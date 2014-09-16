@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		"SeparatorPredicate" ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziTokenParser",
+	"pools" : [
+		 ],
+	"super" : "PPTokenParser",
+	"type" : "normal" }

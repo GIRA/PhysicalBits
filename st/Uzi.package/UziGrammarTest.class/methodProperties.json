@@ -1,0 +1,10 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"testEmptyScriptBody" : "Richo 9/16/2014 16:54",
+		"testIdentifierToken" : "Richo 9/16/2014 15:53",
+		"testNumberToken" : "Richo 9/16/2014 15:52",
+		"testScriptName" : "Richo 9/16/2014 16:25",
+		"testTickingRate" : "Richo 9/16/2014 16:41",
+		"testTickingState" : "Richo 9/16/2014 16:27" } }
