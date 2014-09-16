@@ -1,4 +1,4 @@
-as yet unclassified
+grammar-scripts
 testTickingRate
 	| pp d h m s |
 	pp := UziGrammar new tickingRate.

@@ -1,4 +1,4 @@
-as yet unclassified
+primitives and tokens
 testNumberToken
 	| pp |
 	pp := UziGrammar new numberToken.

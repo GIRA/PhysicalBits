@@ -1,4 +1,4 @@
-as yet unclassified
+primitives and tokens
 testIdentifierToken
 	| pp |
 	pp := UziGrammar new identifierToken.

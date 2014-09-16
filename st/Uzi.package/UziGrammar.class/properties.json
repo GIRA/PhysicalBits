@@ -9,7 +9,11 @@
 		"number",
 		"identifier",
 		"identifierToken",
-		"numberToken" ],
+		"numberToken",
+		"unary",
+		"keyword",
+		"binary",
+		"unaryToken" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],

@@ -1,4 +1,4 @@
-as yet unclassified
+grammar-scripts
 testTickingState
 	| pp |
 	pp := UziGrammar new tickingState.

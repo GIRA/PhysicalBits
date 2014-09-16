@@ -1,4 +1,4 @@
-as yet unclassified
+grammar-scripts
 testEmptyScriptBody
 	| pp b |
 	pp := UziGrammar new scriptBody.

@@ -2,9 +2,13 @@
 	"class" : {
 		 },
 	"instance" : {
+		"testBinaryToken" : "Richo 9/16/2014 17:36",
 		"testEmptyScriptBody" : "Richo 9/16/2014 16:54",
 		"testIdentifierToken" : "Richo 9/16/2014 15:53",
+		"testKeywordToken" : "Richo 9/16/2014 17:17",
 		"testNumberToken" : "Richo 9/16/2014 15:52",
 		"testScriptName" : "Richo 9/16/2014 16:25",
 		"testTickingRate" : "Richo 9/16/2014 16:41",
-		"testTickingState" : "Richo 9/16/2014 16:27" } }
+		"testTickingState" : "Richo 9/16/2014 16:27",
+		"testUnaryMessage" : "Richo 9/16/2014 17:41",
+		"testUnaryToken" : "Richo 9/16/2014 17:14" } }
