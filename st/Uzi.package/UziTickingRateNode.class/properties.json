@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"value",
+		"scale" ],
+	"name" : "UziTickingRateNode",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

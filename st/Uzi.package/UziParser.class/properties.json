@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziParser",
+	"pools" : [
+		 ],
+	"super" : "UziGrammar",
+	"type" : "normal" }
