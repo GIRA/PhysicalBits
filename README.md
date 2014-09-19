@@ -1,6 +1,6 @@
 Uzi
 ===
 
-(Installer ss project: 'WebClient')
-	install: 'WebClient-Core';
-	install: 'WebClient-Tests'.
+(Installer lukas project: 'petit')
+install: 'PetitParser';
+install: 'PetitTests'.
