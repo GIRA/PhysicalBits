@@ -1,5 +1,5 @@
 {
-	"category" : "Uzi-Tests",
+	"category" : "Uzi-Parser-Nodes",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
@@ -7,8 +7,8 @@
 	"commentStamp" : "",
 	"instvars" : [
 		 ],
-	"name" : "UziGrammarTest",
+	"name" : "UziParseNode",
 	"pools" : [
 		 ],
-	"super" : "TestCase",
+	"super" : "Object",
 	"type" : "normal" }

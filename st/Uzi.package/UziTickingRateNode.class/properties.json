@@ -11,5 +11,5 @@
 	"name" : "UziTickingRateNode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNode",
 	"type" : "normal" }

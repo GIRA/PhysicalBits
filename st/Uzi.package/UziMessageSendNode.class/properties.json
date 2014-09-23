@@ -12,5 +12,5 @@
 	"name" : "UziMessageSendNode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNode",
 	"type" : "normal" }

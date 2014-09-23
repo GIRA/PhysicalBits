@@ -10,5 +10,5 @@
 	"name" : "UziNumberNode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNode",
 	"type" : "normal" }

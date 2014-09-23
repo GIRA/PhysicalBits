@@ -1,14 +1,17 @@
 {
-	"category" : "Uzi-Tests",
+	"category" : "Uzi-Program",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
-	"name" : "UziGrammarTest",
+		"name",
+		"state",
+		"delay",
+		"body" ],
+	"name" : "UziScript",
 	"pools" : [
 		 ],
-	"super" : "TestCase",
+	"super" : "Object",
 	"type" : "normal" }
