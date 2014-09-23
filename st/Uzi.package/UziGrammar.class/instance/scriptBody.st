@@ -1,3 +1,6 @@
 grammar-scripts
 scriptBody
-	^ $[ asParser uziToken , numberToken star, $] asParser uziToken
+	^ $[ asParser uziToken , 
+		(statements ==> [:nodesAndTokens |
+			nodesAndTokens reject: [:each | each isNil or: [each isKindOf: UziToken]]]), 
+		$] asParser uziToken

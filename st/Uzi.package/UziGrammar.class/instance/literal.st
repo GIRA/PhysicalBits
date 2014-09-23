@@ -1,0 +1,3 @@
+grammar
+literal
+	^ numberLiteral

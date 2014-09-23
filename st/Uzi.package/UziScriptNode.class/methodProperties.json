@@ -2,6 +2,7 @@
 	"class" : {
 		"name:state:tickingRate:body:" : "Richo 9/23/2014 11:11" },
 	"instance" : {
+		"body" : "Richo 9/23/2014 16:22",
 		"initializeWithName:state:tickingRate:body:" : "Richo 9/23/2014 11:13",
 		"name" : "Richo 9/23/2014 11:13",
 		"state" : "Richo 9/23/2014 11:13",
