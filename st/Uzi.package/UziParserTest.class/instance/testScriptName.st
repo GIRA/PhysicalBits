@@ -1,4 +1,4 @@
-as yet unclassified
+grammar-scripts
 testScriptName 
 	| pp |
 	pp := UziParser new scriptName.

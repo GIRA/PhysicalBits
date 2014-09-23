@@ -2,7 +2,14 @@
 	"class" : {
 		 },
 	"instance" : {
+		"testBinaryExpression" : "Richo 9/23/2014 13:06",
+		"testEmptyScript" : "Richo 9/23/2014 11:15",
+		"testKeywordExpression" : "Richo 9/23/2014 13:09",
 		"testLiteralNumber" : "Richo 9/19/2014 19:41",
 		"testScriptName" : "Richo 9/19/2014 19:56",
-		"testTickingRate" : "Richo 9/19/2014 20:17",
-		"testTickingState" : "Richo 9/19/2014 19:58" } }
+		"testTickingRateDays" : "Richo 9/23/2014 11:05",
+		"testTickingRateHours" : "Richo 9/23/2014 11:04",
+		"testTickingRateMinutes" : "Richo 9/23/2014 11:03",
+		"testTickingRateSeconds" : "Richo 9/23/2014 11:00",
+		"testTickingState" : "Richo 9/19/2014 19:58",
+		"testUnaryExpression" : "Richo 9/23/2014 13:00" } }

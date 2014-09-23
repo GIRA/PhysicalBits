@@ -2,7 +2,12 @@
 	"class" : {
 		 },
 	"instance" : {
+		"binaryExpression" : "Richo 9/23/2014 13:07",
+		"build:messages:" : "Richo 9/23/2014 13:02",
+		"keywordExpression" : "Richo 9/23/2014 13:12",
 		"numberLiteral" : "Richo 9/19/2014 19:45",
-		"scriptName" : "Richo 9/19/2014 19:57",
+		"script" : "Richo 9/23/2014 11:10",
+		"scriptName" : "Richo 9/23/2014 12:54",
 		"tickingRate" : "Richo 9/19/2014 20:05",
-		"tickingState" : "Richo 9/19/2014 19:59" } }
+		"tickingState" : "Richo 9/19/2014 19:59",
+		"unaryExpression" : "Richo 9/23/2014 13:01" } }

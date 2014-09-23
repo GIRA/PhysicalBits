@@ -1,5 +1,5 @@
-as yet unclassified
-testTickingRate
+grammar-scripts
+testTickingRateSeconds
 	| pp |
 	pp := UziParser new tickingRate.
 	self assert: (pp parse: '1/s') delay = 1 second.

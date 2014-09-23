@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"name",
+		"state",
+		"tickingRate",
+		"body" ],
+	"name" : "UziScriptNode",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

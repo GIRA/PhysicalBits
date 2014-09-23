@@ -21,7 +21,11 @@
 		"binaryMessage",
 		"keywordToken",
 		"binaryExpression",
-		"keywordMessage" ],
+		"keywordMessage",
+		"scriptName",
+		"tickingState",
+		"tickingRate",
+		"scriptBody" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],

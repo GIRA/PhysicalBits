@@ -1,3 +1,5 @@
 scripts
 scriptName
-	^ super scriptName map: [:ign :token | token inputValue asSymbol]
+	^ super scriptName map: [:token |
+		"Remove the first character ($#)"
+		token inputValue allButFirst asSymbol]

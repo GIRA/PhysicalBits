@@ -1,4 +1,4 @@
-as yet unclassified
+grammar-literals
 testLiteralNumber
 	| pp |
 	pp := UziParser new numberLiteral.

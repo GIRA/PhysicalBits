@@ -1,3 +1,3 @@
 grammar-scripts
 scriptName
-	^ $# asParser , identifierToken
+	^ ($# asParser, identifier) uziToken
