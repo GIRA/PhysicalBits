@@ -1,7 +1,7 @@
 instance creation
-name: name state: state delay: delay body: body
+name: name state: state delay: delay bytecodes: bytecodes
 	^ self basicNew
 		initializeWithName: name
 		state: state
 		delay: delay
-		body: body
+		bytecodes: bytecodes

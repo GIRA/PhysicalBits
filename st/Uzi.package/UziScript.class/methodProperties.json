@@ -1,5 +1,9 @@
 {
 	"class" : {
-		"name:state:delay:body:" : "Richo 9/23/2014 17:21" },
+		"name:state:delay:bytecodes:" : "Richo 9/25/2014 10:08" },
 	"instance" : {
-		"initializeWithName:state:delay:body:" : "Richo 9/23/2014 17:22" } }
+		"bytecodes" : "Richo 9/25/2014 10:10",
+		"delay" : "Richo 9/25/2014 10:07",
+		"initializeWithName:state:delay:bytecodes:" : "Richo 9/25/2014 10:13",
+		"name" : "Richo 9/25/2014 10:06",
+		"state" : "Richo 9/25/2014 10:13" } }

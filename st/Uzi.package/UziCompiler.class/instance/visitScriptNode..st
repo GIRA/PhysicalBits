@@ -4,4 +4,4 @@ visitScriptNode: node
 		name: node name
 		state: node state
 		delay: (self visit: node tickingRate)
-		body: (self visitCollection: node body)
+		bytecodes: (self visitCollection: node body)
