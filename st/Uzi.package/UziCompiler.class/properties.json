@@ -6,7 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
+		"literals",
+		"variables",
+		"bytecodes" ],
 	"name" : "UziCompiler",
 	"pools" : [
 		 ],
