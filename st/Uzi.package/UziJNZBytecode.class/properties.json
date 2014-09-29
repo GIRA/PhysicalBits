@@ -1,18 +1,14 @@
 {
-	"category" : "Uzi-Tests",
+	"category" : "Uzi-Program",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"pushLit",
-		"primCall",
-		"end",
-		"jnz",
-		"jmp" ],
-	"name" : "UziTest",
+		 ],
+	"name" : "UziJNZBytecode",
 	"pools" : [
 		 ],
-	"super" : "TestCase",
+	"super" : "UziBytecode",
 	"type" : "normal" }

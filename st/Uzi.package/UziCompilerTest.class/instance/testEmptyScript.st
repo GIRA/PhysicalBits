@@ -1,4 +1,4 @@
-as yet unclassified
+tests
 testEmptyScript
 	| cc program script1 |
 	cc := UziCompiler new.

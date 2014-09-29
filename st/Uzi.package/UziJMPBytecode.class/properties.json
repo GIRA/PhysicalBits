@@ -1,14 +1,14 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Program",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes" ],
-	"name" : "UziBytecodeBuilder",
+		 ],
+	"name" : "UziJMPBytecode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziBytecode",
 	"type" : "normal" }

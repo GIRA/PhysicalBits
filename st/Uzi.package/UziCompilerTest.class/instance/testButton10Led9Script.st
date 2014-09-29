@@ -1,4 +1,4 @@
-as yet unclassified
+tests
 testButton10Led9Script
 	| cc program script1 bytecodes |
 	cc := UziCompiler new.

@@ -1,5 +1,8 @@
-initialize-release
+setup
 setUp
+	"Shortcuts to create bytecodes"
 	pushLit := UziPushLiteralBytecode.
 	primCall := UziPrimitiveCallBytecode.
-	end := UziEndBytecode new.
+	end := UziEndBytecode new..
+	jnz := UziJNZBytecode.
+	jmp := UziJMPBytecode
