@@ -7,8 +7,8 @@
 	"commentStamp" : "",
 	"instvars" : [
 		 ],
-	"name" : "UziTerminateBytecode",
+	"name" : "UziEndBytecode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziBytecode",
 	"type" : "normal" }

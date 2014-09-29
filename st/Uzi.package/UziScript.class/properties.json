@@ -9,7 +9,9 @@
 		"name",
 		"state",
 		"delay",
-		"bytecodes" ],
+		"bytecodes",
+		"literals",
+		"variables" ],
 	"name" : "UziScript",
 	"pools" : [
 		 ],

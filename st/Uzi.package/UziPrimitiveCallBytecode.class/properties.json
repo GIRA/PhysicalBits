@@ -1,16 +1,14 @@
 {
-	"category" : "Uzi-Tests",
+	"category" : "Uzi-Program",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"pushLit",
-		"primCall",
-		"end" ],
-	"name" : "UziCompilerTest",
+		 ],
+	"name" : "UziPrimitiveCallBytecode",
 	"pools" : [
 		 ],
-	"super" : "TestCase",
+	"super" : "UziBytecode",
 	"type" : "normal" }

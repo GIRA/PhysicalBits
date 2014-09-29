@@ -9,7 +9,7 @@
 		"pushLit",
 		"primCall",
 		"end" ],
-	"name" : "UziCompilerTest",
+	"name" : "UziTest",
 	"pools" : [
 		 ],
 	"super" : "TestCase",
