@@ -5,6 +5,8 @@
 		"bytecodes" : "Richo 9/25/2014 10:10",
 		"delay" : "Richo 9/25/2014 10:07",
 		"initializeWithName:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 17:39",
+		"isTicking" : "Richo 10/7/2014 16:00",
+		"literalAt:" : "Richo 10/7/2014 16:46",
 		"literals" : "Richo 9/29/2014 17:34",
 		"name" : "Richo 9/25/2014 10:06",
 		"state" : "Richo 9/25/2014 10:13",

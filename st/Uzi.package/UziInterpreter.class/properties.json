@@ -1,0 +1,19 @@
+{
+	"category" : "Uzi-Simulator",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"script",
+		"lastTime",
+		"ip",
+		"stack",
+		"next",
+		"arduino" ],
+	"name" : "UziInterpreter",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
