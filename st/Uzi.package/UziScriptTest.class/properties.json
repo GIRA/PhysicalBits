@@ -1,14 +1,14 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Tests",
 	"classinstvars" : [
-		"primitives" ],
+		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes" ],
-	"name" : "Uzi",
+		 ],
+	"name" : "UziScriptTest",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "TestCase",
 	"type" : "normal" }

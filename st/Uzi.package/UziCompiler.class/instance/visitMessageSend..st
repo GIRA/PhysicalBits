@@ -8,6 +8,6 @@ visitMessageSend: node
 	"Then we create the primCall bytecode.
 	The argument is a primitive name associated with the node selector."
 	bytecode := UziPrimitiveCallBytecode 
-		arg: (self primitiveNameFor: node selector).
+		arg: (self primitiveNumberFor: node selector).
 	"Finally, we register the bytecode"
 	bytecodes add: bytecode

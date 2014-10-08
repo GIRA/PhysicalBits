@@ -4,9 +4,10 @@
 	"instance" : {
 		"compile:" : "Richo 9/23/2014 17:07",
 		"primitiveNameFor:" : "Richo 9/29/2014 18:40",
+		"primitiveNumberFor:" : "Richo 10/8/2014 16:03",
 		"visit:" : "Richo 9/23/2014 17:10",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
-		"visitMessageSend:" : "Richo 9/29/2014 18:45",
+		"visitMessageSend:" : "Richo 10/8/2014 15:53",
 		"visitNumberNode:" : "Richo 9/29/2014 18:43",
 		"visitScriptNode:" : "Richo 9/29/2014 18:41",
 		"visitTickingRateNode:" : "Richo 9/29/2014 18:45" } }

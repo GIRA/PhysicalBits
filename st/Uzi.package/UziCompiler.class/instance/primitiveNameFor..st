@@ -1,4 +1,4 @@
-accessing
+private
 primitiveNameFor: selector
 	^ selector caseOf: {
 		[#at:] -> [#getValue].

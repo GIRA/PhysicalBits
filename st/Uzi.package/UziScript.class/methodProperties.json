@@ -2,6 +2,7 @@
 	"class" : {
 		"name:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 17:38" },
 	"instance" : {
+		"asByteArray" : "Richo 10/8/2014 15:01",
 		"bytecodes" : "Richo 9/25/2014 10:10",
 		"delay" : "Richo 9/25/2014 10:07",
 		"initializeWithName:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 17:39",
@@ -10,4 +11,8 @@
 		"literals" : "Richo 9/29/2014 17:34",
 		"name" : "Richo 9/25/2014 10:06",
 		"state" : "Richo 9/25/2014 10:13",
-		"variables" : "Richo 9/29/2014 17:39" } }
+		"variables" : "Richo 9/29/2014 17:39",
+		"writeBytecodesOn:" : "Richo 10/8/2014 16:06",
+		"writeHeaderOn:" : "Richo 10/8/2014 15:09",
+		"writeLiteralsOn:" : "Richo 10/8/2014 15:27",
+		"writeVariablesOn:" : "Richo 10/8/2014 16:08" } }

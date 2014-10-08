@@ -1,5 +1,6 @@
 {
 	"class" : {
+		"primitives" : "Richo 10/8/2014 16:03",
 		"scriptNamed:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 19:28" },
 	"instance" : {
 		"add:" : "Richo 9/29/2014 19:27",
@@ -7,5 +8,5 @@
 		"initialize" : "Richo 9/29/2014 19:04",
 		"jmp:" : "Richo 9/29/2014 19:27",
 		"jnz:" : "Richo 9/29/2014 19:27",
-		"primCall:" : "Richo 9/29/2014 19:27",
+		"primCall:" : "Richo 10/8/2014 16:05",
 		"pushLit:" : "Richo 9/29/2014 19:28" } }

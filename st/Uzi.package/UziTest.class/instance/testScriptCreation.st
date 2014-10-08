@@ -7,8 +7,8 @@ testScriptCreation
 		bytecodes: [:uzi | uzi
 			pushLit: 0;
 			pushLit: 1;
-			primCall: #getValue;
-			primCall: #setValue;
+			primCall: 0;
+			primCall: 1;
 			end	].
 	self assert: script name = #main.
 	self assert: script state = #ticking.
@@ -20,7 +20,7 @@ testScriptCreation
 	self assert: bytecodes = {
 		pushLit arg: 0.
 		pushLit arg: 1.
-		primCall arg: #getValue.
-		primCall arg: #setValue.
+		primCall arg: 0.
+		primCall arg: 1.
 		end.
 	}
