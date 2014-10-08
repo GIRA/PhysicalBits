@@ -6,6 +6,6 @@ testEmptyScript
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
 	self assert: script1 name = #main.
-	self assert: script1 state = #ticking.
+	self assert: script1 isTicking.
 	self assert: script1 delay = 1000.
 	self assert: script1 bytecodes size = 1

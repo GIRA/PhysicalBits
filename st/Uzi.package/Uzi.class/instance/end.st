@@ -1,3 +1,3 @@
 bytecode creation
 end
-	^ self add: UziEndBytecode new
+	bytecodes add: UziEndBytecode new

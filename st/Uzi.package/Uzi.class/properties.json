@@ -6,7 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes" ],
+		"bytecodes",
+		"literals",
+		"variables" ],
 	"name" : "Uzi",
 	"pools" : [
 		 ],

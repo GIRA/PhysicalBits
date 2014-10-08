@@ -1,3 +1,3 @@
 accessing
 isTicking
-	^ state = #ticking
+	^ ticking

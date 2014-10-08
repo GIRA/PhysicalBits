@@ -1,18 +1,18 @@
 {
 	"class" : {
-		"name:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 17:38" },
+		"name:ticking:delay:literals:variables:bytecodes:" : "Richo 10/8/2014 17:32" },
 	"instance" : {
+		"accept:" : "Richo 10/8/2014 18:03",
 		"asByteArray" : "Richo 10/8/2014 15:01",
 		"bytecodes" : "Richo 9/25/2014 10:10",
 		"delay" : "Richo 9/25/2014 10:07",
-		"initializeWithName:state:delay:literals:variables:bytecodes:" : "Richo 9/29/2014 17:39",
-		"isTicking" : "Richo 10/7/2014 16:00",
+		"initializeWithName:ticking:delay:literals:variables:bytecodes:" : "Richo 10/8/2014 17:33",
+		"isTicking" : "Richo 10/8/2014 17:33",
 		"literalAt:" : "Richo 10/7/2014 16:46",
 		"literals" : "Richo 9/29/2014 17:34",
 		"name" : "Richo 9/25/2014 10:06",
-		"state" : "Richo 9/25/2014 10:13",
 		"variables" : "Richo 9/29/2014 17:39",
-		"writeBytecodesOn:" : "Richo 10/8/2014 16:06",
+		"writeBytecodesOn:" : "Richo 10/8/2014 17:41",
 		"writeHeaderOn:" : "Richo 10/8/2014 15:09",
-		"writeLiteralsOn:" : "Richo 10/8/2014 15:27",
+		"writeLiteralsOn:" : "Richo 10/8/2014 17:40",
 		"writeVariablesOn:" : "Richo 10/8/2014 16:08" } }

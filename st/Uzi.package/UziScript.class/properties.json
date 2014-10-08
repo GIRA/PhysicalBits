@@ -7,7 +7,7 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"name",
-		"state",
+		"ticking",
 		"delay",
 		"bytecodes",
 		"literals",

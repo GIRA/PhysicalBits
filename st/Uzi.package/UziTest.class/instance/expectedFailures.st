@@ -1,0 +1,3 @@
+setup
+expectedFailures
+	^ #(testScriptCreationOld)

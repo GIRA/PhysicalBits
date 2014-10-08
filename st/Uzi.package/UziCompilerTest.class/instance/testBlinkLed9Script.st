@@ -10,7 +10,7 @@ testBlinkLed9Script
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
 	self assert: script1 name = #blinkLed9.
-	self assert: script1 state = #ticking.
+	self assert: script1 isTicking.
 	self assert: script1 delay = 1000.
 	self assert: script1 literals = #(9 0 1).
 	self assert: script1 variables isEmpty.

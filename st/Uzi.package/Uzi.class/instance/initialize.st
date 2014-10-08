@@ -1,4 +1,6 @@
 initialization
 initialize
 	super initialize.
-	bytecodes := OrderedCollection new
+	literals := OrderedCollection new.
+	variables := OrderedCollection new.
+	bytecodes := OrderedCollection new.

@@ -4,4 +4,4 @@ primCall: primNameOrNumber
 	arg := primNameOrNumber isNumber
 		ifTrue: [primNameOrNumber]
 		ifFalse: [self class primitives at: primNameOrNumber].
-	^ self add: (UziPrimitiveCallBytecode arg: arg)
+	bytecodes add: (UziPrimitiveCallBytecode arg: arg)

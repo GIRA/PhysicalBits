@@ -2,6 +2,8 @@
 	"class" : {
 		 },
 	"instance" : {
+		"expectedFailures" : "Richo 10/8/2014 17:24",
 		"setUp" : "Richo 9/29/2014 19:25",
-		"testScriptCreation" : "Richo 10/8/2014 15:48",
-		"testScriptCreation2" : "Richo 10/8/2014 15:48" } }
+		"testScriptCreation" : "Richo 10/8/2014 17:23",
+		"testScriptCreation2" : "Richo 10/8/2014 17:36",
+		"testScriptCreationOld" : "Richo 10/8/2014 17:22" } }

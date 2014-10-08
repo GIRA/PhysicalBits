@@ -5,4 +5,4 @@ writeLiteralsOn: aStream
 	size := 0.
 	count := literals size.
 	aStream nextPut: ((count bitShift: 2) bitOr: size).
-	literals do: [:lit | aStream nextPut: lit]
+	literals do: [:lit | aStream nextPut: lit value]

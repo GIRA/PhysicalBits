@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Encoder",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"stream",
+		"literals" ],
+	"name" : "UziEncoder",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

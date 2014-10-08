@@ -7,7 +7,7 @@ visitScriptNode: node
 	bytecodes add: UziEndBytecode new.
 	^ UziScript
 		name: node name
-		state: node state
+		ticking: node state = #ticking
 		delay: (self visit: node tickingRate)
 		literals: literals asArray
 		variables: variables asArray

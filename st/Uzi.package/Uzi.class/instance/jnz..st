@@ -1,3 +1,3 @@
 bytecode creation
 jnz: arg
-	^ self add: (UziJNZBytecode arg: arg)
+	bytecodes add: (UziJNZBytecode arg: arg)
