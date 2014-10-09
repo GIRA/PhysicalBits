@@ -1,4 +1,4 @@
-as yet unclassified
+encoding scripts
 writeScriptHeader: anUziScript
 	| header |
 	"The header has 4 bytes.

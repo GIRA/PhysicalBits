@@ -7,3 +7,4 @@ SystemOrganization addCategory: #'Uzi-Program'!
 SystemOrganization addCategory: #'Uzi-Core'!
 SystemOrganization addCategory: #'Uzi-Simulator'!
 SystemOrganization addCategory: #'Uzi-Encoder'!
+SystemOrganization addCategory: #'Uzi-Programmer'!

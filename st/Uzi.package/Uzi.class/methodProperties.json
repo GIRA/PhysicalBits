@@ -11,5 +11,7 @@
 		"jnz:" : "Richo 10/8/2014 17:29",
 		"literals" : "Richo 10/8/2014 17:29",
 		"primCall:" : "Richo 10/8/2014 17:29",
+		"primGetValue" : "Richo 10/9/2014 16:29",
+		"primSetValue" : "Richo 10/9/2014 16:29",
 		"pushLit:" : "Richo 10/8/2014 17:30",
 		"variables" : "Richo 10/8/2014 17:29" } }

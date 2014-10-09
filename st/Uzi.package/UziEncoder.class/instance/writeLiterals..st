@@ -1,4 +1,4 @@
-as yet unclassified
+encoding scripts
 writeLiterals: anUziScript
 	| grouped |
 	"First we sort and store them so that later we can get their indexes"

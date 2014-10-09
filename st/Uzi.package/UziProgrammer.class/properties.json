@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Programmer",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"port" ],
+	"name" : "UziProgrammer",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
