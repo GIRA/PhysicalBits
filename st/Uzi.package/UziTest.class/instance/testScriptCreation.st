@@ -21,7 +21,7 @@ testScriptCreation
 	self assert: bytecodes = {
 		pushLit arg: script literals first.
 		pushLit arg: script literals second.
-		primCall arg: 0.
-		primCall arg: 1.
+		primCall arg: (prim named: #getValue).
+		primCall arg: (prim named: #setValue).
 		end.
 	}

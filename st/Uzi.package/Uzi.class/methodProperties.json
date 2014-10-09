@@ -1,6 +1,5 @@
 {
 	"class" : {
-		"primitives" : "Richo 10/8/2014 16:03",
 		"script:ticking:delay:bytecodes:" : "Richo 10/8/2014 17:27" },
 	"instance" : {
 		"add:" : "Richo 9/29/2014 19:27",
@@ -10,7 +9,7 @@
 		"jmp:" : "Richo 10/8/2014 17:29",
 		"jnz:" : "Richo 10/8/2014 17:29",
 		"literals" : "Richo 10/8/2014 17:29",
-		"primCall:" : "Richo 10/8/2014 17:29",
+		"primCall:" : "Richo 10/9/2014 17:27",
 		"primGetValue" : "Richo 10/9/2014 16:29",
 		"primSetValue" : "Richo 10/9/2014 16:29",
 		"pushLit:" : "Richo 10/8/2014 17:30",

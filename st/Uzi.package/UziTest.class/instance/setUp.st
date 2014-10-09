@@ -5,4 +5,6 @@ setUp
 	primCall := UziPrimitiveCallBytecode.
 	end := UziEndBytecode new..
 	jnz := UziJNZBytecode.
-	jmp := UziJMPBytecode
+	jmp := UziJMPBytecode.
+	"... and primitives"
+	prim := UziPrimitive

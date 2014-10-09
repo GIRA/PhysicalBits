@@ -8,8 +8,8 @@ testButton10Led9Encoding
 		bytecodes: [:uzi | uzi
 			pushLit: 9;
 			pushLit: 10;
-			primCall: 0;
-			primCall: 1;
+			primGetValue;
+			primSetValue;
 			end].
 	self assert: (encoder encode: script) = #[
 		"Stepping and steptime (true, 10)"

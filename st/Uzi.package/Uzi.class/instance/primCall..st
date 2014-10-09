@@ -1,7 +1,5 @@
 bytecode creation
-primCall: primNameOrNumber
+primCall: primName
 	| arg |
-	arg := primNameOrNumber isNumber
-		ifTrue: [primNameOrNumber]
-		ifFalse: [self class primitives at: primNameOrNumber].
+	arg := UziPrimitive named: primName.
 	bytecodes add: (UziPrimitiveCallBytecode arg: arg)

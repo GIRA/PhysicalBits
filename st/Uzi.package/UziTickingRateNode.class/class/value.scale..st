@@ -1,7 +1,7 @@
 instance creation
 value: aPositiveNumber scale: aSymbol
 	aPositiveNumber <= 0 
-		ifTrue: [InvalidTickingRateError signal].
+		ifTrue: [UziInvalidTickingRateError signal: aPositiveNumber].
 	^ self basicNew 
 		initializeWithValue: aPositiveNumber 
 		scale: aSymbol 

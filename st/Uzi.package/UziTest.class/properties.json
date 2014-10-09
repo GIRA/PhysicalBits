@@ -10,7 +10,8 @@
 		"primCall",
 		"end",
 		"jnz",
-		"jmp" ],
+		"jmp",
+		"prim" ],
 	"name" : "UziTest",
 	"pools" : [
 		 ],

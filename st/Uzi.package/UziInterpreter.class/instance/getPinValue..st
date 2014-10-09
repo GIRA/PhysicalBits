@@ -1,3 +1,3 @@
 private
-getValue: pinNumber
+getPinValue: pinNumber
 	^ (self pin: pinNumber) value

@@ -1,16 +1,14 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Errors",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes",
-		"literals",
-		"variables" ],
-	"name" : "Uzi",
+		 ],
+	"name" : "UziPrimitiveNotFoundError",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "Error",
 	"type" : "normal" }

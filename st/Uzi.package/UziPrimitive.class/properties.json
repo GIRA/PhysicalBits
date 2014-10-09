@@ -1,15 +1,13 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Program",
 	"classinstvars" : [
-		 ],
+		"primitives" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes",
-		"literals",
-		"variables" ],
-	"name" : "Uzi",
+		"code" ],
+	"name" : "UziPrimitive",
 	"pools" : [
 		 ],
 	"super" : "Object",

@@ -22,14 +22,14 @@ testScriptCreation2
 	self assert: script variables isEmpty.
 	self assert: script bytecodes = {
 		pushLit arg: script literals first.
-		primCall arg: 0.
+		primCall arg: (prim named: #getValue).
 		jnz arg: 4.
 		pushLit arg: script literals first.
 		pushLit arg: script literals second.
-		primCall arg: 1.
+		primCall arg: (prim named: #setValue).
 		jmp arg: 3.
 		pushLit arg: script literals first.
 		pushLit arg: script literals third.
-		primCall arg: 1.
+		primCall arg: (prim named: #setValue).
 		end	
 	}

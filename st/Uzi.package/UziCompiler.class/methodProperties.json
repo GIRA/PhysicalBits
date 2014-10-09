@@ -3,11 +3,10 @@
 		 },
 	"instance" : {
 		"compile:" : "Richo 9/23/2014 17:07",
-		"primitiveNameFor:" : "Richo 9/29/2014 18:40",
-		"primitiveNumberFor:" : "Richo 10/8/2014 16:03",
+		"primitiveFor:" : "Richo 10/9/2014 17:51",
 		"visit:" : "Richo 9/23/2014 17:10",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
-		"visitMessageSend:" : "Richo 10/8/2014 15:53",
+		"visitMessageSend:" : "Richo 10/9/2014 17:28",
 		"visitNumberNode:" : "Richo 10/8/2014 17:17",
 		"visitScriptNode:" : "Richo 10/8/2014 17:37",
 		"visitTickingRateNode:" : "Richo 9/29/2014 18:45" } }
