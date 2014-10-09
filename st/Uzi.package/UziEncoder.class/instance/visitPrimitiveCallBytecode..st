@@ -1,4 +1,4 @@
 visiting
 visitPrimitiveCallBytecode: bytecode
-	stream nextPut: ((bytecode code bitShift: 4) 
-					bitOr: bytecode argument code)
+	self writeBytecode: 5
+		argument: bytecode argument code
