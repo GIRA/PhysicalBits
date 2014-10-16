@@ -41,10 +41,13 @@ StackVM * vm = new StackVM();
 PE * pe = new PE();
 ReadStream * stream = new SerialStream(&Serial);
 
+unsigned long lastTimeInputSent = 0; 
+
 void executeCommand(byte);
 void executeSetProgram(void);
 void executeSetValue(void);
 void executeSetMode(void);
+void sendInputs(void);
 
 void setup() {
 	Serial.begin(57600);
@@ -57,9 +60,31 @@ void loop() {
 	if (Serial.available()) {
 		unsigned char inByte = stream->nextChar();
 		Serial.write(inByte);
-		executeCommand(inByte);		
-	} else {	
-		vm->executeProgram(program, pe);
+		executeCommand(inByte);
+	}
+	
+        vm->executeProgram(program, pe);
+        
+        unsigned long now = millis();
+        if (now - lastTimeInputSent > 50) {
+                sendInputs();
+                lastTimeInputSent = now;
+        }
+}
+
+void sendInputs(void) {        
+        for (int i = 0; i < TOTAL_PINS; i++) {
+                int pin = PIN_NUMBER(i);
+                if (pe->getMode(pin) == INPUT) {
+                        Serial.write(1);
+                        Serial.write(pin);
+                             
+                        unsigned short val = pe->getValue(pin);
+                        unsigned char buf[2];
+                        buf[0] = (val >> 8) & 0xFF;
+                        buf[1] = val & 0xFF; 
+                        Serial.write(buf, 2);
+                }
 	}
 }
 

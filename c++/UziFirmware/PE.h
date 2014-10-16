@@ -1,10 +1,11 @@
 #pragma once
 
 // The following macros will work for standard arduino, other versions should redefine.
-#define TOTAL_PINS											  18
-#define PIN_INDEX(x)								   ((x) - 2)
-#define IS_ANALOG(x)					((x) >= 14 && (x) <= 19)
-#define IS_DIGITAL(x)							 (!IS_ANALOG(x))
+#define TOTAL_PINS								        18
+#define ARRAY_INDEX(pin)					               ((pin) - 2)
+#define PIN_NUMBER(index)                                                    ((index) + 2)
+#define IS_ANALOG(pin)					      ((pin) >= 14 && (pin) <= 19)
+#define IS_DIGITAL(pin)						         (!IS_ANALOG(pin))
 
 class PE {
 

@@ -2,7 +2,7 @@
 #include "Arduino.h"
 
 unsigned char PE::getMode(unsigned int pin) {
-	int index = PIN_INDEX(pin);
+	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return INPUT;
 	} else {
@@ -11,7 +11,7 @@ unsigned char PE::getMode(unsigned int pin) {
 }
 
 void PE::setMode(unsigned int pin, unsigned char mode) {
-	int index = PIN_INDEX(pin);
+	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return;
 	}
@@ -20,7 +20,7 @@ void PE::setMode(unsigned int pin, unsigned char mode) {
 }
 
 unsigned short PE::getValue(unsigned int pin) {
-	int index = PIN_INDEX(pin);
+	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return 0;
 	}
@@ -38,7 +38,7 @@ unsigned short PE::getValue(unsigned int pin) {
 }
 
 void PE::setValue(unsigned int pin, unsigned short value) {
-	int index = PIN_INDEX(pin);
+	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return;
 	}
