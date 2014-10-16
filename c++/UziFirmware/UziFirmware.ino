@@ -3,6 +3,8 @@
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM	                         0
+#define RQ_SET_VALUE                             1
+#define RQ_SET_MODE                              2
 
 // Two examples of compiled programs
 unsigned char blinkLed9[] = {// LENGTH: 24
@@ -37,9 +39,12 @@ unsigned char button10Led9[] = {// LENGTH: 14
 StackProgram * program = new StackProgram();
 StackVM * vm = new StackVM();
 PE * pe = new PE();
+ReadStream * stream = new SerialStream(&Serial);
 
 void executeCommand(byte);
 void executeSetProgram(void);
+void executeSetValue(void);
+void executeSetMode(void);
 
 void setup() {
 	Serial.begin(57600);
@@ -50,62 +55,43 @@ void setup() {
 
 void loop() {
 	if (Serial.available()) {
-		byte inByte = Serial.read();
+		unsigned char inByte = stream->nextChar();
 		Serial.write(inByte);
 		executeCommand(inByte);		
 	} else {	
 		vm->executeProgram(program, pe);
 	}
-
-  /*int aval = Serial.available();
-  if(aval > 0) {
-    ReadStream * rs = new SerialStream(&Serial);
-    for (int i = 0; i < aval; i++) {
-      unsigned char next = rs->nextChar();
-      Serial.write(next);
-    }
-    delete rs;
-  }*/
-	
-        /*long n = rs->nextLong(4);
-	bool _stepping = (n >> 31) & 1;
-	long _stepTime = n & 0x7FFFFFFF;
-
-        Serial.println("###");
-        Serial.println(n);
-        Serial.println(_stepping ? 1 : 0);
-        Serial.println(_stepTime);
-        Serial.println("###");*/
-        
-        /*
-        if (Serial.available()) {
-          Serial.read();
-          long result = 0;
-          result |= (0x00L << (3 * 8));
-          result |= (0x01L << (2 * 8));
-          result |= (0x00L << (1 * 8));
-          result |= (0x01L << (0 * 8));
-          Serial.println(result);
-        }
-        */
-        
-        /*
-        long n = rs->nextLong(4);
-        Serial.println(n);
-        */
 }
 
-void executeCommand(byte cmd) {
+void executeCommand(unsigned char cmd) {
 	switch(cmd) {
 		case RQ_SET_PROGRAM:
 			executeSetProgram();
 			break;
+                case RQ_SET_VALUE:
+                        executeSetValue();
+                        break;
+                case RQ_SET_MODE:
+                        executeSetMode();
+                        break;
 	}
 }
 
 void executeSetProgram(void) {
-        ReadStream * rs = new SerialStream(&Serial);
         delete program;
-        program = new StackProgram(rs);        
-        delete rs;
+        program = new StackProgram(stream);
+}
+
+void executeSetValue(void) {
+        unsigned char pin = stream->nextChar();
+        unsigned char value = stream->nextChar();
+        
+        pe->setValue(pin, value);
+}
+
+void executeSetMode(void) {
+        unsigned char pin = stream->nextChar();
+        unsigned char mode = stream->nextChar();
+        
+        pe->setMode(pin, mode);
 }
