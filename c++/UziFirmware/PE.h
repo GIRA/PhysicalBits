@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Arduino.h"
+
 // The following macros will work for standard arduino, other versions should redefine.
 #define TOTAL_PINS								        18
 #define ARRAY_INDEX(pin)					               ((pin) - 2)
@@ -13,7 +15,7 @@ public:
 	PE(void) {
 		for (int i = 0; i < TOTAL_PINS; i++) {
 			_pinValues[i] = 0;
-			_pinModes[i] = 0;
+			_pinModes[i] = OUTPUT;
 		}
 	}
 	~PE(void) {}

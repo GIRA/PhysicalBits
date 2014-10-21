@@ -4,7 +4,7 @@
 unsigned char PE::getMode(unsigned int pin) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
-		return INPUT;
+		return OUTPUT;
 	} else {
 		return _pinModes[index];
 	}
