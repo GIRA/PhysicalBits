@@ -5,6 +5,20 @@
 #define RQ_SET_PROGRAM	                         0
 #define RQ_SET_VALUE                             1
 #define RQ_SET_MODE                              2
+#define RQ_START_REPORTING                       3
+#define RQ_STOP_REPORTING                        4
+
+/* RESPONSE COMMANDS */
+#define RS_ERROR                                 0
+#define RS_PIN_VALUE                             1
+
+/* MACROS */
+#define IS_COMMAND(x)                    ((x) >> 7 == 0)
+#define IS_ARGUMENT(x)                   ((x) >> 7 == 1)
+#define GET_COMMAND(x)                               (x)
+#define GET_ARGUMENT(x)                      ((x) & 127)
+#define AS_COMMAND(x)                                (x)
+#define AS_ARGUMENT(x)                       ((x) | 128)
 
 // Two examples of compiled programs
 unsigned char blinkLed9[] = {// LENGTH: 24
@@ -41,13 +55,17 @@ StackVM * vm = new StackVM();
 PE * pe = new PE();
 ReadStream * stream = new SerialStream(&Serial);
 
-unsigned long lastTimeInputSent = 0; 
+unsigned char reporting = 0;
+unsigned long lastTimeReport = 0; 
 
-void executeCommand(byte);
+void executeCommand(unsigned char);
 void executeSetProgram(void);
 void executeSetValue(void);
 void executeSetMode(void);
-void sendInputs(void);
+void executeStartReporting(void);
+void executeStopReporting(void);
+void sendPinValues(void);
+void sendError(unsigned char);
 
 void setup() {
 	Serial.begin(57600);
@@ -59,31 +77,36 @@ void setup() {
 void loop() {
 	if (Serial.available()) {
 		unsigned char inByte = stream->nextChar();
-		Serial.write(inByte);
 		executeCommand(inByte);
 	}
 	
         vm->executeProgram(program, pe);
         
+        if (!reporting) return;
         unsigned long now = millis();
-        if (now - lastTimeInputSent > 50) {
-                sendInputs();
-                lastTimeInputSent = now;
+        if (now - lastTimeReport > 50) {
+                sendPinValues();
+                lastTimeReport = now;
         }
 }
 
-void sendInputs(void) {        
+void sendError(unsigned char errorCode) {
+        Serial.write(AS_COMMAND(RS_ERROR));
+        Serial.write(AS_ARGUMENT(errorCode));  
+}
+
+void sendPinValues(void) {        
         for (int i = 0; i < TOTAL_PINS; i++) {
                 int pin = PIN_NUMBER(i);
                 if (pe->getMode(pin) == INPUT) {
-                        Serial.write(1);
-                        Serial.write(pin);
-                             
+                        Serial.write(AS_COMMAND(RS_PIN_VALUE));
+                        Serial.write(AS_ARGUMENT(pin));
+                        
                         unsigned short val = pe->getValue(pin);
-                        unsigned char buf[2];
-                        buf[0] = (val >> 8) & 0xFF;
-                        buf[1] = val & 0xFF; 
-                        Serial.write(buf, 2);
+                        unsigned char val1 = val & 127;
+                        unsigned char val2 = val >> 7;
+                        Serial.write(AS_ARGUMENT(val1));            
+                        Serial.write(AS_ARGUMENT(val2));
                 }
 	}
 }
@@ -98,6 +121,12 @@ void executeCommand(unsigned char cmd) {
                         break;
                 case RQ_SET_MODE:
                         executeSetMode();
+                        break;
+                case RQ_START_REPORTING:
+                        executeStartReporting();
+                        break;
+                case RQ_STOP_REPORTING:
+                        executeStopReporting();
                         break;
 	}
 }
@@ -119,4 +148,12 @@ void executeSetMode(void) {
         unsigned char mode = stream->nextChar();
         
         pe->setMode(pin, mode);
+}
+
+void executeStartReporting(void) {
+        reporting = 1;
+}
+
+void executeStopReporting(void) {
+        reporting = 0;
 }
