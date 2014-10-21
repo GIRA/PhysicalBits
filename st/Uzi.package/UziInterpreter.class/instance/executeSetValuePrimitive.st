@@ -1,6 +1,6 @@
 primitives
 executeSetValuePrimitive
-	| pop1 pop2 |
-	pop1 := stack pop.
-	pop2 := stack pop.
-	self setPin: pop2 value: pop1
+	| val pin |
+	val := stack pop.
+	pin := stack pop.
+	protocol setPin: pin value: val

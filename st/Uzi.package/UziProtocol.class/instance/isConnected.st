@@ -1,3 +1,3 @@
 connection
 isConnected
-	^ port notNil
+	^ serial notNil

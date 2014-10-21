@@ -1,8 +1,6 @@
 {
 	"class" : {
-		 },
+		"on:" : "Richo 10/21/2014 13:37" },
 	"instance" : {
-		"connectOnPort:" : "Richo 10/9/2014 16:25",
-		"disconnect" : "Richo 10/9/2014 16:25",
-		"install:" : "Richo 10/9/2014 16:31",
-		"isConnected" : "Richo 10/9/2014 16:25" } }
+		"initializeWith:" : "Richo 10/21/2014 13:37",
+		"install:" : "Richo 10/21/2014 13:38" } }

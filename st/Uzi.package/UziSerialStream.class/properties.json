@@ -6,8 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"protocol" ],
-	"name" : "UziProgrammer",
+		"port",
+		"buffer" ],
+	"name" : "UziSerialStream",
 	"pools" : [
 		 ],
 	"super" : "Object",

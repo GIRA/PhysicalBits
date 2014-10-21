@@ -1,0 +1,3 @@
+private
+getCommand: byte
+	^ byte

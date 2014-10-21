@@ -2,4 +2,4 @@ primitives
 executeGetValuePrimitive
 	| pop |
 	pop := stack pop.
-	stack push: (self getPinValue: pop)
+	stack push: (protocol getPinValue: pop)

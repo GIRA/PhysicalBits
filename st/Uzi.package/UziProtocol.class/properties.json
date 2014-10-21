@@ -6,8 +6,11 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"protocol" ],
-	"name" : "UziProgrammer",
+		"serial",
+		"process",
+		"pinValues",
+		"pinModes" ],
+	"name" : "UziProtocol",
 	"pools" : [
 		 ],
 	"super" : "Object",

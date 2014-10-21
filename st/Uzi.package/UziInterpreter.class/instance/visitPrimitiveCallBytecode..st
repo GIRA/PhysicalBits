@@ -1,6 +1,6 @@
 bytecodes
 visitPrimitiveCallBytecode: bytecode 
-	bytecode argument value caseOf: {
+	bytecode argument code caseOf: {
 		[0] -> [self executeGetValuePrimitive].
 		[1] -> [self executeSetValuePrimitive].
 		[2] -> [self executeGetModePrimitive].

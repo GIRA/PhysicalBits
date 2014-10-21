@@ -1,3 +1,3 @@
 instance creation
-on: anArduino script: anUziScript 
-	^ self basicNew initializeWithArduino: anArduino script: anUziScript
+on: anUziProtocol script: anUziScript 
+	^ self basicNew initializeWithProtocol: anUziProtocol script: anUziScript
