@@ -2,13 +2,15 @@
 	"class" : {
 		"on:script:" : "Richo 10/21/2014 13:39" },
 	"instance" : {
-		"execute" : "Richo 10/7/2014 16:28",
+		"execute" : "Richo 10/28/2014 19:40",
 		"executeBytecode:" : "Richo 10/9/2014 17:10",
 		"executeGetValuePrimitive" : "Richo 10/21/2014 13:40",
 		"executeSetValuePrimitive" : "Richo 10/21/2014 19:48",
 		"initialize" : "Richo 10/7/2014 17:08",
 		"initializeWithProtocol:script:" : "Richo 10/21/2014 13:40",
-		"nextBytecode" : "Richo 10/7/2014 16:29",
+		"nextBytecode" : "Richo 10/28/2014 19:40",
 		"visit:" : "Richo 10/9/2014 17:07",
+		"visitJMPBytecode:" : "Richo 10/28/2014 19:31",
+		"visitJNZBytecode:" : "Richo 10/28/2014 19:30",
 		"visitPrimitiveCallBytecode:" : "Richo 10/21/2014 19:43",
 		"visitPushLiteralBytecode:" : "Richo 10/9/2014 17:09" } }

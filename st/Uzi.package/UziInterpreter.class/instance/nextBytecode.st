@@ -1,6 +1,6 @@
 accessing
 nextBytecode
 	| bytecode |
-	bytecode := script bytecodes at: ip + 1.
+	bytecode := script bytecodeAt: ip.
 	ip := ip + 1.
 	^ bytecode

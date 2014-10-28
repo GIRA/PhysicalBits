@@ -4,6 +4,7 @@
 	"instance" : {
 		"accept:" : "Richo 10/8/2014 18:03",
 		"asByteArray" : "Richo 10/9/2014 16:29",
+		"bytecodeAt:" : "Richo 10/28/2014 19:39",
 		"bytecodes" : "Richo 9/25/2014 10:10",
 		"delay" : "Richo 9/25/2014 10:07",
 		"initializeWithName:ticking:delay:literals:variables:bytecodes:" : "Richo 10/8/2014 17:33",
