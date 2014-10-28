@@ -1,3 +1,3 @@
-grammar-scripts
-scriptBody
+grammar-blocks
+block
 	^ $[ asParser uziToken , cleanStatements, $] asParser uziToken

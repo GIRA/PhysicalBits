@@ -32,7 +32,9 @@
 		"literal",
 		"parens",
 		"numberLiteral",
-		"script" ],
+		"script",
+		"block",
+		"cleanStatements" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],
