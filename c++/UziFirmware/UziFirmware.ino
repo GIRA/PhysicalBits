@@ -105,8 +105,8 @@ void sendPinValues(void) {
 			// PE.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
 			unsigned short val = pe->getValue(pin) * 1023;
-			unsigned char val1 = val & 127;
-			unsigned char val2 = val >> 7;
+			unsigned char val1 = val >> 7; 	// MSB
+			unsigned char val2 = val & 127;	// LSB
 			Serial.write(AS_ARGUMENT(val1));            
 			Serial.write(AS_ARGUMENT(val2));
 		}
