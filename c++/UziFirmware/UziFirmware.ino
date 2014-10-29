@@ -2,23 +2,23 @@
 #include "SerialStream.h"
 
 /* REQUEST COMMANDS */
-#define RQ_SET_PROGRAM	                         0
-#define RQ_SET_VALUE                             1
-#define RQ_SET_MODE                              2
-#define RQ_START_REPORTING                       3
-#define RQ_STOP_REPORTING                        4
+#define RQ_SET_PROGRAM									0
+#define RQ_SET_VALUE									1
+#define RQ_SET_MODE										2
+#define RQ_START_REPORTING								3
+#define RQ_STOP_REPORTING								4
 
 /* RESPONSE COMMANDS */
-#define RS_ERROR                                 0
-#define RS_PIN_VALUE                             1
+#define RS_ERROR										0
+#define RS_PIN_VALUE									1
 
 /* MACROS */
-#define IS_COMMAND(x)                    ((x) >> 7 == 0)
-#define IS_ARGUMENT(x)                   ((x) >> 7 == 1)
-#define GET_COMMAND(x)                               (x)
-#define GET_ARGUMENT(x)                      ((x) & 127)
-#define AS_COMMAND(x)                                (x)
-#define AS_ARGUMENT(x)                       ((x) | 128)
+#define IS_COMMAND(x)						((x) >> 7 == 0)
+#define IS_ARGUMENT(x)						((x) >> 7 == 1)
+#define GET_COMMAND(x)									(x)
+#define GET_ARGUMENT(x)							((x) & 127)
+#define AS_COMMAND(x)									(x)
+#define AS_ARGUMENT(x)							((x) | 128)
 
 // Two examples of compiled programs
 unsigned char blinkLed9[] = {// LENGTH: 24
@@ -56,7 +56,7 @@ PE * pe = new PE();
 ReadStream * stream = new SerialStream(&Serial);
 
 unsigned char reporting = 0;
-unsigned long lastTimeReport = 0; 
+unsigned long lastTimeReport = 0;
 
 void executeCommand(unsigned char);
 void executeSetProgram(void);
@@ -80,34 +80,36 @@ void loop() {
 		executeCommand(inByte);
 	}
 	
-        vm->executeProgram(program, pe);
-        
-        if (!reporting) return;
-        unsigned long now = millis();
-        if (now - lastTimeReport > 50) {
-                sendPinValues();
-                lastTimeReport = now;
-        }
+	vm->executeProgram(program, pe);
+	
+	if (!reporting) return;
+	unsigned long now = millis();
+	if (now - lastTimeReport > 50) {
+		sendPinValues();
+		lastTimeReport = now;
+	}
 }
 
 void sendError(unsigned char errorCode) {
-        Serial.write(AS_COMMAND(RS_ERROR));
-        Serial.write(AS_ARGUMENT(errorCode));  
+	Serial.write(AS_COMMAND(RS_ERROR));
+	Serial.write(AS_ARGUMENT(errorCode));
 }
 
-void sendPinValues(void) {        
-        for (int i = 0; i < TOTAL_PINS; i++) {
-                int pin = PIN_NUMBER(i);
-                if (pe->getMode(pin) == INPUT) {
-                        Serial.write(AS_COMMAND(RS_PIN_VALUE));
-                        Serial.write(AS_ARGUMENT(pin));
-                        
-                        unsigned short val = pe->getValue(pin);
-                        unsigned char val1 = val & 127;
-                        unsigned char val2 = val >> 7;
-                        Serial.write(AS_ARGUMENT(val1));            
-                        Serial.write(AS_ARGUMENT(val2));
-                }
+void sendPinValues(void) {
+	for (int i = 0; i < TOTAL_PINS; i++) {
+		int pin = PIN_NUMBER(i);
+		if (pe->getMode(pin) == INPUT) {
+			Serial.write(AS_COMMAND(RS_PIN_VALUE));
+			Serial.write(AS_ARGUMENT(pin));
+			
+			// PE.getValue(..) returns a float between 0 and 1
+			// but we send back a value between 0 and 1023.
+			unsigned short val = pe->getValue(pin) * 1023;
+			unsigned char val1 = val & 127;
+			unsigned char val2 = val >> 7;
+			Serial.write(AS_ARGUMENT(val1));            
+			Serial.write(AS_ARGUMENT(val2));
+		}
 	}
 }
 
@@ -116,44 +118,45 @@ void executeCommand(unsigned char cmd) {
 		case RQ_SET_PROGRAM:
 			executeSetProgram();
 			break;
-                case RQ_SET_VALUE:
-                        executeSetValue();
-                        break;
-                case RQ_SET_MODE:
-                        executeSetMode();
-                        break;
-                case RQ_START_REPORTING:
-                        executeStartReporting();
-                        break;
-                case RQ_STOP_REPORTING:
-                        executeStopReporting();
-                        break;
+		case RQ_SET_VALUE:
+			executeSetValue();
+			break;
+		case RQ_SET_MODE:
+			executeSetMode();
+			break;
+		case RQ_START_REPORTING:
+			executeStartReporting();
+			break;
+		case RQ_STOP_REPORTING:
+			executeStopReporting();
+			break;
 	}
 }
 
 void executeSetProgram(void) {
-        delete program;
-        program = new StackProgram(stream);
+	delete program;
+	program = new StackProgram(stream);
 }
 
 void executeSetValue(void) {
-        unsigned char pin = stream->nextChar();
-        unsigned char value = stream->nextChar();
-        
-        pe->setValue(pin, value);
+	unsigned char pin = stream->nextChar();
+	// We receive a value between 0 and 255 but PE.setValue(..) expects 0..1
+	float value = (float)stream->nextChar() / 255;
+	
+	pe->setValue(pin, value);
 }
 
 void executeSetMode(void) {
-        unsigned char pin = stream->nextChar();
-        unsigned char mode = stream->nextChar();
-        
-        pe->setMode(pin, mode);
+	unsigned char pin = stream->nextChar();
+	unsigned char mode = stream->nextChar();
+	
+	pe->setMode(pin, mode);
 }
 
 void executeStartReporting(void) {
-        reporting = 1;
+	reporting = 1;
 }
 
 void executeStopReporting(void) {
-        reporting = 0;
+	reporting = 0;
 }
