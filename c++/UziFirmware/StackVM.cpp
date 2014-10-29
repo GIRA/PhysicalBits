@@ -105,7 +105,7 @@ void StackVM::executePrimitive(unsigned char primitiveIndex) {
 			_pe->setValue((unsigned int)pop2, (unsigned short)pop1);
 			break;
 		case 0x02:// getMode
-			pop1 =  _stack->pop();
+			pop1 = _stack->pop();
 			_stack->push(_pe->getMode((unsigned int)pop1));
 			break;
 		case 0x03:// setMode
