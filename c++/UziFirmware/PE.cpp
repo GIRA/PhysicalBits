@@ -19,7 +19,7 @@ void PE::setMode(unsigned int pin, unsigned char mode) {
     pinMode(pin, mode);
 }
 
-unsigned short PE::getValue(unsigned int pin) {
+float PE::getValue(unsigned int pin) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return 0;
@@ -29,42 +29,42 @@ unsigned short PE::getValue(unsigned int pin) {
 		return _pinValues[index];
     } else {
 		if (IS_ANALOG(pin)) {
-			return analogRead(pin);
+			// analogRead() returns a value between 0 and 1023, we treat HIGH as 1 so we divide.
+			return (float)analogRead(pin) / 1023;
 		} else {
-			// digitalRead() returns either 0 or 1, we treat HIGH as 255 so we multiply.
-			return digitalRead(pin) * 255;
+			return digitalRead(pin);
 		}
     }
 }
 
-void PE::setValue(unsigned int pin, unsigned short value) {
+void PE::setValue(unsigned int pin, float value) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
 		return;
 	}
 
-	// We want to keep the value between 0 and 255, which is what analogWrite() can handle.
-	unsigned short actualValue;
-	if (value < 0) {
+	// We must keep the value between 0 and 1
+	float actualValue;
+	if (value <= 0) {
 		actualValue = 0;
-	} else if (value > 255) {
-		actualValue = 255;
+	} else if (value >= 1) {
+		actualValue = 1;
 	} else {
 		actualValue = value;
 	}
 	
 	_pinValues[index] = actualValue;
 	if (getMode(pin) == OUTPUT) {
-		// It seems counter-intuitive but analog pins don't suppor analogWrite(), this is
+		// It seems counter-intuitive but analog pins don't support analogWrite(), this is
 		// because analogWrite() sends a PWM signal and has nothing to do with analog pins
 		// or analogRead().
 		// So, we check in order to avoid sending analogWrite() to an analog pin. Also, if
-		// the value is either 0 or 255 there is no need for analogWrite(), we should use 
-		// digitalWrite().
-		if (IS_ANALOG(pin) || actualValue == 255 || actualValue == 0) {
-			digitalWrite(pin, actualValue);
+		// the value is close to either 0 or 1 there is no need for analogWrite(), we should 
+		// use digitalWrite().
+		if (IS_ANALOG(pin) || actualValue > 0.996 || actualValue < 0.004) {
+			digitalWrite(pin, actualValue > 0.5 ? HIGH : LOW);
 		} else {
-			analogWrite(pin, actualValue);
+			analogWrite(pin, actualValue * 255);
 		}
 	}
 }
