@@ -1,18 +1,18 @@
 #include "StackArray.h"
 
 
-void StackArray::push(long element) {
+void StackArray::push(float element) {
 	_elements[_pointer] = element;
 	_pointer++;
 }
 
-long StackArray::pop(void) {
+float StackArray::pop(void) {
 	_pointer--;
-	long result = _elements[_pointer];	
+	float result = _elements[_pointer];	
 	return result;
 }
 
-long StackArray::top(void) {
+float StackArray::top(void) {
 	return _elements[_pointer - 1];
 }
 

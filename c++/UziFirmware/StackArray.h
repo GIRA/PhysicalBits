@@ -10,15 +10,15 @@ public:
 	}
 	~StackArray(void) {}
 
-	void push(long);
-	long pop(void);
-	long top(void);
+	void push(float);
+	float pop(void);
+	float top(void);
 	void reset(void);
 	bool overflow(void);
 
 private:
 	
-	long _elements[MAX_SIZE];
+	float _elements[MAX_SIZE];
 	unsigned int _pointer;
 
 };
