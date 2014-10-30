@@ -2,12 +2,12 @@
 
 #include "ReadStream.h"
 
-class StackProgram {
+class Script {
 
 public:
-	StackProgram(ReadStream*);
-	StackProgram(void);
-	~StackProgram(void);
+	Script(ReadStream*);
+	Script(void);
+	~Script(void);
 
 	long literalAt(int);
 	long localAt(int);

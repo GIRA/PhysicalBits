@@ -1,4 +1,4 @@
-#include "StackVM.h"
+#include "Interpreter.h"
 #include "SerialStream.h"
 
 /* REQUEST COMMANDS */
@@ -50,8 +50,8 @@ unsigned char button10Led9[] = {// LENGTH: 14
 };
 
 
-StackProgram * program = new StackProgram();
-StackVM * vm = new StackVM();
+Script * script = new Script();
+Interpreter * vm = new Interpreter();
 PE * pe = new PE();
 ReadStream * stream = new SerialStream(&Serial);
 
@@ -69,7 +69,7 @@ void sendError(unsigned char);
 
 void setup() {
 	Serial.begin(57600);
-	// Temporary hack because the StackVM doesn't have primitives to set pin modes yet:
+	// Temporary hack because the Interpreter doesn't have primitives to set pin modes yet:
 	pe->setMode(9, OUTPUT);
 	pe->setMode(10, INPUT);
 }
@@ -80,7 +80,7 @@ void loop() {
 		executeCommand(inByte);
 	}
 	
-	vm->executeProgram(program, pe);
+	vm->executeScript(script, pe);
 	
 	if (!reporting) return;
 	unsigned long now = millis();
@@ -134,8 +134,8 @@ void executeCommand(unsigned char cmd) {
 }
 
 void executeSetProgram(void) {
-	delete program;
-	program = new StackProgram(stream);
+	delete script;
+	script = new Script(stream);
 }
 
 void executeSetValue(void) {

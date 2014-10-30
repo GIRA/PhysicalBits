@@ -2,19 +2,19 @@
 
 #include "PE.h"
 #include "StackArray.h"
-#include "StackProgram.h"
+#include "Script.h"
 
-class StackVM {
+class Interpreter {
 
 public:
-	StackVM(void) {
+	Interpreter(void) {
 		_stack = new StackArray();
     }
-	~StackVM(void) {
+	~Interpreter(void) {
 		delete _stack;
 	}
 
-	void executeProgram(StackProgram*, PE*);
+	void executeScript(Script*, PE*);
 
 
 private:
@@ -23,7 +23,7 @@ private:
 
 	int _ip;
 	StackArray * _stack;
-	StackProgram * _currentProgram;
+	Script * _currentScript;
 	
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char);

@@ -1,6 +1,6 @@
-#include "StackProgram.h"
+#include "Script.h"
 
-StackProgram::StackProgram(ReadStream * rs) {
+Script::Script(ReadStream * rs) {
     long n = rs->nextLong(4);
 	_stepping = (n >> 31) & 1;
 	_stepTime = n & 0x7FFFFFFF;
@@ -11,7 +11,7 @@ StackProgram::StackProgram(ReadStream * rs) {
 	_bytecodes = parseBytecodes(rs);
 }
 
-StackProgram::StackProgram() {
+Script::Script() {
 	// Returns a NOOP program.
 	_stepping = false;
 	_stepTime = _lastStepTime = 0;
@@ -21,45 +21,45 @@ StackProgram::StackProgram() {
 	_bytecodes[0] = 0xFF;
 }
 
-StackProgram::~StackProgram(void) {
+Script::~Script(void) {
 	delete[] _literals;
 	delete[] _locals;
 	delete[] _bytecodes;
 }
 
-long StackProgram::literalAt(int index) {
+long Script::literalAt(int index) {
 	return _literals[index];
 }
 
-long StackProgram::localAt(int index) {
+long Script::localAt(int index) {
 	return _locals[index];
 }
 
-unsigned char StackProgram::bytecodeAt(int index) {
+unsigned char Script::bytecodeAt(int index) {
 	return _bytecodes[index];
 }
 
-void StackProgram::rememberLastStepTime(long now) {
+void Script::rememberLastStepTime(long now) {
 	_lastStepTime = now;
 }
 
-bool StackProgram::shouldStepNow(long now) {
+bool Script::shouldStepNow(long now) {
 	return (now - _lastStepTime) > _stepTime;
 }
 
-bool StackProgram::isStepping(void) {
+bool Script::isStepping(void) {
 	return _stepping;
 }
 
-void StackProgram::setStepping(bool val) {
+void Script::setStepping(bool val) {
 	_stepping = val;
 }
 
-long StackProgram::stepTime(void) {
+long Script::stepTime(void) {
 	return _stepTime;
 }
 
-long * StackProgram::parseSection(ReadStream * rs) {
+long * Script::parseSection(ReadStream * rs) {
 	unsigned char size = rs->nextChar();
 	long * result = new long[size];
 	int i = 0;
@@ -76,6 +76,6 @@ long * StackProgram::parseSection(ReadStream * rs) {
 	return result;
 }
 
-unsigned char * StackProgram::parseBytecodes(ReadStream * rs) {
+unsigned char * Script::parseBytecodes(ReadStream * rs) {
 	return rs->upTo(0xFF, true);
 }

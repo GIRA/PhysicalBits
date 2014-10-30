@@ -1,18 +1,18 @@
-#include "StackVM.h"
+#include "Interpreter.h"
 
 
-void StackVM::executeProgram(StackProgram * program, PE * pe) {
-	if (!program->isStepping()) {
+void Interpreter::executeScript(Script * script, PE * pe) {
+	if (!script->isStepping()) {
 		return;
 	}
 	long now = pe->getMillis();
-	if (!program->shouldStepNow(now)) {
+	if (!script->shouldStepNow(now)) {
 		return;
 	}
-	program->rememberLastStepTime(now);
+	script->rememberLastStepTime(now);
 
 	_ip = 0;
-	_currentProgram = program;
+	_currentScript = script;
 	_stack->reset();
 	_pe = pe;
 	unsigned char next = nextBytecode();
@@ -26,13 +26,13 @@ void StackVM::executeProgram(StackProgram * program, PE * pe) {
 	}
 }
 
-unsigned char StackVM::nextBytecode(void) {
-	unsigned char bytecode = _currentProgram->bytecodeAt(_ip);
+unsigned char Interpreter::nextBytecode(void) {
+	unsigned char bytecode = _currentScript->bytecodeAt(_ip);
 	_ip++;
 	return bytecode;
 }
 
-void StackVM::executeBytecode(unsigned char bytecode) {
+void Interpreter::executeBytecode(unsigned char bytecode) {
 	unsigned char key = bytecode & 0xF0;
 	unsigned char value = bytecode & 0x0F;
 	
@@ -41,7 +41,7 @@ void StackVM::executeBytecode(unsigned char bytecode) {
 
 	switch (key) {
 		case 0x00:// pushLit
-			_stack->push(_currentProgram->literalAt(value));
+			_stack->push(_currentScript->literalAt(value));
 			break;
 		case 0x10:// pushLocal
 			break;
@@ -89,7 +89,7 @@ void StackVM::executeBytecode(unsigned char bytecode) {
 	}
 }
 
-void StackVM::executePrimitive(unsigned char primitiveIndex) {
+void Interpreter::executePrimitive(unsigned char primitiveIndex) {
 
 	float pop1;
 	float pop2;
