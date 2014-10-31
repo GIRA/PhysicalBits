@@ -1,5 +1,5 @@
 as yet unclassified
-testEncodingEmptyProgram
+testEmptyProgram
 	| program encoded |
 	program := UziProgram
 		inputs: #(10)

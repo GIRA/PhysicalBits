@@ -1,17 +1,28 @@
 as yet unclassified
 testButton10Led9Encoding
-	| script encoder |
+	| program encoder |
 	encoder := UziEncoder new.
-	script := Uzi script: #main
-		ticking: true
-		delay: 10
-		bytecodes: [:uzi | uzi
-			pushLit: 9;
-			pushLit: 10;
-			primGetValue;
-			primSetValue;
-			end].
-	self assert: (encoder encode: script) = #[
+	program := UziProgram
+		inputs: #(10)
+		scripts: {Uzi 
+			script: #main
+			ticking: true
+			delay: 10
+			bytecodes: [:uzi | uzi
+				pushLit: 9;
+				pushLit: 10;
+				primGetValue;
+				primSetValue;
+				end]}.
+	self assert: (encoder encode: program) = #[
+		"How many scripts"
+		1
+		
+		"Pin modes"
+		0 2r01000000 0
+		
+		"Script 1:
+		======"
 		"Stepping and steptime (true, 10)"
 		16r80 16r00 16r00 16r0A
 		
