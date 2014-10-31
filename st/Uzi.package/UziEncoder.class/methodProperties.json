@@ -6,6 +6,7 @@
 		"visit:" : "Richo 10/8/2014 18:03",
 		"visitCollection:" : "Richo 10/30/2014 21:58",
 		"visitEndBytecode:" : "Richo 10/8/2014 18:53",
+		"visitJNZBytecode:" : "Richo 10/30/2014 22:21",
 		"visitPrimitiveCallBytecode:" : "Richo 10/9/2014 18:10",
 		"visitProgram:" : "Richo 10/30/2014 21:56",
 		"visitPushLiteralBytecode:" : "Richo 10/9/2014 18:08",
@@ -13,7 +14,7 @@
 		"writeBytecode:argument:" : "Richo 10/9/2014 18:10",
 		"writeBytecodes:" : "Richo 10/8/2014 18:49",
 		"writeLiterals:" : "Richo 10/8/2014 18:55",
-		"writeProgramInputs:" : "Richo 10/30/2014 21:55",
+		"writeProgramInputs:" : "Richo 10/30/2014 22:20",
 		"writeProgramScriptCount:" : "Richo 10/30/2014 16:49",
 		"writeScriptHeader:" : "Richo 10/8/2014 18:54",
 		"writeVariables:" : "Richo 10/8/2014 18:48" } }
