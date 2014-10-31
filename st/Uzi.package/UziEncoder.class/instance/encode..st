@@ -1,5 +1,5 @@
 encoding
-encode: anUziScript
+encode: anUziProgram
 	stream := #[] writeStream.
-	self visit: anUziScript.
+	self visit: anUziProgram.
 	^ stream contents
