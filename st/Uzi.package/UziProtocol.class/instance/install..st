@@ -1,3 +1,3 @@
 installing
-install: anUziScript
-	self send: #[0] , (UziEncoder new encode: anUziScript)
+install: anUziProgram
+	self send: #[0] , (UziEncoder new encode: anUziProgram)
