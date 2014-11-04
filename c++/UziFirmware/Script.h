@@ -17,6 +17,8 @@ public:
 	bool isStepping(void);
 	void setStepping(bool);
 	long stepTime(void);
+	void setNext(Script*);
+	Script* getNext(void);
 
 private:
 	
@@ -26,6 +28,7 @@ private:
 	long * _literals;
 	long * _locals;
 	unsigned char * _bytecodes;
+	Script * _nextScript;
 
 	long * parseSection(ReadStream*);
 	unsigned char * parseBytecodes(ReadStream*);

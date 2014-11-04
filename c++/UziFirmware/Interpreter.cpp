@@ -1,5 +1,13 @@
 #include "Interpreter.h"
 
+void Interpreter::executeProgram(Program * program, PE * pe) {
+	int count = program->getScriptCount();
+	Script * script = program->getScript();
+	for (int i = 0; i < count; i++) {
+		executeScript(script, pe);
+		script = script->getNext();
+	}
+}
 
 void Interpreter::executeScript(Script * script, PE * pe) {
 	if (!script->isStepping()) {

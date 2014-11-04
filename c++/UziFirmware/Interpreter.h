@@ -2,7 +2,7 @@
 
 #include "PE.h"
 #include "StackArray.h"
-#include "Script.h"
+#include "Program.h"
 
 class Interpreter {
 
@@ -14,8 +14,8 @@ public:
 		delete _stack;
 	}
 
+	void executeProgram(Program*, PE*);
 	void executeScript(Script*, PE*);
-
 
 private:
 

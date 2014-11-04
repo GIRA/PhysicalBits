@@ -50,8 +50,8 @@ unsigned char button10Led9[] = {// LENGTH: 14
 };
 
 
-Script * script = new Script();
-Interpreter * vm = new Interpreter();
+Program * program = new Program();
+Interpreter * interpreter = new Interpreter();
 PE * pe = new PE();
 ReadStream * stream = new SerialStream(&Serial);
 
@@ -71,7 +71,9 @@ void setup() {
 	Serial.begin(57600);
 	// Temporary hack because the Interpreter doesn't have primitives to set pin modes yet:
 	pe->setMode(9, OUTPUT);
+	pe->setMode(8, OUTPUT);
 	pe->setMode(10, INPUT);
+	pe->setMode(15, INPUT);
 }
 
 void loop() {
@@ -80,7 +82,7 @@ void loop() {
 		executeCommand(inByte);
 	}
 	
-	vm->executeScript(script, pe);
+	interpreter->executeProgram(program, pe);
 	
 	if (!reporting) return;
 	unsigned long now = millis();
@@ -134,8 +136,8 @@ void executeCommand(unsigned char cmd) {
 }
 
 void executeSetProgram(void) {
-	delete script;
-	script = new Script(stream);
+	delete program;
+	program = new Program(stream);
 }
 
 void executeSetValue(void) {

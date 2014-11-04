@@ -9,10 +9,17 @@ public:
 	Program(ReadStream*);
 	Program(void);
 	~Program(void);
+	
+	unsigned char getScriptCount(void);
+	Script * getScript(void);
 
 private:
-		
+	
 	unsigned char _pinModes[3];
-	Script * _scripts;
+	unsigned char _scriptCount;
+	Script * _script;
+	
+	void parsePinModes(ReadStream*);
+	void parseScripts(ReadStream*);
 };
 

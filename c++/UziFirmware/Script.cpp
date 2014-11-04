@@ -9,6 +9,7 @@ Script::Script(ReadStream * rs) {
 	_literals = parseSection(rs);
 	_locals = parseSection(rs);
 	_bytecodes = parseBytecodes(rs);
+	_nextScript = 0;
 }
 
 Script::Script() {
@@ -19,12 +20,16 @@ Script::Script() {
 	_locals = new long[0];
 	_bytecodes = new unsigned char[1];
 	_bytecodes[0] = 0xFF;
+	_nextScript = 0;
 }
 
 Script::~Script(void) {
 	delete[] _literals;
 	delete[] _locals;
 	delete[] _bytecodes;
+	if (_nextScript != 0) {
+		delete _nextScript;
+	}
 }
 
 long Script::literalAt(int index) {
@@ -53,6 +58,14 @@ bool Script::isStepping(void) {
 
 void Script::setStepping(bool val) {
 	_stepping = val;
+}
+
+Script* Script::getNext(void) {
+	return _nextScript;
+}
+
+void Script::setNext(Script* next) {
+	_nextScript = next;
 }
 
 long Script::stepTime(void) {

@@ -1,29 +1,42 @@
 #include "Program.h"
 
 Program::Program(ReadStream * rs) {
-	/*
-    long n = rs->nextLong(4);
-	_stepping = (n >> 31) & 1;
-	_stepTime = n & 0x7FFFFFFF;
-	_lastStepTime = 0;
-	
-	_literals = parseSection(rs);
-	_locals = parseSection(rs);
-	_bytecodes = parseBytecodes(rs);*/
+	_scriptCount = rs->nextChar();
+	parsePinModes(rs);
+	parseScripts(rs);
 }
 
 Program::Program() {
-	// Returns a NOOP program.
-	/*_stepping = false;
-	_stepTime = _lastStepTime = 0;
-	_literals = new long[0];
-	_locals = new long[0];
-	_bytecodes = new unsigned char[1];
-	_bytecodes[0] = 0xFF;*/
+	_scriptCount = 0;
+	for (int i = 0; i < 3; i++) {
+		_pinModes[i] = 0;
+	}
+	_script = new Script();
 }
 
 Program::~Program(void) {
-	/*delete[] _literals;
-	delete[] _locals;
-	delete[] _bytecodes;*/
+	delete _script;
+}
+
+unsigned char Program::getScriptCount(void) {
+	return _scriptCount;
+}
+
+Script * Program::getScript(void) {
+	return _script;
+}
+
+void Program::parsePinModes(ReadStream * rs) {
+	for (int i = 0; i < 3; i++) {
+		_pinModes[i] = rs->nextChar();
+	}
+}
+
+void Program::parseScripts(ReadStream * rs) {
+	Script * scriptTemp;
+	for (int i = 0; i < _scriptCount; i++) {
+		scriptTemp = new Script(rs);
+		scriptTemp->setNext(_script);
+		_script = scriptTemp;
+	}
 }
