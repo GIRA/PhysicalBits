@@ -1,6 +1,16 @@
 #include "PE.h"
 #include "Arduino.h"
 
+PE::PE(void) {
+	for (int i = 0; i < TOTAL_PINS; i++) {
+		_pinValues[i] = 0;
+		_pinModes[i] = OUTPUT;
+	}
+	for (int j = 2; j < 20; j++) {
+		setMode(j, OUTPUT);
+	}
+}
+
 unsigned char PE::getMode(unsigned int pin) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {

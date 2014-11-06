@@ -14,12 +14,7 @@
 class PE {
 
 public:
-	PE(void) {
-		for (int i = 0; i < TOTAL_PINS; i++) {
-			_pinValues[i] = 0;
-			_pinModes[i] = OUTPUT;
-		}
-	}
+	PE(void);
 	~PE(void) {}
 	
 	unsigned char getMode(unsigned int);
