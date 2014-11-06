@@ -70,10 +70,10 @@ void sendError(unsigned char);
 void setup() {
 	Serial.begin(57600);
 	// Temporary hack because the Interpreter doesn't have primitives to set pin modes yet:
-	pe->setMode(9, OUTPUT);
+	/*pe->setMode(9, OUTPUT);
 	pe->setMode(8, OUTPUT);
 	pe->setMode(10, INPUT);
-	pe->setMode(15, INPUT);
+	pe->setMode(15, INPUT);*/
 }
 
 void loop() {
@@ -138,6 +138,7 @@ void executeCommand(unsigned char cmd) {
 void executeSetProgram(void) {
 	delete program;
 	program = new Program(stream);
+	program->configurePins(pe);
 }
 
 void executeSetValue(void) {
