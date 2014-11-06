@@ -27,9 +27,6 @@ Script::~Script(void) {
 	delete[] _literals;
 	delete[] _locals;
 	delete[] _bytecodes;
-	if (_nextScript != 0) {
-		delete _nextScript;
-	}
 }
 
 long Script::literalAt(int index) {
