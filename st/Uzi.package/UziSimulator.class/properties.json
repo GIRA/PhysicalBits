@@ -6,13 +6,11 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"script",
-		"lastTime",
-		"ip",
-		"stack",
-		"next",
-		"protocol" ],
-	"name" : "UziInterpreter",
+		"program",
+		"process",
+		"protocol",
+		"interpreters" ],
+	"name" : "UziSimulator",
 	"pools" : [
 		 ],
 	"super" : "Object",

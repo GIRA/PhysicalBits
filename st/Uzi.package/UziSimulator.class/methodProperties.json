@@ -1,0 +1,16 @@
+{
+	"class" : {
+		"new" : "Richo 11/6/2014 11:33",
+		"on:" : "Richo 11/5/2014 18:09" },
+	"instance" : {
+		"configurePins" : "Richo 11/6/2014 08:49",
+		"initialize" : "Richo 11/6/2014 08:54",
+		"initializeWith:" : "Richo 11/5/2014 18:10",
+		"isStarted" : "Richo 11/5/2014 18:13",
+		"program" : "Richo 11/5/2014 18:14",
+		"program:" : "Richo 11/5/2014 18:14",
+		"rebuildInterpreters" : "Richo 11/5/2014 18:16",
+		"start" : "Richo 11/5/2014 18:12",
+		"step" : "Richo 11/6/2014 08:50",
+		"stepTime" : "Richo 11/5/2014 18:13",
+		"stop" : "Richo 11/5/2014 18:13" } }
