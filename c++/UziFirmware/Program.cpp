@@ -15,7 +15,14 @@ Program::Program() {
 }
 
 Program::~Program(void) {
-	delete _script;
+	//delete _script;
+	Script * current = _script;
+	Script * next = _script->getNext();
+	for (int i = 0; i < _scriptCount; i++) {
+		delete current;
+		current = next;
+		next = current->getNext();
+	}
 }
 
 unsigned char Program::getScriptCount(void) {
@@ -24,6 +31,22 @@ unsigned char Program::getScriptCount(void) {
 
 Script * Program::getScript(void) {
 	return _script;
+}
+
+void Program::configurePins(PE * pe) {
+	int pinNumber = 1;
+	int pinMode = OUTPUT;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 7; j >= 0; j--) {
+			if (_pinModes[i] >> j & 0x01 > 0) {
+				pinMode = INPUT;
+			}
+			if (pinNumber >= 2 && pe->getMode(pinNumber) != pinMode) {
+				pe->setMode(pinNumber, pinMode);
+			}
+			pinNumber++;
+		}
+	}
 }
 
 void Program::parsePinModes(ReadStream * rs) {

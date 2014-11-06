@@ -2,6 +2,7 @@
 
 #include "ReadStream.h"
 #include "Script.h"
+#include "PE.h"
 
 class Program {
 
@@ -12,6 +13,7 @@ public:
 	
 	unsigned char getScriptCount(void);
 	Script * getScript(void);
+	void configurePins(PE*);
 
 private:
 	
