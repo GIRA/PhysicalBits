@@ -76,7 +76,7 @@ long * Script::parseSection(ReadStream * rs) {
 	while (i < size) {
 		unsigned char sec = rs->nextChar();
 		int count = (sec >> 2) & 0x3F;
-		int size = (sec & 0x03) + 1;
+		int size = (sec & 0x03) + 1; // ACAACA Richo: This variable is shadowing the outer size!! FIX THIS!!
 		while (count > 0) {
 			result[i] = rs->nextLong(size);
 			count--;
