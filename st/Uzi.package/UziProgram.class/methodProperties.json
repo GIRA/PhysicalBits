@@ -1,9 +1,10 @@
 {
 	"class" : {
-		"empty" : "Richo 11/5/2014 18:11",
-		"inputs:scripts:" : "Richo 10/30/2014 15:30" },
+		"empty" : "Richo 12/11/2014 16:04",
+		"inputs:outputs:scripts:" : "Richo 12/11/2014 16:03" },
 	"instance" : {
 		"accept:" : "Richo 10/30/2014 16:20",
-		"initializeWithInputs:scripts:" : "Richo 10/30/2014 15:31",
+		"initializeWithInputs:outputs:scripts:" : "Richo 12/11/2014 16:05",
 		"inputs" : "Richo 10/30/2014 16:35",
+		"outputs" : "Richo 12/11/2014 16:05",
 		"scripts" : "Richo 9/23/2014 17:32" } }

@@ -1,5 +1,6 @@
 visiting
 visitProgram: anUziProgram
 	self writeProgramScriptCount: anUziProgram;
-		writeProgramInputs: anUziProgram;
+		writeProgramPins: anUziProgram inputs;
+		writeProgramPins: anUziProgram outputs;
 		visitCollection: anUziProgram scripts

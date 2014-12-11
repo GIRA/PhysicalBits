@@ -1,3 +1,3 @@
 instance creation
 empty
-	^ self inputs: #() scripts: #()
+	^ self inputs: #() outputs: #() scripts: #()
