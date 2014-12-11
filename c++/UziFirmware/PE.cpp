@@ -1,20 +1,10 @@
 #include "PE.h"
 #include "Arduino.h"
 
-PE::PE(void) {
-	for (int i = 0; i < TOTAL_PINS; i++) {
-		_pinValues[i] = 0;
-		_pinModes[i] = OUTPUT;
-	}
-	for (int j = 2; j < 20; j++) {
-		setMode(j, OUTPUT);
-	}
-}
-
 unsigned char PE::getMode(unsigned int pin) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
-		return OUTPUT;
+		return INPUT;
 	} else {
 		return _pinModes[index];
 	}
@@ -23,6 +13,10 @@ unsigned char PE::getMode(unsigned int pin) {
 void PE::setMode(unsigned int pin, unsigned char mode) {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS) {
+		return;
+	}
+	// Avoid changing the pin mode if it was already set
+	if (_pinModes[index] == mode) {
 		return;
 	}
 	_pinModes[index] = mode;
