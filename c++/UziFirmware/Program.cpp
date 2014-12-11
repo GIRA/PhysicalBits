@@ -35,15 +35,15 @@ Script * Program::getScript(void) {
 
 void Program::configurePins(PE * pe) {
 	int pinNumber = 1;
-	int pinMode = OUTPUT;
-	for (int i = 0; i < 3; i++) {
-		for (int j = 7; j >= 0; j--) {
-			if (_pinModes[i] >> j & 0x01 > 0) {
+	int pinMode = INPUT;
+	for (int index = 0; index < 3; index++) {
+		for (int shift = 7; shift >= 0; shift--) {
+			if ((_pinModes[index] >> shift) & 0x01) {
+				pinMode = OUTPUT;
+			} else {
 				pinMode = INPUT;
 			}
-			if (pinNumber >= 2 && pe->getMode(pinNumber) != pinMode) {
-				pe->setMode(pinNumber, pinMode);
-			}
+			pe->setMode(pinNumber, pinMode);
 			pinNumber++;
 		}
 	}
