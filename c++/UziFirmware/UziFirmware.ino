@@ -20,36 +20,6 @@
 #define AS_COMMAND(x)									(x)
 #define AS_ARGUMENT(x)							((x) | 128)
 
-// Two examples of compiled programs
-unsigned char blinkLed9[] = {// LENGTH: 24
-	// Stepping and steptime (true, 1000)
-	0x80, 0x00, 0x03, 0xE8,
-	
-	// Literals (9, 255, 0, 1000)
-	0x04, 0x0C, 0x09, 0xFF, 0x00, 0x05, 0x03, 0xE8, 
-
-	// Variables
-	0x00,
-
-	// Bytecodes
-	0x00, 0x50, 0xA4, 0x00, 0x01, 0x51, 0x83, 0x00,
-	0x02, 0x51, 0xFF
-};
-unsigned char button10Led9[] = {// LENGTH: 14
-	// Stepping and steptime (true, 0)
-	0x80, 0x00, 0x00, 0x00,
-
-	// Literals (9, 10)
-	0x02, 0x08, 0x09, 0x0A,
-
-	// Variables
-	0x00,
-
-	// Bytecodes
-	0x00, 0x01, 0x50, 0x51, 0xFF 
-};
-
-
 Program * program = new Program();
 Interpreter * interpreter = new Interpreter();
 PE * pe = new PE();
