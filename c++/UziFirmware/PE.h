@@ -18,6 +18,7 @@ public:
 		for (int i = 0; i < TOTAL_PINS; i++) {
 			_pinValues[i] = 0;
 			_pinModes[i] = INPUT;
+			_pinReport[i] = false;
 		}
 	}
 	~PE(void) {}
@@ -26,6 +27,8 @@ public:
 	void setMode(unsigned int, unsigned char);
 	float getValue(unsigned int);
 	void setValue(unsigned int, float);
+	bool getReport(unsigned int);
+	void setReport(unsigned int, bool);
 	long getMillis(void);
 	void delayMs(unsigned long);
 
@@ -33,6 +36,7 @@ private:
 	
 	float _pinValues[TOTAL_PINS];
 	unsigned char _pinModes[TOTAL_PINS];
+	bool _pinReport[TOTAL_PINS];
 
 };
 

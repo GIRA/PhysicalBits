@@ -73,6 +73,22 @@ void PE::setValue(unsigned int pin, float value) {
 	}
 }
 
+void PE::setReport(unsigned int pin, bool report) {
+	int index = ARRAY_INDEX(pin);
+	if (index < 0 || index >= TOTAL_PINS) {
+		return;
+	}
+	_pinReport[index] = report;
+}
+
+bool PE::getReport(unsigned int pin) {
+	int index = ARRAY_INDEX(pin);
+	if (index < 0 || index >= TOTAL_PINS) {
+		return false;
+	}
+	return _pinReport[index];
+}
+
 long PE::getMillis() {
 	return millis();
 }
