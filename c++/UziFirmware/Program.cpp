@@ -9,7 +9,8 @@ Program::Program(ReadStream * rs) {
 Program::Program() {
 	_scriptCount = 0;
 	for (int i = 0; i < 3; i++) {
-		_pinModes[i] = 0;
+		_inputs[i] = 0;
+		_outputs[i] = 0;
 	}
 	_script = new Script();
 }
@@ -34,15 +35,23 @@ Script * Program::getScript(void) {
 }
 
 void Program::configurePins(PE * pe) {
-	int pinNumber = 1;
-	int pinMode = INPUT;
+	int pinNumber = 0;
 	for (int index = 0; index < 3; index++) {
 		for (int shift = 7; shift >= 0; shift--) {
-			if ((_pinModes[index] >> shift) & 0x01) {
-				pinMode = OUTPUT;
-			} else {
+			unsigned char in = _inputs[index] >> shift & 0x01;
+			unsigned char out = _outputs[index] >> shift & 0x01;
+			unsigned char pinMode = INPUT;
+			bool report = false;			
+			if (in && out) {
+				pinMode = INPUT_PULLUP;
+				report = true;
+			} else if (in) {
 				pinMode = INPUT;
+				report = true;
+			} else if (out) {
+				pinMode = OUTPUT;
 			}
+			pe->setReport(pinNumber, report);
 			pe->setMode(pinNumber, pinMode);
 			pinNumber++;
 		}
@@ -51,7 +60,10 @@ void Program::configurePins(PE * pe) {
 
 void Program::parsePinModes(ReadStream * rs) {
 	for (int i = 0; i < 3; i++) {
-		_pinModes[i] = rs->nextChar();
+		_inputs[i] = rs->nextChar();
+	}
+	for (int i = 0; i < 3; i++) {
+		_outputs[i] = rs->nextChar();
 	}
 }
 
