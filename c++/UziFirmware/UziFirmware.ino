@@ -70,7 +70,7 @@ void sendError(unsigned char errorCode) {
 void sendPinValues(void) {
 	for (int i = 0; i < TOTAL_PINS; i++) {
 		int pin = PIN_NUMBER(i);
-		if (pe->getMode(pin) == INPUT) {
+		if (pe->getReport(pin)) {
 			Serial.write(AS_COMMAND(RS_PIN_VALUE));
 			Serial.write(AS_ARGUMENT(pin));
 			
