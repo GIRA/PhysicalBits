@@ -2,6 +2,7 @@
 #include "SerialStream.h"
 #include <EEPROM.h>
 #include "EEPROMWriter.h"
+#include "EEPROMStream.h"
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
@@ -24,7 +25,7 @@
 #define AS_COMMAND(x)									(x)
 #define AS_ARGUMENT(x)							((x) | 128)
 
-#define PROGRAM_START								   0xC3
+#define PROGRAM_START 					(unsigned char)0xC3
 
 Program * program = new Program();
 Interpreter * interpreter = new Interpreter();
@@ -44,8 +45,11 @@ void executeSetReport(void);
 void executeSaveProgram(void);
 void sendPinValues(void);
 void sendError(unsigned char);
+void checkSavedProgram(void);
 
 void setup() {
+	checkSavedProgram();
+
 	Serial.begin(57600);
 }
 
@@ -63,6 +67,16 @@ void loop() {
 		sendPinValues();
 		lastTimeReport = now;
 	}
+}
+
+void checkSavedProgram(void) {
+	EEPROMStream * eeprom = new EEPROMStream();
+	if (eeprom->nextChar() == PROGRAM_START) {
+		delete program;
+		program = new Program(eeprom);
+		program->configurePins(pe);
+	}
+	delete eeprom;
 }
 
 void sendError(unsigned char errorCode) {
