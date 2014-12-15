@@ -1,6 +1,6 @@
 #pragma once
 
-const int MAX_SIZE = 100;
+const unsigned int MAX_SIZE = 100;
 
 class StackArray {
 

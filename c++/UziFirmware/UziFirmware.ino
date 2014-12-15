@@ -165,7 +165,7 @@ void executeSetReport(void) {
 }
 
 void executeSaveProgram(void) {
-	unsigned short size = (unsigned short)stream->nextLong(2);
+	long size = stream->nextLong(2);
 	
 	EEPROMWriter * writer = new EEPROMWriter();
 	writer->nextPut(PROGRAM_START);
