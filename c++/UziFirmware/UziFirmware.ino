@@ -45,10 +45,10 @@ void executeSetReport(void);
 void executeSaveProgram(void);
 void sendPinValues(void);
 void sendError(unsigned char);
-void checkSavedProgram(void);
+void installSavedProgram(void);
 
 void setup() {
-	checkSavedProgram();
+	installSavedProgram();
 
 	Serial.begin(57600);
 }
@@ -69,7 +69,7 @@ void loop() {
 	}
 }
 
-void checkSavedProgram(void) {
+void installSavedProgram(void) {
 	Reader * eeprom = new EEPROMReader();
 	if (eeprom->nextChar() == PROGRAM_START) {
 		delete program;
