@@ -10,8 +10,6 @@ public:
 	~SerialStream(void);
 		
 	unsigned char nextChar(void);
-	
-	unsigned char * upTo(unsigned char, bool);
 
 private:
 

@@ -13,8 +13,6 @@ public:
 	
 	unsigned char nextChar(void);
 
-	unsigned char * upTo(unsigned char, bool);
-
 private:
 
 	int _position;
