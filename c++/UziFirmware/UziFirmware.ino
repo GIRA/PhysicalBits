@@ -10,6 +10,7 @@
 #define RQ_START_REPORTING								3
 #define RQ_STOP_REPORTING								4
 #define RQ_SET_REPORT									5
+#define RQ_SAVE_PROGRAM									6
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -22,6 +23,8 @@
 #define GET_ARGUMENT(x)							((x) & 127)
 #define AS_COMMAND(x)									(x)
 #define AS_ARGUMENT(x)							((x) | 128)
+
+#define PROGRAM_START								   0xC3
 
 Program * program = new Program();
 Interpreter * interpreter = new Interpreter();
@@ -38,6 +41,7 @@ void executeSetMode(void);
 void executeStartReporting(void);
 void executeStopReporting(void);
 void executeSetReport(void);
+void executeSaveProgram(void);
 void sendPinValues(void);
 void sendError(unsigned char);
 
@@ -104,6 +108,9 @@ void executeCommand(unsigned char cmd) {
 		case RQ_SET_REPORT:
 			executeSetReport();
 			break;
+		case RQ_SAVE_PROGRAM:
+			executeSaveProgram();
+			break;
 	}
 }
 
@@ -141,4 +148,15 @@ void executeSetReport(void) {
 	unsigned char report = stream->nextChar();
 	
 	pe->setReport(pin, report);
+}
+
+void executeSaveProgram(void) {
+	unsigned short size = (unsigned short)stream->nextLong(2);
+	
+	EEPROMWriter * writer = new EEPROMWriter();
+	writer->nextPut(PROGRAM_START);
+	for (int i = 0; i < size; i++) {
+		writer->nextPut(stream->nextChar());
+	}
+	delete writer;
 }
