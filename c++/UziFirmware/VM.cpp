@@ -35,9 +35,7 @@ void VM::executeScript(Script * script, PE * pe) {
 }
 
 unsigned char VM::nextBytecode(void) {
-	unsigned char bytecode = _currentScript->bytecodeAt(_ip);
-	_ip++;
-	return bytecode;
+	return _currentScript->bytecodeAt(_ip++);
 }
 
 void VM::executeBytecode(unsigned char bytecode) {

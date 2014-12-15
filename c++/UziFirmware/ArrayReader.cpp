@@ -11,9 +11,7 @@ bool ArrayReader::isClosed(void) {
 }
 
 unsigned char ArrayReader::nextChar(void) {
-	unsigned char result = _elements[_position];
-	_position++;
-	return result;
+	return _elements[_position++];
 }
 
 int ArrayReader::position(void) {

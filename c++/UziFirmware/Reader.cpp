@@ -35,7 +35,7 @@ unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive) {
 	}
 	// If the resulting array is smaller than our expectation, we need to resize it.
 	if (i < arraySize) {
-		unsigned char * temp =  new unsigned char[i];
+		unsigned char * temp = new unsigned char[i];
 		memcpy(temp, result, i);
 		delete [] result;
 		result = temp;

@@ -2,14 +2,11 @@
 
 
 void StackArray::push(float element) {
-	_elements[_pointer] = element;
-	_pointer++;
+	_elements[_pointer++] = element;
 }
 
 float StackArray::pop(void) {
-	_pointer--;
-	float result = _elements[_pointer];	
-	return result;
+	return _elements[--_pointer];
 }
 
 float StackArray::top(void) {
