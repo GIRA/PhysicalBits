@@ -1,6 +1,6 @@
-#include "ReadStream.h"
+#include "Reader.h"
 
-long ReadStream::nextLong(int size) {
+long Reader::nextLong(int size) {
 	long result = 0;
 	for (int i = size - 1; i >= 0; i--) {
 		result |= ((unsigned long)nextChar() << (i * 8));
@@ -9,7 +9,7 @@ long ReadStream::nextLong(int size) {
 }
 
 
-unsigned char * ReadStream::upTo(unsigned char aCharacter, bool inclusive) {
+unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive) {
 	// This number should be big enough to prevent too many resizings 
 	// and small enough to avoid wasting memory. For now, I'll choose 100 bytes.
 	int arraySize = 100; 

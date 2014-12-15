@@ -1,6 +1,6 @@
 #include "Script.h"
 
-Script::Script(ReadStream * rs) {
+Script::Script(Reader * rs) {
     long n = rs->nextLong(4);
 	_stepping = (n >> 31) & 1;
 	_stepTime = n & 0x7FFFFFFF;
@@ -69,7 +69,7 @@ long Script::stepTime(void) {
 	return _stepTime;
 }
 
-long * Script::parseSection(ReadStream * rs) {
+long * Script::parseSection(Reader * rs) {
 	unsigned char size = rs->nextChar();
 	long * result = new long[size];
 	int i = 0;
@@ -86,6 +86,6 @@ long * Script::parseSection(ReadStream * rs) {
 	return result;
 }
 
-unsigned char * Script::parseBytecodes(ReadStream * rs) {
+unsigned char * Script::parseBytecodes(Reader * rs) {
 	return rs->upTo(0xFF, true);
 }

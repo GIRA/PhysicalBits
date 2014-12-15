@@ -1,26 +1,26 @@
-#include "ArrayStream.h"
+#include "ArrayReader.h"
 
-ArrayStream::ArrayStream(unsigned char * anArray, int size) {
+ArrayReader::ArrayReader(unsigned char * anArray, int size) {
 	_position = 0;
 	_elements = anArray;
 	_size = size;
 }
 
-bool ArrayStream::isClosed(void) {
+bool ArrayReader::isClosed(void) {
 	return _position >= _size;
 }
 
-unsigned char ArrayStream::nextChar(void) {
+unsigned char ArrayReader::nextChar(void) {
 	unsigned char result = _elements[_position];
 	_position++;
 	return result;
 }
 
-int ArrayStream::position(void) {
+int ArrayReader::position(void) {
 	return _position;
 }
 
-unsigned char * ArrayStream::upTo(unsigned char aCharacter, bool inclusive) {	
+unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive) {	
 	int arraySize = remaining();
 	unsigned char * result = new unsigned char[arraySize];
 	int i = 0;
@@ -42,10 +42,10 @@ unsigned char * ArrayStream::upTo(unsigned char aCharacter, bool inclusive) {
 	return result;
 }
 
-int ArrayStream::size(void) {
+int ArrayReader::size(void) {
 	return _size;
 }
 
-int ArrayStream::remaining(void) {
+int ArrayReader::remaining(void) {
 	return _size - _position;
 }

@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-class ReadStream {
+class Reader {
 
 public:
 	

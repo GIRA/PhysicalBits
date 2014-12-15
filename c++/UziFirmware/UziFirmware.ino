@@ -1,8 +1,8 @@
-#include "Interpreter.h"
-#include "SerialStream.h"
 #include <EEPROM.h>
+#include "Interpreter.h"
+#include "SerialReader.h"
 #include "EEPROMWriter.h"
-#include "EEPROMStream.h"
+#include "EEPROMReader.h"
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
@@ -30,7 +30,7 @@
 Program * program = new Program();
 Interpreter * interpreter = new Interpreter();
 PE * pe = new PE();
-ReadStream * stream = new SerialStream(&Serial);
+Reader * stream = new SerialReader(&Serial);
 
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
@@ -70,7 +70,7 @@ void loop() {
 }
 
 void checkSavedProgram(void) {
-	EEPROMStream * eeprom = new EEPROMStream();
+	Reader * eeprom = new EEPROMReader();
 	if (eeprom->nextChar() == PROGRAM_START) {
 		delete program;
 		program = new Program(eeprom);

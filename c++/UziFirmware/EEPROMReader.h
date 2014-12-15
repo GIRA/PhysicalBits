@@ -1,15 +1,15 @@
 #pragma once
 
 #include "EEPROM.h"
-#include "ReadStream.h"
+#include "Reader.h"
 
-class EEPROMStream : public ReadStream {
+class EEPROMReader : public Reader {
 
 public:
-	EEPROMStream() {
+	EEPROMReader() {
 		_position = 0;
 	}
-	~EEPROMStream(void) {}
+	~EEPROMReader(void) {}
 	
 	unsigned char nextChar(void);
 

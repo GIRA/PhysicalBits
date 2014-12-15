@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ReadStream.h"
+#include "Reader.h"
 #include "HardwareSerial.h"
 
-class SerialStream : public ReadStream {
+class SerialReader : public Reader {
 
 public:
-	SerialStream(HardwareSerial *);
-	~SerialStream(void);
+	SerialReader(HardwareSerial *);
+	~SerialReader(void);
 		
 	unsigned char nextChar(void);
 

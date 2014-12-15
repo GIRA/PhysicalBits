@@ -1,11 +1,11 @@
 #pragma once
 
-#include "ReadStream.h"
+#include "Reader.h"
 
 class Script {
 
 public:
-	Script(ReadStream*);
+	Script(Reader*);
 	Script(void);
 	~Script(void);
 
@@ -30,7 +30,7 @@ private:
 	unsigned char * _bytecodes;
 	Script * _nextScript;
 
-	long * parseSection(ReadStream*);
-	unsigned char * parseBytecodes(ReadStream*);
+	long * parseSection(Reader*);
+	unsigned char * parseBytecodes(Reader*);
 };
 

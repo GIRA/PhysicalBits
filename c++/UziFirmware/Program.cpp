@@ -1,6 +1,6 @@
 #include "Program.h"
 
-Program::Program(ReadStream * rs) {
+Program::Program(Reader * rs) {
 	_scriptCount = rs->nextChar();
 	parsePinModes(rs);
 	parseScripts(rs);
@@ -54,7 +54,7 @@ void Program::configurePins(PE * pe) {
 	}
 }
 
-void Program::parsePinModes(ReadStream * rs) {
+void Program::parsePinModes(Reader * rs) {
 	for (int i = 0; i < 3; i++) {
 		_inputs[i] = rs->nextChar();
 	}
@@ -63,7 +63,7 @@ void Program::parsePinModes(ReadStream * rs) {
 	}
 }
 
-void Program::parseScripts(ReadStream * rs) {
+void Program::parseScripts(Reader * rs) {
 	Script * scriptTemp;
 	for (int i = 0; i < _scriptCount; i++) {
 		scriptTemp = new Script(rs);

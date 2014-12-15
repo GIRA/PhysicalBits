@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ReadStream.h"
+#include "Reader.h"
 
-class ArrayStream : public ReadStream {
+class ArrayReader : public Reader {
 
 public:
-	ArrayStream(unsigned char*, int);
-	~ArrayStream(void) {}
+	ArrayReader(unsigned char*, int);
+	~ArrayReader(void) {}
 	
 	bool isClosed(void);
 		

@@ -1,13 +1,13 @@
 #pragma once
 
-#include "ReadStream.h"
+#include "Reader.h"
 #include "Script.h"
 #include "PE.h"
 
 class Program {
 
 public:
-	Program(ReadStream*);
+	Program(Reader*);
 	Program(void);
 	~Program(void);
 	
@@ -22,7 +22,7 @@ private:
 	unsigned char _scriptCount;
 	Script * _script;
 	
-	void parsePinModes(ReadStream*);
-	void parseScripts(ReadStream*);
+	void parsePinModes(Reader*);
+	void parseScripts(Reader*);
 };
 
