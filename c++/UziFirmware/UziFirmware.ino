@@ -1,5 +1,5 @@
 #include <EEPROM.h>
-#include "Interpreter.h"
+#include "VM.h"
 #include "SerialReader.h"
 #include "EEPROMWriter.h"
 #include "EEPROMReader.h"
@@ -28,7 +28,7 @@
 #define PROGRAM_START 					(unsigned char)0xC3
 
 Program * program = new Program();
-Interpreter * interpreter = new Interpreter();
+VM * vm = new VM();
 PE * pe = new PE();
 Reader * stream = new SerialReader(&Serial);
 
@@ -59,7 +59,7 @@ void loop() {
 		executeCommand(inByte);
 	}
 	
-	interpreter->executeProgram(program, pe);
+	vm->executeProgram(program, pe);
 	
 	if (!reporting) return;
 	unsigned long now = millis();

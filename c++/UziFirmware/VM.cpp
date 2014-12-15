@@ -1,6 +1,6 @@
-#include "Interpreter.h"
+#include "VM.h"
 
-void Interpreter::executeProgram(Program * program, PE * pe) {
+void VM::executeProgram(Program * program, PE * pe) {
 	int count = program->getScriptCount();
 	Script * script = program->getScript();
 	for (int i = 0; i < count; i++) {
@@ -9,7 +9,7 @@ void Interpreter::executeProgram(Program * program, PE * pe) {
 	}
 }
 
-void Interpreter::executeScript(Script * script, PE * pe) {
+void VM::executeScript(Script * script, PE * pe) {
 	if (!script->isStepping()) {
 		return;
 	}
@@ -34,13 +34,13 @@ void Interpreter::executeScript(Script * script, PE * pe) {
 	}
 }
 
-unsigned char Interpreter::nextBytecode(void) {
+unsigned char VM::nextBytecode(void) {
 	unsigned char bytecode = _currentScript->bytecodeAt(_ip);
 	_ip++;
 	return bytecode;
 }
 
-void Interpreter::executeBytecode(unsigned char bytecode) {
+void VM::executeBytecode(unsigned char bytecode) {
 	unsigned char key = bytecode & 0xF0;
 	unsigned char value = bytecode & 0x0F;
 	
@@ -97,7 +97,7 @@ void Interpreter::executeBytecode(unsigned char bytecode) {
 	}
 }
 
-void Interpreter::executePrimitive(unsigned char primitiveIndex) {
+void VM::executePrimitive(unsigned char primitiveIndex) {
 
 	float pop1;
 	float pop2;

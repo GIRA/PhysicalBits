@@ -4,13 +4,13 @@
 #include "StackArray.h"
 #include "Program.h"
 
-class Interpreter {
+class VM {
 
 public:
-	Interpreter(void) {
+	VM(void) {
 		_stack = new StackArray();
     }
-	~Interpreter(void) {
+	~VM(void) {
 		delete _stack;
 	}
 
