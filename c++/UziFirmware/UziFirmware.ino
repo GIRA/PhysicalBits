@@ -1,5 +1,7 @@
 #include "Interpreter.h"
 #include "SerialStream.h"
+#include <EEPROM.h>
+#include "EEPROMWriter.h"
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
@@ -39,11 +41,6 @@ void sendError(unsigned char);
 
 void setup() {
 	Serial.begin(57600);
-	// Temporary hack because the Interpreter doesn't have primitives to set pin modes yet:
-	/*pe->setMode(9, OUTPUT);
-	pe->setMode(8, OUTPUT);
-	pe->setMode(10, INPUT);
-	pe->setMode(15, INPUT);*/
 }
 
 void loop() {
