@@ -41,17 +41,13 @@ void Program::configurePins(PE * pe) {
 			unsigned char in = _inputs[index] >> shift & 0x01;
 			unsigned char out = _outputs[index] >> shift & 0x01;
 			unsigned char pinMode = INPUT;
-			bool report = false;			
 			if (in && out) {
 				pinMode = INPUT_PULLUP;
-				report = true;
 			} else if (in) {
 				pinMode = INPUT;
-				report = true;
 			} else if (out) {
 				pinMode = OUTPUT;
 			}
-			pe->setReport(pinNumber, report);
 			pe->setMode(pinNumber, pinMode);
 			pinNumber++;
 		}

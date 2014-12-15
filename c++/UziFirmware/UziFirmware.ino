@@ -9,6 +9,7 @@
 #define RQ_SET_MODE										2
 #define RQ_START_REPORTING								3
 #define RQ_STOP_REPORTING								4
+#define RQ_SET_REPORT									5
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -36,6 +37,7 @@ void executeSetValue(void);
 void executeSetMode(void);
 void executeStartReporting(void);
 void executeStopReporting(void);
+void executeSetReport(void);
 void sendPinValues(void);
 void sendError(unsigned char);
 
@@ -99,6 +101,9 @@ void executeCommand(unsigned char cmd) {
 		case RQ_STOP_REPORTING:
 			executeStopReporting();
 			break;
+		case RQ_SET_REPORT:
+			executeSetReport();
+			break;
 	}
 }
 
@@ -129,4 +134,11 @@ void executeStartReporting(void) {
 
 void executeStopReporting(void) {
 	reporting = 0;
+}
+
+void executeSetReport(void) {
+	unsigned char pin = stream->nextChar();
+	unsigned char report = stream->nextChar();
+	
+	pe->setReport(pin, report);
 }
