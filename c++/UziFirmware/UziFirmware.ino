@@ -29,7 +29,7 @@
 #define PROGRAM_START 					(unsigned char)0xC3
 #define REPORT_INTERVAL									 50
 
-Program * program = new Program();
+Program * program;
 VM * vm = new VM();
 PE * pe = new PE();
 Reader * stream = new SerialReader(&Serial);
