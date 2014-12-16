@@ -37,20 +37,20 @@ Reader * stream = new SerialReader(&Serial);
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
 
-void executeCommand(unsigned char);
-void executeSetProgram(void);
-void executeSetValue(void);
-void executeSetMode(void);
-void executeStartReporting(void);
-void executeStopReporting(void);
-void executeSetReport(void);
-void executeSaveProgram(void);
-void sendPinValues(void);
-void sendError(unsigned char);
-void installSavedProgram(void);
-void initSerial(void);
-void checkForIncomingMessages(void);
-void sendReport(void);
+inline void executeCommand(unsigned char);
+inline void executeSetProgram(void);
+inline void executeSetValue(void);
+inline void executeSetMode(void);
+inline void executeStartReporting(void);
+inline void executeStopReporting(void);
+inline void executeSetReport(void);
+inline void executeSaveProgram(void);
+inline void sendPinValues(void);
+inline void sendError(unsigned char);
+inline void installSavedProgram(void);
+inline void initSerial(void);
+inline void checkForIncomingMessages(void);
+inline void sendReport(void);
 
 void setup() {
 	installSavedProgram();
