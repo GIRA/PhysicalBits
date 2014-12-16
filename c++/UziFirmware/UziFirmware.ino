@@ -25,7 +25,9 @@
 #define AS_COMMAND(x)									(x)
 #define AS_ARGUMENT(x)							((x) | 128)
 
+/* OTHER CONSTANTS */
 #define PROGRAM_START 					(unsigned char)0xC3
+#define REPORT_INTERVAL									 50
 
 Program * program = new Program();
 VM * vm = new VM();
@@ -46,27 +48,19 @@ void executeSaveProgram(void);
 void sendPinValues(void);
 void sendError(unsigned char);
 void installSavedProgram(void);
+void initSerial(void);
+void checkForIncomingMessages(void);
+void sendReport(void);
 
 void setup() {
 	installSavedProgram();
-
-	Serial.begin(57600);
+	initSerial();
 }
 
 void loop() {
-	if (Serial.available()) {
-		unsigned char inByte = stream->nextChar();
-		executeCommand(inByte);
-	}
-	
+	checkForIncomingMessages();	
 	vm->executeProgram(program, pe);
-	
-	if (!reporting) return;
-	unsigned long now = millis();
-	if (now - lastTimeReport > 50) {
-		sendPinValues();
-		lastTimeReport = now;
-	}
+	sendReport();
 }
 
 void installSavedProgram(void) {
@@ -77,6 +71,26 @@ void installSavedProgram(void) {
 		program->configurePins(pe);
 	}
 	delete eeprom;
+}
+
+void initSerial(void) {
+	Serial.begin(57600);
+}
+
+void checkForIncomingMessages(void) {
+	if (Serial.available()) {
+		unsigned char in = stream->nextChar();
+		executeCommand(in);
+	}
+}
+
+void sendReport(void) {
+	if (!reporting) return;
+	unsigned long now = millis();
+	if (now - lastTimeReport > REPORT_INTERVAL) {
+		sendPinValues();
+		lastTimeReport = now;
+	}
 }
 
 void sendError(unsigned char errorCode) {
