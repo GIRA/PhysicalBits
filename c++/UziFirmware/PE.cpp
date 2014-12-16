@@ -20,7 +20,7 @@ void PE::setMode(unsigned int pin, unsigned char mode) {
 		return;
 	}
 	_pinModes[index] = mode;
-    pinMode(pin, mode);
+	pinMode(pin, mode);
 }
 
 float PE::getValue(unsigned int pin) {
@@ -29,16 +29,16 @@ float PE::getValue(unsigned int pin) {
 		return 0;
 	}
 	
-    if (getMode(pin) == OUTPUT) {
+	if (getMode(pin) == OUTPUT) {
 		return _pinValues[index];
-    } else {
+	} else {
 		if (IS_ANALOG(pin)) {
 			// analogRead() returns a value between 0 and 1023, we treat HIGH as 1 so we divide.
 			return (float)analogRead(pin) / 1023;
 		} else {
 			return digitalRead(pin);
 		}
-    }
+	}
 }
 
 void PE::setValue(unsigned int pin, float value) {

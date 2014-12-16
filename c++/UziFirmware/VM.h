@@ -10,7 +10,7 @@ class VM {
 public:
 	VM(void) {
 		_stack = new StackArray();
-    }
+	}
 	~VM(void) {
 		delete _stack;
 	}

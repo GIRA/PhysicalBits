@@ -96,7 +96,7 @@ void sendPinValues(void) {
 			unsigned short val = pe->getValue(pin) * 1023;
 			unsigned char val1 = val >> 7; 	// MSB
 			unsigned char val2 = val & 127;	// LSB
-			Serial.write(AS_ARGUMENT(val1));            
+			Serial.write(AS_ARGUMENT(val1));
 			Serial.write(AS_ARGUMENT(val2));
 		}
 	}

@@ -1,7 +1,7 @@
 #include "Script.h"
 
 Script::Script(Reader * rs) {
-    long n = rs->nextLong(4);
+	long n = rs->nextLong(4);
 	_stepping = (n >> 31) & 1;
 	_stepTime = n & 0x7FFFFFFF;
 	_lastStepTime = 0;
