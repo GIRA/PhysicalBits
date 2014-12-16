@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include "PE.h"
@@ -15,7 +16,6 @@ public:
 	}
 
 	void executeProgram(Program*, PE*);
-	void executeScript(Script*, PE*);
 
 private:
 
@@ -28,6 +28,7 @@ private:
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char);
 	void executePrimitive(unsigned char);
+	void executeScript(Script*, PE*);
 
 };
 
