@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"offset",
+		"position",
+		"nextPointer" ],
+	"name" : "EEPROMReader2",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

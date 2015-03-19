@@ -1,0 +1,15 @@
+{
+	"class" : {
+		"new" : "Richo 3/18/2015 18:26",
+		"on:" : "Richo 3/18/2015 18:26" },
+	"instance" : {
+		"avgProgramSize" : "Richo 3/18/2015 18:26",
+		"drawEEPROMUsageOn:" : "Richo 3/18/2015 18:26",
+		"drawOn:" : "Richo 3/18/2015 18:26",
+		"drawStatisticsOn:" : "Richo 3/18/2015 18:26",
+		"extent:" : "Richo 3/18/2015 18:26",
+		"initialize" : "Richo 3/18/2015 18:26",
+		"initializeWith:" : "Richo 3/18/2015 18:26",
+		"step" : "Richo 3/18/2015 18:26",
+		"stepTime" : "Richo 3/18/2015 18:26",
+		"useTheEEPROM" : "Richo 3/18/2015 19:20" } }

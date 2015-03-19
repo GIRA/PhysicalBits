@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"position" ],
+	"name" : "EEPROMWriter3",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

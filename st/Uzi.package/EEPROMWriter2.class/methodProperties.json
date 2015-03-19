@@ -1,0 +1,12 @@
+{
+	"class" : {
+		"on:" : "Richo 3/18/2015 16:58" },
+	"instance" : {
+		"actualIndex" : "Richo 3/18/2015 18:09",
+		"findOffset" : "Richo 3/18/2015 22:45",
+		"fixPointers" : "Richo 3/18/2015 22:43",
+		"incrementPosition" : "Richo 3/18/2015 22:48",
+		"initialize" : "Richo 3/18/2015 22:44",
+		"initializeWith:" : "Richo 3/18/2015 16:59",
+		"jumpOverLastProgram" : "Richo 3/18/2015 22:44",
+		"nextPut:" : "Richo 3/18/2015 17:58" } }
