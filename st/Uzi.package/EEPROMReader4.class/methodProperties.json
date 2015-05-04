@@ -1,0 +1,14 @@
+{
+	"class" : {
+		"beginMark" : "Richo 3/26/2015 15:29",
+		"endMark" : "Richo 3/26/2015 15:29",
+		"on:" : "Richo 3/26/2015 14:39" },
+	"instance" : {
+		"findOffset" : "Richo 3/26/2015 19:35",
+		"findOffsetOld" : "Richo 3/26/2015 19:01",
+		"incrementPosition" : "Richo 3/26/2015 14:39",
+		"initialize" : "Richo 3/26/2015 19:30",
+		"initializeWith:" : "Richo 3/26/2015 14:39",
+		"next" : "Richo 3/26/2015 14:39",
+		"next:" : "Richo 3/26/2015 14:39",
+		"upTo:" : "Richo 3/26/2015 14:39" } }
