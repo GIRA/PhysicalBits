@@ -1,14 +1,15 @@
 {
-	"category" : "Uzi-Program",
+	"category" : "Uzi-EEPROM-Tests",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"code" ],
-	"name" : "UziPrimitive",
+		"begin",
+		"end" ],
+	"name" : "UziEEPROMReaderTest",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "TestCase",
 	"type" : "normal" }

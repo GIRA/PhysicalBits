@@ -1,13 +1,15 @@
 {
-	"category" : "Uzi-Program",
+	"category" : "Uzi-EEPROM",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"code" ],
-	"name" : "UziPrimitive",
+		"eeprom",
+		"position",
+		"offset" ],
+	"name" : "EEPROMWriter4",
 	"pools" : [
 		 ],
 	"super" : "Object",

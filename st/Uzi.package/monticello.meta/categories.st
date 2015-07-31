@@ -5,4 +5,5 @@ SystemOrganization addCategory: #'Uzi-Errors'!
 SystemOrganization addCategory: #'Uzi-Program'!
 SystemOrganization addCategory: #'Uzi-Core'!
 SystemOrganization addCategory: #'Uzi-Simulator'!
+SystemOrganization addCategory: #'Uzi-EEPROM-Tests'!
 SystemOrganization addCategory: #'Uzi-EEPROM'!

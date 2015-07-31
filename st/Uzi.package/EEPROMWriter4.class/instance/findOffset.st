@@ -1,4 +1,4 @@
-initializing
+as yet unclassified
 findOffset
 	| index next peek firstBegin lastBegin boxedIndex beginMark endMark break |
 	beginMark := self class beginMark.
@@ -37,4 +37,4 @@ findOffset
 			
 	] doWhileTrue: [peek value = beginMark].
 		
-	^ lastBegin
+	^ boxedIndex value
