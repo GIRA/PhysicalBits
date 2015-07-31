@@ -9,7 +9,7 @@
 		"eeprom",
 		"position",
 		"offset" ],
-	"name" : "EEPROMReader4",
+	"name" : "EEPROMReader",
 	"pools" : [
 		 ],
 	"super" : "Object",

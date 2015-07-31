@@ -8,7 +8,7 @@ test9
 	eeprom write: 3 value: begin.
 	eeprom write: 10 value: end.	
 	
-	reader := EEPROMReader4 on: eeprom.
+	reader := EEPROMReader on: eeprom.
 
 	self assert: reader findOffset equals: 5.
 	

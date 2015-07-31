@@ -9,7 +9,7 @@
 		"eeprom",
 		"position",
 		"offset" ],
-	"name" : "EEPROMWriter4",
+	"name" : "EEPROMWriter",
 	"pools" : [
 		 ],
 	"super" : "Object",
