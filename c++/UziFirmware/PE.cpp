@@ -100,7 +100,7 @@ void PE::delayMs(unsigned long milliseconds) {
 
 void PE::reset() {	
 	for (int i = 0; i < TOTAL_PINS; i++) {
-		if (_pinModes[0] == OUTPUT) {
+		if (_pinModes[i] == OUTPUT) {
 			setValue(PIN_NUMBER(i), 0);
 			setMode(PIN_NUMBER(i), INPUT);
 		}
