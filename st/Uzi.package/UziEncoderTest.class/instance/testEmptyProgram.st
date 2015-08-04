@@ -2,8 +2,6 @@ as yet unclassified
 testEmptyProgram
 	| program encoded |
 	program := UziProgram
-		inputs: #(10)
-		outputs: #()
 		scripts: {}.
 	encoded := UziEncoder new encode: program.
 	self assert: encoded size = 7.

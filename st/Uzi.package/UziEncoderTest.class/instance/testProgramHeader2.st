@@ -2,8 +2,6 @@ as yet unclassified
 testProgramHeader2
 	| program encoded |
 	program := UziProgram
-		inputs: #(0 1 4 10 15 21 23)
-		outputs: #()
 		scripts: {
 			Uzi exampleButton10Led9.
 			Uzi examplePot15Led9.

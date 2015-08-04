@@ -3,8 +3,6 @@ testButton10Led9Encoding
 	| program encoder |
 	encoder := UziEncoder new.
 	program := UziProgram
-		inputs: #(10)
-		outputs: #(9)
 		scripts: {Uzi 
 			script: #main
 			ticking: true

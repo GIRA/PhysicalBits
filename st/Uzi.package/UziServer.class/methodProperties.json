@@ -1,0 +1,13 @@
+{
+	"class" : {
+		"directory:" : "Richo 8/4/2015 14:35" },
+	"instance" : {
+		"initialize" : "Richo 8/4/2015 15:34",
+		"initializeResources" : "Richo 8/4/2015 14:51",
+		"initializeWithDirectory:" : "Richo 8/4/2015 14:35",
+		"processCompile:" : "Richo 8/4/2015 15:35",
+		"processConnect:" : "Richo 8/4/2015 14:55",
+		"processDisconnect:" : "Richo 8/4/2015 15:50",
+		"processInstall:" : "Richo 8/4/2015 15:52",
+		"processRun:" : "Richo 8/4/2015 14:28",
+		"serverUrl" : "Richo 8/4/2015 14:48" } }

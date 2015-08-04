@@ -2,6 +2,6 @@ accessing
 compile: aString 
 	| nodes scripts |
 	nodes := UziParser parse: aString.
+	nodes isPetitFailure ifTrue: [^ UziParseError signal: nodes asString].
 	scripts := nodes collect: [:node | self visit: node].
-	self flag: #Richo. "I am not configuring the pins yet!"
-	^ UziProgram inputs: #() outputs: #() scripts: scripts
+	^ UziProgram scripts: scripts

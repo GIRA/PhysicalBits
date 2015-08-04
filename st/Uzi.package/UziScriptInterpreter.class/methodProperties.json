@@ -4,6 +4,7 @@
 	"instance" : {
 		"execute" : "Richo 10/28/2014 19:40",
 		"executeBytecode:" : "Richo 10/9/2014 17:10",
+		"executeGetModePrimitive" : "Richo 8/4/2015 15:49",
 		"executeGetValuePrimitive" : "Richo 10/21/2014 13:40",
 		"executeSetValuePrimitive" : "Richo 10/21/2014 19:48",
 		"initialize" : "Richo 10/7/2014 17:08",

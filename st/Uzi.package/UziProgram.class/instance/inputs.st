@@ -1,3 +1,0 @@
-accessing
-inputs
-	^ inputs

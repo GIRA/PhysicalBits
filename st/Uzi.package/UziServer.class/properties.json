@@ -1,0 +1,18 @@
+{
+	"category" : "Uzi-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"webDirectory",
+		"compiler",
+		"simulator",
+		"protocol",
+		"encoder" ],
+	"name" : "UziServer",
+	"pools" : [
+		 ],
+	"super" : "RESTServer",
+	"type" : "normal" }
