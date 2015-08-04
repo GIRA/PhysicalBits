@@ -1,8 +1,8 @@
 grammar
 statements
 	^ 	(expression wrapped , 
-			(($. asParser uziToken plus , 
+			((separator , 
 				statements ==> [ :nodes | nodes first , nodes last ])
-					/ $. asParser uziToken star)
+					/ optionalSeparator)
 						==> [ :nodes | (Array with: nodes first) , (nodes last)])
-							/	($. asParser uziToken star)
+							/	optionalSeparator

@@ -34,7 +34,9 @@
 		"numberLiteral",
 		"script",
 		"block",
-		"cleanStatements" ],
+		"cleanStatements",
+		"separator",
+		"optionalSeparator" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],

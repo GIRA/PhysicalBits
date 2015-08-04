@@ -1,3 +1,3 @@
 grammar-scripts
 script
-	^ scriptName, tickingState, tickingRate, scriptBody, $. asParser uziToken star 
+	^ scriptName, tickingState, tickingRate, scriptBody, optionalSeparator
