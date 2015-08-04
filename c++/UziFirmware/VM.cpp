@@ -104,16 +104,20 @@ void VM::executePrimitive(unsigned char primitiveIndex) {
 			unsigned int pin = _stack->pop(); 
 			_pe->setValue(pin, value);
 		} break;
-		case 0x02: {// getMode
+		case 0x02: {// toggle
+			unsigned int pin = _stack->pop();
+			_pe->setValue(pin, 1 - _pe->getValue(pin));
+		} break;
+		case 0x03: {// getMode
 			unsigned int pin = _stack->pop();
 			_stack->push(_pe->getMode(pin));
 		} break;
-		case 0x03: {// setMode
+		case 0x04: {// setMode
 			unsigned char mode = _stack->pop();
 			unsigned int pin = _stack->pop();
 			_pe->setMode(pin, mode);
 		} break;
-		case 0x04: {// delay
+		case 0x05: {// delay
 			_pe->delayMs(_stack->pop());
 		} break;
 	}
