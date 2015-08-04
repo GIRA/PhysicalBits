@@ -17,12 +17,6 @@ testButton10Led9Encoding
 		"How many scripts"
 		1
 		
-		"INPUTS"
-		0 2r00100000 0
-		
-		"OUTPUTS"
-		0 2r01000000 0
-		
 		"Script 1:
 		======"
 		"Stepping and steptime (true, 10)"

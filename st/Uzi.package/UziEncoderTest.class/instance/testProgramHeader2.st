@@ -8,9 +8,4 @@ testProgramHeader2
 			Uzi exampleBlinkLed9.
 		}.
 	encoded := UziEncoder new encode: program.
-	self assert: encoded size > 4.
-	self assert: (encoded first: 4) 
-		equals: #[3 
-			2r11001000
-			2r00100001
-			2r00000101]
+	self assert: encoded first equals: 3
