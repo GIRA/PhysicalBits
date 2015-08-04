@@ -37,7 +37,7 @@ int EEPROMWriter::actualIndex(void) {
  * We did a full round trip, so now we need to fix the pointer chain.
  */
 void EEPROMWriter::fixPointers(void) {
-	_offset = (offset + 1) % EEPROM_SIZE;
+	_offset = (_offset + 1) % EEPROM_SIZE;
 	if (_offset > 255) {
 		// Special case. 
 		// For now we just set it as the max posible value.
@@ -57,3 +57,5 @@ void EEPROMWriter::nextPut(unsigned char value) {
 	_position++;
 }
 
+void EEPROMWriter::jumpOverLastProgram(void) {
+}
