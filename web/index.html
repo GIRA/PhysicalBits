@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="bootstrap-3.3.5-dist/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="bootstrap-3.3.5-dist/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" media="screen" href="http://openfontlibrary.org/face/charger" rel="stylesheet" type="text/css"/>
+	<style type="text/css" media="screen">
+		h1 { 
+			font-family: 'ChargerRegular'; 
+			font-weight: normal; 
+			font-style: normal; 
+		}
+		
+		#editor { 
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 270px;
+			font-size: 16px;
+		}
+		
+		#left-bar {
+			top: 0;
+			left: 0;
+			color: white;
+			/* background-color: #0A0A0A; */
+			background-color: #2C2C2F;
+			position: absolute;
+			height: 100%;
+			width: 270px;
+		}
+		
+		#title {
+			padding: 0px 10px;
+		}
+		
+		#controls {
+			padding: 10px;
+			font-size: large;
+		}
+		
+	</style>
+  </head>
+
+  <body>
+	<div id="left-bar">
+		<div id="title">
+			<h1>Uzi</h1>			
+		</div>
+		<hr>
+		<div id="controls">
+			<div>
+				<span style="display:inline-block;">Arduino port:</span>
+				<div style="display:inline-block;" class="dropdown">
+					<button class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+						COM1
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+						<li><a href="#">COM1</a></li>
+						<li><a href="#">COM6</a></li>
+						<li><a href="#">COM7</a></li>
+						<li role="separator" class="divider"></li>
+						<li><a href="#">other...</a></li>
+					</ul>
+				</div>
+			</div>
+			<p>
+				<div class="btn-group btn-group-justified" role="group" aria-label="...">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-success">Connect</button>
+					</div>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-danger" disabled="disabled">Disconnect</button>
+					</div>
+				</div>
+			</p>
+			<p>
+				<div class="btn-group btn-group-justified" role="group" aria-label="...">
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-primary">Compile</button>
+					</div>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-primary">Install</button>
+					</div>
+					<div class="btn-group" role="group">
+						<button type="button" class="btn btn-primary">Run</button>
+					</div>
+				</div>
+			</p>
+		</div>
+	</div>
+	<div id="editor">
+"Example: Blinking two leds"
+	
+#blink13 ticking 1 / s [
+	toggle: 13.
+]
+
+#blink12 ticking 2 / s [
+	toggle: 12.
+]
+	</div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="jquery/jquery-1.11.3.min.js"></script>
+    <script src="bootstrap-3.3.5-dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="bootstrap-3.3.5-dist/js/ie10-viewport-bug-workaround.js"></script>
+	
+	<!-- ACE -->
+	<script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script>
+		var editor = ace.edit("editor");
+		editor.setTheme("ace/theme/ambiance");
+		editor.getSession().setMode("ace/mode/d");
+	</script>
+  </body>
+</html>
