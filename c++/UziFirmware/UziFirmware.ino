@@ -53,7 +53,7 @@ inline void checkForIncomingMessages(void);
 inline void sendReport(void);
 
 void setup() {
-	installSavedProgram();
+	//installSavedProgram();
 	initSerial();
 }
 
