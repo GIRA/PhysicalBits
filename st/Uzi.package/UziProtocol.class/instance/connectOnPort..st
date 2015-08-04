@@ -1,8 +1,9 @@
 connection
-connectOnPort: portName 
+connectOnPort: aString 
 	self isConnected
 		ifTrue: [^ self].
 	serial := UziSerialStream new baudRate: 57600;
-				 openPort: portName.
+				 openPort: aString.
 	serial
-		ifNotNil: [self startSteppingProcess; startReporting]
+		ifNotNil: [portName := aString.
+			self startSteppingProcess; startReporting]

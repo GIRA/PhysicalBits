@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"encoder",
+		"compiler",
+		"protocol",
+		"simulator" ],
+	"name" : "UziResource",
+	"pools" : [
+		 ],
+	"super" : "RESTObject",
+	"type" : "normal" }

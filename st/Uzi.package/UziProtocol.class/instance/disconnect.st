@@ -4,4 +4,4 @@ disconnect
 	[self stopReporting]
 		ensure: [self stopSteppingProcess.
 			serial close.
-			serial := nil]
+			serial := portName := nil]

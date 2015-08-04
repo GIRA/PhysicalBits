@@ -9,7 +9,8 @@
 		"serial",
 		"process",
 		"pinValues",
-		"pinModes" ],
+		"pinModes",
+		"portName" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
