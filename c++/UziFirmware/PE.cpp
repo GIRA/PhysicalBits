@@ -58,18 +58,19 @@ void PE::setValue(unsigned int pin, float value) {
 	}
 	
 	_pinValues[index] = actualValue;
-	if (getMode(pin) == OUTPUT) {
-		// It seems counter-intuitive but analog pins don't support analogWrite(), this is
-		// because analogWrite() sends a PWM signal and has nothing to do with analog pins
-		// or analogRead().
-		// So, we check in order to avoid sending analogWrite() to an analog pin. Also, if
-		// the value is close to either 0 or 1 there is no need for analogWrite(), we should 
-		// use digitalWrite().
-		if (IS_ANALOG(pin) || actualValue > 0.996 || actualValue < 0.004) {
-			digitalWrite(pin, actualValue > 0.5 ? HIGH : LOW);
-		} else {
-			analogWrite(pin, actualValue * 255);
-		}
+	if (getMode(pin) == INPUT) {
+		setMode(pin, OUTPUT);
+	}
+	// It seems counter-intuitive but analog pins don't support analogWrite(), this is
+	// because analogWrite() sends a PWM signal and has nothing to do with analog pins
+	// or analogRead().
+	// So, we check in order to avoid sending analogWrite() to an analog pin. Also, if
+	// the value is close to either 0 or 1 there is no need for analogWrite(), we should 
+	// use digitalWrite().
+	if (IS_ANALOG(pin) || actualValue > 0.996 || actualValue < 0.004) {
+		digitalWrite(pin, actualValue > 0.5 ? HIGH : LOW);
+	} else {
+		analogWrite(pin, actualValue * 255);
 	}
 }
 
@@ -95,4 +96,16 @@ long PE::getMillis() {
 
 void PE::delayMs(unsigned long milliseconds) {
 	delay(milliseconds);
+}
+
+void PE::reset() {	
+	for (int i = 0; i < TOTAL_PINS; i++) {
+		if (_pinModes[0] == OUTPUT) {
+			setValue(PIN_NUMBER(i), 0);
+			setMode(PIN_NUMBER(i), INPUT);
+		}
+		_pinValues[i] = 0;
+		_pinModes[i] = INPUT;
+		_pinReport[i] = false;
+	}
 }

@@ -29,6 +29,7 @@ public:
 	void setReport(unsigned int, bool);
 	long getMillis(void);
 	void delayMs(unsigned long);
+	void reset(void);
 
 private:
 	
