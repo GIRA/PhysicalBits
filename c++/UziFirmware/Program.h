@@ -17,12 +17,9 @@ public:
 
 private:
 	
-	unsigned char _inputs[3];
-	unsigned char _outputs[3];
 	unsigned char _scriptCount;
 	Script * _script;
 	
-	void parsePinModes(Reader*);
 	void parseScripts(Reader*);
 };
 
