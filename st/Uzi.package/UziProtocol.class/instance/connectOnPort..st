@@ -6,4 +6,7 @@ connectOnPort: aString
 				 openPort: aString.
 	serial
 		ifNotNil: [portName := aString.
-			self startSteppingProcess; startReporting]
+			self startSteppingProcess; 
+				startKeepAliveProcess.
+			100 milliSeconds asDelay wait.
+			self startReporting]

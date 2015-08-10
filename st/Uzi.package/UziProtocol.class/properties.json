@@ -10,7 +10,8 @@
 		"process",
 		"pinValues",
 		"pinModes",
-		"portName" ],
+		"portName",
+		"keepAlive" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],

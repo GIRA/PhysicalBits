@@ -2,6 +2,4 @@ connection
 disconnect
 	self isConnected ifFalse: [^ self].
 	[self stopReporting]
-		ensure: [self stopSteppingProcess.
-			serial close.
-			serial := portName := nil]
+		ensure: [self privateDisconnect]
