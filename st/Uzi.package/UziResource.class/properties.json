@@ -9,7 +9,9 @@
 		"encoder",
 		"compiler",
 		"protocol",
-		"simulator" ],
+		"simulator",
+		"sema",
+		"changed" ],
 	"name" : "UziResource",
 	"pools" : [
 		 ],

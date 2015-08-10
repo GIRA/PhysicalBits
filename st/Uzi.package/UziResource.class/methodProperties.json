@@ -3,10 +3,12 @@
 		 },
 	"instance" : {
 		"detail" : "Richo 8/4/2015 18:26",
-		"initialize" : "Richo 8/4/2015 18:18",
+		"initialize" : "Richo 8/10/2015 11:29",
 		"initializeResources" : "Richo 8/4/2015 18:17",
 		"processCompile:" : "Richo 8/4/2015 18:27",
 		"processConnect:" : "Richo 8/6/2015 17:43",
 		"processDisconnect:" : "Richo 8/6/2015 17:43",
+		"processGET:" : "Richo 8/10/2015 11:31",
 		"processInstall:" : "Richo 8/4/2015 18:27",
-		"processRun:" : "Richo 8/6/2015 17:50" } }
+		"processRun:" : "Richo 8/6/2015 17:50",
+		"update" : "Richo 8/10/2015 11:30" } }
