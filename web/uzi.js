@@ -156,7 +156,7 @@
 	function updateLoop(first) {
 		getUziState(first ? 0 : 45, {
 			success: updateUI,
-			complete: updateLoop,
+			complete: function () { updateLoop(false); },
 			error: errorHandler
 		});
 	}
