@@ -12,6 +12,7 @@
 #define RQ_STOP_REPORTING								4
 #define RQ_SET_REPORT									5
 #define RQ_SAVE_PROGRAM									6
+#define RQ_KEEP_ALIVE									7
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -28,6 +29,7 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(unsigned char)0xC3
 #define REPORT_INTERVAL									 50
+#define KEEP_ALIVE_INTERVAL							   1000
 
 Program * program;
 VM * vm = new VM();
@@ -36,6 +38,7 @@ Reader * stream = new SerialReader(&Serial);
 
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
+unsigned long lastTimeKeepAlive = 0;
 
 inline void executeCommand(unsigned char);
 inline void executeSetProgram(void);
@@ -61,6 +64,7 @@ void loop() {
 	checkForIncomingMessages();	
 	vm->executeProgram(program, pe);
 	sendReport();
+	checkKeepAlive();
 }
 
 void installSavedProgram(void) {
@@ -90,6 +94,14 @@ void sendReport(void) {
 	if (now - lastTimeReport > REPORT_INTERVAL) {
 		sendPinValues();
 		lastTimeReport = now;
+	}
+}
+
+void checkKeepAlive(void) {
+	if (!reporting) return;
+	unsigned long now = millis();
+	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL) {
+		executeStopReporting();
 	}
 }
 
@@ -139,6 +151,9 @@ void executeCommand(unsigned char cmd) {
 		case RQ_SAVE_PROGRAM:
 			executeSaveProgram();
 			break;
+		case RQ_KEEP_ALIVE:
+			executeKeepAlive();
+			break;
 	}
 }
 
@@ -187,4 +202,8 @@ void executeSaveProgram(void) {
 		writer->nextPut(stream->nextChar());
 	}
 	delete writer;
+}
+
+void executeKeepAlive(void) {
+	lastTimeKeepAlive = millis();
 }
