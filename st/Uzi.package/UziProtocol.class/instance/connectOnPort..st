@@ -9,4 +9,6 @@ connectOnPort: aString
 			self startSteppingProcess; 
 				startKeepAliveProcess.
 			100 milliSeconds asDelay wait.
-			self startReporting]
+			self startReporting;
+				sendPinsReporting;
+				triggerEvent: #connect]

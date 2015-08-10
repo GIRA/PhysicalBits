@@ -1,7 +1,7 @@
 connection
 privateDisconnect
 	"Private! Use #disconnect"
-	self stopSteppingProcess;
-		stopKeepAliveProcess.
+	self stopSteppingProcess.
 	serial ifNotNil: #close.
-	serial := portName := nil
+	serial := portName := nil.
+	self triggerEvent: #disconnect
