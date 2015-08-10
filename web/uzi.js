@@ -1,7 +1,30 @@
 (function () {
+	
+	function nop () { /* Do nothing */ }
+	
+	function errorHandler (err) {
+		console.log(err);
+		Alert.danger(err.responseText || "Connection error");
+	}
 
 	function getSelectedPort() {
 		return port.innerText;
+	}
+	
+	function getUziState(wait, callbacks) {
+		var success = callbacks.success || nop;
+		var complete = callbacks.complete || nop;
+		var error = callbacks.error || nop;
+		ajax.request({ 
+			type: 'GET', 
+			url: "/uzi",
+			data: {
+				wait: wait
+			},
+			success: success,
+			complete: complete,
+			error: error
+		}, 2);
 	}
 
 	function connect () {
@@ -12,22 +35,14 @@
 				port: getSelectedPort()
 			},
 			success: function (uzi) {
+				updateUI(uzi);
 				if (uzi.isConnected) {
 					Alert.success("Arduino connected on port: " + uzi.portName);
-					$("#connect").attr("disabled", "disabled");
-					$("#port").attr("disabled", "disabled");
-					$("#disconnect").removeAttr("disabled");					
-					//$("#install").removeAttr("disabled");
-					$("#run").removeAttr("disabled");
-					$("#more").removeAttr("disabled");
 				} else {
 					Alert.danger("Arduino not found");
 				}
 			},
-			error: function (err) {
-				console.log(err);
-				Alert.danger(err.responseText);
-			}
+			error: errorHandler
 		}, 2);
 	}
 
@@ -39,22 +54,14 @@
 				port: getSelectedPort()
 			},
 			success: function (uzi) {
+				updateUI(uzi);
 				if (uzi.isConnected) {
 					Alert.danger("Arduino connected on port: " + uzi.portName);
 				} else {
 					Alert.success("Arduino disconnected");
-					$("#connect").removeAttr("disabled");
-					$("#port").removeAttr("disabled");
-					$("#disconnect").attr("disabled", "disabled");
-					$("#install").attr("disabled", "disabled");
-					$("#run").attr("disabled", "disabled");
-					$("#more").attr("disabled", "disabled");
 				}
 			},
-			error: function (err) {
-				console.log(err);
-				Alert.danger(err.responseText);
-			}
+			error: errorHandler
 		}, 2);
 	}
 
@@ -69,10 +76,7 @@
 				console.log(bytecodes);
 				Alert.success("Compilation successful");
 			},
-			error: function (err) {
-				console.log(err);
-				Alert.danger(err.responseText);
-			}
+			error: errorHandler
 		}, 2);
 	}
 
@@ -87,10 +91,7 @@
 				console.log(bytecodes);
 				Alert.success("Installation successful");
 			},
-			error: function (err) {
-				console.log(err);
-				Alert.danger(err.responseText);
-			}
+			error: errorHandler
 		}, 2);
 	}
 
@@ -104,10 +105,7 @@
 			success: function (bytecodes) {
 				console.log(bytecodes);
 			},
-			error: function (err) {
-				console.log(err);
-				Alert.danger(err.responseText);
-			}
+			error: errorHandler
 		}, 2);
 	}
 
@@ -121,7 +119,9 @@
 				} else {
 					selectedPort = this.innerText;
 				}
-				port.innerHTML = selectedPort + "\n<span class='caret'></span>";
+				$("#port")
+					.text(selectedPort)
+					.append("\n<span class='caret'></span>");
 			});
 		
 		// Buttons
@@ -130,9 +130,37 @@
 		$("#compile").on("click", compile);
 		$("#install").on("click", install);
 		$("#run").on("click", run);
-		
+	}
+	
+	function updateUI(uzi) {
+		if (uzi.isConnected) {
+			$("#connect").attr("disabled", "disabled");
+			$("#port")
+				.attr("disabled", "disabled")
+				.text(uzi.portName)
+				.append("\n<span class='caret'></span>");			
+			$("#disconnect").removeAttr("disabled");					
+			//$("#install").removeAttr("disabled");
+			$("#run").removeAttr("disabled");
+			$("#more").removeAttr("disabled");
+		} else {
+			$("#connect").removeAttr("disabled");
+			$("#port").removeAttr("disabled");
+			$("#disconnect").attr("disabled", "disabled");
+			$("#install").attr("disabled", "disabled");
+			$("#run").attr("disabled", "disabled");
+			$("#more").attr("disabled", "disabled");
+		}
 	}
 
+	function updateLoop(first) {
+		getUziState(first ? 0 : 45, {
+			success: updateUI,
+			complete: updateLoop,
+			error: errorHandler
+		});
+	}
+	
 	bindEvents();
-
+	updateLoop(true);
 })();
