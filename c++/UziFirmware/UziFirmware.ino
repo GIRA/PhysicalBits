@@ -29,7 +29,7 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(unsigned char)0xC3
 #define REPORT_INTERVAL									 50
-#define KEEP_ALIVE_INTERVAL							   1000
+#define KEEP_ALIVE_INTERVAL							   2000
 
 Program * program;
 VM * vm = new VM();
