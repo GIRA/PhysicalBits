@@ -8,6 +8,6 @@ writeScriptHeader: anUziScript
 				ifTrue: [1] 
 				ifFalse: [0]) 
 					bitShift: 31) 
-					bitOr: anUziScript delay.
+					bitOr: anUziScript delay rounded.
 	3 to: 0 by: -1 do: [:i |
 		stream nextPut: ((header bitShift: -8 * i) bitAnd: 16rFF)]
