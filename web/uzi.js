@@ -19,6 +19,7 @@
 					$("#disconnect").removeAttr("disabled");					
 					//$("#install").removeAttr("disabled");
 					$("#run").removeAttr("disabled");
+					$("#more").removeAttr("disabled");
 				} else {
 					Alert.danger("Arduino not found");
 				}
@@ -47,6 +48,7 @@
 					$("#disconnect").attr("disabled", "disabled");
 					$("#install").attr("disabled", "disabled");
 					$("#run").attr("disabled", "disabled");
+					$("#more").attr("disabled", "disabled");
 				}
 			},
 			error: function (err) {
