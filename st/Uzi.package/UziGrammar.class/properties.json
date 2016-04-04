@@ -36,7 +36,8 @@
 		"block",
 		"cleanStatements",
 		"separator",
-		"optionalSeparator" ],
+		"optionalSeparator",
+		"constantLiteral" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],
