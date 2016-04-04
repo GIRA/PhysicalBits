@@ -13,6 +13,7 @@
 #define RQ_SET_REPORT									5
 #define RQ_SAVE_PROGRAM									6
 #define RQ_KEEP_ALIVE									7
+#define RQ_PROFILE										8
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -40,6 +41,8 @@ Reader * stream = new SerialReader(&Serial);
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
 unsigned long lastTimeKeepAlive = 0;
+
+unsigned char profiling = 0;
 unsigned long lastTimeProfile = 0;
 unsigned short tickCount = 0;
 
@@ -57,6 +60,7 @@ inline void installSavedProgram(void);
 inline void initSerial(void);
 inline void checkForIncomingMessages(void);
 inline void sendReport(void);
+inline void executeProfile(void);
 
 void setup() {
 	//installSavedProgram();
@@ -93,10 +97,10 @@ void checkForIncomingMessages(void) {
 }
 
 void sendProfile() {
+	if (!profiling) return;
 	unsigned long now = millis();
 	tickCount++;
 	if (now - lastTimeProfile > 100) {
-		lastTimeProfile = now;
 		Serial.write(AS_COMMAND(RS_PROFILE));     
 
 		unsigned short val = tickCount;
@@ -106,6 +110,7 @@ void sendProfile() {
 		Serial.write(AS_ARGUMENT(val2));
 
 		tickCount = 0;
+		lastTimeProfile = now;
 	}
 }
 
@@ -175,6 +180,9 @@ void executeCommand(unsigned char cmd) {
 		case RQ_KEEP_ALIVE:
 			executeKeepAlive();
 			break;
+		case RQ_PROFILE:
+			executeProfile();
+			break;
 	}
 }
 
@@ -227,4 +235,10 @@ void executeSaveProgram(void) {
 
 void executeKeepAlive(void) {
 	lastTimeKeepAlive = millis();
+}
+
+void executeProfile(void) {
+	profiling = stream->nextChar();
+	tickCount = 0;
+	lastTimeProfile = millis();
 }
