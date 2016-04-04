@@ -3,7 +3,7 @@ testButton10Led9Script
 	| cc program script1 bytecodes |
 	cc := UziCompiler new.
 	program := cc compile: '#button10Led9 ticking 100/s [
-			at: 9 put: (at: 10)
+			write: 9 value: (read: 10)
 		]'.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
