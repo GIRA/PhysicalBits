@@ -64,7 +64,7 @@ void setup() {
 }
 
 void loop() {
-	checkForIncomingMessages();	
+	checkForIncomingMessages();
 	vm->executeProgram(program, pe);
 	//sendReport();
 	//checkKeepAlive();
@@ -93,20 +93,20 @@ void checkForIncomingMessages(void) {
 }
 
 void sendProfile() {
-  unsigned long now = millis();
-  tickCount++;
-  if (now - lastTimeProfile > 100) {
-    lastTimeProfile = now;
-    Serial.write(AS_COMMAND(RS_PROFILE));     
-    
-    unsigned short val = tickCount;
-    unsigned char val1 = val >> 7;  // MSB
-    unsigned char val2 = val & 127; // LSB
-    Serial.write(AS_ARGUMENT(val1));
-    Serial.write(AS_ARGUMENT(val2));
+	unsigned long now = millis();
+	tickCount++;
+	if (now - lastTimeProfile > 100) {
+		lastTimeProfile = now;
+		Serial.write(AS_COMMAND(RS_PROFILE));     
 
-    tickCount = 0;
-  }
+		unsigned short val = tickCount;
+		unsigned char val1 = val >> 7;  // MSB
+		unsigned char val2 = val & 127; // LSB
+		Serial.write(AS_ARGUMENT(val1));
+		Serial.write(AS_ARGUMENT(val2));
+
+		tickCount = 0;
+	}
 }
 
 void sendReport(void) {
