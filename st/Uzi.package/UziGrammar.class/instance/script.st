@@ -1,3 +1,3 @@
 grammar-scripts
 script
-	^ scriptName, tickingState, tickingRate, scriptBody, optionalSeparator
+	^ scriptName, tickingState, tickingRate optional, scriptBody, optionalSeparator
