@@ -1,8 +1,8 @@
 private
 primitiveFor: selector
 	^ UziPrimitive named: (selector caseOf: {
-		[#at:] -> [#getValue].
-		[#at:put:] -> [#setValue].
+		[#read:] -> [#getValue].
+		[#write:value:] -> [#setValue].
 		[#toggle:] -> [#toggle].
 		[#+] -> [#add].
 		[#-] -> [#subtract].

@@ -1,7 +1,8 @@
 {
 	"class" : {
 		"rsError" : "Richo 10/21/2014 19:26",
-		"rsPinValue" : "Richo 10/21/2014 19:26" },
+		"rsPinValue" : "Richo 10/21/2014 19:26",
+		"rsProfile" : "Richo 3/30/2016 17:02" },
 	"instance" : {
 		"connectOnPort:" : "Richo 8/10/2015 11:15",
 		"disconnect" : "Richo 8/10/2015 10:19",
@@ -20,8 +21,9 @@
 		"portName" : "Richo 8/4/2015 18:25",
 		"privateDisconnect" : "Richo 8/10/2015 11:04",
 		"processError" : "Richo 10/21/2014 19:36",
-		"processInput" : "Richo 10/21/2014 19:26",
+		"processInput" : "Richo 3/30/2016 17:21",
 		"processPinValue" : "Richo 12/15/2014 16:59",
+		"processProfile" : "Richo 4/4/2016 10:21",
 		"run:" : "Richo 8/4/2015 18:34",
 		"send:" : "Richo 8/10/2015 10:28",
 		"sendPinsReporting" : "Richo 8/10/2015 11:16",
