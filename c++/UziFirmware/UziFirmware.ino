@@ -66,7 +66,7 @@ void setup() {
 void loop() {
 	checkForIncomingMessages();
 	vm->executeProgram(program, pe);
-	//sendReport();
+	sendReport();
 	//checkKeepAlive();
   sendProfile();
 }
