@@ -17,6 +17,7 @@
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
 #define RS_PIN_VALUE									1
+#define RS_PROFILE                    2
 
 /* MACROS */
 #define IS_COMMAND(x)						((x) >> 7 == 0)
@@ -39,6 +40,8 @@ Reader * stream = new SerialReader(&Serial);
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
 unsigned long lastTimeKeepAlive = 0;
+unsigned long lastTimeProfile = 0;
+unsigned short tickCount = 0;
 
 inline void executeCommand(unsigned char);
 inline void executeSetProgram(void);
@@ -63,8 +66,9 @@ void setup() {
 void loop() {
 	checkForIncomingMessages();	
 	vm->executeProgram(program, pe);
-	sendReport();
-	checkKeepAlive();
+	//sendReport();
+	//checkKeepAlive();
+  sendProfile();
 }
 
 void installSavedProgram(void) {
@@ -86,6 +90,23 @@ void checkForIncomingMessages(void) {
 		unsigned char in = stream->nextChar();
 		executeCommand(in);
 	}
+}
+
+void sendProfile() {
+  unsigned long now = millis();
+  tickCount++;
+  if (now - lastTimeProfile > 100) {
+    lastTimeProfile = now;
+    Serial.write(AS_COMMAND(RS_PROFILE));     
+    
+    unsigned short val = tickCount;
+    unsigned char val1 = val >> 7;  // MSB
+    unsigned char val2 = val & 127; // LSB
+    Serial.write(AS_ARGUMENT(val1));
+    Serial.write(AS_ARGUMENT(val2));
+
+    tickCount = 0;
+  }
 }
 
 void sendReport(void) {
