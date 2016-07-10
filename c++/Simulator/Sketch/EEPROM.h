@@ -1,8 +1,6 @@
 #pragma once
 
-// HACK(Richo): This shouldn't be redefined...
-#define E2END 255
-
+#define E2END 1023
 
 class EEPROMClass {
 
