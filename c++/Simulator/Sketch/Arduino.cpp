@@ -117,7 +117,7 @@ char CSerial::read()
 
 void CSerial::write(unsigned char c) 
 {
-	_append(c);
+	printf("%c", c);
 }
 
 void CSerial::_append(char c)
