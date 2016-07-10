@@ -33,7 +33,7 @@
 #define REPORT_INTERVAL									 50
 #define KEEP_ALIVE_INTERVAL							   2000
 
-Program * program;
+Program * program = new Program();
 VM * vm = new VM();
 PE * pe = new PE();
 Reader * stream = new SerialReader();
