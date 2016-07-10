@@ -19,7 +19,6 @@
 
 #define _AVR_IO_H_
 #define _SFR_IO8(io_addr) ((io_addr))
-#include "C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include\avr\iomxx0_1.h"
 
 #define boolean bool
 
