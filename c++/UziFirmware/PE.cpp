@@ -69,7 +69,7 @@ void PE::setValue(unsigned int pin, float value) {
 	if (IS_ANALOG(pin) || actualValue > 0.996 || actualValue < 0.004) {
 		digitalWrite(pin, actualValue > 0.5 ? HIGH : LOW);
 	} else {
-		analogWrite(pin, actualValue * 255);
+		analogWrite(pin, (unsigned short)(actualValue * 255));
 	}
 }
 

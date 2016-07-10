@@ -74,7 +74,7 @@ void loop() {
 	vm->executeProgram(program, pe);
 	sendReport();
 	//checkKeepAlive();
-  sendProfile();
+	sendProfile();
 }
 
 void installSavedProgram(void) {
@@ -147,7 +147,7 @@ void sendPinValues(void) {
 			
 			// PE.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
-			unsigned short val = pe->getValue(pin) * 1023;
+			unsigned short val = (unsigned short)(pe->getValue(pin) * 1023);
 			unsigned char val1 = val >> 7; 	// MSB
 			unsigned char val2 = val & 127;	// LSB
 			Serial.write(AS_ARGUMENT(val1));
@@ -221,7 +221,7 @@ void executeSetReport(void) {
 	unsigned char pin = stream->nextChar();
 	unsigned char report = stream->nextChar();
 	
-	pe->setReport(pin, report);
+	pe->setReport(pin, report != 0);
 }
 
 void executeSaveProgram(void) {

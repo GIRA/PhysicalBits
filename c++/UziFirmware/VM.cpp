@@ -44,7 +44,7 @@ void VM::executeBytecode(unsigned char bytecode) {
 	
 	switch (key) {
 		case 0x00: {// pushLit
-			_stack->push(_currentScript->literalAt(value));
+			_stack->push((float)_currentScript->literalAt(value));
 		} break;
 		case 0x10: {// pushLocal
 		} break;
@@ -96,29 +96,29 @@ void VM::executePrimitive(unsigned char primitiveIndex) {
 
 	switch(primitiveIndex) {
 		case 0x00: {// getValue
-			unsigned int pin = _stack->pop();
+			unsigned int pin = (unsigned int)_stack->pop();
 			_stack->push(_pe->getValue(pin));
 		} break;
 		case 0x01: {// setValue
 			float value = _stack->pop();
-			unsigned int pin = _stack->pop(); 
+			unsigned int pin = (unsigned int)_stack->pop();
 			_pe->setValue(pin, value);
 		} break;
 		case 0x02: {// toggle
-			unsigned int pin = _stack->pop();
+			unsigned int pin = (unsigned int)_stack->pop();
 			_pe->setValue(pin, 1 - _pe->getValue(pin));
 		} break;
 		case 0x03: {// getMode
-			unsigned int pin = _stack->pop();
+			unsigned int pin = (unsigned int)_stack->pop();
 			_stack->push(_pe->getMode(pin));
 		} break;
 		case 0x04: {// setMode
-			unsigned char mode = _stack->pop();
-			unsigned int pin = _stack->pop();
+			unsigned char mode = (unsigned char)_stack->pop();
+			unsigned int pin = (unsigned int)_stack->pop();
 			_pe->setMode(pin, mode);
 		} break;
 		case 0x05: {// delay
-			_pe->delayMs(_stack->pop());
+			_pe->delayMs((unsigned long)_stack->pop());
 		} break;
 	}
 }

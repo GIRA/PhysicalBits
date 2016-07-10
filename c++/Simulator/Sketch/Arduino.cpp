@@ -40,7 +40,7 @@ extern unsigned short analogRead(unsigned int pin) {
 }
 
 void analogWrite(unsigned int pin, unsigned short value) {
-	__setPinValue(pin, round(value * 4.01176470588235));
+	__setPinValue(pin, (unsigned short)round(value * 4.01176470588235));
 }
 
 void digitalWrite(int pin, int value)

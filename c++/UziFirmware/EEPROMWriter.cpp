@@ -19,6 +19,7 @@ int EEPROMWriter::findOffset(void) {
 		}
 		index = index + val;
 	} while(index < EEPROM_SIZE);
+	return 0;
 }
 
 void EEPROMWriter::incrementPosition(void) {
