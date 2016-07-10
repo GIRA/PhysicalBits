@@ -1,5 +1,4 @@
 #include "PE.h"
-#include "Arduino.h"
 
 unsigned char PE::getMode(unsigned int pin) {
 	int index = ARRAY_INDEX(pin);

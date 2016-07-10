@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Arduino.h"
+#include "VSPDE.h"
 
 // The following macros will work for standard arduino, other versions should redefine.
 #define TOTAL_PINS														   18

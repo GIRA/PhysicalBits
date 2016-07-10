@@ -36,7 +36,7 @@
 Program * program;
 VM * vm = new VM();
 PE * pe = new PE();
-Reader * stream = new SerialReader(&Serial);
+Reader * stream = new SerialReader();
 
 unsigned char reporting = 0;
 unsigned long lastTimeReport = 0;
@@ -54,11 +54,13 @@ inline void executeStartReporting(void);
 inline void executeStopReporting(void);
 inline void executeSetReport(void);
 inline void executeSaveProgram(void);
+inline void executeKeepAlive(void);
 inline void sendPinValues(void);
 inline void sendError(unsigned char);
 inline void installSavedProgram(void);
 inline void initSerial(void);
 inline void checkForIncomingMessages(void);
+inline void sendProfile(void);
 inline void sendReport(void);
 inline void executeProfile(void);
 
