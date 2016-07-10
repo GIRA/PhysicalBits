@@ -46,10 +46,10 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\UziFirmware\UziFirmware.ino" />
-    <ClCompile Include="..\..\UziFirmware\VSPDE.cpp">
+    <ClCompile Include="EEPROM.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EEPROM.cpp">
+    <ClCompile Include="Arduino.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -84,10 +84,10 @@
     <ClInclude Include="..\..\UziFirmware\VM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\UziFirmware\VSPDE.h">
+    <ClInclude Include="EEPROM.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="EEPROM.h">
+    <ClInclude Include="Arduino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

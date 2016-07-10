@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Reader.h"
-#include "VSPDE.h"
+#include "Arduino.h"
 
 class SerialReader : public Reader {
 

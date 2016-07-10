@@ -124,8 +124,8 @@
     <ClCompile Include="..\..\UziFirmware\SerialReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\StackArray.cpp" />
     <ClCompile Include="..\..\UziFirmware\VM.cpp" />
-    <ClCompile Include="..\..\UziFirmware\VSPDE.cpp" />
     <ClCompile Include="EEPROM.cpp" />
+    <ClCompile Include="Arduino.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UziFirmware\ArrayReader.h" />
@@ -138,8 +138,8 @@
     <ClInclude Include="..\..\UziFirmware\SerialReader.h" />
     <ClInclude Include="..\..\UziFirmware\StackArray.h" />
     <ClInclude Include="..\..\UziFirmware\VM.h" />
-    <ClInclude Include="..\..\UziFirmware\VSPDE.h" />
     <ClInclude Include="EEPROM.h" />
+    <ClInclude Include="Arduino.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\UziFirmware\UziFirmware.ino">
