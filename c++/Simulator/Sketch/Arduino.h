@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "Simulator.h"
 
 // Add CPU hardware definitions
 
@@ -91,16 +92,6 @@ extern bool digitalRead(int);
 extern unsigned short analogRead(unsigned int);
 extern void analogWrite(unsigned int, unsigned short);
 
-#define EXTERN extern "C" __declspec(dllexport)
-EXTERN long foo(void);
-
-// The following macros will work for standard arduino, other versions should redefine.
-#define __TOTAL_PINS__												 20
-#define __IS_ANALOG__(x)						((x) >= 14 && (x) <= 19)
-#define __IS_DIGITAL__(x)							 (!__IS_ANALOG__(x))
-
-unsigned short __getPinValue(unsigned int);
-void __setPinValue(unsigned int, unsigned short);
-#else
-#include "Arduino.h"
+extern void setup();
+extern void loop();
 #endif

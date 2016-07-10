@@ -126,6 +126,7 @@
     <ClCompile Include="..\..\UziFirmware\VM.cpp" />
     <ClCompile Include="EEPROM.cpp" />
     <ClCompile Include="Arduino.cpp" />
+    <ClCompile Include="Simulator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UziFirmware\ArrayReader.h" />
@@ -140,6 +141,7 @@
     <ClInclude Include="..\..\UziFirmware\VM.h" />
     <ClInclude Include="EEPROM.h" />
     <ClInclude Include="Arduino.h" />
+    <ClInclude Include="Simulator.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\UziFirmware\UziFirmware.ino">
