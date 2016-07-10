@@ -8,8 +8,8 @@
     <ProjectGuid>{E1EF049B-39BE-4A63-AE81-AD34E6FFF8E3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArduinoSim</RootNamespace>
-    <AssemblyName>ArduinoSim</AssemblyName>
+    <RootNamespace>Simulator</RootNamespace>
+    <AssemblyName>Simulator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

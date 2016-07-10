@@ -1,4 +1,4 @@
-﻿namespace ArduinoSim
+﻿namespace Simulator
 {
     partial class Pin
     {
@@ -31,7 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.led = new System.Windows.Forms.PictureBox();
-            this.graph = new ArduinoSim.Graph();
+            this.graph = new Simulator.Graph();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.led)).BeginInit();
             this.SuspendLayout();
@@ -70,7 +70,7 @@
             // led
             // 
             this.led.BackColor = System.Drawing.Color.White;
-            this.led.Image = global::ArduinoSim.Properties.Resources.off;
+            this.led.Image = global::Simulator.Properties.Resources.off;
             this.led.Location = new System.Drawing.Point(21, 66);
             this.led.Name = "led";
             this.led.Size = new System.Drawing.Size(69, 66);

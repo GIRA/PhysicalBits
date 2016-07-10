@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace ArduinoSim
+namespace Simulator
 {
     public partial class Pin : UserControl
     {

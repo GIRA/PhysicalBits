@@ -1,4 +1,4 @@
-﻿namespace ArduinoSim
+﻿namespace Simulator
 {
     partial class Main
     {

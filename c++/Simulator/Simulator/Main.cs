@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace ArduinoSim
+namespace Simulator
 {
     public partial class Main : Form
     {
