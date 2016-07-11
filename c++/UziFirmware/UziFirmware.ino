@@ -43,9 +43,11 @@ removed eventually.
 Program * defaultProgram()
 {
 	unsigned char encoded[] = {
-		1, 128, 0, 3, 232, 3, 12, 0, 1, 13, 0, 2, 80, 164, 2, 1, 81, 131, 2, 0, 81, 255
+		2,
+		128, 0, 0, 0, 2, 8, 11, 14, 0, 0, 1, 80, 81, 255, 
+		128, 0, 3, 232, 3, 12, 0, 1, 13, 0, 2, 80, 164, 2, 1, 81, 131, 2, 0, 81, 255
 	};
-	ArrayReader reader(encoded, 22);
+	ArrayReader reader(encoded, 36);
 	return new Program(&reader);
 }
 Program * program = defaultProgram();
