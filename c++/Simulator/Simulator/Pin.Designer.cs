@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
+            this.title = new System.Windows.Forms.Label();
             this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.led = new System.Windows.Forms.PictureBox();
             this.graph = new Simulator.Graph();
@@ -36,18 +36,18 @@
             ((System.ComponentModel.ISupportInitialize)(this.led)).BeginInit();
             this.SuspendLayout();
             // 
-            // label1
+            // title
             // 
-            this.label1.BackColor = System.Drawing.Color.White;
-            this.label1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.label1.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(10, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 37);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "00";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.title.BackColor = System.Drawing.Color.White;
+            this.title.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.title.Font = new System.Drawing.Font("Calibri", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.title.ForeColor = System.Drawing.Color.Black;
+            this.title.Location = new System.Drawing.Point(10, 0);
+            this.title.Name = "title";
+            this.title.Size = new System.Drawing.Size(92, 37);
+            this.title.TabIndex = 0;
+            this.title.Text = "00";
+            this.title.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // numericUpDown1
             // 
@@ -97,13 +97,13 @@
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.Controls.Add(this.led);
             this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.title);
             this.Controls.Add(this.graph);
             this.ForeColor = System.Drawing.Color.Black;
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "Pin";
             this.Size = new System.Drawing.Size(547, 160);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Pin_Paint);
+            this.Load += new System.EventHandler(this.Pin_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.led)).EndInit();
             this.ResumeLayout(false);
@@ -112,7 +112,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label title;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
         private Graph graph;
         private System.Windows.Forms.PictureBox led;
