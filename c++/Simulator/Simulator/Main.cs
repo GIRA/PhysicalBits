@@ -193,5 +193,10 @@ namespace Simulator
             toggle(pins[19]);
         }
 
+        private void openSerialButton_Click(object sender, EventArgs e)
+        {
+            SerialConsole serial = new SerialConsole();
+            serial.ShowDialog();
+        }
     }
 }

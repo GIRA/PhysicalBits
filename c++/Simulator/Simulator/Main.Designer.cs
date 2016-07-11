@@ -55,6 +55,7 @@
             this.a2 = new System.Windows.Forms.CheckBox();
             this.a1 = new System.Windows.Forms.CheckBox();
             this.a0 = new System.Windows.Forms.CheckBox();
+            this.openSerialButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // stepTimer
@@ -342,11 +343,23 @@
             this.a0.UseVisualStyleBackColor = true;
             this.a0.CheckedChanged += new System.EventHandler(this.a0_CheckedChanged);
             // 
+            // openSerialButton
+            // 
+            this.openSerialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.openSerialButton.Location = new System.Drawing.Point(695, 12);
+            this.openSerialButton.Name = "openSerialButton";
+            this.openSerialButton.Size = new System.Drawing.Size(123, 33);
+            this.openSerialButton.TabIndex = 46;
+            this.openSerialButton.Text = "Open Serial";
+            this.openSerialButton.UseVisualStyleBackColor = true;
+            this.openSerialButton.Click += new System.EventHandler(this.openSerialButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 380);
+            this.Controls.Add(this.openSerialButton);
             this.Controls.Add(this.a5);
             this.Controls.Add(this.a4);
             this.Controls.Add(this.a3);
@@ -411,8 +424,7 @@
         private System.Windows.Forms.CheckBox a2;
         private System.Windows.Forms.CheckBox a1;
         private System.Windows.Forms.CheckBox a0;
-
-
+        private System.Windows.Forms.Button openSerialButton;
     }
 }
 
