@@ -46,11 +46,14 @@ EXTERN void GPIO_setPinValue(unsigned int pin, unsigned short value)
 	__setPinValue(pin, value);
 }
 
-EXTERN void Sketch_start(void)
+EXTERN void Sketch_setup(void)
 {
 	setup();
-	for (;;)
-		loop();
+}
+
+EXTERN void Sketch_loop(void)
+{
+	loop();
 }
 
 EXTERN size_t Serial_readInto(char* buffer, size_t len)

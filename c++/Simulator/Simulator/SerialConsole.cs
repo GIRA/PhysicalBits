@@ -31,10 +31,10 @@ namespace Simulator
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
-            string output = Sketch.ReadSerial();
+            Tuple<DateTime, string> output = Sketch.ReadSerial();
 
-            if (string.IsNullOrWhiteSpace(output)) return;
-            outputTextBox.AppendText(string.Format("{0:HH:mm:ss.fff}| {1}", DateTime.Now, output));
+            if (output == null) return;
+            outputTextBox.AppendText(string.Format("{0:HH:mm:ss.fff}| {1}", output.Item1, output.Item2));
             outputTextBox.AppendText(Environment.NewLine);
         }
     }

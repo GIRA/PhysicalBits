@@ -15,7 +15,7 @@ namespace Simulator
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SerialConsole());
+            Application.Run(new Main());
         }
     }
 }
