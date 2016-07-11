@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace Simulator
 {
-    class Sketch
+    public class Sketch
     {
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
         private static extern short GPIO_getPinValue(int pin);
@@ -28,41 +28,44 @@ namespace Simulator
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]        
         private static extern int Serial_readInto(StringBuilder buffer, int len);
 
-        private static ConcurrentQueue<Tuple<DateTime, string>> serial;
-        private static Thread thread;
-        private static bool running = false;
+        private static Sketch current = new Sketch();
+        public static Sketch Current { get { return current; } }
 
-        public static short GetPinValue(int pin)
+        private ConcurrentQueue<Tuple<DateTime, string>> serial;
+        private Thread thread;
+        private bool running = false;
+
+        public short GetPinValue(int pin)
         {
             return GPIO_getPinValue(pin);
         }
 
-        public static void SetPinValue(int pin, short value)
+        public void SetPinValue(int pin, short value)
         {
             GPIO_setPinValue(pin, value);
         }
 
-        public static void Start()
+        public void Start()
         {
             if (running) return;
             running = true;
-            thread = new Thread(Process);
+            thread = new Thread(Main);
             thread.Start();
         }
 
-        public static void Stop()
+        public void Stop()
         {
             running = false;
         }
 
-        public static bool Running { get { return running; } }
+        public bool Running { get { return running; } }
         
-        public static void WriteSerial(string str)
+        public void WriteSerial(string str)
         {
             Serial_write(str, str.Length);
         }
         
-        public static Tuple<DateTime,string> ReadSerial()
+        public Tuple<DateTime,string> ReadSerial()
         {
             if (serial == null) return null;
             Tuple<DateTime, string> result;
@@ -73,12 +76,12 @@ namespace Simulator
             return null;
         }
 
-        private static void InitSerial()
+        private void InitSerial()
         {
             serial = new ConcurrentQueue<Tuple<DateTime, string>>();
         }
 
-        private static void EnqueueSerial()
+        private void EnqueueSerial()
         {
             StringBuilder sb = new StringBuilder(1024);
             int count = Serial_readInto(sb, sb.Capacity);
@@ -89,7 +92,7 @@ namespace Simulator
             }
         }
 
-        private static void Process()
+        private void Main()
         {
             InitSerial();
             Sketch_setup();

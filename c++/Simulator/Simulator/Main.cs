@@ -16,6 +16,8 @@ namespace Simulator
         private Pin[] pins = new Pin[PIN_COUNT];
         private CheckBox[] checks = new CheckBox[PIN_COUNT];
 
+        private Sketch sketch = Sketch.Current;
+
         public Main()
         {
             InitializeComponent();
@@ -25,7 +27,7 @@ namespace Simulator
         {
             InitializePins();
             stepTimer.Enabled = true;
-            Sketch.Start();
+            sketch.Start();
         }
 
         private void InitializePins()
@@ -33,7 +35,7 @@ namespace Simulator
             pinsTable.Padding = new Padding(0, 0, SystemInformation.VerticalScrollBarWidth, 0);
             for (int i = 0; i < PIN_COUNT; i++)
             {
-                Pin pin = new Pin(i);
+                Pin pin = new Pin(i, sketch);
                 pin.Size = new Size(pinsTable.Size.Width - SystemInformation.VerticalScrollBarWidth, pin.Size.Height);
                 pin.Anchor = AnchorStyles.Left | AnchorStyles.Right;
                 pin.Visible = false;
@@ -61,15 +63,15 @@ namespace Simulator
         private void stepTimer_Tick(object sender, EventArgs e)
         {
             // HACK(Richo): To speed testing, I automatically change the value of A0
-            Sketch.SetPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
+            sketch.SetPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
             
             UpdateUI();
         }
 
         private void UpdateUI()
         {
-            startButton.Enabled = !Sketch.Running;
-            stopButton.Enabled = Sketch.Running;
+            startButton.Enabled = !sketch.Running;
+            stopButton.Enabled = sketch.Running;
             for (int i = 0; i < PIN_COUNT; i++)
             {
                 pins[i].UpdateValue();
@@ -79,12 +81,12 @@ namespace Simulator
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Sketch.Stop();
+            sketch.Stop();
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
-            Sketch.Start();
+            sketch.Start();
         }
 
         private void toggle(Pin pin)
@@ -94,13 +96,13 @@ namespace Simulator
 
         private void openSerialButton_Click(object sender, EventArgs e)
         {
-            SerialConsole serial = new SerialConsole();
+            SerialConsole serial = new SerialConsole(sketch);
             serial.ShowDialog();
         }
 
         private void stopButton_Click(object sender, EventArgs e)
         {
-            Sketch.Stop();
+            sketch.Stop();
         }
     }
 }

@@ -13,12 +13,15 @@ namespace Simulator
     {
         private int number = 0;
         private short value = 0;
+        private Sketch sketch;
 
         public int Number { get { return number; } }
 
-        public Pin(int n)
+        public Pin(int number, Sketch sketch)
         {
-            number = n;
+            this.number = number;
+            this.sketch = sketch;
+
             InitializeComponent();
         }
 
@@ -29,12 +32,12 @@ namespace Simulator
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            Sketch.SetPinValue(number, Convert.ToInt16(numericUpDown1.Value));
+            sketch.SetPinValue(number, Convert.ToInt16(numericUpDown1.Value));
         }
 
         public void UpdateValue()
         {
-            value = Sketch.GetPinValue(number);
+            value = sketch.GetPinValue(number);
             numericUpDown1.Value = value;
             graph.Add(value);
             led.Image = value > 0 ?
@@ -44,7 +47,7 @@ namespace Simulator
 
         private void led_Click(object sender, EventArgs e)
         {
-            Sketch.SetPinValue(number, (short)(1023 - value));
+            sketch.SetPinValue(number, (short)(1023 - value));
         }
         
     }

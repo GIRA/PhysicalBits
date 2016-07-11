@@ -12,8 +12,12 @@ namespace Simulator
 {
     public partial class SerialConsole : Form
     {
-        public SerialConsole()
+        private Sketch sketch;
+
+        public SerialConsole(Sketch sketch)
         {
+            this.sketch = sketch;
+
             InitializeComponent();
         }
 
@@ -25,13 +29,13 @@ namespace Simulator
         private void sendButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(inputTextBox.Text)) return;
-            Sketch.WriteSerial(inputTextBox.Text);
+            sketch.WriteSerial(inputTextBox.Text);
             inputTextBox.Clear();
         }
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
-            Tuple<DateTime, string> output = Sketch.ReadSerial();
+            Tuple<DateTime, string> output = sketch.ReadSerial();
 
             if (output == null) return;
             outputTextBox.AppendText(string.Format("{0:HH:mm:ss.fff}| {1}", output.Item1, output.Item2));
