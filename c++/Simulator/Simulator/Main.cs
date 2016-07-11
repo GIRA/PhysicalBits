@@ -35,7 +35,10 @@ namespace Simulator
 
         Random rnd = new Random();
         private void stepTimer_Tick(object sender, EventArgs e)
-        {            
+        {
+            // HACK(Richo): To speed testing, I automatically change the value of A0
+            Sketch.setPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
+
             foreach (Pin pin in pins)
             {
                 pin.UpdateValue();
