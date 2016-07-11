@@ -32,12 +32,9 @@
             this.stepTimer = new System.Windows.Forms.Timer(this.components);
             this.pinsTable = new System.Windows.Forms.TableLayoutPanel();
             this.startButton = new System.Windows.Forms.Button();
-            this.digitalPinsLabel = new System.Windows.Forms.Label();
             this.openSerialButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
-            this.digitalChecksTable = new System.Windows.Forms.TableLayoutPanel();
-            this.analogChecksTable = new System.Windows.Forms.TableLayoutPanel();
-            this.analogPinsLabel = new System.Windows.Forms.Label();
+            this.checksTable = new System.Windows.Forms.TableLayoutPanel();
             this.SuspendLayout();
             // 
             // stepTimer
@@ -91,15 +88,6 @@
             this.startButton.UseVisualStyleBackColor = true;
             this.startButton.Click += new System.EventHandler(this.startButton_Click);
             // 
-            // digitalPinsLabel
-            // 
-            this.digitalPinsLabel.Location = new System.Drawing.Point(12, 51);
-            this.digitalPinsLabel.Name = "digitalPinsLabel";
-            this.digitalPinsLabel.Size = new System.Drawing.Size(76, 23);
-            this.digitalPinsLabel.TabIndex = 10;
-            this.digitalPinsLabel.Text = "Digital pins:";
-            this.digitalPinsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // openSerialButton
             // 
             this.openSerialButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -121,59 +109,34 @@
             this.stopButton.UseVisualStyleBackColor = true;
             this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
             // 
-            // digitalChecksTable
+            // checksTable
             // 
-            this.digitalChecksTable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.checksTable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.digitalChecksTable.ColumnCount = 14;
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.digitalChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
-            this.digitalChecksTable.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddColumns;
-            this.digitalChecksTable.Location = new System.Drawing.Point(94, 51);
-            this.digitalChecksTable.Name = "digitalChecksTable";
-            this.digitalChecksTable.RowCount = 1;
-            this.digitalChecksTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.digitalChecksTable.Size = new System.Drawing.Size(723, 23);
-            this.digitalChecksTable.TabIndex = 48;
-            // 
-            // analogChecksTable
-            // 
-            this.analogChecksTable.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.analogChecksTable.ColumnCount = 6;
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.analogChecksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 473F));
-            this.analogChecksTable.Location = new System.Drawing.Point(94, 80);
-            this.analogChecksTable.Name = "analogChecksTable";
-            this.analogChecksTable.RowCount = 1;
-            this.analogChecksTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.analogChecksTable.Size = new System.Drawing.Size(723, 23);
-            this.analogChecksTable.TabIndex = 50;
-            // 
-            // analogPinsLabel
-            // 
-            this.analogPinsLabel.Location = new System.Drawing.Point(12, 80);
-            this.analogPinsLabel.Name = "analogPinsLabel";
-            this.analogPinsLabel.Size = new System.Drawing.Size(76, 23);
-            this.analogPinsLabel.TabIndex = 49;
-            this.analogPinsLabel.Text = "Analog pins:";
-            this.analogPinsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.checksTable.ColumnCount = 14;
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.checksTable.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.AddColumns;
+            this.checksTable.Location = new System.Drawing.Point(12, 51);
+            this.checksTable.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.checksTable.Name = "checksTable";
+            this.checksTable.RowCount = 2;
+            this.checksTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.checksTable.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.checksTable.Size = new System.Drawing.Size(805, 52);
+            this.checksTable.TabIndex = 48;
             // 
             // Main
             // 
@@ -181,12 +144,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 609);
             this.Controls.Add(this.pinsTable);
-            this.Controls.Add(this.analogChecksTable);
-            this.Controls.Add(this.analogPinsLabel);
-            this.Controls.Add(this.digitalChecksTable);
+            this.Controls.Add(this.checksTable);
             this.Controls.Add(this.stopButton);
             this.Controls.Add(this.openSerialButton);
-            this.Controls.Add(this.digitalPinsLabel);
             this.Controls.Add(this.startButton);
             this.Name = "Main";
             this.Text = "Arduino Simulator";
@@ -201,12 +161,9 @@
         private System.Windows.Forms.Timer stepTimer;
         private System.Windows.Forms.TableLayoutPanel pinsTable;
         private System.Windows.Forms.Button startButton;
-        private System.Windows.Forms.Label digitalPinsLabel;
         private System.Windows.Forms.Button openSerialButton;
         private System.Windows.Forms.Button stopButton;
-        private System.Windows.Forms.TableLayoutPanel digitalChecksTable;
-        private System.Windows.Forms.TableLayoutPanel analogChecksTable;
-        private System.Windows.Forms.Label analogPinsLabel;
+        private System.Windows.Forms.TableLayoutPanel checksTable;
     }
 }
 

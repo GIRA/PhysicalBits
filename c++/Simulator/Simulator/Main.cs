@@ -43,14 +43,7 @@ namespace Simulator
 
                 CheckBox check = new CheckBox();
                 check.Text = pin.Number.ToString();
-                if (i < 14)
-                {
-                    digitalChecksTable.Controls.Add(check);
-                }
-                else
-                {
-                    analogChecksTable.Controls.Add(check);
-                }
+                checksTable.Controls.Add(check);
 
                 pins[i] = pin;
                 checks[i] = check;
