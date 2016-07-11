@@ -15,6 +15,7 @@ namespace Simulator
         private const int PIN_COUNT = 20;
         private Pin[] pins = new Pin[PIN_COUNT];
         private CheckBox[] checks = new CheckBox[PIN_COUNT];
+        private SerialConsole serial;
 
         private Sketch sketch = Sketch.Current;
 
@@ -66,6 +67,7 @@ namespace Simulator
             startButton.Enabled = !sketch.Running;
             pauseButton.Enabled = sketch.Running;
             stopButton.Enabled = sketch.Running;
+            openSerialButton.Enabled = serial == null || serial.IsDisposed;
 
             for (int i = 0; i < PIN_COUNT; i++)
             {
@@ -97,7 +99,10 @@ namespace Simulator
 
         private void openSerialButton_Click(object sender, EventArgs e)
         {
-            SerialConsole serial = new SerialConsole(sketch);
+            // Only one serial console open
+            if (serial != null && !serial.IsDisposed) return;
+
+            serial = new SerialConsole(sketch);
             serial.Show();
         }
 
