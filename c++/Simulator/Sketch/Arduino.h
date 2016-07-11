@@ -79,8 +79,8 @@ public:
 	// VSPDE
 	void _append(char c);
 private:
-	char buffer[1024];
-	int buflen;
+	char in_buffer[1024];
+	int in_buflen;
 };
 
 extern CSerial Serial;

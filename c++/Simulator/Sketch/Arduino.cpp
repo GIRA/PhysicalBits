@@ -60,8 +60,8 @@ bool digitalRead(int pin)
 
 void CSerial::begin(long)
 {
-	buffer[0] = 0;
-	buflen = 0;
+	in_buffer[0] = 0;
+	in_buflen = 0;
 }
 
 void CSerial::print(char *pString)
@@ -102,16 +102,16 @@ void CSerial::println(unsigned long value, int)
 
 int CSerial::available()
 {
-	return buflen;
+	return in_buflen;
 }
 
 char CSerial::read()
 {
 	char c = 0;
-	if (buflen > 0)
+	if (in_buflen > 0)
 	{
-		c = buffer[0];
-		memcpy(&buffer[0], &buffer[1], --buflen);
+		c = in_buffer[0];
+		memcpy(&in_buffer[0], &in_buffer[1], --in_buflen);
 	}
 	return c;
 }
@@ -123,10 +123,10 @@ void CSerial::write(unsigned char c)
 
 void CSerial::_append(char c)
 {
-	CSerial::buffer[buflen] = c;
-	if (++buflen >= 1024)
+	CSerial::in_buffer[in_buflen] = c;
+	if (++in_buflen >= 1024)
 	{
-		buflen--;
+		in_buflen--;
 	}
 }
 
