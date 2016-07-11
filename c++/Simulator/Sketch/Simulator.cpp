@@ -36,29 +36,29 @@ EXTERN long foo(void)
 }
 
 
-EXTERN unsigned short getPinValue(unsigned int pin)
+EXTERN unsigned short GPIO_getPinValue(unsigned int pin)
 {
 	return __getPinValue(pin);
 }
 
-EXTERN void setPinValue(unsigned int pin, unsigned short value)
+EXTERN void GPIO_setPinValue(unsigned int pin, unsigned short value)
 {
 	__setPinValue(pin, value);
 }
 
-EXTERN void start(void)
+EXTERN void Sketch_start(void)
 {
 	setup();
 	for (;;)
 		loop();
 }
 
-EXTERN size_t serial_readInto(char* buffer, size_t len)
+EXTERN size_t Serial_readInto(char* buffer, size_t len)
 {
 	return Serial.out_readInto(buffer, len);
 }
 
-EXTERN void serial_write(char* str, int len)
+EXTERN void Serial_write(char* str, size_t len)
 {
 	for (int i = 0; i < len; i++)
 	{

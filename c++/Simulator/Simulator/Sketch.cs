@@ -9,27 +9,24 @@ namespace Simulator
     class Sketch
     {
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int foo();
+        public static extern short GPIO_getPinValue(int pin);
 
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Int16 getPinValue(Int32 pin);
+        public static extern void GPIO_setPinValue(int pin, short value);
 
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void setPinValue(Int32 pin, Int16 value);
-
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void start();
+        public static extern void Sketch_start();
         
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void serial_write([MarshalAs(UnmanagedType.LPStr)]string str, int len);
+        public static extern void Serial_write([MarshalAs(UnmanagedType.LPStr)]string str, int len);
         
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]        
-        public static extern int serial_readInto(StringBuilder buffer, int len);
+        public static extern int Serial_readInto(StringBuilder buffer, int len);
 
-        internal static string serial_read()
+        internal static string Serial_read()
         {
             StringBuilder sb = new StringBuilder(1024);
-            int count = serial_readInto(sb, sb.Capacity);
+            int count = Serial_readInto(sb, sb.Capacity);
             return sb.ToString(0, count);
         }
     }
