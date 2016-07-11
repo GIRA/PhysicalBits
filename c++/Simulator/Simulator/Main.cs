@@ -37,7 +37,7 @@ namespace Simulator
         private void stepTimer_Tick(object sender, EventArgs e)
         {
             // HACK(Richo): To speed testing, I automatically change the value of A0
-            Sketch.GPIO_setPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
+            Sketch.SetPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
 
             foreach (Pin pin in pins)
             {
@@ -76,7 +76,7 @@ namespace Simulator
         {
             if (sketchProcess == null)
             {
-                sketchProcess = new Thread(Sketch.Sketch_start);
+                sketchProcess = new Thread(Sketch.Start);
                 sketchProcess.Start();
                 startButton.Text = "Stop";
             }

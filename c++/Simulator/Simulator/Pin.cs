@@ -49,12 +49,12 @@ namespace Simulator
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            Sketch.GPIO_setPinValue(_number, Convert.ToInt16(numericUpDown1.Value));
+            Sketch.SetPinValue(_number, Convert.ToInt16(numericUpDown1.Value));
         }
 
         public void UpdateValue()
         {
-            _value = Sketch.GPIO_getPinValue(_number);
+            _value = Sketch.GetPinValue(_number);
             numericUpDown1.Value = _value;
             graph.Add(_value);
             led.Image = _value > 0 ?
@@ -64,7 +64,7 @@ namespace Simulator
 
         private void led_Click(object sender, EventArgs e)
         {
-            Sketch.GPIO_setPinValue(_number, Convert.ToInt16(_value > 0 ? 0 : 1023));
+            Sketch.SetPinValue(_number, Convert.ToInt16(_value > 0 ? 0 : 1023));
         }
         
     }

@@ -25,13 +25,13 @@ namespace Simulator
         private void sendButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(inputTextBox.Text)) return;
-            Sketch.Serial_write(inputTextBox.Text, inputTextBox.Text.Length);
+            Sketch.WriteSerial(inputTextBox.Text);
             inputTextBox.Clear();
         }
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
-            string output = Sketch.Serial_read();
+            string output = Sketch.ReadSerial();
 
             if (string.IsNullOrWhiteSpace(output)) return;
             outputTextBox.AppendText(string.Format("{0:HH:mm:ss.fff}| {1}", DateTime.Now, output));
