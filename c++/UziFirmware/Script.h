@@ -23,13 +23,13 @@ public:
 
 private:
 
-	bool _stepping;
-	long _stepTime;
-	long _lastStepTime;
-	long * _literals;
-	long * _locals;
-	unsigned char * _bytecodes;
-	Script * _nextScript;
+	bool stepping;
+	long stepTime;
+	long lastStepTime;
+	long * literals;
+	long * locals;
+	unsigned char * bytecodes;
+	Script * nextScript;
 
 	long * parseSection(Reader*);
 	unsigned char * parseBytecodes(Reader*);

@@ -3,83 +3,83 @@
 Script::Script(Reader * rs)
 {
 	long n = rs->nextLong(4);
-	_stepping = (n >> 31) & 1;
-	_stepTime = n & 0x7FFFFFFF;
-	_lastStepTime = 0;
+	stepping = (n >> 31) & 1;
+	stepTime = n & 0x7FFFFFFF;
+	lastStepTime = 0;
 
-	_literals = parseSection(rs);
-	_locals = parseSection(rs);
-	_bytecodes = parseBytecodes(rs);
-	_nextScript = 0;
+	literals = parseSection(rs);
+	locals = parseSection(rs);
+	bytecodes = parseBytecodes(rs);
+	nextScript = 0;
 }
 
 Script::Script()
 {
 	// Returns a NOOP program.
-	_stepping = false;
-	_stepTime = _lastStepTime = 0;
-	_literals = new long[0];
-	_locals = new long[0];
-	_bytecodes = new unsigned char[1];
-	_bytecodes[0] = 0xFF;
-	_nextScript = 0;
+	stepping = false;
+	stepTime = lastStepTime = 0;
+	literals = new long[0];
+	locals = new long[0];
+	bytecodes = new unsigned char[1];
+	bytecodes[0] = 0xFF;
+	nextScript = 0;
 }
 
 Script::~Script(void)
 {
-	delete[] _literals;
-	delete[] _locals;
-	delete[] _bytecodes;
+	delete[] literals;
+	delete[] locals;
+	delete[] bytecodes;
 }
 
 long Script::literalAt(int index)
 {
-	return _literals[index];
+	return literals[index];
 }
 
 long Script::localAt(int index)
 {
-	return _locals[index];
+	return locals[index];
 }
 
 unsigned char Script::bytecodeAt(int index)
 {
-	return _bytecodes[index];
+	return bytecodes[index];
 }
 
 void Script::rememberLastStepTime(long now)
 {
-	_lastStepTime = now;
+	lastStepTime = now;
 }
 
 bool Script::shouldStepNow(long now)
 {
-	return (now - _lastStepTime) > _stepTime;
+	return (now - lastStepTime) > stepTime;
 }
 
 bool Script::isStepping(void)
 {
-	return _stepping;
+	return stepping;
 }
 
 void Script::setStepping(bool val)
 {
-	_stepping = val;
+	stepping = val;
 }
 
 Script* Script::getNext(void)
 {
-	return _nextScript;
+	return nextScript;
 }
 
 void Script::setNext(Script* next)
 {
-	_nextScript = next;
+	nextScript = next;
 }
 
 long Script::getStepTime(void)
 {
-	return _stepTime;
+	return stepTime;
 }
 
 long * Script::parseSection(Reader * rs)
