@@ -30,7 +30,7 @@ namespace Simulator
                 pins.Add(pin);
                 pin.Visible = false;
             }
-            d13.Checked = true;
+            d11.Checked = d13.Checked = a0.Checked = true;
         }
 
         Random rnd = new Random();
