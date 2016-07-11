@@ -77,7 +77,7 @@ void Script::setNext(Script* next)
 	_nextScript = next;
 }
 
-long Script::stepTime(void)
+long Script::getStepTime(void)
 {
 	return _stepTime;
 }

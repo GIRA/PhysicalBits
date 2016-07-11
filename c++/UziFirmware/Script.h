@@ -17,7 +17,7 @@ public:
 	void rememberLastStepTime(long);
 	bool isStepping(void);
 	void setStepping(bool);
-	long stepTime(void);
+	long getStepTime(void);
 	void setNext(Script*);
 	Script* getNext(void);
 
