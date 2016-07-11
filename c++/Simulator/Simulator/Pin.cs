@@ -11,7 +11,6 @@ namespace Simulator
 {
     public partial class Pin : UserControl
     {
-
         private int _number = 0;
         private int _value = 0;
 
@@ -31,11 +30,6 @@ namespace Simulator
         {
             _number = n;
             InitializeComponent();
-        }
-
-        public Pin()
-            : this(0)
-        {
         }
 
         private void Pin_Load(object sender, EventArgs e)
