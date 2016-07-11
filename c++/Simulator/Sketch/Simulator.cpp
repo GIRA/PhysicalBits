@@ -52,3 +52,16 @@ EXTERN void start(void)
 	for (;;)
 		loop();
 }
+
+EXTERN size_t serial_readInto(char* buffer, size_t len)
+{
+	return Serial.out_readInto(buffer, len);
+}
+
+EXTERN void serial_write(char* str, int len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		Serial.out_write(str[i]);
+	}
+}

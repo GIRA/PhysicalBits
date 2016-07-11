@@ -62,11 +62,19 @@ void CSerial::begin(long)
 {
 	in_buffer[0] = 0;
 	in_buflen = 0;
+
+	out_buffer[0] = 0;
+	out_buflen = 0;
 }
 
 void CSerial::print(char *pString)
 {
-	printf("%s", pString);
+	char temp[1024];
+	int count = sprintf(temp, "%s", pString);
+	for (int i = 0; i < count; i++)
+	{
+		out_write(temp[i]);
+	}
 }
 
 void CSerial::print(int value, int)
@@ -107,6 +115,16 @@ int CSerial::available()
 
 char CSerial::read()
 {
+	return in_read();
+}
+
+void CSerial::write(unsigned char c)
+{
+	printf("%c", c);
+}
+
+char CSerial::in_read()
+{
 	char c = 0;
 	if (in_buflen > 0)
 	{
@@ -116,18 +134,43 @@ char CSerial::read()
 	return c;
 }
 
-void CSerial::write(unsigned char c)
-{
-	printf("%c", c);
-}
-
-void CSerial::_append(char c)
+void CSerial::in_write(char c)
 {
 	CSerial::in_buffer[in_buflen] = c;
 	if (++in_buflen >= 1024)
 	{
 		in_buflen--;
 	}
+}
+
+char CSerial::out_read()
+{
+	char c = 0;
+	if (out_buflen > 0)
+	{
+		c = out_buffer[0];
+		memcpy(&out_buffer[0], &out_buffer[1], --out_buflen);
+	}
+	return c;
+}
+
+void CSerial::out_write(char c)
+{
+	CSerial::out_buffer[out_buflen] = c;
+	if (++out_buflen >= 1024)
+	{
+		in_buflen--;
+	}
+}
+
+size_t CSerial::out_readInto(char* buffer, size_t len)
+{
+	int i = 0;
+	while (out_buflen)
+	{
+		buffer[i++] = out_read();
+	}
+	return i;
 }
 
 //--------------------------------------------------------------------
@@ -141,7 +184,7 @@ int main(int, char**)
 	{
 		if (_kbhit())
 		{
-			Serial._append((char)_getch());
+			Serial.in_write((char)_getch());
 		}
 		loop();
 	}

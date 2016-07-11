@@ -76,11 +76,19 @@ public:
 	char read();
 	void write(unsigned char);
 
-	// VSPDE
-	void _append(char c);
+	char in_read();
+	void in_write(char c);
+
+	char out_read();
+	void out_write(char c);
+	size_t out_readInto(char* buffer, size_t len);
+
 private:
 	char in_buffer[1024];
 	int in_buflen;
+
+	char out_buffer[1024];
+	int out_buflen;
 };
 
 extern CSerial Serial;

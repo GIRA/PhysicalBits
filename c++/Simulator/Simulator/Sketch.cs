@@ -19,5 +19,18 @@ namespace Simulator
 
         [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
         public static extern void start();
+        
+        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void serial_write([MarshalAs(UnmanagedType.LPStr)]string str, int len);
+        
+        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]        
+        public static extern int serial_readInto(StringBuilder buffer, int len);
+
+        internal static string serial_read()
+        {
+            StringBuilder sb = new StringBuilder(1024);
+            int count = serial_readInto(sb, sb.Capacity);
+            return sb.ToString(0, count);
+        }
     }
 }
