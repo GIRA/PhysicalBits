@@ -18,6 +18,14 @@ namespace Simulator
             InitializeComponent();
         }
 
+        private void Graph_Load(object sender, EventArgs e)
+        {
+            SetStyle(ControlStyles.OptimizedDoubleBuffer
+                | ControlStyles.UserPaint
+                | ControlStyles.AllPaintingInWmPaint,
+                true);
+        }
+
         public void Add(int value)
         {
             if (values.Count >= Width)
@@ -41,6 +49,7 @@ namespace Simulator
         private void Graph_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             Pen pen = new Pen(Color.Green, 1);
             g.TranslateTransform(Location.X * -1, Location.Y * -1);
             g.FillRectangle(Brushes.Black, Bounds);

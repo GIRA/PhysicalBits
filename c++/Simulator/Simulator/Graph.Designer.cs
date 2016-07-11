@@ -36,6 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.DoubleBuffered = true;
             this.Name = "Graph";
+            this.Load += new System.EventHandler(this.Graph_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Graph_Paint);
             this.ResumeLayout(false);
 
