@@ -1,6 +1,6 @@
-#include "PE.h"
+#include "GPIO.h"
 
-unsigned char PE::getMode(unsigned int pin)
+unsigned char GPIO::getMode(unsigned int pin)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -13,7 +13,7 @@ unsigned char PE::getMode(unsigned int pin)
 	}
 }
 
-void PE::setMode(unsigned int pin, unsigned char mode)
+void GPIO::setMode(unsigned int pin, unsigned char mode)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -29,7 +29,7 @@ void PE::setMode(unsigned int pin, unsigned char mode)
 	pinMode(pin, mode);
 }
 
-float PE::getValue(unsigned int pin)
+float GPIO::getValue(unsigned int pin)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -55,7 +55,7 @@ float PE::getValue(unsigned int pin)
 	}
 }
 
-void PE::setValue(unsigned int pin, float value)
+void GPIO::setValue(unsigned int pin, float value)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -99,7 +99,7 @@ void PE::setValue(unsigned int pin, float value)
 	}
 }
 
-void PE::setReport(unsigned int pin, bool report)
+void GPIO::setReport(unsigned int pin, bool report)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -109,7 +109,7 @@ void PE::setReport(unsigned int pin, bool report)
 	_pinReport[index] = report;
 }
 
-bool PE::getReport(unsigned int pin)
+bool GPIO::getReport(unsigned int pin)
 {
 	int index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
@@ -119,17 +119,17 @@ bool PE::getReport(unsigned int pin)
 	return _pinReport[index];
 }
 
-long PE::getMillis()
+long GPIO::getMillis()
 {
 	return millis();
 }
 
-void PE::delayMs(unsigned long milliseconds)
+void GPIO::delayMs(unsigned long milliseconds)
 {
 	delay(milliseconds);
 }
 
-void PE::reset()
+void GPIO::reset()
 {
 	for (int i = 0; i < TOTAL_PINS; i++)
 	{

@@ -2,7 +2,7 @@
 
 #include "Reader.h"
 #include "Script.h"
-#include "PE.h"
+#include "GPIO.h"
 
 class Program
 {
@@ -14,7 +14,7 @@ public:
 
 	unsigned char getScriptCount(void);
 	Script * getScript(void);
-	void configurePins(PE*);
+	void configurePins(GPIO*);
 
 private:
 

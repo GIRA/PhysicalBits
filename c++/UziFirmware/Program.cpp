@@ -46,7 +46,7 @@ void Program::parseScripts(Reader * rs)
 	}
 }
 
-void Program::configurePins(PE * pe)
+void Program::configurePins(GPIO * pe)
 {
 	pe->reset();
 }

@@ -31,9 +31,6 @@
     <ClCompile Include="..\..\UziFirmware\EEPROMWriter.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\UziFirmware\PE.cpp">
-      <Filter>Sketch</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\UziFirmware\Program.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
@@ -53,6 +50,9 @@
       <Filter>Sketch</Filter>
     </ClCompile>
     <ClCompile Include="..\..\UziFirmware\UziFirmware.ino">
+      <Filter>Sketch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\UziFirmware\GPIO.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,9 +75,6 @@
     <ClInclude Include="..\..\UziFirmware\EEPROMWriter.h">
       <Filter>Sketch</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\UziFirmware\PE.h">
-      <Filter>Sketch</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\UziFirmware\Program.h">
       <Filter>Sketch</Filter>
     </ClInclude>
@@ -94,6 +91,9 @@
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\VM.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\GPIO.h">
       <Filter>Sketch</Filter>
     </ClInclude>
   </ItemGroup>

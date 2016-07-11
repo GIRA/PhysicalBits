@@ -50,7 +50,7 @@ Program * defaultProgram()
 }
 Program * program = defaultProgram();
 VM * vm = new VM();
-PE * pe = new PE();
+GPIO * pe = new GPIO();
 Reader * stream = new SerialReader();
 
 unsigned char reporting = 0;
@@ -177,7 +177,7 @@ void sendPinValues(void)
 			Serial.write(AS_COMMAND(RS_PIN_VALUE));
 			Serial.write(AS_ARGUMENT(pin));
 
-			// PE.getValue(..) returns a float between 0 and 1
+			// GPIO.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
 			unsigned short val = (unsigned short)(pe->getValue(pin) * 1023);
 			unsigned char val1 = val >> 7; 	// MSB
@@ -232,7 +232,7 @@ void executeSetProgram(void)
 void executeSetValue(void)
 {
 	unsigned char pin = stream->nextChar();
-	// We receive a value between 0 and 255 but PE.setValue(..) expects 0..1
+	// We receive a value between 0 and 255 but GPIO.setValue(..) expects 0..1
 	float value = (float)stream->nextChar() / 255;
 
 	pe->setValue(pin, value);

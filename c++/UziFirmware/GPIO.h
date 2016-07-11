@@ -9,11 +9,11 @@
 #define IS_ANALOG(pin)							 ((pin) >= 14 && (pin) <= 19)
 #define IS_DIGITAL(pin)										(!IS_ANALOG(pin))
 
-class PE
+class GPIO
 {
 
 public:
-	PE(void)
+	GPIO(void)
 	{
 		for (int i = 0; i < TOTAL_PINS; i++)
 		{
@@ -22,7 +22,7 @@ public:
 			_pinReport[i] = false;
 		}
 	}
-	~PE(void) {}
+	~GPIO(void) {}
 
 	unsigned char getMode(unsigned int);
 	void setMode(unsigned int, unsigned char);

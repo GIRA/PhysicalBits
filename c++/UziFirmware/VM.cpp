@@ -1,6 +1,6 @@
 #include "VM.h"
 
-void VM::executeProgram(Program * program, PE * pe)
+void VM::executeProgram(Program * program, GPIO * pe)
 {
 	int count = program->getScriptCount();
 	Script * script = program->getScript();
@@ -11,7 +11,7 @@ void VM::executeProgram(Program * program, PE * pe)
 	}
 }
 
-void VM::executeScript(Script * script, PE * pe)
+void VM::executeScript(Script * script, GPIO * pe)
 {
 	if (!script->isStepping())
 	{

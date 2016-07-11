@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "PE.h"
+#include "GPIO.h"
 #include "StackArray.h"
 #include "Program.h"
 
@@ -18,11 +18,11 @@ public:
 		delete _stack;
 	}
 
-	void executeProgram(Program*, PE*);
+	void executeProgram(Program*, GPIO*);
 
 private:
 
-	PE * _pe;
+	GPIO * _pe;
 
 	int _ip;
 	StackArray * _stack;
@@ -31,7 +31,7 @@ private:
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char);
 	void executePrimitive(unsigned char);
-	void executeScript(Script*, PE*);
+	void executeScript(Script*, GPIO*);
 
 };
 
