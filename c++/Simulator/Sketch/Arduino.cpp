@@ -174,7 +174,7 @@ void CSerial::out_write(char c)
 
 void CSerial::out_write(char* str, size_t len)
 {
-	for (int i = 0; i < len; i++)
+	for (size_t i = 0; i < len; i++)
 	{
 		out_write(str[i]);
 	}
