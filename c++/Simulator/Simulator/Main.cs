@@ -65,9 +65,10 @@ namespace Simulator
         {
             startButton.Enabled = !sketch.Running;
             stopButton.Enabled = sketch.Running;
+
             for (int i = 0; i < PIN_COUNT; i++)
             {
-                pins[i].UpdateValue();
+                if (sketch.Running) { pins[i].UpdateValue(); }
                 pins[i].Visible = checks[i].Checked;
             }
         }
