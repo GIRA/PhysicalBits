@@ -55,12 +55,6 @@
     <Compile Include="Graph.Designer.cs">
       <DependentUpon>Graph.cs</DependentUpon>
     </Compile>
-    <Compile Include="Log.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Log.designer.cs">
-      <DependentUpon>Log.cs</DependentUpon>
-    </Compile>
     <Compile Include="Pin.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -84,9 +78,6 @@
     <Compile Include="Sketch.cs" />
     <EmbeddedResource Include="Graph.resx">
       <DependentUpon>Graph.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Log.resx">
-      <DependentUpon>Log.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
