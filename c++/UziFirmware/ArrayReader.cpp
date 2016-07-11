@@ -28,7 +28,7 @@ unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
 	unsigned char * result = new unsigned char[arraySize];
 	int i = 0;
 	bool found = false;
-	while (i < arraySize || !found)
+	while (i < arraySize && !found)
 	{
 		unsigned char next = nextChar();
 		found = (next == aCharacter);
