@@ -97,7 +97,7 @@ namespace Simulator
         private void openSerialButton_Click(object sender, EventArgs e)
         {
             SerialConsole serial = new SerialConsole(sketch);
-            serial.ShowDialog();
+            serial.Show();
         }
 
         private void stopButton_Click(object sender, EventArgs e)
