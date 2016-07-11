@@ -1,5 +1,6 @@
 #include <EEPROM.h>
 #include "VM.h"
+#include "ArrayReader.h" // HACK(Richo): Only necessary for the default program
 #include "SerialReader.h"
 #include "EEPROMWriter.h"
 #include "EEPROMReader.h"
@@ -33,7 +34,20 @@
 #define REPORT_INTERVAL									 50
 #define KEEP_ALIVE_INTERVAL							   2000
 
-Program * program = new Program();
+/*
+HACK(Richo): 
+I defined this default program just to simplify testing with the simulator. This code is 
+fragile because it depends on a specific version of the instruction set and it should be
+removed eventually.
+*/
+Program * defaultProgram() {
+	unsigned char encoded[] = { 
+		1, 128, 0, 3, 232, 3, 12, 0, 1, 13, 0, 2, 80, 164, 2, 1, 81, 131, 2, 0, 81, 255
+	};
+	ArrayReader reader(encoded, 22);
+	return new Program(&reader);
+}
+Program * program = defaultProgram();
 VM * vm = new VM();
 PE * pe = new PE();
 Reader * stream = new SerialReader();
