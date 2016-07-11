@@ -11,54 +11,40 @@ namespace Simulator
 {
     public partial class Pin : UserControl
     {
-        private int _number = 0;
-        private int _value = 0;
+        private int number = 0;
+        private short value = 0;
 
-        public int Number
-        {
-            get
-            {
-                return _number;
-            }
-            set
-            {
-                _number = value;
-            }
-        }
+        public int Number { get { return number; } }
 
         public Pin(int n)
         {
-            _number = n;
+            number = n;
             InitializeComponent();
-        }
-
-        private void Pin_Load(object sender, EventArgs e)
-        {
         }
 
         private void Pin_Paint(object sender, PaintEventArgs e)
         {
-            label1.Text = _number.ToString();
+            label1.Text = number.ToString();
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            Sketch.SetPinValue(_number, Convert.ToInt16(numericUpDown1.Value));
+            Sketch.SetPinValue(number, Convert.ToInt16(numericUpDown1.Value));
         }
 
         public void UpdateValue()
         {
-            _value = Sketch.GetPinValue(_number);
-            numericUpDown1.Value = _value;
-            graph.Add(_value);
-            led.Image = _value > 0 ?
+            value = Sketch.GetPinValue(number);
+            numericUpDown1.Value = value;
+            graph.Add(value);
+            led.Image = value > 0 ?
                 Properties.Resources.on :
                 Properties.Resources.off;
         }
 
         private void led_Click(object sender, EventArgs e)
         {
-            Sketch.SetPinValue(_number, Convert.ToInt16(_value > 0 ? 0 : 1023));
+            Sketch.SetPinValue(number, (short)(1023 - value));
         }
         
     }

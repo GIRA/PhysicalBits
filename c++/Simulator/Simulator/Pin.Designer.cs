@@ -103,7 +103,6 @@
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "Pin";
             this.Size = new System.Drawing.Size(547, 160);
-            this.Load += new System.EventHandler(this.Pin_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Pin_Paint);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.led)).EndInit();
