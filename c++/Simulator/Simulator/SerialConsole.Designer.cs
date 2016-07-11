@@ -147,9 +147,10 @@
             this.hexTextBox.Location = new System.Drawing.Point(3, 3);
             this.hexTextBox.Multiline = true;
             this.hexTextBox.Name = "hexTextBox";
-            this.hexTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.hexTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.hexTextBox.Size = new System.Drawing.Size(561, 359);
             this.hexTextBox.TabIndex = 3;
+            this.hexTextBox.WordWrap = false;
             // 
             // updateTimer
             // 
@@ -174,9 +175,10 @@
             this.decTextBox.Location = new System.Drawing.Point(3, 3);
             this.decTextBox.Multiline = true;
             this.decTextBox.Name = "decTextBox";
-            this.decTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.decTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.decTextBox.Size = new System.Drawing.Size(561, 359);
             this.decTextBox.TabIndex = 4;
+            this.decTextBox.WordWrap = false;
             // 
             // SerialConsole
             // 
