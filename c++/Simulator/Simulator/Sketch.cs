@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace Simulator
 {
@@ -28,6 +29,8 @@ namespace Simulator
         private static extern int Serial_readInto(StringBuilder buffer, int len);
 
         private static ConcurrentQueue<Tuple<DateTime, string>> serial;
+        private static Thread thread;
+        private static bool running = false;
 
         public static short GetPinValue(int pin)
         {
@@ -41,15 +44,19 @@ namespace Simulator
 
         public static void Start()
         {
-            InitSerial();
-            Sketch_setup();
-            while (true)
-            {
-                EnqueueSerial();
-                Sketch_loop();
-            }
+            if (running) return;
+            running = true;
+            thread = new Thread(Process);
+            thread.Start();
         }
 
+        public static void Stop()
+        {
+            running = false;
+        }
+
+        public static bool Running { get { return running; } }
+        
         public static void WriteSerial(string str)
         {
             Serial_write(str, str.Length);
@@ -79,6 +86,17 @@ namespace Simulator
             if (!string.IsNullOrWhiteSpace(read))
             {
                 serial.Enqueue(new Tuple<DateTime, string>(DateTime.Now, read));
+            }
+        }
+
+        private static void Process()
+        {
+            InitSerial();
+            Sketch_setup();
+            while (running)
+            {
+                EnqueueSerial();
+                Sketch_loop();
             }
         }
     }
