@@ -42,9 +42,15 @@ namespace Simulator
             asciiTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, output.Item2));
             asciiTextBox.AppendText(Environment.NewLine);
 
-            string hex = string.Join(" ", Encoding.ASCII.GetBytes(output.Item2).Select(b => b.ToString("X2")));
+            byte[] outputBytes = Encoding.ASCII.GetBytes(output.Item2);
+
+            string hex = string.Join(" ", outputBytes.Select(b => b.ToString("X2")));
             hexTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, hex));
             hexTextBox.AppendText(Environment.NewLine);
+            
+            string dec = string.Join(" ", outputBytes);
+            decTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, dec));
+            decTextBox.AppendText(Environment.NewLine);
         }
     }
 }

@@ -38,6 +38,8 @@
             this.hexPage = new System.Windows.Forms.TabPage();
             this.hexTextBox = new System.Windows.Forms.TextBox();
             this.updateTimer = new System.Windows.Forms.Timer(this.components);
+            this.decPage = new System.Windows.Forms.TabPage();
+            this.decTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -45,6 +47,7 @@
             this.tabControl1.SuspendLayout();
             this.asciiPage.SuspendLayout();
             this.hexPage.SuspendLayout();
+            this.decPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -95,6 +98,7 @@
             // 
             this.tabControl1.Controls.Add(this.asciiPage);
             this.tabControl1.Controls.Add(this.hexPage);
+            this.tabControl1.Controls.Add(this.decPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(0);
@@ -152,6 +156,28 @@
             this.updateTimer.Interval = 1;
             this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
             // 
+            // decPage
+            // 
+            this.decPage.Controls.Add(this.decTextBox);
+            this.decPage.Location = new System.Drawing.Point(4, 22);
+            this.decPage.Name = "decPage";
+            this.decPage.Padding = new System.Windows.Forms.Padding(3);
+            this.decPage.Size = new System.Drawing.Size(567, 365);
+            this.decPage.TabIndex = 2;
+            this.decPage.Text = "DEC";
+            this.decPage.UseVisualStyleBackColor = true;
+            // 
+            // decTextBox
+            // 
+            this.decTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.decTextBox.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.decTextBox.Location = new System.Drawing.Point(3, 3);
+            this.decTextBox.Multiline = true;
+            this.decTextBox.Name = "decTextBox";
+            this.decTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.decTextBox.Size = new System.Drawing.Size(561, 359);
+            this.decTextBox.TabIndex = 4;
+            // 
             // SerialConsole
             // 
             this.AcceptButton = this.sendButton;
@@ -172,6 +198,8 @@
             this.asciiPage.PerformLayout();
             this.hexPage.ResumeLayout(false);
             this.hexPage.PerformLayout();
+            this.decPage.ResumeLayout(false);
+            this.decPage.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -187,5 +215,7 @@
         private System.Windows.Forms.TabPage asciiPage;
         private System.Windows.Forms.TabPage hexPage;
         private System.Windows.Forms.TextBox hexTextBox;
+        private System.Windows.Forms.TabPage decPage;
+        private System.Windows.Forms.TextBox decTextBox;
     }
 }
