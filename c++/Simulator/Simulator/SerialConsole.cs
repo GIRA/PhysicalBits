@@ -16,5 +16,22 @@ namespace Simulator
         {
             InitializeComponent();
         }
+
+        private void SerialConsole_Load(object sender, EventArgs e)
+        {
+            updateTimer.Enabled = true;
+        }
+
+        private void sendButton_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(inputTextBox.Text)) return;
+            outputTextBox.AppendText(string.Format("{0:HH:mm:ss.fff}| {1}", DateTime.Now, inputTextBox.Text));
+            outputTextBox.AppendText(Environment.NewLine);
+            inputTextBox.Clear();
+        }
+
+        private void updateTimer_Tick(object sender, EventArgs e)
+        {
+        }
     }
 }
