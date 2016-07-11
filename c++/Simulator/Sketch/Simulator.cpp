@@ -22,7 +22,12 @@ void __setPinValue(unsigned int pin, unsigned short value)
 	{
 		return;
 	}
-	__pinValues__[index] = value % 1024;
+
+	unsigned short actualValue = value;
+	if (value > 1023) actualValue = 1023;
+	else if (value < 0) actualValue = 0;
+
+	__pinValues__[index] = actualValue;
 }
 
 EXTERN long foo(void)
