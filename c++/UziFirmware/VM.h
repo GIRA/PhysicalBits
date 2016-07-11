@@ -5,13 +5,16 @@
 #include "StackArray.h"
 #include "Program.h"
 
-class VM {
+class VM
+{
 
 public:
-	VM(void) {
+	VM(void) 
+	{
 		_stack = new StackArray();
 	}
-	~VM(void) {
+	~VM(void)
+	{
 		delete _stack;
 	}
 
@@ -24,7 +27,7 @@ private:
 	int _ip;
 	StackArray * _stack;
 	Script * _currentScript;
-	
+
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char);
 	void executePrimitive(unsigned char);

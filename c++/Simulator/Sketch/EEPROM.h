@@ -2,7 +2,8 @@
 
 #define E2END 1023
 
-class EEPROMClass {
+class EEPROMClass
+{
 
 public:
 	unsigned char read(int);

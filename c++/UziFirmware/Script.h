@@ -2,7 +2,8 @@
 
 #include "Reader.h"
 
-class Script {
+class Script
+{
 
 public:
 	Script(Reader*);
@@ -21,7 +22,7 @@ public:
 	Script* getNext(void);
 
 private:
-	
+
 	bool _stepping;
 	long _stepTime;
 	long _lastStepTime;

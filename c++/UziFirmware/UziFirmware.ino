@@ -35,13 +35,14 @@
 #define KEEP_ALIVE_INTERVAL							   2000
 
 /*
-HACK(Richo): 
-I defined this default program just to simplify testing with the simulator. This code is 
+HACK(Richo):
+I defined this default program just to simplify testing with the simulator. This code is
 fragile because it depends on a specific version of the instruction set and it should be
 removed eventually.
 */
-Program * defaultProgram() {
-	unsigned char encoded[] = { 
+Program * defaultProgram()
+{
+	unsigned char encoded[] = {
 		1, 128, 0, 3, 232, 3, 12, 0, 1, 13, 0, 2, 80, 164, 2, 1, 81, 131, 2, 0, 81, 255
 	};
 	ArrayReader reader(encoded, 22);
@@ -78,12 +79,14 @@ inline void sendProfile(void);
 inline void sendReport(void);
 inline void executeProfile(void);
 
-void setup() {
+void setup()
+{
 	//installSavedProgram();
 	initSerial();
 }
 
-void loop() {
+void loop()
+{
 	checkForIncomingMessages();
 	vm->executeProgram(program, pe);
 	sendReport();
@@ -91,9 +94,11 @@ void loop() {
 	sendProfile();
 }
 
-void installSavedProgram(void) {
+void installSavedProgram(void)
+{
 	Reader * eeprom = new EEPROMReader();
-	if (eeprom->nextChar() == PROGRAM_START) {
+	if (eeprom->nextChar() == PROGRAM_START)
+	{
 		delete program;
 		program = new Program(eeprom);
 		program->configurePins(pe);
@@ -101,23 +106,28 @@ void installSavedProgram(void) {
 	delete eeprom;
 }
 
-void initSerial(void) {
+void initSerial(void)
+{
 	Serial.begin(57600);
 }
 
-void checkForIncomingMessages(void) {
-	if (Serial.available()) {
+void checkForIncomingMessages(void)
+{
+	if (Serial.available())
+	{
 		unsigned char in = stream->nextChar();
 		executeCommand(in);
 	}
 }
 
-void sendProfile() {
+void sendProfile()
+{
 	if (!profiling) return;
 	unsigned long now = millis();
 	tickCount++;
-	if (now - lastTimeProfile > 100) {
-		Serial.write(AS_COMMAND(RS_PROFILE));     
+	if (now - lastTimeProfile > 100)
+	{
+		Serial.write(AS_COMMAND(RS_PROFILE));
 
 		unsigned short val = tickCount;
 		unsigned char val1 = val >> 7;  // MSB
@@ -130,35 +140,43 @@ void sendProfile() {
 	}
 }
 
-void sendReport(void) {
+void sendReport(void)
+{
 	if (!reporting) return;
 	unsigned long now = millis();
-	if (now - lastTimeReport > REPORT_INTERVAL) {
+	if (now - lastTimeReport > REPORT_INTERVAL)
+	{
 		sendPinValues();
 		lastTimeReport = now;
 	}
 }
 
-void checkKeepAlive(void) {
+void checkKeepAlive(void)
+{
 	if (!reporting) return;
 	unsigned long now = millis();
-	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL) {
+	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
+	{
 		executeStopReporting();
 	}
 }
 
-void sendError(unsigned char errorCode) {
+void sendError(unsigned char errorCode)
+{
 	Serial.write(AS_COMMAND(RS_ERROR));
 	Serial.write(AS_ARGUMENT(errorCode));
 }
 
-void sendPinValues(void) {
-	for (int i = 0; i < TOTAL_PINS; i++) {
+void sendPinValues(void)
+{
+	for (int i = 0; i < TOTAL_PINS; i++)
+	{
 		int pin = PIN_NUMBER(i);
-		if (pe->getReport(pin)) {
+		if (pe->getReport(pin))
+		{
 			Serial.write(AS_COMMAND(RS_PIN_VALUE));
 			Serial.write(AS_ARGUMENT(pin));
-			
+
 			// PE.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
 			unsigned short val = (unsigned short)(pe->getValue(pin) * 1023);
@@ -170,8 +188,10 @@ void sendPinValues(void) {
 	}
 }
 
-void executeCommand(unsigned char cmd) {
-	switch(cmd) {
+void executeCommand(unsigned char cmd)
+{
+	switch (cmd)
+	{
 		case RQ_SET_PROGRAM:
 			executeSetProgram();
 			break;
@@ -202,58 +222,68 @@ void executeCommand(unsigned char cmd) {
 	}
 }
 
-void executeSetProgram(void) {
+void executeSetProgram(void)
+{
 	delete program;
 	program = new Program(stream);
 	program->configurePins(pe);
 }
 
-void executeSetValue(void) {
+void executeSetValue(void)
+{
 	unsigned char pin = stream->nextChar();
 	// We receive a value between 0 and 255 but PE.setValue(..) expects 0..1
 	float value = (float)stream->nextChar() / 255;
-	
+
 	pe->setValue(pin, value);
 }
 
-void executeSetMode(void) {
+void executeSetMode(void)
+{
 	unsigned char pin = stream->nextChar();
 	unsigned char mode = stream->nextChar();
-	
+
 	pe->setMode(pin, mode);
 }
 
-void executeStartReporting(void) {
+void executeStartReporting(void)
+{
 	reporting = 1;
 }
 
-void executeStopReporting(void) {
+void executeStopReporting(void)
+{
 	reporting = 0;
 }
 
-void executeSetReport(void) {
+void executeSetReport(void)
+{
 	unsigned char pin = stream->nextChar();
 	unsigned char report = stream->nextChar();
-	
+
 	pe->setReport(pin, report != 0);
 }
 
-void executeSaveProgram(void) {
+void executeSaveProgram(void)
+{
 	long size = stream->nextLong(2);
-	
+
 	EEPROMWriter * writer = new EEPROMWriter();
 	writer->nextPut(PROGRAM_START);
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++)
+	{
 		writer->nextPut(stream->nextChar());
 	}
 	delete writer;
 }
 
-void executeKeepAlive(void) {
+void executeKeepAlive(void)
+{
 	lastTimeKeepAlive = millis();
 }
 
-void executeProfile(void) {
+void executeProfile(void)
+{
 	profiling = stream->nextChar();
 	tickCount = 0;
 	lastTimeProfile = millis();

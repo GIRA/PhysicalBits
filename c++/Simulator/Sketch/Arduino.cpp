@@ -17,7 +17,7 @@ CSerial Serial;
 
 unsigned long millis()
 {
-	return (clock() * 1000) /  CLOCKS_PER_SEC;
+	return (clock() * 1000) / CLOCKS_PER_SEC;
 }
 
 void delay(unsigned long delayms)
@@ -31,15 +31,16 @@ void delay(unsigned long delayms)
 // I/O
 //--------------------------------------------------------------------
 
-void pinMode(int,int)
-{
-}
+void pinMode(int, int)
+{}
 
-extern unsigned short analogRead(unsigned int pin) {
+extern unsigned short analogRead(unsigned int pin)
+{
 	return __getPinValue(pin);
 }
 
-void analogWrite(unsigned int pin, unsigned short value) {
+void analogWrite(unsigned int pin, unsigned short value)
+{
 	__setPinValue(pin, (unsigned short)round(value * 4.01176470588235));
 }
 
@@ -99,13 +100,13 @@ void CSerial::println(unsigned long value, int)
 }
 
 
-int CSerial::available() 
+int CSerial::available()
 {
 	return buflen;
 }
 
-char CSerial::read() 
-{ 
+char CSerial::read()
+{
 	char c = 0;
 	if (buflen > 0)
 	{
@@ -115,7 +116,7 @@ char CSerial::read()
 	return c;
 }
 
-void CSerial::write(unsigned char c) 
+void CSerial::write(unsigned char c)
 {
 	printf("%c", c);
 }
@@ -136,7 +137,7 @@ void CSerial::_append(char c)
 int main(int, char**)
 {
 	setup();
-	for(;;)
+	for (;;)
 	{
 		if (_kbhit())
 		{

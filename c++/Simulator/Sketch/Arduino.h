@@ -65,13 +65,13 @@ public:
 	void begin(long);
 
 	void print(char*);
-	void print(int,int);
+	void print(int, int);
 
 	void println();
 	void println(char*);
-	void println(int,int);
-	void println(unsigned int,int);
-	void println(unsigned long,int);
+	void println(int, int);
+	void println(unsigned int, int);
+	void println(unsigned long, int);
 	int available();
 	char read();
 	void write(unsigned char);
@@ -86,8 +86,8 @@ private:
 extern CSerial Serial;
 extern unsigned long millis();
 extern void delay(unsigned long);
-extern void pinMode(int,int);
-extern void digitalWrite(int,int);
+extern void pinMode(int, int);
+extern void digitalWrite(int, int);
 extern bool digitalRead(int);
 extern unsigned short analogRead(unsigned int);
 extern void analogWrite(unsigned int, unsigned short);

@@ -2,10 +2,12 @@
 
 const unsigned int MAX_SIZE = 100;
 
-class StackArray {
+class StackArray
+{
 
 public:
-	StackArray(void) {
+	StackArray(void)
+	{
 		_pointer = 0;
 	}
 	~StackArray(void) {}
@@ -17,7 +19,7 @@ public:
 	bool overflow(void);
 
 private:
-	
+
 	float _elements[MAX_SIZE];
 	unsigned int _pointer;
 
