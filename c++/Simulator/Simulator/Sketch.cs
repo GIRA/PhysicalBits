@@ -5,27 +5,30 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Simulator
 {
     public class Sketch
     {
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        private const string DLL_NAME = "Sketch";
+        
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern short GPIO_getPinValue(int pin);
 
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern void GPIO_setPinValue(int pin, short value);
 
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern void Sketch_setup();
 
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern void Sketch_loop();
 
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern void Serial_write([MarshalAs(UnmanagedType.LPStr)]string str, int len);
         
-        [DllImport("Sketch", CallingConvention = CallingConvention.Cdecl)]        
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]        
         private static extern int Serial_readInto(StringBuilder buffer, int len);
 
         private static Sketch current = new Sketch();
@@ -34,6 +37,13 @@ namespace Simulator
         private ConcurrentQueue<Tuple<DateTime, string>> serial;
         private Thread thread;
         private bool running = false;
+        private bool paused = false;
+
+        private Sketch() {}
+
+        public bool Running { get { return running; } }
+        public bool Paused { get { return paused; } }
+        public bool Stopped { get { return !running && !paused; } }
 
         public short GetPinValue(int pin)
         {
@@ -53,12 +63,16 @@ namespace Simulator
             thread.Start();
         }
 
+        public void Pause()
+        {
+            paused = true;
+            Stop();
+        }
+
         public void Stop()
         {
             running = false;
         }
-
-        public bool Running { get { return running; } }
         
         public void WriteSerial(string str)
         {
@@ -94,8 +108,12 @@ namespace Simulator
 
         private void Main()
         {
-            InitSerial();
-            Sketch_setup();
+            if (paused) { paused = false; }
+            else
+            {
+                InitSerial();
+                Sketch_setup();
+            }
             while (running)
             {
                 EnqueueSerial();

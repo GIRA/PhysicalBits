@@ -35,6 +35,7 @@
             this.openSerialButton = new System.Windows.Forms.Button();
             this.stopButton = new System.Windows.Forms.Button();
             this.checksTable = new System.Windows.Forms.TableLayoutPanel();
+            this.pauseButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // stepTimer
@@ -101,7 +102,7 @@
             // 
             // stopButton
             // 
-            this.stopButton.Location = new System.Drawing.Point(141, 12);
+            this.stopButton.Location = new System.Drawing.Point(270, 12);
             this.stopButton.Name = "stopButton";
             this.stopButton.Size = new System.Drawing.Size(123, 33);
             this.stopButton.TabIndex = 47;
@@ -138,11 +139,22 @@
             this.checksTable.Size = new System.Drawing.Size(805, 52);
             this.checksTable.TabIndex = 48;
             // 
+            // pauseButton
+            // 
+            this.pauseButton.Location = new System.Drawing.Point(141, 12);
+            this.pauseButton.Name = "pauseButton";
+            this.pauseButton.Size = new System.Drawing.Size(123, 33);
+            this.pauseButton.TabIndex = 49;
+            this.pauseButton.Text = "Pause";
+            this.pauseButton.UseVisualStyleBackColor = true;
+            this.pauseButton.Click += new System.EventHandler(this.pauseButton_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(830, 620);
+            this.Controls.Add(this.pauseButton);
             this.Controls.Add(this.pinsTable);
             this.Controls.Add(this.checksTable);
             this.Controls.Add(this.stopButton);
@@ -164,6 +176,7 @@
         private System.Windows.Forms.Button openSerialButton;
         private System.Windows.Forms.Button stopButton;
         private System.Windows.Forms.TableLayoutPanel checksTable;
+        private System.Windows.Forms.Button pauseButton;
     }
 }
 

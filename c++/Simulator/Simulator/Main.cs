@@ -64,6 +64,7 @@ namespace Simulator
         private void UpdateUI()
         {
             startButton.Enabled = !sketch.Running;
+            pauseButton.Enabled = sketch.Running;
             stopButton.Enabled = sketch.Running;
 
             for (int i = 0; i < PIN_COUNT; i++)
@@ -71,6 +72,12 @@ namespace Simulator
                 if (sketch.Running) { pins[i].UpdateValue(); }
                 pins[i].Visible = checks[i].Checked;
             }
+
+            string state = "Unknown";
+            if (sketch.Running) { state = "Running"; }
+            else if (sketch.Paused) { state = "Paused"; }
+            else if (sketch.Stopped) { state = "Stopped"; }
+            Text = string.Format("Arduino simulator [{0}]", state);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -97,6 +104,11 @@ namespace Simulator
         private void stopButton_Click(object sender, EventArgs e)
         {
             sketch.Stop();
+        }
+
+        private void pauseButton_Click(object sender, EventArgs e)
+        {
+            sketch.Pause();
         }
     }
 }
