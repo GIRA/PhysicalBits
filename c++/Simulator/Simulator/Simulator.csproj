@@ -123,6 +123,12 @@
   <ItemGroup>
     <None Include="Resources\dial.3.png" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sketch\Sketch.vcxproj">
+      <Project>{d5e5e4e2-af59-43f8-a603-51b3b3edcfe9}</Project>
+      <Name>Sketch</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
