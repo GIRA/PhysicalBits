@@ -42,7 +42,7 @@ namespace Simulator
                 pinsTable.Controls.Add(pin);
 
                 CheckBox check = new CheckBox();
-                check.Text = pin.Number.ToString();
+                check.Text = pin.Title;
                 checksTable.Controls.Add(check);
 
                 pins[i] = pin;
