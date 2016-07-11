@@ -81,6 +81,7 @@ public:
 
 	char out_read();
 	void out_write(char c);
+	void out_write(char * str, size_t len);
 	size_t out_readInto(char* buffer, size_t len);
 
 private:

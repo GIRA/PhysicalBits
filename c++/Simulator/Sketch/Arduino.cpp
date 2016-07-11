@@ -71,40 +71,49 @@ void CSerial::print(char *pString)
 {
 	char temp[1024];
 	int count = sprintf(temp, "%s", pString);
-	for (int i = 0; i < count; i++)
-	{
-		out_write(temp[i]);
-	}
+	out_write(temp, count);
 }
 
 void CSerial::print(int value, int)
 {
-	printf("%d", value);
+	char temp[1024];
+	int count = sprintf(temp, "%d", value);
+	out_write(temp, count);
 }
 
 void CSerial::println()
 {
-	printf("\r\n");
+	char temp[1024];
+	int count = sprintf(temp, "\r\n");
+	out_write(temp, count);
 }
 
 void CSerial::println(char *pString)
 {
-	printf("%s\r\n", pString);
+	char temp[1024];
+	int count = sprintf(temp, "%s\r\n", pString);
+	out_write(temp, count);
 }
 
 void CSerial::println(int value, int)
 {
-	printf("%d\r\n", value);
+	char temp[1024];
+	int count = sprintf(temp, "%d\r\n", value);
+	out_write(temp, count);
 }
 
 void CSerial::println(unsigned int value, int)
 {
-	printf("%u\r\n", value);
+	char temp[1024];
+	int count = sprintf(temp, "%u\r\n", value);
+	out_write(temp, count);
 }
 
 void CSerial::println(unsigned long value, int)
 {
-	printf("%lu\r\n", value);
+	char temp[1024];
+	int count = sprintf(temp, "%lu\r\n", value);
+	out_write(temp, count);
 }
 
 
@@ -120,7 +129,7 @@ char CSerial::read()
 
 void CSerial::write(unsigned char c)
 {
-	printf("%c", c);
+	out_write(c);
 }
 
 char CSerial::in_read()
@@ -162,6 +171,15 @@ void CSerial::out_write(char c)
 		in_buflen--;
 	}
 }
+
+void CSerial::out_write(char* str, size_t len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		out_write(str[i]);
+	}
+}
+
 
 size_t CSerial::out_readInto(char* buffer, size_t len)
 {
