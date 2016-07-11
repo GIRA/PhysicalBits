@@ -119,16 +119,6 @@ bool GPIO::getReport(unsigned int pin)
 	return _pinReport[index];
 }
 
-long GPIO::getMillis()
-{
-	return millis();
-}
-
-void GPIO::delayMs(unsigned long milliseconds)
-{
-	delay(milliseconds);
-}
-
 void GPIO::reset()
 {
 	for (int i = 0; i < TOTAL_PINS; i++)

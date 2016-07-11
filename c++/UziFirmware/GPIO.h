@@ -30,8 +30,6 @@ public:
 	void setValue(unsigned int, float);
 	bool getReport(unsigned int);
 	void setReport(unsigned int, bool);
-	long getMillis(void);
-	void delayMs(unsigned long);
 	void reset(void);
 
 private:

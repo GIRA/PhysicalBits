@@ -17,7 +17,7 @@ void VM::executeScript(Script * script, GPIO * pe)
 	{
 		return;
 	}
-	long now = pe->getMillis();
+	long now = millis();
 	if (!script->shouldStepNow(now))
 	{
 		return;
@@ -157,7 +157,7 @@ void VM::executePrimitive(unsigned char primitiveIndex)
 		} break;
 		case 0x05:
 		{// delay
-			_pe->delayMs((unsigned long)_stack->pop());
+			delay((unsigned long)_stack->pop());
 		} break;
 	}
 }
