@@ -1,17 +1,17 @@
 #include "VM.h"
 
-void VM::executeProgram(Program * program, GPIO * pe)
+void VM::executeProgram(Program * program, GPIO * io)
 {
 	int count = program->getScriptCount();
 	Script * script = program->getScript();
 	for (int i = 0; i < count; i++)
 	{
-		executeScript(script, pe);
+		executeScript(script, io);
 		script = script->getNext();
 	}
 }
 
-void VM::executeScript(Script * script, GPIO * pe)
+void VM::executeScript(Script * script, GPIO * io)
 {
 	if (!script->isStepping())
 	{
@@ -27,7 +27,7 @@ void VM::executeScript(Script * script, GPIO * pe)
 	_ip = 0;
 	_currentScript = script;
 	_stack->reset();
-	_pe = pe;
+	_pe = io;
 	unsigned char next = nextBytecode();
 	while (next != (unsigned char)0xFF)
 	{
