@@ -89,11 +89,24 @@ void setup()
 
 void loop()
 {
-	checkForIncomingMessages();
-	vm->executeProgram(program, io);
-	sendReport();
-	//checkKeepAlive();
-	sendProfile();
+	Serial.print("The message begins at ");
+	Serial.print(millis(), 0);
+	Serial.println(" ms.");
+	while (Serial.available())
+	{
+		char c = Serial.read();
+		Serial.write(c);
+	}
+	Serial.println();
+	Serial.print("The message ends at ");
+	Serial.print(millis(), 0);
+	Serial.println(" ms.");
+	delay(1000);
+	//checkForIncomingMessages();
+	//vm->executeProgram(program, io);
+	//sendReport();
+	////checkKeepAlive();
+	//sendProfile();
 }
 
 void installSavedProgram(void)
