@@ -73,10 +73,13 @@ namespace Simulator
         {
             running = false;
         }
-        
+                
         public void WriteSerial(byte[] bytes)
         {
-            Serial_write(bytes, bytes.Length);
+            lock (serial)
+            {
+                Serial_write(bytes, bytes.Length);
+            }
         }
         
         public Tuple<DateTime, byte[]> ReadSerial()
@@ -97,12 +100,15 @@ namespace Simulator
 
         private void EnqueueSerial()
         {
-            byte[] buffer = new byte[1024];
-            int count = Serial_readInto(buffer, buffer.Length);
-            byte[] read = buffer.Take(count).ToArray();
-            if (read.Length > 0)
+            lock (serial)
             {
-                serial.Enqueue(new Tuple<DateTime, byte[]>(DateTime.Now, read));
+                byte[] buffer = new byte[1024];
+                int count = Serial_readInto(buffer, buffer.Length);
+                byte[] read = buffer.Take(count).ToArray();
+                if (read.Length > 0)
+                {
+                    serial.Enqueue(new Tuple<DateTime, byte[]>(DateTime.Now, read));
+                }
             }
         }
 
