@@ -26,15 +26,15 @@ namespace Simulator
         private static extern void Sketch_loop();
 
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Serial_write([MarshalAs(UnmanagedType.LPStr)]string str, int len);
+        private static extern void Serial_write(byte[] str, int len);
         
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]        
-        private static extern int Serial_readInto(StringBuilder buffer, int len);
+        private static extern int Serial_readInto(byte[] buffer, int len);
 
         private static Sketch current = new Sketch();
         public static Sketch Current { get { return current; } }
 
-        private ConcurrentQueue<Tuple<DateTime, string>> serial;
+        private ConcurrentQueue<Tuple<DateTime, byte[]>> serial;
         private Thread thread;
         private bool running = false;
         private bool paused = false;
@@ -74,15 +74,15 @@ namespace Simulator
             running = false;
         }
         
-        public void WriteSerial(string str)
+        public void WriteSerial(byte[] bytes)
         {
-            Serial_write(str, str.Length);
+            Serial_write(bytes, bytes.Length);
         }
         
-        public Tuple<DateTime,string> ReadSerial()
+        public Tuple<DateTime, byte[]> ReadSerial()
         {
             if (serial == null) return null;
-            Tuple<DateTime, string> result;
+            Tuple<DateTime, byte[]> result;
             if (serial.TryDequeue(out result))
             {
                 return result;
@@ -92,17 +92,17 @@ namespace Simulator
 
         private void InitSerial()
         {
-            serial = new ConcurrentQueue<Tuple<DateTime, string>>();
+            serial = new ConcurrentQueue<Tuple<DateTime, byte[]>>();
         }
 
         private void EnqueueSerial()
         {
-            StringBuilder sb = new StringBuilder(1024);
-            int count = Serial_readInto(sb, sb.Capacity);
-            string read = sb.ToString(0, count);
-            if (!string.IsNullOrWhiteSpace(read))
+            byte[] buffer = new byte[1024];
+            int count = Serial_readInto(buffer, buffer.Length);
+            byte[] read = buffer.Take(count).ToArray();
+            if (read.Length > 0)
             {
-                serial.Enqueue(new Tuple<DateTime, string>(DateTime.Now, read));
+                serial.Enqueue(new Tuple<DateTime, byte[]>(DateTime.Now, read));
             }
         }
 

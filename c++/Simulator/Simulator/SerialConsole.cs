@@ -36,50 +36,51 @@ namespace Simulator
 
         private void updateTimer_Tick(object sender, EventArgs e)
         {
-            Tuple<DateTime, string> output = sketch.ReadSerial();
+            Tuple<DateTime, byte[]> output = sketch.ReadSerial();
 
             if (output == null) return;
 
-            asciiTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, output.Item2));
+            string ascii = Encoding.ASCII.GetString(output.Item2);
+            asciiTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, ascii));
             asciiTextBox.AppendText(Environment.NewLine);
 
-            byte[] outputBytes = Encoding.ASCII.GetBytes(output.Item2);
 
-            string hex = string.Join(" ", outputBytes.Select(b => b.ToString("X2")));
+            string hex = string.Join(" ", output.Item2.Select(b => b.ToString("X2")));
             hexTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, hex));
             hexTextBox.AppendText(Environment.NewLine);
             
-            string dec = string.Join(" ", outputBytes);
+            string dec = string.Join(" ", output.Item2);
             decTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, dec));
             decTextBox.AppendText(Environment.NewLine);
         }
 
-        private string Parse(string input)
+        private byte[] Parse(string input)
         {
             try {
                 string trimmed = input.Trim();
                 if (Regex.IsMatch(trimmed, "^'(.|\n)*'\\z"))
                 {
                     // string
-                    return trimmed
-                        .Substring(1, trimmed.Length - 2)
-                        .Replace("''", "'");
+                    return Encoding.ASCII
+                        .GetBytes(trimmed
+                            .Substring(1, trimmed.Length - 2)
+                            .Replace("''", "'"));
                 }
                 else if (Regex.IsMatch(trimmed, @"^#\[(\d|\s)*\]\z"))
                 {
                     // array
-                    return Encoding.ASCII.GetString(trimmed
+                    return trimmed
                         .Substring(2, trimmed.Length - 3)
                         .Split(' ', '\n', '\r', '\t')
                         .Where(str => !string.IsNullOrWhiteSpace(str))
                         .Select(str => byte.Parse(str))
-                        .ToArray());
+                        .ToArray();
                 }
             }
             catch { /* Do nothing */ }
 
             // I give up, just treat as text
-            return input;
+            return Encoding.ASCII.GetBytes(input);
         }
     }
 }
