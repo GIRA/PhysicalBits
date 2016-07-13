@@ -36,7 +36,7 @@ namespace Simulator
             Refresh();
         }
 
-        public int ValueAt(int index)
+        private int ValueAt(int index)
         {
             int diff = Width - values.Count;
             if (index < diff)
