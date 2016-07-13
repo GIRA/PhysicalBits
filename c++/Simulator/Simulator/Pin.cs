@@ -20,6 +20,8 @@ namespace Simulator
         public int Number { get { return number; } }
         public bool IsDigital { get { return number < 14; } }
 
+        public Pin() : this(0, Sketch.Current) { }
+
         public Pin(int number, Sketch sketch)
         {
             this.number = number;
