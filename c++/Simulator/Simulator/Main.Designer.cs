@@ -76,7 +76,7 @@
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pinsTable.Size = new System.Drawing.Size(805, 499);
+            this.pinsTable.Size = new System.Drawing.Size(805, 429);
             this.pinsTable.TabIndex = 6;
             // 
             // startButton
@@ -124,7 +124,7 @@
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 265F));
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.checksTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
@@ -153,7 +153,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(830, 620);
+            this.ClientSize = new System.Drawing.Size(830, 550);
             this.Controls.Add(this.pauseButton);
             this.Controls.Add(this.pinsTable);
             this.Controls.Add(this.checksTable);

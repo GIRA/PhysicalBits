@@ -86,7 +86,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.graph.Location = new System.Drawing.Point(110, -2);
             this.graph.Name = "graph";
-            this.graph.Size = new System.Drawing.Size(439, 162);
+            this.graph.Size = new System.Drawing.Size(30, 162);
             this.graph.TabIndex = 2;
             // 
             // Pin
@@ -102,7 +102,7 @@
             this.ForeColor = System.Drawing.Color.Black;
             this.Margin = new System.Windows.Forms.Padding(0);
             this.Name = "Pin";
-            this.Size = new System.Drawing.Size(547, 160);
+            this.Size = new System.Drawing.Size(143, 160);
             this.Load += new System.EventHandler(this.Pin_Load);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.led)).EndInit();

@@ -37,10 +37,9 @@ namespace Simulator
             for (int i = 0; i < PIN_COUNT; i++)
             {
                 Pin pin = new Pin(i, sketch);
-                pin.Size = new Size(pinsTable.Size.Width - SystemInformation.VerticalScrollBarWidth, pin.Size.Height);
+                pinsTable.Controls.Add(pin);
                 pin.Anchor = AnchorStyles.Left | AnchorStyles.Right;
                 pin.Visible = false;
-                pinsTable.Controls.Add(pin);
 
                 CheckBox check = new CheckBox();
                 check.Text = pin.Title;
@@ -53,6 +52,7 @@ namespace Simulator
             // HACK(Richo): By default I make these three pins visible
             checks[11].Checked = checks[13].Checked = checks[14].Checked = true;
         }
+
 
         private void stepTimer_Tick(object sender, EventArgs e)
         {
@@ -79,7 +79,7 @@ namespace Simulator
             if (sketch.Running) { state = "Running"; }
             else if (sketch.Paused) { state = "Paused"; }
             else if (sketch.Stopped) { state = "Stopped"; }
-            Text = string.Format("Arduino simulator [{0}]", state);
+            Text = string.Format("Arduino Simulator [{0}]", state);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
