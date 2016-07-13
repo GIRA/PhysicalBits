@@ -168,7 +168,7 @@ void CSerial::out_write(char c)
 	CSerial::out_buffer[out_buflen] = c;
 	if (++out_buflen >= 1024)
 	{
-		in_buflen--;
+		out_buflen--;
 	}
 }
 
