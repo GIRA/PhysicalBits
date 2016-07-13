@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -29,7 +30,7 @@ namespace Simulator
         private void sendButton_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(inputTextBox.Text)) return;
-            sketch.WriteSerial(inputTextBox.Text);
+            sketch.WriteSerial(Parse(inputTextBox.Text));
             inputTextBox.Clear();
         }
 
@@ -51,6 +52,34 @@ namespace Simulator
             string dec = string.Join(" ", outputBytes);
             decTextBox.AppendText(string.Format("{0:HH:mm:ss.fff} | {1}", output.Item1, dec));
             decTextBox.AppendText(Environment.NewLine);
+        }
+
+        private string Parse(string input)
+        {
+            try {
+                string trimmed = input.Trim();
+                if (Regex.IsMatch(trimmed, "^'(.|\n)*'\\z"))
+                {
+                    // string
+                    return trimmed
+                        .Substring(1, trimmed.Length - 2)
+                        .Replace("''", "'");
+                }
+                else if (Regex.IsMatch(trimmed, @"^#\[(\d|\s)*\]\z"))
+                {
+                    // array
+                    return Encoding.ASCII.GetString(trimmed
+                        .Substring(2, trimmed.Length - 3)
+                        .Split(' ', '\n', '\r', '\t')
+                        .Where(str => !string.IsNullOrWhiteSpace(str))
+                        .Select(str => byte.Parse(str))
+                        .ToArray());
+                }
+            }
+            catch { /* Do nothing */ }
+
+            // I give up, just treat as text
+            return input;
         }
     }
 }

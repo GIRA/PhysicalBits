@@ -188,7 +188,7 @@
             this.ClientSize = new System.Drawing.Size(575, 494);
             this.Controls.Add(this.splitContainer1);
             this.Name = "SerialConsole";
-            this.Text = "SerialConsole";
+            this.Text = "Serial Console";
             this.Load += new System.EventHandler(this.SerialConsole_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
