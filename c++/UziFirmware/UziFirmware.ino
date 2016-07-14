@@ -89,24 +89,18 @@ void setup()
 
 void loop()
 {
-	Serial.print("The message begins at ");
-	Serial.print(millis(), 0);
-	Serial.println(" ms.");
+	// TODO(Richo): This was added to test the serial console. Remove ASAP
 	while (Serial.available())
 	{
 		char c = Serial.read();
 		Serial.write(c);
 	}
-	Serial.println();
-	Serial.print("The message ends at ");
-	Serial.print(millis(), 0);
-	Serial.println(" ms.");
-	delay(1000);
-	//checkForIncomingMessages();
-	//vm->executeProgram(program, io);
-	//sendReport();
-	////checkKeepAlive();
-	//sendProfile();
+
+	checkForIncomingMessages();
+	vm->executeProgram(program, io);
+	sendReport();
+	//checkKeepAlive();
+	sendProfile();
 }
 
 void installSavedProgram(void)
