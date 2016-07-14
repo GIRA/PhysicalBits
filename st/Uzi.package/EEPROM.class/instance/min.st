@@ -1,3 +1,3 @@
-as yet unclassified
+usage stats
 min
 	^ writes min

@@ -1,4 +1,4 @@
-as yet unclassified
+accessing
 write: index value: value
 	| i |
 	i := index + 1.

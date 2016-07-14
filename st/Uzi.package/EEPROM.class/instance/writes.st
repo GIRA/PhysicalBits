@@ -1,3 +1,3 @@
-accessing
+usage stats
 writes
 	^ writes
