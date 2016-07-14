@@ -50,9 +50,9 @@ namespace Simulator
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            Pen pen = new Pen(Color.Yellow, 1);
+            Pen pen = new Pen(Color.Green, 2);
             g.TranslateTransform(Location.X * -1, Location.Y * -1);
-            g.FillRectangle(Brushes.Black, Bounds);
+            g.FillRectangle(Brushes.White, Bounds);
 
             for (int x = 1; x < Width; x++)
             {

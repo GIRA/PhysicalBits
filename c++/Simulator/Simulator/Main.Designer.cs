@@ -49,7 +49,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pinsTable.AutoScroll = true;
-            this.pinsTable.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.pinsTable.BackColor = System.Drawing.SystemColors.Control;
+            this.pinsTable.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
             this.pinsTable.ColumnCount = 1;
             this.pinsTable.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.pinsTable.GrowStyle = System.Windows.Forms.TableLayoutPanelGrowStyle.FixedSize;
@@ -76,7 +77,7 @@
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.pinsTable.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.pinsTable.Size = new System.Drawing.Size(805, 429);
+            this.pinsTable.Size = new System.Drawing.Size(805, 532);
             this.pinsTable.TabIndex = 6;
             // 
             // startButton
@@ -153,7 +154,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(830, 550);
+            this.ClientSize = new System.Drawing.Size(830, 653);
             this.Controls.Add(this.pauseButton);
             this.Controls.Add(this.pinsTable);
             this.Controls.Add(this.checksTable);
