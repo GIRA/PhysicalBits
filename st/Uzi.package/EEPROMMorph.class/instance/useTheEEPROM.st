@@ -5,7 +5,6 @@ useTheEEPROM
 	writeLimit := eeprom writeLimit.
 	writer := EEPROMWearLevelingWriter on: eeprom.
 	size := (32 to: 128) atRandom.
-	writer nextPut: size.
 	1 to: size do: [:n | 
 		writer nextPut: n \\ 255.
 		eeprom max >= writeLimit
