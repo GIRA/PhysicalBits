@@ -7,4 +7,10 @@
 		"test002PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 7/15/2016 14:20",
 		"test003PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheMiddleOfTheMemory" : "Richo 7/15/2016 14:21",
 		"test004PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheEndOfTheMemory" : "Richo 7/15/2016 14:21",
-		"test005PositionIsCorrectlyInitializedWhenTheProgramSurpassesTheEndOfTheMemory" : "Richo 7/15/2016 14:22" } }
+		"test005PositionIsCorrectlyInitializedWhenTheProgramSurpassesTheEndOfTheMemory" : "Richo 7/15/2016 14:22",
+		"test006PositionIsCorrectlyInitializedWhenThereAreSeveralBeginMarks" : "Richo 7/15/2016 14:24",
+		"test007PositionIsCorrectlyInitializedWithEscapedBeginMarks" : "Richo 7/15/2016 14:25",
+		"test008PositionIsCorrectlyInitializedWithEscapedEndMarks" : "Richo 7/15/2016 14:26",
+		"test009PositionIsCorrectlyInitializedWhenTheEEPROMIsFullOfBeginMarks" : "Richo 7/15/2016 14:27",
+		"test010PositionIsCorrectlyInitializedWhenTheEEPROMIsFullOfEndMarks" : "Richo 7/15/2016 14:28",
+		"test011PositionIsCorrectlyInitializedWhenTheBeginMarkIsAtTheEndOfTheMemory" : "Richo 7/15/2016 14:29" } }
