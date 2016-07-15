@@ -12,8 +12,7 @@ findPosition
 			count := count + 1].
 
 	"Now, look for the end mark on the entire memory"
-	count := 0.
-	position := 0.
+	position := count := 0.
 	[count <= size] whileTrue: [
 			count := count + 1.
 			reader next = self endMark

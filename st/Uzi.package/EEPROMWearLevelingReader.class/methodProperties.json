@@ -1,0 +1,13 @@
+{
+	"class" : {
+		"beginMark" : "Richo 7/15/2016 13:29",
+		"endMark" : "Richo 7/15/2016 13:30",
+		"on:" : "Richo 7/15/2016 13:28" },
+	"instance" : {
+		"beginMark" : "Richo 7/15/2016 13:28",
+		"endMark" : "Richo 7/15/2016 13:28",
+		"findPosition" : "Richo 7/15/2016 14:17",
+		"initialize" : "Richo 7/15/2016 14:16",
+		"initializeWith:" : "Richo 7/15/2016 13:28",
+		"omitBeginMark" : "Richo 7/15/2016 14:15",
+		"position" : "Richo 7/15/2016 14:01" } }

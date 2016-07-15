@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"reader" ],
+	"name" : "EEPROMWearLevelingReader",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
