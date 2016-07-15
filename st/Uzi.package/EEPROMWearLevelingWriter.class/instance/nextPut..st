@@ -1,4 +1,4 @@
 writing
 nextPut: byte
 	self escapeIfNecessary: byte.
-	^ self privateNextPut: byte
+	^ writer nextPut: byte

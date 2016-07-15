@@ -1,5 +1,5 @@
 initialize-release
 initialize
 	super initialize.
-	position := self findPosition.
+	writer := EEPROMWriter eeprom: eeprom position: self findPosition.
 	self writeBeginMark

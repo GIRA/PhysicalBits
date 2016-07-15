@@ -7,7 +7,7 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"eeprom",
-		"position" ],
+		"writer" ],
 	"name" : "EEPROMWearLevelingWriter",
 	"pools" : [
 		 ],
