@@ -3,4 +3,8 @@
 		 },
 	"instance" : {
 		"setUp" : "Richo 7/15/2016 14:02",
-		"test001" : "Richo 7/15/2016 14:05" } }
+		"test001PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheBeginningOfTheMemory" : "Richo 7/15/2016 14:21",
+		"test002PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 7/15/2016 14:20",
+		"test003PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheMiddleOfTheMemory" : "Richo 7/15/2016 14:21",
+		"test004PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheEndOfTheMemory" : "Richo 7/15/2016 14:21",
+		"test005PositionIsCorrectlyInitializedWhenTheProgramSurpassesTheEndOfTheMemory" : "Richo 7/15/2016 14:22" } }
