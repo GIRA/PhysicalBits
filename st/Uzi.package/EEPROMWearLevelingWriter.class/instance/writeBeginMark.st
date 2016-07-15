@@ -1,7 +1,6 @@
 initialize-release
 writeBeginMark
-	"Make sure the begin mark is not escaped by clearing the current position
-	and then writing the begin mark"
+	"Erase previous end mark and then write the begin mark"
 	writer 
 		nextPut: 0;
 		nextPut: self beginMark 
