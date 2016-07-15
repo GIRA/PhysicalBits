@@ -11,4 +11,5 @@
 		"test006TheEndMarkIsEscapedCorrectly" : "Richo 7/15/2016 09:37",
 		"test007PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
 		"test008PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
-		"test009PositionIsCorrectlyInitializedIfTheMarkIsAtTheEnd" : "Richo 7/15/2016 09:40" } }
+		"test009PositionIsCorrectlyInitializedIfTheMarkIsAtTheEnd" : "Richo 7/15/2016 09:40",
+		"test010PositionIsCorrectlyInitializedEvenIfTheEEPROMIsFullOfEndMarks" : "Richo 7/15/2016 10:01" } }
