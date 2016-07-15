@@ -1,9 +1,9 @@
 {
 	"class" : {
-		"on:" : "Richo 7/14/2016 17:33" },
+		"eeprom:position:" : "Richo 7/15/2016 08:08",
+		"on:" : "Richo 7/15/2016 08:08" },
 	"instance" : {
 		"incrementPosition" : "Richo 7/14/2016 17:37",
-		"initialize" : "Richo 7/14/2016 17:33",
-		"initializeWith:" : "Richo 7/14/2016 17:33",
+		"initializeWithEEPROM:position:" : "Richo 7/15/2016 08:09",
 		"next" : "Richo 7/14/2016 17:34",
 		"position" : "Richo 7/14/2016 17:35" } }

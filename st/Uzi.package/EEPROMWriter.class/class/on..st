@@ -1,3 +1,3 @@
 instance creation
 on: eeprom
-	^ self basicNew initializeWith: eeprom
+	^ self eeprom: eeprom position: 0
