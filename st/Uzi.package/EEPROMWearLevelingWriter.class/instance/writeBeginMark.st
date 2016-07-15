@@ -1,9 +1,7 @@
 initialize-release
 writeBeginMark
-	| previousPos |
-	"Make sure the begin mark is not escaped by checking the previous byte"
-	previousPos := (writer position - 1) \\ eeprom size.
-	(eeprom read: previousPos) = self beginMark 
-		ifTrue: [eeprom write: previousPos value: 0].
-	"Now we now we can safely write our begin mark"
-	writer nextPut: self beginMark 
+	"Make sure the begin mark is not escaped by clearing the current position
+	and then writing the begin mark"
+	writer 
+		nextPut: 0;
+		nextPut: self beginMark 

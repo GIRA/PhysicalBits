@@ -7,5 +7,6 @@ test002PositionIsCorrectlyInitializedOnADirtyEEPROM
 	eeprom write: 32 value: end.
 	
 	writer := EEPROMWearLevelingWriter on: eeprom.
-	self assert: begin equals: (eeprom read: 32).
-	self assert: 33 equals: writer position
+	self assert: 0 equals: (eeprom read: 32).
+	self assert: begin equals: (eeprom read: 33).
+	self assert: 34 equals: writer position

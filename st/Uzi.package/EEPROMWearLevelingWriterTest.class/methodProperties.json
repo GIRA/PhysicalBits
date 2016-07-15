@@ -3,12 +3,12 @@
 		 },
 	"instance" : {
 		"setUp" : "Richo 7/14/2016 18:35",
-		"test001PositionIsCorrectlyInitializedOnADirtyEEPROM" : "Richo 7/14/2016 18:36",
-		"test001PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 7/14/2016 18:35",
-		"test002PositionIsCorrectlyInitializedOnADirtyEEPROM" : "Richo 7/14/2016 18:37",
-		"test003PositionIsCorrectlyInitializedAfterEscapedMarks" : "Richo 7/14/2016 18:37",
-		"test004ClosingTheWriterAppendsTheEndMark" : "Richo 7/14/2016 18:52",
-		"test005TheBeginMarkIsEscapedCorrectly" : "Richo 7/14/2016 18:54",
-		"test006TheEndMarkIsEscapedCorrectly" : "Richo 7/14/2016 18:54",
-		"test007PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 08:36",
-		"test008PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:07" } }
+		"test001PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 7/15/2016 09:32",
+		"test002PositionIsCorrectlyInitializedOnADirtyEEPROM" : "Richo 7/15/2016 09:32",
+		"test003PositionIsCorrectlyInitializedAfterEscapedMarks" : "Richo 7/15/2016 09:34",
+		"test004ClosingTheWriterAppendsTheEndMark" : "Richo 7/15/2016 09:35",
+		"test005TheBeginMarkIsEscapedCorrectly" : "Richo 7/15/2016 09:36",
+		"test006TheEndMarkIsEscapedCorrectly" : "Richo 7/15/2016 09:37",
+		"test007PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
+		"test008PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
+		"test009PositionIsCorrectlyInitializedIfTheMarkIsAtTheEnd" : "Richo 7/15/2016 09:40" } }

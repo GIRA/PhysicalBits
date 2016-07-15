@@ -14,13 +14,13 @@ findPosition
 	"Now, look for the end mark on the entire memory"
 	count := 0.
 	wasEnd := false.
-	[count < size]
+	[count <= size]
 		whileTrue: [| next isEnd |
 			next := reader peek.
 			isEnd := next = self endMark.
 			"If the previous byte was the end mark and the next is not
 			we can safely say we found our position"
-			(wasEnd and: [isEnd not]) ifTrue: [^ reader position - 1].
+			(wasEnd and: [isEnd not]) ifTrue: [^ reader position - 1 \\ size].
 			"We only set the wasEnd flag if the current byte is the end mark
 			and the previous was not. This way we ignore escaped bytes"
 			wasEnd := wasEnd not and: [isEnd].
