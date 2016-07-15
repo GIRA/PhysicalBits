@@ -1,6 +1,6 @@
 initialize-release
 findPosition
-	| size wasEnd count reader position |
+	| size count reader position |
 	size := eeprom size.
 	reader := EEPROMReader on: eeprom.
 	
@@ -13,21 +13,14 @@ findPosition
 
 	"Now, look for the end mark on the entire memory"
 	count := 0.
-	wasEnd := false.
 	position := 0.
-	[count <= size]
-		whileTrue: [| next isEnd |
-			next := reader peek.
-			isEnd := next = self endMark.
-			"If the previous byte was the end mark and the next is not
-			we can safely say we found our position"
-			(wasEnd and: [isEnd not])
-				ifTrue: ["Set the position and break out of the loop"
-					position := reader position - 1 \\ size.
-					count := size + 1]
-				ifFalse: ["We only set the wasEnd flag if the current byte is the end mark
-						and the previous was not. This way we ignore escaped bytes"
-					wasEnd := wasEnd not and: [isEnd].
-					count := count + 1.
-					reader next]].
+	[count <= size] whileTrue: [
+			count := count + 1.
+			reader next = self endMark
+				ifTrue: [reader peek = self endMark
+					ifTrue: ["It was escaped. Skip next"
+						reader next]
+					ifFalse: ["We found it! Break out of the loop"
+						position := reader position - 1 \\ size.
+						count := size + 1]]].
 	^ position
