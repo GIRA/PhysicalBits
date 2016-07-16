@@ -16,10 +16,13 @@ public:
 	~EEPROMReader(void) {}
 
 	unsigned char next(void);
+	unsigned char peek(void);
+	unsigned char back(void);
+	unsigned char peekBack(void);
 
 private:
 	int position;
 
 	void incrementPosition(void);
-
+	void decrementPosition(void);
 };
