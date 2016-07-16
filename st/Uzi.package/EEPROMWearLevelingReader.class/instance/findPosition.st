@@ -22,8 +22,11 @@ findPosition
 				ifFalse: ["We found it! Break out of the loop"
 					count := size + 1]]].
 	
+	"Skip end mark and take note of its position"
+	reader back.
+	endPosition := reader position.
+	
 	"Finally, go back until you find the begin mark"
-	reader back. "Skip end mark"
 	position := count := 0.
 	[count <= size] whileTrue: [
 		count := count + 1.

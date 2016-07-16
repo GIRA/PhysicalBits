@@ -8,5 +8,6 @@ test006PositionIsCorrectlyInitializedWhenThereAreSeveralBeginMarks
 	eeprom write: 216 value: end.
 	eeprom write: 218 value: begin.
 	reader := EEPROMWearLevelingReader on: eeprom.
-	self assert: 129 equals: reader position
+	self assert: 129 equals: reader position.
+	self deny: reader atEnd 
 	

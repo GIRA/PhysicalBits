@@ -4,9 +4,10 @@
 		"endMark" : "Richo 7/15/2016 13:30",
 		"on:" : "Richo 7/15/2016 13:28" },
 	"instance" : {
+		"atEnd" : "Richo 7/16/2016 13:04",
 		"beginMark" : "Richo 7/15/2016 13:28",
 		"endMark" : "Richo 7/15/2016 13:28",
-		"findPosition" : "Richo 7/15/2016 14:17",
+		"findPosition" : "Richo 7/16/2016 13:04",
 		"initialize" : "Richo 7/15/2016 14:16",
 		"initializeWith:" : "Richo 7/15/2016 13:28",
 		"omitBeginMark" : "Richo 7/15/2016 14:15",

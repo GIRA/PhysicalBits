@@ -5,5 +5,5 @@ test001PositionIsCorrectlyInitializedWhenTheProgramIsWrittenAtTheBeginningOfTheM
 	eeprom write: 0 value: begin.
 	eeprom write: 8 value: end.
 	reader := EEPROMWearLevelingReader on: eeprom.
-	self assert: 1 equals: reader position
-	
+	self assert: 1 equals: reader position.
+	self deny: reader atEnd 

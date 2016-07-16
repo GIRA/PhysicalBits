@@ -9,5 +9,6 @@ test008PositionIsCorrectlyInitializedWithEscapedEndMarks
 	eeprom write: 217 value: end.
 	eeprom write: 219 value: end.
 	reader := EEPROMWearLevelingReader on: eeprom.
-	self assert: 33 equals: reader position
+	self assert: 33 equals: reader position.
+	self deny: reader atEnd 
 	
