@@ -10,7 +10,8 @@
 		"lastChanged",
 		"started",
 		"programs",
-		"programsSize" ],
+		"programsSize",
+		"config" ],
 	"name" : "EEPROMMorph",
 	"pools" : [
 		 ],

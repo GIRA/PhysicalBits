@@ -1,4 +1,4 @@
 initializing
-initializeWith: anEEPROM
-	eeprom := anEEPROM.
+initializeWith: configDict
+	config := configDict.
 	self initialize

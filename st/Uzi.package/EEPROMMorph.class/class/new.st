@@ -1,3 +1,3 @@
-as yet unclassified
+instance creation
 new
-	^ self on: EEPROM new
+	^ self config: Dictionary new

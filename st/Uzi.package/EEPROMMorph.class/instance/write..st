@@ -1,7 +1,7 @@
 stepping
 write: program
 	| writer |
-	writer := EEPROMWearLevelingWriter on: eeprom.
+	writer := self writerClass on: eeprom.
 	program do: [:byte |
 		writer nextPut: byte.
 		eeprom max >= eeprom writeLimit
