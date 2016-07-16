@@ -84,12 +84,12 @@ long Script::getStepTime(void)
 
 long * Script::parseSection(Reader * rs)
 {
-	unsigned char size = rs->nextChar();
+	unsigned char size = rs->next();
 	long * result = new long[size];
 	int i = 0;
 	while (i < size)
 	{
-		unsigned char sec = rs->nextChar();
+		unsigned char sec = rs->next();
 		int count = (sec >> 2) & 0x3F;
 		int size = (sec & 0x03) + 1; // ACAACA Richo: This variable is shadowing the outer size!! FIX THIS!!
 		while (count > 0)

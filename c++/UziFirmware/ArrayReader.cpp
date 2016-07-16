@@ -12,7 +12,7 @@ bool ArrayReader::isClosed(void)
 	return _position >= _size;
 }
 
-unsigned char ArrayReader::nextChar(void)
+unsigned char ArrayReader::next(void)
 {
 	return _elements[_position++];
 }
@@ -30,11 +30,11 @@ unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
 	bool found = false;
 	while (i < arraySize && !found)
 	{
-		unsigned char next = nextChar();
-		found = (next == aCharacter);
+		unsigned char nextChar = next();
+		found = (nextChar == aCharacter);
 		if (!found || inclusive)
 		{
-			result[i] = next;
+			result[i] = nextChar;
 			i++;
 		}
 	}

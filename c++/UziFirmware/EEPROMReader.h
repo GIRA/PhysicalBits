@@ -15,7 +15,7 @@ public:
 	EEPROMReader(int);
 	~EEPROMReader(void) {}
 
-	unsigned char nextChar(void);
+	unsigned char next(void);
 
 private:
 	int position;

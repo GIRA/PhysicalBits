@@ -5,7 +5,7 @@ long Reader::nextLong(int size)
 	long result = 0;
 	for (int i = size - 1; i >= 0; i--)
 	{
-		result |= ((unsigned long)nextChar() << (i * 8));
+		result |= ((unsigned long)next() << (i * 8));
 	}
 	return result;
 }
@@ -21,11 +21,11 @@ unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive)
 	bool found = false;
 	while (!found)
 	{
-		unsigned char next = nextChar();
-		found = (next == aCharacter);
+		unsigned char nextChar = next();
+		found = (nextChar == aCharacter);
 		if (!found || inclusive)
 		{
-			result[i] = next;
+			result[i] = nextChar;
 			i++;
 			// If we reached the end of the array, we need to resize it.
 			if (i >= arraySize)

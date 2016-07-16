@@ -11,7 +11,7 @@ public:
 
 	bool isClosed(void);
 
-	unsigned char nextChar(void);
+	unsigned char next(void);
 
 	int position(void);
 

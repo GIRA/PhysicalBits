@@ -17,7 +17,7 @@ void EEPROMReader::incrementPosition(void)
 	position = (position + 1) % EEPROM_SIZE;
 }
 
-unsigned char EEPROMReader::nextChar(void)
+unsigned char EEPROMReader::next(void)
 {
 	unsigned char result = EEPROM.read(position);
 	incrementPosition();

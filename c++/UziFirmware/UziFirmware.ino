@@ -106,7 +106,7 @@ void loop()
 void installSavedProgram(void)
 {
 	Reader * eeprom = new EEPROMReader();
-	if (eeprom->nextChar() == PROGRAM_START)
+	if (eeprom->next() == PROGRAM_START)
 	{
 		delete program;
 		program = new Program(eeprom);
@@ -124,7 +124,7 @@ void checkForIncomingMessages(void)
 {
 	if (Serial.available())
 	{
-		unsigned char in = stream->nextChar();
+		unsigned char in = stream->next();
 		executeCommand(in);
 	}
 }
@@ -240,17 +240,17 @@ void executeSetProgram(void)
 
 void executeSetValue(void)
 {
-	unsigned char pin = stream->nextChar();
+	unsigned char pin = stream->next();
 	// We receive a value between 0 and 255 but GPIO.setValue(..) expects 0..1
-	float value = (float)stream->nextChar() / 255;
+	float value = (float)stream->next() / 255;
 
 	io->setValue(pin, value);
 }
 
 void executeSetMode(void)
 {
-	unsigned char pin = stream->nextChar();
-	unsigned char mode = stream->nextChar();
+	unsigned char pin = stream->next();
+	unsigned char mode = stream->next();
 
 	io->setMode(pin, mode);
 }
@@ -267,8 +267,8 @@ void executeStopReporting(void)
 
 void executeSetReport(void)
 {
-	unsigned char pin = stream->nextChar();
-	unsigned char report = stream->nextChar();
+	unsigned char pin = stream->next();
+	unsigned char report = stream->next();
 
 	io->setReport(pin, report != 0);
 }
@@ -281,7 +281,7 @@ void executeSaveProgram(void)
 	writer->nextPut(PROGRAM_START);
 	for (int i = 0; i < size; i++)
 	{
-		writer->nextPut(stream->nextChar());
+		writer->nextPut(stream->next());
 	}
 	delete writer;
 }
@@ -293,7 +293,7 @@ void executeKeepAlive(void)
 
 void executeProfile(void)
 {
-	profiling = stream->nextChar();
+	profiling = stream->next();
 	tickCount = 0;
 	lastTimeProfile = millis();
 }

@@ -2,7 +2,7 @@
 
 Program::Program(Reader * rs)
 {
-	_scriptCount = rs->nextChar();
+	_scriptCount = rs->next();
 	parseScripts(rs);
 }
 
