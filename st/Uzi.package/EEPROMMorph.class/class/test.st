@@ -1,5 +1,8 @@
 instance creation
 test
+	"
+	self test openInHand.
+	"
 	| config |
 	config := {
 		#eepromSize -> 512.
