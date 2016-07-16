@@ -1,14 +1,10 @@
 stepping
 useTheEEPROM
-	| writer writeLimit size |
+	| program |
 	started ifFalse: [^ self].
-	writeLimit := eeprom writeLimit.
-	writer := EEPROMWearLevelingWriter on: eeprom.
-	size := (32 to: 128) atRandom.
-	1 to: size do: [:n | 
-		writer nextPut: n \\ 255.
-		eeprom max >= writeLimit
-			ifTrue: [started := false. ^ self]].
-	writer close.
-	programs := programs + 1.
-	programsSize := programsSize + size
+	program := (1 to: (32 to: 128) atRandom) collect: [:n | 256 atRandom - 1].
+	(self write: program)
+		ifTrue: [self verify: program.
+			programs := programs + 1.
+			programsSize := programsSize + program size]
+		ifFalse: [started := false]
