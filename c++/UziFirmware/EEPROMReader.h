@@ -12,18 +12,14 @@ class EEPROMReader : public Reader
 
 public:
 	EEPROMReader(void);
+	EEPROMReader(int);
 	~EEPROMReader(void) {}
 
 	unsigned char nextChar(void);
 
 private:
+	int position;
 
-	int _position;
-	int _offset;
-	int _nextPointer;
-
-	int findOffset(void);
-	int actualIndex(void);
 	void incrementPosition(void);
 
 };
