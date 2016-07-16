@@ -4,13 +4,14 @@
 		"endMark" : "Richo 7/14/2016 17:57",
 		"on:" : "Richo 7/14/2016 17:56" },
 	"instance" : {
+		"atEnd" : "Richo 7/16/2016 15:15",
 		"beginMark" : "Richo 7/14/2016 18:29",
 		"close" : "Richo 7/15/2016 09:20",
 		"endMark" : "Richo 7/14/2016 18:29",
 		"escapeIfNecessary:" : "Richo 7/15/2016 09:19",
 		"findPosition" : "Richo 7/15/2016 14:17",
-		"initialize" : "Richo 7/15/2016 09:17",
+		"initialize" : "Richo 7/16/2016 15:14",
 		"initializeWith:" : "Richo 7/14/2016 17:56",
-		"nextPut:" : "Richo 7/15/2016 09:18",
+		"nextPut:" : "Richo 7/16/2016 15:16",
 		"position" : "Richo 7/15/2016 09:21",
 		"writeBeginMark" : "Richo 7/15/2016 09:59" } }
