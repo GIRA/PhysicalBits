@@ -14,6 +14,7 @@ public:
 	~EEPROMWriter(void) {}
 
 	void nextPut(unsigned char);
+	int getPosition(void);
 
 private:
 	int position;
