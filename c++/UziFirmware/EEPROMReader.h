@@ -19,6 +19,7 @@ public:
 	unsigned char peek(void);
 	unsigned char back(void);
 	unsigned char peekBack(void);
+	int getPosition();
 
 private:
 	int position;

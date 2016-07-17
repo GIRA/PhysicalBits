@@ -12,6 +12,11 @@ EEPROMReader::EEPROMReader(int position)
 	EEPROMReader::position = position;
 }
 
+int EEPROMReader::getPosition(void)
+{
+	return position;
+}
+
 void EEPROMReader::incrementPosition(void)
 {
 	position = (position + 1) % EEPROM_SIZE;
