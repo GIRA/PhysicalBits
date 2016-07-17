@@ -3,7 +3,7 @@
 #include "ArrayReader.h" // HACK(Richo): Only necessary for the default program
 #include "SerialReader.h"
 #include "EEPROMWriter.h"
-#include "EEPROMReader.h"
+#include "EEPROMWearLevelingReader.h"
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
@@ -82,7 +82,7 @@ void loop()
 
 void installSavedProgram(void)
 {
-	Reader * eeprom = new EEPROMReader();
+	Reader * eeprom = new EEPROMWearLevelingReader();
 	if (eeprom->next() == PROGRAM_START)
 	{
 		delete program;
