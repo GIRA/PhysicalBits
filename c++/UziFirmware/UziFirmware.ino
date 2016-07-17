@@ -1,6 +1,5 @@
 #include <EEPROM.h>
 #include "VM.h"
-#include "ArrayReader.h" // HACK(Richo): Only necessary for the default program
 #include "SerialReader.h"
 #include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
