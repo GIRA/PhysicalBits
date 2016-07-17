@@ -2,7 +2,7 @@
 #include "VM.h"
 #include "ArrayReader.h" // HACK(Richo): Only necessary for the default program
 #include "SerialReader.h"
-#include "EEPROMWriter.h"
+#include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
 
 /* REQUEST COMMANDS */
@@ -254,12 +254,13 @@ void executeSaveProgram(void)
 {
 	long size = stream->nextLong(2);
 
-	EEPROMWriter * writer = new EEPROMWriter();
+	EEPROMWearLevelingWriter * writer = new EEPROMWearLevelingWriter();
 	writer->nextPut(PROGRAM_START);
 	for (int i = 0; i < size; i++)
 	{
 		writer->nextPut(stream->next());
 	}
+	writer->close();
 	delete writer;
 }
 
