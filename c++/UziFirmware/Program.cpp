@@ -16,12 +16,12 @@ Program::~Program(void)
 {
 	//delete _script;
 	Script * current = _script;
-	Script * next = _script->getNext();
+	Script * next;
 	for (int i = 0; i < _scriptCount; i++)
 	{
+		next = current->getNext();
 		delete current;
 		current = next;
-		next = current->getNext();
 	}
 }
 
