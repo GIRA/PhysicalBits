@@ -4,7 +4,7 @@ install: anUziProgram
 	encoded := UziEncoder new encode: anUziProgram.
 	msb := (encoded size bitAnd: 16rFF00) >> 8.
 	lsb := (encoded size bitAnd: 16rFF).
-	self send: {
+	^ self send: {
 		6.
 		msb.
 		lsb		

@@ -1,3 +1,3 @@
 reporting
 stopReporting
-	self send: #[4]
+	^ self send: #[4]

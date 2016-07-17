@@ -1,3 +1,3 @@
 reporting
 startReporting
-	self send: #[3]
+	^ self send: #[3]

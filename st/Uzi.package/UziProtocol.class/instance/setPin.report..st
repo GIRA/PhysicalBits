@@ -1,6 +1,7 @@
 reporting
 setPin: pinNumber report: report
-	self send: {
+	| msg |
+	msg := self send: {
 		5. 
 		pinNumber. 
 		report ifTrue: [1] ifFalse: [0]
@@ -8,6 +9,8 @@ setPin: pinNumber report: report
 	report 
 		ifTrue: [
 			pinsReporting add: pinNumber.
-			self startReporting]
+			msg := msg, self startReporting]
 		ifFalse: [
-			pinsReporting remove: pinNumber ifAbsent: ["Do nothing"]]
+			pinsReporting remove: pinNumber ifAbsent: ["Do nothing"]].
+		
+	^ msg

@@ -1,3 +1,3 @@
 profiling
 stopProfiling
-	self send: #[8 0]
+	^ self send: #[8 0]

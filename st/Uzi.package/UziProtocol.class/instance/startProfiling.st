@@ -1,3 +1,3 @@
 profiling
 startProfiling
-	self send: #[8 1]
+	^ self send: #[8 1]
