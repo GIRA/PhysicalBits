@@ -58,6 +58,9 @@
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingReader.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingWriter.cpp">
+      <Filter>Sketch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEPROM.h">
@@ -100,6 +103,9 @@
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h">
       <Filter>Sketch</Filter>
     </ClInclude>
   </ItemGroup>

@@ -117,6 +117,7 @@
     <ClCompile Include="..\..\UziFirmware\ArrayReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingReader.cpp" />
+    <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingWriter.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMWriter.cpp" />
     <ClCompile Include="..\..\UziFirmware\GPIO.cpp" />
     <ClCompile Include="..\..\UziFirmware\Program.cpp" />
@@ -133,6 +134,7 @@
     <ClInclude Include="..\..\UziFirmware\ArrayReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h" />
+    <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWriter.h" />
     <ClInclude Include="..\..\UziFirmware\GPIO.h" />
     <ClInclude Include="..\..\UziFirmware\Program.h" />
