@@ -55,6 +55,9 @@
     <ClCompile Include="..\..\UziFirmware\GPIO.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingReader.cpp">
+      <Filter>Sketch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEPROM.h">
@@ -94,6 +97,9 @@
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\GPIO.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h">
       <Filter>Sketch</Filter>
     </ClInclude>
   </ItemGroup>
