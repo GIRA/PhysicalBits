@@ -34,23 +34,7 @@
 #define REPORT_INTERVAL									 50
 #define KEEP_ALIVE_INTERVAL							   2000
 
-/*
-HACK(Richo):
-I defined this default program just to simplify testing with the simulator. This code is
-fragile because it depends on a specific version of the instruction set and it should be
-removed eventually.
-*/
-Program * defaultProgram()
-{
-	unsigned char encoded[] = {
-		2,
-		128, 0, 0, 0, 2, 8, 11, 14, 0, 0, 1, 80, 81, 255, 
-		128, 0, 3, 232, 3, 12, 0, 1, 13, 0, 2, 80, 164, 2, 1, 81, 131, 2, 0, 81, 255
-	};
-	ArrayReader reader(encoded, 36);
-	return new Program(&reader);
-}
-Program * program = defaultProgram();
+Program * program = new Program();
 VM * vm = new VM();
 GPIO * io = new GPIO();
 Reader * stream = new SerialReader();
@@ -83,19 +67,12 @@ inline void executeProfile(void);
 
 void setup()
 {
-	//installSavedProgram();
+	installSavedProgram();
 	initSerial();
 }
 
 void loop()
 {
-	// TODO(Richo): This was added to test the serial console. Remove ASAP
-	while (Serial.available())
-	{
-		char c = Serial.read();
-		Serial.write(c);
-	}
-
 	checkForIncomingMessages();
 	vm->executeProgram(program, io);
 	sendReport();
