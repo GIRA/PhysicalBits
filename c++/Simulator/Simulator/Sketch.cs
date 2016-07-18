@@ -35,6 +35,7 @@ namespace Simulator
         public static Sketch Current { get { return current; } }
 
         private ConcurrentQueue<Tuple<DateTime, byte[]>> serial;
+        private object serial_lock = new object();
         private Thread thread;
         private bool running = false;
         private bool paused = false;
@@ -76,7 +77,7 @@ namespace Simulator
                 
         public void WriteSerial(byte[] bytes)
         {
-            lock (serial)
+            lock (serial_lock)
             {
                 Serial_write(bytes, bytes.Length);
             }
@@ -100,7 +101,7 @@ namespace Simulator
 
         private void EnqueueSerial()
         {
-            lock (serial)
+            lock (serial_lock)
             {
                 byte[] buffer = new byte[1024];
                 int count = Serial_readInto(buffer, buffer.Length);
