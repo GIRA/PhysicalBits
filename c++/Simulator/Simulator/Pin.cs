@@ -55,7 +55,7 @@ namespace Simulator
 
         private void led_Click(object sender, EventArgs e)
         {
-            sketch.SetPinValue(number, (short)(1023 - value));
+            sketch.SetPinValue(number, (short)(value > 0 ? 0 : 1023));
         }
     }
 }
