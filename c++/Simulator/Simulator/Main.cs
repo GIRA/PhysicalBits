@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Simulator
 {
@@ -29,6 +30,19 @@ namespace Simulator
             InitializePins();
             stepTimer.Enabled = true;
             sketch.Start();
+            // HACK(Richo): To quickly test, I run a default program
+            Task.Delay(500) // Wait a bit to give time to the Serial to initialize
+                .ContinueWith(task =>
+                {
+                    sketch.WriteSerial(new byte[]
+                    {
+                        0,
+                        2,
+                        128, 0, 3, 232, 1, 4, 13, 0, 0, 82, 255,
+                        128, 0, 0, 0, 2, 8, 11, 15, 0, 0, 1, 80, 81, 255
+                    });
+                });
+                 
         }
 
         private void InitializePins()
@@ -50,14 +64,14 @@ namespace Simulator
             }
 
             // HACK(Richo): By default I make these three pins visible
-            checks[11].Checked = checks[13].Checked = checks[14].Checked = true;
+            checks[11].Checked = checks[13].Checked = checks[15].Checked = true;
         }
 
 
         private void stepTimer_Tick(object sender, EventArgs e)
         {
             // HACK(Richo): To speed testing, I automatically change the value of A0
-            sketch.SetPinValue(14, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
+            sketch.SetPinValue(15, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
             
             UpdateUI();
         }
@@ -115,5 +129,6 @@ namespace Simulator
         {
             sketch.Pause();
         }
+
     }
 }
