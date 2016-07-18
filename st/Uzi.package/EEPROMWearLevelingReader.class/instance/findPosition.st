@@ -18,7 +18,8 @@ findPosition
 		reader next = self endMark
 			ifTrue: [reader peek = self endMark
 				ifTrue: ["It was escaped. Skip next"
-					reader next]
+					reader next.
+					count := count + 1]
 				ifFalse: ["We found it! Break out of the loop"
 					count := size + 1]]].
 	
@@ -33,7 +34,8 @@ findPosition
 		reader back = self beginMark
 			ifTrue: [reader peekBack = self beginMark
 				ifTrue: ["It was escaped. Skip back"
-					reader back]
+					reader back.
+					count := count + 1]
 				ifFalse: ["We found it! Break out of the loop"
 					position := reader position.
 					count := size + 1]]].
