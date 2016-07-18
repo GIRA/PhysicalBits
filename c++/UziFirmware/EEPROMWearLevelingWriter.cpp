@@ -7,7 +7,7 @@ EEPROMWearLevelingWriter::EEPROMWearLevelingWriter()
 	beginPosition = writer->getPosition();
 	// Erase previous end mark and then write the begin mark"
 	writer->nextPut(0);
-	writer->nextPut(BEGIN_MARK);
+	writer->nextPut(EEPROM_BEGIN_MARK);
 }
 
 EEPROMWearLevelingWriter::~EEPROMWearLevelingWriter()
@@ -37,7 +37,7 @@ bool EEPROMWearLevelingWriter::atEnd()
 
 void EEPROMWearLevelingWriter::escapeIfNecessary(unsigned char byte)
 {
-	if (byte == BEGIN_MARK || byte == END_MARK)
+	if (byte == EEPROM_BEGIN_MARK || byte == EEPROM_END_MARK)
 	{
 		writer->nextPut(byte);
 	}
@@ -48,9 +48,9 @@ void EEPROMWearLevelingWriter::close()
 	if (closed) return;
 	closed = true;
 
-	writer->nextPut(END_MARK);
+	writer->nextPut(EEPROM_END_MARK);
 	// Make sure it's not escaped
-	if (EEPROM.read(writer->getPosition()) == END_MARK)
+	if (EEPROM.read(writer->getPosition()) == EEPROM_END_MARK)
 	{
 		EEPROM.write(writer->getPosition(), 0);
 	}
@@ -63,7 +63,7 @@ int EEPROMWearLevelingWriter::findPosition()
 
 	// Skip beginning end marks
 	count = 0;
-	while (count < EEPROM_SIZE && reader.peek() == END_MARK)
+	while (count < EEPROM_SIZE && reader.peek() == EEPROM_END_MARK)
 	{
 		// Skip this byte
 		reader.next();
@@ -75,17 +75,19 @@ int EEPROMWearLevelingWriter::findPosition()
 	while (count <= EEPROM_SIZE)
 	{
 		count++;
-		if (reader.next() == END_MARK)
+		if (reader.next() == EEPROM_END_MARK)
 		{
-			if (reader.peek() == END_MARK)
+			if (reader.peek() == EEPROM_END_MARK)
 			{
 				// It was escaped. Skip next
 				reader.next();
+				count++;
 			}
 			else
 			{
 				// We found it! Break out of the loop
-				position = reader.getPosition() - 1 % EEPROM_SIZE;
+				reader.back();
+				position = reader.getPosition();
 				break;
 			}
 		}

@@ -1,9 +1,6 @@
 #pragma once
 
-#include "EEPROM.h"
-
-// E2END = The last EEPROM address
-#define EEPROM_SIZE			(E2END + 1)
+#include "EEPROMUtils.h"
 
 class EEPROMWriter
 {

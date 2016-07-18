@@ -31,8 +31,8 @@ bool EEPROMWearLevelingReader::atEnd()
 
 unsigned char EEPROMWearLevelingReader::escapeIfNecessary(unsigned char byte)
 {
-	if ((byte == BEGIN_MARK && reader->peek() == BEGIN_MARK)
-		|| (byte == END_MARK && reader->peek() == END_MARK))
+	if ((byte == EEPROM_BEGIN_MARK && reader->peek() == EEPROM_BEGIN_MARK)
+		|| (byte == EEPROM_END_MARK && reader->peek() == EEPROM_END_MARK))
 	{
 		reader->next();
 	}
@@ -46,7 +46,7 @@ int EEPROMWearLevelingReader::findPosition()
 
 	// Skip beginning end marks
 	count = 0;
-	while (count < EEPROM_SIZE && reader.peek() == END_MARK)
+	while (count < EEPROM_SIZE && reader.peek() == EEPROM_END_MARK)
 	{
 		// Skip this byte
 		reader.next();
@@ -58,12 +58,13 @@ int EEPROMWearLevelingReader::findPosition()
 	while (count <= EEPROM_SIZE)
 	{
 		count++;
-		if (reader.next() == END_MARK)
+		if (reader.next() == EEPROM_END_MARK)
 		{
-			if (reader.peek() == END_MARK)
+			if (reader.peek() == EEPROM_END_MARK)
 			{
 				// It was escaped. Skip next
 				reader.next();
+				count++;
 			}
 			else
 			{
@@ -82,12 +83,13 @@ int EEPROMWearLevelingReader::findPosition()
 	while (count <= EEPROM_SIZE)
 	{
 		count++;
-		if (reader.back() == BEGIN_MARK)
+		if (reader.back() == EEPROM_BEGIN_MARK)
 		{
-			if (reader.peekBack() == BEGIN_MARK)
+			if (reader.peekBack() == EEPROM_BEGIN_MARK)
 			{
 				// It was escaped. Skip back
 				reader.back();
+				count++;
 			}
 			else
 			{

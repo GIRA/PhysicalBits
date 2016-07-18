@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\UziFirmware\ArrayReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMReader.h" />
+    <ClInclude Include="..\..\UziFirmware\EEPROMUtils.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWriter.h" />

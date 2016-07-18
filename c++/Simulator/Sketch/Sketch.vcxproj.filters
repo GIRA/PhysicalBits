@@ -108,5 +108,8 @@
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h">
       <Filter>Sketch</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\EEPROMUtils.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

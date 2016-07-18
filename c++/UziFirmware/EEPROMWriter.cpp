@@ -18,7 +18,7 @@ int EEPROMWriter::getPosition()
 
 void EEPROMWriter::incrementPosition(void)
 {
-	position = (position + 1) % EEPROM_SIZE;
+	position = positive_modulo(position + 1, EEPROM_SIZE);
 }
 
 void EEPROMWriter::nextPut(unsigned char value)

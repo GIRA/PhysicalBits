@@ -19,12 +19,12 @@ int EEPROMReader::getPosition(void)
 
 void EEPROMReader::incrementPosition(void)
 {
-	position = (position + 1) % EEPROM_SIZE;
+	position = positive_modulo(position + 1, EEPROM_SIZE);
 }
 
 void EEPROMReader::decrementPosition(void)
 {
-	position = (position - 1) % EEPROM_SIZE;
+	position = positive_modulo(position - 1, EEPROM_SIZE);
 }
 
 unsigned char EEPROMReader::next(void)

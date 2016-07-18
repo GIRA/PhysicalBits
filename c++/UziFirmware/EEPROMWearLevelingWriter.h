@@ -3,9 +3,6 @@
 #include "EEPROMReader.h"
 #include "EEPROMWriter.h"
 
-#define BEGIN_MARK	0xCE
-#define END_MARK	0xCF
-
 class EEPROMWearLevelingWriter
 {
 
