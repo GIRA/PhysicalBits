@@ -140,7 +140,7 @@
 				.text(uzi.portName)
 				.append("\n<span class='caret'></span>");			
 			$("#disconnect").removeAttr("disabled");					
-			//$("#install").removeAttr("disabled");
+			$("#install").removeAttr("disabled");
 			$("#run").removeAttr("disabled");
 			$("#more").removeAttr("disabled");
 		} else {
