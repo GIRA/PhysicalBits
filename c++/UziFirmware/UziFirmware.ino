@@ -81,14 +81,13 @@ void loop()
 
 void installSavedProgram(void)
 {
-	Reader * eeprom = new EEPROMWearLevelingReader();
-	if (eeprom->next() == PROGRAM_START)
+	EEPROMWearLevelingReader eeprom;
+	if (eeprom.next() == PROGRAM_START)
 	{
 		delete program;
-		program = new Program(eeprom);
+		program = new Program(&eeprom);
 		program->configurePins(io);
 	}
-	delete eeprom;
 }
 
 void initSerial(void)
@@ -253,14 +252,13 @@ void executeSaveProgram(void)
 {
 	long size = stream->nextLong(2);
 
-	EEPROMWearLevelingWriter * writer = new EEPROMWearLevelingWriter();
-	writer->nextPut(PROGRAM_START);
+	EEPROMWearLevelingWriter writer;
+	writer.nextPut(PROGRAM_START);
 	for (int i = 0; i < size; i++)
 	{
-		writer->nextPut(stream->next());
+		writer.nextPut(stream->next());
 	}
-	writer->close();
-	delete writer;
+	writer.close();
 }
 
 void executeKeepAlive(void)
