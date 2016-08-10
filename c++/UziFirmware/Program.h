@@ -15,12 +15,18 @@ public:
 	unsigned char getScriptCount(void);
 	Script * getScript(void);
 	void configurePins(GPIO*);
+	
+	long getGlobal(int);
+	void setGlobal(int, long);
 
 private:
 
 	unsigned char scriptCount;
 	Script * script;
 
+	long * globals;
+
+	long * parseVariables(Reader*);
 	void parseScripts(Reader*);
 };
 

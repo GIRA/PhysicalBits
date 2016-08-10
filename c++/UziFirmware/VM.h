@@ -24,6 +24,7 @@ private:
 
 	int pc;
 	StackArray * stack;
+	Program * currentProgram;
 	Script * currentScript;
 
 	unsigned char nextBytecode(void);

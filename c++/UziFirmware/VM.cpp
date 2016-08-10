@@ -2,6 +2,7 @@
 
 void VM::executeProgram(Program * program, GPIO * io)
 {
+	currentProgram = program;
 	int count = program->getScriptCount();
 	Script * script = program->getScript();
 	for (int i = 0; i < count; i++)
@@ -56,13 +57,13 @@ void VM::executeBytecode(unsigned char bytecode, GPIO * io)
 	{
 		case 0x00:
 		{// pushLit
-			stack->push((float)currentScript->literalAt(value));
 		} break;
 		case 0x10:
 		{// pushLocal
 		} break;
 		case 0x20:
 		{// pushGlobal
+			stack->push((float)currentProgram->getGlobal(value));
 		} break;
 		case 0x30:
 		{// setLocal
