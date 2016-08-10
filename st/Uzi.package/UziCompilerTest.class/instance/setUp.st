@@ -1,6 +1,6 @@
 setup
 setUp
-	pushLit := UziPushLiteralBytecode.
+	pushLit := UziPushBytecode.
 	primCall := UziPrimitiveCallBytecode.
 	end := UziEndBytecode new.
 	prim := UziPrimitive

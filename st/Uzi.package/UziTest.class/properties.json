@@ -6,12 +6,11 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"pushLit",
-		"primCall",
 		"end",
 		"jnz",
 		"jmp",
-		"prim" ],
+		"prim",
+		"push" ],
 	"name" : "UziTest",
 	"pools" : [
 		 ],

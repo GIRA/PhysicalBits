@@ -2,31 +2,27 @@ as yet unclassified
 testButton10Led9Encoding
 	| program encoder |
 	encoder := UziEncoder new.
-	program := UziProgram
-		scripts: {UziScriptBuilder
+	program := Uzi program: [:p | p
 			script: #main
 			ticking: true
 			delay: 10
 			bytecodes: [:uzi | uzi
-				pushLit: 9;
-				pushLit: 10;
-				primGetValue;
-				primSetValue;
-				end]}.
+				push: 9;
+				push: 10;
+				prim: #getValue;
+				prim: #setValue;
+				end]].
 	self assert: (encoder encode: program) = #[
 		"How many scripts"
 		1
+		
+		"Variables (9, 10)" 
+		16r02 16r08 16r09 16r0A
 		
 		"Script 1:
 		======"
 		"Stepping and steptime (true, 10)"
 		16r80 16r00 16r00 16r0A
 		
-		"Literals (9, 10)" 
-		16r02 16r08 16r09 16r0A
-		
-		"Variables"
-		16r00
-		
 		"Bytecodes"
-		16r00 16r01 16r50 16r51 16rFF]
+		16r20 16r21 16r50 16r51 16rFF]

@@ -1,3 +1,3 @@
 instance creation
 empty
-	^ self scripts: #()
+	^ self variables: #() scripts: #()

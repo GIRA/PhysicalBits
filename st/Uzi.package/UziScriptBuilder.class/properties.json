@@ -1,14 +1,16 @@
 {
-	"category" : "Uzi-ProgramBuilder",
+	"category" : "Uzi-Builders",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"bytecodes",
-		"literals",
-		"variables" ],
+		"program",
+		"scriptName",
+		"ticking",
+		"delay",
+		"bytecodes" ],
 	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],

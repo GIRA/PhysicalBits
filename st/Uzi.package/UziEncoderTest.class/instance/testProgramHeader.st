@@ -1,10 +1,8 @@
 as yet unclassified
 testProgramHeader
 	| program encoded |
-	program := UziProgram
-		scripts: {
-			UziScriptBuilder exampleButton10Led9.
-			UziScriptBuilder examplePot15Led9
-		}.
+	program := Uzi program: [:pb | Uzi 
+		exampleButton10Led9On: pb;
+		examplePot15Led9On: pb].
 	encoded := UziEncoder new encode: program.
 	self assert: encoded first equals: 2

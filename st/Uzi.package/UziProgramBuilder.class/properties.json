@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Builders",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"variables",
+		"scripts" ],
+	"name" : "UziProgramBuilder",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

@@ -1,21 +1,12 @@
 {
 	"class" : {
-		"INPUT" : "Richo 8/4/2015 17:22",
-		"OUTPUT" : "Richo 8/4/2015 17:22",
-		"exampleBlinkLed9" : "Richo 8/10/2016 16:43",
-		"exampleButton10Led9" : "Richo 8/10/2016 16:43",
-		"examplePot15Led9" : "Richo 8/10/2016 16:43",
-		"script:ticking:delay:bytecodes:" : "Richo 10/8/2014 17:27" },
+		"program:scriptName:ticking:delay:" : "Richo 8/10/2016 18:28" },
 	"instance" : {
-		"add:" : "Richo 9/29/2014 19:27",
-		"bytecodes" : "Richo 10/8/2014 17:29",
-		"end" : "Richo 10/8/2014 17:29",
-		"initialize" : "Richo 10/8/2014 17:28",
-		"jmp:" : "Richo 10/8/2014 17:29",
-		"jnz:" : "Richo 10/8/2014 17:29",
-		"literals" : "Richo 10/8/2014 17:29",
-		"primCall:" : "Richo 10/9/2014 17:27",
-		"primGetValue" : "Richo 10/9/2014 16:29",
-		"primSetValue" : "Richo 10/9/2014 16:29",
-		"pushLit:" : "Richo 10/8/2014 17:30",
-		"variables" : "Richo 10/8/2014 17:29" } }
+		"end" : "Richo 8/10/2016 17:43",
+		"initialize" : "Richo 8/10/2016 17:41",
+		"initializeWithProgram:scriptName:ticking:delay:" : "Richo 8/10/2016 18:29",
+		"jmp:" : "Richo 8/10/2016 17:43",
+		"jnz:" : "Richo 8/10/2016 17:43",
+		"prim:" : "Richo 8/10/2016 17:42",
+		"push:" : "Richo 8/10/2016 17:41",
+		"script" : "Richo 8/10/2016 17:43" } }

@@ -9,12 +9,11 @@
 		"visitJMPBytecode:" : "Richo 10/30/2014 22:27",
 		"visitJNZBytecode:" : "Richo 10/30/2014 22:26",
 		"visitPrimitiveCallBytecode:" : "Richo 10/9/2014 18:10",
-		"visitProgram:" : "Richo 8/4/2015 16:39",
-		"visitPushLiteralBytecode:" : "Richo 10/9/2014 18:08",
-		"visitScript:" : "Richo 10/8/2014 18:42",
+		"visitProgram:" : "Richo 8/10/2016 18:08",
+		"visitPushBytecode:" : "Richo 8/10/2016 18:07",
+		"visitScript:" : "Richo 8/10/2016 18:07",
 		"writeBytecode:argument:" : "Richo 10/9/2014 18:10",
 		"writeBytecodes:" : "Richo 10/8/2014 18:49",
-		"writeLiterals:" : "Richo 10/8/2014 18:55",
 		"writeProgramScriptCount:" : "Richo 10/30/2014 16:49",
 		"writeScriptHeader:" : "Richo 8/10/2015 09:14",
-		"writeVariables:" : "Richo 10/8/2014 18:48" } }
+		"writeVariables:" : "Richo 8/10/2016 18:08" } }

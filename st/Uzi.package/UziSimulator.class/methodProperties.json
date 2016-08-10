@@ -1,9 +1,11 @@
 {
 	"class" : {
+		"INPUT" : "Richo 8/10/2016 18:17",
+		"OUTPUT" : "Richo 8/10/2016 18:17",
 		"new" : "Richo 11/6/2014 11:33",
 		"on:" : "Richo 11/5/2014 18:09" },
 	"instance" : {
-		"configurePins" : "Richo 8/10/2016 16:43",
+		"configurePins" : "Richo 8/10/2016 18:18",
 		"initialize" : "Richo 11/6/2014 08:54",
 		"initializeWith:" : "Richo 11/5/2014 18:10",
 		"isStarted" : "Richo 11/5/2014 18:13",

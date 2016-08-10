@@ -1,5 +1,17 @@
 encoding scripts
-writeVariables: anUziScript
-	stream nextPut: anUziScript variables size.
-	anUziScript variables ifEmpty: [^ self].
-	self halt
+writeVariables: anUziProgram
+	| grouped |
+	"First we sort and store them so that later we can get their indexes"
+	variables := anUziProgram variables asSortedCollection: [:a :b | a value < b value].
+	"We start the section by writing how many items to expect"
+	stream nextPut: variables size.
+	"We group by sizes (in bytes)"
+	grouped := variables groupBy: [:literal | 
+		(1 to: 4) detect: [:e | literal value < (2 raisedTo: 8 * e)]]
+		having: [:ign | true].
+	"And then we write each group"
+	grouped keysAndValuesDo: [:size :group |
+		"The first byte says how many and of what size"
+		stream nextPut: ((group size bitShift: 2) bitOr: size - 1).
+		"Then we can write each value"
+		group do: [:lit | stream nextPut: lit value]]

@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Program",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziPushBytecode",
+	"pools" : [
+		 ],
+	"super" : "UziBytecode",
+	"type" : "normal" }
