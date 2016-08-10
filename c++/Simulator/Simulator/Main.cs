@@ -36,10 +36,21 @@ namespace Simulator
                 {
                     sketch.WriteSerial(new byte[]
                     {
-                        0,
-                        2,
-                        128, 0, 3, 232, 1, 4, 13, 0, 0, 82, 255,
-                        128, 0, 0, 0, 2, 8, 11, 15, 0, 0, 1, 80, 81, 255
+                        0, // Run program
+                        1, // Script count
+                        3, 12, 0, 1, 13, // Globals
+                        128, 0, 3, 232, // Script header
+                        34,  // PUSH 13
+                        80,  // PRIM #read
+                        164, // JNZ  4
+                        34,  // PUSH 13
+                        33,  // PUSH 1
+                        81,  // PRIM #write
+                        131, // JMP  3
+                        34,  // PUSH 13
+                        32,  // PUSH 0
+                        81,  // PRIM #write
+                        255  // END
                     });
                 });
                  
