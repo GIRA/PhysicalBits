@@ -13,17 +13,16 @@ public:
 
 	unsigned char next(void);
 
-	int position(void);
+	int getPosition(void);
 
 	unsigned char * upTo(unsigned char, bool);
 
 private:
 
-	int _position;
-	int _size;
-	unsigned char * _elements;
+	int position;
+	int size;
+	unsigned char * elements;
 
-	int size(void);
 	int remaining(void);
 };
 

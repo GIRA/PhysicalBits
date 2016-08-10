@@ -2,22 +2,22 @@
 
 Program::Program(Reader * rs)
 {
-	_scriptCount = rs->next();
+	scriptCount = rs->next();
 	parseScripts(rs);
 }
 
 Program::Program()
 {
-	_scriptCount = 0;
-	_script = new Script();
+	scriptCount = 0;
+	script = new Script();
 }
 
 Program::~Program(void)
 {
 	//delete _script;
-	Script * current = _script;
+	Script * current = script;
 	Script * next;
-	for (int i = 0; i < _scriptCount; i++)
+	for (int i = 0; i < scriptCount; i++)
 	{
 		next = current->getNext();
 		delete current;
@@ -27,22 +27,22 @@ Program::~Program(void)
 
 unsigned char Program::getScriptCount(void)
 {
-	return _scriptCount;
+	return scriptCount;
 }
 
 Script * Program::getScript(void)
 {
-	return _script;
+	return script;
 }
 
 void Program::parseScripts(Reader * rs)
 {
 	Script * scriptTemp;
-	for (int i = 0; i < _scriptCount; i++)
+	for (int i = 0; i < scriptCount; i++)
 	{
 		scriptTemp = new Script(rs);
-		scriptTemp->setNext(_script);
-		_script = scriptTemp;
+		scriptTemp->setNext(script);
+		script = scriptTemp;
 	}
 }
 

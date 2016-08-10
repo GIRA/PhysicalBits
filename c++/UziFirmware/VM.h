@@ -11,22 +11,22 @@ class VM
 public:
 	VM(void) 
 	{
-		_stack = new StackArray();
+		stack = new StackArray();
 	}
 	~VM(void)
 	{
-		delete _stack;
+		delete stack;
 	}
 
 	void executeProgram(Program*, GPIO*);
 
 private:
 
-	GPIO * _pe;
+	GPIO * io;
 
-	int _ip;
-	StackArray * _stack;
-	Script * _currentScript;
+	int pc;
+	StackArray * stack;
+	Script * currentScript;
 
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char);

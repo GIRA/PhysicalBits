@@ -3,25 +3,25 @@
 
 void StackArray::push(float element)
 {
-	_elements[_pointer++] = element;
+	elements[pointer++] = element;
 }
 
 float StackArray::pop(void)
 {
-	return _elements[--_pointer];
+	return elements[--pointer];
 }
 
 float StackArray::top(void)
 {
-	return _elements[_pointer - 1];
+	return elements[pointer - 1];
 }
 
 void StackArray::reset(void)
 {
-	_pointer = 0;
+	pointer = 0;
 }
 
 bool StackArray::overflow(void)
 {
-	return _pointer >= MAX_SIZE;
+	return pointer >= MAX_SIZE;
 }

@@ -18,8 +18,8 @@ public:
 
 private:
 
-	unsigned char _scriptCount;
-	Script * _script;
+	unsigned char scriptCount;
+	Script * script;
 
 	void parseScripts(Reader*);
 };

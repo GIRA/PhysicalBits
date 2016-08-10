@@ -2,24 +2,24 @@
 
 ArrayReader::ArrayReader(unsigned char * anArray, int size)
 {
-	_position = 0;
-	_elements = anArray;
-	_size = size;
+	position = 0;
+	elements = anArray;
+	size = size;
 }
 
 bool ArrayReader::isClosed(void)
 {
-	return _position >= _size;
+	return position >= size;
 }
 
 unsigned char ArrayReader::next(void)
 {
-	return _elements[_position++];
+	return elements[position++];
 }
 
-int ArrayReader::position(void)
+int ArrayReader::getPosition(void)
 {
-	return _position;
+	return position;
 }
 
 unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
@@ -48,12 +48,7 @@ unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
 	return result;
 }
 
-int ArrayReader::size(void)
-{
-	return _size;
-}
-
 int ArrayReader::remaining(void)
 {
-	return _size - _position;
+	return size - position;
 }

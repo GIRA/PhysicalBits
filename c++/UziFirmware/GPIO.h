@@ -17,9 +17,9 @@ public:
 	{
 		for (int i = 0; i < TOTAL_PINS; i++)
 		{
-			_pinValues[i] = 0;
-			_pinModes[i] = INPUT;
-			_pinReport[i] = false;
+			pinValues[i] = 0;
+			pinModes[i] = INPUT;
+			pinReport[i] = false;
 		}
 	}
 	~GPIO(void) {}
@@ -34,9 +34,9 @@ public:
 
 private:
 
-	float _pinValues[TOTAL_PINS];
-	unsigned char _pinModes[TOTAL_PINS];
-	bool _pinReport[TOTAL_PINS];
+	float pinValues[TOTAL_PINS];
+	unsigned char pinModes[TOTAL_PINS];
+	bool pinReport[TOTAL_PINS];
 
 };
 

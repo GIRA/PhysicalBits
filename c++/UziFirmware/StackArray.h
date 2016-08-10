@@ -8,7 +8,7 @@ class StackArray
 public:
 	StackArray(void)
 	{
-		_pointer = 0;
+		pointer = 0;
 	}
 	~StackArray(void) {}
 
@@ -20,8 +20,8 @@ public:
 
 private:
 
-	float _elements[MAX_SIZE];
-	unsigned int _pointer;
+	float elements[MAX_SIZE];
+	unsigned int pointer;
 
 };
 

@@ -9,7 +9,7 @@ unsigned char GPIO::getMode(unsigned int pin)
 	}
 	else
 	{
-		return _pinModes[index];
+		return pinModes[index];
 	}
 }
 
@@ -21,11 +21,11 @@ void GPIO::setMode(unsigned int pin, unsigned char mode)
 		return;
 	}
 	// Avoid changing the pin mode if it was already set
-	if (_pinModes[index] == mode)
+	if (pinModes[index] == mode)
 	{
 		return;
 	}
-	_pinModes[index] = mode;
+	pinModes[index] = mode;
 	pinMode(pin, mode);
 }
 
@@ -39,7 +39,7 @@ float GPIO::getValue(unsigned int pin)
 
 	if (getMode(pin) == OUTPUT)
 	{
-		return _pinValues[index];
+		return pinValues[index];
 	}
 	else
 	{
@@ -78,7 +78,7 @@ void GPIO::setValue(unsigned int pin, float value)
 		actualValue = value;
 	}
 
-	_pinValues[index] = actualValue;
+	pinValues[index] = actualValue;
 	if (getMode(pin) == INPUT)
 	{
 		setMode(pin, OUTPUT);
@@ -106,7 +106,7 @@ void GPIO::setReport(unsigned int pin, bool report)
 	{
 		return;
 	}
-	_pinReport[index] = report;
+	pinReport[index] = report;
 }
 
 bool GPIO::getReport(unsigned int pin)
@@ -116,20 +116,20 @@ bool GPIO::getReport(unsigned int pin)
 	{
 		return false;
 	}
-	return _pinReport[index];
+	return pinReport[index];
 }
 
 void GPIO::reset()
 {
 	for (int i = 0; i < TOTAL_PINS; i++)
 	{
-		if (_pinModes[i] == OUTPUT)
+		if (pinModes[i] == OUTPUT)
 		{
 			setValue(PIN_NUMBER(i), 0);
 			setMode(PIN_NUMBER(i), INPUT);
 		}
-		_pinValues[i] = 0;
-		_pinModes[i] = INPUT;
-		_pinReport[i] = false;
+		pinValues[i] = 0;
+		pinModes[i] = INPUT;
+		pinReport[i] = false;
 	}
 }

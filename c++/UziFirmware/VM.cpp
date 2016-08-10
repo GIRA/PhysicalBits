@@ -24,15 +24,15 @@ void VM::executeScript(Script * script, GPIO * io)
 	}
 	script->rememberLastStepTime(now);
 
-	_ip = 0;
-	_currentScript = script;
-	_stack->reset();
-	_pe = io;
+	pc = 0;
+	currentScript = script;
+	stack->reset();
+	this->io = io;
 	unsigned char next = nextBytecode();
 	while (next != (unsigned char)0xFF)
 	{
 		executeBytecode(next);
-		if (_stack->overflow())
+		if (stack->overflow())
 		{
 			next = (unsigned char)0xFF;
 		}
@@ -45,7 +45,7 @@ void VM::executeScript(Script * script, GPIO * io)
 
 unsigned char VM::nextBytecode(void)
 {
-	return _currentScript->bytecodeAt(_ip++);
+	return currentScript->bytecodeAt(pc++);
 }
 
 void VM::executeBytecode(unsigned char bytecode)
@@ -57,7 +57,7 @@ void VM::executeBytecode(unsigned char bytecode)
 	{
 		case 0x00:
 		{// pushLit
-			_stack->push((float)_currentScript->literalAt(value));
+			stack->push((float)currentScript->literalAt(value));
 		} break;
 		case 0x10:
 		{// pushLocal
@@ -82,27 +82,27 @@ void VM::executeBytecode(unsigned char bytecode)
 		{// pop
 			for (int i = 0; i < value; i++)
 			{
-				_stack->pop();
+				stack->pop();
 			}
 		} break;
 		case 0x80:
 		{// jmp
-			_ip = _ip + value;
+			pc = pc + value;
 		} break;
 		case 0x90:
 		{// jne
-			float a = _stack->pop();
-			float b = _stack->pop();
+			float a = stack->pop();
+			float b = stack->pop();
 			if (a != b)
 			{
-				_ip = _ip + value;
+				pc = pc + value;
 			}
 		} break;
 		case 0xA0:
 		{// jnz
-			if (_stack->pop() != 0)
+			if (stack->pop() != 0)
 			{
-				_ip = _ip + value;
+				pc = pc + value;
 			}
 		} break;
 		case 0xB0:
@@ -130,34 +130,34 @@ void VM::executePrimitive(unsigned char primitiveIndex)
 	{
 		case 0x00:
 		{// getValue
-			unsigned int pin = (unsigned int)_stack->pop();
-			_stack->push(_pe->getValue(pin));
+			unsigned int pin = (unsigned int)stack->pop();
+			stack->push(io->getValue(pin));
 		} break;
 		case 0x01:
 		{// setValue
-			float value = _stack->pop();
-			unsigned int pin = (unsigned int)_stack->pop();
-			_pe->setValue(pin, value);
+			float value = stack->pop();
+			unsigned int pin = (unsigned int)stack->pop();
+			io->setValue(pin, value);
 		} break;
 		case 0x02:
 		{// toggle
-			unsigned int pin = (unsigned int)_stack->pop();
-			_pe->setValue(pin, 1 - _pe->getValue(pin));
+			unsigned int pin = (unsigned int)stack->pop();
+			io->setValue(pin, 1 - io->getValue(pin));
 		} break;
 		case 0x03:
 		{// getMode
-			unsigned int pin = (unsigned int)_stack->pop();
-			_stack->push(_pe->getMode(pin));
+			unsigned int pin = (unsigned int)stack->pop();
+			stack->push(io->getMode(pin));
 		} break;
 		case 0x04:
 		{// setMode
-			unsigned char mode = (unsigned char)_stack->pop();
-			unsigned int pin = (unsigned int)_stack->pop();
-			_pe->setMode(pin, mode);
+			unsigned char mode = (unsigned char)stack->pop();
+			unsigned int pin = (unsigned int)stack->pop();
+			io->setMode(pin, mode);
 		} break;
 		case 0x05:
 		{// delay
-			delay((unsigned long)_stack->pop());
+			delay((unsigned long)stack->pop());
 		} break;
 	}
 }
