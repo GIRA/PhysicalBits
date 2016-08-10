@@ -27,11 +27,10 @@ void VM::executeScript(Script * script, GPIO * io)
 	pc = 0;
 	currentScript = script;
 	stack->reset();
-	this->io = io;
 	unsigned char next = nextBytecode();
 	while (next != (unsigned char)0xFF)
 	{
-		executeBytecode(next);
+		executeBytecode(next, io);
 		if (stack->overflow())
 		{
 			next = (unsigned char)0xFF;
@@ -48,7 +47,7 @@ unsigned char VM::nextBytecode(void)
 	return currentScript->bytecodeAt(pc++);
 }
 
-void VM::executeBytecode(unsigned char bytecode)
+void VM::executeBytecode(unsigned char bytecode, GPIO * io)
 {
 	unsigned char key = bytecode & 0xF0;
 	unsigned char value = bytecode & 0x0F;
@@ -73,7 +72,7 @@ void VM::executeBytecode(unsigned char bytecode)
 		} break;
 		case 0x50:
 		{// primCall
-			executePrimitive(value);
+			executePrimitive(value, io);
 		} break;
 		case 0x60:
 		{// scriptCall
@@ -123,7 +122,7 @@ void VM::executeBytecode(unsigned char bytecode)
 	}
 }
 
-void VM::executePrimitive(unsigned char primitiveIndex)
+void VM::executePrimitive(unsigned char primitiveIndex, GPIO * io)
 {
 
 	switch (primitiveIndex)

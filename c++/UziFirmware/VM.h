@@ -22,15 +22,13 @@ public:
 
 private:
 
-	GPIO * io;
-
 	int pc;
 	StackArray * stack;
 	Script * currentScript;
 
 	unsigned char nextBytecode(void);
-	void executeBytecode(unsigned char);
-	void executePrimitive(unsigned char);
+	void executeBytecode(unsigned char, GPIO*);
+	void executePrimitive(unsigned char, GPIO*);
 	void executeScript(Script*, GPIO*);
 
 };
