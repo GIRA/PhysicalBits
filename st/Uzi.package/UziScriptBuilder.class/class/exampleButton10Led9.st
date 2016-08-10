@@ -1,6 +1,6 @@
 script examples
 exampleButton10Led9
-	^ Uzi
+	^ self
 		script: #button10Led9
 		ticking: true
 		delay: 0

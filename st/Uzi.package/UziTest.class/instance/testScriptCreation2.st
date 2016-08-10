@@ -1,7 +1,7 @@
 tests
 testScriptCreation2
 	| script |
-	script := Uzi script: #main 
+	script := UziScriptBuilder script: #main 
 		ticking: true delay: 1000
 		bytecodes: [:uzi | uzi
 			pushLit: 9;

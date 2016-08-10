@@ -3,7 +3,7 @@ testButton10Led9Encoding
 	| program encoder |
 	encoder := UziEncoder new.
 	program := UziProgram
-		scripts: {Uzi 
+		scripts: {UziScriptBuilder
 			script: #main
 			ticking: true
 			delay: 10

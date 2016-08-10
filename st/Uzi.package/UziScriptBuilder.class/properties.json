@@ -1,5 +1,5 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-ProgramBuilder",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
@@ -9,7 +9,7 @@
 		"bytecodes",
 		"literals",
 		"variables" ],
-	"name" : "Uzi",
+	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],
 	"super" : "Object",

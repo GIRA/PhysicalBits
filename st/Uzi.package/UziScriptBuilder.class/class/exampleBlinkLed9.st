@@ -1,6 +1,6 @@
 script examples
 exampleBlinkLed9
-	^ Uzi
+	^ self
 		script: #blinkLed9
 		ticking: true
 		delay: 1000

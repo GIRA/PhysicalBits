@@ -1,6 +1,6 @@
 script examples
 examplePot15Led9
-	^ Uzi
+	^ self
 		script: #pot15Led9
 		ticking: true
 		delay: 0
