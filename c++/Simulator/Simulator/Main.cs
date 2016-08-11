@@ -37,18 +37,32 @@ namespace Simulator
                     sketch.WriteSerial(new byte[]
                     {
                         0, // Run program
-                        1, // Script count
-                        3, 12, 0, 1, 13, // Globals
-                        128, 0, 3, 232, // Script header
-                        34,  // PUSH 13
+
+                        2, // Script count
+
+                        // Globals
+                        5, // Total # of globals
+                        20, // 5 variables of 1 byte each
+                        0, 1, 11, 13, 15, // Initial values
+
+                        // Script 1: #Blink13 (with IF)
+                        128, 0, 3, 232, // Header: ticking 1/s
+                        35,  // PUSH 13
+                        35,  // PUSH 13
                         80,  // PRIM #read
-                        164, // JNZ  4
-                        34,  // PUSH 13
+                        163, // JNZ  3
                         33,  // PUSH 1
                         81,  // PRIM #write
-                        131, // JMP  3
-                        34,  // PUSH 13
+                        130, // JMP  2
                         32,  // PUSH 0
+                        81,  // PRIM #write
+                        255, // END
+
+                        // Script 2: #Pot15Led11
+                        128, 0, 0, 0, // Header: ticking
+                        34,  // PUSH 11
+                        36,  // PUSH 15
+                        80,  // PRIM #read
                         81,  // PRIM #write
                         255  // END
                     });
