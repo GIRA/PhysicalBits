@@ -47,24 +47,24 @@ namespace Simulator
 
                         // Script 1: #Blink13 (with IF)
                         128, 0, 3, 232, // Header: ticking 1/s
-                        35,  // PUSH 13
-                        35,  // PUSH 13
-                        80,  // PRIM #read
-                        163, // JNZ  3
-                        33,  // PUSH 1
-                        81,  // PRIM #write
-                        130, // JMP  2
-                        32,  // PUSH 0
-                        81,  // PRIM #write
-                        255, // END
-
+                        11, // Bytecode count
+                        0x83,       // PUSH 13
+                        0x83,       // PUSH 13
+                        0xA0,       // PRIM #read
+                        0xF2, 0x03, // JNZ  3
+                        0x81,       // PUSH 1
+                        0xA1,       // PRIM #write
+                        0xFF, 0x02, // JMP  2
+                        0x80,       // PUSH 0
+                        0xA1,       // PRIM #write
+                        
                         // Script 2: #Pot15Led11
                         128, 0, 0, 0, // Header: ticking
-                        34,  // PUSH 11
-                        36,  // PUSH 15
-                        80,  // PRIM #read
-                        81,  // PRIM #write
-                        255  // END
+                        4, // Bytecode count
+                        0x82,       // PUSH 11
+                        0x84,       // PUSH 15
+                        0xA0,       // PRIM #read
+                        0xA1,       // PRIM #write
                     });
                 });
                  
