@@ -28,19 +28,16 @@ void VM::executeScript(Script * script, GPIO * io)
 	pc = 0;
 	currentScript = script;
 	stack->reset();
-	unsigned char next = nextBytecode();
-	while (next != (unsigned char)0xFF)
+	while (pc < currentScript->getBytecodeCount())
 	{
+		unsigned char next = nextBytecode();
 		executeBytecode(next, io);
 		if (stack->overflow())
 		{
-			next = (unsigned char)0xFF;
+			// TODO(Richo): Notify client of stack overflow
+			break;
 		}
-		else
-		{
-			next = nextBytecode();
-		}
-	}
+	}	
 }
 
 unsigned char VM::nextBytecode(void)
@@ -50,91 +47,172 @@ unsigned char VM::nextBytecode(void)
 
 void VM::executeBytecode(unsigned char bytecode, GPIO * io)
 {
-	unsigned char key = bytecode & 0xF0;
-	unsigned char value = bytecode & 0x0F;
-
-	switch (key)
+	unsigned char opcode;
+	unsigned short argument;
+	if (bytecode < 0x80)
 	{
+		opcode = bytecode >> 5;
+		argument = bytecode & 0x1F;
+	}
+	else
+	{
+		opcode = bytecode >> 4;
+		argument = bytecode & 0xF;
+		if (0xF == opcode)
+		{
+			opcode = bytecode;
+			if (argument >= 2)
+			{
+				argument = nextBytecode();
+			}
+		}		
+	}
+
+	switch (opcode)
+	{
+		// Turn ON
 		case 0x00:
-		{// pushLit
+		{
+			io->setValue(argument, HIGH);
 		} break;
-		case 0x10:
-		{// pushLocal
+
+		// Turn OFF
+		case 0x01:
+		{
+			io->setValue(argument, LOW);
 		} break;
-		case 0x20:
-		{// pushGlobal
-			stack->push((float)currentProgram->getGlobal(value));
+
+		// Write
+		case 0x02:
+		{
+			io->setValue(argument, stack->pop());
 		} break;
-		case 0x30:
-		{// setLocal
+
+		// Read
+		case 0x03:
+		{
+			stack->push(io->getValue(argument));
 		} break;
-		case 0x40:
-		{// setGlobal
+
+		// Push
+		case 0xF8:
+		case 0x08:
+		{
+			stack->push(currentProgram->getGlobal(argument));
 		} break;
-		case 0x50:
-		{// primCall
-			executePrimitive(value, io);
+
+		// Pop
+		case 0xF9:
+		case 0x09:
+		{
+			currentProgram->setGlobal(argument, stack->pop());
 		} break;
-		case 0x60:
-		{// scriptCall
+
+		// Prim call
+		case 0xFB: argument += 256; // 288 -> 543
+		case 0xFA: argument += 16;  // 32 -> 287
+		case 0x0B: argument += 16;  // 16 -> 31
+		case 0x0A:					// 0 -> 15
+		{
+			executePrimitive(argument, io);
 		} break;
-		case 0x70:
-		{// pop
-			for (int i = 0; i < value; i++)
-			{
-				stack->pop();
-			}
+
+		// Script call
+		case 0xFC:
+		case 0x0C:
+		{
+
 		} break;
-		case 0x80:
-		{// jmp
-			pc = pc + value;
+
+		// Start script
+		case 0xFD:
+		case 0x0D:
+		{
+
 		} break;
-		case 0x90:
-		{// jne
-			float a = stack->pop();
-			float b = stack->pop();
-			if (a != b)
-			{
-				pc = pc + value;
-			}
+
+		// Stop script
+		case 0xFE:
+		case 0x0E:
+		{
+
 		} break;
-		case 0xA0:
-		{// jnz
+
+		// Yield
+		case 0xF0:
+		{
+
+		} break;
+
+		// Yield time
+		case 0xF1:
+		{
+		} break;
+
+		// JNZ
+		case 0xF2:
+		{
 			if (stack->pop() != 0)
 			{
-				pc = pc + value;
+				pc += argument;
 			}
 		} break;
-		case 0xB0:
+
+		// JNE
+		case 0xF3:
 		{
+			float a = stack->pop();
+			float b = stack->pop();
+			if (a != b) // TODO(Richo): float comparison
+			{
+				pc += argument;
+			}
 		} break;
-		case 0xC0:
+
+		// JLT
+		case 0xF4:
 		{
+
 		} break;
-		case 0xD0:
+
+		// JLTE
+		case 0xF5:
 		{
+
 		} break;
-		case 0xE0:
+
+		// JGT
+		case 0xF6:
 		{
+
 		} break;
-		case 0xF0:
-		{// extend
+
+		// JGTE
+		case 0xF7:
+		{
+
+		} break;
+
+		// JMP
+		case 0xFF:
+		{
+			pc += argument;
 		} break;
 	}
+
 }
 
-void VM::executePrimitive(unsigned char primitiveIndex, GPIO * io)
+void VM::executePrimitive(unsigned short primitiveIndex, GPIO * io)
 {
-
 	switch (primitiveIndex)
 	{
 		case 0x00:
-		{// getValue
+		{// read
 			unsigned int pin = (unsigned int)stack->pop();
 			stack->push(io->getValue(pin));
 		} break;
 		case 0x01:
-		{// setValue
+		{// write
 			float value = stack->pop();
 			unsigned int pin = (unsigned int)stack->pop();
 			io->setValue(pin, value);

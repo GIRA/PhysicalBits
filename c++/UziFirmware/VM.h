@@ -29,7 +29,7 @@ private:
 
 	unsigned char nextBytecode(void);
 	void executeBytecode(unsigned char, GPIO*);
-	void executePrimitive(unsigned char, GPIO*);
+	void executePrimitive(unsigned short, GPIO*);
 	void executeScript(Script*, GPIO*);
 
 };
