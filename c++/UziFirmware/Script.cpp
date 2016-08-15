@@ -7,7 +7,8 @@ Script::Script(Reader * rs)
 	stepTime = n & 0x7FFFFFFF;
 	lastStepTime = 0;
 
-	bytecodes = parseBytecodes(rs);
+	bytecodeCount = rs->next();
+	bytecodes = rs->next(bytecodeCount);
 	nextScript = 0;
 }
 
@@ -15,15 +16,19 @@ Script::Script()
 {
 	// Returns a NOOP program.
 	stepping = false;
-	stepTime = lastStepTime = 0;
-	bytecodes = new unsigned char[1];
-	bytecodes[0] = 0xFF;
+	stepTime = lastStepTime = bytecodeCount = 0;
+	bytecodes = new unsigned char[0];
 	nextScript = 0;
 }
 
 Script::~Script(void)
 {
 	delete[] bytecodes;
+}
+
+unsigned char Script::getBytecodeCount(void)
+{
+	return bytecodeCount;
 }
 
 unsigned char Script::bytecodeAt(int index)
@@ -64,9 +69,4 @@ void Script::setNext(Script* next)
 long Script::getStepTime(void)
 {
 	return stepTime;
-}
-
-unsigned char * Script::parseBytecodes(Reader * rs)
-{
-	return rs->upTo(0xFF, true);
 }
