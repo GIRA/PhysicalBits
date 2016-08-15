@@ -1,4 +1,4 @@
-encoding scripts
+encoding programs
 writeVariables: anUziProgram
 	| grouped |
 	"First we sort and store them so that later we can get their indexes"

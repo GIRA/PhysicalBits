@@ -1,4 +1,5 @@
-visiting
+encoding bytecodes
 visitPrimitiveCallBytecode: bytecode
-	self writeBytecode: 5
-		argument: bytecode argument code
+	| arg |
+	arg := bytecode argument code.
+	stream nextPut: (16rA0 bitOr: arg)

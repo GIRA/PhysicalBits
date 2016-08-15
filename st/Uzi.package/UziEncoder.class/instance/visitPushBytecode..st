@@ -1,4 +1,5 @@
-visiting
+encoding bytecodes
 visitPushBytecode: bytecode
-	self writeBytecode: 2
-		argument: (variables indexOf: bytecode argument) - 1	
+	| arg |
+	arg := (variables indexOf: bytecode argument) - 1.
+	stream nextPut: (16r80 bitOr: arg)

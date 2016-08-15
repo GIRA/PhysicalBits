@@ -1,4 +1,5 @@
-visiting
+encoding bytecodes
 visitJNZBytecode: bytecode  
-	self writeBytecode: 16rA
-		argument: bytecode argument
+	stream
+		nextPut: 16rF2;
+		nextPut: bytecode argument

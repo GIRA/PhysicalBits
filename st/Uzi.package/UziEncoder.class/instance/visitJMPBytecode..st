@@ -1,4 +1,5 @@
-visiting
+encoding bytecodes
 visitJMPBytecode: bytecode
-	self writeBytecode: 8
-		argument: bytecode argument
+	stream 
+		nextPut: 16rFF;
+		nextPut: bytecode argument

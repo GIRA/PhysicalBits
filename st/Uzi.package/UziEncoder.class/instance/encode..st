@@ -1,5 +1,5 @@
 encoding
 encode: anUziProgram
-	stream := #[] writeStream.
-	self visit: anUziProgram.
-	^ stream contents
+	^ self 
+		withStream: #[] writeStream 
+		do: [self visit: anUziProgram]
