@@ -10,6 +10,15 @@ long Reader::nextLong(int size)
 	return result;
 }
 
+unsigned char * Reader::next(int size)
+{
+	unsigned char * result = new unsigned char[size];
+	for (int i = 0; i < size; i++)
+	{
+		result[i] = next();
+	}
+	return result;
+}
 
 unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive)
 {

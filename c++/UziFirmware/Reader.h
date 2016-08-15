@@ -9,8 +9,8 @@ public:
 
 	virtual unsigned char next(void) = 0;
 
+	virtual unsigned char * next(int);
 	virtual unsigned char * upTo(unsigned char, bool);
 	virtual long nextLong(int);
-
 };
 
