@@ -8,4 +8,4 @@ testEmptyScript
 	self assert: script1 name = #main.
 	self assert: script1 isTicking.
 	self assert: script1 delay = 1000.
-	self assert: script1 bytecodes size = 1
+	self assert: script1 bytecodes isEmpty 

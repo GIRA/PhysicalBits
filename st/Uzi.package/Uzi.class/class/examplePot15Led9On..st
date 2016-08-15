@@ -8,5 +8,4 @@ examplePot15Led9On: programBuilder
 			push: 9;
 			push: 15;
 			prim: #getValue;
-			prim: #setValue;
-			end]
+			prim: #setValue]

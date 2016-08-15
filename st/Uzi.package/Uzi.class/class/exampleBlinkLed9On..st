@@ -14,5 +14,4 @@ exampleBlinkLed9On: programBuilder
 			jmp: 3;
 			push: 9;
 			push: 0;			
-			prim: #setValue;
-			end]
+			prim: #setValue]

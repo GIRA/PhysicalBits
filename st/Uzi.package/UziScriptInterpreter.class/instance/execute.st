@@ -8,9 +8,8 @@ execute
 	
 	ip := 0.
 	stack := UziStack new.
-	next := self nextBytecode.
-	[next isEnd] whileFalse: [
-		self executeBytecode: next.
+	[ip < script bytecodes size] whileTrue: [
+		self executeBytecode: self nextBytecode.
 		stack overflow
-			ifTrue: [next := UziEndBytecode new]
-			ifFalse: [next := self nextBytecode]]
+			ifTrue: [self flag: #Richo. "Notify overflow"
+				ip := script bytecodes size]]

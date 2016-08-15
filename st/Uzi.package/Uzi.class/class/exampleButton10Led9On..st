@@ -8,5 +8,4 @@ exampleButton10Led9On: programBuilder
 			push: 9;
 			push: 10;
 			prim: #getValue;
-			prim: #setValue;
-			end]
+			prim: #setValue]

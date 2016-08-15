@@ -2,7 +2,6 @@ visiting
 visitScriptNode: node
 	bytecodes := OrderedCollection new.
 	self visitCollection: node body.
-	bytecodes add: UziEndBytecode new.
 	^ UziScript
 		name: node name
 		ticking: node state = #ticking

@@ -14,8 +14,7 @@ testProgramCreation2
 			jmp: 3;
 			push: 9;
 			push: 0;
-			prim: #setValue;
-			end	]].
+			prim: #setValue]].
 	self assert: 1 equals: program scripts size.
 	self assert: #(9 255 0) equals: (program variables collect: #value).
 	script := program scripts first.
@@ -32,6 +31,5 @@ testProgramCreation2
 		jmp arg: 3.
 		push arg: program variables first.
 		push arg: program variables third.
-		prim arg: (UziPrimitive named: #setValue).
-		end	
+		prim arg: (UziPrimitive named: #setValue)
 	}

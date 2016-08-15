@@ -9,8 +9,7 @@ testProgramCreation
 			push: 9;
 			push: 10;
 			prim: #getValue;
-			prim: #setValue;
-			end]].
+			prim: #setValue]].
 	self assert: 1 equals: program scripts size.
 	self assert: #(9 10) equals: (program variables collect: #value).
 	script := program scripts first.
@@ -18,11 +17,10 @@ testProgramCreation
 	self assert: script isTicking.
 	self assert: script delay = 1000.
 	bytecodes := script bytecodes.
-	self assert: bytecodes size = 5.
+	self assert: bytecodes size = 4.
 	self assert: bytecodes = {
 		push arg: program variables first.
 		push arg: program variables second.
 		prim arg: (UziPrimitive named: #getValue).
-		prim arg: (UziPrimitive named: #setValue).
-		end.
+		prim arg: (UziPrimitive named: #setValue)
 	}

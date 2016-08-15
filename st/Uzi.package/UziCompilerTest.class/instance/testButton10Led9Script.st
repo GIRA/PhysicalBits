@@ -12,11 +12,10 @@ testButton10Led9Script
 	self assert: script1 isTicking.
 	self assert: script1 delay = 10.
 	bytecodes := script1 bytecodes.
-	self assert: bytecodes size = 5.
+	self assert: bytecodes size = 4.
 	self assert: bytecodes = {
 		pushLit arg: program variables first.
 		pushLit arg: program variables second.
 		primCall arg: (prim named: #getValue).
-		primCall arg: (prim named: #setValue).
-		end.
+		primCall arg: (prim named: #setValue)
 	}

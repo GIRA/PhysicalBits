@@ -10,8 +10,7 @@ testButton10Led9Encoding
 				push: 9;
 				push: 10;
 				prim: #getValue;
-				prim: #setValue;
-				end]].
+				prim: #setValue]].
 	self assert: (encoder encode: program) = #[
 		"How many scripts"
 		1
@@ -24,5 +23,8 @@ testButton10Led9Encoding
 		"Stepping and steptime (true, 10)"
 		16r80 16r00 16r00 16r0A
 		
+		"Bytecode count"
+		16r04
+		
 		"Bytecodes"
-		16r20 16r21 16r50 16r51 16rFF]
+		16r80 16r81 16rA0 16rA1]
