@@ -16,6 +16,6 @@ testButton10Led9Script
 	self assert: bytecodes = {
 		pushLit arg: program variables first.
 		pushLit arg: program variables second.
-		primCall arg: (prim named: #getValue).
-		primCall arg: (prim named: #setValue)
+		primCall arg: (prim named: #read).
+		primCall arg: (prim named: #write)
 	}

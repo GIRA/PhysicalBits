@@ -7,5 +7,5 @@ examplePot15Led9On: programBuilder
 		bytecodes: [:uzi | uzi
 			push: 9;
 			push: 15;
-			prim: #getValue;
-			prim: #setValue]
+			prim: #read;
+			prim: #write]

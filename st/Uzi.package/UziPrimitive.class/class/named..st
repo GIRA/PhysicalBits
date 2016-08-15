@@ -1,8 +1,8 @@
 instance creation
 named: primitiveName
 	^ primitiveName caseOf: {
-		[#getValue] -> [self code: 0].
-		[#setValue] -> [self code: 1].
+		[#read] -> [self code: 0].
+		[#write] -> [self code: 1].
 		[#toggle] -> [self code: 2].
 		[#add] -> [self code: 3].
 		[#subtract] -> [self code: 4].

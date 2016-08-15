@@ -9,8 +9,8 @@ testButton10Led9Encoding
 			bytecodes: [:uzi | uzi
 				push: 9;
 				push: 10;
-				prim: #getValue;
-				prim: #setValue]].
+				prim: #read;
+				prim: #write]].
 	self assert: (encoder encode: program) = #[
 		"How many scripts"
 		1

@@ -7,5 +7,5 @@ exampleButton10Led9On: programBuilder
 		bytecodes: [:uzi | uzi
 			push: 9;
 			push: 10;
-			prim: #getValue;
-			prim: #setValue]
+			prim: #read;
+			prim: #write]

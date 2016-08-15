@@ -8,8 +8,8 @@ testProgramCreation
 		bytecodes: [:uzi | uzi
 			push: 9;
 			push: 10;
-			prim: #getValue;
-			prim: #setValue]].
+			prim: #read;
+			prim: #write]].
 	self assert: 1 equals: program scripts size.
 	self assert: #(9 10) equals: (program variables collect: #value).
 	script := program scripts first.
@@ -21,6 +21,6 @@ testProgramCreation
 	self assert: bytecodes = {
 		push arg: program variables first.
 		push arg: program variables second.
-		prim arg: (UziPrimitive named: #getValue).
-		prim arg: (UziPrimitive named: #setValue)
+		prim arg: (UziPrimitive named: #read).
+		prim arg: (UziPrimitive named: #write)
 	}

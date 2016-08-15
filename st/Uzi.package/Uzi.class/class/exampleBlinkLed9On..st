@@ -6,12 +6,12 @@ exampleBlinkLed9On: programBuilder
 		delay: 1000
 		bytecodes: [:u2 | u2
 			push: 9;
-			prim: #getValue;
+			prim: #read;
 			jnz: 4;
 			push: 9;
 			push: 1;
-			prim: #setValue;
+			prim: #write;
 			jmp: 3;
 			push: 9;
 			push: 0;			
-			prim: #setValue]
+			prim: #write]
