@@ -79,10 +79,18 @@ namespace SimulatorTest
                 */
                 0, 1, 0, 128, 0, 0, 0, 2, 111, 77
             });
-            sketch.SetPinValue(15, 512);
+            /*
+            INFO(Richo):
+            The choice of 120 as expected value is not casual. Since analogRead() and
+            analogWrite() have different scales (the former goes from 0 to 1023, and 
+            latter from 0 to 255) and we internally store the pin values as floats,
+            some precision can be lost. So, I chose 120 because it's one of those
+            values that keep their precision after being read/write.
+            */
+            sketch.SetPinValue(15, 120);
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
-            Assert.AreEqual(512, sketch.GetPinValue(13));
+            Assert.AreEqual(120, sketch.GetPinValue(13));
         }
 
         private void TurnOffAllPins()
