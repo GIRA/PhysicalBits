@@ -118,14 +118,24 @@ namespace Simulator
             if (paused) { paused = false; }
             else
             {
-                InitSerial();
-                Sketch_setup();
+                Setup();
             }
             while (running)
             {
-                EnqueueSerial();
-                Sketch_loop();
+                Loop();
             }
+        }
+
+        public void Setup()
+        {
+            InitSerial();
+            Sketch_setup();
+        }
+
+        public void Loop()
+        {
+            EnqueueSerial();
+            Sketch_loop();
         }
     }
 }
