@@ -95,7 +95,7 @@ void GPIO::setValue(unsigned int pin, float value)
 	}
 	else
 	{
-		analogWrite(pin, (unsigned short)(actualValue * 255));
+		analogWrite(pin, (unsigned short)round(actualValue * 255));
 	}
 }
 
