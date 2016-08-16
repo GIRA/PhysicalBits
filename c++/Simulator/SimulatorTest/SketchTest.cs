@@ -22,12 +22,14 @@ namespace SimulatorTest
             sketch.WriteSerial(new byte[]
             {
                 /*
-                Uzi program: [:p | p
-	                script: #test
-	                ticking: true
-	                delay: 0
-	                bytecodes: [:s | s
-		                turnOn: 13]].
+                program := Uzi
+                    program: [:p | p
+	                    script: #test
+	                    ticking: true
+	                    delay: 0
+	                    bytecodes: [:s | s
+		                    turnOn: 13]].
+                UziProtocol new run: program
                 */
                 0, 1, 0, 128, 0, 0, 0, 1, 13
             });
@@ -42,12 +44,14 @@ namespace SimulatorTest
             sketch.WriteSerial(new byte[]
             {
                 /*
-                Uzi program: [:p | p
-	                script: #test
-	                ticking: true
-	                delay: 0
-	                bytecodes: [:s | s
-		                turnOff: 13]].
+                program := Uzi 
+                    program: [:p | p
+	                    script: #test
+	                    ticking: true
+	                    delay: 0
+	                    bytecodes: [:s | s
+		                    turnOff: 13]].
+                UziProtocol new run: program
                 */
                 0, 1, 0, 128, 0, 0, 0, 1, 45
             });
@@ -55,6 +59,30 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void TestReadWriteBytecode()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi 
+                    program: [:p | p
+	                    script: #test
+	                    ticking: true
+	                    delay: 0
+	                    bytecodes: [:s | s
+		                    read: 15;
+		                    write: 13]].
+                UziProtocol new run: program
+                */
+                0, 1, 0, 128, 0, 0, 0, 2, 111, 77
+            });
+            sketch.SetPinValue(15, 512);
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(512, sketch.GetPinValue(13));
         }
 
         private void TurnOffAllPins()
