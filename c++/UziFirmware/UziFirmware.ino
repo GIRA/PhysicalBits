@@ -30,7 +30,7 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(unsigned char)0xC3
-#define REPORT_INTERVAL									 50
+#define REPORT_INTERVAL									100
 #define KEEP_ALIVE_INTERVAL							   2000
 
 Program * program = new Program();
