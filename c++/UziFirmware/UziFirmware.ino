@@ -14,11 +14,12 @@
 #define RQ_SAVE_PROGRAM									6
 #define RQ_KEEP_ALIVE									7
 #define RQ_PROFILE										8
+#define RQ_RUN_PROGRAM									9
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
 #define RS_PIN_VALUE									1
-#define RS_PROFILE                    2
+#define RS_PROFILE										2
 
 /* MACROS */
 #define IS_COMMAND(x)						((x) >> 7 == 0)
@@ -63,6 +64,7 @@ inline void checkForIncomingMessages(void);
 inline void sendProfile(void);
 inline void sendReport(void);
 inline void executeProfile(void);
+inline void executeRunProgram(void);
 
 void setup()
 {
@@ -203,6 +205,9 @@ void executeCommand(unsigned char cmd)
 		case RQ_PROFILE:
 			executeProfile();
 			break;
+		case RQ_RUN_PROGRAM:
+			executeRunProgram();
+			break;
 	}
 }
 
@@ -271,4 +276,10 @@ void executeProfile(void)
 	profiling = stream->next();
 	tickCount = 0;
 	lastTimeProfile = millis();
+}
+
+void executeRunProgram(void)
+{
+	Program program(stream);
+	vm->executeProgram(&program, io);
 }
