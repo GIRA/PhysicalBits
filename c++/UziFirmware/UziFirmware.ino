@@ -101,8 +101,9 @@ void checkForIncomingMessages(void)
 {
 	if (Serial.available())
 	{
-		unsigned char in = stream->next();
-		executeCommand(in);
+		bool timeout;
+		unsigned char in = stream->next(timeout);
+		if (!timeout) { executeCommand(in); }
 	}
 }
 
@@ -220,17 +221,26 @@ void executeSetProgram(void)
 
 void executeSetValue(void)
 {
-	unsigned char pin = stream->next();
+	bool timeout;
+
+	unsigned char pin = stream->next(timeout);
+	if (timeout) return;
+
 	// We receive a value between 0 and 255 but GPIO.setValue(..) expects 0..1
-	float value = (float)stream->next() / 255;
+	float value = (float)stream->next(timeout) / 255;
+	if (timeout) return;
 
 	io->setValue(pin, value);
 }
 
 void executeSetMode(void)
 {
-	unsigned char pin = stream->next();
-	unsigned char mode = stream->next();
+	bool timeout;
+
+	unsigned char pin = stream->next(timeout);
+	if (timeout) return;
+	unsigned char mode = stream->next(timeout);
+	if (timeout) return;
 
 	io->setMode(pin, mode);
 }
@@ -247,21 +257,28 @@ void executeStopReporting(void)
 
 void executeSetReport(void)
 {
-	unsigned char pin = stream->next();
-	unsigned char report = stream->next();
+	bool timeout;
+	unsigned char pin = stream->next(timeout);
+	if (timeout) return;
+	unsigned char report = stream->next(timeout);
+	if (timeout) return;
 
 	io->setReport(pin, report != 0);
 }
 
 void executeSaveProgram(void)
 {
-	long size = stream->nextLong(2);
+	bool timeout;
+	long size = stream->nextLong(2, timeout);
+	if (timeout) return;
 
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	for (int i = 0; i < size; i++)
 	{
-		writer.nextPut(stream->next());
+		writer.nextPut(stream->next(timeout));
+		if (timeout) return; // TODO(Richo): What happens if we don't close the writer?
+							 // The program we write should be invalid, how do we enforce that?
 	}
 	writer.close();
 }
@@ -273,7 +290,10 @@ void executeKeepAlive(void)
 
 void executeProfile(void)
 {
-	profiling = stream->next();
+	bool timeout;
+	profiling = stream->next(timeout);
+	if (timeout) return;
+
 	tickCount = 0;
 	lastTimeProfile = millis();
 }

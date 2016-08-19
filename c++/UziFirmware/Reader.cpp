@@ -1,26 +1,28 @@
 #include "Reader.h"
 
-long Reader::nextLong(int size)
+long Reader::nextLong(int size, bool& timeout)
 {
-	long result = 0;
+	long result = 0;	
 	for (int i = size - 1; i >= 0; i--)
 	{
-		result |= ((unsigned long)next() << (i * 8));
+		result |= ((unsigned long)next(timeout) << (i * 8));
+		if (timeout) return 0;
 	}
 	return result;
 }
 
-unsigned char * Reader::next(int size)
+unsigned char * Reader::next(int size, bool& timeout)
 {
 	unsigned char * result = new unsigned char[size];
 	for (int i = 0; i < size; i++)
 	{
-		result[i] = next();
+		result[i] = next(timeout);
+		if (timeout) return 0;
 	}
 	return result;
 }
 
-unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive)
+unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive, bool& timeout)
 {
 	// This number should be big enough to prevent too many resizings 
 	// and small enough to avoid wasting memory. For now, I'll choose 100 bytes.
@@ -30,8 +32,8 @@ unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive)
 	bool found = false;
 	while (!found)
 	{
-		unsigned char nextChar = next();
-		found = (nextChar == aCharacter);
+		unsigned char nextChar = next(timeout);
+		found = (nextChar == aCharacter) || timeout;
 		if (!found || inclusive)
 		{
 			result[i] = nextChar;

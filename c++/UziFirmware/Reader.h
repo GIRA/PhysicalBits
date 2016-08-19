@@ -7,10 +7,10 @@ class Reader
 
 public:
 
-	virtual unsigned char next(void) = 0;
+	virtual unsigned char next(bool&) = 0;
 
-	virtual unsigned char * next(int);
-	virtual unsigned char * upTo(unsigned char, bool);
-	virtual long nextLong(int);
+	virtual unsigned char * next(int, bool&);
+	virtual unsigned char * upTo(unsigned char, bool, bool&);
+	virtual long nextLong(int, bool&);
 };
 

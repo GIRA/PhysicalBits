@@ -2,19 +2,34 @@
 
 Script::Script(Reader * rs)
 {
-	long n = rs->nextLong(4);
-	stepping = (n >> 31) & 1;
-	stepTime = n & 0x7FFFFFFF;
-	lastStepTime = 0;
+	bool timeout;
 
-	bytecodeCount = rs->next();
-	bytecodes = rs->next(bytecodeCount);
-	nextScript = 0;
+	long n = rs->nextLong(4, timeout);
+
+	if (!timeout)
+	{
+		stepping = (n >> 31) & 1;
+		stepTime = n & 0x7FFFFFFF;
+		lastStepTime = 0;
+		nextScript = 0;
+	}
+	if (!timeout) { bytecodeCount = rs->next(timeout); }
+	if (!timeout) { bytecodes = rs->next(bytecodeCount, timeout); }
+
+	if (timeout)
+	{
+		initNOP();
+	}
 }
 
 Script::Script()
 {
-	// Returns a NOOP program.
+	initNOP();
+}
+
+void Script::initNOP()
+{
+	// Initializes current script as NOP
 	stepping = false;
 	stepTime = lastStepTime = bytecodeCount = 0;
 	bytecodes = new unsigned char[0];

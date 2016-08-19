@@ -30,5 +30,7 @@ private:
 	unsigned char bytecodeCount;
 
 	Script * nextScript;
+
+	void initNOP(void);
 };
 

@@ -12,8 +12,9 @@ bool ArrayReader::isClosed(void)
 	return position >= size;
 }
 
-unsigned char ArrayReader::next(void)
+unsigned char ArrayReader::next(bool& timeout)
 {
+	timeout = false;
 	return elements[position++];
 }
 
@@ -22,7 +23,7 @@ int ArrayReader::getPosition(void)
 	return position;
 }
 
-unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
+unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive, bool& timeout)
 {
 	int arraySize = remaining();
 	unsigned char * result = new unsigned char[arraySize];
@@ -30,8 +31,8 @@ unsigned char * ArrayReader::upTo(unsigned char aCharacter, bool inclusive)
 	bool found = false;
 	while (i < arraySize && !found)
 	{
-		unsigned char nextChar = next();
-		found = (nextChar == aCharacter);
+		unsigned char nextChar = next(timeout);
+		found = (nextChar == aCharacter) || timeout;
 		if (!found || inclusive)
 		{
 			result[i] = nextChar;

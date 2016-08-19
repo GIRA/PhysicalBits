@@ -11,6 +11,8 @@ public:
 	~EEPROMWearLevelingReader();
 	
 	unsigned char next(void);
+	unsigned char next(bool&);
+
 	bool atEnd(void);
 
 private:

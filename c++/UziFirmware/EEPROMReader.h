@@ -11,6 +11,8 @@ public:
 	EEPROMReader(int);
 	~EEPROMReader(void) {}
 
+	unsigned char next(bool&);
+
 	unsigned char next(void);
 	unsigned char peek(void);
 	unsigned char back(void);

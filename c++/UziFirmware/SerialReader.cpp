@@ -1,7 +1,15 @@
 #include "SerialReader.h"
 
-unsigned char SerialReader::next(void)
+#define TIMEOUT		1000
+
+unsigned char SerialReader::next(bool& timeout)
 {
-	while (Serial.available() <= 0);
+	long start = millis();
+	timeout = false;
+	while (Serial.available() <= 0)
+	{
+		timeout = millis() - start > TIMEOUT;
+		if (timeout) return 0;
+	}
 	return (unsigned char)Serial.read();
 }

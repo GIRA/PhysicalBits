@@ -11,11 +11,11 @@ public:
 
 	bool isClosed(void);
 
-	unsigned char next(void);
+	unsigned char next(bool&);
 
 	int getPosition(void);
 
-	unsigned char * upTo(unsigned char, bool);
+	unsigned char * upTo(unsigned char, bool, bool&);
 
 private:
 

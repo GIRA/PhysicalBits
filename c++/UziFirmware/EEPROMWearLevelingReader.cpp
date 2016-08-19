@@ -24,6 +24,12 @@ unsigned char EEPROMWearLevelingReader::next()
 	}
 }
 
+unsigned char EEPROMWearLevelingReader::next(bool& timeout)
+{
+	timeout = false;
+	return next();
+}
+
 bool EEPROMWearLevelingReader::atEnd()
 {
 	return reader->getPosition() == endPosition;
