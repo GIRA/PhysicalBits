@@ -1,44 +1,33 @@
 #include "Script.h"
 
-Script::Script(Reader * rs)
+Script::Script(Reader * rs, bool& timeout)
 {
-	bool timeout;
-
 	long n = rs->nextLong(4, timeout);
-
 	if (!timeout)
 	{
 		stepping = (n >> 31) & 1;
 		stepTime = n & 0x7FFFFFFF;
 		lastStepTime = 0;
-		nextScript = 0;
 	}
 	if (!timeout) { bytecodeCount = rs->next(timeout); }
 	if (!timeout) { bytecodes = rs->next(bytecodeCount, timeout); }
 
-	if (timeout)
-	{
-		initNOP();
-	}
+	nextScript = 0;
 }
 
 Script::Script()
 {
-	initNOP();
-}
-
-void Script::initNOP()
-{
 	// Initializes current script as NOP
 	stepping = false;
 	stepTime = lastStepTime = bytecodeCount = 0;
-	bytecodes = new unsigned char[0];
+	bytecodes = 0;
 	nextScript = 0;
 }
 
 Script::~Script(void)
 {
 	delete[] bytecodes;
+	delete nextScript;
 }
 
 unsigned char Script::getBytecodeCount(void)

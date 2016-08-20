@@ -6,7 +6,7 @@ class Script
 {
 
 public:
-	Script(Reader*);
+	Script(Reader*, bool&);
 	Script(void);
 	~Script(void);
 
@@ -30,7 +30,5 @@ private:
 	unsigned char bytecodeCount;
 
 	Script * nextScript;
-
-	void initNOP(void);
 };
 

@@ -26,7 +26,7 @@ private:
 
 	long * globals;
 
-	long * parseVariables(Reader*);
-	void parseScripts(Reader*);
+	void parseGlobals(Reader*, bool&);
+	void parseScripts(Reader*, bool&);
 };
 
