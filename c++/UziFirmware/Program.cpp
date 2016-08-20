@@ -71,11 +71,6 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 	}
 }
 
-void Program::configurePins(GPIO * io)
-{
-	io->reset();
-}
-
 long Program::getGlobal(int index)
 {
 	return globals[index];

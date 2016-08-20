@@ -92,7 +92,7 @@ void installSavedProgram(void)
 		{
 			delete program;
 			program = p;
-			program->configurePins(io);
+			io->reset();
 		}
 	}
 }
@@ -225,7 +225,7 @@ void executeSetProgram(void)
 	{
 		delete program;
 		program = p;
-		program->configurePins(io);
+		io->reset();
 	}
 }
 

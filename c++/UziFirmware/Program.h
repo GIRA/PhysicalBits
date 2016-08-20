@@ -14,7 +14,6 @@ public:
 
 	unsigned char getScriptCount(void);
 	Script * getScript(void);
-	void configurePins(GPIO*);
 	
 	long getGlobal(int);
 	void setGlobal(int, long);
