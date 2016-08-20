@@ -86,9 +86,14 @@ void installSavedProgram(void)
 	EEPROMWearLevelingReader eeprom;
 	if (eeprom.next() == PROGRAM_START)
 	{
-		delete program;
-		program = new Program(&eeprom);
-		program->configurePins(io);
+		bool timeout;
+		Program* p = new Program(&eeprom, timeout);
+		if (!timeout)
+		{
+			delete program;
+			program = p;
+			program->configurePins(io);
+		}
 	}
 }
 
@@ -214,9 +219,14 @@ void executeCommand(unsigned char cmd)
 
 void executeSetProgram(void)
 {
-	delete program;
-	program = new Program(stream);
-	program->configurePins(io);
+	bool timeout;
+	Program* p = new Program(stream, timeout);
+	if (!timeout)
+	{
+		delete program;
+		program = p;
+		program->configurePins(io);
+	}
 }
 
 void executeSetValue(void)
@@ -300,6 +310,8 @@ void executeProfile(void)
 
 void executeRunProgram(void)
 {
-	Program program(stream);
+	bool timeout;
+	Program program(stream, timeout);
+	if (timeout) return;
 	vm->executeProgram(&program, io);
 }

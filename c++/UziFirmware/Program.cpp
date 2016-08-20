@@ -1,8 +1,7 @@
 #include "Program.h"
 
-Program::Program(Reader * rs)
+Program::Program(Reader * rs, bool& timeout)
 {
-	bool timeout;
 	scriptCount = rs->next(timeout);
 	if (!timeout) { parseGlobals(rs, timeout); }
 	if (!timeout) { parseScripts(rs, timeout); }

@@ -8,7 +8,7 @@ class Program
 {
 
 public:
-	Program(Reader*);
+	Program(Reader*, bool&);
 	Program(void);
 	~Program(void);
 
