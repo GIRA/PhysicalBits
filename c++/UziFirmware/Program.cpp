@@ -35,18 +35,18 @@ Script * Program::getScript(void)
 
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
-	unsigned char size = rs->next(timeout);
+	unsigned char varCount = rs->next(timeout);
 	if (timeout) return;
 
-	globals = new long[size];
+	globals = new long[varCount];
 	int i = 0;
-	while (i < size)
+	while (i < varCount)
 	{
 		unsigned char sec = rs->next(timeout);
 		if (timeout) return;
 
 		int count = (sec >> 2) & 0x3F;
-		int size = (sec & 0x03) + 1; // ACAACA Richo: This variable is shadowing the outer size!! FIX THIS!!
+		int size = (sec & 0x03) + 1;
 		while (count > 0)
 		{
 			globals[i] = rs->nextLong(size, timeout);
