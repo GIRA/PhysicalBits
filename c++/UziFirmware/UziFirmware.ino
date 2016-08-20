@@ -58,6 +58,7 @@ inline void executeSaveProgram(void);
 inline void executeKeepAlive(void);
 inline void sendPinValues(void);
 inline void sendError(unsigned char);
+inline void installProgramFromReader(Reader*);
 inline void installSavedProgram(void);
 inline void initSerial(void);
 inline void checkForIncomingMessages(void);
@@ -86,14 +87,7 @@ void installSavedProgram(void)
 	EEPROMWearLevelingReader eeprom;
 	if (eeprom.next() == PROGRAM_START)
 	{
-		bool timeout;
-		Program* p = new Program(&eeprom, timeout);
-		if (!timeout)
-		{
-			delete program;
-			program = p;
-			io->reset();
-		}
+		installProgramFromReader(&eeprom);
 	}
 }
 
@@ -219,14 +213,7 @@ void executeCommand(unsigned char cmd)
 
 void executeSetProgram(void)
 {
-	bool timeout;
-	Program* p = new Program(stream, timeout);
-	if (!timeout)
-	{
-		delete program;
-		program = p;
-		io->reset();
-	}
+	installProgramFromReader(stream);
 }
 
 void executeSetValue(void)
@@ -314,4 +301,16 @@ void executeRunProgram(void)
 	Program program(stream, timeout);
 	if (timeout) return;
 	vm->executeProgram(&program, io);
+}
+
+void installProgramFromReader(Reader* reader)
+{
+	bool timeout;
+	Program* p = new Program(reader, timeout);
+	if (!timeout)
+	{
+		delete program;
+		program = p;
+		io->reset();
+	}
 }
