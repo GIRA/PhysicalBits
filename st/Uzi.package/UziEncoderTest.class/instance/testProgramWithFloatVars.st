@@ -1,6 +1,6 @@
 as yet unclassified
 testProgramWithFloatVars
-	| program encoded |
+	| program encoded vars |
 	program := Uzi program: [:p | p
 		script: #blink
 		ticking: true
@@ -9,4 +9,5 @@ testProgramWithFloatVars
 			push: 0.5;		
 			write: 13]].
 	encoded := UziEncoder new encode: program.
-	self fail
+	vars := encoded copyFrom: 2 to: 7.
+	self assert: #[1 7 63 0 0 0] equals: vars

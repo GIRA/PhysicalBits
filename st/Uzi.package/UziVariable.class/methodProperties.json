@@ -3,5 +3,7 @@
 		"value:" : "Richo 8/10/2016 18:04" },
 	"instance" : {
 		"initializeWith:" : "Richo 8/10/2016 18:04",
+		"isFloat" : "Richo 8/20/2016 11:15",
+		"isInteger" : "Richo 8/20/2016 11:15",
 		"printOn:" : "Richo 8/10/2016 18:04",
 		"value" : "Richo 8/10/2016 18:04" } }

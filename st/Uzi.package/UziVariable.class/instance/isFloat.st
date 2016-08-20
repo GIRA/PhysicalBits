@@ -1,0 +1,3 @@
+testing
+isFloat
+	^ value isFloat
