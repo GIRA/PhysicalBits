@@ -38,7 +38,7 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 	unsigned char varCount = rs->next(timeout);
 	if (timeout) return;
 
-	globals = new long[varCount];
+	globals = new float[varCount];
 	int i = 0;
 	while (i < varCount)
 	{
@@ -49,7 +49,15 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 		int size = (sec & 0x03) + 1;
 		while (count > 0)
 		{
-			globals[i] = rs->nextLong(size, timeout);
+			if (size == 4)
+			{
+				// Special case: float
+				globals[i] = rs->nextFloat(timeout);
+			}
+			else
+			{
+				globals[i] = (float)rs->nextLong(size, timeout);
+			}
 			if (timeout) return;
 
 			count--;
@@ -71,12 +79,12 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 	}
 }
 
-long Program::getGlobal(int index)
+float Program::getGlobal(int index)
 {
 	return globals[index];
 }
 
-void Program::setGlobal(int index, long value)
+void Program::setGlobal(int index, float value)
 {
 	globals[index] = value;
 }

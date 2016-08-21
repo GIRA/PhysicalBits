@@ -15,15 +15,15 @@ public:
 	unsigned char getScriptCount(void);
 	Script * getScript(void);
 	
-	long getGlobal(int);
-	void setGlobal(int, long);
+	float getGlobal(int);
+	void setGlobal(int, float);
 
 private:
 
 	unsigned char scriptCount;
 	Script * script;
 
-	long * globals;
+	float* globals;
 
 	void parseGlobals(Reader*, bool&);
 	void parseScripts(Reader*, bool&);
