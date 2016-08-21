@@ -11,6 +11,30 @@ long Reader::nextLong(int size, bool& timeout)
 	return result;
 }
 
+/*
+INFO(Richo): Code taken and adapted from
+http://www.microchip.com/forums/m590535.aspx#590570
+*/
+float Reader::nextFloat(bool& timeout)
+{
+	union
+	{
+		float f;
+		unsigned long ul;
+	} u;
+	unsigned char a = next(timeout);
+	if (timeout) return 0;
+	unsigned char b = next(timeout);
+	if (timeout) return 0;
+	unsigned char c = next(timeout);
+	if (timeout) return 0;
+	unsigned char d = next(timeout);
+	if (timeout) return 0;
+
+	u.ul = (a << 24) | (b << 16) | (c << 8) | d;
+	return u.f;
+}
+
 unsigned char * Reader::next(int size, bool& timeout)
 {
 	unsigned char * result = new unsigned char[size];

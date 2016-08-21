@@ -12,5 +12,6 @@ public:
 	virtual unsigned char * next(int, bool&);
 	virtual unsigned char * upTo(unsigned char, bool, bool&);
 	virtual long nextLong(int, bool&);
+	virtual float nextFloat(bool&);
 };
 
