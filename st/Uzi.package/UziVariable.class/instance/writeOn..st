@@ -1,4 +1,4 @@
-printing
+encoding
 writeOn: stream
 	"If the size equals 4 we have to encode it as a float"
 	| size actualValue |
