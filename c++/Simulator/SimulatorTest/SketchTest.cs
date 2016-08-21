@@ -115,6 +115,28 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
+        [TestMethod]
+        public void TestPushWithFloatingPointVariable()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true
+	                delay: 0
+	                bytecodes: [:s | s
+		                push: 0.2;		
+		                write: 13]].
+                UziProtocol new run: program.
+                */
+                0, 1, 1, 7, 62, 76, 204, 205, 128, 0, 0, 0, 2, 128, 77
+            });
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(Math.Round(0.2 * 1023), sketch.GetPinValue(13));
+        }
+
         private void TurnOffAllPins()
         {
             for (int i = 0; i < 19; i++)
