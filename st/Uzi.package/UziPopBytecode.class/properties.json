@@ -6,10 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"value",
-		"name" ],
-	"name" : "UziVariable",
+		 ],
+	"name" : "UziPopBytecode",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziBytecode",
 	"type" : "normal" }

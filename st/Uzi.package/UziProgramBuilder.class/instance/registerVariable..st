@@ -1,5 +1,9 @@
 private
-registerVariable: variableValue
-	^ variables 
-		detect: [:v | v value = variableValue]
-		ifNone: [variables add: (UziVariable value: variableValue)]
+registerVariable: arg
+	"If the argument is a string we interpret it as the variable name, otherwise
+	we treat it as value."
+	^ arg isString 
+		ifTrue: [variables detect: [:v | v name = arg] 
+			ifNone: [variables add: (UziVariable named: arg)]]
+		ifFalse: [variables detect: [:v | v value = arg]
+			ifNone: [variables add: (UziVariable value: arg)]]

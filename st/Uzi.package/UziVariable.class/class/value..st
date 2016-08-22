@@ -1,3 +1,3 @@
 instance creation
 value: aNumber
-	^ self basicNew initializeWith: aNumber
+	^ self basicNew initializeWithName: nil value: aNumber
