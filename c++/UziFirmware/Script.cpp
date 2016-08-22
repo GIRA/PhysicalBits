@@ -47,7 +47,7 @@ void Script::rememberLastStepTime(long now)
 
 bool Script::shouldStepNow(long now)
 {
-	return (now - lastStepTime) > stepTime;
+	return (now - lastStepTime) >= stepTime;
 }
 
 bool Script::isStepping(void)
