@@ -137,6 +137,32 @@ namespace SimulatorTest
             Assert.AreEqual(Math.Round(0.2 * 1023), sketch.GetPinValue(13));
         }
 
+        [TestMethod]
+        public void TestPopBytecode()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true 
+	                delay: 0
+	                bytecodes: [:s | s
+		                push: #a;
+		                write: 13;
+		                push: 1;
+		                pop: #a]].
+                UziProtocol new run: program.
+                */
+                0, 1, 2, 8, 0, 1, 128, 0, 0, 0, 4, 128, 77, 129, 144
+            });
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop(); // The first loop sets the var to 1
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop(); // And now we set the pin
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
         private void TurnOffAllPins()
         {
             for (int i = 0; i < 19; i++)
