@@ -10,7 +10,8 @@
 		"scriptName",
 		"ticking",
 		"delay",
-		"bytecodes" ],
+		"bytecodes",
+		"labels" ],
 	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],

@@ -7,5 +7,6 @@
 		"testProgramHeader" : "Richo 8/10/2016 18:55",
 		"testProgramHeader2" : "Richo 8/10/2016 18:55",
 		"testProgramWithFloatVars" : "Richo 8/20/2016 11:21",
+		"testProgramWithJumpsCountsInstructionsCorrectly" : "Richo 8/22/2016 08:29",
 		"testProgramWithOneByteVars" : "Richo 8/20/2016 10:46",
 		"testProgramWithVarsLargerThanOneByte" : "Richo 8/20/2016 10:47" } }
