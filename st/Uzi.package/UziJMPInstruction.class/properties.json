@@ -10,5 +10,5 @@
 	"name" : "UziJMPInstruction",
 	"pools" : [
 		 ],
-	"super" : "UziInstruction",
+	"super" : "UziBranchInstruction",
 	"type" : "normal" }
