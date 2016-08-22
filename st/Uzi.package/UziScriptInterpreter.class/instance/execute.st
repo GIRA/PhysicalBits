@@ -8,7 +8,7 @@ execute
 	
 	ip := 0.
 	stack := UziStack new.
-	[ip < script bytecodes size] whileTrue: [
+	[ip < script instructions size] whileTrue: [
 		self executeBytecode: self nextBytecode.
 		stack overflow
 			ifTrue: [self flag: #Richo. "Notify overflow"

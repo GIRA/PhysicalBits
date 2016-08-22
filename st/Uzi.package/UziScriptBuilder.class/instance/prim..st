@@ -1,5 +1,5 @@
-bytecode creation
+instruction creation
 prim: primName
 	| arg |
 	arg := UziPrimitive named: primName.
-	bytecodes add: (UziPrimitiveCallBytecode arg: arg)
+	instructions add: (UziPrimitiveCallInstruction arg: arg)

@@ -1,3 +1,3 @@
-bytecode creation
+instruction creation
 write: arg
-	bytecodes add: (UziWriteBytecode arg: arg)
+	instructions add: (UziWriteInstruction arg: arg)

@@ -5,7 +5,7 @@ testProgramWithFloatVars
 		script: #blink
 		ticking: true
 		delay: 0
-		bytecodes: [:s | s
+		instructions: [:s | s
 			push: 0.5;		
 			write: 13]].
 	encoded := UziEncoder new encode: program.

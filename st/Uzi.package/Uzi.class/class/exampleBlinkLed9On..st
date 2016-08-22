@@ -4,7 +4,7 @@ exampleBlinkLed9On: programBuilder
 		script: #blinkLed9
 		ticking: true
 		delay: 1000
-		bytecodes: [:u2 | u2
+		instructions: [:u2 | u2
 			push: 9;
 			prim: #read;
 			jnz: 4;

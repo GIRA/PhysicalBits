@@ -1,5 +1,5 @@
-bytecode creation
+instruction creation
 pop: arg
 	| variable |
 	variable := program registerVariable: arg.
-	bytecodes add: (UziPopBytecode arg: variable) 
+	instructions add: (UziPopInstruction arg: variable) 

@@ -4,7 +4,7 @@ examplePot15Led9On: programBuilder
 		script: #pot15Led9
 		ticking: true
 		delay: 0
-		bytecodes: [:uzi | uzi
+		instructions: [:uzi | uzi
 			push: 9;
 			push: 15;
 			prim: #read;

@@ -1,3 +1,3 @@
-bytecode creation
+instruction creation
 read: arg
-	bytecodes add: (UziReadBytecode arg: arg) 
+	instructions add: (UziReadInstruction arg: arg) 

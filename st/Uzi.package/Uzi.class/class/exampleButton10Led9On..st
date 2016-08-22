@@ -4,7 +4,7 @@ exampleButton10Led9On: programBuilder
 		script: #button10Led9
 		ticking: true
 		delay: 0
-		bytecodes: [:uzi | uzi
+		instructions: [:uzi | uzi
 			push: 9;
 			push: 10;
 			prim: #read;

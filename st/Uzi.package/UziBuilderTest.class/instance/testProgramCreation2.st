@@ -4,7 +4,7 @@ testProgramCreation2
 	program := Uzi program: [:p | p
 		script: #main 
 		ticking: true delay: 1000
-		bytecodes: [:s | s
+		instructions: [:s | s
 			push: 9;
 			prim: #read;
 			jnz: 4;
@@ -21,7 +21,7 @@ testProgramCreation2
 	self assert: script name = #main.
 	self assert: script isTicking.
 	self assert: script delay = 1000.
-	self assert: script bytecodes = {
+	self assert: script instructions = {
 		push arg: program variables second.
 		prim arg: (UziPrimitive named: #read).
 		jnz arg: 4.

@@ -5,7 +5,7 @@ testProgramWithVarsLargerThanOneByte
 		script: #blink
 		ticking: true
 		delay: 0
-		bytecodes: [:s | s
+		instructions: [:s | s
 			push: 256;		
 			write: 13]].
 	encoded := UziEncoder new encode: program.

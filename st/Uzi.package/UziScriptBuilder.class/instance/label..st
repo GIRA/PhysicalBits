@@ -1,4 +1,4 @@
-bytecode creation
+instruction creation
 label: arg
 	(labels includesKey: arg) ifTrue: [Error signal: 'Multiple label definition'].
-	labels at: arg put: bytecodes size.
+	labels at: arg put: instructions size.

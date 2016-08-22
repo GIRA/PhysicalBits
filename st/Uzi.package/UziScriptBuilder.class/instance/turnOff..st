@@ -1,3 +1,3 @@
-bytecode creation
+instruction creation
 turnOff: arg
-	bytecodes add: (UziTurnOffBytecode arg: arg) 
+	instructions add: (UziTurnOffInstruction arg: arg) 

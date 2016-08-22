@@ -1,7 +1,7 @@
 setup
 setUp
-	"Shortcuts to create bytecodes"
-	push := UziPushBytecode.
-	prim := UziPrimitiveCallBytecode.
-	jnz := UziJNZBytecode.
-	jmp := UziJMPBytecode
+	"Shortcuts to create instructions"
+	push := UziPushInstruction.
+	prim := UziPrimitiveCallInstruction.
+	jnz := UziJNZInstruction.
+	jmp := UziJMPInstruction

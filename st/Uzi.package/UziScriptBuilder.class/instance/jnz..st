@@ -1,3 +1,3 @@
-bytecode creation
+instruction creation
 jnz: arg
-	bytecodes add: (UziJNZBytecode arg: arg)
+	instructions add: (UziJNZInstruction arg: arg)

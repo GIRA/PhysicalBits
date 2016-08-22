@@ -6,7 +6,7 @@ testButton10Led9Encoding
 			script: #main
 			ticking: true
 			delay: 10
-			bytecodes: [:uzi | uzi
+			instructions: [:uzi | uzi
 				push: 9;
 				push: 10;
 				prim: #read;

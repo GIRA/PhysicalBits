@@ -1,6 +1,6 @@
 tests
 testButton10Led9Script
-	| cc program script1 bytecodes |
+	| cc program script1 instructions |
 	cc := UziCompiler new.
 	program := cc compile: '#button10Led9 ticking 100/s [
 			write: 9 value: (read: 10)
@@ -11,9 +11,9 @@ testButton10Led9Script
 	self assert: script1 name = #button10Led9.
 	self assert: script1 isTicking.
 	self assert: script1 delay = 10.
-	bytecodes := script1 bytecodes.
-	self assert: bytecodes size = 4.
-	self assert: bytecodes = {
+	instructions := script1 instructions.
+	self assert: instructions size = 4.
+	self assert: instructions = {
 		pushLit arg: program variables first.
 		pushLit arg: program variables second.
 		primCall arg: (prim named: #read).

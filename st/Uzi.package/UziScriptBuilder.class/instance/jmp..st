@@ -1,3 +1,3 @@
-bytecode creation
+instruction creation
 jmp: arg
-	bytecodes add: (UziJMPBytecode arg: arg)
+	instructions add: (UziJMPInstruction arg: arg)

@@ -5,7 +5,7 @@ testProgramWithJumpsCountsInstructionsCorrectly
 		script: #blink
 		ticking: true 
 		delay: 500
-		bytecodes: [:s | s
+		instructions: [:s | s
 			read: 13;
 			jnz: 2;
 			turnOn: 13;

@@ -9,9 +9,7 @@
 		"name",
 		"ticking",
 		"delay",
-		"bytecodes",
-		"literals",
-		"variables" ],
+		"instructions" ],
 	"name" : "UziScript",
 	"pools" : [
 		 ],
