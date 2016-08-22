@@ -13,7 +13,7 @@ public:
 	~Program(void);
 
 	unsigned char getScriptCount(void);
-	Script * getScript(void);
+	Script * getScriptAt(int);
 	
 	float getGlobal(int);
 	void setGlobal(int, float);
@@ -21,7 +21,7 @@ public:
 private:
 
 	unsigned char scriptCount;
-	Script * script;
+	Script* scripts;
 
 	float* globals;
 

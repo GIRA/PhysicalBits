@@ -7,8 +7,10 @@ class Script
 {
 
 public:
-	Script(Reader*, bool&);
 	Script(void);
+	Script(Reader*, bool&);
+	Script(const Script&);
+	Script& operator=(const Script&);
 	~Script(void);
 
 	unsigned char getInstructionCount(void);
@@ -18,8 +20,6 @@ public:
 	bool isStepping(void);
 	void setStepping(bool);
 	long getStepTime(void);
-	void setNext(Script*);
-	Script* getNext(void);
 
 private:
 
@@ -29,8 +29,6 @@ private:
 
 	Instruction* instructions;
 	unsigned char instructionCount;
-
-	Script * nextScript;
 
 	void parseInstructions(Reader*, bool&);
 };
