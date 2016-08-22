@@ -28,10 +28,10 @@ void VM::executeScript(Script * script, GPIO * io)
 	pc = 0;
 	currentScript = script;
 	stack->reset();
-	while (pc < currentScript->getBytecodeCount())
+	while (pc < currentScript->getInstructionCount())
 	{
-		unsigned char next = nextBytecode();
-		executeBytecode(next, io);
+		Instruction next = nextInstruction();
+		executeInstruction(next, io);
 		if (stack->overflow())
 		{
 			// TODO(Richo): Notify client of stack overflow
@@ -40,34 +40,15 @@ void VM::executeScript(Script * script, GPIO * io)
 	}	
 }
 
-unsigned char VM::nextBytecode(void)
+Instruction VM::nextInstruction(void)
 {
-	return currentScript->bytecodeAt(pc++);
+	return currentScript->getInstructionAt(pc++);
 }
 
-void VM::executeBytecode(unsigned char bytecode, GPIO * io)
+void VM::executeInstruction(Instruction instruction, GPIO * io)
 {
-	unsigned char opcode;
-	unsigned short argument;
-	if (bytecode < 0x80)
-	{
-		opcode = bytecode >> 5;
-		argument = bytecode & 0x1F;
-	}
-	else
-	{
-		opcode = bytecode >> 4;
-		argument = bytecode & 0xF;
-		if (0xF == opcode)
-		{
-			opcode = bytecode;
-			if (argument >= 2)
-			{
-				argument = nextBytecode();
-			}
-		}		
-	}
-
+	unsigned char opcode = instruction.getOpcode();
+	unsigned short argument = instruction.getArgument();
 	switch (opcode)
 	{
 		// Turn ON

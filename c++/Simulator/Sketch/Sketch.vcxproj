@@ -120,6 +120,7 @@
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingWriter.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMWriter.cpp" />
     <ClCompile Include="..\..\UziFirmware\GPIO.cpp" />
+    <ClCompile Include="..\..\UziFirmware\Instruction.cpp" />
     <ClCompile Include="..\..\UziFirmware\Program.cpp" />
     <ClCompile Include="..\..\UziFirmware\Reader.cpp" />
     <ClCompile Include="..\..\UziFirmware\Script.cpp" />
@@ -138,6 +139,7 @@
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWriter.h" />
     <ClInclude Include="..\..\UziFirmware\GPIO.h" />
+    <ClInclude Include="..\..\UziFirmware\Instruction.h" />
     <ClInclude Include="..\..\UziFirmware\Program.h" />
     <ClInclude Include="..\..\UziFirmware\Reader.h" />
     <ClInclude Include="..\..\UziFirmware\Script.h" />

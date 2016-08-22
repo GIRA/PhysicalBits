@@ -47,7 +47,7 @@ namespace Simulator
 
                         // Script 1: #Blink13 (with IF)
                         128, 0, 3, 232, // Header: ticking 1/s
-                        11, // Bytecode count
+                        9, // Instruction count
                         0x83,       // PUSH 13
                         0x83,       // PUSH 13
                         0xA0,       // PRIM #read
@@ -60,7 +60,7 @@ namespace Simulator
                         
                         // Script 2: #Pot15Led11
                         128, 0, 0, 0, // Header: ticking
-                        4, // Bytecode count
+                        4, // Instruction count
                         0x82,       // PUSH 11
                         0x84,       // PUSH 15
                         0xA0,       // PRIM #read

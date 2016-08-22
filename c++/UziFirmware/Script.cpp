@@ -9,8 +9,8 @@ Script::Script(Reader * rs, bool& timeout)
 		stepTime = n & 0x7FFFFFFF;
 		lastStepTime = 0;
 	}
-	if (!timeout) { bytecodeCount = rs->next(timeout); }
-	if (!timeout) { bytecodes = rs->next(bytecodeCount, timeout); }
+	if (!timeout) { instructionCount = rs->next(timeout); }
+	if (!timeout) { parseInstructions(rs, timeout); }
 
 	nextScript = 0;
 }
@@ -19,25 +19,25 @@ Script::Script()
 {
 	// Initializes current script as NOP
 	stepping = false;
-	stepTime = lastStepTime = bytecodeCount = 0;
-	bytecodes = 0;
+	stepTime = lastStepTime = instructionCount = 0;
+	instructions = 0;
 	nextScript = 0;
 }
 
 Script::~Script(void)
 {
-	delete[] bytecodes;
+	delete[] instructions;
 	delete nextScript;
 }
 
-unsigned char Script::getBytecodeCount(void)
+unsigned char Script::getInstructionCount(void)
 {
-	return bytecodeCount;
+	return instructionCount;
 }
 
-unsigned char Script::bytecodeAt(int index)
+Instruction Script::getInstructionAt(int index)
 {
-	return bytecodes[index];
+	return instructions[index];
 }
 
 void Script::rememberLastStepTime(long now)
@@ -73,4 +73,15 @@ void Script::setNext(Script* next)
 long Script::getStepTime(void)
 {
 	return stepTime;
+}
+
+void Script::parseInstructions(Reader* rs, bool& timeout)
+{
+	instructions = new Instruction[instructionCount];
+	for (int i = 0; i < instructionCount; i++)
+	{
+		Instruction instruction(rs, timeout);
+		if (timeout) return;
+		instructions[i] = instruction;
+	}
 }

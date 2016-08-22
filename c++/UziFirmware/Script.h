@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Reader.h"
+#include "Instruction.h"
 
 class Script
 {
@@ -10,8 +11,8 @@ public:
 	Script(void);
 	~Script(void);
 
-	unsigned char getBytecodeCount(void);
-	unsigned char bytecodeAt(int);
+	unsigned char getInstructionCount(void);
+	Instruction getInstructionAt(int);
 	bool shouldStepNow(long);
 	void rememberLastStepTime(long);
 	bool isStepping(void);
@@ -26,9 +27,11 @@ private:
 	long stepTime;
 	long lastStepTime;
 
-	unsigned char * bytecodes;
-	unsigned char bytecodeCount;
+	Instruction* instructions;
+	unsigned char instructionCount;
 
 	Script * nextScript;
+
+	void parseInstructions(Reader*, bool&);
 };
 
