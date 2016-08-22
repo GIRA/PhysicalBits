@@ -6,7 +6,10 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
+		"jnz",
+		"jmp",
+		"prim",
+		"push" ],
 	"name" : "UziBuilderTest",
 	"pools" : [
 		 ],

@@ -1,4 +1,4 @@
-as yet unclassified
+tests
 testLabelsAreUpdatedCorrectly
 	| instructions program |
 	program := Uzi program: [:p | p
