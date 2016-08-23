@@ -1,5 +1,13 @@
 #include "Script.h"
 
+Script::Script()
+{
+	// Initializes current script as NOP
+	stepping = false;
+	stepTime = lastStepTime = instructionCount = 0;
+	instructions = 0;
+}
+
 Script::Script(Reader * rs, bool& timeout)
 {
 	long n = rs->nextLong(4, timeout);
@@ -11,23 +19,30 @@ Script::Script(Reader * rs, bool& timeout)
 	}
 	if (!timeout) { instructionCount = rs->next(timeout); }
 	if (!timeout) { parseInstructions(rs, timeout); }
-
-	nextScript = 0;
 }
 
-Script::Script()
+Script::Script(const Script& other)
 {
-	// Initializes current script as NOP
-	stepping = false;
-	stepTime = lastStepTime = instructionCount = 0;
-	instructions = 0;
-	nextScript = 0;
+	operator=(other);
+}
+
+Script& Script::operator=(const Script& other)
+{
+	stepping = other.stepping;
+	stepTime = other.stepTime;
+	lastStepTime = other.lastStepTime;
+	instructionCount = other.instructionCount;
+	instructions = new Instruction[instructionCount];
+	for (int i = 0; i < instructionCount; i++)
+	{
+		instructions[i] = other.instructions[i];
+	}
+	return *this;
 }
 
 Script::~Script(void)
 {
 	delete[] instructions;
-	delete nextScript;
 }
 
 unsigned char Script::getInstructionCount(void)
@@ -58,16 +73,6 @@ bool Script::isStepping(void)
 void Script::setStepping(bool val)
 {
 	stepping = val;
-}
-
-Script* Script::getNext(void)
-{
-	return nextScript;
-}
-
-void Script::setNext(Script* next)
-{
-	nextScript = next;
 }
 
 long Script::getStepTime(void)

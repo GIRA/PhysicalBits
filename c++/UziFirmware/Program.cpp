@@ -6,11 +6,6 @@ Program::Program(Reader * rs, bool& timeout)
 	scriptCount = rs->next(timeout);
 	if (!timeout) { parseGlobals(rs, timeout); }
 	if (!timeout) { parseScripts(rs, timeout); }
-
-	if (timeout)
-	{
-		scriptCount = 0;
-	}
 }
 
 Program::Program()
@@ -22,7 +17,7 @@ Program::Program()
 Program::~Program(void)
 {
 	delete[] globals;
-	delete script;
+	delete[] scripts;
 }
 
 unsigned char Program::getScriptCount(void)
@@ -30,9 +25,9 @@ unsigned char Program::getScriptCount(void)
 	return scriptCount;
 }
 
-Script * Program::getScript(void)
+Script * Program::getScriptAt(int index)
 {
-	return script;
+	return &scripts[index];
 }
 
 void Program::parseGlobals(Reader * rs, bool& timeout)
@@ -70,13 +65,10 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 
 void Program::parseScripts(Reader * rs, bool& timeout)
 {
-	Script * scriptTemp;
+	scripts = new Script[scriptCount];
 	for (int i = 0; i < scriptCount; i++)
-	{
-		scriptTemp = new Script(rs, timeout);
-		scriptTemp->setNext(script);
-		script = scriptTemp;
-
+	{		
+		scripts[i] = Script(rs, timeout);
 		if (timeout) return;
 	}
 }
