@@ -2,6 +2,7 @@
 
 Program::Program(Reader * rs, bool& timeout)
 {
+	script = 0;
 	scriptCount = rs->next(timeout);
 	if (!timeout) { parseGlobals(rs, timeout); }
 	if (!timeout) { parseScripts(rs, timeout); }
@@ -15,6 +16,7 @@ Program::Program(Reader * rs, bool& timeout)
 Program::Program()
 {
 	scriptCount = 0;
+	script = 0;
 }
 
 Program::~Program(void)
