@@ -18,6 +18,7 @@
 #define RQ_KEEP_ALIVE									7
 #define RQ_PROFILE										8
 #define RQ_RUN_PROGRAM									9
+#define RQ_SET_GLOBAL								   10
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -69,6 +70,7 @@ inline void sendProfile(void);
 inline void sendReport(void);
 inline void executeProfile(void);
 inline void executeRunProgram(void);
+inline void executeSetGlobal(void);
 
 void setup()
 {
@@ -212,6 +214,9 @@ void executeCommand(unsigned char cmd)
 		case RQ_RUN_PROGRAM:
 			executeRunProgram();
 			break;
+		case RQ_SET_GLOBAL:
+			executeSetGlobal();
+			break;
 	}
 }
 
@@ -318,4 +323,15 @@ void loadProgramFromReader(Reader* reader)
 		program = p;
 		io->reset();
 	}
+}
+
+void executeSetGlobal(void) 
+{
+	bool timeout;
+	unsigned char index = stream->next(timeout);
+	if (timeout) return;
+	float value = stream->nextFloat(timeout);
+	if (timeout) return;
+
+	program->setGlobal(index, value);
 }
