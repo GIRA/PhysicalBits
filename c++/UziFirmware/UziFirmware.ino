@@ -4,6 +4,9 @@
 #include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
 
+#define MAJOR_VERSION		0
+#define MINOR_VERSION		0
+
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
 #define RQ_SET_VALUE									1
@@ -58,8 +61,8 @@ inline void executeSaveProgram(void);
 inline void executeKeepAlive(void);
 inline void sendPinValues(void);
 inline void sendError(unsigned char);
-inline void installProgramFromReader(Reader*);
-inline void installSavedProgram(void);
+inline void loadProgramFromReader(Reader*);
+inline void loadInstalledProgram(void);
 inline void initSerial(void);
 inline void checkForIncomingMessages(void);
 inline void sendProfile(void);
@@ -69,7 +72,7 @@ inline void executeRunProgram(void);
 
 void setup()
 {
-	installSavedProgram();
+	loadInstalledProgram();
 	initSerial();
 }
 
@@ -82,12 +85,13 @@ void loop()
 	sendProfile();
 }
 
-void installSavedProgram(void)
+void loadInstalledProgram(void)
 {
 	EEPROMWearLevelingReader eeprom;
-	if (eeprom.next() == PROGRAM_START)
+	if (eeprom.next() == PROGRAM_START
+		&& eeprom.next() == MAJOR_VERSION)
 	{
-		installProgramFromReader(&eeprom);
+		loadProgramFromReader(&eeprom);
 	}
 }
 
@@ -213,7 +217,7 @@ void executeCommand(unsigned char cmd)
 
 void executeSetProgram(void)
 {
-	installProgramFromReader(stream);
+	loadProgramFromReader(stream);
 }
 
 void executeSetValue(void)
@@ -271,6 +275,7 @@ void executeSaveProgram(void)
 
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
+	writer.nextPut(MAJOR_VERSION);
 	for (int i = 0; i < size; i++)
 	{
 		writer.nextPut(stream->next(timeout));
@@ -303,7 +308,7 @@ void executeRunProgram(void)
 	vm->executeProgram(&program, io);
 }
 
-void installProgramFromReader(Reader* reader)
+void loadProgramFromReader(Reader* reader)
 {
 	bool timeout;
 	Program* p = new Program(reader, timeout);
