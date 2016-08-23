@@ -4,10 +4,11 @@ void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
 	int count = program->getScriptCount();
+	Script * script = program->getScript();
 	for (int i = 0; i < count; i++)
 	{
-		Script * script = program->getScriptAt(i);
 		executeScript(script, io);
+		script = script->getNext();
 	}
 }
 
