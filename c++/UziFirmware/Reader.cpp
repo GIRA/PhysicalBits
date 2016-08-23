@@ -22,13 +22,13 @@ float Reader::nextFloat(bool& timeout)
 		float f;
 		unsigned long ul;
 	} u;
-	unsigned char a = next(timeout);
+	unsigned long a = next(timeout);
 	if (timeout) return 0;
-	unsigned char b = next(timeout);
+	unsigned long b = next(timeout);
 	if (timeout) return 0;
-	unsigned char c = next(timeout);
+	unsigned long c = next(timeout);
 	if (timeout) return 0;
-	unsigned char d = next(timeout);
+	unsigned long d = next(timeout);
 	if (timeout) return 0;
 
 	u.ul = (a << 24) | (b << 16) | (c << 8) | d;
