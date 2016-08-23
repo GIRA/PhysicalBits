@@ -12,7 +12,8 @@
 		"keepAlive",
 		"pinValues",
 		"pinModes",
-		"pinsReporting" ],
+		"pinsReporting",
+		"currentProgram" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
