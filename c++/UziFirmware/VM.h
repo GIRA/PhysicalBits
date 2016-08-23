@@ -27,8 +27,8 @@ private:
 	Program * currentProgram;
 	Script * currentScript;
 
-	Instruction nextInstruction(void);
-	void executeInstruction(Instruction, GPIO*);
+	Instruction_s nextInstruction(void);
+	void executeInstruction(Instruction_s, GPIO*);
 	void executePrimitive(unsigned short, GPIO*);
 	void executeScript(Script*, GPIO*);
 

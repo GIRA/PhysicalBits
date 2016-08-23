@@ -35,7 +35,7 @@ unsigned char Script::getInstructionCount(void)
 	return instructionCount;
 }
 
-Instruction Script::getInstructionAt(int index)
+Instruction_s Script::getInstructionAt(int index)
 {
 	return instructions[index];
 }
@@ -77,11 +77,34 @@ long Script::getStepTime(void)
 
 void Script::parseInstructions(Reader* rs, bool& timeout)
 {
-	instructions = new Instruction[instructionCount];
+	instructions = new Instruction_s[instructionCount];
 	for (int i = 0; i < instructionCount; i++)
 	{
-		Instruction instruction(rs, timeout);
+		unsigned char bytecode = rs->next(timeout);
 		if (timeout) return;
-		instructions[i] = instruction;
+
+		unsigned char opcode;
+		unsigned short argument;
+		if (bytecode < 0x80)
+		{
+			opcode = bytecode >> 5;
+			argument = bytecode & 0x1F;
+		}
+		else
+		{
+			opcode = bytecode >> 4;
+			argument = bytecode & 0xF;
+			if (0xF == opcode)
+			{
+				opcode = bytecode;
+				if (argument >= 2)
+				{
+					argument = rs->next(timeout);
+					if (timeout) return;
+				}
+			}
+		}
+		instructions[i].opcode = opcode;
+		instructions[i].argument = argument;
 	}
 }

@@ -1,7 +1,12 @@
 #pragma once
 
 #include "Reader.h"
-#include "Instruction.h"
+
+typedef struct Instruction_s
+{
+	unsigned char opcode;
+	unsigned short argument;
+};
 
 class Script
 {
@@ -12,7 +17,7 @@ public:
 	~Script(void);
 
 	unsigned char getInstructionCount(void);
-	Instruction getInstructionAt(int);
+	Instruction_s getInstructionAt(int);
 	bool shouldStepNow(long);
 	void rememberLastStepTime(long);
 	bool isStepping(void);
@@ -27,7 +32,7 @@ private:
 	long stepTime;
 	long lastStepTime;
 
-	Instruction* instructions;
+	Instruction_s* instructions;
 	unsigned char instructionCount;
 
 	Script * nextScript;

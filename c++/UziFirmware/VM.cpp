@@ -30,7 +30,7 @@ void VM::executeScript(Script * script, GPIO * io)
 	stack->reset();
 	while (pc < currentScript->getInstructionCount())
 	{
-		Instruction next = nextInstruction();
+		Instruction_s next = nextInstruction();
 		executeInstruction(next, io);
 		if (stack->overflow())
 		{
@@ -40,15 +40,15 @@ void VM::executeScript(Script * script, GPIO * io)
 	}	
 }
 
-Instruction VM::nextInstruction(void)
+Instruction_s VM::nextInstruction(void)
 {
 	return currentScript->getInstructionAt(pc++);
 }
 
-void VM::executeInstruction(Instruction instruction, GPIO * io)
+void VM::executeInstruction(Instruction_s instruction, GPIO * io)
 {
-	unsigned char opcode = instruction.getOpcode();
-	unsigned short argument = instruction.getArgument();
+	unsigned char opcode = instruction.opcode;
+	unsigned short argument = instruction.argument;
 	switch (opcode)
 	{
 		// Turn ON
