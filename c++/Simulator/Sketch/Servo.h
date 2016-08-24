@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Arduino.h"
 
 typedef unsigned char uint8_t;
 typedef signed char int8_t;
@@ -20,7 +21,7 @@ public:
 	// return true if this servo is attached, otherwise false 
 	bool attached();                   
 private:
-
+	int pinNumber = 0;
 	bool isAttached = false;
 };
 
