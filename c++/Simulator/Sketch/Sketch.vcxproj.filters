@@ -61,6 +61,9 @@
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingWriter.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
+    <ClCompile Include="Servo.cpp">
+      <Filter>Support</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEPROM.h">
@@ -110,6 +113,9 @@
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\EEPROMUtils.h">
       <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="Servo.h">
+      <Filter>Support</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
