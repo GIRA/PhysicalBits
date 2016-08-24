@@ -1,5 +1,7 @@
 #include "GPIO.h"
 
+Servo servos[TOTAL_PINS];
+
 unsigned char GPIO::getMode(unsigned int pin)
 {
 	int index = ARRAY_INDEX(pin);
@@ -83,6 +85,10 @@ void GPIO::setValue(unsigned int pin, float value)
 	{
 		setMode(pin, OUTPUT);
 	}
+	if (servos[index].attached())
+	{
+		servos[index].detach();
+	}
 	// It seems counter-intuitive but analog pins don't support analogWrite(), this is
 	// because analogWrite() sends a PWM signal and has nothing to do with analog pins
 	// or analogRead().
@@ -97,6 +103,38 @@ void GPIO::setValue(unsigned int pin, float value)
 	{
 		analogWrite(pin, (unsigned short)round(actualValue * 255));
 	}
+}
+
+void GPIO::servoWrite(unsigned int pin, float value)
+{
+	int index = ARRAY_INDEX(pin);
+	if (index < 0 || index >= TOTAL_PINS)
+	{
+		return;
+	}
+
+	// We must keep the value between 0 and 1
+	float actualValue;
+	if (value <= 0)
+	{
+		actualValue = 0;
+	}
+	else if (value >= 1)
+	{
+		actualValue = 1;
+	}
+	else
+	{
+		actualValue = value;
+	}
+	pinValues[index] = actualValue;
+
+	int degrees = actualValue * 180.0;
+	if (!servos[index].attached())
+	{
+		servos[index].attach(pin);
+	}
+	servos[index].write(degrees);
 }
 
 void GPIO::setReport(unsigned int pin, bool report)

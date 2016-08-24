@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Arduino.h"
+#include <Servo.h>
 
 // The following macros will work for standard arduino, other versions should redefine.
 #define TOTAL_PINS														   18
@@ -28,6 +29,7 @@ public:
 	void setMode(unsigned int, unsigned char);
 	float getValue(unsigned int);
 	void setValue(unsigned int, float);
+	void servoWrite(unsigned int, float);
 	bool getReport(unsigned int);
 	void setReport(unsigned int, bool);
 	void reset(void);
