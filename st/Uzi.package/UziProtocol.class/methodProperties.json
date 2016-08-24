@@ -4,8 +4,9 @@
 		"rsPinValue" : "Richo 10/21/2014 19:26",
 		"rsProfile" : "Richo 3/30/2016 17:02" },
 	"instance" : {
-		"connectOnPort:" : "Richo 8/24/2016 16:18",
-		"connectOnSocket:" : "Richo 8/24/2016 16:19",
+		"connectOn:usingSerial:" : "Richo 8/24/2016 17:26",
+		"connectOnPort:" : "Richo 8/24/2016 17:25",
+		"connectOnSocket:" : "Richo 8/24/2016 17:26",
 		"disconnect" : "Richo 8/10/2015 10:19",
 		"getArgument:" : "Richo 10/21/2014 19:31",
 		"getArgument:or:" : "Richo 10/21/2014 19:37",
