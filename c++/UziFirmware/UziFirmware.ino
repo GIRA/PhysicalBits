@@ -161,12 +161,24 @@ void sendError(unsigned char errorCode)
 
 void sendPinValues(void)
 {
+	int count = 0;
 	for (int i = 0; i < TOTAL_PINS; i++)
 	{
 		int pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
-			Serial.write(AS_COMMAND(RS_PIN_VALUE));
+			count++;
+		}
+	}
+	if (count == 0) return;
+	
+	Serial.write(AS_COMMAND(RS_PIN_VALUE));
+	Serial.write(AS_ARGUMENT(count));
+	for (int i = 0; i < TOTAL_PINS; i++)
+	{
+		int pin = PIN_NUMBER(i);
+		if (io->getReport(pin))
+		{
 			Serial.write(AS_ARGUMENT(pin));
 
 			// GPIO.getValue(..) returns a float between 0 and 1
