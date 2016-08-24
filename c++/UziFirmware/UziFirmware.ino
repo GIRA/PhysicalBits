@@ -171,13 +171,11 @@ void sendPinValues(void)
 		int pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
-			Serial.write(pin);
-
 			// GPIO.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
 			unsigned short val = (unsigned short)(io->getValue(pin) * 1023);
-			unsigned char val1 = val >> 7; 	// MSB
-			unsigned char val2 = val & 127;	// LSB
+			unsigned char val1 = (pin << 2) | (val >> 8); 	// MSB
+			unsigned char val2 = val & 0xFF;	// LSB
 			Serial.write(val1);
 			Serial.write(val2);
 		}
