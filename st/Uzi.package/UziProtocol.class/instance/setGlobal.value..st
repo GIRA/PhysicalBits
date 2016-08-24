@@ -1,7 +1,8 @@
-connection
+accessing-globals
 setGlobal: name value: value
 	| index msg |
-	index := currentProgram variables indexOf: (currentProgram variables detect: [:var | var name = name]).
+	index := currentProgram variables
+		indexOf: (currentProgram variables detect: [:var | var name = name]).
 	msg := ByteArray streamContents: [:stream | | actualValue |
 		stream nextPut: 10.
 		stream nextPut: index - 1.
