@@ -1,8 +1,8 @@
 connection
-connectOnPort: aString 
+connectOnSocket: aString 
 	self isConnected
 		ifTrue: [^ self].
-	serial := UziSerialStream new
+	serial := (UziSerialStream on: SocketSerialPort new)
 				 baudRate: 57600;
 				 openPort: aString.
 	serial

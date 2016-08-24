@@ -4,6 +4,7 @@ SystemOrganization addCategory: #'Uzi-Parser-Nodes'!
 SystemOrganization addCategory: #'Uzi-Errors'!
 SystemOrganization addCategory: #'Uzi-Program-Instructions'!
 SystemOrganization addCategory: #'Uzi-Program'!
+SystemOrganization addCategory: #'Uzi-Utils'!
 SystemOrganization addCategory: #'Uzi-Core'!
 SystemOrganization addCategory: #'Uzi-Builders'!
 SystemOrganization addCategory: #'Uzi-Simulator'!
