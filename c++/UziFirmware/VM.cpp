@@ -215,8 +215,10 @@ void VM::executePrimitive(unsigned short primitiveIndex, GPIO * io)
 			io->setMode(pin, mode);
 		} break;
 		case 0x05:
-		{// delay
-			delay((unsigned long)stack->pop());
+		{// servoWrite
+			float value = stack->pop();
+			unsigned int pin = (unsigned int)stack->pop();
+			io->servoWrite(pin, value);
 		} break;
 	}
 }
