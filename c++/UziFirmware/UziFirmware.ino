@@ -25,14 +25,6 @@
 #define RS_PIN_VALUE									1
 #define RS_PROFILE										2
 
-/* MACROS */
-#define IS_COMMAND(x)						((x) >> 7 == 0)
-#define IS_ARGUMENT(x)						((x) >> 7 == 1)
-#define GET_COMMAND(x)									(x)
-#define GET_ARGUMENT(x)							((x) & 127)
-#define AS_COMMAND(x)									(x)
-#define AS_ARGUMENT(x)							((x) | 128)
-
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(unsigned char)0xC3
 #define REPORT_INTERVAL									100
@@ -119,13 +111,13 @@ void sendProfile()
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		Serial.write(AS_COMMAND(RS_PROFILE));
+		Serial.write(RS_PROFILE);
 
 		unsigned short val = tickCount;
 		unsigned char val1 = val >> 7;  // MSB
 		unsigned char val2 = val & 127; // LSB
-		Serial.write(AS_ARGUMENT(val1));
-		Serial.write(AS_ARGUMENT(val2));
+		Serial.write(val1);
+		Serial.write(val2);
 
 		tickCount = 0;
 		lastTimeProfile = now;
@@ -155,8 +147,8 @@ void checkKeepAlive(void)
 
 void sendError(unsigned char errorCode)
 {
-	Serial.write(AS_COMMAND(RS_ERROR));
-	Serial.write(AS_ARGUMENT(errorCode));
+	Serial.write(RS_ERROR);
+	Serial.write(errorCode);
 }
 
 void sendPinValues(void)
@@ -172,22 +164,22 @@ void sendPinValues(void)
 	}
 	if (count == 0) return;
 	
-	Serial.write(AS_COMMAND(RS_PIN_VALUE));
-	Serial.write(AS_ARGUMENT(count));
+	Serial.write(RS_PIN_VALUE);
+	Serial.write(count);
 	for (int i = 0; i < TOTAL_PINS; i++)
 	{
 		int pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
-			Serial.write(AS_ARGUMENT(pin));
+			Serial.write(pin);
 
 			// GPIO.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
 			unsigned short val = (unsigned short)(io->getValue(pin) * 1023);
 			unsigned char val1 = val >> 7; 	// MSB
 			unsigned char val2 = val & 127;	// LSB
-			Serial.write(AS_ARGUMENT(val1));
-			Serial.write(AS_ARGUMENT(val2));
+			Serial.write(val1);
+			Serial.write(val2);
 		}
 	}
 }
