@@ -1,3 +1,4 @@
 connection
 connectOnSocket: aString
-	^ self connectOn: aString usingSerial: SocketSerialPort new
+	^ self privateConnectOn: aString
+		usingSerial: SocketSerialPort new

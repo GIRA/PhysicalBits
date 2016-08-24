@@ -1,7 +1,7 @@
 receiving
 processError
 	| errorCode |
-	errorCode := self getArgument: serial next or: [^ self].
+	errorCode := serial next.
 	Transcript show: 'Uzi error: ';
 		show: errorCode;
 		cr

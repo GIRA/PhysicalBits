@@ -9,10 +9,10 @@ processPinValue
 	However, when saving the value it must be in the range 0..1
 	"
 	| pin value val1 val2 count |
-	count := self getArgument: serial next or: [^ self].
+	count := serial next.
 	count timesRepeat: [
-		pin := self getArgument: serial next or: [^ self].
-		val1 := self getArgument: serial next or: [^ self].
-		val2 := self getArgument: serial next or: [^ self].
-		value := val2 bitOr: (val1 << 7).
+		val1 := serial next.
+		val2 := serial next.
+		pin := val1 >> 2.
+		value := val2 bitOr: ((val1 bitAnd: 2r11) << 8).
 		pinValues at: pin put: value / 1023.0]

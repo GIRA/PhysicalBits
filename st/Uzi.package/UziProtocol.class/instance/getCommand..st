@@ -1,3 +1,0 @@
-private
-getCommand: byte
-	^ byte

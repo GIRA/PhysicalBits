@@ -1,5 +1,5 @@
-private
-connectOn: portString usingSerial: aSerialPort
+connection
+privateConnectOn: portString usingSerial: aSerialPort
 	self isConnected
 		ifTrue: [^ self].
 	serial := (UziSerialStream on: aSerialPort)

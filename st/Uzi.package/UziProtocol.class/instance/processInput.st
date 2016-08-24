@@ -1,9 +1,7 @@
 receiving
 processInput
-	| in cmd |
-	[in := serial next]
-		doWhileFalse: [self isCommand: in].
-	cmd := self getCommand: in.
+	| cmd |
+	cmd := serial next.
 	cmd caseOf: {
 		[self class rsError] -> [self processError].
 		[self class rsPinValue] -> [self processPinValue].
