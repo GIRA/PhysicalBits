@@ -2,7 +2,7 @@
 
 #include "Reader.h"
 
-struct Instruction_s
+struct Instruction
 {
 	unsigned char opcode;
 	unsigned short argument;
@@ -17,7 +17,7 @@ public:
 	~Script(void);
 
 	unsigned char getInstructionCount(void);
-	Instruction_s getInstructionAt(int);
+	Instruction getInstructionAt(int);
 	bool shouldStepNow(long);
 	void rememberLastStepTime(long);
 	bool isStepping(void);
@@ -32,7 +32,7 @@ private:
 	long stepTime;
 	long lastStepTime;
 
-	Instruction_s* instructions;
+	Instruction* instructions;
 	unsigned char instructionCount;
 
 	Script * nextScript;

@@ -35,7 +35,7 @@ unsigned char Script::getInstructionCount(void)
 	return instructionCount;
 }
 
-Instruction_s Script::getInstructionAt(int index)
+Instruction Script::getInstructionAt(int index)
 {
 	return instructions[index];
 }
@@ -77,7 +77,7 @@ long Script::getStepTime(void)
 
 void Script::parseInstructions(Reader* rs, bool& timeout)
 {
-	instructions = new Instruction_s[instructionCount];
+	instructions = new Instruction[instructionCount];
 	for (int i = 0; i < instructionCount; i++)
 	{
 		unsigned char bytecode = rs->next(timeout);
