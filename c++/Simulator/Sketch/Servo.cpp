@@ -15,7 +15,7 @@ void Servo::detach()
 
 void Servo::write(int value) 
 {
-	float actualValue = (float)value / 180.0 * 255;
+	float actualValue = (float)value / 180.0f * 255.0f;
 	analogWrite(pinNumber, (unsigned short)round(actualValue));
 }
 

@@ -129,7 +129,7 @@ void GPIO::servoWrite(unsigned int pin, float value)
 	}
 	pinValues[index] = actualValue;
 
-	int degrees = actualValue * 180.0;
+	int degrees = (int)round(actualValue * 180.0);
 	if (!servos[index].attached())
 	{
 		servos[index].attach(pin);

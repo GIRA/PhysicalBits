@@ -2,7 +2,7 @@
 
 #include "Reader.h"
 
-typedef struct Instruction_s
+struct Instruction_s
 {
 	unsigned char opcode;
 	unsigned short argument;
