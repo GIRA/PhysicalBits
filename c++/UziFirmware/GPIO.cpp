@@ -168,6 +168,5 @@ void GPIO::reset()
 		}
 		pinValues[i] = 0;
 		pinModes[i] = INPUT;
-		pinReport[i] = false;
 	}
 }
