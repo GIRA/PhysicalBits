@@ -117,5 +117,8 @@
     <ClInclude Include="Servo.h">
       <Filter>Support</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\types.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

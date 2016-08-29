@@ -144,6 +144,7 @@
     <ClInclude Include="..\..\UziFirmware\Script.h" />
     <ClInclude Include="..\..\UziFirmware\SerialReader.h" />
     <ClInclude Include="..\..\UziFirmware\StackArray.h" />
+    <ClInclude Include="..\..\UziFirmware\types.h" />
     <ClInclude Include="..\..\UziFirmware\VM.h" />
     <ClInclude Include="EEPROM.h" />
     <ClInclude Include="Arduino.h" />
