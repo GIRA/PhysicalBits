@@ -26,13 +26,13 @@ public:
 	}
 	~GPIO(void) {}
 
-	uint8 getMode(uint16);
-	void setMode(uint16, uint8);
-	float getValue(uint16);
-	void setValue(uint16, float);
-	void servoWrite(uint16, float);
-	bool getReport(uint16);
-	void setReport(uint16, bool);
+	uint8 getMode(uint8);
+	void setMode(uint8, uint8);
+	float getValue(uint8);
+	void setValue(uint8, float);
+	void servoWrite(uint8, float);
+	bool getReport(uint8);
+	void setReport(uint8, bool);
 	void reset(void);
 
 private:

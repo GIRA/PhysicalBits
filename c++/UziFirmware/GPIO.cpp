@@ -2,9 +2,9 @@
 
 Servo servos[TOTAL_PINS];
 
-uint8 GPIO::getMode(uint16 pin)
+uint8 GPIO::getMode(uint8 pin)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return INPUT;
@@ -15,9 +15,9 @@ uint8 GPIO::getMode(uint16 pin)
 	}
 }
 
-void GPIO::setMode(uint16 pin, uint8 mode)
+void GPIO::setMode(uint8 pin, uint8 mode)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -31,9 +31,9 @@ void GPIO::setMode(uint16 pin, uint8 mode)
 	pinMode(pin, mode);
 }
 
-float GPIO::getValue(uint16 pin)
+float GPIO::getValue(uint8 pin)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return 0;
@@ -57,9 +57,9 @@ float GPIO::getValue(uint16 pin)
 	}
 }
 
-void GPIO::setValue(uint16 pin, float value)
+void GPIO::setValue(uint8 pin, float value)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -105,9 +105,9 @@ void GPIO::setValue(uint16 pin, float value)
 	}
 }
 
-void GPIO::servoWrite(uint16 pin, float value)
+void GPIO::servoWrite(uint8 pin, float value)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -137,9 +137,9 @@ void GPIO::servoWrite(uint16 pin, float value)
 	servos[index].write(degrees);
 }
 
-void GPIO::setReport(uint16 pin, bool report)
+void GPIO::setReport(uint8 pin, bool report)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -147,9 +147,9 @@ void GPIO::setReport(uint16 pin, bool report)
 	pinReport[index] = report;
 }
 
-bool GPIO::getReport(uint16 pin)
+bool GPIO::getReport(uint8 pin)
 {
-	int16 index = ARRAY_INDEX(pin);
+	uint8 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return false;
@@ -159,7 +159,7 @@ bool GPIO::getReport(uint16 pin)
 
 void GPIO::reset()
 {
-	for (int16 i = 0; i < TOTAL_PINS; i++)
+	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
 		if (pinModes[i] == OUTPUT)
 		{

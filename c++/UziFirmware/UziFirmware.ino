@@ -154,9 +154,9 @@ void sendError(uint8 errorCode)
 void sendPinValues(void)
 {
 	uint8 count = 0;
-	for (int16 i = 0; i < TOTAL_PINS; i++)
+	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
-		int16 pin = PIN_NUMBER(i);
+		uint8 pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
 			count++;
@@ -166,9 +166,9 @@ void sendPinValues(void)
 	
 	Serial.write(RS_PIN_VALUE);
 	Serial.write(count);
-	for (int16 i = 0; i < TOTAL_PINS; i++)
+	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
-		int16 pin = PIN_NUMBER(i);
+		uint8 pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
 			// GPIO.getValue(..) returns a float between 0 and 1

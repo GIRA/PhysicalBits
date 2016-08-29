@@ -54,25 +54,25 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 		// Turn ON
 		case 0x00:
 		{
-			io->setValue(argument, HIGH);
+			io->setValue((uint8)argument, HIGH);
 		} break;
 
 		// Turn OFF
 		case 0x01:
 		{
-			io->setValue(argument, LOW);
+			io->setValue((uint8)argument, LOW);
 		} break;
 
 		// Write
 		case 0x02:
 		{
-			io->setValue(argument, stack->pop());
+			io->setValue((uint8)argument, stack->pop());
 		} break;
 
 		// Read
 		case 0x03:
 		{
-			stack->push(io->getValue(argument));
+			stack->push(io->getValue((uint8)argument));
 		} break;
 
 		// Push
@@ -189,35 +189,35 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 	{
 		case 0x00:
 		{// read
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			stack->push(io->getValue(pin));
 		} break;
 		case 0x01:
 		{// write
 			float value = stack->pop();
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, value);
 		} break;
 		case 0x02:
 		{// toggle
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1 - io->getValue(pin));
 		} break;
 		case 0x03:
 		{// getMode
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			stack->push(io->getMode(pin));
 		} break;
 		case 0x04:
 		{// setMode
 			uint8 mode = (uint8)stack->pop();
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			io->setMode(pin, mode);
 		} break;
 		case 0x05:
 		{// servoWrite
 			float value = stack->pop();
-			uint16 pin = (uint16)stack->pop();
+			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
 		} break;
 	}
