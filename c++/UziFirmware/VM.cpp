@@ -3,9 +3,9 @@
 void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
-	int count = program->getScriptCount();
+	int16 count = program->getScriptCount();
 	Script * script = program->getScript();
-	for (int i = 0; i < count; i++)
+	for (int16 i = 0; i < count; i++)
 	{
 		executeScript(script, io);
 		script = script->getNext();
@@ -18,7 +18,7 @@ void VM::executeScript(Script * script, GPIO * io)
 	{
 		return;
 	}
-	long now = millis();
+	int32 now = millis();
 	if (!script->shouldStepNow(now))
 	{
 		return;
@@ -47,8 +47,8 @@ Instruction VM::nextInstruction(void)
 
 void VM::executeInstruction(Instruction instruction, GPIO * io)
 {
-	unsigned char opcode = instruction.opcode;
-	unsigned short argument = instruction.argument;
+	uint8 opcode = instruction.opcode;
+	uint16 argument = instruction.argument;
 	switch (opcode)
 	{
 		// Turn ON
@@ -183,41 +183,41 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 
 }
 
-void VM::executePrimitive(unsigned short primitiveIndex, GPIO * io)
+void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 {
 	switch (primitiveIndex)
 	{
 		case 0x00:
 		{// read
-			unsigned int pin = (unsigned int)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			stack->push(io->getValue(pin));
 		} break;
 		case 0x01:
 		{// write
 			float value = stack->pop();
-			unsigned int pin = (unsigned int)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			io->setValue(pin, value);
 		} break;
 		case 0x02:
 		{// toggle
-			unsigned int pin = (unsigned int)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			io->setValue(pin, 1 - io->getValue(pin));
 		} break;
 		case 0x03:
 		{// getMode
-			unsigned int pin = (unsigned int)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			stack->push(io->getMode(pin));
 		} break;
 		case 0x04:
 		{// setMode
-			unsigned char mode = (unsigned char)stack->pop();
-			unsigned int pin = (unsigned int)stack->pop();
+			uint8 mode = (uint8)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			io->setMode(pin, mode);
 		} break;
 		case 0x05:
 		{// servoWrite
 			float value = stack->pop();
-			unsigned int pin = (unsigned int)stack->pop();
+			uint16 pin = (uint16)stack->pop();
 			io->servoWrite(pin, value);
 		} break;
 	}

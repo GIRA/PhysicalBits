@@ -25,7 +25,7 @@ Program::~Program(void)
 	delete script;
 }
 
-unsigned char Program::getScriptCount(void)
+uint8 Program::getScriptCount(void)
 {
 	return scriptCount;
 }
@@ -37,18 +37,18 @@ Script * Program::getScript(void)
 
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
-	unsigned char varCount = rs->next(timeout);
+	uint8 varCount = rs->next(timeout);
 	if (timeout) return;
 
 	globals = new float[varCount];
-	int i = 0;
+	uint8 i = 0;
 	while (i < varCount)
 	{
-		unsigned char sec = rs->next(timeout);
+		uint8 sec = rs->next(timeout);
 		if (timeout) return;
 
-		int count = (sec >> 2) & 0x3F;
-		int size = (sec & 0x03) + 1;
+		int16 count = (sec >> 2) & 0x3F;
+		int16 size = (sec & 0x03) + 1;
 		while (count > 0)
 		{
 			if (size == 4)
@@ -71,7 +71,7 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 void Program::parseScripts(Reader * rs, bool& timeout)
 {
 	Script * scriptTemp;
-	for (int i = 0; i < scriptCount; i++)
+	for (int16 i = 0; i < scriptCount; i++)
 	{
 		scriptTemp = new Script(rs, timeout);
 		scriptTemp->setNext(script);
@@ -81,12 +81,12 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 	}
 }
 
-float Program::getGlobal(int index)
+float Program::getGlobal(int16 index)
 {
 	return globals[index];
 }
 
-void Program::setGlobal(int index, float value)
+void Program::setGlobal(int16 index, float value)
 {
 	globals[index] = value;
 }

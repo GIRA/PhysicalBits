@@ -22,14 +22,14 @@ public:
 
 private:
 
-	int pc;
+	int16 pc;
 	StackArray * stack;
 	Program * currentProgram;
 	Script * currentScript;
 
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*);
-	void executePrimitive(unsigned short, GPIO*);
+	void executePrimitive(uint16, GPIO*);
 	void executeScript(Script*, GPIO*);
 
 };

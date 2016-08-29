@@ -2,7 +2,7 @@
 
 Script::Script(Reader * rs, bool& timeout)
 {
-	long n = rs->nextLong(4, timeout);
+	int32 n = rs->nextLong(4, timeout);
 	if (!timeout)
 	{
 		stepping = (n >> 31) & 1;
@@ -30,22 +30,22 @@ Script::~Script(void)
 	delete nextScript;
 }
 
-unsigned char Script::getInstructionCount(void)
+uint8 Script::getInstructionCount(void)
 {
 	return instructionCount;
 }
 
-Instruction Script::getInstructionAt(int index)
+Instruction Script::getInstructionAt(int16 index)
 {
 	return instructions[index];
 }
 
-void Script::rememberLastStepTime(long now)
+void Script::rememberLastStepTime(int32 now)
 {
 	lastStepTime = now;
 }
 
-bool Script::shouldStepNow(long now)
+bool Script::shouldStepNow(int32 now)
 {
 	return (now - lastStepTime) >= stepTime;
 }
@@ -70,7 +70,7 @@ void Script::setNext(Script* next)
 	nextScript = next;
 }
 
-long Script::getStepTime(void)
+int32 Script::getStepTime(void)
 {
 	return stepTime;
 }
@@ -78,13 +78,13 @@ long Script::getStepTime(void)
 void Script::parseInstructions(Reader* rs, bool& timeout)
 {
 	instructions = new Instruction[instructionCount];
-	for (int i = 0; i < instructionCount; i++)
+	for (int16 i = 0; i < instructionCount; i++)
 	{
-		unsigned char bytecode = rs->next(timeout);
+		uint8 bytecode = rs->next(timeout);
 		if (timeout) return;
 
-		unsigned char opcode;
-		unsigned short argument;
+		uint8 opcode;
+		uint16 argument;
 		if (bytecode < 0x80)
 		{
 			opcode = bytecode >> 5;

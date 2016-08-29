@@ -2,14 +2,14 @@
 
 #define TIMEOUT		1000
 
-unsigned char SerialReader::next(bool& timeout)
+uint8 SerialReader::next(bool& timeout)
 {
-	long start = millis();
+	int32 start = millis();
 	timeout = false;
 	while (Serial.available() <= 0)
 	{
 		timeout = millis() - start > TIMEOUT;
 		if (timeout) return 0;
 	}
-	return (unsigned char)Serial.read();
+	return (uint8)Serial.read();
 }

@@ -26,7 +26,7 @@
 #define RS_PROFILE										2
 
 /* OTHER CONSTANTS */
-#define PROGRAM_START 					(unsigned char)0xC3
+#define PROGRAM_START 					(uint8)0xC3
 #define REPORT_INTERVAL									100
 #define KEEP_ALIVE_INTERVAL							   2000
 
@@ -35,15 +35,15 @@ VM * vm = new VM();
 GPIO * io = new GPIO();
 Reader * stream = new SerialReader();
 
-unsigned char reporting = 0;
-unsigned long lastTimeReport = 0;
-unsigned long lastTimeKeepAlive = 0;
+uint8 reporting = 0;
+uint32 lastTimeReport = 0;
+uint32 lastTimeKeepAlive = 0;
 
-unsigned char profiling = 0;
-unsigned long lastTimeProfile = 0;
-unsigned short tickCount = 0;
+uint8 profiling = 0;
+uint32 lastTimeProfile = 0;
+uint16 tickCount = 0;
 
-inline void executeCommand(unsigned char);
+inline void executeCommand(uint8);
 inline void executeSetProgram(void);
 inline void executeSetValue(void);
 inline void executeSetMode(void);
@@ -53,7 +53,7 @@ inline void executeSetReport(void);
 inline void executeSaveProgram(void);
 inline void executeKeepAlive(void);
 inline void sendPinValues(void);
-inline void sendError(unsigned char);
+inline void sendError(uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
 inline void initSerial(void);
@@ -99,7 +99,7 @@ void checkForIncomingMessages(void)
 	if (Serial.available())
 	{
 		bool timeout;
-		unsigned char in = stream->next(timeout);
+		uint8 in = stream->next(timeout);
 		if (!timeout) { executeCommand(in); }
 	}
 }
@@ -107,15 +107,15 @@ void checkForIncomingMessages(void)
 void sendProfile()
 {
 	if (!profiling) return;
-	unsigned long now = millis();
+	uint32 now = millis();
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
 		Serial.write(RS_PROFILE);
 
-		unsigned short val = tickCount;
-		unsigned char val1 = val >> 7;  // MSB
-		unsigned char val2 = val & 127; // LSB
+		uint16 val = tickCount;
+		uint8 val1 = val >> 7;  // MSB
+		uint8 val2 = val & 127; // LSB
 		Serial.write(val1);
 		Serial.write(val2);
 
@@ -127,7 +127,7 @@ void sendProfile()
 void sendReport(void)
 {
 	if (!reporting) return;
-	unsigned long now = millis();
+	uint32 now = millis();
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
 		sendPinValues();
@@ -138,14 +138,14 @@ void sendReport(void)
 void checkKeepAlive(void)
 {
 	if (!reporting) return;
-	unsigned long now = millis();
+	uint32 now = millis();
 	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
 	{
 		executeStopReporting();
 	}
 }
 
-void sendError(unsigned char errorCode)
+void sendError(uint8 errorCode)
 {
 	Serial.write(RS_ERROR);
 	Serial.write(errorCode);
@@ -153,10 +153,10 @@ void sendError(unsigned char errorCode)
 
 void sendPinValues(void)
 {
-	int count = 0;
-	for (int i = 0; i < TOTAL_PINS; i++)
+	uint8 count = 0;
+	for (int16 i = 0; i < TOTAL_PINS; i++)
 	{
-		int pin = PIN_NUMBER(i);
+		int16 pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
 			count++;
@@ -166,23 +166,23 @@ void sendPinValues(void)
 	
 	Serial.write(RS_PIN_VALUE);
 	Serial.write(count);
-	for (int i = 0; i < TOTAL_PINS; i++)
+	for (int16 i = 0; i < TOTAL_PINS; i++)
 	{
-		int pin = PIN_NUMBER(i);
+		int16 pin = PIN_NUMBER(i);
 		if (io->getReport(pin))
 		{
 			// GPIO.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
-			unsigned short val = (unsigned short)(io->getValue(pin) * 1023);
-			unsigned char val1 = (pin << 2) | (val >> 8); 	// MSB
-			unsigned char val2 = val & 0xFF;	// LSB
+			uint16 val = (uint16)(io->getValue(pin) * 1023);
+			uint8 val1 = (pin << 2) | (val >> 8); 	// MSB
+			uint8 val2 = val & 0xFF;	// LSB
 			Serial.write(val1);
 			Serial.write(val2);
 		}
 	}
 }
 
-void executeCommand(unsigned char cmd)
+void executeCommand(uint8 cmd)
 {
 	switch (cmd)
 	{
@@ -231,7 +231,7 @@ void executeSetValue(void)
 {
 	bool timeout;
 
-	unsigned char pin = stream->next(timeout);
+	uint8 pin = stream->next(timeout);
 	if (timeout) return;
 
 	// We receive a value between 0 and 255 but GPIO.setValue(..) expects 0..1
@@ -245,9 +245,9 @@ void executeSetMode(void)
 {
 	bool timeout;
 
-	unsigned char pin = stream->next(timeout);
+	uint8 pin = stream->next(timeout);
 	if (timeout) return;
-	unsigned char mode = stream->next(timeout);
+	uint8 mode = stream->next(timeout);
 	if (timeout) return;
 
 	io->setMode(pin, mode);
@@ -266,9 +266,9 @@ void executeStopReporting(void)
 void executeSetReport(void)
 {
 	bool timeout;
-	unsigned char pin = stream->next(timeout);
+	uint8 pin = stream->next(timeout);
 	if (timeout) return;
-	unsigned char report = stream->next(timeout);
+	uint8 report = stream->next(timeout);
 	if (timeout) return;
 
 	io->setReport(pin, report != 0);
@@ -277,13 +277,13 @@ void executeSetReport(void)
 void executeSaveProgram(void)
 {
 	bool timeout;
-	long size = stream->nextLong(2, timeout);
+	int32 size = stream->nextLong(2, timeout);
 	if (timeout) return;
 
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
-	for (int i = 0; i < size; i++)
+	for (int16 i = 0; i < size; i++)
 	{
 		writer.nextPut(stream->next(timeout));
 		if (timeout) return; // TODO(Richo): What happens if we don't close the writer?
@@ -330,7 +330,7 @@ void loadProgramFromReader(Reader* reader)
 void executeSetGlobal(void) 
 {
 	bool timeout;
-	unsigned char index = stream->next(timeout);
+	uint8 index = stream->next(timeout);
 	if (timeout) return;
 	float value = stream->nextFloat(timeout);
 	if (timeout) return;

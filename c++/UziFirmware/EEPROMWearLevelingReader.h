@@ -10,17 +10,17 @@ public:
 	EEPROMWearLevelingReader();
 	~EEPROMWearLevelingReader();
 	
-	unsigned char next(void);
-	unsigned char next(bool&);
+	uint8 next(void);
+	uint8 next(bool&);
 
 	bool atEnd(void);
 
 private:
 
 	EEPROMReader * reader;
-	int endPosition;
+	int16 endPosition;
 
-	int findPosition(void);
-	unsigned char escapeIfNecessary(unsigned char);
+	int16 findPosition(void);
+	uint8 escapeIfNecessary(uint8);
 };
 

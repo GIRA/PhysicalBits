@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EEPROM.h"
+#include "types.h"
 
 // E2END = The last EEPROM address
 #define EEPROM_SIZE			(E2END + 1)
@@ -10,7 +11,7 @@
 #define EEPROM_END_MARK	0xCF
 
 // Taken from: http://stackoverflow.com/a/14997413
-inline int positive_modulo(int i, int n)
+inline int16 positive_modulo(int16 i, int16 n)
 {
 	return (i % n + n) % n;
 }

@@ -6,23 +6,23 @@ class ArrayReader : public Reader
 {
 
 public:
-	ArrayReader(unsigned char*, int);
+	ArrayReader(uint8*, int16);
 	~ArrayReader(void) {}
 
 	bool isClosed(void);
 
-	unsigned char next(bool&);
+	uint8 next(bool&);
 
-	int getPosition(void);
+	int16 getPosition(void);
 
-	unsigned char * upTo(unsigned char, bool, bool&);
+	uint8 * upTo(uint8, bool, bool&);
 
 private:
 
-	int position;
-	int size;
-	unsigned char * elements;
+	int16 position;
+	int16 size;
+	uint8 * elements;
 
-	int remaining(void);
+	int16 remaining(void);
 };
 

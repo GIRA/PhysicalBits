@@ -2,9 +2,9 @@
 
 Servo servos[TOTAL_PINS];
 
-unsigned char GPIO::getMode(unsigned int pin)
+uint8 GPIO::getMode(uint16 pin)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return INPUT;
@@ -15,9 +15,9 @@ unsigned char GPIO::getMode(unsigned int pin)
 	}
 }
 
-void GPIO::setMode(unsigned int pin, unsigned char mode)
+void GPIO::setMode(uint16 pin, uint8 mode)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -31,9 +31,9 @@ void GPIO::setMode(unsigned int pin, unsigned char mode)
 	pinMode(pin, mode);
 }
 
-float GPIO::getValue(unsigned int pin)
+float GPIO::getValue(uint16 pin)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return 0;
@@ -57,9 +57,9 @@ float GPIO::getValue(unsigned int pin)
 	}
 }
 
-void GPIO::setValue(unsigned int pin, float value)
+void GPIO::setValue(uint16 pin, float value)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -101,13 +101,13 @@ void GPIO::setValue(unsigned int pin, float value)
 	}
 	else
 	{
-		analogWrite(pin, (unsigned short)round(actualValue * 255));
+		analogWrite(pin, (uint16)round(actualValue * 255));
 	}
 }
 
-void GPIO::servoWrite(unsigned int pin, float value)
+void GPIO::servoWrite(uint16 pin, float value)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -129,7 +129,7 @@ void GPIO::servoWrite(unsigned int pin, float value)
 	}
 	pinValues[index] = actualValue;
 
-	int degrees = (int)round(actualValue * 180.0);
+	int16 degrees = (int16)round(actualValue * 180.0);
 	if (!servos[index].attached())
 	{
 		servos[index].attach(pin);
@@ -137,9 +137,9 @@ void GPIO::servoWrite(unsigned int pin, float value)
 	servos[index].write(degrees);
 }
 
-void GPIO::setReport(unsigned int pin, bool report)
+void GPIO::setReport(uint16 pin, bool report)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return;
@@ -147,9 +147,9 @@ void GPIO::setReport(unsigned int pin, bool report)
 	pinReport[index] = report;
 }
 
-bool GPIO::getReport(unsigned int pin)
+bool GPIO::getReport(uint16 pin)
 {
-	int index = ARRAY_INDEX(pin);
+	int16 index = ARRAY_INDEX(pin);
 	if (index < 0 || index >= TOTAL_PINS)
 	{
 		return false;
@@ -159,7 +159,7 @@ bool GPIO::getReport(unsigned int pin)
 
 void GPIO::reset()
 {
-	for (int i = 0; i < TOTAL_PINS; i++)
+	for (int16 i = 0; i < TOTAL_PINS; i++)
 	{
 		if (pinModes[i] == OUTPUT)
 		{

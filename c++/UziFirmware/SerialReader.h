@@ -10,6 +10,6 @@ public:
 	SerialReader() {}
 	~SerialReader(void) {}
 
-	unsigned char next(bool&);
+	uint8 next(bool&);
 };
 

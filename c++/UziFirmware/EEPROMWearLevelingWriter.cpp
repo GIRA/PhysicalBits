@@ -16,7 +16,7 @@ EEPROMWearLevelingWriter::~EEPROMWearLevelingWriter()
 	delete writer;
 }
 
-void EEPROMWearLevelingWriter::nextPut(unsigned char byte)
+void EEPROMWearLevelingWriter::nextPut(uint8 byte)
 {
 	if (atEnd())
 	{
@@ -35,7 +35,7 @@ bool EEPROMWearLevelingWriter::atEnd()
 	return writer->getPosition() == beginPosition;
 }
 
-void EEPROMWearLevelingWriter::escapeIfNecessary(unsigned char byte)
+void EEPROMWearLevelingWriter::escapeIfNecessary(uint8 byte)
 {
 	if (byte == EEPROM_BEGIN_MARK || byte == EEPROM_END_MARK)
 	{
@@ -56,10 +56,10 @@ void EEPROMWearLevelingWriter::close()
 	}
 }
 
-int EEPROMWearLevelingWriter::findPosition()
+int16 EEPROMWearLevelingWriter::findPosition()
 {
 	EEPROMReader reader;
-	int count, position;
+	int16 count, position;
 
 	// Skip beginning end marks
 	count = 0;

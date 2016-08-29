@@ -8,19 +8,19 @@ class EEPROMReader : public Reader
 
 public:
 	EEPROMReader(void);
-	EEPROMReader(int);
+	EEPROMReader(int16);
 	~EEPROMReader(void) {}
 
-	unsigned char next(bool&);
+	uint8 next(bool&);
 
-	unsigned char next(void);
-	unsigned char peek(void);
-	unsigned char back(void);
-	unsigned char peekBack(void);
-	int getPosition();
+	uint8 next(void);
+	uint8 peek(void);
+	uint8 back(void);
+	uint8 peekBack(void);
+	int16 getPosition();
 
 private:
-	int position;
+	int16 position;
 
 	void incrementPosition(void);
 	void decrementPosition(void);

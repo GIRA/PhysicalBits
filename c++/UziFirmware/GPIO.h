@@ -2,6 +2,7 @@
 
 #include "Arduino.h"
 #include <Servo.h>
+#include "types.h"
 
 // The following macros will work for standard arduino, other versions should redefine.
 #define TOTAL_PINS														   18
@@ -16,7 +17,7 @@ class GPIO
 public:
 	GPIO(void)
 	{
-		for (int i = 0; i < TOTAL_PINS; i++)
+		for (uint8 i = 0; i < TOTAL_PINS; i++)
 		{
 			pinValues[i] = 0;
 			pinModes[i] = INPUT;
@@ -25,19 +26,19 @@ public:
 	}
 	~GPIO(void) {}
 
-	unsigned char getMode(unsigned int);
-	void setMode(unsigned int, unsigned char);
-	float getValue(unsigned int);
-	void setValue(unsigned int, float);
-	void servoWrite(unsigned int, float);
-	bool getReport(unsigned int);
-	void setReport(unsigned int, bool);
+	uint8 getMode(uint16);
+	void setMode(uint16, uint8);
+	float getValue(uint16);
+	void setValue(uint16, float);
+	void servoWrite(uint16, float);
+	bool getReport(uint16);
+	void setReport(uint16, bool);
 	void reset(void);
 
 private:
 
 	float pinValues[TOTAL_PINS];
-	unsigned char pinModes[TOTAL_PINS];
+	uint8 pinModes[TOTAL_PINS];
 	bool pinReport[TOTAL_PINS];
 
 };

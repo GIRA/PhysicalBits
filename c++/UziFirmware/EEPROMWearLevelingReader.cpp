@@ -12,7 +12,7 @@ EEPROMWearLevelingReader::~EEPROMWearLevelingReader()
 	delete reader;
 }
 
-unsigned char EEPROMWearLevelingReader::next()
+uint8 EEPROMWearLevelingReader::next()
 {
 	if (atEnd())
 	{
@@ -24,7 +24,7 @@ unsigned char EEPROMWearLevelingReader::next()
 	}
 }
 
-unsigned char EEPROMWearLevelingReader::next(bool& timeout)
+uint8 EEPROMWearLevelingReader::next(bool& timeout)
 {
 	timeout = false;
 	return next();
@@ -35,7 +35,7 @@ bool EEPROMWearLevelingReader::atEnd()
 	return reader->getPosition() == endPosition;
 }
 
-unsigned char EEPROMWearLevelingReader::escapeIfNecessary(unsigned char byte)
+uint8 EEPROMWearLevelingReader::escapeIfNecessary(uint8 byte)
 {
 	if ((byte == EEPROM_BEGIN_MARK && reader->peek() == EEPROM_BEGIN_MARK)
 		|| (byte == EEPROM_END_MARK && reader->peek() == EEPROM_END_MARK))
@@ -45,10 +45,10 @@ unsigned char EEPROMWearLevelingReader::escapeIfNecessary(unsigned char byte)
 	return byte;
 }
 
-int EEPROMWearLevelingReader::findPosition()
+int16 EEPROMWearLevelingReader::findPosition()
 {
 	EEPROMReader reader;
-	int count, position;
+	int16 count, position;
 
 	// Skip beginning end marks
 	count = 0;

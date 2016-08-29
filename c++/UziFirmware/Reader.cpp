@@ -1,11 +1,11 @@
 #include "Reader.h"
 
-long Reader::nextLong(int size, bool& timeout)
+int32 Reader::nextLong(int16 size, bool& timeout)
 {
-	long result = 0;	
-	for (int i = size - 1; i >= 0; i--)
+	int32 result = 0;	
+	for (int16 i = size - 1; i >= 0; i--)
 	{
-		result |= ((unsigned long)next(timeout) << (i * 8));
+		result |= ((uint32)next(timeout) << (i * 8));
 		if (timeout) return 0;
 	}
 	return result;
@@ -20,25 +20,25 @@ float Reader::nextFloat(bool& timeout)
 	union
 	{
 		float f;
-		unsigned long ul;
+		uint32 ul;
 	} u;
-	unsigned long a = next(timeout);
+	uint32 a = next(timeout);
 	if (timeout) return 0;
-	unsigned long b = next(timeout);
+	uint32 b = next(timeout);
 	if (timeout) return 0;
-	unsigned long c = next(timeout);
+	uint32 c = next(timeout);
 	if (timeout) return 0;
-	unsigned long d = next(timeout);
+	uint32 d = next(timeout);
 	if (timeout) return 0;
 
 	u.ul = (a << 24) | (b << 16) | (c << 8) | d;
 	return u.f;
 }
 
-unsigned char * Reader::next(int size, bool& timeout)
+uint8 * Reader::next(int16 size, bool& timeout)
 {
-	unsigned char * result = new unsigned char[size];
-	for (int i = 0; i < size; i++)
+	uint8 * result = new uint8[size];
+	for (int16 i = 0; i < size; i++)
 	{
 		result[i] = next(timeout);
 		if (timeout) return 0;
@@ -46,17 +46,17 @@ unsigned char * Reader::next(int size, bool& timeout)
 	return result;
 }
 
-unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive, bool& timeout)
+uint8 * Reader::upTo(uint8 aCharacter, bool inclusive, bool& timeout)
 {
 	// This number should be big enough to prevent too many resizings 
 	// and small enough to avoid wasting memory. For now, I'll choose 100 bytes.
-	int arraySize = 100;
-	unsigned char * result = new unsigned char[arraySize];
-	int i = 0;
+	int16 arraySize = 100;
+	uint8 * result = new uint8[arraySize];
+	int16 i = 0;
 	bool found = false;
 	while (!found)
 	{
-		unsigned char nextChar = next(timeout);
+		uint8 nextChar = next(timeout);
 		found = (nextChar == aCharacter) || timeout;
 		if (!found || inclusive)
 		{
@@ -65,8 +65,8 @@ unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive, bool& tim
 			// If we reached the end of the array, we need to resize it.
 			if (i >= arraySize)
 			{
-				int newSize = arraySize * 2;
-				unsigned char * temp = new unsigned char[newSize];
+				int16 newSize = arraySize * 2;
+				uint8 * temp = new uint8[newSize];
 				memcpy(temp, result, arraySize);
 				delete[] result;
 				result = temp;
@@ -77,7 +77,7 @@ unsigned char * Reader::upTo(unsigned char aCharacter, bool inclusive, bool& tim
 	// If the resulting array is smaller than our expectation, we need to resize it.
 	if (i < arraySize)
 	{
-		unsigned char * temp = new unsigned char[i];
+		uint8 * temp = new uint8[i];
 		memcpy(temp, result, i);
 		delete[] result;
 		result = temp;

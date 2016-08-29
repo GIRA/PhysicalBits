@@ -12,15 +12,15 @@ public:
 	Program(void);
 	~Program(void);
 
-	unsigned char getScriptCount(void);
+	uint8 getScriptCount(void);
 	Script * getScript(void);
 	
-	float getGlobal(int);
-	void setGlobal(int, float);
+	float getGlobal(int16);
+	void setGlobal(int16, float);
 
 private:
 
-	unsigned char scriptCount;
+	uint8 scriptCount;
 	Script * script;
 
 	float* globals;

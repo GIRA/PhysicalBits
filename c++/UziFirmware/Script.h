@@ -4,8 +4,8 @@
 
 struct Instruction
 {
-	unsigned char opcode;
-	unsigned short argument;
+	uint8 opcode;
+	uint16 argument;
 };
 
 class Script
@@ -16,24 +16,24 @@ public:
 	Script(void);
 	~Script(void);
 
-	unsigned char getInstructionCount(void);
-	Instruction getInstructionAt(int);
-	bool shouldStepNow(long);
-	void rememberLastStepTime(long);
+	uint8 getInstructionCount(void);
+	Instruction getInstructionAt(int16);
+	bool shouldStepNow(int32);
+	void rememberLastStepTime(int32);
 	bool isStepping(void);
 	void setStepping(bool);
-	long getStepTime(void);
+	int32 getStepTime(void);
 	void setNext(Script*);
 	Script* getNext(void);
 
 private:
 
 	bool stepping;
-	long stepTime;
-	long lastStepTime;
+	int32 stepTime;
+	int32 lastStepTime;
 
 	Instruction* instructions;
-	unsigned char instructionCount;
+	uint8 instructionCount;
 
 	Script * nextScript;
 

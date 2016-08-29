@@ -7,14 +7,14 @@ class EEPROMWriter
 
 public:
 	EEPROMWriter();
-	EEPROMWriter(int);
+	EEPROMWriter(int16);
 	~EEPROMWriter(void) {}
 
-	void nextPut(unsigned char);
-	int getPosition(void);
+	void nextPut(uint8);
+	int16 getPosition(void);
 
 private:
-	int position;
+	int16 position;
 
 	void incrementPosition(void);
 

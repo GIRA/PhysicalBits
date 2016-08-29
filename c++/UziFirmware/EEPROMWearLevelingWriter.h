@@ -10,17 +10,17 @@ public:
 	EEPROMWearLevelingWriter();
 	~EEPROMWearLevelingWriter();
 	
-	void nextPut(unsigned char);
+	void nextPut(uint8);
 	bool atEnd(void);
 	void close();
 
 private:
 
 	EEPROMWriter * writer;
-	int beginPosition;
+	int16 beginPosition;
 	bool closed = false;
 
-	int findPosition(void);
-	void escapeIfNecessary(unsigned char);
+	int16 findPosition(void);
+	void escapeIfNecessary(uint8);
 };
 

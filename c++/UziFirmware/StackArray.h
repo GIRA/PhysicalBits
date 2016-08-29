@@ -1,6 +1,8 @@
 #pragma once
 
-const unsigned int MAX_SIZE = 100;
+#include "types.h"
+
+const uint16 MAX_SIZE = 100;
 
 class StackArray
 {
@@ -21,7 +23,7 @@ public:
 private:
 
 	float elements[MAX_SIZE];
-	unsigned int pointer;
+	uint16 pointer;
 
 };
 
