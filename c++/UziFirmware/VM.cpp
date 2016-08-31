@@ -153,25 +153,45 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 		// JLT
 		case 0xF4:
 		{
-
+			float b = stack->pop();
+			float a = stack->pop();
+			if (a < b)
+			{
+				pc += argument;
+			}
 		} break;
 
 		// JLTE
 		case 0xF5:
 		{
-
+			float b = stack->pop();
+			float a = stack->pop();
+			if (a <= b)
+			{
+				pc += argument;
+			}
 		} break;
 
 		// JGT
 		case 0xF6:
 		{
-
+			float b = stack->pop();
+			float a = stack->pop();
+			if (a > b)
+			{
+				pc += argument;
+			}
 		} break;
 
 		// JGTE
 		case 0xF7:
 		{
-
+			float b = stack->pop();
+			float a = stack->pop();
+			if (a >= b)
+			{
+				pc += argument;
+			}
 		} break;
 
 		// JMP
