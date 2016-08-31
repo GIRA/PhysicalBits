@@ -24,6 +24,7 @@ private:
 	Script * script;
 
 	float* globals;
+	bool* globalsReport;
 
 	void parseGlobals(Reader*, bool&);
 	void parseScripts(Reader*, bool&);

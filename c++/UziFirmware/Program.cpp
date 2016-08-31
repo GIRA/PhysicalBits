@@ -2,7 +2,10 @@
 
 Program::Program(Reader * rs, bool& timeout)
 {
+	globals = 0;
+	globalsReport = 0;
 	script = 0;
+
 	scriptCount = rs->next(timeout);
 	if (!timeout) { parseGlobals(rs, timeout); }
 	if (!timeout) { parseScripts(rs, timeout); }
@@ -17,10 +20,13 @@ Program::Program()
 {
 	scriptCount = 0;
 	script = 0;
+	globals = 0;
+	globalsReport = 0;
 }
 
 Program::~Program(void)
 {
+	delete[] globalsReport;
 	delete[] globals;
 	delete script;
 }
@@ -41,6 +47,7 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 	if (timeout) return;
 
 	globals = new float[varCount];
+	globalsReport = new bool[varCount];
 	uint8 i = 0;
 	while (i < varCount)
 	{
@@ -51,6 +58,7 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 		int16 size = (sec & 0x03) + 1;
 		while (count > 0)
 		{
+			globalsReport[i] = false;
 			if (size == 4)
 			{
 				// Special case: float
