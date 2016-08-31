@@ -17,12 +17,16 @@ public:
 	
 	float getGlobal(int16);
 	void setGlobal(int16, float);
+	bool getReport(uint8);
+	void setReport(uint8, bool);
+	uint8 getGlobalCount(void);
 
 private:
 
 	uint8 scriptCount;
 	Script * script;
 
+	uint8 globalCount;
 	float* globals;
 	bool* globalsReport;
 

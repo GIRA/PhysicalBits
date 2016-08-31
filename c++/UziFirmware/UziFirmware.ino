@@ -19,11 +19,13 @@
 #define RQ_PROFILE										8
 #define RQ_RUN_PROGRAM									9
 #define RQ_SET_GLOBAL								   10
+#define RQ_SET_GLOBAL_REPORT						   11
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
 #define RS_PIN_VALUE									1
 #define RS_PROFILE										2
+#define RS_GLOBAL_VALUE									3
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
@@ -53,6 +55,7 @@ inline void executeSetReport(void);
 inline void executeSaveProgram(void);
 inline void executeKeepAlive(void);
 inline void sendPinValues(void);
+inline void sendGlobalValues(void);
 inline void sendError(uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
@@ -63,6 +66,7 @@ inline void sendReport(void);
 inline void executeProfile(void);
 inline void executeRunProgram(void);
 inline void executeSetGlobal(void);
+inline void executeSetGlobalReport(void);
 
 void setup()
 {
@@ -131,6 +135,7 @@ void sendReport(void)
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
 		sendPinValues();
+		sendGlobalValues();
 		lastTimeReport = now;
 	}
 }
@@ -182,6 +187,39 @@ void sendPinValues(void)
 	}
 }
 
+void sendGlobalValues(void)
+{
+	uint8 count = 0;
+	for (uint8 i = 0; i < program->getGlobalCount(); i++)
+	{
+		if (program->getReport(i))
+		{
+			count++;
+		}
+	}
+	if (count == 0) return;
+
+	Serial.write(RS_GLOBAL_VALUE);
+	Serial.write(count);
+	for (uint8 i = 0; i < program->getGlobalCount(); i++)
+	{
+		if (program->getReport(i))
+		{
+			Serial.write(i);
+			union
+			{
+				float f;
+				uint32 ul;
+			} u;
+			u.f = program->getGlobal(i);
+			Serial.write((u.ul >> 24) & 0xFF);
+			Serial.write((u.ul >> 16) & 0xFF);
+			Serial.write((u.ul >> 8) & 0xFF);
+			Serial.write(u.ul & 0xFF);
+		}
+	}
+}
+
 void executeCommand(uint8 cmd)
 {
 	switch (cmd)
@@ -218,6 +256,12 @@ void executeCommand(uint8 cmd)
 			break;
 		case RQ_SET_GLOBAL:
 			executeSetGlobal();
+			break;
+		case RQ_SET_GLOBAL_REPORT:
+			executeSetGlobalReport();
+			break;
+		default:
+			// TODO(Richo): Return RS_ERROR
 			break;
 	}
 }
@@ -336,4 +380,15 @@ void executeSetGlobal(void)
 	if (timeout) return;
 
 	program->setGlobal(index, value);
+}
+
+void executeSetGlobalReport(void)
+{
+	bool timeout;
+	uint8 index = stream->next(timeout);
+	if (timeout) return;
+	uint8 report = stream->next(timeout);
+	if (timeout) return;
+
+	program->setReport(index, report != 0);
 }

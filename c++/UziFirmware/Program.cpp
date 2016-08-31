@@ -2,6 +2,7 @@
 
 Program::Program(Reader * rs, bool& timeout)
 {
+	globalCount = 0;
 	globals = 0;
 	globalsReport = 0;
 	script = 0;
@@ -20,6 +21,7 @@ Program::Program()
 {
 	scriptCount = 0;
 	script = 0;
+	globalCount = 0;
 	globals = 0;
 	globalsReport = 0;
 }
@@ -43,13 +45,13 @@ Script * Program::getScript(void)
 
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
-	uint8 varCount = rs->next(timeout);
+	globalCount = rs->next(timeout);
 	if (timeout) return;
-
-	globals = new float[varCount];
-	globalsReport = new bool[varCount];
+		
+	globals = new float[globalCount];
+	globalsReport = new bool[globalCount];
 	uint8 i = 0;
-	while (i < varCount)
+	while (i < globalCount)
 	{
 		uint8 sec = rs->next(timeout);
 		if (timeout) return;
@@ -97,4 +99,19 @@ float Program::getGlobal(int16 index)
 void Program::setGlobal(int16 index, float value)
 {
 	globals[index] = value;
+}
+
+bool Program::getReport(uint8 index)
+{
+	return globalsReport[index];
+}
+
+void Program::setReport(uint8 index, bool report)
+{
+	globalsReport[index] = report;
+}
+
+uint8 Program::getGlobalCount(void)
+{
+	return globalCount;
 }
