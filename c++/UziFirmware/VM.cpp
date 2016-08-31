@@ -240,5 +240,11 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
 		} break;
+		case 0x06:
+		{// add
+			float val1 = stack->pop();
+			float val2 = stack->pop();
+			stack->push(val1 + val2);
+		} break;
 	}
 }
