@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Program-Instructions",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziJZInstruction",
+	"pools" : [
+		 ],
+	"super" : "UziBranchInstruction",
+	"type" : "normal" }
