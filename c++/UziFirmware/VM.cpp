@@ -125,15 +125,19 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 
 		} break;
 
-		// Yield time
+		// JZ
 		case 0xF1:
 		{
+			if (stack->pop() == 0) // TODO(Richo): Float comparison
+			{
+				pc += argument;
+			}
 		} break;
 
 		// JNZ
 		case 0xF2:
 		{
-			if (stack->pop() != 0)
+			if (stack->pop() != 0) // TODO(Richo): Float comparison
 			{
 				pc += argument;
 			}

@@ -97,7 +97,7 @@ void Script::parseInstructions(Reader* rs, bool& timeout)
 			if (0xF == opcode)
 			{
 				opcode = bytecode;
-				if (argument >= 2)
+				if (argument > 0)
 				{
 					argument = rs->next(timeout);
 					if (timeout) return;
