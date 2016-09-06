@@ -346,5 +346,18 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 			stack->push(sin(val));
 		} break;
 
+		// cos
+		case 0x11:
+		{
+			float val = stack->pop();
+			stack->push(cos(val));
+		} break;
+
+		// tan
+		case 0x12:
+		{
+			float val = stack->pop();
+			stack->push(tan(val));
+		} break;
 	}
 }
