@@ -17,7 +17,7 @@ namespace Simulator
 
         private TcpListener listener;
         private Thread thread;
-        private ConcurrentQueue<Tuple<DateTime, byte[]>> serial;
+        private Socket client;
         private bool running = false;
         private bool connected = false;
 
@@ -35,19 +35,26 @@ namespace Simulator
         public bool Running { get { return running; } }
         public bool Connected { get { return connected; } }
 
-        private void OnSerialReceived(Tuple<DateTime, byte[]> obj)
+        private void OnSerialReceived(Tuple<DateTime, byte[]> tuple)
         {
-            if (connected)
+            if (connected && client != null)
             {
-                serial.Enqueue(obj);
+                try
+                {
+                    // Serial to Socket
+                    client.Send(tuple.Item2);
+                }
+                catch
+                {
+                    connected = false;
+                }
             }
         }
 
         public void Start()
         {
             if (running) return;
-
-            serial = new ConcurrentQueue<Tuple<DateTime, byte[]>>();
+            
             thread = new Thread(Step);
             thread.IsBackground = true;
             thread.Start();
@@ -63,20 +70,13 @@ namespace Simulator
             running = true;
             do
             {
-                using (Socket client = listener.AcceptSocket())
+                using (client = listener.AcceptSocket())
                 {
                     connected = true;
                     do
                     {
                         try
                         {
-                            // Serial to Socket
-                            Tuple<DateTime, byte[]> tuple;
-                            while (serial.TryDequeue(out tuple))
-                            {
-                                client.Send(tuple.Item2);
-                            }
-
                             // Socket to serial
                             byte[] buffer = new byte[1024];
                             int bytesRead = client.Receive(buffer);
@@ -92,6 +92,7 @@ namespace Simulator
                     }
                     while (connected);
                 }
+                client = null;
             }
             while (running);
         }
