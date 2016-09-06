@@ -255,18 +255,88 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 		// multiply
 		case 0x05:
 		{
-			float val1 = stack->pop();
 			float val2 = stack->pop();
+			float val1 = stack->pop();
 			stack->push(val1 * val2);
 		} break;
 
 		// add
 		case 0x06:
 		{
-			float val1 = stack->pop();
 			float val2 = stack->pop();
+			float val1 = stack->pop();
 			stack->push(val1 + val2);
 		} break;
 
+		// divide
+		case 0x07:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 / val2);
+		} break;
+
+		// subtract
+		case 0x08:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 - val2);
+		} break;
+		
+		// equals
+		case 0x09:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 == val2); // TODO(Richo)
+		} break;
+
+		// notEquals
+		case 0x0A:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 != val2); // TODO(Richo)
+		} break;
+
+		// greaterThan
+		case 0x0B:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 > val2);
+		} break;
+
+		// greaterThanOrEquals
+		case 0x0C:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 >= val2);
+		} break;
+
+		// lessThan
+		case 0x0D:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 < val2);
+		} break;
+
+		// lessThanOrEquals
+		case 0x0E:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 <= val2);
+		} break;
+
+		// negate
+		case 0x0F:
+		{
+			float val = stack->pop();
+			stack->push(-1 * val);
+		} break;
 	}
 }
