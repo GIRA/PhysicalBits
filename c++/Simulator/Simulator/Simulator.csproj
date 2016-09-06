@@ -76,6 +76,7 @@
       <DependentUpon>SerialConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="Sketch.cs" />
+    <Compile Include="SocketConnection.cs" />
     <EmbeddedResource Include="Graph.resx">
       <DependentUpon>Graph.cs</DependentUpon>
     </EmbeddedResource>
