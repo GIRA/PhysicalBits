@@ -7,5 +7,14 @@ named: primitiveName
 		[#servoDegrees] -> [3].
 		[#servoWrite] -> [4].
 		[#multiply] -> [5].
-		[#add] -> [6]
+		[#add] -> [6].
+		[#divide] -> [7].
+		[#subtract] -> [8].
+		[#equals] -> [9].
+		[#notEquals] -> [10].
+		[#greaterThan] -> [11].
+		[#greaterThanOrEquals] -> [12].
+		[#lessThan] -> [13].
+		[#lessThanOrEquals] -> [14].
+		[#negate] -> [15]
 	} otherwise: [UziPrimitiveNotFoundError signal: primitiveName])
