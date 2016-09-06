@@ -63,6 +63,7 @@ namespace Simulator
             if (running) return;
             running = true;
             thread = new Thread(Main);
+            thread.IsBackground = true;
             thread.Start();
         }
 
