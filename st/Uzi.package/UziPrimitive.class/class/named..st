@@ -17,5 +17,7 @@ named: primitiveName
 		[#lessThan] -> [13].
 		[#lessThanOrEquals] -> [14].
 		[#negate] -> [15].
-		[#sin] -> [16]
+		[#sin] -> [16].
+		[#cos] -> [17].
+		[#tan] -> [18]
 	} otherwise: [UziPrimitiveNotFoundError signal: primitiveName])
