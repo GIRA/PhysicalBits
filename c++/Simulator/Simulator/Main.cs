@@ -17,6 +17,7 @@ namespace Simulator
         private Pin[] pins = new Pin[PIN_COUNT];
         private CheckBox[] checks = new CheckBox[PIN_COUNT];
         private SerialConsole serial;
+        private SocketConnection socket;
 
         private Sketch sketch = Sketch.Current;
 
@@ -27,6 +28,7 @@ namespace Simulator
 
         private void Main_Load(object sender, EventArgs e)
         {
+            InitializeSocket();
             InitializePins();
             stepTimer.Enabled = true;
             sketch.Start();
@@ -67,7 +69,13 @@ namespace Simulator
                         0xA1,       // PRIM #write
                     });
                 });
-                 
+
+        }
+
+        private void InitializeSocket()
+        {
+            socket = new SocketConnection(sketch);
+            socket.Start();
         }
 
         private void InitializePins()
@@ -97,7 +105,7 @@ namespace Simulator
         {
             // HACK(Richo): To speed testing, I automatically change the value of A0
             sketch.SetPinValue(15, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
-            
+
             UpdateUI();
         }
 
@@ -114,16 +122,22 @@ namespace Simulator
                 pins[i].Visible = checks[i].Checked;
             }
 
-            string state = "Unknown";
-            if (sketch.Running) { state = "Running"; }
-            else if (sketch.Paused) { state = "Paused"; }
-            else if (sketch.Stopped) { state = "Stopped"; }
-            Text = string.Format("Arduino Simulator [{0}]", state);
+            string sketchState = "Unknown";
+            if (sketch.Running) { sketchState = "Running"; }
+            else if (sketch.Paused) { sketchState = "Paused"; }
+            else if (sketch.Stopped) { sketchState = "Stopped"; }
+
+            string socketState = "Unknown";
+            if (socket.Connected) { socketState = "Connected"; }
+            else if (socket.Running) { socketState = string.Format("Listening on port {0}", socket.Port); }
+
+            Text = string.Format("Arduino Simulator [Sketch: {0}][Socket: {1}]", sketchState, socketState);
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
         {
             sketch.Stop();
+            socket.Stop();
         }
 
         private void startButton_Click(object sender, EventArgs e)
@@ -154,6 +168,5 @@ namespace Simulator
         {
             sketch.Pause();
         }
-
     }
 }
