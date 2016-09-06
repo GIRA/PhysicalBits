@@ -3,28 +3,24 @@
 void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
+	Script * script = 0;
 	int16 count = program->getScriptCount();
-	Script * script = program->getScript();
+	
+	int32 now = millis();
+	script = program->getScript();
 	for (int16 i = 0; i < count; i++)
 	{
-		executeScript(script, io);
+		if (script->isStepping() && script->shouldStepNow(now))
+		{
+			script->rememberLastStepTime(now);
+			executeScript(script, io);
+		}
 		script = script->getNext();
 	}
 }
 
 void VM::executeScript(Script * script, GPIO * io)
 {
-	if (!script->isStepping())
-	{
-		return;
-	}
-	int32 now = millis();
-	if (!script->shouldStepNow(now))
-	{
-		return;
-	}
-	script->rememberLastStepTime(now);
-
 	pc = 0;
 	currentScript = script;
 	stack->reset();
@@ -109,14 +105,22 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 		case 0xFD:
 		case 0x0D:
 		{
-
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
+			{
+				script->setStepping(true);
+			}
 		} break;
 
 		// Stop script
 		case 0xFE:
 		case 0x0E:
 		{
-
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
+			{
+				script->setStepping(false);
+			}
 		} break;
 
 		// Yield
