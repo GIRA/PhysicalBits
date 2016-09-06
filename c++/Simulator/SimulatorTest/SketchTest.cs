@@ -187,6 +187,35 @@ namespace SimulatorTest
             Assert.AreEqual(0, sketch.GetPinValue(13));
         }
 
+        [TestMethod]
+        public void TestJZBytecode()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true 
+	                delay: 0
+	                instructions: [:s | s
+		                read: 13;
+		                jz: #zero;
+		                turnOff: 13;
+		                jmp: #end;
+		                label: #zero;
+		                turnOn: 13;
+		                label: #end]].
+                UziProtocol new run: program.
+                */
+                0, 1, 0, 128, 0, 0, 0, 5, 109, 241, 2, 45, 255, 1, 13
+            });
+            sketch.SetPinValue(13, 0);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
         private void TurnOffAllPins()
         {
             for (int i = 0; i < 19; i++)
