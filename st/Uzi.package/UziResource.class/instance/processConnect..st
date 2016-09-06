@@ -2,7 +2,9 @@ requests
 processConnect: req
 	| port |
 	port := req fields at: 'port' ifAbsent: [^ req send400Response: 'Missing parameter: "port"'].
-	[protocol connectOnPort: port]
+	[(port beginsWith: 'COM') 
+		ifTrue: [protocol connectOnPort: port]
+		ifFalse: [protocol connectOnSocket: port]]
 		on: Error
 		do: [:err | ^ req send400Response: err description].
 	req sendJSONResponse: self detail
