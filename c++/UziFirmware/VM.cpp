@@ -98,7 +98,6 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 		case 0xFC:
 		case 0x0C:
 		{
-
 		} break;
 
 		// Start script
@@ -215,44 +214,59 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 {
 	switch (primitiveIndex)
 	{
+		// read
 		case 0x00:
-		{// read
+		{
 			uint8 pin = (uint8)stack->pop();
 			stack->push(io->getValue(pin));
 		} break;
+
+		// write
 		case 0x01:
-		{// write
+		{
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, value);
 		} break;
+
+		// toggle
 		case 0x02:
-		{// toggle
+		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1 - io->getValue(pin));
 		} break;
+
+		// servoDegrees
 		case 0x03:
-		{// getMode
+		{
+			float value = stack->pop() / 180.0;
 			uint8 pin = (uint8)stack->pop();
-			stack->push(io->getMode(pin));
+			io->servoWrite(pin, value);
 		} break;
+
+		// servoWrite
 		case 0x04:
-		{// setMode
-			uint8 mode = (uint8)stack->pop();
-			uint8 pin = (uint8)stack->pop();
-			io->setMode(pin, mode);
-		} break;
-		case 0x05:
-		{// servoWrite
+		{
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
 		} break;
+
+		// multiply
+		case 0x05:
+		{
+			float val1 = stack->pop();
+			float val2 = stack->pop();
+			stack->push(val1 * val2);
+		} break;
+
+		// add
 		case 0x06:
-		{// add
+		{
 			float val1 = stack->pop();
 			float val2 = stack->pop();
 			stack->push(val1 + val2);
 		} break;
+
 	}
 }
