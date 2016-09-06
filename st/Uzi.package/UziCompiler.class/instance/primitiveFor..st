@@ -2,11 +2,10 @@ private
 primitiveFor: selector
 	^ UziPrimitive named: (selector caseOf: {
 		[#read] -> [#read].
-		[#read:] -> [#read].
 		[#write:] -> [#write].
-		[#write:value:] -> [#write].
 		[#toggle] -> [#toggle].
-		[#toggle:] -> [#toggle].
+		[#servoDegrees:] -> [#servoDegrees].
+		[#servoWrite:] -> [#servoWrite].
 		[#+] -> [#add].
 		[#-] -> [#subtract].
 		[#*] -> [#multiply].
@@ -19,4 +18,11 @@ primitiveFor: selector
 		[#arcTan] -> [#arcTan].
 		[#squared] -> [#squared].
 		[#sqrt] -> [#sqrt].
+		[#=] -> [#equals].
+		[#~=] -> [#notEquals].
+		[#>] -> [#greaterThan].
+		[#>=] -> [#greaterThanOrEquals].
+		[#<] -> [#lessThan].
+		[#<=] -> [#lessThanOrEquals].
+		[#negated] -> [#negate].
 	} otherwise: [UziInvalidPrimitiveCallError signal: selector])
