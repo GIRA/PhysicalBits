@@ -43,6 +43,17 @@ Script * Program::getScript(void)
 	return script;
 }
 
+Script * Program::getScript(int16 index)
+{
+	if (index >= scriptCount) return 0;
+	Script* result = script;
+	for (int i = 0; i < index; i++)
+	{
+		result = result->getNext();
+	}
+	return result;
+}
+
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
 	globalCount = rs->next(timeout);
@@ -80,12 +91,19 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 
 void Program::parseScripts(Reader * rs, bool& timeout)
 {
-	Script * scriptTemp;
+	Script* last = 0;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
-		scriptTemp = new Script(rs, timeout);
-		scriptTemp->setNext(script);
-		script = scriptTemp;
+		Script* temp = new Script(rs, timeout);
+		if (i == 0)
+		{
+			script = last = temp;			
+		}
+		else
+		{
+			last->setNext(temp);
+			last = temp;
+		}
 
 		if (timeout) return;
 	}

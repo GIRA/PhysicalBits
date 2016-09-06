@@ -13,7 +13,8 @@ public:
 	~Program(void);
 
 	uint8 getScriptCount(void);
-	Script * getScript(void);
+	Script* getScript(void);
+	Script* getScript(int16);
 	
 	float getGlobal(int16);
 	void setGlobal(int16, float);
@@ -24,7 +25,7 @@ public:
 private:
 
 	uint8 scriptCount;
-	Script * script;
+	Script* script;
 
 	uint8 globalCount;
 	float* globals;
