@@ -8,12 +8,6 @@ class StackArray
 {
 
 public:
-	StackArray(void)
-	{
-		pointer = 0;
-	}
-	~StackArray(void) {}
-
 	void push(float);
 	float pop(void);
 	float top(void);
@@ -23,7 +17,7 @@ public:
 private:
 
 	float elements[MAX_SIZE];
-	uint16 pointer;
+	uint16 pointer = 0;
 
 };
 
