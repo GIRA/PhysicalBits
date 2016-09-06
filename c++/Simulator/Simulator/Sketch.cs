@@ -34,6 +34,8 @@ namespace Simulator
         private static Sketch current = new Sketch();
         public static Sketch Current { get { return current; } }
 
+        public event Action<Tuple<DateTime, byte[]>> SerialReceived = (tuple) => { };
+
         private ConcurrentQueue<Tuple<DateTime, byte[]>> serial;
         private object serial_lock = new object();
         private Thread thread;
@@ -108,7 +110,9 @@ namespace Simulator
                 byte[] read = buffer.Take(count).ToArray();
                 if (read.Length > 0)
                 {
-                    serial.Enqueue(new Tuple<DateTime, byte[]>(DateTime.Now, read));
+                    Tuple<DateTime, byte[]> tuple = new Tuple<DateTime, byte[]>(DateTime.Now, read);
+                    serial.Enqueue(tuple);
+                    SerialReceived(tuple);
                 }
             }
         }
@@ -134,8 +138,8 @@ namespace Simulator
 
         public void Loop()
         {
-            EnqueueSerial();
             Sketch_loop();
+            EnqueueSerial();
         }
     }
 }
