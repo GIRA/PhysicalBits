@@ -5,5 +5,5 @@ registerVariable: arg
 	^ arg isString 
 		ifTrue: [variables detect: [:v | v name = arg] 
 			ifNone: [variables add: (UziVariable named: arg)]]
-		ifFalse: [variables detect: [:v | v value = arg]
+		ifFalse: [variables detect: [:v | v value = arg and: [v isConstant]]
 			ifNone: [variables add: (UziVariable value: arg)]]
