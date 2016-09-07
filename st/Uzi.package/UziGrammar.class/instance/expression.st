@@ -1,3 +1,3 @@
 grammar
 expression
-	^ keywordExpression 
+	^ assignment / keywordExpression 

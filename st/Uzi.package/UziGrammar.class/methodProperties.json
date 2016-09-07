@@ -2,6 +2,7 @@
 	"class" : {
 		 },
 	"instance" : {
+		"assignment" : "Richo 9/7/2016 11:20",
 		"binary" : "Richo 9/16/2014 17:34",
 		"binaryExpression" : "Richo 9/17/2014 18:26",
 		"binaryMessage" : "Richo 9/17/2014 18:06",
@@ -9,7 +10,7 @@
 		"block" : "Richo 10/28/2014 18:14",
 		"cleanStatements" : "Richo 10/28/2014 18:15",
 		"constantLiteral" : "Richo 4/4/2016 11:03",
-		"expression" : "Richo 9/23/2014 15:09",
+		"expression" : "Richo 9/7/2016 11:20",
 		"forbiddenCharacters" : "Richo 9/16/2014 17:36",
 		"identifier" : "Richo 9/16/2014 14:26",
 		"identifierToken" : "Richo 9/16/2014 15:47",

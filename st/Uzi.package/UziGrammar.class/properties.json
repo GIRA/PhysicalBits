@@ -38,7 +38,8 @@
 		"separator",
 		"optionalSeparator",
 		"constantLiteral",
-		"variable" ],
+		"variable",
+		"assignment" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],
