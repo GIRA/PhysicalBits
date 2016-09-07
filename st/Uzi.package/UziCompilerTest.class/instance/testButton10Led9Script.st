@@ -14,8 +14,8 @@ testButton10Led9Script
 	instructions := script1 instructions.
 	self assert: instructions size = 4.
 	self assert: instructions = {
-		pushLit arg: program variables first.
-		pushLit arg: program variables second.
-		primCall arg: (prim named: #read).
-		primCall arg: (prim named: #write)
+		push arg: program variables first.
+		push arg: program variables second.
+		prim arg: (UziPrimitive named: #read).
+		prim arg: (UziPrimitive named: #write)
 	}

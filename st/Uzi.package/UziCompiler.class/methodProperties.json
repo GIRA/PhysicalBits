@@ -6,6 +6,7 @@
 		"primitiveFor:" : "Richo 9/7/2016 10:16",
 		"visit:" : "Richo 9/23/2014 17:10",
 		"visit:ifNil:" : "Richo 4/4/2016 11:21",
+		"visitAssignmentNode:" : "Richo 9/7/2016 11:31",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
 		"visitMessageSend:" : "Richo 9/7/2016 10:19",
 		"visitNumberNode:" : "Richo 9/7/2016 10:18",

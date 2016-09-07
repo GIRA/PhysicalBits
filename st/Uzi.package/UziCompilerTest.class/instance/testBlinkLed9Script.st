@@ -15,8 +15,8 @@ testBlinkLed9Script
 	self assert: (script1 literals collect: #value) = #(9 1 0).
 	self assert: script1 variables isEmpty.
 	self assert: script1 instructions = {
-		pushLit arg: script1 literals first.
-		primCall arg: #getValue.
-		pushLit arg: 1.
+		push arg: script1 literals first.
+		prim arg: #getValue.
+		push arg: 1.
 		self flag: #Richo. "ACAACA fix this!"
 	}

@@ -1,5 +1,5 @@
 setup
 setUp
-	pushLit := UziPushInstruction.
-	primCall := UziPrimitiveCallInstruction.
-	prim := UziPrimitive
+	push := UziPushInstruction.
+	pop := UziPopInstruction.
+	prim := UziPrimitiveCallInstruction

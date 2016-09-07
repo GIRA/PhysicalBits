@@ -6,9 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"pushLit",
-		"primCall",
-		"prim" ],
+		"prim",
+		"push",
+		"pop" ],
 	"name" : "UziCompilerTest",
 	"pools" : [
 		 ],

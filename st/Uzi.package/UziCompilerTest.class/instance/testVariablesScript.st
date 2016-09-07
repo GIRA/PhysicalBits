@@ -7,7 +7,7 @@ testVariablesScript
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
 	self assert: script1 instructions = {
-		pushLit arg: (program variables detect: [:var | var name = 'a']).
-		pushLit arg: (program variables detect: [:var | var name = 'b']).
-		primCall arg: (prim named: #write).
+		push arg: (program variables detect: [:var | var name = 'a']).
+		push arg: (program variables detect: [:var | var name = 'b']).
+		prim arg: (UziPrimitive named: #write).
 	}

@@ -2,4 +2,7 @@
 	"class" : {
 		"left:right:" : "Richo 9/7/2016 11:23" },
 	"instance" : {
-		"initializeWithLeft:right:" : "Richo 9/7/2016 11:23" } }
+		"accept:" : "Richo 9/7/2016 11:30",
+		"initializeWithLeft:right:" : "Richo 9/7/2016 11:23",
+		"left" : "Richo 9/7/2016 11:31",
+		"right" : "Richo 9/7/2016 11:31" } }
