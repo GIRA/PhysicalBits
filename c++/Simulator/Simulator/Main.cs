@@ -104,7 +104,7 @@ namespace Simulator
         private void stepTimer_Tick(object sender, EventArgs e)
         {
             // HACK(Richo): To speed testing, I automatically change the value of A0
-            sketch.SetPinValue(15, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
+            //sketch.SetPinValue(15, Convert.ToInt16(Math.Sin((double)Environment.TickCount / 1000) * 1024));
 
             UpdateUI();
         }
