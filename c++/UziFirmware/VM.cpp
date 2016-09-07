@@ -239,7 +239,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 		// servoDegrees
 		case 0x03:
 		{
-			float value = stack->pop() / 180.0;
+			float value = stack->pop() / 180.0f;
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
 		} break;
@@ -343,21 +343,21 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 		case 0x10:
 		{
 			float val = stack->pop();
-			stack->push(sin(val));
+			stack->push(sinf(val));
 		} break;
 
 		// cos
 		case 0x11:
 		{
 			float val = stack->pop();
-			stack->push(cos(val));
+			stack->push(cosf(val));
 		} break;
 
 		// tan
 		case 0x12:
 		{
 			float val = stack->pop();
-			stack->push(tan(val));
+			stack->push(tanf(val));
 		} break;
 
 		// turnOn
