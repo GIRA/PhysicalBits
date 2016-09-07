@@ -359,5 +359,19 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 			float val = stack->pop();
 			stack->push(tan(val));
 		} break;
+
+		// turnOn
+		case 0x13:
+		{
+			uint8 pin = (uint8)stack->pop();
+			io->setValue(pin, 1);
+		} break;
+
+		// turnOff
+		case 0x14:
+		{
+			uint8 pin = (uint8)stack->pop();
+			io->setValue(pin, 0);
+		} break;
 	}
 }
