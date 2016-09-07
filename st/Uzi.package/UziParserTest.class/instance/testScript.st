@@ -8,10 +8,4 @@ testScript
 	self assert: script tickingRate delay = 1 second.
 	self assert: script body notNil.
 	body := script body.
-	self assert: body size = 3.
-	self assert: (body allSatisfy: [:each | each receiver = nil]).
-	self assert: (body allSatisfy: [:each | each arguments isEmpty]).
-	self assert: body first selector = 'foo'.
-	self assert: body second selector = 'bar'.
-	self assert: body third selector = 'baz'.
-	
+	self assert: #(foo bar baz) equals: (body collect: #name)

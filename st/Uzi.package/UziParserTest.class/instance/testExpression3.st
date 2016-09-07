@@ -7,9 +7,7 @@ testExpression3
 	self assert: expr selector = #bar:qux:.
 	self assert: expr arguments size = 2.
 	rcvr := expr receiver.
-	self assert: rcvr receiver isNil.
-	self assert: rcvr selector = #foo.
-	self assert: rcvr arguments isEmpty.
+	self assert: 'foo' equals: rcvr name.
 	arg1 := expr arguments first.
 	self assert: arg1 receiver value = 42.
 	self assert: arg1 selector = #+.

@@ -2,15 +2,15 @@ grammar-messages
 testBinaryExpression
 	| pp msg |
 	pp := UziGrammar new binaryExpression.
-	msg := pp parse: '+ foo'.
+	msg := pp parse: '1 + 2 foo'.
 	self assert: (self 
 		isBinaryExpression: msg 
 		receiver: [:rcvr |
 			self isUnaryExpression: rcvr
-				receiver: nil
+				receiver: '1'
 				messages: #()]
 		selector: '+'
 		argument: [:arg | self 
 			isUnaryExpression: arg
-			receiver: nil 
+			receiver: '2' 
 			messages: #('foo')]).

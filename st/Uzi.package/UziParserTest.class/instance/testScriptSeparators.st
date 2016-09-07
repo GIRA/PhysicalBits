@@ -14,11 +14,11 @@ testScriptSeparators
 	self assert: script tickingRate delay = 1 second.
 	self assert: script body notNil.
 	self assert: script body size = 1.
-	self assert: script body first selector = 'foo'.
+	self assert: script body first name = 'foo'.
 	script := scripts second.
 	self assert: script name = #script2.
 	self assert: script state = #paused.
 	self assert: script tickingRate delay = 30 seconds.
 	self assert: script body notNil.
 	self assert: script body size = 1.
-	self assert: script body first selector = 'bar'
+	self assert: script body first name = 'bar'

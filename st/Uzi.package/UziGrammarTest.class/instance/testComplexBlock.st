@@ -6,7 +6,7 @@ testComplexBlock
 	[
 		foo.
 		bar baz.
-		foo: bar * baz
+		1 foo: bar * baz
 	] '.
 	self assert: b first inputValue = '['.
 	self assert: b second size = 3.
