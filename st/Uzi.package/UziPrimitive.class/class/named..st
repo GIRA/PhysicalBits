@@ -19,5 +19,7 @@ named: primitiveName
 		[#negate] -> [15].
 		[#sin] -> [16].
 		[#cos] -> [17].
-		[#tan] -> [18]
+		[#tan] -> [18].
+		[#turnOn] -> [19].
+		[#turnOff] -> [20]
 	} otherwise: [UziPrimitiveNotFoundError signal: primitiveName])

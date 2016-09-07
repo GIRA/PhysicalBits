@@ -1,6 +1,8 @@
 private
 primitiveFor: selector
 	^ selector caseOf: {
+		[#on] -> [#turnOn].
+		[#off] -> [#turnOff].
 		[#read] -> [#read].
 		[#write:] -> [#write].
 		[#toggle] -> [#toggle].
