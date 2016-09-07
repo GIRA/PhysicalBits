@@ -1,9 +1,9 @@
 visiting
-handleIfTrueMessageSend: node
+handleIfFalseMessageSend: node
 	| label |
 	self visit: node receiver.
 	label := self newLabel.
-	script jz: label.
-	"True block"
+	script jnz: label.
+	"False block"
 	self visit: node arguments first.
 	script label: label
