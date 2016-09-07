@@ -2,13 +2,11 @@
 	"class" : {
 		 },
 	"instance" : {
-		"compile:" : "Richo 8/10/2016 18:41",
-		"primitiveFor:" : "Richo 9/6/2016 17:57",
-		"registerVariable:" : "Richo 8/10/2016 19:09",
+		"compile:" : "Richo 9/7/2016 10:14",
+		"primitiveFor:" : "Richo 9/7/2016 10:16",
 		"visit:" : "Richo 9/23/2014 17:10",
 		"visit:ifNil:" : "Richo 4/4/2016 11:21",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
-		"visitMessageSend:" : "Richo 8/22/2016 09:57",
-		"visitNumberNode:" : "Richo 8/22/2016 09:57",
-		"visitScriptNode:" : "Richo 8/22/2016 09:57",
-		"visitTickingRateNode:" : "Richo 9/29/2014 18:45" } }
+		"visitMessageSend:" : "Richo 9/7/2016 10:19",
+		"visitNumberNode:" : "Richo 9/7/2016 10:18",
+		"visitScriptNode:" : "Richo 9/7/2016 10:23" } }

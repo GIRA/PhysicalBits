@@ -3,7 +3,7 @@ testButton10Led9Script
 	| cc program script1 instructions |
 	cc := UziCompiler new.
 	program := cc compile: '#button10Led9 ticking 100/s [
-			write: 9 value: (read: 10)
+			9 write: 10 read
 		]'.
 	self assert: program scripts size = 1.	
 	self assert:  #(9 10) equals: (program variables collect: #value).

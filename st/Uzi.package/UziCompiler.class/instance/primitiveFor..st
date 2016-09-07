@@ -1,6 +1,6 @@
 private
 primitiveFor: selector
-	^ UziPrimitive named: (selector caseOf: {
+	^ selector caseOf: {
 		[#read] -> [#read].
 		[#write:] -> [#write].
 		[#toggle] -> [#toggle].
@@ -25,4 +25,4 @@ primitiveFor: selector
 		[#<] -> [#lessThan].
 		[#<=] -> [#lessThanOrEquals].
 		[#negated] -> [#negate].
-	} otherwise: [UziInvalidPrimitiveCallError signal: selector])
+	} otherwise: [UziInvalidPrimitiveCallError signal: selector]

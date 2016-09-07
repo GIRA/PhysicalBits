@@ -1,9 +1,9 @@
 visiting
 visitScriptNode: node
-	instructions := OrderedCollection new.
-	self visitCollection: node body.
-	^ UziScript
-		name: node name
+	program 
+		script: node name 
 		ticking: node state = #ticking
-		delay: (self visit: node tickingRate ifNil: 0)
-		instructions: instructions asArray
+		delay: (node tickingRate ifNil: 0 ifNotNil: #delayMs) 
+		instructions: [:s |
+			script := s.
+			self visitCollection: node body]

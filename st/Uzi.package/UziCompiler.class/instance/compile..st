@@ -1,8 +1,8 @@
 accessing
 compile: aString 
-	| nodes scripts |
+	| nodes |
 	nodes := UziParser parse: aString.
-	nodes isPetitFailure ifTrue: [^ UziParseError signal: nodes asString].	
-	variables := OrderedCollection new.
-	scripts := nodes collect: [:node | self visit: node].
-	^ UziProgram variables: variables scripts: scripts
+	nodes isPetitFailure ifTrue: [^ UziParseError signal: nodes asString].
+	^ Uzi program: [:p |
+		program := p.
+		self visitCollection: nodes]

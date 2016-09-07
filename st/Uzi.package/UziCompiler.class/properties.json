@@ -6,8 +6,8 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"variables",
-		"instructions" ],
+		"program",
+		"script" ],
 	"name" : "UziCompiler",
 	"pools" : [
 		 ],
