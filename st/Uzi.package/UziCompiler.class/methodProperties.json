@@ -7,7 +7,9 @@
 		"handleIfFalseMessageSend:" : "Richo 9/7/2016 16:38",
 		"handleIfTrueIfFalseMessageSend:" : "Richo 9/7/2016 15:49",
 		"handleIfTrueMessageSend:" : "Richo 9/7/2016 16:38",
-		"handleSpecialMessageSend:" : "Richo 9/7/2016 16:46",
+		"handleSpecialMessageSend:" : "Richo 9/7/2016 17:48",
+		"handleStartScriptMessageSend:" : "Richo 9/7/2016 17:48",
+		"handleStopScriptMessageSend:" : "Richo 9/7/2016 17:49",
 		"newLabel" : "Richo 9/7/2016 15:53",
 		"positionOf:in:" : "Richo 9/7/2016 17:04",
 		"primitiveFor:" : "Richo 9/7/2016 15:55",
@@ -20,4 +22,5 @@
 		"visitMessageSend:" : "Richo 9/7/2016 16:47",
 		"visitNumberNode:" : "Richo 9/7/2016 10:18",
 		"visitScriptNode:" : "Richo 9/7/2016 10:23",
+		"visitScriptRefNode:" : "Richo 9/7/2016 17:49",
 		"visitVariableNode:" : "Richo 9/7/2016 11:16" } }

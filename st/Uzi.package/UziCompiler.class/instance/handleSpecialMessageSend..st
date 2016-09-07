@@ -8,5 +8,7 @@ handleSpecialMessageSend: node
 		[#ifTrue:] -> [self handleIfTrueMessageSend: node. ^ true].
 		[#ifFalse:] -> [self handleIfFalseMessageSend: node. ^ true].
 		[#ifTrue:ifFalse:] -> [self handleIfTrueIfFalseMessageSend: node. ^ true].
-		[#ifFalse:ifTrue:] -> [self handleIfFalseIfTrueMessageSend: node. ^ true]
+		[#ifFalse:ifTrue:] -> [self handleIfFalseIfTrueMessageSend: node. ^ true].
+		[#start] -> [self handleStartScriptMessageSend: node. ^ true].
+		[#stop] -> [self handleStopScriptMessageSend: node. ^ true]
 	} otherwise: [^ false].
