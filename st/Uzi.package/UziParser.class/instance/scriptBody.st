@@ -1,3 +1,3 @@
 scripts
 scriptBody
-	^ super scriptBody map: [:ign1 :statements :ign2 | statements]
+	^ super scriptBody map: [:ign1 :stmts :ign2 | stmts]

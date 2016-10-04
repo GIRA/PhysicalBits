@@ -1,6 +1,6 @@
 scripts
 tickingRate
-	^ super tickingRate map: [:number :ign :scale |
+	^ super tickingRate map: [:n :ign :scale |
 		UziTickingRateNode 
-			value: number inputValue asNumber
+			value: n inputValue asNumber
 			scale: scale inputValue asSymbol]

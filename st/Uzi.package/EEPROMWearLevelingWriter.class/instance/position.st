@@ -1,3 +1,3 @@
 accessing
 position
-	^ writer ifNotNil: #position
+	^ writer ifNotNil: [writer position]

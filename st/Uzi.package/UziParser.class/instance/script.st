@@ -1,6 +1,6 @@
 scripts
 script
-	^ super script map: [:scriptName :tickingState :tickingRate :body :ign |
+	^ super script map: [:name :tState :tRate :body :ign |
 		UziScriptNode
 			name: scriptName
 			state: tickingState

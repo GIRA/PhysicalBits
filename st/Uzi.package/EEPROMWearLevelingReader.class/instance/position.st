@@ -1,3 +1,3 @@
 accessing
 position
-	^ reader ifNotNil: #position
+	^ reader ifNotNil: [reader position]
