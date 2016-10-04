@@ -1,4 +1,4 @@
 blocks
 block
-	^ super block map: [:ign1 :statements :ign2 | 
-			UziBlockNode statements: statements]
+	^ super block map: [:ign1 :stmts :ign2 | 
+			UziBlockNode statements: stmts]
