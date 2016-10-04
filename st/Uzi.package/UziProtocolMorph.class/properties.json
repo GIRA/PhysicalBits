@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"protocol" ],
+	"name" : "UziProtocolMorph",
+	"pools" : [
+		 ],
+	"super" : "Morph",
+	"type" : "normal" }

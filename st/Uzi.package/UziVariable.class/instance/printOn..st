@@ -2,5 +2,7 @@ printing
 printOn: aStream
 	super printOn: aStream.
 	aStream nextPut: $(;
-		print: value;
+		print: (name 
+			ifNil: value 
+			ifNotNil: [name -> value]);
 		nextPut: $)

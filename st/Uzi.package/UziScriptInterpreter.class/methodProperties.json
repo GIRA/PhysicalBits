@@ -10,8 +10,8 @@
 		"initialize" : "Richo 10/7/2014 17:08",
 		"initializeWithProtocol:script:" : "Richo 10/21/2014 13:40",
 		"nextBytecode" : "Richo 8/22/2016 09:49",
-		"visit:" : "Richo 10/9/2014 17:07",
 		"visitJMPBytecode:" : "Richo 10/28/2014 19:31",
 		"visitJNZBytecode:" : "Richo 10/28/2014 19:30",
 		"visitPrimitiveCallBytecode:" : "Richo 10/21/2014 19:43",
-		"visitPushBytecode:" : "Richo 8/10/2016 17:40" } }
+		"visitPushBytecode:" : "Richo 8/10/2016 17:40",
+		"visit:" : "Richo 10/9/2014 17:07" } }

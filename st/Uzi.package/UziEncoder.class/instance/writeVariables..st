@@ -1,9 +1,9 @@
 encoding programs
-writeVariables: program
+writeVariables: anUziProgram
 	| grouped |
-	variables := program variables.
+	variables := anUziProgram variables.
 	stream nextPut: variables size.
-	grouped := variables groupBy: #size having: [:ign | true].
+	grouped := variables groupBy: [:var | var size] having: [:ign | true].
 	(1 to: 4) do: [:size |
 		grouped at: size ifPresent: [:group |
 			"The first byte or each group says how many variables and the size.

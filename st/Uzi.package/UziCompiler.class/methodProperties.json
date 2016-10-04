@@ -14,8 +14,6 @@
 		"positionOf:in:" : "Richo 9/7/2016 17:04",
 		"primitiveFor:" : "Richo 9/7/2016 15:55",
 		"signalParseError:source:" : "Richo 9/7/2016 17:32",
-		"visit:" : "Richo 9/23/2014 17:10",
-		"visit:ifNil:" : "Richo 4/4/2016 11:21",
 		"visitAssignmentNode:" : "Richo 9/7/2016 11:31",
 		"visitBlockNode:" : "Richo 9/7/2016 15:49",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
@@ -23,4 +21,6 @@
 		"visitNumberNode:" : "Richo 9/7/2016 10:18",
 		"visitScriptNode:" : "Richo 10/3/2016 20:07",
 		"visitScriptRefNode:" : "Richo 9/7/2016 17:49",
-		"visitVariableNode:" : "Richo 9/7/2016 11:16" } }
+		"visitVariableNode:" : "Richo 9/7/2016 11:16",
+		"visit:" : "Richo 9/23/2014 17:10",
+		"visit:ifNil:" : "Richo 4/4/2016 11:21" } }

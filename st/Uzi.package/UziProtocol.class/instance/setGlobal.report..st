@@ -4,6 +4,7 @@ setGlobal: name report: report
 	^ currentProgram ifNotNil: [
 		index := currentProgram variables
 			indexOf: (currentProgram variables detect: [:var | var name = name]).
+		globals at: index - 1 put: nil.
 		self send: {
 			11. 
 			index - 1. 
