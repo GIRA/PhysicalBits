@@ -14,7 +14,8 @@
 		"pinModes",
 		"pinsReporting",
 		"currentProgram",
-		"globals" ],
+		"globals",
+		"globalsReporting" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
