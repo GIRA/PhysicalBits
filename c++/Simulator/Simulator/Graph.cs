@@ -11,7 +11,9 @@ namespace Simulator
 {
     public partial class Graph : UserControl
     {
-        List<int> values = new List<int>();
+        private List<int> values = new List<int>();
+        private Pen pen = new Pen(Color.Green, 2);
+        private Brush brush = Brushes.White;
 
         public Graph()
         {
@@ -50,9 +52,8 @@ namespace Simulator
         {
             Graphics g = e.Graphics;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            Pen pen = new Pen(Color.Green, 2);
             g.TranslateTransform(Location.X * -1, Location.Y * -1);
-            g.FillRectangle(Brushes.White, Bounds);
+            g.FillRectangle(brush, Bounds);
 
             for (int x = 1; x < Width; x++)
             {
