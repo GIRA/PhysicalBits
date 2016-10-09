@@ -1,5 +1,5 @@
 drawing
-drawOn: aCanvas
+oldDrawOn: aCanvas
 	aCanvas 
 		clipBy: self bounds
 		during: [:canvas || offset step i |

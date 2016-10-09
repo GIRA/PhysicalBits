@@ -1,3 +1,14 @@
 stepping
 step
-	self changed
+	self borderColor: (self isConnected 
+		ifTrue: [Color green] 
+		ifFalse: [Color red]).
+	connectButton label: (self isConnected 
+		ifTrue: ['Disconnect']
+		ifFalse: ['Connect...']).
+	connectedText contents: self isConnected asString.
+	portText contents: self portName.
+	pinTexts keysAndValuesDo: [:pin :text |
+		text contents: (self getPinValue: pin) asString].
+	globalTexts keysAndValuesDo: [:var :text |
+		text contents: (self getGlobal: var) asString]

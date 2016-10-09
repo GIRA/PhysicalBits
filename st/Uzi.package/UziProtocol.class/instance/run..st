@@ -1,7 +1,6 @@
 installing
 run: anUziProgram
 	currentProgram := anUziProgram.
-	"Keep reporting the variables that remain"
 	globals := Dictionary new.
 	^ [self send: #[0] , (UziEncoder new encode: anUziProgram)]
 		ensure: ["Keep reporting the variables that remain"

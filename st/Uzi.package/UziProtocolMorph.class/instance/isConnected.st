@@ -1,0 +1,3 @@
+accessing
+isConnected
+	^ protocol isConnected

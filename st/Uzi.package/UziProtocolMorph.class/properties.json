@@ -6,9 +6,17 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"protocol" ],
+		"protocol",
+		"connectButton",
+		"pinsButton",
+		"globalsButton",
+		"editorButton",
+		"connectedText",
+		"portText",
+		"pinTexts",
+		"globalTexts" ],
 	"name" : "UziProtocolMorph",
 	"pools" : [
 		 ],
-	"super" : "Morph",
+	"super" : "AlignmentMorph",
 	"type" : "normal" }
