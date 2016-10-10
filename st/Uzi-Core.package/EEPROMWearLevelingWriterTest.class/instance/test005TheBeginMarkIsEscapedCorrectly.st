@@ -1,8 +1,8 @@
 as yet unclassified
 test005TheBeginMarkIsEscapedCorrectly
 	| eeprom writer |
-	eeprom := EEPROM size: 256.
-	writer := EEPROMWearLevelingWriter on: eeprom.
+	eeprom := UziEEPROM size: 256.
+	writer := UziEEPROMWearLevelingWriter on: eeprom.
 	writer nextPut: begin.
 	writer close.
 	"The result should be:

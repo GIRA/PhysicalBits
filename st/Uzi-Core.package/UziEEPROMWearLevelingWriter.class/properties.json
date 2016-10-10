@@ -7,13 +7,10 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"eeprom",
-		"lastChanged",
-		"started",
-		"programs",
-		"programsSize",
-		"config" ],
-	"name" : "EEPROMMorph",
+		"writer",
+		"beginPosition" ],
+	"name" : "UziEEPROMWearLevelingWriter",
 	"pools" : [
 		 ],
-	"super" : "Morph",
+	"super" : "Object",
 	"type" : "normal" }

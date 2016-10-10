@@ -1,8 +1,8 @@
 as yet unclassified
 test004ClosingTheWriterAppendsTheEndMark
 	| eeprom writer |
-	eeprom := EEPROM size: 256.
-	writer := EEPROMWearLevelingWriter on: eeprom.
+	eeprom := UziEEPROM size: 256.
+	writer := UziEEPROMWearLevelingWriter on: eeprom.
 	0 to: 5 do: [:i | writer nextPut: i].
 	writer close.
 	"The result should be:

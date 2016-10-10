@@ -9,7 +9,7 @@
 		"eeprom",
 		"reader",
 		"endPosition" ],
-	"name" : "EEPROMWearLevelingReader",
+	"name" : "UziEEPROMWearLevelingReader",
 	"pools" : [
 		 ],
 	"super" : "Object",

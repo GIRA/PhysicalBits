@@ -1,4 +1,4 @@
 setup
 setUp 
-	begin := EEPROMWearLevelingReader beginMark.
-	end := EEPROMWearLevelingReader endMark 
+	begin := UziEEPROMWearLevelingReader beginMark.
+	end := UziEEPROMWearLevelingReader endMark 

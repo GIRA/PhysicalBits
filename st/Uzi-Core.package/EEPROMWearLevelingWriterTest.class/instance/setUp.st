@@ -1,4 +1,4 @@
 setup
 setUp 
-	begin := EEPROMWearLevelingWriter beginMark.
-	end := EEPROMWearLevelingWriter endMark
+	begin := UziEEPROMWearLevelingWriter beginMark.
+	end := UziEEPROMWearLevelingWriter endMark

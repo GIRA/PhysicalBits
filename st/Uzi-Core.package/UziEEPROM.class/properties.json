@@ -6,9 +6,10 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"eeprom",
-		"position" ],
-	"name" : "EEPROMReader",
+		"bytes",
+		"writes",
+		"max" ],
+	"name" : "UziEEPROM",
 	"pools" : [
 		 ],
 	"super" : "Object",

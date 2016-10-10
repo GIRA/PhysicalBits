@@ -1,8 +1,8 @@
 as yet unclassified
 test006TheEndMarkIsEscapedCorrectly
 	| eeprom writer |
-	eeprom := EEPROM size: 256.
-	writer := EEPROMWearLevelingWriter on: eeprom.
+	eeprom := UziEEPROM size: 256.
+	writer := UziEEPROMWearLevelingWriter on: eeprom.
 	writer nextPut: end.
 	writer close.
 	"The result should be:

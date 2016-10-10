@@ -2,15 +2,15 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 7/14/2016 18:35",
-		"test001PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 7/15/2016 09:32",
-		"test002PositionIsCorrectlyInitializedOnADirtyEEPROM" : "Richo 7/15/2016 09:32",
-		"test003PositionIsCorrectlyInitializedAfterEscapedMarks" : "Richo 7/15/2016 09:34",
-		"test004ClosingTheWriterAppendsTheEndMark" : "Richo 7/15/2016 09:35",
-		"test005TheBeginMarkIsEscapedCorrectly" : "Richo 7/15/2016 09:36",
-		"test006TheEndMarkIsEscapedCorrectly" : "Richo 7/15/2016 09:37",
-		"test007PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
-		"test008PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 7/15/2016 09:38",
-		"test009PositionIsCorrectlyInitializedIfTheMarkIsAtTheEnd" : "Richo 7/15/2016 09:40",
-		"test010PositionIsCorrectlyInitializedEvenIfTheEEPROMIsFullOfEndMarks" : "Richo 7/15/2016 10:01",
-		"test011WritingAfterTheBeginPositionThrowsException" : "Richo 7/16/2016 15:13" } }
+		"setUp" : "Richo 10/10/2016 11:25",
+		"test001PositionIsCorrectlyInitializedOnAnEmptyEEPROM" : "Richo 10/10/2016 11:25",
+		"test002PositionIsCorrectlyInitializedOnADirtyEEPROM" : "Richo 10/10/2016 11:26",
+		"test003PositionIsCorrectlyInitializedAfterEscapedMarks" : "Richo 10/10/2016 11:25",
+		"test004ClosingTheWriterAppendsTheEndMark" : "Richo 10/10/2016 11:25",
+		"test005TheBeginMarkIsEscapedCorrectly" : "Richo 10/10/2016 11:25",
+		"test006TheEndMarkIsEscapedCorrectly" : "Richo 10/10/2016 11:25",
+		"test007PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 10/10/2016 11:26",
+		"test008PositionIsCorrectlyInitializedEvenAfterEscapedEndAtTheBoundaries" : "Richo 10/10/2016 11:25",
+		"test009PositionIsCorrectlyInitializedIfTheMarkIsAtTheEnd" : "Richo 10/10/2016 11:26",
+		"test010PositionIsCorrectlyInitializedEvenIfTheEEPROMIsFullOfEndMarks" : "Richo 10/10/2016 11:25",
+		"test011WritingAfterTheBeginPositionThrowsException" : "Richo 10/10/2016 11:25" } }

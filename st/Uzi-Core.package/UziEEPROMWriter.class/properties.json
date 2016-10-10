@@ -8,7 +8,7 @@
 	"instvars" : [
 		"eeprom",
 		"position" ],
-	"name" : "EEPROMWriter",
+	"name" : "UziEEPROMWriter",
 	"pools" : [
 		 ],
 	"super" : "Object",

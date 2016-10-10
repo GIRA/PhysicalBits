@@ -7,7 +7,7 @@ test
 	config := {
 		#eepromSize -> 512.
 		#programRange -> (0 to: 256).
-		#readerClass -> EEPROMWearLevelingReader.
-		#writerClass -> EEPROMWearLevelingWriter
+		#readerClass -> UziEEPROMWearLevelingReader.
+		#writerClass -> UziEEPROMWearLevelingWriter
 	} as: Dictionary.
 	^ self config: config

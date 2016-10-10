@@ -1,12 +1,12 @@
 tests
 test013ReadingPastTheEndReturnsNilWithoutAdvancingTheReader
 	| eeprom reader |
-	eeprom := EEPROM size: 256.
+	eeprom := UziEEPROM size: 256.
 	eeprom write: 14 value: begin.
 	eeprom write: 15 value: 1.
 	eeprom write: 16 value: 2.
 	eeprom write: 17 value: end.
-	reader := EEPROMWearLevelingReader on: eeprom.
+	reader := UziEEPROMWearLevelingReader on: eeprom.
 	self assert: 15 equals: reader position.
 	self deny: reader atEnd.
 	self assert: 1 equals: reader next.

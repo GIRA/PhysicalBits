@@ -1,7 +1,7 @@
 tests
 test014ReadingEscapedBytesAreHandledCorrectly
 	| eeprom reader |
-	eeprom := EEPROM size: 256.
+	eeprom := UziEEPROM size: 256.
 	eeprom write: 14 value: begin.
 	eeprom write: 15 value: begin.	
 	eeprom write: 16 value: begin.
@@ -12,7 +12,7 @@ test014ReadingEscapedBytesAreHandledCorrectly
 	eeprom write: 21 value: end.
 	eeprom write: 22 value: 4.
 	eeprom write: 32 value: end.
-	reader := EEPROMWearLevelingReader on: eeprom.
+	reader := UziEEPROMWearLevelingReader on: eeprom.
 	self assert: 15 equals: reader position.
 	self assert: begin equals: reader next.
 	self assert: 1 equals: reader next.
