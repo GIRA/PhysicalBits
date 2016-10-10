@@ -1,0 +1,3 @@
+reading
+peek
+	^ buffer peek

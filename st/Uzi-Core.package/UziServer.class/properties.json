@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"webDirectory" ],
+	"name" : "UziServer",
+	"pools" : [
+		 ],
+	"super" : "RESTServer",
+	"type" : "normal" }

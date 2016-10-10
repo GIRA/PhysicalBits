@@ -1,0 +1,3 @@
+accessing
+isStarted
+	^ process notNil

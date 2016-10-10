@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Simulator",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"pointer",
+		"elements" ],
+	"name" : "UziStack",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

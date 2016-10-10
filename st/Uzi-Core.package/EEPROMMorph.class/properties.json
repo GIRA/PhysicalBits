@@ -1,0 +1,19 @@
+{
+	"category" : "Uzi-Core-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"lastChanged",
+		"started",
+		"programs",
+		"programsSize",
+		"config" ],
+	"name" : "EEPROMMorph",
+	"pools" : [
+		 ],
+	"super" : "Morph",
+	"type" : "normal" }

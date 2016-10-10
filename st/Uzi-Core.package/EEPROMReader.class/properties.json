@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"position" ],
+	"name" : "EEPROMReader",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

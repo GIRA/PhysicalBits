@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-EEPROM-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"begin",
+		"end" ],
+	"name" : "EEPROMWearLevelingReaderTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }

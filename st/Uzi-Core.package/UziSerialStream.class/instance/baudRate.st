@@ -1,0 +1,3 @@
+settings
+baudRate
+	^ port baudRate

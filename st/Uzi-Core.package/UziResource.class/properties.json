@@ -1,0 +1,19 @@
+{
+	"category" : "Uzi-Core-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"encoder",
+		"compiler",
+		"protocol",
+		"simulator",
+		"sema",
+		"changed" ],
+	"name" : "UziResource",
+	"pools" : [
+		 ],
+	"super" : "RESTObject",
+	"type" : "normal" }

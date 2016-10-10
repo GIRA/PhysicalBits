@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Utils",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"socket" ],
+	"name" : "SocketSerialPort",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

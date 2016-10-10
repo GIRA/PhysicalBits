@@ -1,0 +1,3 @@
+grammar
+primary
+	^ literal / parens

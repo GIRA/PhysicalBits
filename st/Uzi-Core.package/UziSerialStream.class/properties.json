@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Utils",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"port",
+		"buffer" ],
+	"name" : "UziSerialStream",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

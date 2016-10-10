@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"eeprom",
+		"writer",
+		"beginPosition" ],
+	"name" : "EEPROMWearLevelingWriter",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

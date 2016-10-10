@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"program",
+		"script" ],
+	"name" : "UziCompiler",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

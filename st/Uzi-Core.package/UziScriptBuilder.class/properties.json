@@ -1,0 +1,19 @@
+{
+	"category" : "Uzi-Core-Builders",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"program",
+		"scriptName",
+		"ticking",
+		"delay",
+		"labels",
+		"instructions" ],
+	"name" : "UziScriptBuilder",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

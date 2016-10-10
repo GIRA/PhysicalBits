@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Core-Program",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"name",
+		"ticking",
+		"delay",
+		"instructions" ],
+	"name" : "UziScript",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "Uzi",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

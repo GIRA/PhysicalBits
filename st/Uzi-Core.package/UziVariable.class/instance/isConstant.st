@@ -1,0 +1,3 @@
+testing
+isConstant
+	^ name isNil

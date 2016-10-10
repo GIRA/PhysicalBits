@@ -1,0 +1,26 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"encode:" : "Richo 8/22/2016 08:25",
+		"visitCollection:" : "Richo 10/30/2014 21:58",
+		"visitJLTEInstruction:" : "Richo 8/31/2016 17:17",
+		"visitJMPInstruction:" : "Richo 8/22/2016 10:03",
+		"visitJNZInstruction:" : "Richo 8/22/2016 10:03",
+		"visitJZInstruction:" : "Richo 9/6/2016 11:17",
+		"visitPopInstruction:" : "Richo 8/22/2016 10:03",
+		"visitPrimitiveCallInstruction:" : "Richo 9/6/2016 16:34",
+		"visitProgram:" : "Richo 9/6/2016 11:58",
+		"visitPushInstruction:" : "Richo 8/22/2016 10:03",
+		"visitReadInstruction:" : "Richo 8/22/2016 10:03",
+		"visitScript:" : "Richo 8/22/2016 10:06",
+		"visitStartScriptInstruction:" : "Richo 9/6/2016 12:01",
+		"visitStopScriptInstruction:" : "Richo 9/6/2016 12:00",
+		"visitTurnOffInstruction:" : "Richo 8/22/2016 10:03",
+		"visitTurnOnInstruction:" : "Richo 8/22/2016 10:04",
+		"visitWriteInstruction:" : "Richo 8/22/2016 10:04",
+		"visit:" : "Richo 10/8/2014 18:03",
+		"writeInstructions:" : "Richo 8/22/2016 10:04",
+		"writeProgramScriptCount:" : "Richo 10/30/2014 16:49",
+		"writeScriptHeader:" : "Richo 8/10/2015 09:14",
+		"writeVariables:" : "Richo 10/4/2016 12:43" } }

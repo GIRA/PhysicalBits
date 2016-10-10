@@ -1,0 +1,3 @@
+testing
+isInteger 
+	^ value isInteger 

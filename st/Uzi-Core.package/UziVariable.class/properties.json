@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Program",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"value",
+		"name" ],
+	"name" : "UziVariable",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

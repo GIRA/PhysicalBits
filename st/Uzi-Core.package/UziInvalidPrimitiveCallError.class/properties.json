@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Errors",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziInvalidPrimitiveCallError",
+	"pools" : [
+		 ],
+	"super" : "Error",
+	"type" : "normal" }

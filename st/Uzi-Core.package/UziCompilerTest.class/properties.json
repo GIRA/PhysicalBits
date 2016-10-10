@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"prim",
+		"push",
+		"pop" ],
+	"name" : "UziCompilerTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }
