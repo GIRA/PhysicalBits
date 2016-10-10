@@ -3,6 +3,7 @@
 		 },
 	"instance" : {
 		"encode:" : "Richo 8/22/2016 08:25",
+		"visit:" : "Richo 10/8/2014 18:03",
 		"visitCollection:" : "Richo 10/30/2014 21:58",
 		"visitJLTEInstruction:" : "Richo 8/31/2016 17:17",
 		"visitJMPInstruction:" : "Richo 8/22/2016 10:03",
@@ -19,7 +20,6 @@
 		"visitTurnOffInstruction:" : "Richo 8/22/2016 10:03",
 		"visitTurnOnInstruction:" : "Richo 8/22/2016 10:04",
 		"visitWriteInstruction:" : "Richo 8/22/2016 10:04",
-		"visit:" : "Richo 10/8/2014 18:03",
 		"writeInstructions:" : "Richo 8/22/2016 10:04",
 		"writeProgramScriptCount:" : "Richo 10/30/2014 16:49",
 		"writeScriptHeader:" : "Richo 8/10/2015 09:14",
