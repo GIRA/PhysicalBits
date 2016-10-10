@@ -6,8 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
-	"name" : "EEPROMWriterTest",
+		"begin",
+		"end" ],
+	"name" : "UziEEPROMWearLevelingReaderTest",
 	"pools" : [
 		 ],
 	"super" : "TestCase",

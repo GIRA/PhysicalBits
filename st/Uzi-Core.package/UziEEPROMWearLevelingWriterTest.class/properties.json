@@ -8,7 +8,7 @@
 	"instvars" : [
 		"begin",
 		"end" ],
-	"name" : "EEPROMWearLevelingReaderTest",
+	"name" : "UziEEPROMWearLevelingWriterTest",
 	"pools" : [
 		 ],
 	"super" : "TestCase",
