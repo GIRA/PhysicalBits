@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"protocol" ],
+	"name" : "UziEditor",
+	"pools" : [
+		 ],
+	"super" : "StringHolder",
+	"type" : "normal" }
