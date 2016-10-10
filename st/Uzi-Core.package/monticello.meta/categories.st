@@ -7,6 +7,4 @@ SystemOrganization addCategory: #'Uzi-Core-Program'!
 SystemOrganization addCategory: #'Uzi-Core-Utils'!
 SystemOrganization addCategory: #'Uzi-Core'!
 SystemOrganization addCategory: #'Uzi-Core-Builders'!
-SystemOrganization addCategory: #'Uzi-Core-EEPROM'!
 SystemOrganization addCategory: #'Uzi-Core-Server'!
-SystemOrganization addCategory: #'Uzi-Core-EEPROM-Tests'!
