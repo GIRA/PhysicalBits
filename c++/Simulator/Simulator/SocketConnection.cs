@@ -80,10 +80,13 @@ namespace Simulator
                             // Socket to serial
                             byte[] buffer = new byte[1024];
                             int bytesRead = client.Receive(buffer);
-                            sketch.WriteSerial(buffer.Take(bytesRead).ToArray());
+                            if (bytesRead > 0)
+                            {
+                                sketch.WriteSerial(buffer.Take(bytesRead).ToArray());
+                            }
 
-                            // Break if we're no longer running
-                            connected = running;
+                            // Break if we're no longer running or if we read 0 bytes
+                            connected = running && bytesRead > 0;
                         }
                         catch
                         {
