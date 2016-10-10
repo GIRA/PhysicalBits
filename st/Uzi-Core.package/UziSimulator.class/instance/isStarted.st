@@ -1,3 +1,0 @@
-accessing
-isStarted
-	^ process notNil
