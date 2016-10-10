@@ -1,7 +1,7 @@
 initialize-release
 initialize
 	super initialize.
-	writer := UziEEPROMWearLevelingWriter 
+	writer := UziEEPROMWriter 
 		eeprom: eeprom 
 		position: self findPosition.
 	beginPosition := writer position.
