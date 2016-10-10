@@ -1,0 +1,3 @@
+constants
+beginMark 
+	^ UziEEPROMWearLevelingWriter beginMark 

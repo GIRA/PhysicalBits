@@ -1,0 +1,3 @@
+constants
+endMark 
+	^ UziEEPROMWearLevelingWriter endMark 

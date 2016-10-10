@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-EEPROM",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"bytes",
+		"writes",
+		"max" ],
+	"name" : "UziEEPROM",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

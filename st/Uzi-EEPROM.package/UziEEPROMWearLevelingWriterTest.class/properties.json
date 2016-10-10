@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-EEPROM-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"begin",
+		"end" ],
+	"name" : "UziEEPROMWearLevelingWriterTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }

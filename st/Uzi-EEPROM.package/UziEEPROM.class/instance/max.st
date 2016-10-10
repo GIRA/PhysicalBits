@@ -1,0 +1,3 @@
+usage stats
+max
+	^ max
