@@ -1,5 +1,7 @@
 building
 buildSubmorphs
+	pinTexts := Dictionary new.
+	globalTexts := Dictionary new.
 	self addMorphBack: self buildButtons;
 		addMorphBack: self buildConnectionPanel.
 	self pinsReporting 
