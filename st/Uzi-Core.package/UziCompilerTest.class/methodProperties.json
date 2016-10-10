@@ -2,10 +2,9 @@
 	"class" : {
 		 },
 	"instance" : {
-		"expectedFailures" : "Richo 8/4/2015 17:46",
-		"setUp" : "Richo 9/7/2016 11:27",
+		"setUp" : "Richo 10/10/2016 13:45",
 		"testAssignmentScript" : "Richo 9/7/2016 11:32",
-		"testBlinkLed9Script" : "Richo 9/7/2016 11:28",
+		"testBlinkLed9Script" : "Richo 10/10/2016 13:46",
 		"testButton10Led9Script" : "Richo 9/7/2016 11:28",
 		"testEmptyScript" : "Richo 8/22/2016 09:51",
 		"testInvalidSelector" : "Richo 9/7/2016 10:35",

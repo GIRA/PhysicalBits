@@ -2,4 +2,6 @@ setup
 setUp
 	push := UziPushInstruction.
 	pop := UziPopInstruction.
-	prim := UziPrimitiveCallInstruction
+	prim := UziPrimitiveCallInstruction.
+	jz := UziJZInstruction.
+	jmp := UziJMPInstruction.
