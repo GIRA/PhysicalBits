@@ -1,0 +1,23 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		"lastPortName" ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"protocol",
+		"connectButton",
+		"pinsButton",
+		"globalsButton",
+		"editorButton",
+		"connectedText",
+		"portText",
+		"pinTexts",
+		"globalTexts",
+		"portName" ],
+	"name" : "UziProtocolMorph",
+	"pools" : [
+		 ],
+	"super" : "AlignmentMorph",
+	"type" : "normal" }

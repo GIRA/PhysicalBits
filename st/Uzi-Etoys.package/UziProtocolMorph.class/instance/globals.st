@@ -1,0 +1,3 @@
+accessing
+globals
+	^ protocol variables

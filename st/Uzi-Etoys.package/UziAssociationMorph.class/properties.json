@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"key",
+		"value",
+		"keyText",
+		"valueText" ],
+	"name" : "UziAssociationMorph",
+	"pools" : [
+		 ],
+	"super" : "AlignmentMorph",
+	"type" : "normal" }
