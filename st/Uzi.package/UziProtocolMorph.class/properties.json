@@ -1,7 +1,7 @@
 {
 	"category" : "Uzi-Etoys",
 	"classinstvars" : [
-		 ],
+		"lastPortName" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
@@ -14,7 +14,8 @@
 		"connectedText",
 		"portText",
 		"pinTexts",
-		"globalTexts" ],
+		"globalTexts",
+		"portName" ],
 	"name" : "UziProtocolMorph",
 	"pools" : [
 		 ],

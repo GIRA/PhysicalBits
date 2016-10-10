@@ -10,6 +10,8 @@ buildGlobalsList
 		ifNotEmpty: [globals asSortedCollection 
 			do: [:var || m |
 				m := globalTexts at: var 
-					ifAbsentPut: [UziAssociationMorph new key: var asSymbol].
+					ifAbsentPut: [UziAssociationMorph new 
+						key: var asSymbol;
+						name: ('Global #{1}' format: { var })].
 				globalsList addMorphBack: m]].
 	^ globalsList

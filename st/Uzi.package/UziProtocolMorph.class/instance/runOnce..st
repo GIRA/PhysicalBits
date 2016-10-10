@@ -1,4 +1,4 @@
-as yet unclassified
+running programs
 runOnce: aString
 	| program |
 	program := UziCompiler new 

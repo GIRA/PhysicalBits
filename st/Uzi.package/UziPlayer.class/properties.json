@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziPlayer",
+	"pools" : [
+		 ],
+	"super" : "Player",
+	"type" : "normal" }

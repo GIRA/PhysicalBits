@@ -1,6 +1,7 @@
 building
 buildButtons
 	^ self newRow
+		addMorphBack: self buildViewerButton;
 		addMorphBack: (connectButton := self newButton
 			label: 'Connect...';
 			actionSelector: #toggleConnection;

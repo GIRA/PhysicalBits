@@ -1,3 +1,5 @@
 accessing
 portName
-	^ protocol portName asString
+	^ self isConnected 
+		ifTrue: [protocol portName asString]
+		ifFalse: [portName asString]

@@ -4,6 +4,7 @@ initialize
 	protocol := UziProtocol new.
 	pinTexts := Dictionary new.
 	globalTexts := Dictionary new.
+	portName := self class lastPortName.
 	self color: Color white;
 		borderWidth: 2;
 		borderColor: Color red;

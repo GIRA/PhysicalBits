@@ -5,4 +5,5 @@ initialize
 	value := 0.
 	self color: Color transparent;
 		listDirection: #leftToRight;
+		cellInset: 5;
 		buildSubmorphs

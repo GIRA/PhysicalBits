@@ -12,6 +12,8 @@ buildPinsList
 		ifNotEmpty: [pins asSortedCollection 
 			do: [:pin || m |
 				m := pinTexts at: pin
-					ifAbsentPut: [UziAssociationMorph new key: pin].
+					ifAbsentPut: [UziAssociationMorph new
+						key: pin;
+						name: ('Pin {1}' format: {pin})].
 				pinsList addMorphBack: m]].
 	^ pinsList
