@@ -1,11 +1,17 @@
 building
 buildPinsList
-	| pinsList |
+	| pinsList pins |
 	pinsList := self newColumn.
-	self pinsReporting asSortedCollection do: [:pin || pinText |
-		pinText := (self getPinValue: pin) asString asMorph.
-		pinTexts at: pin put: pinText.
-		pinsList addMorphBack: (self newRow
-			addMorphBack: ('  {1} -> ' format: { pin }) asMorph;
-			addMorphBack: pinText)].
+	pins := self pinsReporting.
+	(pinTexts keys copyWithoutAll: pins)
+		do: [:key |
+			(pinTexts at: key) delete.
+			pinTexts removeKey: key].
+	pins
+		ifEmpty: [pinsList addMorphBack: '  *no pins enabled*' asMorph]
+		ifNotEmpty: [pins asSortedCollection 
+			do: [:pin || m |
+				m := pinTexts at: pin
+					ifAbsentPut: [UziAssociationMorph new key: pin].
+				pinsList addMorphBack: m]].
 	^ pinsList

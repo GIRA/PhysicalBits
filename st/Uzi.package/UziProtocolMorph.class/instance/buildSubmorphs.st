@@ -1,10 +1,6 @@
 building
 buildSubmorphs
-	pinTexts := Dictionary new.
-	globalTexts := Dictionary new.
 	self addMorphBack: self buildButtons;
-		addMorphBack: self buildConnectionPanel.
-	self pinsReporting 
-		ifNotEmpty: [self addMorphBack: self buildPinsPanel].
-	self globals
-		ifNotEmpty: [self addMorphBack: self buildGlobalsPanel]
+		addMorphBack: self buildConnectionPanel;
+		addMorphBack: self buildPinsPanel;
+		addMorphBack: self buildGlobalsPanel

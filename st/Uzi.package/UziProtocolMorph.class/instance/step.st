@@ -9,6 +9,6 @@ step
 	connectedText contents: self isConnected asString.
 	portText contents: self portName.
 	pinTexts keysAndValuesDo: [:pin :text |
-		text contents: (self getPinValue: pin) asString].
+		text value: (self getPinValue: pin)].
 	globalTexts keysAndValuesDo: [:var :text |
-		text contents: (self getGlobal: var) asString]
+		text value: (self getGlobal: var)]
