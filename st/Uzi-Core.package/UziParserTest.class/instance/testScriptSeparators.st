@@ -1,12 +1,13 @@
 grammar-scripts
 testScriptSeparators
-	| pp script scripts |
+	| pp script scripts nodes |
 	pp := UziParser new.
-	scripts := pp parse: '
+	nodes := pp parse: '
 		#script1 ticking 1/s [foo]... "Holaaaaa"... . . . . 
 		..
 		.
 		#script2 ticking 2/m [bar]'.
+	scripts := nodes second.
 	self assert: scripts size equals: 2.
 	script := scripts first.
 	self assert: script name = #script1.

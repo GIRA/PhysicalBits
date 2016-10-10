@@ -40,7 +40,8 @@
 		"constantLiteral",
 		"variable",
 		"assignment",
-		"scriptLiteral" ],
+		"scriptLiteral",
+		"variableDefinition" ],
 	"name" : "UziGrammar",
 	"pools" : [
 		 ],

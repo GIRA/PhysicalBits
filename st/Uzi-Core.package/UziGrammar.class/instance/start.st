@@ -1,3 +1,3 @@
 accessing
 start
-	^ script plus end
+	^ (variableDefinition star, script plus) end

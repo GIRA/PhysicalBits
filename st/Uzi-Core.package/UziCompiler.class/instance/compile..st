@@ -5,4 +5,5 @@ compile: aString
 	nodes isPetitFailure ifTrue: [^ self signalParseError: nodes source: aString].
 	^ Uzi program: [:p |
 		program := p.
-		self visitCollection: nodes]
+		self visitCollection: nodes first;
+			visitCollection: nodes second]
