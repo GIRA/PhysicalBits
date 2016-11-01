@@ -9,7 +9,7 @@ privateConnectOn: portString usingSerial: aSerialPort
 		ifNotNil: [portName := portString.
 			self startSteppingProcess; 
 				startKeepAliveProcess.
-			100 milliSeconds asDelay wait.
+			3000 milliSeconds asDelay wait.
 			self startReporting;
 				sendPinsReporting;
 				triggerEvent: #connect]

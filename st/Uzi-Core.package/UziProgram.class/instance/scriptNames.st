@@ -1,3 +1,3 @@
 accessing
 scriptNames
-	^ scripts collect: #name
+	^ scripts collect: [:script | script name]
