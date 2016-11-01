@@ -12,6 +12,8 @@ buildGlobalsList
 				m := globalTexts at: var 
 					ifAbsentPut: [UziAssociationMorph new 
 						key: var asSymbol;
-						name: ('Global #{1}' format: { var })].
+						name: ('Global #{1}' format: { var });
+						valueChanged: [:key :val |
+							 self setGlobal: key value: val]].
 				globalsList addMorphBack: m]].
 	^ globalsList

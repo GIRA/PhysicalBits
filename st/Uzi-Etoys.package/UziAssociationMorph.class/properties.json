@@ -9,7 +9,8 @@
 		"key",
 		"value",
 		"keyText",
-		"valueText" ],
+		"valueText",
+		"valueChanged" ],
 	"name" : "UziAssociationMorph",
 	"pools" : [
 		 ],

@@ -1,4 +1,3 @@
 accessing
 value: newValue
-	value := newValue.
-	valueText contents: value printString
+	valueChanged ifNotNil: [valueChanged value: key value: newValue]

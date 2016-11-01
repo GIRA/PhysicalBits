@@ -1,5 +1,6 @@
 connection
-connectOn: portName
-	(portName beginsWith: 'COM')
-		ifTrue: [self connectOnPort: portName]
-		ifFalse: [self connectOnSocket: portName]
+connectOn: port
+	(port beginsWith: 'COM')
+		ifTrue: [self connectOnPort: port]
+		ifFalse: [self connectOnSocket: port].
+	pinTexts keysDo: [:pin | self setPin: pin report: true]

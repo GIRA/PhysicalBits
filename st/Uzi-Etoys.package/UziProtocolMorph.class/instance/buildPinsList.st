@@ -14,6 +14,8 @@ buildPinsList
 				m := pinTexts at: pin
 					ifAbsentPut: [UziAssociationMorph new
 						key: pin;
-						name: ('Pin {1}' format: {pin})].
+						name: ('Pin {1}' format: {pin});
+						valueChanged: [:key :val | 
+							self setPin: key value: val]].
 				pinsList addMorphBack: m]].
 	^ pinsList
