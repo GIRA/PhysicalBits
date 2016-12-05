@@ -91,13 +91,15 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 
 void Program::parseScripts(Reader * rs, bool& timeout)
 {
+	uint8 instructionCount = 0;
 	Script* last = 0;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
-		Script* temp = new Script(rs, timeout);
+		Script* temp = new Script(instructionCount, rs, timeout);
+		instructionCount += temp->getInstructionCount();
 		if (i == 0)
 		{
-			script = last = temp;			
+			script = last = temp;
 		}
 		else
 		{

@@ -21,10 +21,10 @@ void VM::executeProgram(Program * program, GPIO * io)
 
 void VM::executeScript(Script * script, GPIO * io)
 {
-	pc = 0;
 	currentScript = script;
+	pc = currentScript->getInstructionStart();
 	stack->reset();
-	while (pc < currentScript->getInstructionCount())
+	while (pc <= currentScript->getInstructionStop())
 	{
 		Instruction next = nextInstruction();
 		executeInstruction(next, io);

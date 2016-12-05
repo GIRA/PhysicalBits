@@ -12,10 +12,12 @@ class Script
 {
 
 public:
-	Script(Reader*, bool&);
+	Script(uint8, Reader*, bool&);
 	Script(void);
 	~Script(void);
 
+	uint8 getInstructionStart(void);
+	uint8 getInstructionStop(void);
 	uint8 getInstructionCount(void);
 	Instruction getInstructionAt(int16);
 	bool shouldStepNow(int32);
@@ -32,8 +34,9 @@ private:
 	int32 stepTime;
 	int32 lastStepTime;
 
-	Instruction* instructions;
+	uint8 instructionStart;
 	uint8 instructionCount;
+	Instruction* instructions;
 
 	Script * nextScript;
 

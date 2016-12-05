@@ -11,6 +11,7 @@ class VM
 public:
 	VM(void) 
 	{
+		pc = 0;
 		stack = new StackArray();
 	}
 	~VM(void)

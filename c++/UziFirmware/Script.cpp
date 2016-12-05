@@ -1,7 +1,8 @@
 #include "Script.h"
 
-Script::Script(Reader * rs, bool& timeout)
+Script::Script(uint8 start, Reader * rs, bool& timeout)
 {
+	instructionStart = start;
 	int32 n = rs->nextLong(4, timeout);
 	if (!timeout)
 	{
@@ -30,6 +31,16 @@ Script::~Script(void)
 	delete nextScript;
 }
 
+uint8 Script::getInstructionStart(void)
+{
+	return instructionStart;
+}
+
+uint8 Script::getInstructionStop(void)
+{
+	return instructionStart + instructionCount - 1;
+}
+
 uint8 Script::getInstructionCount(void)
 {
 	return instructionCount;
@@ -37,7 +48,7 @@ uint8 Script::getInstructionCount(void)
 
 Instruction Script::getInstructionAt(int16 index)
 {
-	return instructions[index];
+	return instructions[index - instructionStart];
 }
 
 void Script::rememberLastStepTime(int32 now)
