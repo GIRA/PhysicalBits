@@ -12,6 +12,7 @@ namespace SimulatorTest
         [TestInitialize]
         public void Setup()
         {
+            sketch.SetMillis(-1);
             sketch.Setup();
             TurnOffAllPins();
         }
@@ -214,6 +215,87 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void TestTickingRate()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true 
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 13;
+		                prim: #toggle]].
+                UziProtocol new run: program.
+                */
+                0, 1, 1, 4, 13, 128, 0, 3, 232, 2, 128, 162
+            });
+            TurnOffAllPins();
+
+            sketch.SetMillis(0);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1750);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void TestMultipleScriptsWithDifferentTickingRates()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true 
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 13;
+		                prim: #toggle];
+	                script: #pot
+	                ticking: true
+	                delay: 100
+	                instructions: [:s | s
+		                read: 15;
+		                write: 9]].
+                UziProtocol new run: program.
+                */
+                0, 2, 1, 4, 13, 128, 0, 3, 232, 2, 128, 162, 128, 0, 0, 100, 2, 111, 73
+            });
+            TurnOffAllPins();
+            sketch.SetPinValue(15, 120);
+
+            sketch.SetMillis(0);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(120, sketch.GetPinValue(15));
+            Assert.AreEqual(0, sketch.GetPinValue(9));
+
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(120, sketch.GetPinValue(15));
+            Assert.AreEqual(120, sketch.GetPinValue(9));
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            Assert.AreEqual(120, sketch.GetPinValue(15));
+            Assert.AreEqual(120, sketch.GetPinValue(9));
         }
 
         private void TurnOffAllPins()

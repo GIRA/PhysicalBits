@@ -68,3 +68,8 @@ EXTERN void Serial_write(char* str, size_t len)
 		Serial.in_write(str[i]);
 	}
 }
+
+EXTERN void Sketch_setMillis(long millis)
+{
+	setMillis(millis);
+}

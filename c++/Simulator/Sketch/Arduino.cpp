@@ -10,14 +10,26 @@
 
 
 CSerial Serial;
+long millisMock = -1;
 
 //--------------------------------------------------------------------
 // Timers
 //--------------------------------------------------------------------
+void setMillis(long value)
+{
+	millisMock = value;
+}
 
 unsigned long millis()
 {
-	return (clock() * 1000) / CLOCKS_PER_SEC;
+	if (millisMock < 0)
+	{
+		return (clock() * 1000) / CLOCKS_PER_SEC;
+	}
+	else
+	{
+		return (unsigned long)millisMock;
+	}
 }
 
 void delay(unsigned long delayms)

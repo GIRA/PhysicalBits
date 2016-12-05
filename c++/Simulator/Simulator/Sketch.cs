@@ -31,6 +31,9 @@ namespace Simulator
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]        
         private static extern int Serial_readInto(byte[] buffer, int len);
 
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void Sketch_setMillis(int millis);
+
         private static Sketch current = new Sketch();
         public static Sketch Current { get { return current; } }
 
@@ -141,6 +144,11 @@ namespace Simulator
         {
             Sketch_loop();
             EnqueueSerial();
+        }
+
+        public void SetMillis(int millis)
+        {
+            Sketch_setMillis(millis);
         }
     }
 }

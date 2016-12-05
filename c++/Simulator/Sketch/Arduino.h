@@ -103,4 +103,6 @@ extern void analogWrite(unsigned int, unsigned short);
 
 extern void setup();
 extern void loop();
+
+extern void setMillis(long);
 #endif
