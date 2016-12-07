@@ -27,4 +27,5 @@ primitiveFor: selector
 		[#<] -> [#lessThan].
 		[#<=] -> [#lessThanOrEquals].
 		[#negated] -> [#negate].
+		[#msDelay] -> [#yieldTime]
 	} otherwise: [UziInvalidPrimitiveCallError signal: selector]
