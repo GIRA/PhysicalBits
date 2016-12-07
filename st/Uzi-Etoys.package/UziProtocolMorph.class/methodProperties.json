@@ -1,6 +1,6 @@
 {
 	"class" : {
-		"additionsToViewerCategories" : "Richo 10/9/2016 23:45",
+		"additionsToViewerCategories" : "Richo 11/9/2016 16:26",
 		"descriptionForPartsBin" : "Richo 10/10/2016 15:39",
 		"lastPortName" : "Richo 10/10/2016 00:04",
 		"lastPortName:" : "Richo 10/10/2016 00:05" },
@@ -27,6 +27,7 @@
 		"getPinValue:" : "Richo 10/9/2016 17:25",
 		"globals" : "Richo 10/9/2016 17:33",
 		"initialize" : "Richo 10/10/2016 00:16",
+		"installCurrentProgram" : "Richo 11/9/2016 16:29",
 		"isConnected" : "Richo 10/9/2016 17:41",
 		"newButton" : "Richo 10/9/2016 18:06",
 		"newColumn" : "Richo 10/9/2016 17:14",
