@@ -105,7 +105,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0x0B: argument += 16;  // 16 -> 31
 		case 0x0A:					// 0 -> 15
 		{
-			executePrimitive(argument, io);
+			executePrimitive(argument, io, yieldFlag);
 		} break;
 
 		// Script call
@@ -225,7 +225,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 }
 
-void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
+void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 {
 	switch (primitiveIndex)
 	{
@@ -387,6 +387,14 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io)
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 0);
+		} break;
+
+		// yieldTime
+		case 0x15:
+		{
+			float time = stack->pop();
+			currentScript->setLastStepTime(millis() + time - currentScript->getStepTime());
+			yieldFlag = true;
 		} break;
 	}
 }

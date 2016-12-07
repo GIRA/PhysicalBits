@@ -31,7 +31,7 @@ private:
 
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*, bool& yieldFlag);
-	void executePrimitive(uint16, GPIO*);
+	void executePrimitive(uint16, GPIO*, bool& yieldFlag);
 	void executeCoroutine(Coroutine*, GPIO*);
 
 };
