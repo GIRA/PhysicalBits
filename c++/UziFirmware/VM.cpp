@@ -13,7 +13,7 @@ void VM::executeProgram(Program * program, GPIO * io)
 		Script* script = coroutine->getScript();
 		if (script->isStepping() && script->shouldStepNow(now))
 		{
-			script->rememberLastStepTime(now);
+			script->setLastStepTime(now);
 			executeCoroutine(coroutine, io);
 		}
 		coroutine = coroutine->getNext();
@@ -139,6 +139,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		// Yield
 		case 0xF0:
 		{
+			currentScript->setLastStepTime(currentScript->getLastStepTime() - currentScript->getStepTime());
 			yieldFlag = true;
 		} break;
 

@@ -51,7 +51,12 @@ Instruction Script::getInstructionAt(int16 index)
 	return instructions[index - instructionStart];
 }
 
-void Script::rememberLastStepTime(int32 now)
+int32 Script::getLastStepTime(void)
+{
+	return lastStepTime;
+}
+
+void Script::setLastStepTime(int32 now)
 {
 	lastStepTime = now;
 }

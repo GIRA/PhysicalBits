@@ -368,6 +368,43 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
+
+        [TestMethod]
+        public void TestYieldInstructionResumesOnNextTick()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #yieldTest
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                turnOn: 12;
+		                yield;
+		                turnOff: 12]].
+                UziProtocol new run: program
+                */
+                0, 1, 0, 128, 0, 3, 232, 3, 12, 240, 44
+            });
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(12));
+
+            sketch.SetMillis(1001);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(12));
+
+            sketch.SetMillis(1002);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(12));
+            
+            sketch.SetMillis(2001);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(12));
+        }
+
         private void TurnOffAllPins()
         {
             for (int i = 0; i < 19; i++)
