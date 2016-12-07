@@ -64,6 +64,9 @@
     <ClCompile Include="Servo.cpp">
       <Filter>Support</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UziFirmware\Coroutine.cpp">
+      <Filter>Sketch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEPROM.h">
@@ -118,6 +121,9 @@
       <Filter>Support</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\types.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\Coroutine.h">
       <Filter>Sketch</Filter>
     </ClInclude>
   </ItemGroup>

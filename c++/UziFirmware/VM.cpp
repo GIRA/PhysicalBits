@@ -3,27 +3,29 @@
 void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
-	Script * script = 0;
-	int16 count = program->getScriptCount();
+	Coroutine * coroutine = 0;
+	int16 count = program->getCoroutineCount();
 	
 	int32 now = millis();
-	script = program->getScript();
+	coroutine = program->getCoroutine();
 	for (int16 i = 0; i < count; i++)
 	{
+		Script* script = coroutine->getScript();
 		if (script->isStepping() && script->shouldStepNow(now))
 		{
 			script->rememberLastStepTime(now);
-			executeScript(script, io);
+			executeCoroutine(coroutine, io);
 		}
-		script = script->getNext();
+		coroutine = coroutine->getNext();
 	}
 }
 
-void VM::executeScript(Script * script, GPIO * io)
+void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 {
-	currentScript = script;
-	pc = currentScript->getInstructionStart();
-	stack->reset();
+	currentCoroutine = coroutine;
+	currentScript = coroutine->getScript();
+	pc = coroutine->getPC();
+	stack = coroutine->getStack();
 	while (pc <= currentScript->getInstructionStop())
 	{
 		Instruction next = nextInstruction();
@@ -33,7 +35,7 @@ void VM::executeScript(Script * script, GPIO * io)
 			// TODO(Richo): Notify client of stack overflow
 			break;
 		}
-	}	
+	}
 }
 
 Instruction VM::nextInstruction(void)

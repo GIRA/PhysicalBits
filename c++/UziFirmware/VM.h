@@ -24,14 +24,15 @@ public:
 private:
 
 	int16 pc;
-	StackArray * stack;
-	Program * currentProgram;
-	Script * currentScript;
+	StackArray* stack;
+	Program* currentProgram;
+	Coroutine* currentCoroutine;
+	Script* currentScript;
 
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*);
 	void executePrimitive(uint16, GPIO*);
-	void executeScript(Script*, GPIO*);
+	void executeCoroutine(Coroutine*, GPIO*);
 
 };
 

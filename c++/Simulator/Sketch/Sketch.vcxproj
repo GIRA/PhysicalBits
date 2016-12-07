@@ -115,6 +115,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\UziFirmware\ArrayReader.cpp" />
+    <ClCompile Include="..\..\UziFirmware\Coroutine.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\EEPROMWearLevelingWriter.cpp" />
@@ -133,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\UziFirmware\ArrayReader.h" />
+    <ClInclude Include="..\..\UziFirmware\Coroutine.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMUtils.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h" />

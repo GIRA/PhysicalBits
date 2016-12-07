@@ -6,6 +6,7 @@ Program::Program(Reader * rs, bool& timeout)
 	globals = 0;
 	globalsReport = 0;
 	script = 0;
+	coroutine = 0;
 
 	scriptCount = rs->next(timeout);
 	if (!timeout) { parseGlobals(rs, timeout); }
@@ -15,12 +16,17 @@ Program::Program(Reader * rs, bool& timeout)
 	{
 		scriptCount = 0;
 	}
+	else
+	{
+		initializeCoroutines();
+	}
 }
 
 Program::Program()
 {
 	scriptCount = 0;
 	script = 0;
+	coroutine = 0;
 	globalCount = 0;
 	globals = 0;
 	globalsReport = 0;
@@ -31,6 +37,7 @@ Program::~Program(void)
 	delete[] globalsReport;
 	delete[] globals;
 	delete script;
+	delete coroutine;
 }
 
 uint8 Program::getScriptCount(void)
@@ -47,6 +54,28 @@ Script * Program::getScript(int16 index)
 {
 	if (index >= scriptCount) return 0;
 	Script* result = script;
+	for (int i = 0; i < index; i++)
+	{
+		result = result->getNext();
+	}
+	return result;
+}
+
+uint8 Program::getCoroutineCount(void)
+{
+	// INFO(Richo): For now, we'll use the same var
+	return scriptCount;
+}
+
+Coroutine* Program::getCoroutine(void)
+{
+	return coroutine;
+}
+
+Coroutine* Program::getCoroutine(int16 index)
+{
+	if (index >= scriptCount) return 0;
+	Coroutine* result = coroutine;
 	for (int i = 0; i < index; i++)
 	{
 		result = result->getNext();
@@ -108,6 +137,26 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 		}
 
 		if (timeout) return;
+	}
+}
+
+void Program::initializeCoroutines(void)
+{
+	Script* current = script;
+	Coroutine* last = 0;
+	for (int i = 0; i < scriptCount; i++)
+	{
+		Coroutine* temp = new Coroutine(current);
+		if (i == 0)
+		{
+			coroutine = last = temp;
+		}
+		else
+		{
+			last->setNext(temp);
+			last = temp;
+		}
+		current = current->getNext();
 	}
 }
 

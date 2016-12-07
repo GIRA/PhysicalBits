@@ -2,6 +2,7 @@
 
 #include "Reader.h"
 #include "Script.h"
+#include "Coroutine.h"
 #include "GPIO.h"
 
 class Program
@@ -15,6 +16,9 @@ public:
 	uint8 getScriptCount(void);
 	Script* getScript(void);
 	Script* getScript(int16);
+	uint8 getCoroutineCount(void);
+	Coroutine* getCoroutine(void);
+	Coroutine* getCoroutine(int16);
 	
 	float getGlobal(int16);
 	void setGlobal(int16, float);
@@ -26,6 +30,7 @@ private:
 
 	uint8 scriptCount;
 	Script* script;
+	Coroutine* coroutine;
 
 	uint8 globalCount;
 	float* globals;
@@ -33,5 +38,6 @@ private:
 
 	void parseGlobals(Reader*, bool&);
 	void parseScripts(Reader*, bool&);
+	void initializeCoroutines(void);
 };
 
