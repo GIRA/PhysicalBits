@@ -21,5 +21,6 @@ named: primitiveName
 		[#cos] -> [17].
 		[#tan] -> [18].
 		[#turnOn] -> [19].
-		[#turnOff] -> [20]
+		[#turnOff] -> [20].
+		[#yieldTime] -> [21]
 	} otherwise: [UziPrimitiveNotFoundError signal: primitiveName])
