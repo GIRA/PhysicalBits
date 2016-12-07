@@ -19,7 +19,6 @@ Coroutine::Coroutine()
 Coroutine::~Coroutine(void)
 {
 	delete stack;
-	//delete script;
 	delete next;
 }
 
@@ -33,9 +32,20 @@ int16 Coroutine::getPC(void)
 	return pc;
 }
 
+void Coroutine::setPC(int16 value)
+{
+	pc = value;
+}
+
 StackArray* Coroutine::getStack(void)
 {
 	return stack;
+}
+
+void Coroutine::setStack(StackArray* value)
+{
+	delete stack;
+	stack = value;
 }
 
 Coroutine* Coroutine::getNext(void)

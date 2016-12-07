@@ -13,6 +13,7 @@ public:
 	float top(void);
 	void reset(void);
 	bool overflow(void);
+	StackArray* copy(void);
 
 private:
 

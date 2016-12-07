@@ -30,7 +30,7 @@ private:
 	Script* currentScript;
 
 	Instruction nextInstruction(void);
-	void executeInstruction(Instruction, GPIO*);
+	void executeInstruction(Instruction, GPIO*, bool& yieldFlag);
 	void executePrimitive(uint16, GPIO*);
 	void executeCoroutine(Coroutine*, GPIO*);
 

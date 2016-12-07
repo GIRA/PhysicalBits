@@ -25,3 +25,13 @@ bool StackArray::overflow(void)
 {
 	return pointer >= MAX_SIZE;
 }
+
+StackArray* StackArray::copy(void)
+{
+	StackArray* result = new StackArray();
+	for (int i = 0; i < pointer; i++)
+	{
+		result->push(elements[i]);
+	}
+	return result;
+}

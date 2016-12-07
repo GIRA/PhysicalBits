@@ -14,7 +14,9 @@ public:
 	Coroutine* getNext(void);
 	Script* getScript(void);
 	int16 getPC(void);
+	void setPC(int16);
 	StackArray* getStack(void);
+	void setStack(StackArray*);
 
 private:
 

@@ -26,13 +26,25 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	currentScript = coroutine->getScript();
 	pc = coroutine->getPC();
 	stack = coroutine->getStack();
-	while (pc <= currentScript->getInstructionStop())
+	bool yieldFlag = false;
+	while (true)
 	{
+		if (pc > currentScript->getInstructionStop())
+		{
+			coroutine->setPC(currentScript->getInstructionStart());
+			break;
+		}
 		Instruction next = nextInstruction();
-		executeInstruction(next, io);
+		executeInstruction(next, io, yieldFlag);
 		if (stack->overflow())
 		{
 			// TODO(Richo): Notify client of stack overflow
+			break;
+		}
+		if (yieldFlag)
+		{
+			coroutine->setPC(pc);
+			coroutine->setStack(stack->copy());
 			break;
 		}
 	}
@@ -43,7 +55,7 @@ Instruction VM::nextInstruction(void)
 	return currentScript->getInstructionAt(pc++);
 }
 
-void VM::executeInstruction(Instruction instruction, GPIO * io)
+void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 {
 	uint8 opcode = instruction.opcode;
 	uint16 argument = instruction.argument;
@@ -127,7 +139,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io)
 		// Yield
 		case 0xF0:
 		{
-
+			yieldFlag = true;
 		} break;
 
 		// JZ
