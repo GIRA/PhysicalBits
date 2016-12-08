@@ -36,8 +36,8 @@ Program::~Program(void)
 {
 	delete[] globalsReport;
 	delete[] globals;
-	delete script;
 	delete coroutine;
+	delete script;
 }
 
 uint8 Program::getScriptCount(void)

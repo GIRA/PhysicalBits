@@ -12,11 +12,9 @@ public:
 	VM(void) 
 	{
 		pc = 0;
-		stack = new StackArray();
 	}
 	~VM(void)
 	{
-		delete stack;
 	}
 
 	void executeProgram(Program*, GPIO*);
