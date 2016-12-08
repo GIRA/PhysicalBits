@@ -2,7 +2,7 @@
 
 #include "types.h"
 
-const uint16 MAX_SIZE = 100;
+const uint16 MAX_SIZE = 10;
 
 class StackArray
 {
