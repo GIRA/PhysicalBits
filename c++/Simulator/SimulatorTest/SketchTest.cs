@@ -237,19 +237,19 @@ namespace SimulatorTest
 
             sketch.SetMillis(0);
             sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
 
             sketch.SetMillis(1500);
             sketch.Loop();
-            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            Assert.AreEqual(0, sketch.GetPinValue(13));
 
             sketch.SetMillis(1750);
             sketch.Loop();
-            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            Assert.AreEqual(0, sketch.GetPinValue(13));
 
             sketch.SetMillis(2500);
             sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
         [TestMethod]
@@ -275,23 +275,29 @@ namespace SimulatorTest
                 */
                 0, 2, 1, 4, 13, 128, 0, 3, 232, 2, 128, 162, 128, 0, 0, 100, 2, 111, 73
             });
-            sketch.SetPinValue(15, 120);
 
             sketch.SetMillis(0);
             sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            Assert.AreEqual(0, sketch.GetPinValue(15));
+            Assert.AreEqual(0, sketch.GetPinValue(9));
+
+            sketch.SetPinValue(15, 120);
+            sketch.SetMillis(50);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
             Assert.AreEqual(120, sketch.GetPinValue(15));
             Assert.AreEqual(0, sketch.GetPinValue(9));
 
             sketch.SetMillis(500);
             sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
             Assert.AreEqual(120, sketch.GetPinValue(15));
             Assert.AreEqual(120, sketch.GetPinValue(9));
 
             sketch.SetMillis(1500);
             sketch.Loop();
-            Assert.AreEqual(1023, sketch.GetPinValue(13));
+            Assert.AreEqual(0, sketch.GetPinValue(13));
             Assert.AreEqual(120, sketch.GetPinValue(15));
             Assert.AreEqual(120, sketch.GetPinValue(9));
         }

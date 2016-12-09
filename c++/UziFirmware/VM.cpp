@@ -11,9 +11,9 @@ void VM::executeProgram(Program * program, GPIO * io)
 	for (int16 i = 0; i < count; i++)
 	{
 		Script* script = coroutine->getScript();
-		if (script->isStepping() && script->shouldStepNow(now))
+		if (script->isStepping() && now >= coroutine->getNextRun())
 		{
-			script->setLastStepTime(now);
+			coroutine->setNextRun(now + script->getStepTime());
 			executeCoroutine(coroutine, io);
 		}
 		coroutine = coroutine->getNext();
@@ -139,7 +139,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		// Yield
 		case 0xF0:
 		{
-			currentScript->setLastStepTime(currentScript->getLastStepTime() - currentScript->getStepTime());
+			currentCoroutine->setNextRun(millis());
 			yieldFlag = true;
 		} break;
 
@@ -392,8 +392,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		// yieldTime
 		case 0x15:
 		{
-			float time = stack->pop();
-			currentScript->setLastStepTime(millis() + time - currentScript->getStepTime());
+			int32 time = (int32)round(stack->pop());
+			currentCoroutine->setNextRun(millis() + time);
 			yieldFlag = true;
 		} break;
 	}

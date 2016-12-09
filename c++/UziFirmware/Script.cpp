@@ -8,7 +8,6 @@ Script::Script(uint8 start, Reader * rs, bool& timeout)
 	{
 		stepping = (n >> 31) & 1;
 		stepTime = n & 0x7FFFFFFF;
-		lastStepTime = 0;
 	}
 	if (!timeout) { instructionCount = rs->next(timeout); }
 	if (!timeout) { parseInstructions(rs, timeout); }
@@ -20,7 +19,7 @@ Script::Script()
 {
 	// Initializes current script as NOP
 	stepping = false;
-	stepTime = lastStepTime = instructionCount = 0;
+	stepTime = instructionCount = 0;
 	instructions = 0;
 	nextScript = 0;
 }
@@ -49,21 +48,6 @@ uint8 Script::getInstructionCount(void)
 Instruction Script::getInstructionAt(int16 index)
 {
 	return instructions[index - instructionStart];
-}
-
-int32 Script::getLastStepTime(void)
-{
-	return lastStepTime;
-}
-
-void Script::setLastStepTime(int32 now)
-{
-	lastStepTime = now;
-}
-
-bool Script::shouldStepNow(int32 now)
-{
-	return (now - lastStepTime) >= stepTime;
 }
 
 bool Script::isStepping(void)

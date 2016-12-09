@@ -5,6 +5,7 @@ Coroutine::Coroutine(Script* script)
 	this->script = script;
 	pc = script->getInstructionStart();
 	stack = new StackArray();
+	nextRun = 0;
 	next = 0;
 }
 
@@ -56,4 +57,14 @@ Coroutine* Coroutine::getNext(void)
 void Coroutine::setNext(Coroutine* value)
 {
 	next = value;
+}
+
+int32 Coroutine::getNextRun(void)
+{
+	return nextRun;
+}
+
+void Coroutine::setNextRun(int32 value)
+{
+	nextRun = value;
 }

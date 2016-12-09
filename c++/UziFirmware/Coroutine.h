@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Arduino.h"
 #include "StackArray.h"
 #include "Script.h"
 
@@ -17,12 +18,15 @@ public:
 	void setPC(int16);
 	StackArray* getStack(void);
 	void setStack(StackArray*);
+	int32 getNextRun(void);
+	void setNextRun(int32);
 
 private:
 
 	int16 pc;
 	StackArray* stack; 
 	Script* script;
+	int32 nextRun;
 
 	Coroutine* next;
 };
