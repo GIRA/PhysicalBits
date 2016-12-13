@@ -13,7 +13,8 @@ public:
 	float top(void);
 	void reset(void);
 	bool overflow(void);
-	StackArray* copy(void);
+	uint16 getPointer(void);
+	float getElementAt(uint16);
 
 private:
 

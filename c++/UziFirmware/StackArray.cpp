@@ -26,12 +26,12 @@ bool StackArray::overflow(void)
 	return pointer >= MAX_SIZE;
 }
 
-StackArray* StackArray::copy(void)
+uint16 StackArray::getPointer(void)
 {
-	StackArray* result = new StackArray();
-	for (int i = 0; i < pointer; i++)
-	{
-		result->push(elements[i]);
-	}
-	return result;
+	return pointer;
+}
+
+float StackArray::getElementAt(uint16 index)
+{
+	return elements[index];
 }

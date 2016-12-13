@@ -25,7 +25,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	currentCoroutine = coroutine;
 	currentScript = coroutine->getScript();
 	pc = coroutine->getPC();
-	stack = coroutine->getStack();
+	coroutine->restoreStack(stack);
 	bool yieldFlag = false;
 	while (true)
 	{
@@ -44,7 +44,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		if (yieldFlag)
 		{
 			coroutine->setPC(pc);
-			coroutine->setStack(stack->copy());
+			coroutine->saveStack(stack);
 			break;
 		}
 	}
@@ -392,7 +392,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		// yieldTime
 		case 0x15:
 		{
-			int32 time = (int32)round(stack->pop());
+			int32 time = (int32)stack->pop();
 			currentCoroutine->setNextRun(millis() + time);
 			yieldFlag = true;
 		} break;

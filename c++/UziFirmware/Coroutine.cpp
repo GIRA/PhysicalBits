@@ -4,7 +4,8 @@ Coroutine::Coroutine(Script* script)
 {
 	this->script = script;
 	pc = script->getInstructionStart();
-	stack = new StackArray();
+	stackElements = 0;
+	stackSize = 0;
 	nextRun = 0;
 	next = 0;
 }
@@ -12,14 +13,15 @@ Coroutine::Coroutine(Script* script)
 Coroutine::Coroutine()
 {
 	pc = 0;
-	stack = 0;
+	stackElements = 0;
+	stackSize = 0;
 	script = 0;
 	next = 0;
 }
 
 Coroutine::~Coroutine(void)
 {
-	delete stack;
+	delete stackElements;
 	delete next;
 }
 
@@ -38,15 +40,24 @@ void Coroutine::setPC(int16 value)
 	pc = value;
 }
 
-StackArray* Coroutine::getStack(void)
+void Coroutine::saveStack(StackArray* stack)
 {
-	return stack;
+	delete stackElements;
+	stackSize = stack->getPointer();
+	stackElements = new float[stackSize];
+	for (int i = 0; i < stackSize; i++)
+	{
+		stackElements[i] = stack->getElementAt(i);
+	}
 }
 
-void Coroutine::setStack(StackArray* value)
+void Coroutine::restoreStack(StackArray* stack)
 {
-	delete stack;
-	stack = value;
+	stack->reset();
+	for (int i = 0; i < stackSize; i++)
+	{
+		stack->push(stackElements[i]);
+	}
 }
 
 Coroutine* Coroutine::getNext(void)
