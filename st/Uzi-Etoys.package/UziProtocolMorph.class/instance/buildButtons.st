@@ -17,4 +17,5 @@ buildButtons
 		addMorphBack: (editorButton := self newButton
 			label: 'Editor';
 			actionSelector: #openEditor;
-			yourself)
+			yourself);
+		addMorphBack: self buildInspectorButton
