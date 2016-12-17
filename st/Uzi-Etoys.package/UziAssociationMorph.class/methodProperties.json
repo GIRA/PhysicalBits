@@ -3,7 +3,7 @@
 		"additionsToViewerCategories" : "Richo 10/9/2016 22:09" },
 	"instance" : {
 		"buildSubmorphs" : "Richo 10/9/2016 22:34",
-		"buildViewerButton" : "Richo 10/9/2016 22:33",
+		"buildViewerButton" : "Richo 12/16/2016 21:15",
 		"categoriesForViewer" : "Richo 10/9/2016 22:13",
 		"initialize" : "Richo 10/13/2016 10:19",
 		"key" : "Richo 10/9/2016 21:22",
@@ -12,5 +12,5 @@
 		"privateValue:" : "Richo 10/31/2016 16:43",
 		"validCategories" : "Richo 10/9/2016 22:13",
 		"value" : "Richo 10/9/2016 21:22",
-		"valueChanged:" : "Richo 10/13/2016 10:18",
-		"value:" : "Richo 10/13/2016 10:26" } }
+		"value:" : "Richo 10/13/2016 10:26",
+		"valueChanged:" : "Richo 10/13/2016 10:18" } }

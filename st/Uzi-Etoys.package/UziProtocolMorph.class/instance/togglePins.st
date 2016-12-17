@@ -2,7 +2,7 @@ button actions
 togglePins
 	| options |
 	options := 2 to: 19.
-	(UIManager 
+	(UIManager default
 		chooseFrom: (options collect: [:pin | pin asString])
 		values: options
 		title: 'Toggle pin')

@@ -1,7 +1,7 @@
 button actions
 toggleGlobals
 	self globals ifNotEmpty: [:options |
-		(UIManager 
+		(UIManager default
 			chooseFrom: options
 			values: options
 			title: 'Toggle global')
