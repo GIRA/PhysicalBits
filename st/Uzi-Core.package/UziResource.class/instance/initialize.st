@@ -7,7 +7,6 @@ initialize
 	protocol 
 		when: #connect send: #update to: self;
 		when: #disconnect send: #update to: self.
-	simulator := UziSimulator on: protocol.
 	
 	sema := Semaphore new.
 	changed := false.
