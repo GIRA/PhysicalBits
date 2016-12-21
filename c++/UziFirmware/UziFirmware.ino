@@ -26,6 +26,7 @@
 #define RS_PIN_VALUE									1
 #define RS_PROFILE										2
 #define RS_GLOBAL_VALUE									3
+#define RS_TRACE										4
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
@@ -67,6 +68,7 @@ inline void executeProfile(void);
 inline void executeRunProgram(void);
 inline void executeSetGlobal(void);
 inline void executeSetGlobalReport(void);
+inline void trace(const char*);
 
 void setup()
 {
@@ -400,4 +402,16 @@ void executeSetGlobalReport(void)
 	if (timeout) return;
 
 	program->setReport(index, report != 0);
+}
+
+// TODO(Richo): Move this to some other place so that I can access it from anywhere
+void trace(const char* str)
+{
+	Serial.write(RS_TRACE);
+	uint8 size = strlen(str);
+	Serial.write(size);
+	for (int i = 0; i < size; i++)
+	{
+		Serial.write(str[i]);
+	}
 }
