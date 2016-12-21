@@ -323,17 +323,26 @@ void executeSaveProgram(void)
 	bool timeout;
 	int32 size = stream->nextLong(2, timeout);
 	if (timeout) return;
+	uint8* buf = new uint8[size];
+	for (int i = 0; i < size; i++)
+	{
+		buf[i] = stream->next(timeout);
+		if (timeout)
+		{
+			delete[] buf;
+			return;
+		}
+	}
 
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
-	for (int16 i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
 	{
-		writer.nextPut(stream->next(timeout));
-		if (timeout) return; // TODO(Richo): What happens if we don't close the writer?
-							 // The program we write should be invalid, how do we enforce that?
+		writer.nextPut(buf[i]);
 	}
 	writer.close();
+	delete[] buf;
 }
 
 void executeKeepAlive(void)

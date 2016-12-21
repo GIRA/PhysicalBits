@@ -3,7 +3,7 @@
 int32 Reader::nextLong(int16 size, bool& timeout)
 {
 	int32 result = 0;	
-	for (int16 i = size - 1; i >= 0; i--)
+	for (int32 i = size - 1; i >= 0; i--)
 	{
 		result |= ((uint32)next(timeout) << (i * 8));
 		if (timeout) return 0;
