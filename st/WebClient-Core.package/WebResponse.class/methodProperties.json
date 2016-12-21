@@ -1,0 +1,26 @@
+{
+	"class" : {
+		"protocol:code:" : "ar 2/20/2010 11:24" },
+	"instance" : {
+		"code" : "ar 2/20/2010 10:39",
+		"content" : "ar 6/18/2010 23:51",
+		"contentStream" : "ar 1/31/2012 14:02",
+		"getContent" : "ar 5/11/2010 20:07",
+		"isInformational" : "ar 7/9/2010 00:27",
+		"isRedirect" : "ar 8/10/2010 08:56",
+		"isSuccess" : "ar 2/23/2010 10:13",
+		"protocol:code:" : "SvenVanCaekenberghe 6/14/2010 15:48",
+		"readFrom:" : "ar 2/22/2010 02:40",
+		"request" : "ar 4/1/2010 16:02",
+		"request:" : "ar 4/1/2010 16:03",
+		"setCookie:" : "ar 2/20/2010 19:35",
+		"setCookie:value:path:" : "ar 2/20/2010 19:35",
+		"setCookie:value:path:expires:domain:secure:" : "ar 2/20/2010 19:35",
+		"setCookieAt:" : "ar 2/25/2010 18:16",
+		"setCookiesDo:" : "ar 2/21/2010 09:51",
+		"status" : "ar 2/20/2010 10:39",
+		"status:" : "ar 2/20/2010 10:39",
+		"url" : "ar 8/24/2010 21:37",
+		"url:" : "ar 8/24/2010 21:37",
+		"writeOn:" : "ar 2/20/2010 16:33",
+		"writeStatusOn:" : "ar 2/20/2010 16:33" } }

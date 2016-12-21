@@ -1,0 +1,14 @@
+{
+	"category" : "REST-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"data" ],
+	"name" : "RESTObject",
+	"pools" : [
+		 ],
+	"super" : "RESTResource",
+	"type" : "normal" }

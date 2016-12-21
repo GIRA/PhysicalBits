@@ -1,0 +1,11 @@
+{
+	"class" : {
+		"with:" : "lr 5/3/2010 20:26",
+		"with:with:" : "lr 9/23/2008 18:32",
+		"withAll:" : "lr 4/29/2010 10:12" },
+	"instance" : {
+		"children" : "lr 10/21/2009 16:37",
+		"copyWith:" : "lr 9/17/2008 22:36",
+		"initialize" : "lr 4/29/2010 10:12",
+		"postCopy" : "lr 5/22/2010 10:26",
+		"setParsers:" : "lr 4/29/2010 10:12" } }

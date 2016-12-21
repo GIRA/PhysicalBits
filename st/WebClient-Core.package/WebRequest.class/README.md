@@ -1,0 +1,1 @@
+Represents an HTTP request for WebClient/WebServer.

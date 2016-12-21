@@ -1,0 +1,3 @@
+accessing
+serverPort
+	^ self subclassResponsibility 

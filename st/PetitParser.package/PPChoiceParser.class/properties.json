@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "lr 4/18/2008 15:35",
+	"instvars" : [
+		 ],
+	"name" : "PPChoiceParser",
+	"pools" : [
+		 ],
+	"super" : "PPListParser",
+	"type" : "normal" }

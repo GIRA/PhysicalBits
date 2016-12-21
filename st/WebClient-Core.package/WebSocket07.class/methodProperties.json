@@ -1,0 +1,28 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"close" : "ar 9/26/2011 13:06",
+		"firstFragment:" : "ar 9/26/2011 12:48",
+		"handleClose:" : "ar 9/26/2011 13:07",
+		"handleControl:type:" : "ar 9/26/2011 11:37",
+		"handlePing:" : "ar 9/26/2011 11:41",
+		"handlePong:" : "ar 9/26/2011 11:40",
+		"initialize" : "klub 6/13/2012 17:00",
+		"lastFragment:" : "ar 9/26/2011 13:07",
+		"masking" : "ar 9/27/2011 13:47",
+		"masking:" : "ar 9/27/2011 13:47",
+		"nextFragment:" : "ar 9/26/2011 13:08",
+		"nextNumber:from:" : "ar 10/5/2011 19:43",
+		"onPing:" : "ar 9/26/2011 12:49",
+		"onPong:" : "ar 9/26/2011 12:49",
+		"ping:" : "ar 9/26/2011 12:03",
+		"pong:" : "ar 9/26/2011 12:03",
+		"readFrame" : "ar 9/27/2011 13:31",
+		"readFrameFrom:" : "ar 10/5/2011 19:46",
+		"run" : "ar 9/26/2011 12:40",
+		"send:" : "ar 9/26/2011 11:14",
+		"send:code:" : "ar 9/26/2011 12:48",
+		"send:code:final:" : "ar 9/27/2011 13:47",
+		"send:code:final:mask:" : "ar 11/17/2011 11:19",
+		"xor:with:" : "ar 9/26/2011 13:09" } }

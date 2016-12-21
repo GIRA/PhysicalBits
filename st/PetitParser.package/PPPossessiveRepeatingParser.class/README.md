@@ -1,0 +1,1 @@
+The default repeating parser with standard PEG semantics (i.e. possessive, blind, eager).

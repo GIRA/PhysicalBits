@@ -1,0 +1,17 @@
+{
+	"category" : "WebClient-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		"frameType",
+		"frameData",
+		"closing",
+		"masking" ],
+	"name" : "WebSocket07",
+	"pools" : [
+		 ],
+	"super" : "WebSocket",
+	"type" : "normal" }

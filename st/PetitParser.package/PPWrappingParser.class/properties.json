@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		 ],
+	"name" : "PPWrappingParser",
+	"pools" : [
+		 ],
+	"super" : "PPActionParser",
+	"type" : "normal" }

@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		 ],
+	"name" : "PPLiteralObjectParser",
+	"pools" : [
+		 ],
+	"super" : "PPLiteralParser",
+	"type" : "normal" }

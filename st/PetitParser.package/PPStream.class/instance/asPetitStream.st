@@ -1,0 +1,3 @@
+converting
+asPetitStream
+	^ self

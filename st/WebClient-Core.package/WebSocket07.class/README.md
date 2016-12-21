@@ -1,0 +1,1 @@
+A wrapper object for the WebSocket API.

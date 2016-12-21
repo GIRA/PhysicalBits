@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "lr 4/3/2011 15:08",
+	"instvars" : [
+		 ],
+	"name" : "PPLazyRepeatingParser",
+	"pools" : [
+		 ],
+	"super" : "PPLimitedRepeatingParser",
+	"type" : "normal" }

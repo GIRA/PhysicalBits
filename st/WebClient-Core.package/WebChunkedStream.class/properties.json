@@ -1,0 +1,15 @@
+{
+	"category" : "WebClient-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "ar 1/31/2012 14:00",
+	"instvars" : [
+		"sourceStream",
+		"chunkSize" ],
+	"name" : "WebChunkedStream",
+	"pools" : [
+		 ],
+	"super" : "ReadStream",
+	"type" : "normal" }

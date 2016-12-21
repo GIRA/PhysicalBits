@@ -1,0 +1,17 @@
+{
+	"category" : "WebClient-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		"name",
+		"process",
+		"stream",
+		"handlers" ],
+	"name" : "WebSocket",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		"size" ],
+	"name" : "PPPredicateSequenceParser",
+	"pools" : [
+		 ],
+	"super" : "PPPredicateParser",
+	"type" : "normal" }

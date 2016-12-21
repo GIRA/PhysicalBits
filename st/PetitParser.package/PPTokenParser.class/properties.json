@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Parsers",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "lr 2/25/2013 23:31",
+	"instvars" : [
+		"tokenClass" ],
+	"name" : "PPTokenParser",
+	"pools" : [
+		 ],
+	"super" : "PPFlattenParser",
+	"type" : "normal" }

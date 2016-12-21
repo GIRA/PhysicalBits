@@ -1,0 +1,14 @@
+{
+	"category" : "PetitParser-Tools",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		"operators" ],
+	"name" : "PPExpressionParser",
+	"pools" : [
+		 ],
+	"super" : "PPDelegateParser",
+	"type" : "normal" }

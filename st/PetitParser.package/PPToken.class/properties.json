@@ -1,0 +1,17 @@
+{
+	"category" : "PetitParser-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		"NewLineParser" ],
+	"commentStamp" : "lr 2/25/2013 23:34",
+	"instvars" : [
+		"collection",
+		"start",
+		"stop",
+		"value" ],
+	"name" : "PPToken",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

@@ -1,0 +1,17 @@
+{
+	"category" : "WebClient-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		"StatusCodes" ],
+	"commentStamp" : "ar 2/23/2010 10:37",
+	"instvars" : [
+		"stream",
+		"protocol",
+		"headers",
+		"content" ],
+	"name" : "WebMessage",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

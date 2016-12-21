@@ -1,0 +1,1 @@
+The not-predicate, a parser that succeeds whenever its delegate does not, but consumes no input [Parr 1994, 1995].

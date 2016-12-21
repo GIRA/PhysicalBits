@@ -1,0 +1,9 @@
+{
+	"class" : {
+		"message:at:" : "lr 5/5/2010 13:56" },
+	"instance" : {
+		"initializeMessage:at:" : "lr 5/5/2010 13:55",
+		"isPetitFailure" : "lr 2/7/2010 20:54",
+		"message" : "lr 5/5/2010 13:56",
+		"position" : "lr 5/5/2010 13:55",
+		"printOn:" : "lr 5/5/2010 14:01" } }

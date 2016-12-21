@@ -1,0 +1,3 @@
+parsing
+parseOn: aStream
+	^ nil

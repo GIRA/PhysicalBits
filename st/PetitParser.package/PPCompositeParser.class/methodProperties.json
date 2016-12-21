@@ -1,0 +1,18 @@
+{
+	"class" : {
+		"dependencies" : "lr 3/16/2013 21:42",
+		"ignoredNames" : "lr 1/29/2010 11:35",
+		"new" : "lr 12/7/2009 08:24",
+		"newStartingAt:" : "lr 3/16/2013 21:21",
+		"parse:" : "lr 2/7/2010 20:57",
+		"parse:onError:" : "lr 2/7/2010 21:02",
+		"parse:startingAt:" : "lr 2/7/2010 20:57",
+		"parse:startingAt:onError:" : "lr 2/7/2010 21:02",
+		"startSymbol" : "lr 12/7/2009 08:20" },
+	"instance" : {
+		"dependencyAt:" : "lr 3/16/2013 21:41",
+		"initializeStartingAt:dependencies:" : "lr 3/16/2013 17:15",
+		"productionAt:" : "lr 12/4/2009 18:39",
+		"productionAt:ifAbsent:" : "lr 6/4/2010 13:37",
+		"productionNames" : "lr 5/8/2011 15:45",
+		"start" : "lr 5/16/2008 17:32" } }

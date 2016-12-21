@@ -1,0 +1,14 @@
+{
+	"category" : "REST-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"conditions" ],
+	"name" : "RESTActionMap",
+	"pools" : [
+		 ],
+	"super" : "RESTResource",
+	"type" : "normal" }

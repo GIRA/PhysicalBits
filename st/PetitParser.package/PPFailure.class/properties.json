@@ -1,0 +1,15 @@
+{
+	"category" : "PetitParser-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "<historical>",
+	"instvars" : [
+		"message",
+		"position" ],
+	"name" : "PPFailure",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

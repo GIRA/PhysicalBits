@@ -1,0 +1,10 @@
+{
+	"class" : {
+		"on:" : "lr 1/7/2010 15:30",
+		"on:message:" : "lr 1/7/2010 15:29" },
+	"instance" : {
+		"caseInsensitive" : "lr 6/1/2010 22:24",
+		"initializeOn:message:" : "lr 5/2/2010 13:25",
+		"literal" : "lr 5/2/2010 13:26",
+		"message" : "lr 5/2/2010 13:26",
+		"printNameOn:" : "lr 4/16/2010 16:38" } }

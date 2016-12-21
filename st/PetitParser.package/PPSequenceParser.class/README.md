@@ -1,0 +1,1 @@
+A parser that parses a sequence of parsers.

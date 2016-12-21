@@ -1,0 +1,9 @@
+{
+	"class" : {
+		"on:message:negated:message:size:" : "lr 6/12/2010 09:14",
+		"on:message:size:" : "lr 6/12/2010 09:14" },
+	"instance" : {
+		"initializeOn:message:negated:message:size:" : "lr 6/12/2010 09:13",
+		"negate" : "lr 6/12/2010 09:14",
+		"parseOn:" : "lr 6/12/2010 09:25",
+		"size" : "lr 6/12/2010 08:58" } }

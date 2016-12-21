@@ -1,0 +1,14 @@
+{
+	"category" : "REST-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"directory" ],
+	"name" : "RESTFileSystem",
+	"pools" : [
+		 ],
+	"super" : "RESTResource",
+	"type" : "normal" }
