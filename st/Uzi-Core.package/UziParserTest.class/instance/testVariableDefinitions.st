@@ -1,7 +1,7 @@
-grammar-scripts
+tests
 testVariableDefinitions
 	| pp nodes vars |
-	pp := UziParser new.
+	pp := parser.
 	nodes := pp parse: '
 		a := 4. b := 3.
 		#script1 ticking 1/s [foo]'.

@@ -1,7 +1,7 @@
-grammar-messages
+tests
 testBinaryExpressionWithLiteralReceiverAndArgument
 	| pp send |
-	pp := UziParser new binaryExpression.
+	pp := parser binarySend.
 	send := pp parse: '42 + -42'.
 	self assert: send receiver value = 42.
 	self assert: send selector = #+.

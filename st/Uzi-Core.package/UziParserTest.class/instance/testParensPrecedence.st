@@ -1,7 +1,7 @@
-grammar
+tests
 testParensPrecedence
 	| pp expr arg |
-	pp := UziParser new expression.
+	pp := parser expression.
 	expr := pp parse: '3 + (4 * 5)'.
 	self assert: expr receiver value = 3.
 	self assert: expr selector = #+.

@@ -1,6 +1,5 @@
-grammar-blocks
+tests
 testEmptyBlock
-	| pp b |
-	pp := UziParser new block.
-	b := pp parse: '[]'.
-	self assert: b statements isEmpty
+	| pp |
+	pp := parser block.
+	self shouldnt: [pp parse: '[]'] raise: Exception.

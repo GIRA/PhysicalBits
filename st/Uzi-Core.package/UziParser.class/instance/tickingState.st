@@ -1,3 +1,3 @@
-scripts
+grammar-scripts
 tickingState
-	^ super tickingState map: [:token | token inputValue asSymbol]
+	^ 'ticking' asParser flatten map: [:str | str asSymbol]

@@ -1,4 +1,4 @@
-blocks
+grammar-literals
 block
-	^ super block map: [:ign1 :stmts :ign2 | 
-			UziBlockNode statements: stmts]
+	^ $[ asParser , ws , statements , ws , $] asParser
+		map: [:ign1 :ign2 :stmts :ign3 :ign4 | UziBlockNode statements: stmts]

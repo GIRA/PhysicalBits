@@ -1,0 +1,3 @@
+grammar-variables
+reference
+	^ variable

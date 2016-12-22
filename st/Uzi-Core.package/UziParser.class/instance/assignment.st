@@ -1,4 +1,4 @@
-grammar
-assignment
-	^ super assignment 
-		map: [:left :ign :right | UziAssignmentNode left: left right: right]
+grammar-expressions
+assignment 
+	^ variable , ws , ':=' asParser , ws , expression 
+		==> [:nodes | UziAssignmentNode left: nodes first right: nodes last]

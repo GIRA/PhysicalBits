@@ -1,6 +1,7 @@
-scripts
+grammar-scripts
 tickingRate
-	^ super tickingRate map: [:n :ign :scale |
-		UziTickingRateNode 
-			value: n inputValue asNumber
-			scale: scale inputValue asSymbol]
+	^ number , ws , $/ asParser, ws , ('s' asParser / 'm' asParser / 'h' asParser / 'd' asParser) flatten
+		==> [:nodes |
+			UziTickingRateNode 
+				value: nodes first value
+				scale: nodes last asSymbol]

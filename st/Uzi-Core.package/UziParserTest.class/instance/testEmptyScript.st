@@ -1,7 +1,7 @@
-grammar-scripts
+tests
 testEmptyScript
 	| pp script |
-	pp := UziParser new script.
+	pp := parser script.
 	script := pp parse: '#foo ticking 8 / s []'.
 	self deny: script isPetitFailure.
 	self assert: script name = #foo.

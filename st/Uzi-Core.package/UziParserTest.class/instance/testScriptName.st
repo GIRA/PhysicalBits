@@ -1,5 +1,5 @@
-grammar-scripts
+tests
 testScriptName 
 	| pp |
-	pp := UziParser new scriptName.
+	pp := parser scriptName.
 	self assert: (pp parse: '#foo') value == #foo.

@@ -1,7 +1,7 @@
-grammar
+tests
 testExpression
 	| pp expr expr1 |
-	pp := UziParser new expression.
+	pp := parser expression.
 	expr := pp parse: '1 foo bar'.
 	self assert: expr receiver notNil.
 	self assert: expr selector = #bar.

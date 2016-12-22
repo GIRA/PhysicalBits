@@ -1,4 +1,3 @@
-literals
+grammar-variables
 variable
-	^ super variable
-		==> [:token | UziVariableNode named: token inputValue]
+	^ identifier map: [:varName | UziVariableNode named: varName]

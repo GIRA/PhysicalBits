@@ -1,7 +1,7 @@
-grammar
+tests
 testExpression3
 	| pp expr rcvr arg1 arg2 |
-	pp := UziParser new expression.
+	pp := parser expression.
 	expr := pp parse: 'foo bar: 42 + 24 qux: -42'.
 	self assert: expr receiver notNil.
 	self assert: expr selector = #bar:qux:.

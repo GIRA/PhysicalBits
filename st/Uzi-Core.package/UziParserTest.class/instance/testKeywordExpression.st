@@ -1,7 +1,7 @@
-grammar-messages
+tests
 testKeywordExpression
 	| pp send send2 send3 |
-	pp := UziParser new keywordExpression.
+	pp := parser keywordSend.
 	send := pp parse: '1 bar: 2 + 3 foo'.
 	self assert: 1 equals: send receiver value.
 	self assert: send selector = #bar:.

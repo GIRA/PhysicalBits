@@ -1,7 +1,7 @@
-grammar-scripts
+tests
 testScript
 	| body pp script |
-	pp := UziParser new script.
+	pp := parser script.
 	script := pp parse: '#main ticking 1/s [foo. bar. baz]'.
 	self assert: script name = #main.
 	self assert: script state = #ticking.

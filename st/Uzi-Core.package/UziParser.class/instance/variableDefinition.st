@@ -1,4 +1,4 @@
-literals
-variableDefinition 
-	^ super variableDefinition
-		map: [:var :ign :val :sep | UziVariableDefinitionNode name: var name value: val value]
+grammar-variables
+variableDefinition
+	^ ws, variable , ws , ':=' asParser flatten, ws , (constant / number) , separator 
+		==> [:nodes | UziVariableDefinitionNode name: nodes second name value: nodes sixth value]

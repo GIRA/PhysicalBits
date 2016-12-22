@@ -1,7 +1,7 @@
-grammar-scripts
+tests
 testScriptSeparators
 	| pp script scripts nodes |
-	pp := UziParser new.
+	pp := parser.
 	nodes := pp parse: '
 		#script1 ticking 1/s [foo]... "Holaaaaa"... . . . . 
 		..

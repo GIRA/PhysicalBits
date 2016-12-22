@@ -1,5 +1,5 @@
-grammar-scripts
+tests
 testTickingState
 	| pp |
-	pp := UziParser new tickingState.
+	pp := parser tickingState.
 	self assert: (pp parse: 'ticking') value == #ticking.
