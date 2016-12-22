@@ -1,6 +1,6 @@
 instance creation
 named: primitiveName	
-	^ self code: (primitiveName caseOf: {
+	^ self name: primitiveName code: (primitiveName caseOf: {
 		[#read] -> [0].
 		[#write] -> [1].
 		[#toggle] -> [2].
