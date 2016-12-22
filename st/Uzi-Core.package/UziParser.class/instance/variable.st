@@ -1,3 +1,3 @@
 grammar-variables
 variable
-	^ identifier map: [:varName | UziVariableNode named: varName]
+	^ identifier map: [:varName | UziVariableNode named: varName asSymbol]
