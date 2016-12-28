@@ -2,7 +2,7 @@
 	"class" : {
 		 },
 	"instance" : {
-		"compile:" : "Richo 12/22/2016 16:53",
+		"compile:" : "Richo 12/28/2016 13:14",
 		"handleIfFalseIfTrueMessageSend:" : "Richo 9/7/2016 16:39",
 		"handleIfFalseMessageSend:" : "Richo 9/7/2016 16:38",
 		"handleIfTrueIfFalseMessageSend:" : "Richo 9/7/2016 15:49",
@@ -14,14 +14,14 @@
 		"positionOf:in:" : "Richo 9/7/2016 17:04",
 		"primitiveFor:" : "Richo 12/6/2016 23:59",
 		"signalParseError:source:" : "Richo 9/7/2016 17:32",
-		"visit:" : "Richo 9/23/2014 17:10",
+		"visit:" : "Richo 12/28/2016 13:10",
 		"visit:ifNil:" : "Richo 4/4/2016 11:21",
 		"visitAssignmentNode:" : "Richo 9/7/2016 11:31",
 		"visitBlockNode:" : "Richo 9/7/2016 15:49",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
 		"visitMessageSend:" : "Richo 9/7/2016 16:47",
 		"visitNumberNode:" : "Richo 9/7/2016 10:18",
-		"visitScriptNode:" : "Richo 10/10/2016 11:38",
+		"visitScriptNode:" : "Richo 12/28/2016 13:14",
 		"visitScriptRefNode:" : "Richo 9/7/2016 17:49",
 		"visitVariableDefinitionNode:" : "Richo 10/10/2016 16:23",
 		"visitVariableNode:" : "Richo 9/7/2016 11:16" } }

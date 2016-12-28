@@ -11,7 +11,8 @@
 		"ticking",
 		"delay",
 		"labels",
-		"instructions" ],
+		"instructions",
+		"currentNode" ],
 	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],

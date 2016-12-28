@@ -6,4 +6,5 @@ compile: aString
 	^ Uzi program: [:p |
 		program := p.
 		self visitCollection: nodes first;
-			visitCollection: nodes second]
+			visitCollection: nodes second.
+		program := nil]

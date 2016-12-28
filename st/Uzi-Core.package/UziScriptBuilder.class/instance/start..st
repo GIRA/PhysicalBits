@@ -1,3 +1,3 @@
 instruction creation
 start: arg
-	instructions add: (UziStartScriptInstruction arg: arg)
+	self addInstruction: (UziStartScriptInstruction arg: arg)

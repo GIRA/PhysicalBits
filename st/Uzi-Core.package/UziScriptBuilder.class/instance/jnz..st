@@ -1,3 +1,3 @@
 instruction creation
 jnz: arg
-	instructions add: (UziJNZInstruction arg: arg)
+	self addInstruction: (UziJNZInstruction arg: arg)

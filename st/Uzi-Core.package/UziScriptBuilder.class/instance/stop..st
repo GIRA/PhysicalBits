@@ -1,3 +1,3 @@
 instruction creation
 stop: arg
-	instructions add: (UziStopScriptInstruction arg: arg)
+	self addInstruction: (UziStopScriptInstruction arg: arg)

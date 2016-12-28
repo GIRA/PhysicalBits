@@ -6,4 +6,5 @@ visitScriptNode: node
 		delay: (node tickingRate ifNil: [0] ifNotNil: [:tickingRate | tickingRate delayMs]) 
 		instructions: [:s |
 			script := s.
-			self visitCollection: node body]
+			self visitCollection: node body.
+			script := nil]

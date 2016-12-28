@@ -1,3 +1,3 @@
 instruction creation
 read: arg
-	instructions add: (UziReadInstruction arg: arg) 
+	self addInstruction: (UziReadInstruction arg: arg) 

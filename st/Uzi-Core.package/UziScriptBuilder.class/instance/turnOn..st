@@ -1,3 +1,3 @@
 instruction creation
 turnOn: arg
-	instructions add: (UziTurnOnInstruction arg: arg) 
+	self addInstruction: (UziTurnOnInstruction arg: arg) 

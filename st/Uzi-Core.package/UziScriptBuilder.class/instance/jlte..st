@@ -1,3 +1,3 @@
 instruction creation
 jlte: arg
-	instructions add: (UziJLTEInstruction arg: arg)
+	self addInstruction: (UziJLTEInstruction arg: arg)

@@ -1,3 +1,3 @@
 instruction creation
 jmp: arg
-	instructions add: (UziJMPInstruction arg: arg)
+	self addInstruction: (UziJMPInstruction arg: arg)

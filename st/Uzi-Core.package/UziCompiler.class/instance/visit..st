@@ -1,3 +1,5 @@
 visiting-utils
 visit: anUziNode
-	^ anUziNode accept: self
+	^ script 
+		ifNil: [anUziNode accept: self]
+		ifNotNil: [script withCurrentNode: anUziNode do: [anUziNode accept: self]]
