@@ -1,3 +1,6 @@
 grammar-variables
 variable
-	^ identifier map: [:varName | UziVariableNode named: varName asSymbol]
+	^ identifier token 
+		map: [:token || varName |
+			varName := token parsedValue. 
+			(UziVariableNode named: varName asSymbol) token: token]

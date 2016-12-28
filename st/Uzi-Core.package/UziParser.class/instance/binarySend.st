@@ -1,4 +1,7 @@
 grammar-binary
 binarySend
-	^ unarySend , binaryTail optional
-		map: [:rcvr :msgs | self send: rcvr messages: msgs]
+	^ (unarySend , binaryTail optional) token
+		map: [:token || rcvr msgs |
+			rcvr := token parsedValue first.
+			msgs := token parsedValue second.
+			(self send: rcvr messages: msgs) token: token]

@@ -1,8 +1,11 @@
 grammar-scripts
 script
-	^ ws , scriptName, ws , tickingState optional, ws , tickingRate optional, ws , block , separator optional
-		==> [:nodes | UziScriptNode
-			name: nodes second
-			state: nodes fourth
-			tickingRate: nodes sixth
-			body: nodes eighth statements]
+	^ ws , (scriptName, ws , tickingState optional, ws , tickingRate optional, ws , block) token , separator optional
+	map: [:ign1 :token :ign2 || nodes |
+		nodes := token parsedValue.
+		(UziScriptNode
+			name: nodes first
+			state: nodes third
+			tickingRate: nodes fifth
+			body: nodes seventh statements)
+			token: token]

@@ -1,3 +1,4 @@
 grammar-literals
 number
-	^ float / integer map: [:val | UziNumberNode value: val]
+	^ (float / integer) token 
+	map: [:token | (UziNumberNode value: token parsedValue) token: token]
