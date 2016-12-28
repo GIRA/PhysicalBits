@@ -22,6 +22,10 @@ public:
 	void setNextRun(int32);
 	int8 getBreakCount(void);
 	void setBreakCount(int8);
+	bool getDumpState(void);
+	void clearDumpState(void);
+	uint16 getStackSize(void);
+	float getStackElementAt(uint16);
 
 private:
 
@@ -35,4 +39,5 @@ private:
 	Coroutine* next;
 
 	int8 breakCount;
+	bool dumpState = false;
 };

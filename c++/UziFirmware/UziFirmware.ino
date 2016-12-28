@@ -28,6 +28,7 @@
 #define RS_PROFILE										2
 #define RS_GLOBAL_VALUE									3
 #define RS_TRACE										4
+#define RS_COROUTINE_STATE								5
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
@@ -66,6 +67,7 @@ inline void initSerial(void);
 inline void checkForIncomingMessages(void);
 inline void sendProfile(void);
 inline void sendReport(void);
+inline void sendVMState(void);
 inline void executeProfile(void);
 inline void executeRunProgram(void);
 inline void executeSetGlobal(void);
@@ -85,6 +87,7 @@ void loop()
 	sendReport();
 	//checkKeepAlive();
 	sendProfile();
+	sendVMState();
 }
 
 void loadInstalledProgram(void)
@@ -141,6 +144,42 @@ void sendReport(void)
 		sendPinValues();
 		sendGlobalValues();
 		lastTimeReport = now;
+	}
+}
+
+void sendVMState(void)
+{
+	int16 count = program->getCoroutineCount();
+	Coroutine* coroutine = program->getCoroutine();
+	for (int16 i = 0; i < count; i++)
+	{
+		if (coroutine->getDumpState())
+		{
+			coroutine->clearDumpState();
+			Serial.write(RS_COROUTINE_STATE);
+			Serial.write(i);
+			int16 pc = coroutine->getPC();
+			uint8 val1 = pc >> 8 & 0xFF; // MSB
+			uint8 val2 = pc & 0xFF;	// LSB
+			Serial.write(val1);
+			Serial.write(val2);
+			uint16 stackSize = coroutine->getStackSize();
+			Serial.write(stackSize);
+			for (int j = 0; j < stackSize; j++)
+			{
+				union
+				{
+					float f;
+					uint32 ul;
+				} u;
+				u.f = coroutine->getStackElementAt(j);
+				Serial.write((u.ul >> 24) & 0xFF);
+				Serial.write((u.ul >> 16) & 0xFF);
+				Serial.write((u.ul >> 8) & 0xFF);
+				Serial.write(u.ul & 0xFF);
+			}
+		}
+		coroutine = coroutine->getNext();
 	}
 }
 

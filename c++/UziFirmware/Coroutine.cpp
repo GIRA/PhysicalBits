@@ -90,4 +90,26 @@ int8 Coroutine::getBreakCount(void)
 void Coroutine::setBreakCount(int8 value)
 {
 	breakCount = value;
+	dumpState = value == 0;
+}
+
+bool Coroutine::getDumpState(void)
+{
+	return dumpState;
+}
+
+void Coroutine::clearDumpState(void)
+{
+	dumpState = false;
+}
+
+uint16 Coroutine::getStackSize(void)
+{
+	return stackSize;
+}
+
+float Coroutine::getStackElementAt(uint16 index)
+{
+	if (index >= stackSize) return 0;
+	return stackElements[index];
 }
