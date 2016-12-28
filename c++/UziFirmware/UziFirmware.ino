@@ -20,6 +20,7 @@
 #define RQ_RUN_PROGRAM									9
 #define RQ_SET_GLOBAL								   10
 #define RQ_SET_GLOBAL_REPORT						   11
+#define RQ_SET_BREAK_COUNT							   12
 
 /* RESPONSE COMMANDS */
 #define RS_ERROR										0
@@ -55,6 +56,7 @@ inline void executeStopReporting(void);
 inline void executeSetReport(void);
 inline void executeSaveProgram(void);
 inline void executeKeepAlive(void);
+inline void executeSetBreakCount(void);
 inline void sendPinValues(void);
 inline void sendGlobalValues(void);
 inline void sendError(uint8);
@@ -262,6 +264,9 @@ void executeCommand(uint8 cmd)
 		case RQ_SET_GLOBAL_REPORT:
 			executeSetGlobalReport();
 			break;
+		case RQ_SET_BREAK_COUNT:
+			executeSetBreakCount();
+			break;
 		default:
 			// TODO(Richo): Return RS_ERROR
 			break;
@@ -402,6 +407,21 @@ void executeSetGlobalReport(void)
 	if (timeout) return;
 
 	program->setReport(index, report != 0);
+}
+
+void executeSetBreakCount(void)
+{
+	bool timeout;
+	uint8 index = stream->next(timeout);
+	if (timeout) return;
+	int8 value = stream->next(timeout) - 127;
+	if (timeout) return;
+
+	Coroutine* coroutine = program->getCoroutine(index);
+	if (coroutine != 0)
+	{
+		coroutine->setBreakCount(value);
+	}
 }
 
 // TODO(Richo): Move this to some other place so that I can access it from anywhere

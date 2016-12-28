@@ -8,6 +8,7 @@ Coroutine::Coroutine(Script* script)
 	stackSize = 0;
 	nextRun = 0;
 	next = 0;
+	breakCount = -1;
 }
 
 Coroutine::Coroutine()
@@ -17,6 +18,7 @@ Coroutine::Coroutine()
 	stackSize = 0;
 	script = 0;
 	next = 0;
+	breakCount = 0;
 }
 
 Coroutine::~Coroutine(void)
@@ -78,4 +80,14 @@ int32 Coroutine::getNextRun(void)
 void Coroutine::setNextRun(int32 value)
 {
 	nextRun = value;
+}
+
+int8 Coroutine::getBreakCount(void)
+{
+	return breakCount;
+}
+
+void Coroutine::setBreakCount(int8 value)
+{
+	breakCount = value;
 }

@@ -20,7 +20,8 @@ public:
 	void restoreStack(StackArray*);
 	int32 getNextRun(void);
 	void setNextRun(int32);
-
+	int8 getBreakCount(void);
+	void setBreakCount(int8);
 
 private:
 
@@ -32,4 +33,6 @@ private:
 	int32 nextRun;
 
 	Coroutine* next;
+
+	int8 breakCount;
 };

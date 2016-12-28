@@ -32,7 +32,20 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		if (pc > currentScript->getInstructionStop())
 		{
 			coroutine->setPC(currentScript->getInstructionStart());
+			coroutine->saveStack(stack);
 			break;
+		}
+		int8 breakCount = coroutine->getBreakCount();
+		if (breakCount >= 0)
+		{
+			if (breakCount == 0)
+			{
+				coroutine->setPC(pc);
+				coroutine->saveStack(stack);
+				coroutine->setNextRun(millis());
+				break;
+			}
+			coroutine->setBreakCount(breakCount - 1);
 		}
 		Instruction next = nextInstruction();
 		executeInstruction(next, io, yieldFlag);
