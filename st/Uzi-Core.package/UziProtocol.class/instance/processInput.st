@@ -7,7 +7,8 @@ processInput
 		[self class rsPinValue] -> [self processPinValue].
 		[self class rsProfile] -> [self processProfile].
 		[self class rsGlobalValue] -> [self processGlobalValue].
-		[self class rsTrace] -> [self processTrace]
+		[self class rsTrace] -> [self processTrace].
+		[self class rsCoroutineState] -> [self processCoroutineState]
 	} otherwise: [WorldState 
 		addDeferredUIMessage: [Transcript 
 			show: 'Uzi - Invalid response code: '; 

@@ -1,5 +1,6 @@
 {
 	"class" : {
+		"rsCoroutineState" : "Richo 12/28/2016 17:16",
 		"rsError" : "Richo 10/21/2014 19:26",
 		"rsGlobalValue" : "Richo 8/31/2016 16:54",
 		"rsPinValue" : "Richo 10/21/2014 19:26",
@@ -24,9 +25,10 @@
 		"portName" : "Richo 8/4/2015 18:25",
 		"privateConnectOn:usingSerial:" : "Richo 10/13/2016 11:33",
 		"privateDisconnect" : "Richo 10/13/2016 11:14",
+		"processCoroutineState" : "Richo 12/28/2016 17:53",
 		"processError" : "Richo 8/24/2016 18:05",
 		"processGlobalValue" : "Richo 10/4/2016 13:08",
-		"processInput" : "Richo 12/21/2016 14:46",
+		"processInput" : "Richo 12/28/2016 17:16",
 		"processPinValue" : "Richo 8/24/2016 18:06",
 		"processProfile" : "Richo 8/24/2016 18:06",
 		"processTrace" : "Richo 12/21/2016 14:59",
