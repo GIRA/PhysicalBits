@@ -1,8 +1,6 @@
 visiting
 visitBlockNode: node
 	node statements 
-		do: [:each | self 
-			assert: each isStatement
-			description: 'Statement expected' 
-			node: each].
+		do: [:each | self assertStatement: each].
+	
 	self visitCollection: node statements

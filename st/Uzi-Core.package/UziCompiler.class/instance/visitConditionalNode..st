@@ -1,5 +1,5 @@
 visiting
 visitConditionalNode: node
-	node falseBranch isNil ifTrue: [^ self handleIfTrue: node].
-	node trueBranch isNil ifTrue: [^ self handleIfFalse: node].
+	node falseBranch isEmpty ifTrue: [^ self handleIfTrue: node].
+	node trueBranch isEmpty ifTrue: [^ self handleIfFalse: node].
 	^ self handleIfTrueIfFalse: node
