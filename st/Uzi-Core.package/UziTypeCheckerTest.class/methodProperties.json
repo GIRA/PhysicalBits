@@ -1,0 +1,12 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"assertInvalid:" : "Richo 12/31/2016 13:45",
+		"check:" : "Richo 12/31/2016 13:40",
+		"testAssignmentValueShouldBeAnExpression" : "Richo 12/31/2016 13:57",
+		"testAssignmentsAreNotExpressions" : "Richo 12/31/2016 13:52",
+		"testBlockOnlyContainsStatements" : "Richo 12/31/2016 13:54",
+		"testConditionalBranchesShouldBeBlocks" : "Richo 12/31/2016 14:01",
+		"testConditionalsAreNotExpressions" : "Richo 12/31/2016 13:53",
+		"testConditionsShouldBeExpressions" : "Richo 12/31/2016 14:06" } }
