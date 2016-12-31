@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Errors",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"errors" ],
+	"name" : "UziCompileError",
+	"pools" : [
+		 ],
+	"super" : "Error",
+	"type" : "normal" }

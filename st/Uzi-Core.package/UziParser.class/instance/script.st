@@ -7,5 +7,5 @@ script
 			name: nodes first
 			state: nodes third
 			tickingRate: nodes fifth
-			body: nodes seventh statements)
+			body: nodes seventh)
 			token: token]

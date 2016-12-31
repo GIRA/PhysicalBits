@@ -8,7 +8,8 @@
 	"instvars" : [
 		"receiver",
 		"selector",
-		"arguments" ],
+		"arguments",
+		"primitive" ],
 	"name" : "UziMessageSendNode",
 	"pools" : [
 		 ],

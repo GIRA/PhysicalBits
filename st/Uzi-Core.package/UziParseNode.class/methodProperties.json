@@ -3,5 +3,16 @@
 		 },
 	"instance" : {
 		"accept:" : "Richo 9/23/2014 17:36",
+		"isAssignment" : "Richo 12/30/2016 15:02",
+		"isBlock" : "Richo 12/30/2016 15:02",
+		"isExpression" : "Richo 12/30/2016 15:23",
+		"isMessageSend" : "Richo 12/30/2016 15:02",
+		"isNumber" : "Richo 12/30/2016 15:02",
+		"isProgram" : "Richo 12/30/2016 15:02",
+		"isScript" : "Richo 12/30/2016 15:02",
+		"isStatement" : "Richo 12/30/2016 15:13",
+		"isTickingRate" : "Richo 12/30/2016 15:02",
+		"isVariable" : "Richo 12/30/2016 15:02",
+		"isVariableDefinition" : "Richo 12/30/2016 15:02",
 		"token" : "Richo 12/27/2016 22:18",
 		"token:" : "Richo 12/27/2016 22:18" } }

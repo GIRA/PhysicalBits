@@ -1,0 +1,27 @@
+instance creation
+primSpec
+	"(name code isExpression)"
+	^ #(
+		(read 0 true)
+		(write 1 false)
+		(toggle 2 false)
+		(servoDegrees 3 false)
+		(servoWrite 4 false)
+		(multiply 5 true)
+		(add 6 true)
+		(divide 7 true)
+		(subtract 8 true)
+		(equals 9 true)
+		(notEquals 10 true)
+		(greaterThan 11 true)
+		(greaterThanOrEquals 12 true)
+		(lessThan 13 true)
+		(lessThanOrEquals 14 true)
+		(negate 15 true)
+		(sin 16 true)
+		(cos 17 true)
+		(tan 18 true)
+		(turnOn 19 false)
+		(turnOff 20 false)
+		(yieldTime 21 false)
+	)

@@ -7,5 +7,5 @@ testScript
 	self assert: script state = #ticking.
 	self assert: script tickingRate delay = 1 second.
 	self assert: script body notNil.
-	body := script body.
+	body := script body statements.
 	self assert: #(foo bar baz) equals: (body collect: #name)

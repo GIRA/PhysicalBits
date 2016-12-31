@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Errors",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"node",
+		"description" ],
+	"name" : "UziTypeError",
+	"pools" : [
+		 ],
+	"super" : "Error",
+	"type" : "normal" }

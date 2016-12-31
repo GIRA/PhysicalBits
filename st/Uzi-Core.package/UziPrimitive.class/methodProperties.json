@@ -1,10 +1,14 @@
 {
 	"class" : {
-		"name:code:" : "Richo 12/22/2016 18:35",
-		"named:" : "Richo 12/22/2016 18:34" },
+		"name:code:isExpression:" : "Richo 12/30/2016 15:28",
+		"named:" : "Richo 12/30/2016 15:34",
+		"primSpec" : "Richo 12/30/2016 15:36" },
 	"instance" : {
 		"=" : "Richo 8/4/2015 17:38",
 		"code" : "Richo 10/9/2014 17:47",
 		"hash" : "Richo 8/4/2015 17:38",
-		"initializeWithName:code:" : "Richo 12/22/2016 18:34",
+		"initializeWithName:code:isExpression:" : "Richo 12/30/2016 15:28",
+		"isExpression" : "Richo 12/30/2016 15:28",
+		"isStatement" : "Richo 12/30/2016 15:28",
+		"name" : "Richo 12/30/2016 16:23",
 		"printOn:" : "Richo 12/22/2016 18:35" } }

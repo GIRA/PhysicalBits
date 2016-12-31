@@ -1,0 +1,12 @@
+{
+	"class" : {
+		"condition:false:" : "Richo 12/30/2016 16:11",
+		"condition:true:" : "Richo 12/30/2016 16:10",
+		"condition:true:false:" : "Richo 12/30/2016 15:56" },
+	"instance" : {
+		"accept:" : "Richo 12/30/2016 16:17",
+		"condition" : "Richo 12/30/2016 16:12",
+		"falseBranch" : "Richo 12/30/2016 16:16",
+		"initializeWithCondition:trueBranch:falseBranch:" : "Richo 12/30/2016 15:57",
+		"isStatement" : "Richo 12/30/2016 16:40",
+		"trueBranch" : "Richo 12/30/2016 16:15" } }
