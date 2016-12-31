@@ -1,4 +1,6 @@
 running programs
 run: aString
-	protocol run: (UziCompiler new compile: aString).
-	self rebuild
+	self compile: aString 
+		thenDo: [:program | 
+			protocol run: program.
+			self rebuild]

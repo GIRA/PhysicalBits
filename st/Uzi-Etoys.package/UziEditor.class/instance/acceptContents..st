@@ -1,5 +1,4 @@
 as yet unclassified
 acceptContents: aText
 	protocol run: aText asString.
-	^ super acceptContents: aText
-	
+	^ false "Keep it always dirty so that we don't need to make a change to recompile"
