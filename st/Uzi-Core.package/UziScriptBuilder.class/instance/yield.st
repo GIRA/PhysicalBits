@@ -1,3 +1,3 @@
 instruction creation
 yield
-	self addInstruction: UziYieldInstruction new
+	^ self addInstruction: UziYieldInstruction new

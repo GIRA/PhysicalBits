@@ -9,7 +9,8 @@
 		"name",
 		"ticking",
 		"delay",
-		"instructions" ],
+		"instructions",
+		"node" ],
 	"name" : "UziScript",
 	"pools" : [
 		 ],

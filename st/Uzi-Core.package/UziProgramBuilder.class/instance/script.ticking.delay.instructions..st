@@ -7,4 +7,4 @@ script: scriptName ticking: isTicking delay: delayMs instructions: aBlock
 		ticking: isTicking
 		delay: delayMs.
 	aBlock value: builder.
-	scripts add: builder script
+	^ scripts add: builder script

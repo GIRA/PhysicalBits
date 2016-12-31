@@ -1,7 +1,8 @@
 visiting
 visitProgramNode: node
-	^ Uzi program: [:p |
+	^ (Uzi program: [:p |
 		program := p.
 		self visitCollection: node variableDefinitions;
 			visitCollection: node scripts.
-		program := nil]
+		program := nil]) node: node
+		
