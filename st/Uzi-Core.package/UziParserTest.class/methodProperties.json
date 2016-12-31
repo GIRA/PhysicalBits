@@ -39,6 +39,7 @@
 		"testTickingRateMinutes" : "Richo 12/22/2016 16:11",
 		"testTickingRateSeconds" : "Richo 12/22/2016 16:11",
 		"testTickingState" : "Richo 12/22/2016 16:11",
+		"testTrailingSpacesAreAccepted" : "Richo 12/31/2016 14:21",
 		"testUnarySelector" : "Richo 12/22/2016 16:18",
 		"testUnarySend" : "Richo 12/22/2016 16:52",
 		"testVariableDefinitions" : "Richo 12/30/2016 14:41" } }
