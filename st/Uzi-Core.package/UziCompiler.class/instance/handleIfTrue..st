@@ -6,4 +6,4 @@ handleIfTrue: node
 	(script jz: label) node: node.
 	"True block"
 	self visit: node trueBranch.
-	(script label: label) node: node
+	script label: label

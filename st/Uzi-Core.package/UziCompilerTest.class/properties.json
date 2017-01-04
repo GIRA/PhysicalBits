@@ -10,7 +10,8 @@
 		"push",
 		"pop",
 		"jz",
-		"jmp" ],
+		"jmp",
+		"jnz" ],
 	"name" : "UziCompilerTest",
 	"pools" : [
 		 ],
