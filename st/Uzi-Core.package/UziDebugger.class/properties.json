@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"protocol",
+		"script",
+		"pc",
+		"stack" ],
+	"name" : "UziDebugger",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

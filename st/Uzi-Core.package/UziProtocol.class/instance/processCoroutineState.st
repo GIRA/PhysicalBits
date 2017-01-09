@@ -18,4 +18,6 @@ processCoroutineState
 		Transcript 
 			show: ('Coroutine {1}:' format: { index }); cr;
 			tab; show: ('PC: {1} - Stack ({2} elements)' format: { pc . stackSize }); cr;
-			tab; show: stack asArray; cr; cr]
+			tab; show: stack asArray; cr; cr].
+	self triggerEvent: #coroutineUpdate
+		withArguments: { index . pc . stack }

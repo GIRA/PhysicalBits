@@ -1,0 +1,17 @@
+{
+	"class" : {
+		"on:script:" : "Richo 1/9/2017 05:54" },
+	"instance" : {
+		"break" : "Richo 1/9/2017 06:07",
+		"close" : "Richo 1/9/2017 06:03",
+		"continue" : "Richo 1/9/2017 06:09",
+		"coroutineUpdateEvent" : "Richo 1/9/2017 06:04",
+		"currentInstruction" : "Richo 1/9/2017 06:31",
+		"index" : "Richo 1/9/2017 05:59",
+		"initialize" : "Richo 1/9/2017 06:04",
+		"initializeWithProtocol:script:" : "Richo 1/9/2017 05:54",
+		"pc" : "Richo 1/9/2017 12:21",
+		"sourceCode" : "Richo 1/9/2017 06:22",
+		"stack" : "Richo 1/9/2017 06:38",
+		"stepOver" : "Richo 1/9/2017 06:35",
+		"update:pc:stack:" : "Richo 1/9/2017 05:57" } }

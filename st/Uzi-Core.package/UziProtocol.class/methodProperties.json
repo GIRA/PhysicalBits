@@ -9,6 +9,7 @@
 	"instance" : {
 		"connectOnPort:" : "Richo 8/24/2016 18:14",
 		"connectOnSocket:" : "Richo 8/24/2016 18:14",
+		"debuggerOn:" : "Richo 1/9/2017 06:18",
 		"disconnect" : "Richo 8/10/2015 10:19",
 		"getGlobal:" : "Richo 8/31/2016 17:11",
 		"getGlobalReport:" : "Richo 10/9/2016 18:20",
@@ -25,7 +26,7 @@
 		"portName" : "Richo 8/4/2015 18:25",
 		"privateConnectOn:usingSerial:" : "Richo 10/13/2016 11:33",
 		"privateDisconnect" : "Richo 10/13/2016 11:14",
-		"processCoroutineState" : "Richo 12/28/2016 17:53",
+		"processCoroutineState" : "Richo 1/9/2017 05:50",
 		"processError" : "Richo 8/24/2016 18:05",
 		"processGlobalValue" : "Richo 10/4/2016 13:08",
 		"processInput" : "Richo 12/28/2016 17:16",
