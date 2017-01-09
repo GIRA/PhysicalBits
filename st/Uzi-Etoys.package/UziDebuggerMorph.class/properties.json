@@ -1,0 +1,18 @@
+{
+	"category" : "Uzi-Etoys",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"overButton",
+		"continueButton",
+		"breakButton",
+		"debugger",
+		"lastPC" ],
+	"name" : "UziDebuggerMorph",
+	"pools" : [
+		 ],
+	"super" : "AlignmentMorph",
+	"type" : "normal" }

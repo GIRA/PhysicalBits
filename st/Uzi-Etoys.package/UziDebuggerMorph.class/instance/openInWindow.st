@@ -1,0 +1,23 @@
+building
+openInWindow 
+	| height window |
+	window := SystemWindow new.
+	height := 30.
+	window 
+		addMorph: self
+		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.0) offsets: (0@0 corner: 0@height)).
+	window 
+		addMorph: (AlignmentMorph newRow 
+			addMorphBack: (UpdatingStringMorph on: self selector: #stack);
+			yourself)
+		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.2) offsets: (0@height corner: 0@0)).
+	window
+		addMorph: (PluggableTextMorph 
+			on: self
+			text: #contents 
+			accept: nil
+			readSelection: #contentsSelection
+			menu: nil)
+		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 1.0@1) offsets: (0@0 corner: 0@0)).
+	window extent: 600 @ 400.
+	window openInHand

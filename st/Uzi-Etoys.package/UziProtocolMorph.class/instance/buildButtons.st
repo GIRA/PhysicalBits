@@ -18,4 +18,8 @@ buildButtons
 			label: 'Editor';
 			actionSelector: #openEditor;
 			yourself);
+		addMorphBack: (debuggerButton := self newButton
+			label: 'Debugger...';
+			actionSelector: #openDebugger;
+			yourself);
 		addMorphBack: self buildInspectorButton
