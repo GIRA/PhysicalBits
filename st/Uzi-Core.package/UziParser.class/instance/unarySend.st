@@ -4,4 +4,4 @@ unarySend
 		map: [:token || rcvr msgs | 
 			rcvr := token parsedValue first.
 			msgs := token parsedValue last.
-			(self send: rcvr messages: msgs) token: token]
+			(self send: rcvr messages: msgs) token: token withoutTrailingBlanks]

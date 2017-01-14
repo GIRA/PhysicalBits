@@ -4,4 +4,4 @@ keywordSend
 		map: [:token || rcvr msg |
 			rcvr := token parsedValue first.
 			msg := token parsedValue second.
-			(self send: rcvr messages: { msg }) token: token]
+			(self send: rcvr messages: { msg }) token: token withoutTrailingBlanks]
