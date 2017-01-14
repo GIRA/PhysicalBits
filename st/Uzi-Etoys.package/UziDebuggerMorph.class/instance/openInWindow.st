@@ -1,7 +1,7 @@
 building
 openInWindow 
 	| height window |
-	window := SystemWindow new.
+	window := (SystemWindow labelled: 'Uzi Debugger') model: self.
 	height := 30.
 	window 
 		addMorph: self

@@ -2,4 +2,5 @@ stepping
 step
 	lastPC ~= debugger pc
 		ifTrue: [lastPC := debugger pc.
-			self changed: #contentsSelection]
+			self changed: #contentsSelection;
+				rebuild]

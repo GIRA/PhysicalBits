@@ -3,7 +3,7 @@
 		"debugger:" : "Richo 1/9/2017 06:16" },
 	"instance" : {
 		"break" : "Richo 1/9/2017 06:25",
-		"buildSubmorphs" : "Richo 1/9/2017 06:13",
+		"buildSubmorphs" : "Richo 1/9/2017 12:34",
 		"contents" : "Richo 1/9/2017 06:14",
 		"contentsSelection" : "Richo 1/9/2017 06:15",
 		"continue" : "Richo 1/9/2017 06:25",
@@ -12,8 +12,9 @@
 		"initializeWithDebugger:" : "Richo 1/9/2017 06:18",
 		"initializeWithProtocol:script:" : "Richo 12/31/2016 19:35",
 		"newButton" : "Richo 12/31/2016 19:49",
-		"openInWindow" : "Richo 1/9/2017 06:22",
+		"openInWindow" : "Richo 1/13/2017 21:41",
+		"rebuild" : "Richo 1/9/2017 12:49",
 		"stack" : "Richo 1/9/2017 06:32",
-		"step" : "Richo 1/9/2017 12:20",
+		"step" : "Richo 1/9/2017 12:48",
 		"stepOver" : "Richo 1/9/2017 06:36",
 		"stepTime" : "Richo 1/9/2017 06:37" } }
