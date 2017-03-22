@@ -8,11 +8,13 @@ using System.Text;
 using System.Windows.Forms;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Simulator
 {
     public partial class Main : Form
     {
+        private const string EEPROM_FILE = "eeprom.mem";
         private const int PIN_COUNT = 20;
         private Pin[] pins = new Pin[PIN_COUNT];
         private CheckBox[] checks = new CheckBox[PIN_COUNT];
@@ -30,46 +32,9 @@ namespace Simulator
         {
             InitializeSocket();
             InitializePins();
+            ReadEEPROMFile();
             stepTimer.Enabled = true;
             sketch.Start();
-            // HACK(Richo): To quickly test, I run a default program
-            Task.Delay(500) // Wait a bit to give time to the Serial to initialize
-                .ContinueWith(task =>
-                {
-                    sketch.WriteSerial(new byte[]
-                    {
-                        0, // Run program
-
-                        2, // Script count
-
-                        // Globals
-                        5, // Total # of globals
-                        20, // 5 variables of 1 byte each
-                        0, 1, 11, 13, 15, // Initial values
-
-                        // Script 1: #Blink13 (with IF)
-                        128, 0, 3, 232, // Header: ticking 1/s
-                        9, // Instruction count
-                        0x83,       // PUSH 13
-                        0x83,       // PUSH 13
-                        0xA0,       // PRIM #read
-                        0xF2, 0x03, // JNZ  3
-                        0x81,       // PUSH 1
-                        0xA1,       // PRIM #write
-                        0xFF, 0x02, // JMP  2
-                        0x80,       // PUSH 0
-                        0xA1,       // PRIM #write
-                        
-                        // Script 2: #Pot15Led11
-                        128, 0, 0, 0, // Header: ticking
-                        4, // Instruction count
-                        0x82,       // PUSH 11
-                        0x84,       // PUSH 15
-                        0xA0,       // PRIM #read
-                        0xA1,       // PRIM #write
-                    });
-                });
-
         }
 
         private void InitializeSocket()
@@ -100,6 +65,34 @@ namespace Simulator
             checks[11].Checked = checks[13].Checked = checks[15].Checked = true;
         }
 
+        private void ReadEEPROMFile()
+        {
+            if (File.Exists(EEPROM_FILE))
+            {
+                try
+                {
+                    sketch.WriteEEPROM(File.ReadAllBytes(EEPROM_FILE));
+                }
+                catch (Exception ex)
+                {
+                    // INFO(Richo): The file could not exist, or we could not have access to it
+                    MessageBox.Show(ex.ToString());
+                }
+            }
+        }
+
+        private void WriteEEPROMFile()
+        {
+            try
+            {
+                File.WriteAllBytes(EEPROM_FILE, sketch.ReadEEPROM());
+            }
+            catch (Exception ex)
+            {
+                // INFO(Richo): We could not have write access to the file or something
+                MessageBox.Show(ex.ToString());
+            }
+        }
 
         private void stepTimer_Tick(object sender, EventArgs e)
         {
@@ -138,6 +131,7 @@ namespace Simulator
         {
             sketch.Stop();
             socket.Stop();
+            WriteEEPROMFile();
         }
 
         private void startButton_Click(object sender, EventArgs e)
