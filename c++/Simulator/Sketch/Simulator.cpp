@@ -73,3 +73,18 @@ EXTERN void Sketch_setMillis(long millis)
 {
 	setMillis(millis);
 }
+
+EXTERN unsigned char EEPROM_read(int address)
+{
+	return EEPROM.read(address);
+}
+
+EXTERN void EEPROM_write(int address, unsigned char value)
+{
+	EEPROM.write(address, value);
+}
+
+EXTERN int EEPROM_size(void)
+{
+	return E2END + 1;
+}

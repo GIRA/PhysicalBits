@@ -34,6 +34,15 @@ namespace Simulator
         [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
         private static extern void Sketch_setMillis(int millis);
 
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        private static extern byte EEPROM_read(int address);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void EEPROM_write(int address, byte value);
+
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        private static extern int EEPROM_size();
+
         private static Sketch current = new Sketch();
         public static Sketch Current { get { return current; } }
 
@@ -80,7 +89,46 @@ namespace Simulator
         {
             running = false;
         }
-                
+
+        public byte ReadEEPROM(int address)
+        {
+            if (address >= 0 && address < EEPROM_size())
+            {
+                return EEPROM_read(address);
+            }
+            else
+            {
+                // Reading outside the memory
+                return 0;
+            }
+        }
+
+        public byte[] ReadEEPROM()
+        {
+            byte[] eeprom = new byte[EEPROM_size()];
+            for (int i = 0; i < eeprom.Length; i++)
+            {
+                eeprom[i] = ReadEEPROM(i);
+            }
+            return eeprom;
+        }
+
+        public void WriteEEPROM(int address, byte value)
+        {
+            if (address >= 0 && address < EEPROM_size())
+            {
+                EEPROM_write(address, value);
+            }
+        }
+
+        public void WriteEEPROM(byte[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                WriteEEPROM(i, values[i]);
+            }
+        }
+
         public void WriteSerial(byte[] bytes)
         {
             lock (serial_lock)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Arduino.h"
+#include "EEPROM.h"
 
 // The following macros will work for arduino UNO, other versions should redefine.
 #define __TOTAL_PINS__												 20
