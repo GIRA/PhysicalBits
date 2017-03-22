@@ -11,38 +11,6 @@ namespace Simulator
 {
     public class Sketch
     {
-        private const string DLL_NAME = "Sketch";
-        
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern short GPIO_getPinValue(int pin);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void GPIO_setPinValue(int pin, short value);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Sketch_setup();
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Sketch_loop();
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Serial_write(byte[] str, int len);
-        
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]        
-        private static extern int Serial_readInto(byte[] buffer, int len);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void Sketch_setMillis(int millis);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern byte EEPROM_read(int address);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern void EEPROM_write(int address, byte value);
-
-        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-        private static extern int EEPROM_size();
-
         private static Sketch current = new Sketch();
         public static Sketch Current { get { return current; } }
 
@@ -62,12 +30,12 @@ namespace Simulator
 
         public short GetPinValue(int pin)
         {
-            return GPIO_getPinValue(pin);
+            return DLL.GPIO_getPinValue(pin);
         }
 
         public void SetPinValue(int pin, short value)
         {
-            GPIO_setPinValue(pin, value);
+            DLL.GPIO_setPinValue(pin, value);
         }
 
         public void Start()
@@ -92,9 +60,9 @@ namespace Simulator
 
         public byte ReadEEPROM(int address)
         {
-            if (address >= 0 && address < EEPROM_size())
+            if (address >= 0 && address < DLL.EEPROM_size())
             {
-                return EEPROM_read(address);
+                return DLL.EEPROM_read(address);
             }
             else
             {
@@ -105,7 +73,7 @@ namespace Simulator
 
         public byte[] ReadEEPROM()
         {
-            byte[] eeprom = new byte[EEPROM_size()];
+            byte[] eeprom = new byte[DLL.EEPROM_size()];
             for (int i = 0; i < eeprom.Length; i++)
             {
                 eeprom[i] = ReadEEPROM(i);
@@ -115,9 +83,9 @@ namespace Simulator
 
         public void WriteEEPROM(int address, byte value)
         {
-            if (address >= 0 && address < EEPROM_size())
+            if (address >= 0 && address < DLL.EEPROM_size())
             {
-                EEPROM_write(address, value);
+                DLL.EEPROM_write(address, value);
             }
         }
 
@@ -133,7 +101,7 @@ namespace Simulator
         {
             lock (serial_lock)
             {
-                Serial_write(bytes, bytes.Length);
+                DLL.Serial_write(bytes, bytes.Length);
             }
         }
         
@@ -158,7 +126,7 @@ namespace Simulator
             lock (serial_lock)
             {
                 byte[] buffer = new byte[1024];
-                int count = Serial_readInto(buffer, buffer.Length);
+                int count = DLL.Serial_readInto(buffer, buffer.Length);
                 byte[] read = buffer.Take(count).ToArray();
                 if (read.Length > 0)
                 {
@@ -185,18 +153,53 @@ namespace Simulator
         public void Setup()
         {
             InitSerial();
-            Sketch_setup();
+            DLL.Sketch_setup();
         }
 
         public void Loop()
         {
-            Sketch_loop();
+            DLL.Sketch_loop();
             EnqueueSerial();
         }
 
         public void SetMillis(int millis)
         {
-            Sketch_setMillis(millis);
+            DLL.Sketch_setMillis(millis);
+        }
+        
+        private static class DLL
+        {
+            private const string DLL_NAME = "Sketch";
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern short GPIO_getPinValue(int pin);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void GPIO_setPinValue(int pin, short value);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void Sketch_setup();
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void Sketch_loop();
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void Serial_write(byte[] str, int len);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int Serial_readInto(byte[] buffer, int len);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void Sketch_setMillis(int millis);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern byte EEPROM_read(int address);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void EEPROM_write(int address, byte value);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int EEPROM_size();
         }
     }
 }
