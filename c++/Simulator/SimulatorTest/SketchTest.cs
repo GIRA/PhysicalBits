@@ -326,7 +326,7 @@ namespace SimulatorTest
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 3, 13, 169, 45
+                0, 1, 0, 128, 0, 0, 0, 3, 13, 182, 45
             });
 
             sketch.SetMillis(0);
@@ -399,7 +399,7 @@ namespace SimulatorTest
 		                turnOff: 12]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 3, 232, 3, 12, 169, 44
+                0, 1, 0, 128, 0, 3, 232, 3, 12, 182, 44
             });
 
             sketch.SetMillis(1000);
@@ -436,7 +436,7 @@ namespace SimulatorTest
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 1, 5, 3, 232, 128, 0, 0, 100, 4, 13, 128, 170, 45
+                0, 1, 1, 5, 3, 232, 128, 0, 0, 100, 4, 13, 128, 183, 45
             });
 
             sketch.SetMillis(100);
