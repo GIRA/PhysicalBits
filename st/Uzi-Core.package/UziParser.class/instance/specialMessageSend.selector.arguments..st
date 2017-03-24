@@ -20,6 +20,10 @@ specialMessageSend: rcvr selector: selector arguments: args
 		-> [UziLoopNode condition: rcvr body: args first negated: false].
 		[#whileFalse:]
 		-> [UziLoopNode condition: rcvr body: args first negated: true].
+		[#whileTrue]
+		-> [UziLoopNode condition: rcvr negated: false].
+		[#whileFalse]
+		-> [UziLoopNode condition: rcvr negated: true].
 	
 		"Scripting"
 		[#start] -> [self halt].

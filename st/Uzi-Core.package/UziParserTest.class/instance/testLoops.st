@@ -4,7 +4,9 @@ testLoops
 	pp := parser.
 	ast := pp parse: '@script1 ticking 1/s 
 		[[3 > 4] whileTrue: [D13 on].
-		[3 > 4] whileFalse: [D13 on]]'.
+		[3 > 4] whileFalse: [D13 on].
+		[3 > 4] whileTrue.
+		[3 > 4] whileFalse]'.
 	statements := ast scripts first body statements.
 	
 	toArray := [:send |
@@ -18,4 +20,14 @@ testLoops
 	statements second ifNotNil: [:while |
 		self assert: while negated.
 		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
-		self assert: #(13 on nil) equals: (toArray value: while body statements first)]
+		self assert: #(13 on nil) equals: (toArray value: while body statements first)].
+	
+	statements third ifNotNil: [:while |
+		self deny: while negated.
+		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
+		self assert: while body isEmpty].
+	
+	statements fourth ifNotNil: [:while |
+		self assert: while negated.
+		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
+		self assert: while body isEmpty]
