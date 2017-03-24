@@ -17,6 +17,14 @@ namespace SimulatorTest
             TurnOffAllPins();
         }
 
+        private void TurnOffAllPins()
+        {
+            for (int i = 0; i < 19; i++)
+            {
+                sketch.SetPinValue(i, 0);
+            }
+        }
+
         [TestMethod]
         public void TestTurnOnBytecode()
         {
@@ -456,12 +464,61 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
-        private void TurnOffAllPins()
+        [TestMethod]
+        public void TestYieldAfterBackwardsJump()
         {
-            for (int i = 0; i < 19; i++)
+            sketch.WriteSerial(new byte[]
             {
-                sketch.SetPinValue(i, 0);
-            }
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink 
+	                ticking: true 
+	                delay: 1000
+	                instructions: [:s | s push: 11; prim: #toggle];
+	                script: #main
+	                ticking: true
+	                delay: 0
+	                instructions: [:s | s
+		                push: 13; prim: #toggle;
+		                label: #label1; read: 15; jz: #label1;
+		                label: #label2; read: 15; jnz: #label2]].
+                UziProtocol new run: program
+                */
+                0, 2, 2, 8, 11, 13, 128, 0, 3, 232, 2, 128, 162, 128, 0,
+                0, 0, 6, 129, 162, 111, 241, 254, 111, 242, 254
+            });
+
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetPinValue(15, 1023);
+            sketch.SetMillis(1700);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetPinValue(15, 0);
+            sketch.SetMillis(1750);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1800);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(11));
+            Assert.AreEqual(0, sketch.GetPinValue(13));
         }
     }
 }
