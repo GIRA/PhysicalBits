@@ -87,20 +87,35 @@ void Script::parseInstructions(Reader* rs, bool& timeout)
 		int16 argument;
 		if (bytecode < 0x80)
 		{
+			/*
+			If the high-order bit is zero (< 0x8) then the opcode is stored in the 3 msbits
+			and the argument is stored in the 5 lsbits.
+			*/
 			opcode = bytecode >> 5;
 			argument = bytecode & 0x1F;
 		}
 		else
 		{
+			/*
+			If the high-order bit is one (>= 0x8) then the opcode is stored in the 4 msbits
+			and the argument is stored in the 4 lsbits.
+			*/
 			opcode = bytecode >> 4;
 			argument = bytecode & 0xF;
 			if (0xF == opcode)
 			{
+				/*
+				Special case: If the 4 msbits happen to be 0xF then the argument is stored
+				on the next byte.
+				*/
 				opcode = bytecode;
-				if (argument > 0)
+				argument = rs->next(timeout);
+				if (timeout) return;
+
+				// Argument is encoded in two's complement
+				if (argument >= 128)
 				{
-					argument = rs->next(timeout);
-					if (timeout) return;
+					argument = (0xFF & ((argument ^ 0xFF) + 1)) * -1;
 				}
 			}
 		}
