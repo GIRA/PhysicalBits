@@ -30,9 +30,9 @@ private:
 	Script* currentScript;
 
 	Instruction nextInstruction(void);
-	void executeInstruction(Instruction, GPIO*, bool& yieldFlag);
-	void executePrimitive(uint16, GPIO*, bool& yieldFlag);
+	void executeInstruction(Instruction, GPIO*, bool&);
+	void executePrimitive(uint16, GPIO*, bool&);
 	void executeCoroutine(Coroutine*, GPIO*);
-
+	void yieldTime(int32, bool&);
 };
 

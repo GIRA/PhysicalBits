@@ -172,6 +172,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (stack->pop() == 0) // TODO(Richo): Float comparison
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -182,6 +183,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (stack->pop() != 0) // TODO(Richo): Float comparison
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -194,6 +196,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (a != b) // TODO(Richo): float comparison
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -206,6 +209,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (a < b)
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -218,6 +222,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (a <= b)
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -230,6 +235,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (a > b)
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -242,6 +248,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (a >= b)
 			{
 				pc += argument;
+				if (argument < 0) { yieldTime(0, yieldFlag); }
 			}
 		} 
 		break;
@@ -250,6 +257,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0xFF:
 		{
 			pc += argument;
+			if (argument < 0) { yieldTime(0, yieldFlag); }
 		} 
 		break;
 	}
@@ -342,8 +350,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		// yield
 		case 0x09:
 		{
-			currentCoroutine->setNextRun(millis());
-			yieldFlag = true;
+			yieldTime(0, yieldFlag);
 		}
 		break;
 
@@ -351,8 +358,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		case 0x0A:
 		{
 			int32 time = (int32)stack->pop();
-			currentCoroutine->setNextRun(millis() + time);
-			yieldFlag = true;
+			yieldTime(time, yieldFlag);
 		}
 		break;
 		
@@ -457,4 +463,10 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 	}
+}
+
+void VM::yieldTime(int32 time, bool& yieldFlag)
+{
+	currentCoroutine->setNextRun(millis() + time);
+	yieldFlag = true;
 }
