@@ -5,7 +5,7 @@
 #include "EEPROMWearLevelingReader.h"
 
 #define MAJOR_VERSION		0
-#define MINOR_VERSION		0
+#define MINOR_VERSION		1
 
 /* REQUEST COMMANDS */
 #define RQ_SET_PROGRAM									0
@@ -94,7 +94,8 @@ void loadInstalledProgram(void)
 {
 	EEPROMWearLevelingReader eeprom;
 	if (eeprom.next() == PROGRAM_START
-		&& eeprom.next() == MAJOR_VERSION)
+		&& eeprom.next() == MAJOR_VERSION
+		&& eeprom.next() == MINOR_VERSION)
 	{
 		loadProgramFromReader(&eeprom);
 	}
@@ -383,6 +384,7 @@ void executeSaveProgram(void)
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
+	writer.nextPut(MINOR_VERSION);
 	for (int i = 0; i < size; i++)
 	{
 		writer.nextPut(buf[i]);
