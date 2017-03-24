@@ -462,6 +462,14 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			io->setValue(pin, 0);
 		} 
 		break;
+
+		// time
+		case 0x17:
+		{
+			float time = (float)millis() / 1000.0;
+			stack->push(time);
+		}
+		break;
 	}
 }
 
