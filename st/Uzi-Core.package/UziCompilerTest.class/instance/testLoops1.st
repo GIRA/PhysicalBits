@@ -1,5 +1,5 @@
 tests
-testLoops
+testLoops1
 	| cc program script |
 	cc := UziCompiler new.
 	program := cc compile: '@main ticking [[D13 read] whileTrue: [D11 on]]'.
