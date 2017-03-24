@@ -2,7 +2,7 @@ tests
 testConditionals1
 	| cc program script |
 	cc := UziCompiler new.
-	program := cc compile: '#main ticking [D13 read ifTrue: [D13 off] ifFalse: [D13 on]]'.
+	program := cc compile: '@main ticking [D13 read ifTrue: [D13 off] ifFalse: [D13 on]]'.
 	script := program scripts first.
 	self assert: script instructions = {
 		push arg: (program variables detect: [:var | var value = 13]).

@@ -3,10 +3,10 @@ testScriptSeparators
 	| pp script scripts ast |
 	pp := parser.
 	ast := pp parse: '
-		#script1 ticking 1/s [foo]... "Holaaaaa"... . . . . 
+		@script1 ticking 1/s [foo]... "Holaaaaa"... . . . . 
 		..
 		.
-		#script2 ticking 2/m [bar]'.
+		@script2 ticking 2/m [bar]'.
 	scripts := ast scripts.
 	self assert: scripts size equals: 2.
 	script := scripts first.

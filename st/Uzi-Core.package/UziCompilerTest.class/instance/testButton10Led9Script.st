@@ -2,7 +2,7 @@ tests
 testButton10Led9Script
 	| cc program script1 instructions |
 	cc := UziCompiler new.
-	program := cc compile: '#button10Led9 ticking 100/s [
+	program := cc compile: '@button10Led9 ticking 100/s [
 			9 write: 10 read
 		]'.
 	self assert: program scripts size = 1.	

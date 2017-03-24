@@ -3,8 +3,8 @@ testMultipleScripts
 	| pp script scripts ast |
 	pp := parser.
 	ast := pp parse: '
-		#script1 ticking 1/s [foo]
-		#script2 2/m [bar]'.
+		@script1 ticking 1/s [foo]
+		@script2 2/m [bar]'.
 	scripts := ast scripts.
 	self assert: scripts size equals: 2.
 	script := scripts first.

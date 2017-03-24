@@ -2,7 +2,7 @@ tests
 testAssignmentScript
 	| cc program script1 |
 	cc := UziCompiler new.
-	program := cc compile: '#main ticking [ c := 1 ]'.
+	program := cc compile: '@main ticking [ c := 1 ]'.
 	self assert: 2 equals: program variables size.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.

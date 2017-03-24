@@ -2,7 +2,7 @@ tests
 testConditionals
 	| pp ast statements toArray |
 	pp := parser.
-	ast := pp parse: '#script1 ticking 1/s [
+	ast := pp parse: '@script1 ticking 1/s [
 		3 > 4 ifTrue: [D13 on].
 		3 < 4 ifFalse: [D13 off].
 		4 > 3 ifTrue: [D13 on] ifFalse: [D13 off].

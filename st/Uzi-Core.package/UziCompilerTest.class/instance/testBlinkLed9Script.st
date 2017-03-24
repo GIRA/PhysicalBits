@@ -2,7 +2,7 @@ tests
 testBlinkLed9Script
 	| cc program script1 |
 	cc := UziCompiler new.
-	program := cc compile: '#blinkLed9 ticking 1/s [
+	program := cc compile: '@blinkLed9 ticking 1/s [
 		D9 read
 			ifTrue: [D9 off]
 			ifFalse: [D9 on]

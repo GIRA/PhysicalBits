@@ -2,7 +2,7 @@ tests
 testCompilerPreservesParseNodes
 	| cc program instr1 instr2 script |
 	cc := UziCompiler new.
-	program := cc compile: '#main 1 / s [ D13 toggle ]'.
+	program := cc compile: '@main 1 / s [ D13 toggle ]'.
 	self assert: program node variableDefinitions isEmpty.
 	self assert: 1 equals: program node scripts size.
 	script := program scripts first.
