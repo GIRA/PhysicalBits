@@ -347,23 +347,16 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// yield
+		// time
 		case 0x09:
 		{
-			yieldTime(0, yieldFlag);
-		}
-		break;
-
-		// yieldTime
-		case 0x0A:
-		{
-			int32 time = (int32)stack->pop();
-			yieldTime(time, yieldFlag);
+			float time = (float)millis() / 1000.0;
+			stack->push(time);
 		}
 		break;
 		
 		// equals
-		case 0x0B:
+		case 0x0A:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -372,7 +365,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// notEquals
-		case 0x0C:
+		case 0x0B:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -381,7 +374,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// greaterThan
-		case 0x0D:
+		case 0x0C:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -390,7 +383,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// greaterThanOrEquals
-		case 0x0E:
+		case 0x0D:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -399,7 +392,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// lessThan
-		case 0x0F:
+		case 0x0E:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -408,7 +401,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// lessThanOrEquals
-		case 0x10:
+		case 0x0F:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
@@ -417,7 +410,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// negate
-		case 0x11:
+		case 0x10:
 		{
 			float val = stack->pop();
 			stack->push(-1 * val);
@@ -425,14 +418,14 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// sin
-		case 0x12:
+		case 0x11:
 		{
 			float val = stack->pop();
 			stack->push(sinf(val));
 		} break;
 
 		// cos
-		case 0x13:
+		case 0x12:
 		{
 			float val = stack->pop();
 			stack->push(cosf(val));
@@ -440,7 +433,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// tan
-		case 0x14:
+		case 0x13:
 		{
 			float val = stack->pop();
 			stack->push(tanf(val));
@@ -448,7 +441,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// turnOn
-		case 0x15:
+		case 0x14:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1);
@@ -456,18 +449,25 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		break;
 
 		// turnOff
-		case 0x16:
+		case 0x15:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 0);
 		} 
 		break;
 
-		// time
+		// yield
+		case 0x16:
+		{
+			yieldTime(0, yieldFlag);
+		}
+		break;
+
+		// yieldTime
 		case 0x17:
 		{
-			float time = (float)millis() / 1000.0;
-			stack->push(time);
+			int32 time = (int32)stack->pop();
+			yieldTime(time, yieldFlag);
 		}
 		break;
 	}
