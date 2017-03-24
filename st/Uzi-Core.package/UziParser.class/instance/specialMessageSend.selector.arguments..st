@@ -14,6 +14,10 @@ specialMessageSend: rcvr selector: selector arguments: args
 		-> [UziConditionalNode condition: rcvr true: args first false: args second].
 		[#ifFalse:ifTrue:] 
 		-> [UziConditionalNode condition: rcvr true: args second false: args first].
+		
+		"Loops"
+		[#whileTrue:]
+		-> [UziLoopNode condition: rcvr body: args first].
 	
 		"Scripting"
 		[#start] -> [self halt].

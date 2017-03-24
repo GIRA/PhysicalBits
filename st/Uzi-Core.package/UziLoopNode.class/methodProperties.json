@@ -1,0 +1,9 @@
+{
+	"class" : {
+		"condition:body:" : "Richo 3/24/2017 19:12" },
+	"instance" : {
+		"accept:" : "Richo 3/24/2017 19:16",
+		"body" : "Richo 3/24/2017 19:12",
+		"condition" : "Richo 3/24/2017 19:12",
+		"initializeWithCondition:body:" : "Richo 3/24/2017 19:12",
+		"isStatement" : "Richo 3/24/2017 19:21" } }
