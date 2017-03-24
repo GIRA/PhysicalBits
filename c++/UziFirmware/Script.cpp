@@ -84,7 +84,7 @@ void Script::parseInstructions(Reader* rs, bool& timeout)
 		if (timeout) return;
 
 		uint8 opcode;
-		uint16 argument;
+		int16 argument;
 		if (bytecode < 0x80)
 		{
 			opcode = bytecode >> 5;

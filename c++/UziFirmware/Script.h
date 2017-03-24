@@ -5,7 +5,7 @@
 struct Instruction
 {
 	uint8 opcode;
-	uint16 argument;
+	int16 argument;
 };
 
 class Script

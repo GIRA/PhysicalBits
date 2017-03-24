@@ -71,7 +71,7 @@ Instruction VM::nextInstruction(void)
 void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 {
 	uint8 opcode = instruction.opcode;
-	uint16 argument = instruction.argument;
+	int16 argument = instruction.argument;
 	switch (opcode)
 	{
 		// Turn ON
