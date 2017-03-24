@@ -107,6 +107,7 @@ void Script::parseInstructions(Reader* rs, bool& timeout)
 				/*
 				Special case: If the 4 msbits happen to be 0xF then the argument is stored
 				on the next byte.
+				TODO(Richo): Implement extend instruction
 				*/
 				opcode = bytecode;
 				argument = rs->next(timeout);
