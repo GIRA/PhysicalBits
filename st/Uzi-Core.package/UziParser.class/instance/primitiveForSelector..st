@@ -1,5 +1,5 @@
 accessing
-primitiveFor: selector
+primitiveForSelector: selector
 	| primName |
 	primName := selector caseOf: {
 		[#on] -> [#turnOn].

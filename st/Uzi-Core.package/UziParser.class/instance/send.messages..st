@@ -16,6 +16,6 @@ send: rcvr messages: msgs
 						receiver: receiver
 						selector: selector
 						arguments: args
-						primitive: (self primitiveFor: msg key)]].
+						primitive: (self primitiveForSelector: msg key)]].
 			result]
 		

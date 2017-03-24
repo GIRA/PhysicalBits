@@ -1,4 +1,4 @@
-instance creation
+private
 primSpec
 	"(name code isExpression)"
 	^ #(
@@ -25,4 +25,5 @@ primSpec
 		(tan 20 true)
 		(turnOn 21 false)
 		(turnOff 22 false)
+		(time 23 true)
 	)

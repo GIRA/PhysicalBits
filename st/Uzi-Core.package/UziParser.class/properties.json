@@ -23,7 +23,6 @@
 		"variable",
 		"expression",
 		"literal",
-		"reference",
 		"subexpression",
 		"constant",
 		"block",
@@ -41,7 +40,8 @@
 		"tickingState",
 		"tickingRate",
 		"variableDefinition",
-		"script" ],
+		"script",
+		"specialVariable" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
