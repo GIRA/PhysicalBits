@@ -1,3 +1,3 @@
 encoding instructions
-visitYieldInstruction: instruction
+visitDupInstruction: instruction
 	stream nextPut: 16rF0
