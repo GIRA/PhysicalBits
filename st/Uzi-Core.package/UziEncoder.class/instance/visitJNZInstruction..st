@@ -2,4 +2,4 @@ encoding instructions
 visitJNZInstruction: instruction
 	stream
 		nextPut: 16rF2;
-		nextPut: instruction argument
+		nextPut: (self asTwoComplement: instruction argument)

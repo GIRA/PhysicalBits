@@ -2,4 +2,4 @@ encoding instructions
 visitJMPInstruction: instruction
 	stream 
 		nextPut: 16rFF;
-		nextPut: instruction argument
+		nextPut: (self asTwoComplement: instruction argument)
