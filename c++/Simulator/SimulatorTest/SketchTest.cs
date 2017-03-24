@@ -314,11 +314,11 @@ namespace SimulatorTest
 	                delay: 0
 	                instructions: [:s | s
 		                turnOn: 13;
-		                yield;
+		                prim: #yield;
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 3, 13, 240, 45
+                0, 1, 0, 128, 0, 0, 0, 3, 13, 169, 45
             });
 
             sketch.SetMillis(0);
@@ -348,17 +348,17 @@ namespace SimulatorTest
 		                push: 13;
 		                prim: #toggle;
 		                push: 13;
-		                yield;
+		                prim: #yield;
 		                prim: #toggle;
 		                push: 12;
 		                push: 1;
-		                yield;
+		                prim: #yield;
 		                prim: #add;
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
                 0, 1, 3, 12, 1, 12, 13, 128, 0, 0, 0, 10, 130, 162,
-                130, 240, 162, 129, 128, 240, 166, 162
+                130, 169, 162, 129, 128, 169, 166, 162
             });
 
             sketch.SetMillis(0);
@@ -387,11 +387,11 @@ namespace SimulatorTest
 	                delay: 1000
 	                instructions: [:s | s
 		                turnOn: 12;
-		                yield;
+		                prim: #yield;
 		                turnOff: 12]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 3, 232, 3, 12, 240, 44
+                0, 1, 0, 128, 0, 3, 232, 3, 12, 169, 44
             });
 
             sketch.SetMillis(1000);
@@ -428,7 +428,7 @@ namespace SimulatorTest
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 1, 5, 3, 232, 128, 0, 0, 100, 4, 13, 128, 181, 45
+                0, 1, 1, 5, 3, 232, 128, 0, 0, 100, 4, 13, 128, 170, 45
             });
 
             sketch.SetMillis(100);
