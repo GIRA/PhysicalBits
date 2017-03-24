@@ -14,10 +14,5 @@ processCoroutineState
 		val4 := serial next.
 		val := Float fromIEEE32Bit: (val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4))).
 		stack add: val].
-	WorldState addDeferredUIMessage: [
-		Transcript 
-			show: ('Coroutine {1}:' format: { index }); cr;
-			tab; show: ('PC: {1} - Stack ({2} elements)' format: { pc . stackSize }); cr;
-			tab; show: stack asArray; cr; cr].
 	self triggerEvent: #coroutineUpdate
 		withArguments: { index . pc . stack }
