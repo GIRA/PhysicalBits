@@ -78,39 +78,45 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0x00:
 		{
 			io->setValue((uint8)argument, HIGH);
-		} break;
+		} 
+		break;
 
 		// Turn OFF
 		case 0x01:
 		{
 			io->setValue((uint8)argument, LOW);
-		} break;
+		} 
+		break;
 
 		// Write
 		case 0x02:
 		{
 			io->setValue((uint8)argument, stack->pop());
-		} break;
+		} 
+		break;
 
 		// Read
 		case 0x03:
 		{
 			stack->push(io->getValue((uint8)argument));
-		} break;
+		} 
+		break;
 
 		// Push
 		case 0xF8:
 		case 0x08:
 		{
 			stack->push(currentProgram->getGlobal(argument));
-		} break;
+		} 
+		break;
 
 		// Pop
 		case 0xF9:
 		case 0x09:
 		{
 			currentProgram->setGlobal(argument, stack->pop());
-		} break;
+		} 
+		break;
 
 		// Prim call
 		case 0xFB: argument += 256; // 288 -> 543
@@ -119,13 +125,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0x0A:					// 0 -> 15
 		{
 			executePrimitive(argument, io, yieldFlag);
-		} break;
+		} 
+		break;
 
 		// Script call
 		case 0xFC:
 		case 0x0C:
 		{
-		} break;
+		} 
+		break;
 
 		// Start script
 		case 0xFD:
@@ -136,7 +144,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				script->setStepping(true);
 			}
-		} break;
+		} 
+		break;
 
 		// Stop script
 		case 0xFE:
@@ -147,14 +156,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				script->setStepping(false);
 			}
-		} break;
+		} 
+		break;
 
-		// Yield
+		// Dup
 		case 0xF0:
 		{
-			currentCoroutine->setNextRun(millis());
-			yieldFlag = true;
-		} break;
+			// TODO(Richo): This instruction should read a value from the stack and copy it on top
+		} 
+		break;
 
 		// JZ
 		case 0xF1:
@@ -163,7 +173,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JNZ
 		case 0xF2:
@@ -172,7 +183,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JNE
 		case 0xF3:
@@ -183,7 +195,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JLT
 		case 0xF4:
@@ -194,7 +207,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JLTE
 		case 0xF5:
@@ -205,7 +219,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JGT
 		case 0xF6:
@@ -216,7 +231,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JGTE
 		case 0xF7:
@@ -227,13 +243,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				pc += argument;
 			}
-		} break;
+		} 
+		break;
 
 		// JMP
 		case 0xFF:
 		{
 			pc += argument;
-		} break;
+		} 
+		break;
 	}
 
 }
@@ -247,7 +265,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		{
 			uint8 pin = (uint8)stack->pop();
 			stack->push(io->getValue(pin));
-		} break;
+		} 
+		break;
 
 		// write
 		case 0x01:
@@ -255,14 +274,16 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, value);
-		} break;
+		} 
+		break;
 
 		// toggle
 		case 0x02:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1 - io->getValue(pin));
-		} break;
+		}
+		break;
 
 		// servoDegrees
 		case 0x03:
@@ -270,7 +291,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float value = stack->pop() / 180.0f;
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
-		} break;
+		}
+		break;
 
 		// servoWrite
 		case 0x04:
@@ -278,7 +300,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
-		} break;
+		} 
+		break;
 
 		// multiply
 		case 0x05:
@@ -286,7 +309,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 * val2);
-		} break;
+		} 
+		break;
 
 		// add
 		case 0x06:
@@ -294,7 +318,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 + val2);
-		} break;
+		} 
+		break;
 
 		// divide
 		case 0x07:
@@ -302,7 +327,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 / val2);
-		} break;
+		} 
+		break;
 
 		// subtract
 		case 0x08:
@@ -310,104 +336,125 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 - val2);
-		} break;
-		
-		// equals
+		} 
+		break;
+
+		// yield
 		case 0x09:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 == val2); // TODO(Richo)
-		} break;
+			currentCoroutine->setNextRun(millis());
+			yieldFlag = true;
+		}
+		break;
 
-		// notEquals
+		// yieldTime
 		case 0x0A:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 != val2); // TODO(Richo)
-		} break;
-
-		// greaterThan
+			int32 time = (int32)stack->pop();
+			currentCoroutine->setNextRun(millis() + time);
+			yieldFlag = true;
+		}
+		break;
+		
+		// equals
 		case 0x0B:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
-			stack->push(val1 > val2);
-		} break;
+			stack->push(val1 == val2); // TODO(Richo)
+		} 
+		break;
 
-		// greaterThanOrEquals
+		// notEquals
 		case 0x0C:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
-			stack->push(val1 >= val2);
-		} break;
+			stack->push(val1 != val2); // TODO(Richo)
+		} 
+		break;
 
-		// lessThan
+		// greaterThan
 		case 0x0D:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
-			stack->push(val1 < val2);
-		} break;
+			stack->push(val1 > val2);
+		} 
+		break;
 
-		// lessThanOrEquals
+		// greaterThanOrEquals
 		case 0x0E:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
+			stack->push(val1 >= val2);
+		} 
+		break;
+
+		// lessThan
+		case 0x0F:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
+			stack->push(val1 < val2);
+		} 
+		break;
+
+		// lessThanOrEquals
+		case 0x10:
+		{
+			float val2 = stack->pop();
+			float val1 = stack->pop();
 			stack->push(val1 <= val2);
-		} break;
+		} 
+		break;
 
 		// negate
-		case 0x0F:
+		case 0x11:
 		{
 			float val = stack->pop();
 			stack->push(-1 * val);
-		} break;
+		} 
+		break;
 
 		// sin
-		case 0x10:
+		case 0x12:
 		{
 			float val = stack->pop();
 			stack->push(sinf(val));
 		} break;
 
 		// cos
-		case 0x11:
+		case 0x13:
 		{
 			float val = stack->pop();
 			stack->push(cosf(val));
-		} break;
+		} 
+		break;
 
 		// tan
-		case 0x12:
+		case 0x14:
 		{
 			float val = stack->pop();
 			stack->push(tanf(val));
-		} break;
+		} 
+		break;
 
 		// turnOn
-		case 0x13:
+		case 0x15:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1);
-		} break;
+		} 
+		break;
 
 		// turnOff
-		case 0x14:
+		case 0x16:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 0);
-		} break;
-
-		// yieldTime
-		case 0x15:
-		{
-			int32 time = (int32)stack->pop();
-			currentCoroutine->setNextRun(millis() + time);
-			yieldFlag = true;
-		} break;
+		} 
+		break;
 	}
 }
