@@ -17,14 +17,18 @@ specialMessageSend: rcvr selector: selector arguments: args
 		
 		"Loops"
 		[#whileTrue:]
-		-> [UziLoopNode condition: rcvr body: args first negated: false].
+		-> [UziLoopNode condition: rcvr body: args first].
 		[#whileFalse:]
 		-> [UziLoopNode condition: rcvr body: args first negated: true].
 		[#whileTrue]
-		-> [UziLoopNode condition: rcvr negated: false].
+		-> [UziLoopNode condition: rcvr].
 		[#whileFalse]
 		-> [UziLoopNode condition: rcvr negated: true].
-	
+		[#doWhileTrue:]
+		-> [UziLoopNode condition: args first body: rcvr evaluateBodyFirst: true].	
+		[#doWhileFalse:]
+		-> [UziLoopNode condition: args first body: rcvr negated: true evaluateBodyFirst: true].
+		
 		"Scripting"
 		[#start] -> [self halt].
 		[#stop] -> [self halt]

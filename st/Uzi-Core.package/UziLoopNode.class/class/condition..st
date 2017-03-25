@@ -1,6 +1,6 @@
 instance creation
-condition: conditionNode negated: negatedBool
+condition: conditionNode
 	^ self condition: conditionNode
 		body: UziBlockNode empty
-		negated: negatedBool
+		negated: false
 		evaluateBodyFirst: false
