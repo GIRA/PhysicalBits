@@ -11,7 +11,7 @@ primSpec
 		(add 6 true)
 		(divide 7 true)
 		(subtract 8 true)
-		(time 9 true)
+		(seconds 9 true)
 		(equals 10 true)
 		(notEquals 11 true)
 		(greaterThan 12 true)
