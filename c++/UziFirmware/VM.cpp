@@ -347,7 +347,7 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// time
+		// seconds
 		case 0x09:
 		{
 			float time = (float)millis() / 1000.0;
@@ -468,6 +468,14 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		{
 			int32 time = (int32)stack->pop();
 			yieldTime(time, yieldFlag);
+		}
+		break;
+
+		// millis
+		case 0x18:
+		{
+			float time = (float)millis();
+			stack->push(time);
 		}
 		break;
 	}
