@@ -2,7 +2,7 @@
 	"class" : {
 		"check:" : "Richo 12/30/2016 14:45" },
 	"instance" : {
-		"assert:description:node:" : "Richo 12/31/2016 11:18",
+		"assert:description:node:" : "Richo 3/25/2017 22:59",
 		"assertBlock:" : "Richo 12/31/2016 13:10",
 		"assertExpression:" : "Richo 12/31/2016 13:03",
 		"assertScript:" : "Richo 12/31/2016 13:11",
@@ -17,7 +17,7 @@
 		"visitCollection:" : "Richo 12/30/2016 14:52",
 		"visitConditionalNode:" : "Richo 12/31/2016 13:09",
 		"visitLoopNode:" : "Richo 3/25/2017 12:24",
-		"visitMessageSend:" : "Richo 3/25/2017 22:31",
+		"visitMessageSend:" : "Richo 3/25/2017 23:01",
 		"visitNumberNode:" : "Richo 12/30/2016 16:31",
 		"visitProgramNode:" : "Richo 12/31/2016 13:11",
 		"visitScriptNode:" : "Richo 12/31/2016 13:12",

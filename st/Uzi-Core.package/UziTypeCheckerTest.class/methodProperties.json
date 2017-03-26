@@ -5,7 +5,7 @@
 		"assertInvalid:" : "Richo 12/31/2016 13:45",
 		"check:" : "Richo 12/31/2016 13:40",
 		"testAssignmentValueShouldBeAnExpression" : "Richo 3/24/2017 17:07",
-		"testAssignmentsAreNotExpressions" : "Richo 3/24/2017 17:07",
+		"testAssignmentsAreNotExpressions" : "Richo 3/25/2017 22:59",
 		"testBlockOnlyContainsStatements" : "Richo 3/24/2017 17:08",
 		"testConditionalBranchesShouldBeBlocks" : "Richo 3/24/2017 17:08",
 		"testConditionalsAreNotExpressions" : "Richo 3/24/2017 17:08",
@@ -13,4 +13,5 @@
 		"testLoopBodyShouldContainOnlyStatements" : "Richo 3/25/2017 11:42",
 		"testLoopConditionOnlyAllowsOneExpression" : "Richo 3/25/2017 11:44",
 		"testLoopConditionShouldBeABlock" : "Richo 3/25/2017 11:43",
-		"testLoopConditionShouldEndWithExpression" : "Richo 3/25/2017 11:43" } }
+		"testLoopConditionShouldEndWithExpression" : "Richo 3/25/2017 11:43",
+		"testMessageSendReceiverShouldBeAnExpression" : "Richo 3/25/2017 23:00" } }

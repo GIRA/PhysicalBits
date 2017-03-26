@@ -1,4 +1,6 @@
 grammar-unary
 unaryMessage
-	^ ws , unarySelector , $: asParser not
-		map: [:ign1 :sel :ign2 | self message: sel args: #()]
+	^ ws , (unarySelector , $: asParser not) token
+		map: [:ign1 :token || sel |
+			sel := token parsedValue first.
+			self message: sel args: #() token: token]
