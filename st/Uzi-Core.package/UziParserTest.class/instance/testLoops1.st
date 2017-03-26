@@ -1,5 +1,5 @@
 tests
-testLoops
+testLoops1
 	| pp ast statements toArray |
 	pp := parser.
 	ast := pp parse: '@script1 ticking 1/s 

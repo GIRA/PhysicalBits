@@ -27,7 +27,19 @@ specialMessageSend: rcvr selector: selector arguments: args
 		[#doWhileTrue:]
 		-> [UziLoopNode condition: args first body: rcvr evaluateBodyFirst: true].	
 		[#doWhileFalse:]
-		-> [UziLoopNode condition: args first body: rcvr negated: true evaluateBodyFirst: true].
+		-> [UziLoopNode condition: args first body: rcvr negated: true evaluateBodyFirst: true].		
+		[#untilTrue:]
+		-> [UziLoopNode condition: rcvr body: args first negated: true].
+		[#untilFalse:]
+		-> [UziLoopNode condition: rcvr body: args first].
+		[#untilTrue]
+		-> [UziLoopNode condition: rcvr negated: true].
+		[#untilFalse]
+		-> [UziLoopNode condition: rcvr].
+		[#doUntilTrue:]
+		-> [UziLoopNode condition: args first body: rcvr negated: true evaluateBodyFirst: true].	
+		[#doUntilFalse:]
+		-> [UziLoopNode condition: args first body: rcvr evaluateBodyFirst: true].
 		
 		"Scripting"
 		[#start] -> [self halt].
