@@ -26,4 +26,5 @@ primSpec
 		(turnOff 21 false)
 		(yield 22 false)
 		(yieldTime 23 false)
+		(millis 24 true)
 	)
