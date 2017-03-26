@@ -8,6 +8,8 @@ visitMessageSend: node
 	self assert: node primitive notNil
 		description: ('Invalid primitive ''{1}''' format: { node selector })
 		node: node.
+		
+	self assertExpression: node receiver.
 	node arguments do: [:each | self assertExpression: each].
 	
 	self visit: node receiver;
