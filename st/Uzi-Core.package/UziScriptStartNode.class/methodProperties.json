@@ -1,5 +1,9 @@
 {
 	"class" : {
-		"scriptName:" : "Richo 12/21/2016 18:32" },
+		"script:" : "Richo 3/26/2017 20:55" },
 	"instance" : {
-		"initializeWithScriptName:" : "Richo 12/21/2016 18:32" } }
+		"accept:" : "Richo 3/26/2017 21:14",
+		"initializeWith:" : "Richo 3/26/2017 20:56",
+		"isStatement" : "Richo 3/26/2017 21:15",
+		"script" : "Richo 3/26/2017 21:07",
+		"scriptName" : "Richo 3/26/2017 21:16" } }

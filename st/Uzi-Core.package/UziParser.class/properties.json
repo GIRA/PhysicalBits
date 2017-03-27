@@ -41,7 +41,8 @@
 		"tickingRate",
 		"variableDefinition",
 		"script",
-		"specialVariable" ],
+		"specialVariable",
+		"scriptReference" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

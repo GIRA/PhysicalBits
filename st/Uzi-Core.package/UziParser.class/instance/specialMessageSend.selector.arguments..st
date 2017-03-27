@@ -42,6 +42,8 @@ specialMessageSend: rcvr selector: selector arguments: args
 		-> [UziLoopNode condition: args first body: rcvr evaluateBodyFirst: true].
 		
 		"Scripting"
-		[#start] -> [self halt].
-		[#stop] -> [self halt]
+		[#start] 
+		-> [UziScriptStartNode script: rcvr].
+		[#stop] 
+		-> [UziScriptStopNode script: rcvr]
 	} otherwise: [nil].

@@ -11,7 +11,9 @@
 		"pop",
 		"jz",
 		"jmp",
-		"jnz" ],
+		"jnz",
+		"start",
+		"stop" ],
 	"name" : "UziCompilerTest",
 	"pools" : [
 		 ],
