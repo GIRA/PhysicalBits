@@ -1,3 +1,4 @@
 visiting
 visitScriptStartNode: node
-	self flag: #Richo
+	self assertScriptReference: node script.
+	self visit: node script

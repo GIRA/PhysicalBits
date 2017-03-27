@@ -14,4 +14,7 @@
 		"testLoopConditionOnlyAllowsOneExpression" : "Richo 3/25/2017 11:44",
 		"testLoopConditionShouldBeABlock" : "Richo 3/25/2017 11:43",
 		"testLoopConditionShouldEndWithExpression" : "Richo 3/25/2017 11:43",
-		"testMessageSendReceiverShouldBeAnExpression" : "Richo 3/26/2017 11:40" } }
+		"testMessageSendReceiverShouldBeAnExpression" : "Richo 3/26/2017 11:40",
+		"testScriptReferenceShouldReferenceExistingScript" : "Richo 3/26/2017 21:38",
+		"testScriptStartReceiverIsAScriptRef" : "Richo 3/26/2017 21:35",
+		"testScriptStopReceiverIsAScriptRef" : "Richo 3/26/2017 21:38" } }
