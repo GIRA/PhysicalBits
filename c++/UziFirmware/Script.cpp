@@ -107,14 +107,16 @@ void Script::parseInstructions(Reader* rs, bool& timeout)
 				/*
 				Special case: If the 4 msbits happen to be 0xF then the argument is stored
 				on the next byte.
-				TODO(Richo): Implement extend instruction
 				*/
 				opcode = bytecode;
 				argument = rs->next(timeout);
 				if (timeout) return;
 
-				// Argument is encoded in two's complement
-				if (argument >= 128)
+				/*
+				If the opcode is one of the "jump" instructions, the argument is encoded 
+				using two's complement.
+				*/
+				if (opcode >= 0xF0 && opcode <= 0xF7 && argument >= 128)
 				{
 					argument = (0xFF & ((argument ^ 0xFF) + 1)) * -1;
 				}
