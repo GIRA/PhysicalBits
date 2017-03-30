@@ -23,8 +23,8 @@ void VM::executeProgram(Program * program, GPIO * io)
 void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 {
 	currentCoroutine = coroutine;
-	currentScript = coroutine->getScript();
 	pc = coroutine->getPC();
+	currentScript = currentProgram->getScriptForPC(pc);
 	coroutine->restoreStack(stack);
 	bool yieldFlag = false;
 	while (true)
@@ -132,6 +132,9 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0xFC:
 		case 0x0C:
 		{
+			stack->push(pc);
+			currentScript = currentProgram->getScript(argument);
+			pc = currentScript->getInstructionStart();
 		} 
 		break;
 
@@ -478,6 +481,13 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			stack->push(time);
 		}
 		break;
+
+		// ret
+		case 0x19:
+		{
+			pc = stack->pop();
+			currentScript = currentProgram->getScriptForPC(pc);
+		}
 	}
 }
 
