@@ -17,6 +17,7 @@
 		"visitPushInstruction:" : "Richo 8/22/2016 10:03",
 		"visitReadInstruction:" : "Richo 8/22/2016 10:03",
 		"visitScript:" : "Richo 8/22/2016 10:06",
+		"visitScriptCallInstruction:" : "Richo 3/30/2017 17:10",
 		"visitStartScriptInstruction:" : "Richo 9/6/2016 12:01",
 		"visitStopScriptInstruction:" : "Richo 9/6/2016 12:00",
 		"visitTurnOffInstruction:" : "Richo 8/22/2016 10:03",

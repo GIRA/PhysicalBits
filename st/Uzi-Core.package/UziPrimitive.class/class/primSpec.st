@@ -27,4 +27,5 @@ primSpec
 		(yield 22 false)
 		(yieldTime 23 false)
 		(millis 24 true)
+		(ret 25 false)
 	)
