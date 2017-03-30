@@ -16,6 +16,7 @@ public:
 	uint8 getScriptCount(void);
 	Script* getScript(void);
 	Script* getScript(int16);
+	Script* getScriptForPC(int16);
 	uint8 getCoroutineCount(void);
 	Coroutine* getCoroutine(void);
 	Coroutine* getCoroutine(int16);

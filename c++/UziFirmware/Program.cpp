@@ -184,3 +184,17 @@ uint8 Program::getGlobalCount(void)
 {
 	return globalCount;
 }
+
+Script* Program::getScriptForPC(int16 pc)
+{
+	Script* current = script;
+	for (int i = 0; i < scriptCount; i++)
+	{
+		if (pc >= current->getInstructionStart()
+			&& pc <= current->getInstructionStop())
+		{
+			return current;
+		}
+		current = current->getNext();
+	}
+}
