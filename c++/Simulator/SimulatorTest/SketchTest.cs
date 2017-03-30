@@ -216,7 +216,7 @@ namespace SimulatorTest
 		                label: #end]].
                 UziProtocol new run: program.
                 */
-                0, 1, 0, 128, 0, 0, 0, 5, 109, 241, 2, 45, 255, 1, 13
+                0, 1, 0, 128, 0, 0, 0, 5, 109, 241, 2, 45, 240, 1, 13
             });
             sketch.SetPinValue(13, 0);
             sketch.Loop();
