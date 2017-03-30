@@ -159,10 +159,11 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// Dup
+		// JMP
 		case 0xF0:
 		{
-			// TODO(Richo): This instruction should read a value from the stack and copy it on top
+			pc += argument;
+			if (argument < 0) { yieldTime(0, yieldFlag); }
 		} 
 		break;
 
@@ -253,11 +254,10 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JMP
+		// Dup
 		case 0xFF:
 		{
-			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			// TODO(Richo): This instruction should read a value from the stack and copy it on top
 		} 
 		break;
 	}
