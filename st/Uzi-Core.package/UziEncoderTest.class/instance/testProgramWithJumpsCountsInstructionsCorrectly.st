@@ -20,7 +20,7 @@ testProgramWithJumpsCountsInstructionsCorrectly
 		109 "read: 13"
 		242 2 "jnz: 2"
 		13 "turnOn: 13"
-		255 1 "jmp: 1"
+		240 1 "jmp: 1"
 		45 "turnOff: 13"
 	].
 	self assert: expected equals: encoded
