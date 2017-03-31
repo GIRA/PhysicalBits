@@ -520,5 +520,58 @@ namespace SimulatorTest
             Assert.AreEqual(1023, sketch.GetPinValue(11));
             Assert.AreEqual(0, sketch.GetPinValue(13));
         }
+
+        [TestMethod]
+        public void TestScriptCallWithoutParametersOrReturnValue()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #toggle
+	                ticking: false
+	                delay: 0
+	                instructions: [:s | s
+		                push: 10;
+		                prim: #toggle;
+		                prim: #ret;
+		                turnOn: 13];
+	                script: #loop
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                call: #toggle;
+		                push: 11;
+		                prim: #toggle]].
+                UziProtocol new run: program.
+                */
+                0, 2, 2, 8, 10, 11, 0, 0, 0, 0, 4, 128, 162, 185, 13,
+                128, 0, 3, 232, 3, 192, 129, 162
+            });
+
+            /*
+             * 500: D13 off, D11 on, D10 on
+             * 750: D13 off, D11 on, D10 on
+             * 1500: D13 off, D11 off, D10 off
+             */
+
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(10));
+
+            sketch.SetMillis(750);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(11));
+            Assert.AreEqual(1023, sketch.GetPinValue(10));
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+            Assert.AreEqual(0, sketch.GetPinValue(10));
+        }
     }
 }
