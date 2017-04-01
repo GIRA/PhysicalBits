@@ -1,4 +1,3 @@
-#include <EEPROM.h>
 #include "VM.h"
 #include "SerialReader.h"
 #include "EEPROMWearLevelingWriter.h"
@@ -166,7 +165,7 @@ void sendVMState(void)
 			Serial.write(val2);
 			uint16 stackSize = coroutine->getStackSize();
 			Serial.write(stackSize);
-			for (int j = 0; j < stackSize; j++)
+			for (uint16 j = 0; j < stackSize; j++)
 			{
 				uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
 				Serial.write((value >> 24) & 0xFF);

@@ -47,7 +47,7 @@ void Coroutine::saveStack(StackArray* stack)
 	delete stackElements;
 	stackSize = stack->getPointer();
 	stackElements = new float[stackSize];
-	for (int i = 0; i < stackSize; i++)
+	for (uint16 i = 0; i < stackSize; i++)
 	{
 		stackElements[i] = stack->getElementAt(i);
 	}
@@ -56,7 +56,7 @@ void Coroutine::saveStack(StackArray* stack)
 void Coroutine::restoreStack(StackArray* stack)
 {
 	stack->reset();
-	for (int i = 0; i < stackSize; i++)
+	for (uint16 i = 0; i < stackSize; i++)
 	{
 		stack->push(stackElements[i]);
 	}
