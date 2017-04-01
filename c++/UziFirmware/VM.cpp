@@ -132,7 +132,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0xFC:
 		case 0x0C:
 		{
-			stack->push(pc);
+			uint16 framePointer = stack->getPointer();
+			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
 			currentScript = currentProgram->getScript(argument);
 			pc = currentScript->getInstructionStart();
 		} 
@@ -485,7 +486,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		// ret
 		case 0x19:
 		{
-			pc = stack->pop();
+			uint32 value = float_to_uint32(stack->pop());
+			pc = value & 0xFFFF;
 			currentScript = currentProgram->getScriptForPC(pc);
 		}
 	}

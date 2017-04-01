@@ -168,16 +168,11 @@ void sendVMState(void)
 			Serial.write(stackSize);
 			for (int j = 0; j < stackSize; j++)
 			{
-				union
-				{
-					float f;
-					uint32 ul;
-				} u;
-				u.f = coroutine->getStackElementAt(j);
-				Serial.write((u.ul >> 24) & 0xFF);
-				Serial.write((u.ul >> 16) & 0xFF);
-				Serial.write((u.ul >> 8) & 0xFF);
-				Serial.write(u.ul & 0xFF);
+				uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
+				Serial.write((value >> 24) & 0xFF);
+				Serial.write((value >> 16) & 0xFF);
+				Serial.write((value >> 8) & 0xFF);
+				Serial.write(value & 0xFF);
 			}
 		}
 		coroutine = coroutine->getNext();
@@ -250,16 +245,11 @@ void sendGlobalValues(void)
 		if (program->getReport(i))
 		{
 			Serial.write(i);
-			union
-			{
-				float f;
-				uint32 ul;
-			} u;
-			u.f = program->getGlobal(i);
-			Serial.write((u.ul >> 24) & 0xFF);
-			Serial.write((u.ul >> 16) & 0xFF);
-			Serial.write((u.ul >> 8) & 0xFF);
-			Serial.write(u.ul & 0xFF);
+			uint32 value = float_to_uint32(program->getGlobal(i));
+			Serial.write((value >> 24) & 0xFF);
+			Serial.write((value >> 16) & 0xFF);
+			Serial.write((value >> 8) & 0xFF);
+			Serial.write(value & 0xFF);
 		}
 	}
 }

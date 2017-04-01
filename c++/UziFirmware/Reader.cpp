@@ -17,11 +17,6 @@ http://www.microchip.com/forums/m590535.aspx#590570
 */
 float Reader::nextFloat(bool& timeout)
 {
-	union
-	{
-		float f;
-		uint32 ul;
-	} u;
 	uint32 a = next(timeout);
 	if (timeout) return 0;
 	uint32 b = next(timeout);
@@ -31,8 +26,8 @@ float Reader::nextFloat(bool& timeout)
 	uint32 d = next(timeout);
 	if (timeout) return 0;
 
-	u.ul = (a << 24) | (b << 16) | (c << 8) | d;
-	return u.f;
+	uint32 value = (a << 24) | (b << 16) | (c << 8) | d;
+	return uint32_to_float(value);
 }
 
 uint8 * Reader::next(int16 size, bool& timeout)
