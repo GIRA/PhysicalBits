@@ -48,45 +48,39 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 			}
 		}
 
+		// Now we assign the actual opcode and argument
 		switch (opcode)
 		{
-			case 0x00:
-			{
-				instructions[i].opcode = TURN_ON;
-			}
-			break;
+			case 0x00: instructions[i].opcode = TURN_ON; break;
+			case 0x01: instructions[i].opcode = TURN_OFF; break;
+			case 0x02: instructions[i].opcode = WRITE_PIN; break;
+			case 0x03: instructions[i].opcode = READ_PIN; break;
 
-			case 0x01:
+			case 0xF0: instructions[i].opcode = JMP; break;
+			case 0xF1: instructions[i].opcode = JZ; break;
+			case 0xF2: instructions[i].opcode = JNZ; break;
+			case 0xF3: instructions[i].opcode = JNE; break;
+			case 0xF4: instructions[i].opcode = JLT; break;
+			case 0xF5: instructions[i].opcode = JLTE; break;
+			case 0xF6: instructions[i].opcode = JGT; break;
+			case 0xF7: instructions[i].opcode = JGTE; break;
+				
+			case 0xFF:
 			{
-				instructions[i].opcode = TURN_OFF;
-			}
-			break;
-
-			case 0x02:
-			{
-				instructions[i].opcode = WRITE_PIN;
-			}
-			break;
-
-			case 0x03:
-			{
-				instructions[i].opcode = READ_PIN;
+				instructions[i].opcode = argument >> 7 ? WRITE_LOCAL : READ_LOCAL;
+				argument = argument & 0x7F;
 			}
 			break;
 
 			case 0xF8:
 			case 0x08:
-			{
 				instructions[i].opcode = READ_GLOBAL;
-			}
-			break;
+				break;
 
 			case 0xF9:
 			case 0x09:
-			{
 				instructions[i].opcode = WRITE_GLOBAL;
-			}
-			break;
+				break;
 
 			case 0xFB: argument += 256; // 288 -> 543
 			case 0xFA: argument += 16;  // 32 -> 287
@@ -99,79 +93,19 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 
 			case 0xFC:
 			case 0x0C:
-			{
 				instructions[i].opcode = SCRIPT_CALL;
-			}
-			break;
+				break;
 
 			case 0xFD:
 			case 0x0D:
-			{
 				instructions[i].opcode = SCRIPT_START;
-			}
-			break;
+				break;
 
 			case 0xFE:
 			case 0x0E:
-			{
 				instructions[i].opcode = SCRIPT_STOP;
-			}
-			break;
+				break;
 
-			case 0xF0:
-			{
-				instructions[i].opcode = JMP;
-			}
-			break;
-
-			case 0xF1:
-			{
-				instructions[i].opcode = JZ;
-			}
-			break;
-
-			case 0xF2:
-			{
-				instructions[i].opcode = JNZ;
-			}
-			break;
-
-			case 0xF3:
-			{
-				instructions[i].opcode = JNE;
-			}
-			break;
-
-			case 0xF4:
-			{
-				instructions[i].opcode = JLT;
-			}
-			break;
-
-			case 0xF5:
-			{
-				instructions[i].opcode = JLTE;
-			}
-			break;
-
-			case 0xF6:
-			{
-				instructions[i].opcode = JGT;
-			}
-			break;
-
-			case 0xF7:
-			{
-				instructions[i].opcode = JGTE;
-			}
-			break;
-
-			case 0xFF:
-			{
-				instructions[i].opcode = argument >> 7 ? WRITE_LOCAL : READ_LOCAL;
-				argument = argument & 0x7F;
-			}
-			break;
 		}
 		instructions[i].argument = argument;
 	}
