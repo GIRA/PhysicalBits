@@ -9,7 +9,7 @@ class EEPROMReader : public Reader
 public:
 	EEPROMReader(void);
 	EEPROMReader(int16);
-	~EEPROMReader(void) {}
+	virtual ~EEPROMReader(void) {}
 
 	uint8 next(bool&);
 

@@ -494,7 +494,8 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		// pop
 		case 0x1A:
 		{
-			float value = stack->pop();
+			// Throw value away
+			stack->pop();
 		}
 		break;
 

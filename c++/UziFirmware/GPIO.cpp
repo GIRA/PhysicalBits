@@ -5,7 +5,7 @@ Servo servos[TOTAL_PINS];
 uint8 GPIO::getMode(uint8 pin)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return INPUT;
 	}
@@ -18,7 +18,7 @@ uint8 GPIO::getMode(uint8 pin)
 void GPIO::setMode(uint8 pin, uint8 mode)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return;
 	}
@@ -34,7 +34,7 @@ void GPIO::setMode(uint8 pin, uint8 mode)
 float GPIO::getValue(uint8 pin)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return 0;
 	}
@@ -60,7 +60,7 @@ float GPIO::getValue(uint8 pin)
 void GPIO::setValue(uint8 pin, float value)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return;
 	}
@@ -108,7 +108,7 @@ void GPIO::setValue(uint8 pin, float value)
 void GPIO::servoWrite(uint8 pin, float value)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return;
 	}
@@ -140,7 +140,7 @@ void GPIO::servoWrite(uint8 pin, float value)
 void GPIO::setReport(uint8 pin, bool report)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return;
 	}
@@ -150,7 +150,7 @@ void GPIO::setReport(uint8 pin, bool report)
 bool GPIO::getReport(uint8 pin)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index < 0 || index >= TOTAL_PINS)
+	if (index >= TOTAL_PINS)
 	{
 		return false;
 	}

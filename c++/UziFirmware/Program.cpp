@@ -197,4 +197,5 @@ Script* Program::getScriptForPC(int16 pc)
 		}
 		current = current->getNext();
 	}
+	return NULL;
 }

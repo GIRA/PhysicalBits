@@ -8,7 +8,7 @@ class EEPROMWriter
 public:
 	EEPROMWriter();
 	EEPROMWriter(int16);
-	~EEPROMWriter(void) {}
+	virtual ~EEPROMWriter(void) {}
 
 	void nextPut(uint8);
 	int16 getPosition(void);
