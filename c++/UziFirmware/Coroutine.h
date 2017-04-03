@@ -14,6 +14,9 @@ public:
 	void setNext(Coroutine*);
 	Coroutine* getNext(void);
 	Script* getScript(void);
+
+	int16 getFramePointer(void);
+	void setFramePointer(int16);
 	int16 getPC(void);
 	void setPC(int16);
 	void saveStack(StackArray*);
@@ -29,6 +32,7 @@ public:
 
 private:
 
+	int16 framePointer;
 	int16 pc;
 	float* stackElements;
 	uint16 stackSize;

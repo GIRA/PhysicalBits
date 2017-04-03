@@ -23,6 +23,7 @@ public:
 
 private:
 
+	int16 framePointer;
 	int16 pc;
 	StackArray* stack;
 	Program* currentProgram;

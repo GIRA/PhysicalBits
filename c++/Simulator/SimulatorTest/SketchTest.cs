@@ -541,37 +541,30 @@ namespace SimulatorTest
 	                delay: 1000
 	                instructions: [:s | s
 		                call: #toggle;
+                        prim: #pop;
 		                push: 11;
 		                prim: #toggle]].
                 UziProtocol new run: program.
                 */
                 0, 2, 2, 8, 10, 11, 0, 0, 0, 0, 4, 128, 162, 185, 13,
-                128, 0, 3, 232, 3, 192, 129, 162
+                128, 0, 3, 232, 4, 192, 186, 129, 162
             });
 
             /*
-             * 500: D13 off, D11 on, D10 on
-             * 750: D13 off, D11 on, D10 on
-             * 1500: D13 off, D11 off, D10 off
+             * INFO(Richo): This loop allows me to detect stack overflow
              */
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 500);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), string.Format("D13 should always be off (iteration: {0})", i));
 
-            sketch.SetMillis(500);
-            sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
-            Assert.AreEqual(1023, sketch.GetPinValue(11));
-            Assert.AreEqual(1023, sketch.GetPinValue(10));
-
-            sketch.SetMillis(750);
-            sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
-            Assert.AreEqual(1023, sketch.GetPinValue(11));
-            Assert.AreEqual(1023, sketch.GetPinValue(10));
-
-            sketch.SetMillis(1500);
-            sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
-            Assert.AreEqual(0, sketch.GetPinValue(11));
-            Assert.AreEqual(0, sketch.GetPinValue(10));
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), string.Format("D11 should be {1} (iteration: {0})", i, msg));
+                Assert.AreEqual(value, sketch.GetPinValue(10), string.Format("D10 should be {1} (iteration: {0})", i, msg));
+            }
         }
     }
 }

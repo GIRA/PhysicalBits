@@ -23,23 +23,41 @@ void VM::executeProgram(Program * program, GPIO * io)
 void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 {
 	currentCoroutine = coroutine;
+	coroutine->restoreStack(stack);
 	pc = coroutine->getPC();
 	currentScript = currentProgram->getScriptForPC(pc);
-	coroutine->restoreStack(stack);
+	framePointer = coroutine->getFramePointer();
+	if (framePointer == -1)
+	{
+		// TODO(Richo): This means we need to initialize the stack frame?
+	}
 	bool yieldFlag = false;
 	while (true)
 	{
 		if (pc > currentScript->getInstructionStop())
 		{
-			coroutine->setPC(currentScript->getInstructionStart());
-			coroutine->saveStack(stack);
-			break;
+			if (currentScript == coroutine->getScript())
+			{
+				// INFO(Richo): The script was ticking and we reach the end
+				coroutine->setFramePointer(-1);
+				coroutine->setPC(currentScript->getInstructionStart());
+				coroutine->saveStack(stack);
+				break;
+			}
+			else
+			{
+				// INFO(Richo): The script was called from another thread, we must return a value
+				uint32 value = float_to_uint32(stack->pop());
+				pc = value & 0xFFFF;
+				currentScript = currentProgram->getScriptForPC(pc);
+			}
 		}
 		int8 breakCount = coroutine->getBreakCount();
 		if (breakCount >= 0)
 		{
 			if (breakCount == 0)
 			{
+				coroutine->setFramePointer(framePointer);
 				coroutine->setPC(pc);
 				coroutine->saveStack(stack);
 				coroutine->setNextRun(millis());
@@ -56,6 +74,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		if (yieldFlag)
 		{
+			coroutine->setFramePointer(framePointer);
 			coroutine->setPC(pc);
 			coroutine->saveStack(stack);
 			break;
@@ -132,7 +151,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case 0xFC:
 		case 0x0C:
 		{
-			uint16 framePointer = stack->getPointer();
+			framePointer = stack->getPointer();
+			stack->push(0); // Return value slot (default: 0)
 			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
 			currentScript = currentProgram->getScript(argument);
 			pc = currentScript->getInstructionStart();
@@ -258,7 +278,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// Dup
+		// Read/Write Local
 		case 0xFF:
 		{
 			// TODO(Richo): This instruction should read a value from the stack and copy it on top
@@ -490,6 +510,16 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 			pc = value & 0xFFFF;
 			currentScript = currentProgram->getScriptForPC(pc);
 		}
+		break;
+
+		// pop
+		case 0x1A:
+		{
+			float value = stack->pop();
+		}
+		break;
+
+		// writeLocal:
 	}
 }
 
