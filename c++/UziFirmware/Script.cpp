@@ -10,7 +10,7 @@ Script::Script(uint8 start, Reader * rs, bool& timeout)
 		stepTime = n & 0x7FFFFFFF;
 	}
 	if (!timeout) { instructionCount = rs->next(timeout); }
-	if (!timeout) { parseInstructions(rs, timeout); }
+	if (!timeout) { instructions = readInstructions(rs, instructionCount, timeout); }
 
 	nextScript = 0;
 }
@@ -73,56 +73,4 @@ void Script::setNext(Script* next)
 int32 Script::getStepTime(void)
 {
 	return stepTime;
-}
-
-void Script::parseInstructions(Reader* rs, bool& timeout)
-{
-	instructions = new Instruction[instructionCount];
-	for (int16 i = 0; i < instructionCount; i++)
-	{
-		uint8 bytecode = rs->next(timeout);
-		if (timeout) return;
-
-		uint8 opcode;
-		int16 argument;
-		if (bytecode < 0x80)
-		{
-			/*
-			If the high-order bit is zero (< 0x8) then the opcode is stored in the 3 msbits
-			and the argument is stored in the 5 lsbits.
-			*/
-			opcode = bytecode >> 5;
-			argument = bytecode & 0x1F;
-		}
-		else
-		{
-			/*
-			If the high-order bit is one (>= 0x8) then the opcode is stored in the 4 msbits
-			and the argument is stored in the 4 lsbits.
-			*/
-			opcode = bytecode >> 4;
-			argument = bytecode & 0xF;
-			if (0xF == opcode)
-			{
-				/*
-				Special case: If the 4 msbits happen to be 0xF then the argument is stored
-				on the next byte.
-				*/
-				opcode = bytecode;
-				argument = rs->next(timeout);
-				if (timeout) return;
-
-				/*
-				If the opcode is one of the "jump" instructions, the argument is encoded 
-				using two's complement.
-				*/
-				if (opcode >= 0xF0 && opcode <= 0xF7 && argument >= 128)
-				{
-					argument = (0xFF & ((argument ^ 0xFF) + 1)) * -1;
-				}
-			}
-		}
-		instructions[i].opcode = opcode;
-		instructions[i].argument = argument;
-	}
 }

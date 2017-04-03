@@ -89,67 +89,53 @@ Instruction VM::nextInstruction(void)
 
 void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 {
-	uint8 opcode = instruction.opcode;
+	Opcode opcode = instruction.opcode;
 	int16 argument = instruction.argument;
 	switch (opcode)
 	{
-		// Turn ON
-		case 0x00:
+		case TURN_ON:
 		{
 			io->setValue((uint8)argument, HIGH);
 		} 
 		break;
 
-		// Turn OFF
-		case 0x01:
+		case TURN_OFF:
 		{
 			io->setValue((uint8)argument, LOW);
 		} 
 		break;
 
-		// Write
-		case 0x02:
+		case WRITE_PIN:
 		{
 			io->setValue((uint8)argument, stack->pop());
 		} 
 		break;
 
-		// Read
-		case 0x03:
+		case READ_PIN:
 		{
 			stack->push(io->getValue((uint8)argument));
 		} 
 		break;
 
-		// Push
-		case 0xF8:
-		case 0x08:
+		case READ_GLOBAL:
 		{
 			stack->push(currentProgram->getGlobal(argument));
 		} 
 		break;
 
-		// Pop
-		case 0xF9:
-		case 0x09:
+		case WRITE_GLOBAL:
 		{
 			currentProgram->setGlobal(argument, stack->pop());
 		} 
 		break;
 
-		// Prim call
-		case 0xFB: argument += 256; // 288 -> 543
-		case 0xFA: argument += 16;  // 32 -> 287
-		case 0x0B: argument += 16;  // 16 -> 31
-		case 0x0A:					// 0 -> 15
+		case PRIM_CALL:
 		{
 			executePrimitive(argument, io, yieldFlag);
 		} 
 		break;
-
-		// Script call
-		case 0xFC:
-		case 0x0C:
+		
+		case SCRIPT_CALL:
 		{
 			framePointer = stack->getPointer();
 			stack->push(0); // Return value slot (default: 0)
@@ -159,9 +145,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// Start script
-		case 0xFD:
-		case 0x0D:
+		case SCRIPT_START:
 		{
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
@@ -171,9 +155,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// Stop script
-		case 0xFE:
-		case 0x0E:
+		case SCRIPT_STOP:
 		{
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
@@ -183,16 +165,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JMP
-		case 0xF0:
+		case JMP:
 		{
 			pc += argument;
 			if (argument < 0) { yieldTime(0, yieldFlag); }
 		} 
 		break;
 
-		// JZ
-		case 0xF1:
+		case JZ:
 		{
 			if (stack->pop() == 0) // TODO(Richo): Float comparison
 			{
@@ -202,8 +182,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JNZ
-		case 0xF2:
+		case JNZ:
 		{
 			if (stack->pop() != 0) // TODO(Richo): Float comparison
 			{
@@ -213,8 +192,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JNE
-		case 0xF3:
+		case JNE:
 		{
 			float a = stack->pop();
 			float b = stack->pop();
@@ -226,8 +204,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JLT
-		case 0xF4:
+		case JLT:
 		{
 			float b = stack->pop();
 			float a = stack->pop();
@@ -239,8 +216,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JLTE
-		case 0xF5:
+		case JLTE:
 		{
 			float b = stack->pop();
 			float a = stack->pop();
@@ -252,8 +228,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JGT
-		case 0xF6:
+		case JGT:
 		{
 			float b = stack->pop();
 			float a = stack->pop();
@@ -265,8 +240,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// JGTE
-		case 0xF7:
+		case JGTE:
 		{
 			float b = stack->pop();
 			float a = stack->pop();
@@ -278,11 +252,16 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		} 
 		break;
 
-		// Read/Write Local
-		case 0xFF:
+		case READ_LOCAL:
 		{
 			// TODO(Richo): This instruction should read a value from the stack and copy it on top
 		} 
+		break;
+
+		case WRITE_LOCAL:
+		{
+			// TODO(Richo)
+		}
 		break;
 	}
 
