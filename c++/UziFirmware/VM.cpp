@@ -52,14 +52,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			else
 			{
 				// INFO(Richo): The script was called from another thread, we must return a value
-				uint32 value = float_to_uint32(stack->pop());
-				pc = value & 0xFFFF;
-				framePointer = value >> 16;
-				currentScript = currentProgram->getScriptForPC(pc);
-
-				float returnValue = stack->pop();
-				// TODO(Richo): Pop args/locals
-				stack->push(returnValue);
+				unwindStackAndReturn();
 			}
 		}
 		int8 breakCount = coroutine->getBreakCount();
@@ -461,14 +454,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_RET:
 		{
-			uint32 value = float_to_uint32(stack->pop());
-			pc = value & 0xFFFF;
-			framePointer = value >> 16;
-			currentScript = currentProgram->getScriptForPC(pc);
-
-			float returnValue = stack->pop();
-			// TODO(Richo): Pop args/locals
-			stack->push(returnValue);
+			unwindStackAndReturn();
 		}
 		break;
 
@@ -486,4 +472,16 @@ void VM::yieldTime(int32 time, bool& yieldFlag)
 {
 	currentCoroutine->setNextRun(millis() + time);
 	yieldFlag = true;
+}
+
+void VM::unwindStackAndReturn(void)
+{
+	uint32 value = float_to_uint32(stack->pop());
+	pc = value & 0xFFFF;
+	framePointer = value >> 16;
+	currentScript = currentProgram->getScriptForPC(pc);
+
+	float returnValue = stack->pop();
+	// TODO(Richo): Pop args/locals
+	stack->push(returnValue);
 }
