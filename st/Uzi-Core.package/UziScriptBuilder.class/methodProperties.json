@@ -4,7 +4,6 @@
 	"instance" : {
 		"addInstruction:" : "Richo 12/31/2016 20:05",
 		"call:" : "Richo 3/30/2017 16:51",
-		"dup:" : "Richo 3/24/2017 11:37",
 		"initialize" : "Richo 8/22/2016 10:00",
 		"initializeWithProgram:scriptName:ticking:delay:" : "Richo 8/10/2016 18:29",
 		"jlte:" : "Richo 12/31/2016 20:05",
@@ -22,4 +21,5 @@
 		"stop:" : "Richo 12/31/2016 20:06",
 		"turnOff:" : "Richo 12/31/2016 20:06",
 		"turnOn:" : "Richo 12/31/2016 20:07",
-		"write:" : "Richo 12/31/2016 20:06" } }
+		"write:" : "Richo 12/31/2016 20:06",
+		"writeLocal:" : "Richo 4/4/2017 17:18" } }
