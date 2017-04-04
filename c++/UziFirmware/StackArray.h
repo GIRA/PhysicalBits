@@ -14,7 +14,9 @@ public:
 	void reset(void);
 	bool overflow(void);
 	uint16 getPointer(void);
+	void setPointer(uint16);
 	float getElementAt(uint16);
+	void setElementAt(uint16, float);
 
 private:
 

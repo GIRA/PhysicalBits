@@ -31,7 +31,17 @@ uint16 StackArray::getPointer(void)
 	return pointer;
 }
 
+void StackArray::setPointer(uint16 value)
+{
+	pointer = value;
+}
+
 float StackArray::getElementAt(uint16 index)
 {
 	return elements[index];
+}
+
+void StackArray::setElementAt(uint16 index, float value)
+{
+	elements[index] = value;
 }
