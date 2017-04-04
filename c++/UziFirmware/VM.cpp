@@ -39,11 +39,15 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	{
 		if (pc > currentScript->getInstructionStop())
 		{
+			unwindStackAndReturn();
 			if (currentScript == coroutine->getScript())
 			{
-				// INFO(Richo): The script was ticking and we reach the end
-				stack->pop(); // Discard frame pointer and return address
-				stack->pop(); // Discard return value
+				/*
+				INFO(Richo):
+				If we get here it means we weren't called from other script, we just reached 
+				the end of the script after a regular tick. We don't have to return any value. 
+				We simply reset the coroutine state and break out of the loop.
+				*/
 				coroutine->setFramePointer(-1);
 				coroutine->setPC(currentScript->getInstructionStart());
 				coroutine->saveStack(stack);
@@ -51,8 +55,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			}
 			else
 			{
-				// INFO(Richo): The script was called from another thread, we must return a value
-				unwindStackAndReturn();
+				currentScript = currentProgram->getScriptForPC(pc);
 			}
 		}
 		int8 breakCount = coroutine->getBreakCount();
@@ -455,6 +458,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case PRIM_RET:
 		{
 			unwindStackAndReturn();
+			currentScript = currentProgram->getScriptForPC(pc);
 		}
 		break;
 
@@ -475,13 +479,17 @@ void VM::yieldTime(int32 time, bool& yieldFlag)
 }
 
 void VM::unwindStackAndReturn(void)
-{
+{	
 	uint32 value = float_to_uint32(stack->pop());
 	pc = value & 0xFFFF;
 	framePointer = value >> 16;
-	currentScript = currentProgram->getScriptForPC(pc);
 
 	float returnValue = stack->pop();
 	// TODO(Richo): Pop args/locals
-	stack->push(returnValue);
+
+	// INFO(Richo): Only push a return value if we were called from other script
+	if (currentScript != currentCoroutine->getScript())
+	{
+		stack->push(returnValue);
+	}
 }

@@ -712,5 +712,42 @@ namespace SimulatorTest
                     pinValue);
             }
         }
+
+        [TestMethod]
+        public void TestScriptTickingWithExplicitReturn()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p	
+	                script: #incr
+	                ticking: true
+	                delay: 1
+	                instructions: [:s | s
+		                push: #counter;
+		                push: 1;
+		                prim: #add;
+		                pop: #counter;
+		                push: #counter;
+		                writeLocal: 0;
+		                prim: #ret;
+		                push: 11;
+		                prim: #toggle]].
+                UziProtocol new run: program
+                */
+                0, 1, 3, 12, 0, 1, 11, 128, 0, 0, 1, 9, 128, 129,
+                166, 144, 128, 255, 128, 185, 130, 162
+            });
+
+            /*
+             * INFO(Richo): This loop allows me to detect stack overflow
+             */
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off (iteration: {0})", i);
+            }
+        }
     }
 }
