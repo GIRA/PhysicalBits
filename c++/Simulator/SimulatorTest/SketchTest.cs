@@ -557,13 +557,159 @@ namespace SimulatorTest
             {
                 sketch.SetMillis(i * 1000 + 500);
                 sketch.Loop();
-                Assert.AreEqual(0, sketch.GetPinValue(13), string.Format("D13 should always be off (iteration: {0})", i));
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (iteration: {0})", i);
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;
                 string msg = on ? "on" : "off";
-                Assert.AreEqual(value, sketch.GetPinValue(11), string.Format("D11 should be {1} (iteration: {0})", i, msg));
-                Assert.AreEqual(value, sketch.GetPinValue(10), string.Format("D10 should be {1} (iteration: {0})", i, msg));
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
+                Assert.AreEqual(value, sketch.GetPinValue(10), "D10 should be {1} (iteration: {0})", i, msg);
+            }
+        }
+
+
+        [TestMethod]
+        public void TestScriptCallWithoutParametersWithReturnValueAndExplicitReturn()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerVariable: #counter value: 5;
+	
+	                script: #incr
+	                ticking: false
+	                delay: 0
+	                instructions: [:s | s
+		                push: #counter;
+		                push: 1;
+		                prim: #add;
+		                pop: #counter;
+		                push: #counter;
+		                writeLocal: 0;
+		                prim: #ret;
+		                push: 13;
+		                prim: #toggle];
+	
+	                script: #loop
+	                ticking: true
+	                delay: 100
+	                instructions: [:s | s
+		                call: #incr;
+		                push: 100;
+		                prim: #divide;
+		                write: 11]].
+                UziProtocol new run: program.
+                */
+                0, 2, 4, 16, 1, 5, 13, 100, 0, 0, 0, 0, 9, 129, 128, 166, 145, 129, 255,
+                128, 185, 130, 162, 128, 0, 0, 100, 4, 192, 131, 167, 75
+            });
+
+            /*
+             * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
+             */
+            int[] values = new int[] 
+            {
+                61, 72, 82, 92, 102, 113, 123, 133, 143, 153, 164, 174, 184, 194, 205, 215,
+                225, 235, 246, 256, 266, 276, 286, 297, 307, 317, 327, 338, 348, 358, 368,
+                379, 389, 399, 409, 419, 430, 440, 450, 460, 471, 481, 491, 501, 512, 522,
+                532, 542, 552, 563, 573, 583, 593, 604, 614, 624, 634, 644, 655, 665, 675,
+                685, 696, 706, 716, 726, 737, 747, 757, 767, 777, 788, 798, 808, 818, 829,
+                839, 849, 859, 870, 880, 890, 900, 910, 921, 931, 941, 951, 962, 972, 982,
+                992, 1003, 1013, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023,
+                1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023
+            };
+            for (int i = 0; i < values.Length; i++)
+            {
+                sketch.SetMillis(i * 100 + 50);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (iteration: {0})", i);
+                short pinValue = sketch.GetPinValue(11);
+                Assert.IsTrue(pinValue >= values[i] - 2, 
+                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})", 
+                    i,
+                    values[i],
+                    pinValue);
+                Assert.IsTrue(pinValue <= values[i] + 2,
+                    "D11 is larger than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+            }
+        }
+
+
+        [TestMethod]
+        public void TestScriptCallWithoutParametersWithReturnValueAndImplicitReturn()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerVariable: #counter value: 5;
+	
+	                script: #incr
+	                ticking: false
+	                delay: 0
+	                instructions: [:s | s
+		                push: #counter;
+		                push: 1;
+		                prim: #add;
+		                pop: #counter;
+		                push: #counter;
+		                writeLocal: 0;
+		                push: 13;
+		                prim: #toggle];
+	
+	                script: #loop
+	                ticking: true
+	                delay: 100
+	                instructions: [:s | s
+		                call: #incr;
+		                push: 100;
+		                prim: #divide;
+		                write: 11]].
+                UziProtocol new run: program.
+                */
+                0, 2, 4, 16, 1, 5, 13, 100, 0, 0, 0, 0, 8, 129, 128, 166, 145, 129, 255,
+                128, 130, 162, 128, 0, 0, 100, 4, 192, 131, 167, 75
+            });
+
+            /*
+             * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
+             */
+            int[] values = new int[]
+            {
+                61, 72, 82, 92, 102, 113, 123, 133, 143, 153, 164, 174, 184, 194, 205, 215,
+                225, 235, 246, 256, 266, 276, 286, 297, 307, 317, 327, 338, 348, 358, 368,
+                379, 389, 399, 409, 419, 430, 440, 450, 460, 471, 481, 491, 501, 512, 522,
+                532, 542, 552, 563, 573, 583, 593, 604, 614, 624, 634, 644, 655, 665, 675,
+                685, 696, 706, 716, 726, 737, 747, 757, 767, 777, 788, 798, 808, 818, 829,
+                839, 849, 859, 870, 880, 890, 900, 910, 921, 931, 941, 951, 962, 972, 982,
+                992, 1003, 1013, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023,
+                1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023
+            };
+            for (int i = 0; i < values.Length; i++)
+            {
+                sketch.SetMillis(i * 100 + 50);
+                sketch.Loop();
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
+
+                short pinValue = sketch.GetPinValue(11);
+                Assert.IsTrue(pinValue >= values[i] - 2,
+                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+                Assert.IsTrue(pinValue <= values[i] + 2,
+                    "D11 is larger than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
             }
         }
     }
