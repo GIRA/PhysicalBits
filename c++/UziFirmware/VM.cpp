@@ -29,7 +29,10 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	framePointer = coroutine->getFramePointer();
 	if (framePointer == -1)
 	{
-		// TODO(Richo): This means we need to initialize the stack frame?
+		// TODO(Richo): This means we need to initialize the stack frame
+		framePointer = stack->getPointer();
+		stack->push(0); // Return value slot (default: 0)
+		stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
 	}
 	bool yieldFlag = false;
 	while (true)
@@ -39,6 +42,8 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			if (currentScript == coroutine->getScript())
 			{
 				// INFO(Richo): The script was ticking and we reach the end
+				stack->pop(); // Discard frame pointer and return address
+				stack->pop(); // Discard return value
 				coroutine->setFramePointer(-1);
 				coroutine->setPC(currentScript->getInstructionStart());
 				coroutine->saveStack(stack);
@@ -49,7 +54,12 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 				// INFO(Richo): The script was called from another thread, we must return a value
 				uint32 value = float_to_uint32(stack->pop());
 				pc = value & 0xFFFF;
+				framePointer = value >> 16;
 				currentScript = currentProgram->getScriptForPC(pc);
+
+				float returnValue = stack->pop();
+				// TODO(Richo): Pop args/locals
+				stack->push(returnValue);
 			}
 		}
 		int8 breakCount = coroutine->getBreakCount();
@@ -248,13 +258,17 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case READ_LOCAL:
 		{
-			// TODO(Richo): This instruction should read a value from the stack and copy it on top
+			uint16 index = framePointer + argument;
+			float value = stack->getElementAt(index);
+			stack->push(value);
 		} 
 		break;
 
 		case WRITE_LOCAL:
 		{
-			// TODO(Richo)
+			uint16 index = framePointer + argument;
+			float value = stack->pop();
+			stack->setElementAt(index, value);
 		}
 		break;
 
@@ -449,7 +463,12 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		{
 			uint32 value = float_to_uint32(stack->pop());
 			pc = value & 0xFFFF;
+			framePointer = value >> 16;
 			currentScript = currentProgram->getScriptForPC(pc);
+
+			float returnValue = stack->pop();
+			// TODO(Richo): Pop args/locals
+			stack->push(returnValue);
 		}
 		break;
 
