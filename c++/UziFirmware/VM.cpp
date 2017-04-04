@@ -128,12 +128,6 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			currentProgram->setGlobal(argument, stack->pop());
 		} 
 		break;
-
-		case PRIM_CALL:
-		{
-			executePrimitive(argument, io, yieldFlag);
-		} 
-		break;
 		
 		case SCRIPT_CALL:
 		{
@@ -263,41 +257,30 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			// TODO(Richo)
 		}
 		break;
-	}
 
-}
-
-void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
-{
-	switch (primitiveIndex)
-	{
-		// read
-		case 0x00:
+		case PRIM_READ_PIN:
 		{
 			uint8 pin = (uint8)stack->pop();
 			stack->push(io->getValue(pin));
-		} 
+		}
 		break;
 
-		// write
-		case 0x01:
+		case PRIM_WRITE_PIN:
 		{
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, value);
-		} 
+		}
 		break;
 
-		// toggle
-		case 0x02:
+		case PRIM_TOGGLE_PIN:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1 - io->getValue(pin));
 		}
 		break;
 
-		// servoDegrees
-		case 0x03:
+		case PRIM_SERVO_DEGREES:
 		{
 			float value = stack->pop() / 180.0f;
 			uint8 pin = (uint8)stack->pop();
@@ -305,185 +288,164 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		}
 		break;
 
-		// servoWrite
-		case 0x04:
+		case PRIM_SERVO_WRITE:
 		{
 			float value = stack->pop();
 			uint8 pin = (uint8)stack->pop();
 			io->servoWrite(pin, value);
-		} 
+		}
 		break;
 
-		// multiply
-		case 0x05:
+		case PRIM_MULTIPLY:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 * val2);
-		} 
+		}
 		break;
 
-		// add
-		case 0x06:
+		case PRIM_ADD:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 + val2);
-		} 
+		}
 		break;
 
-		// divide
-		case 0x07:
+		case PRIM_DIVIDE:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 / val2);
-		} 
+		}
 		break;
 
-		// subtract
-		case 0x08:
+		case PRIM_SUBTRACT:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 - val2);
-		} 
+		}
 		break;
 
-		// seconds
-		case 0x09:
+		case PRIM_SECONDS:
 		{
 			float time = (float)millis() / 1000.0;
 			stack->push(time);
 		}
 		break;
-		
-		// equals
-		case 0x0A:
+
+		case PRIM_EQ:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 == val2); // TODO(Richo)
-		} 
+		}
 		break;
 
-		// notEquals
-		case 0x0B:
+		case PRIM_NEQ:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 != val2); // TODO(Richo)
-		} 
+		}
 		break;
 
-		// greaterThan
-		case 0x0C:
+		case PRIM_GT:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 > val2);
-		} 
+		}
 		break;
 
-		// greaterThanOrEquals
-		case 0x0D:
+		case PRIM_GTEQ:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 >= val2);
-		} 
+		}
 		break;
 
-		// lessThan
-		case 0x0E:
+		case PRIM_LT:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 < val2);
-		} 
+		}
 		break;
 
-		// lessThanOrEquals
-		case 0x0F:
+		case PRIM_LTEQ:
 		{
 			float val2 = stack->pop();
 			float val1 = stack->pop();
 			stack->push(val1 <= val2);
-		} 
+		}
 		break;
 
-		// negate
-		case 0x10:
+		case PRIM_NEGATE:
 		{
 			float val = stack->pop();
 			stack->push(-1 * val);
-		} 
+		}
 		break;
 
-		// sin
-		case 0x11:
+		case PRIM_SIN:
 		{
 			float val = stack->pop();
 			stack->push(sinf(val));
-		} break;
+		} 
+		break;
 
-		// cos
-		case 0x12:
+		case PRIM_COS:
 		{
 			float val = stack->pop();
 			stack->push(cosf(val));
-		} 
+		}
 		break;
 
-		// tan
-		case 0x13:
+		case PRIM_TAN:
 		{
 			float val = stack->pop();
 			stack->push(tanf(val));
-		} 
+		}
 		break;
 
-		// turnOn
-		case 0x14:
+		case PRIM_TURN_ON:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 1);
-		} 
+		}
 		break;
 
-		// turnOff
-		case 0x15:
+		case PRIM_TURN_OFF:
 		{
 			uint8 pin = (uint8)stack->pop();
 			io->setValue(pin, 0);
-		} 
+		}
 		break;
 
-		// yield
-		case 0x16:
+		case PRIM_YIELD:
 		{
 			yieldTime(0, yieldFlag);
 		}
 		break;
 
-		// yieldTime
-		case 0x17:
+		case PRIM_YIELD_TIME:
 		{
 			int32 time = (int32)stack->pop();
 			yieldTime(time, yieldFlag);
 		}
 		break;
 
-		// millis
-		case 0x18:
+		case PRIM_MILLIS:
 		{
 			float time = (float)millis();
 			stack->push(time);
 		}
 		break;
 
-		// ret
-		case 0x19:
+		case PRIM_RET:
 		{
 			uint32 value = float_to_uint32(stack->pop());
 			pc = value & 0xFFFF;
@@ -491,16 +453,14 @@ void VM::executePrimitive(uint16 primitiveIndex, GPIO * io, bool& yieldFlag)
 		}
 		break;
 
-		// pop
-		case 0x1A:
+		case PRIM_POP:
 		{
 			// Throw value away
 			stack->pop();
 		}
 		break;
-
-		// writeLocal:
 	}
+
 }
 
 void VM::yieldTime(int32 time, bool& yieldFlag)

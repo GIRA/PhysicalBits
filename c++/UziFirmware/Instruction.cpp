@@ -87,7 +87,36 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 			case 0x0B: argument += 16;  // 16 -> 31
 			case 0x0A:					// 0 -> 15
 			{
-				instructions[i].opcode = PRIM_CALL;
+				switch (argument)
+				{
+					case 0x00: instructions[i].opcode = PRIM_READ_PIN; break;
+					case 0x01: instructions[i].opcode = PRIM_WRITE_PIN; break;
+					case 0x02: instructions[i].opcode = PRIM_TOGGLE_PIN; break;
+					case 0x03: instructions[i].opcode = PRIM_SERVO_DEGREES; break;
+					case 0x04: instructions[i].opcode = PRIM_SERVO_WRITE; break;
+					case 0x05: instructions[i].opcode = PRIM_MULTIPLY; break;
+					case 0x06: instructions[i].opcode = PRIM_ADD; break;
+					case 0x07: instructions[i].opcode = PRIM_DIVIDE; break;
+					case 0x08: instructions[i].opcode = PRIM_SUBTRACT; break;
+					case 0x09: instructions[i].opcode = PRIM_SECONDS; break;
+					case 0x0A: instructions[i].opcode = PRIM_EQ; break;
+					case 0x0B: instructions[i].opcode = PRIM_NEQ; break;
+					case 0x0C: instructions[i].opcode = PRIM_GT; break;
+					case 0x0D: instructions[i].opcode = PRIM_GTEQ; break;
+					case 0x0E: instructions[i].opcode = PRIM_LT; break;
+					case 0x0F: instructions[i].opcode = PRIM_LTEQ; break;
+					case 0x10: instructions[i].opcode = PRIM_NEGATE; break;
+					case 0x11: instructions[i].opcode = PRIM_SIN; break;
+					case 0x12: instructions[i].opcode = PRIM_COS; break;
+					case 0x13: instructions[i].opcode = PRIM_TAN; break;
+					case 0x14: instructions[i].opcode = PRIM_TURN_ON; break;
+					case 0x15: instructions[i].opcode = PRIM_TURN_OFF; break;
+					case 0x16: instructions[i].opcode = PRIM_YIELD; break;
+					case 0x17: instructions[i].opcode = PRIM_YIELD_TIME; break;
+					case 0x18: instructions[i].opcode = PRIM_MILLIS; break;
+					case 0x19: instructions[i].opcode = PRIM_RET; break;
+					case 0x1A: instructions[i].opcode = PRIM_POP; break;
+				}
 			}
 			break;
 
