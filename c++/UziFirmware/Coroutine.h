@@ -15,6 +15,8 @@ public:
 	Coroutine* getNext(void);
 	Script* getScript(void);
 
+	Script* getActiveScript(void);
+	void setActiveScript(Script*);
 	int16 getFramePointer(void);
 	void setFramePointer(int16);
 	int16 getPC(void);
@@ -32,6 +34,7 @@ public:
 
 private:
 
+	Script* activeScript;
 	int16 framePointer;
 	int16 pc;
 	float* stackElements;

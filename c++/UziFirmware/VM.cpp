@@ -25,7 +25,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	currentCoroutine = coroutine;
 	coroutine->restoreStack(stack);
 	pc = coroutine->getPC();
-	currentScript = currentProgram->getScriptForPC(pc);
+	currentScript = coroutine->getActiveScript();
 	framePointer = coroutine->getFramePointer();
 	if (framePointer == -1)
 	{
@@ -48,6 +48,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 				the end of the script after a regular tick. We don't have to return any value. 
 				We simply reset the coroutine state and break out of the loop.
 				*/
+				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(-1);
 				coroutine->setPC(currentScript->getInstructionStart());
 				coroutine->saveStack(stack);
@@ -63,6 +64,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		{
 			if (breakCount == 0)
 			{
+				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(framePointer);
 				coroutine->setPC(pc);
 				coroutine->saveStack(stack);
@@ -80,6 +82,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		if (yieldFlag)
 		{
+			coroutine->setActiveScript(currentScript);
 			coroutine->setFramePointer(framePointer);
 			coroutine->setPC(pc);
 			coroutine->saveStack(stack);

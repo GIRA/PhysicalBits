@@ -3,6 +3,7 @@
 Coroutine::Coroutine(Script* script)
 {
 	this->script = script;
+	activeScript = script;
 	framePointer = -1;
 	pc = script->getInstructionStart();
 	stackElements = 0;
@@ -18,7 +19,7 @@ Coroutine::Coroutine()
 	pc = 0;
 	stackElements = 0;
 	stackSize = 0;
-	script = 0;
+	script = activeScript = 0;
 	next = 0;
 	breakCount = 0;
 }
@@ -32,6 +33,17 @@ Coroutine::~Coroutine(void)
 Script* Coroutine::getScript(void)
 {
 	return script;
+}
+
+
+Script* Coroutine::getActiveScript(void)
+{
+	return activeScript;
+}
+
+void Coroutine::setActiveScript(Script* value)
+{
+	activeScript = value;
 }
 
 int16 Coroutine::getFramePointer(void)
