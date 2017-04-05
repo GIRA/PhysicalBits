@@ -1,3 +1,3 @@
 visiting
 visitScriptStartNode: node
-	script start: node scriptName
+	(script start: node scriptName) node: node

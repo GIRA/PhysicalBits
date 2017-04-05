@@ -45,5 +45,9 @@ specialMessageSend: rcvr selector: selector arguments: args
 		[#start] 
 		-> [UziScriptStartNode script: rcvr].
 		[#stop] 
-		-> [UziScriptStopNode script: rcvr]
+		-> [UziScriptStopNode script: rcvr].
+		[#value]
+		-> [UziScriptCallNode script: rcvr withReturnValue: true].
+		[#run]
+		-> [UziScriptCallNode script: rcvr withReturnValue: false]
 	} otherwise: [nil].

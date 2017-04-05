@@ -1,0 +1,3 @@
+testing
+isStatement 
+	^ acceptReturnValue not

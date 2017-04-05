@@ -1,0 +1,11 @@
+{
+	"class" : {
+		"script:withReturnValue:" : "Richo 4/5/2017 08:33" },
+	"instance" : {
+		"accept:" : "Richo 4/5/2017 08:34",
+		"acceptReturnValue" : "Richo 4/5/2017 08:38",
+		"initializeWithScript:acceptReturnValue:" : "Richo 4/5/2017 08:33",
+		"isExpression" : "Richo 4/5/2017 08:36",
+		"isStatement" : "Richo 4/5/2017 08:36",
+		"script" : "Richo 4/5/2017 08:35",
+		"scriptName" : "Richo 4/5/2017 08:38" } }

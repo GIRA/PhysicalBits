@@ -1,0 +1,3 @@
+accessing
+scriptName
+	^ script name

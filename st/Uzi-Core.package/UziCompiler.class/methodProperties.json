@@ -22,10 +22,11 @@
 		"visitMessageSend:" : "Richo 12/31/2016 20:19",
 		"visitNumberNode:" : "Richo 12/31/2016 20:19",
 		"visitProgramNode:" : "Richo 12/31/2016 20:01",
+		"visitScriptCallNode:" : "Richo 4/5/2017 08:37",
 		"visitScriptNode:" : "Richo 12/31/2016 20:01",
 		"visitScriptRefNode:" : "Richo 9/7/2016 17:49",
-		"visitScriptStartNode:" : "Richo 3/26/2017 21:16",
-		"visitScriptStopNode:" : "Richo 3/26/2017 21:17",
+		"visitScriptStartNode:" : "Richo 4/5/2017 08:37",
+		"visitScriptStopNode:" : "Richo 4/5/2017 08:38",
 		"visitSpecialVariableNode:" : "Richo 3/24/2017 17:35",
 		"visitVariableDefinitionNode:" : "Richo 10/10/2016 16:23",
 		"visitVariableNode:" : "Richo 12/31/2016 20:20" } }
