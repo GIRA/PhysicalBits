@@ -29,4 +29,5 @@ primSpec
 		(millis 16r18 true)
 		(ret 16r19 false)
 		(pop 16r1A false)
+		(retv 16r1B false)
 	)

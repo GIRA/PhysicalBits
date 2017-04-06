@@ -1,8 +1,8 @@
 grammar-variables
 specialVariable
-	^ '#' asParser, identifier token 
-		map: [:ign :token || varName primitive |
-			varName := token parsedValue. 
+	^ ('#' asParser, identifier) token 
+		map: [:token || varName primitive |
+			varName := token parsedValue last. 
 			primitive := self primitiveForSpecialVariable: varName.
 			(UziSpecialVariableNode 
 				name: varName asSymbol

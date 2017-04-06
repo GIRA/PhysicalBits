@@ -1,3 +1,3 @@
 grammar-expressions
 expression
-	^ assignment / keywordSend / binarySend
+	^ return / assignment / keywordSend / binarySend

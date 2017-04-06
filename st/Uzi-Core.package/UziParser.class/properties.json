@@ -42,7 +42,8 @@
 		"variableDefinition",
 		"script",
 		"specialVariable",
-		"scriptReference" ],
+		"scriptReference",
+		"return" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
