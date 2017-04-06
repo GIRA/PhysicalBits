@@ -724,6 +724,8 @@ namespace SimulatorTest
 	                ticking: true
 	                delay: 1
 	                instructions: [:s | s
+					    push: 13;
+					    prim: #toggle;
 		                push: #counter;
 		                push: 1;
 		                prim: #add;
@@ -735,8 +737,8 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
-                0, 1, 3, 12, 0, 1, 11, 128, 0, 0, 1, 9, 128, 129,
-                166, 144, 128, 255, 128, 185, 130, 162
+                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 0, 1, 11, 131, 162, 128,
+                129, 166, 144, 128, 255, 128, 185, 130, 162
             });
 
             /*
@@ -747,6 +749,58 @@ namespace SimulatorTest
                 sketch.SetMillis(i);
                 sketch.Loop();
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off (iteration: {0})", i);
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
+            }
+        }
+
+        [TestMethod]
+        public void TestScriptWithYieldBeforeEndOfScript()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p	
+	                script: #blink11
+	                ticking: false
+	                delay: 0
+	                instructions: [:s | s
+					    push: 11;
+					    prim: #toggle];
+				    script: #main
+				    ticking: true
+				    delay: 0
+				    instructions: [:s | s
+					    call: #blink11;
+					    prim: #pop;
+					    push: 100;
+					    prim: #yieldTime]].
+                UziProtocol new run: program
+                */
+                0, 2, 2, 8, 11, 100, 0, 0, 0, 0, 2, 128, 162, 128,
+                0, 0, 0, 4, 192, 186, 129, 183
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 100 + 50);
+                sketch.Loop();
+                sketch.SetMillis(i * 100 + 51);
+                sketch.Loop();
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
+
+                sketch.SetMillis(i * 100 + 75);
+                sketch.Loop();
+                sketch.SetMillis(i * 100 + 76);
+                sketch.Loop();
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
             }
         }
     }
