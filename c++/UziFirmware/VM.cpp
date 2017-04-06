@@ -75,9 +75,9 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		Instruction next = nextInstruction();
 		executeInstruction(next, io, yieldFlag);
-		if (stack->overflow())
+		if (stack->hasError())
 		{
-			// TODO(Richo): Notify client of stack overflow
+			// TODO(Richo): Notify client of stack error
 			break;
 		}
 		if (yieldFlag)
