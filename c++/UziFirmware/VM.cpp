@@ -460,8 +460,19 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_RET:
 		{
-			unwindStackAndReturn();
-			currentScript = currentProgram->getScriptForPC(pc);
+			if (currentScript != currentCoroutine->getScript())
+			{
+				unwindStackAndReturn();
+				currentScript = currentProgram->getScriptForPC(pc);
+			}
+			else
+			{
+				/* 
+				INFO(Richo): Jump pass the end of the script so that in the next iteration 
+				the execution stops.
+				*/
+				pc = currentScript->getInstructionStop() + 1;
+			}
 		}
 		break;
 
