@@ -482,6 +482,30 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			stack->pop();
 		}
 		break;
+
+		case PRIM_RETV:
+		{
+			// TODO(Richo): Duplicated code from WRITE_LOCAL 
+			uint16 index = framePointer + 0; // TODO(Richo): Calculate return value index
+			float value = stack->pop();
+			stack->setElementAt(index, value);
+
+			// TODO(Richo): Duplicated code from PRIM_RET
+			if (currentScript != currentCoroutine->getScript())
+			{
+				unwindStackAndReturn();
+				currentScript = currentProgram->getScriptForPC(pc);
+			}
+			else
+			{
+				/*
+				INFO(Richo): Jump pass the end of the script so that in the next iteration
+				the execution stops.
+				*/
+				pc = currentScript->getInstructionStop() + 1;
+			}
+		}
+		break;
 	}
 
 }
