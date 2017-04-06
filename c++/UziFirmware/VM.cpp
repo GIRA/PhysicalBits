@@ -37,28 +37,6 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	bool yieldFlag = false;
 	while (true)
 	{
-		if (pc > currentScript->getInstructionStop())
-		{
-			unwindStackAndReturn();
-			if (currentScript == coroutine->getScript())
-			{
-				/*
-				INFO(Richo):
-				If we get here it means we weren't called from other script, we just reached 
-				the end of the script after a regular tick. We don't have to return any value. 
-				We simply reset the coroutine state and break out of the loop.
-				*/
-				coroutine->setActiveScript(currentScript);
-				coroutine->setFramePointer(-1);
-				coroutine->setPC(currentScript->getInstructionStart());
-				coroutine->saveStack(stack);
-				break;
-			}
-			else
-			{
-				currentScript = currentProgram->getScriptForPC(pc);
-			}
-		}
 		int8 breakCount = coroutine->getBreakCount();
 		if (breakCount >= 0)
 		{
@@ -79,6 +57,28 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		{
 			// TODO(Richo): Notify client of stack error
 			break;
+		}
+		if (pc > currentScript->getInstructionStop())
+		{
+			unwindStackAndReturn();
+			if (currentScript == coroutine->getScript())
+			{
+				/*
+				INFO(Richo):
+				If we get here it means we weren't called from other script, we just reached
+				the end of the script after a regular tick. We don't have to return any value.
+				We simply reset the coroutine state and break out of the loop.
+				*/
+				coroutine->setActiveScript(currentScript);
+				coroutine->setFramePointer(-1);
+				coroutine->setPC(currentScript->getInstructionStart());
+				coroutine->saveStack(stack);
+				break;
+			}
+			else
+			{
+				currentScript = currentProgram->getScriptForPC(pc);
+			}
 		}
 		if (yieldFlag)
 		{
