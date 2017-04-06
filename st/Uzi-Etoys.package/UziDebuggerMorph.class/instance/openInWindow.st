@@ -10,8 +10,12 @@ openInWindow
 		addMorph: (AlignmentMorph newRow
 			cellPositioning: #topCenter;
 			cellInset: 5;
-			addMorphBack: 'Stack:' asMorph;
-			addMorphBack: ((UpdatingStringMorph on: self selector: #stack)
+			addMorphBack: (Text string: 'Stack:' attributes: { TextEmphasis normal }) asMorph;
+			addMorphBack: ((PluggableTextMorph 
+					on: self
+					text: #stackString  
+					accept: nil)
+				borderWidth: 0;
 				hResizing: #spaceFill;
 				vResizing: #spaceFill;
 				yourself);
