@@ -1,6 +1,7 @@
-grammar-literals
+grammar-blocks
 block
-	^ ($[ asParser , ws , statements , ws , $] asParser) token
-		map: [:token || stmts |
-			stmts := token parsedValue at: 3.
-			(UziBlockNode statements: stmts) token: token]
+	^ ($[ asParser , ws , argumentList optional, ws, statements , ws , $] asParser) token
+		map: [:token || args stmts |
+			args := (token parsedValue at: 3) ifNil: [#()].
+			stmts := token parsedValue at: 5.
+			(UziBlockNode arguments: args statements: stmts) token: token]

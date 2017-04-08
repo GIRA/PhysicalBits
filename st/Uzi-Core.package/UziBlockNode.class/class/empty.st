@@ -1,3 +1,3 @@
 instance creation
 empty
-	^ self statements: #()
+	^ self arguments: #() statements: #()

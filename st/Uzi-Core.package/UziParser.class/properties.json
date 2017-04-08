@@ -43,7 +43,8 @@
 		"script",
 		"specialVariable",
 		"scriptReference",
-		"return" ],
+		"return",
+		"argumentList" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

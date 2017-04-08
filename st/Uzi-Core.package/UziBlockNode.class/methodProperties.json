@@ -1,10 +1,10 @@
 {
 	"class" : {
-		"empty" : "Richo 12/31/2016 13:24",
-		"statements:" : "Richo 10/28/2014 18:18" },
+		"arguments:statements:" : "Richo 4/8/2017 12:07",
+		"empty" : "Richo 4/8/2017 12:08" },
 	"instance" : {
 		"accept:" : "Richo 9/7/2016 15:49",
-		"initializeWith:" : "Richo 10/28/2014 18:19",
+		"initializeWithArguments:statements:" : "Richo 4/8/2017 12:07",
 		"isBlock" : "Richo 12/30/2016 15:03",
 		"isEmpty" : "Richo 12/31/2016 13:33",
 		"statements" : "Richo 10/28/2014 18:19" } }
