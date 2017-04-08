@@ -1,0 +1,3 @@
+testing
+hasLocals
+	^ locals notEmpty 

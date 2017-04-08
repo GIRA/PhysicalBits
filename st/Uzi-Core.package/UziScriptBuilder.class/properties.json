@@ -11,7 +11,8 @@
 		"ticking",
 		"delay",
 		"labels",
-		"instructions" ],
+		"instructions",
+		"args" ],
 	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],

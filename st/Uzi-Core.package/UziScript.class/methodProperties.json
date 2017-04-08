@@ -1,13 +1,16 @@
 {
 	"class" : {
-		"name:ticking:delay:instructions:" : "Richo 8/22/2016 09:53" },
+		"name:ticking:delay:locals:instructions:" : "Richo 4/7/2017 20:53" },
 	"instance" : {
 		"accept:" : "Richo 10/8/2014 18:03",
 		"delay" : "Richo 9/25/2014 10:07",
-		"initializeWithName:ticking:delay:instructions:" : "Richo 8/22/2016 10:01",
+		"hasLocals" : "Richo 4/7/2017 21:09",
+		"indexOfLocal:" : "Richo 4/7/2017 20:52",
+		"initializeWithName:ticking:delay:locals:instructions:" : "Richo 4/7/2017 20:53",
 		"instructionAt:" : "Richo 8/22/2016 09:49",
 		"instructions" : "Richo 8/22/2016 09:50",
 		"isTicking" : "Richo 10/8/2014 17:33",
+		"locals" : "Richo 4/7/2017 20:58",
 		"name" : "Richo 9/25/2014 10:06",
 		"node" : "Richo 12/31/2016 19:57",
 		"node:" : "Richo 12/31/2016 19:57",

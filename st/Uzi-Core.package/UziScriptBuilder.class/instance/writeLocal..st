@@ -1,3 +1,5 @@
 instruction creation
 writeLocal: arg
-	^ self addInstruction: (UziWriteLocalInstruction arg: arg)
+	| var |
+	var := self argumentNamed: arg.
+	^ self addInstruction: (UziWriteLocalInstruction arg: var)

@@ -1,17 +1,14 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Core-Program-Instructions",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"stream",
-		"program",
-		"variables",
-		"script" ],
-	"name" : "UziEncoder",
+		 ],
+	"name" : "UziReadLocalInstruction",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziInstruction",
 	"type" : "normal" }
