@@ -6,8 +6,12 @@ Script::Script(uint8 start, Reader * rs, bool& timeout)
 	int32 n = rs->nextLong(4, timeout);
 	if (!timeout)
 	{
+		stepTime = n & 0x3FFFFFFF;
 		stepping = (n >> 31) & 1;
-		stepTime = n & 0x7FFFFFFF;
+		if ((n >> 30) & 1)
+		{
+			localCount = rs->next(timeout);
+		}
 	}
 	if (!timeout) { instructionCount = rs->next(timeout); }
 	if (!timeout) { instructions = readInstructions(rs, instructionCount, timeout); }
@@ -19,7 +23,7 @@ Script::Script()
 {
 	// Initializes current script as NOP
 	stepping = false;
-	stepTime = instructionCount = 0;
+	stepTime = instructionCount = localCount = 0;
 	instructions = 0;
 	nextScript = 0;
 }
@@ -73,4 +77,9 @@ void Script::setNext(Script* next)
 int32 Script::getStepTime(void)
 {
 	return stepTime;
+}
+
+uint8 Script::getLocalCount(void)
+{
+	return localCount;
 }

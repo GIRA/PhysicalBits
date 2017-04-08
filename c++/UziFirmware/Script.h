@@ -18,6 +18,8 @@ public:
 	bool isStepping(void);
 	void setStepping(bool);
 	int32 getStepTime(void);
+	uint8 getLocalCount(void);
+
 	void setNext(Script*);
 	Script* getNext(void);
 
@@ -25,6 +27,7 @@ private:
 
 	bool stepping;
 	int32 stepTime;
+	uint8 localCount;
 
 	uint8 instructionStart;
 	uint8 instructionCount;
