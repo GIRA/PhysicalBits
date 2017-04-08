@@ -1010,5 +1010,60 @@ namespace SimulatorTest
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
             }
         }
+
+        [TestMethod]
+        public void TestScriptCallWithTwoParametersWithReturnValue()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                call: #main;
+		                prim: #pop];
+	
+	                script: #toggle
+	                ticking: false
+	                delay: 0
+	                args: #(a b)
+	                instructions: [:s | s
+		                readLocal: #a;
+		                readLocal: #a;
+		                readLocal: #b;
+		                prim: #subtract;
+		                prim: #multiply;
+		                prim: #retv;
+		                push: 11;
+		                prim: #toggle];
+	
+	                script: #main 
+	                ticking: false 
+	                delay: 10000000
+	                instructions: [:s | s
+		                push: 1;
+		                read: 13;
+		                call: #toggle;
+		                write: 13]].
+                UziProtocol new run: program.
+                */
+                0, 3, 2, 8, 1, 11, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 2, 8, 255, 0, 255,
+                0, 255, 1, 168, 165, 187, 129, 162, 0, 152, 150, 128, 4, 128, 109, 193, 77
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off (iteration: {0})", i);
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
+            }
+        }
     }
 }
