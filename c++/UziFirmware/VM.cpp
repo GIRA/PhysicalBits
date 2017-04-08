@@ -29,8 +29,11 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	framePointer = coroutine->getFramePointer();
 	if (framePointer == -1)
 	{
-		// TODO(Richo): This means we need to initialize the stack frame
 		framePointer = stack->getPointer();
+		for (int i = 0; i < currentScript->getLocalCount(); i++)
+		{
+			stack->push(0);
+		}
 		stack->push(0); // Return value slot (default: 0)
 		stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
 	}
@@ -140,10 +143,10 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		
 		case SCRIPT_CALL:
 		{
-			framePointer = stack->getPointer();
+			currentScript = currentProgram->getScript(argument);
+			framePointer = stack->getPointer() - currentScript->getLocalCount();
 			stack->push(0); // Return value slot (default: 0)
 			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
-			currentScript = currentProgram->getScript(argument);
 			pc = currentScript->getInstructionStart();
 		} 
 		break;
@@ -486,7 +489,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case PRIM_RETV:
 		{
 			// TODO(Richo): Duplicated code from WRITE_LOCAL 
-			uint16 index = framePointer + 0; // TODO(Richo): Calculate return value index
+			uint16 index = framePointer + currentScript->getLocalCount();
 			float value = stack->pop();
 			stack->setElementAt(index, value);
 
@@ -523,7 +526,12 @@ void VM::unwindStackAndReturn(void)
 	framePointer = value >> 16;
 
 	float returnValue = stack->pop();
-	// TODO(Richo): Pop args/locals
+
+	// INFO(Richo): Pop args/locals
+	for (int i = 0; i < currentScript->getLocalCount(); i++)
+	{
+		stack->pop();
+	}
 
 	// INFO(Richo): Only push a return value if we were called from other script
 	if (currentScript != currentCoroutine->getScript())
