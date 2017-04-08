@@ -12,6 +12,10 @@ Script::Script(uint8 start, Reader * rs, bool& timeout)
 		{
 			localCount = rs->next(timeout);
 		}
+		else
+		{
+			localCount = 0;
+		}
 	}
 	if (!timeout) { instructionCount = rs->next(timeout); }
 	if (!timeout) { instructions = readInstructions(rs, instructionCount, timeout); }
