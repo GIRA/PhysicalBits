@@ -1,5 +1,9 @@
 instruction creation
 push: arg
-	| variable |
-	variable := program registerVariable: arg.
-	^ self addInstruction: (UziPushInstruction arg: variable)
+	^ args detect: [:each | each name = arg]
+		ifFound: [:variable |
+			self addInstruction: (UziReadLocalInstruction arg: variable)]
+		ifNone: [| variable |
+			variable := program registerVariable: arg.
+			self addInstruction: (UziPushInstruction arg: variable)].
+	

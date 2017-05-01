@@ -13,7 +13,9 @@
 		"jmp",
 		"jnz",
 		"start",
-		"stop" ],
+		"stop",
+		"readLocal",
+		"writeLocal" ],
 	"name" : "UziCompilerTest",
 	"pools" : [
 		 ],

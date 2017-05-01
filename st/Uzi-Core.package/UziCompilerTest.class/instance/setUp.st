@@ -8,3 +8,5 @@ setUp
 	jmp := UziJMPInstruction.
 	start := UziStartScriptInstruction.
 	stop := UziStopScriptInstruction.
+	writeLocal := UziWriteLocalInstruction.
+	readLocal := UziReadLocalInstruction 

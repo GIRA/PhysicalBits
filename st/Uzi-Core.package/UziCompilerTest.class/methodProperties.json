@@ -2,7 +2,8 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 3/26/2017 21:13",
+		"setUp" : "Richo 4/8/2017 12:24",
+		"testArguments" : "Richo 4/8/2017 12:24",
 		"testAssignmentScript" : "Richo 3/24/2017 17:06",
 		"testBlinkLed9Script" : "Richo 3/24/2017 17:06",
 		"testButton10Led9Script" : "Richo 3/24/2017 17:06",
