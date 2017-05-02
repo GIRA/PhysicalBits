@@ -1,4 +1,4 @@
 visiting
 visitScriptCallNode: node
-	(script call: node scriptName) node: node.
-	node acceptReturnValue ifFalse: [(script prim: #pop) node: node]
+	node arguments do: [:each | self visit: each value].
+	(script call: node scriptName) node: node

@@ -5,7 +5,13 @@ visitLoopNode: node
 	script label: labelStart.
 	node evaluateBodyFirst 
 		ifTrue: [self visit: node body].
-	self visit: node condition.
+		
+	"We can't directly visit the condition because the loop condition
+	is a special type of block which is allowed to leave a value on the
+	stack. If we visit node as a block, the remaining value will be lost"
+	node condition statements 
+		do: [:stmt | self visit: stmt].
+		
 	(node body isEmpty or: [node evaluateBodyFirst])
 		ifTrue: [
 			node negated

@@ -15,7 +15,8 @@
 		"start",
 		"stop",
 		"readLocal",
-		"writeLocal" ],
+		"writeLocal",
+		"call" ],
 	"name" : "UziCompilerTest",
 	"pools" : [
 		 ],

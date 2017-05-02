@@ -9,4 +9,5 @@ setUp
 	start := UziStartScriptInstruction.
 	stop := UziStopScriptInstruction.
 	writeLocal := UziWriteLocalInstruction.
-	readLocal := UziReadLocalInstruction 
+	readLocal := UziReadLocalInstruction.
+	call := UziScriptCallInstruction 

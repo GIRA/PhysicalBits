@@ -4,7 +4,7 @@ specialMessageSend: rcvr selector: selector arguments: args
 	If the selector is a special message then build the corresponding node
 	and return it. Otherwise return nil.
 	"
-	^ selector caseOf: {
+	^  selector caseOf: {
 		"Conditionals"
 		[#ifTrue:] 
 		-> [UziConditionalNode condition: rcvr true: args first].
@@ -47,7 +47,14 @@ specialMessageSend: rcvr selector: selector arguments: args
 		[#stop] 
 		-> [UziScriptStopNode script: rcvr].
 		[#value]
-		-> [UziScriptCallNode script: rcvr withReturnValue: true].
-		[#run]
-		-> [UziScriptCallNode script: rcvr withReturnValue: false]
-	} otherwise: [nil].
+		-> [UziScriptCallNode script: rcvr]
+	} 
+	otherwise: [rcvr isScriptReference 
+		ifTrue: [| argNames |
+			argNames := selector subStrings: ':'.
+			UziScriptCallNode 
+				script: rcvr 
+				arguments: (argNames 
+					with: args 
+					collect: [:name :arg | name asSymbol -> arg])]
+		ifFalse: [nil]].

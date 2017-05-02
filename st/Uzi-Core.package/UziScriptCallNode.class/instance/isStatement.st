@@ -1,3 +1,3 @@
 testing
 isStatement 
-	^ acceptReturnValue not
+	^ true
