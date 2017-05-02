@@ -824,7 +824,7 @@ namespace SimulatorTest
 	                args: #(n)
 	                instructions: [:s | s
 		                push: 1;
-		                readLocal: #n;
+		                push: #n;
 		                prim: #subtract;
 		                prim: #retv;
 		                push: 11;
@@ -876,7 +876,7 @@ namespace SimulatorTest
 	                args: #(n)
 	                instructions: [:s | s
 		                push: 1;
-		                readLocal: #n;
+		                push: #n;
 		                prim: #subtract;
 		                write: 13];
 	
@@ -926,7 +926,7 @@ namespace SimulatorTest
 	                args: #(n)
 	                instructions: [:s | s
 		                push: 1;
-		                readLocal: #n;
+		                push: #n;
 		                prim: #subtract;
 		                write: 13;
 		                prim: #ret;
@@ -977,8 +977,8 @@ namespace SimulatorTest
 	                delay: 0
 	                args: #(a b)
 	                instructions: [:s | s
-		                readLocal: #a;
-		                readLocal: #b;
+		                push: #a;
+		                push: #b;
 		                prim: #subtract;
 		                write: 13;
 		                prim: #ret;
@@ -1030,9 +1030,9 @@ namespace SimulatorTest
 	                delay: 0
 	                args: #(a b)
 	                instructions: [:s | s
-		                readLocal: #a;
-		                readLocal: #a;
-		                readLocal: #b;
+		                push: #a;
+		                push: #a;
+		                push: #b;
 		                prim: #subtract;
 		                prim: #multiply;
 		                prim: #retv;
