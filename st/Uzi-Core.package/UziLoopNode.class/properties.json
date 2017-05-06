@@ -6,10 +6,10 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
+		"pre",
 		"condition",
-		"body",
-		"negated",
-		"evaluateBodyFirst" ],
+		"post",
+		"negated" ],
 	"name" : "UziLoopNode",
 	"pools" : [
 		 ],

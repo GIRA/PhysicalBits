@@ -21,6 +21,7 @@
 		"testReturnScript" : "Richo 4/6/2017 18:24",
 		"testScriptCallAsCondition" : "Richo 5/2/2017 18:29",
 		"testScriptCallAsLoopCondition" : "Richo 5/2/2017 18:30",
+		"testScriptCallAsLoopCondition2" : "Richo 5/6/2017 19:10",
 		"testScriptCallWithAnonymousArguments" : "Richo 5/1/2017 19:31",
 		"testScriptCallWithoutParameters" : "Richo 5/1/2017 19:23",
 		"testScriptRunWithoutParameters" : "Richo 5/2/2017 18:27",

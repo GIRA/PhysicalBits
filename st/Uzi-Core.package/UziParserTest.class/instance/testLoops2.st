@@ -17,36 +17,36 @@ testLoops2
 	
 	statements first ifNotNil: [:while |
 		self assert: while negated.
-		self deny: while evaluateBodyFirst.
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
-		self assert: #(13 on nil) equals: (toArray value: while body statements first)].
+		self assert: while pre isEmpty.
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: #(13 on nil) equals: (toArray value: while post statements first)].
 	
 	statements second ifNotNil: [:while |
 		self deny: while negated.
-		self deny: while evaluateBodyFirst.
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
-		self assert: #(13 on nil) equals: (toArray value: while body statements first)].
+		self assert: while pre isEmpty.
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: #(13 on nil) equals: (toArray value: while post statements first)].
 	
 	statements third ifNotNil: [:while |
 		self assert: while negated.
-		self deny: while evaluateBodyFirst.
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
-		self assert: while body isEmpty].
+		self assert: while pre isEmpty.
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: while post isEmpty].
 	
 	statements fourth ifNotNil: [:while |
 		self deny: while negated.
-		self deny: while evaluateBodyFirst.
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first).
-		self assert: while body isEmpty].
+		self assert: while pre isEmpty.
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: while post isEmpty].
 	
 	statements fifth ifNotNil: [:while |
 		self assert: while negated.
-		self assert: while evaluateBodyFirst.
-		self assert: #(13 on nil) equals: (toArray value: while body statements first).
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first)].
+		self assert: #(13 on nil) equals: (toArray value: while pre statements first).
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: while post isEmpty].
 	
 	statements sixth ifNotNil: [:while |
 		self deny: while negated.
-		self assert: while evaluateBodyFirst.
-		self assert: #(13 on nil) equals: (toArray value: while body statements first).
-		self assert: #(3 > 4) equals: (toArray value: while condition statements first)]
+		self assert: #(13 on nil) equals: (toArray value: while pre statements first).
+		self assert: #(3 > 4) equals: (toArray value: while condition).
+		self assert: while post isEmpty]

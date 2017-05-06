@@ -1,0 +1,3 @@
+accessing
+lastStatement
+	^ statements last

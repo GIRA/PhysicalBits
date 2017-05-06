@@ -4,6 +4,7 @@
 	"instance" : {
 		"assert:description:node:" : "Richo 3/25/2017 22:59",
 		"assertBlock:" : "Richo 12/31/2016 13:10",
+		"assertBlock:nargs:" : "Richo 5/6/2017 19:31",
 		"assertExpression:" : "Richo 12/31/2016 13:03",
 		"assertScript:" : "Richo 12/31/2016 13:11",
 		"assertScriptReference:" : "Richo 3/26/2017 21:37",
@@ -17,7 +18,7 @@
 		"visitBlockNode:" : "Richo 12/31/2016 13:04",
 		"visitCollection:" : "Richo 12/30/2016 14:52",
 		"visitConditionalNode:" : "Richo 12/31/2016 13:09",
-		"visitLoopNode:" : "Richo 3/25/2017 12:24",
+		"visitLoopNode:" : "Richo 5/6/2017 19:29",
 		"visitMessageSend:" : "Richo 3/25/2017 23:01",
 		"visitNumberNode:" : "Richo 12/30/2016 16:31",
 		"visitProgramNode:" : "Richo 12/31/2016 13:11",
