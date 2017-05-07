@@ -1,8 +1,8 @@
 visiting
 visitConditionalNode: node
 	self assertExpression: node condition.
-	self assertBlock: node trueBranch.
-	self assertBlock: node falseBranch.
+	self assertBlock: node trueBranch nargs: 0.
+	self assertBlock: node falseBranch nargs: 0.
 	
 	self visit: node condition;
 		visit: node trueBranch;
