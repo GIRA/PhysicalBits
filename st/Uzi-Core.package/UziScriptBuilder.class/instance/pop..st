@@ -1,5 +1,9 @@
 instruction creation
 pop: arg
-	| variable |
-	variable := program registerVariable: arg.
-	^ self addInstruction: (UziPopInstruction arg: variable) 
+	^ args detect: [:each | each name = arg]
+		ifFound: [:variable |
+			self addInstruction: (UziWriteLocalInstruction arg: variable)]
+		ifNone: [| variable |
+			variable := program registerVariable: arg.
+			self addInstruction: (UziPopInstruction arg: variable)].
+	
