@@ -10,7 +10,8 @@
 		"continueButton",
 		"breakButton",
 		"debugger",
-		"lastPC" ],
+		"lastPC",
+		"window" ],
 	"name" : "UziDebuggerMorph",
 	"pools" : [
 		 ],

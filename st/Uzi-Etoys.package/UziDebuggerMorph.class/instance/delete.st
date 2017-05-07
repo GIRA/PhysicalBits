@@ -1,5 +1,7 @@
 initialization
 delete
 	super delete.
-	self halt.
-	debugger close
+	debugger continue; close.
+	window ifNotNil: [:w | 
+		window := nil.
+		w delete]

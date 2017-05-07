@@ -1,3 +1,3 @@
 button actions
 continue
-	debugger continue
+	self delete

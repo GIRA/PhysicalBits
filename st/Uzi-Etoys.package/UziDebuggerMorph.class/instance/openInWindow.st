@@ -1,6 +1,6 @@
 building
 openInWindow 
-	| height window |
+	| height |
 	window := (SystemWindow labelled: 'Uzi Debugger') model: self.
 	height := 30.
 	window 

@@ -1,5 +1,5 @@
 building
-buildSubmorphs
+buildSubmorphs			
 	debugger isRunning
 		ifTrue: [self addMorphBack: (breakButton := self newButton
 			label: 'Break';
@@ -10,7 +10,8 @@ buildSubmorphs
 			actionSelector: #continue;
 			yourself)].
 		
+	
 	self addMorphBack: (overButton := self newButton
 			label: 'Over';
 			actionSelector: #stepOver;
-			yourself)
+			yourself).
