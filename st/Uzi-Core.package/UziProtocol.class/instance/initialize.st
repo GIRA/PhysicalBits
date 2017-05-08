@@ -5,4 +5,5 @@ initialize
 	pinValues := Dictionary new.
 	pinModes := Dictionary new.
 	pinsReporting := Set new.
-	globalsReporting := Set new
+	globalsReporting := Set new.
+	tickingScripts := Set new

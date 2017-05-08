@@ -15,7 +15,8 @@
 		"pinsReporting",
 		"currentProgram",
 		"globals",
-		"globalsReporting" ],
+		"globalsReporting",
+		"tickingScripts" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
