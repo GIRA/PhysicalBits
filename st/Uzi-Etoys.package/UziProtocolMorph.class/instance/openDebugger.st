@@ -1,6 +1,6 @@
 button actions
 openDebugger
-	self scripts ifNotEmpty: [:options |
+	self tickingScripts ifNotEmpty: [:options |
 		(UIManager default
 			chooseFrom: (options collect: [:each | each name printString])
 			values: options

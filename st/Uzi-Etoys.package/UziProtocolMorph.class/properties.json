@@ -16,7 +16,8 @@
 		"pinTexts",
 		"globalTexts",
 		"portName",
-		"debuggerButton" ],
+		"debuggerButton",
+		"scriptTexts" ],
 	"name" : "UziProtocolMorph",
 	"pools" : [
 		 ],
