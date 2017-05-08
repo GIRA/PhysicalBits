@@ -12,9 +12,11 @@ scripting: rcvr selector: selector arguments: args
 	otherwise: [rcvr isScriptReference 
 		ifTrue: [| argNames |
 			argNames := selector subStrings: ':'.
-			UziScriptCallNode 
-				script: rcvr 
-				arguments: (argNames 
-					with: args 
-					collect: [:name :arg | name asSymbol -> arg])]
+			argNames size = args size 
+				ifFalse: [nil]
+				ifTrue: [UziScriptCallNode 
+					script: rcvr 
+					arguments: (argNames 
+						with: args 
+						collect: [:name :arg | name asSymbol -> arg])]]
 		ifFalse: [nil]].
