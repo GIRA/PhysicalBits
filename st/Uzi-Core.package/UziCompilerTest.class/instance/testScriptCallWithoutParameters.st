@@ -2,7 +2,7 @@ tests
 testScriptCallWithoutParameters
 	| cc program script |
 	cc := UziCompiler new.
-	program := cc compile: '@main [a := @foo value]. @foo [^ 42]'.
+	program := cc compile: '| a | @main [a := @foo value]. @foo [^ 42]'.
 	script := program scripts first.
 	self assert: script instructions = {
 		call arg: #foo.

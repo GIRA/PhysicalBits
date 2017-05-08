@@ -1,5 +1,7 @@
 visiting
 visitScriptNode: node
+	script := node.
+
 	node tickingRate ifNotNil: [:rate | self assertTickingRate: rate].
 	self assertBlock: node body.
 	

@@ -7,7 +7,8 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"errors",
-		"program" ],
+		"program",
+		"script" ],
 	"name" : "UziTypeChecker",
 	"pools" : [
 		 ],

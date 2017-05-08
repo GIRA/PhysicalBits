@@ -2,7 +2,7 @@ tests
 testScriptCallWithIncompleteNamedArguments
 	| cc program script |
 	cc := UziCompiler new.
-	program := cc compile: '@main [a := @foo arg1: 3]. @foo [:arg1 :arg2 | ^ arg1 * arg2]'.
+	program := cc compile: '| a | @main [a := @foo arg1: 3]. @foo [:arg1 :arg2 | ^ arg1 * arg2]'.
 	script := program scripts first.
 	self assert: script instructions = {
 		push arg: (program variables detect: [:var | var value = 3]).
