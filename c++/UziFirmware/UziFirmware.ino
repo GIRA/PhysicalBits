@@ -28,6 +28,7 @@
 #define RS_GLOBAL_VALUE									3
 #define RS_TRACE										4
 #define RS_COROUTINE_STATE								5
+#define RS_TICKING_SCRIPTS								6
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
@@ -59,6 +60,7 @@ inline void executeKeepAlive(void);
 inline void executeSetBreakCount(void);
 inline void sendPinValues(void);
 inline void sendGlobalValues(void);
+inline void sendTickingScripts(void);
 inline void sendError(uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
@@ -143,6 +145,7 @@ void sendReport(void)
 	{
 		sendPinValues();
 		sendGlobalValues();
+		sendTickingScripts();
 		lastTimeReport = now;
 	}
 }
@@ -250,6 +253,32 @@ void sendGlobalValues(void)
 			Serial.write((value >> 8) & 0xFF);
 			Serial.write(value & 0xFF);
 		}
+	}
+}
+
+void sendTickingScripts(void)
+{
+	Serial.write(RS_TICKING_SCRIPTS);
+	uint8 scriptCount = program->getScriptCount();
+	Serial.write(scriptCount);
+	Script* script = program->getScript();
+	uint8 result = 0;
+	int8 bit = -1;
+	for (int16 i = 0; i < scriptCount; i++)
+	{
+		uint8 isStepping = script->isStepping() ? 1 : 0;
+		result |= isStepping << ++bit;
+		if (bit == 7)
+		{
+			Serial.write(result);
+			bit = -1;
+			result = 0;
+		}
+		script = script->getNext();
+	}
+	if (bit != -1)
+	{
+		Serial.write(result);
 	}
 }
 
