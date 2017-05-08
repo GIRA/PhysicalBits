@@ -11,9 +11,4 @@ processTickingScripts
 	tickingScripts removeAll.
 	(currentProgram notNil and: [count = currentProgram scripts size])
 		ifTrue: [currentProgram scripts withIndexDo: [:script :index |
-			(ticking at: index) ifTrue: [tickingScripts add: script]]].
-	"WorldState 
-		addDeferredUIMessage: [Transcript 
-			show: 'TICKING SCRIPTS: ';
-			show: (ticking);
-			cr]"
+			(ticking at: index) ifTrue: [tickingScripts add: script]]]
