@@ -1,9 +1,9 @@
 grammar-variables
 variableDefinition
-	^ ws, (variable , ws , ':=' asParser flatten, ws , (constant / number)) token , separator 
-		map: [:ign1 :token :ign2 || nodes |
-			nodes := token parsedValue.
+	^ ws, (variable , ws , $= asParser, ws , (constant / number)) token, ws
+		map: [:ign1 :token :ign2 || def |
+			def := token parsedValue.
 			(UziVariableDefinitionNode 
-				name: nodes first name 
-				value: nodes last value)
+				name: def first name 
+				value: def last value)
 				token: token]

@@ -3,7 +3,7 @@ testVariableDefinitions
 	| pp ast vars |
 	pp := parser.
 	ast := pp parse: '
-		a := 4. b := 3.
+		| a = 4, b = 3 |
 		@script1 ticking 1/s [foo]'.
 	vars := ast variableDefinitions.
 	self assert: vars size equals: 2.

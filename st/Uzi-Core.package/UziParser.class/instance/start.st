@@ -1,6 +1,6 @@
 grammar-start
 start
-	^ (variableDefinition star , script plus) token , ws end
+	^ (variableDefinitionList , script plus) token , ws end
 		map: [:token :ign | 
 			(UziProgramNode 
 				variableDefinitions: token parsedValue first
