@@ -1,0 +1,3 @@
+accessing
+defaultBackgroundColor
+	^ Color lightRed 
