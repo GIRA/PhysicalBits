@@ -1,3 +1,3 @@
 accessing
 defaultBackgroundColor
-	^ Color lightRed 
+	^ Color red alphaMixed: 0.5 with: Color lightBlue
