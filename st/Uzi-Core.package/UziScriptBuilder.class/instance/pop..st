@@ -5,5 +5,4 @@ pop: arg
 			self addInstruction: (UziWriteLocalInstruction arg: variable)]
 		ifNone: [| variable |
 			variable := program registerVariable: arg.
-			self addInstruction: (UziPopInstruction arg: variable)].
-	
+			self addInstruction: (UziPopInstruction arg: variable)]
