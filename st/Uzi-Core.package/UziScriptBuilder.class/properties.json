@@ -12,7 +12,8 @@
 		"delay",
 		"labels",
 		"instructions",
-		"args" ],
+		"args",
+		"locals" ],
 	"name" : "UziScriptBuilder",
 	"pools" : [
 		 ],

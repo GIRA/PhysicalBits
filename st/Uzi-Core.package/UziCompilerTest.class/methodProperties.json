@@ -4,6 +4,7 @@
 	"instance" : {
 		"setUp" : "Richo 5/1/2017 19:20",
 		"testArguments" : "Richo 4/8/2017 12:24",
+		"testArgumentsAndLocals" : "Richo 5/8/2017 19:50",
 		"testArgumentsWrite" : "Richo 5/7/2017 19:08",
 		"testAssignmentScript" : "Richo 5/8/2017 18:08",
 		"testBlinkLed9Script" : "Richo 3/24/2017 17:06",

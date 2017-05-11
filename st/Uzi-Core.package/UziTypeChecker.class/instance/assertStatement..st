@@ -1,5 +1,5 @@
 assertions
 assertStatement: node
-	self assert: node isStatement
+	^ self assert: node isStatement
 		description: 'Statement expected' 
 		node: node

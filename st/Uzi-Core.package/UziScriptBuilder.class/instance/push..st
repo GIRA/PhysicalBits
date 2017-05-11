@@ -1,6 +1,6 @@
 instruction creation
 push: arg
-	^ args detect: [:each | each name = arg]
+	^ args, locals detect: [:each | each name = arg]
 		ifFound: [:variable |
 			self addInstruction: (UziReadLocalInstruction arg: variable)]
 		ifNone: [| variable |

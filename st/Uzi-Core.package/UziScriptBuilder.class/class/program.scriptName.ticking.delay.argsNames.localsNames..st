@@ -3,7 +3,8 @@ program: anUziProgramBuilder
 scriptName: scriptName 
 ticking: isTicking 
 delay: delayMs
-argsNames: argsNames 
+argsNames: argsNames
+localsNames: localsNames
 
 	^ self basicNew 
 		initializeWithProgram: anUziProgramBuilder
@@ -11,3 +12,4 @@ argsNames: argsNames
 		ticking: isTicking 
 		delay: delayMs
 		argumentNames: argsNames
+		localNames: localsNames
