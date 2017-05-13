@@ -1,5 +1,5 @@
 private
-registerVariable: arg
+registerGlobal: arg
 	"If the argument is a string we interpret it as the variable name, otherwise
 	we treat it as value."
 	^ arg isString 

@@ -4,5 +4,5 @@ pop: arg
 		ifFound: [:variable |
 			self addInstruction: (UziWriteLocalInstruction arg: variable)]
 		ifNone: [| variable |
-			variable := program registerVariable: arg.
+			variable := program registerGlobal: arg.
 			self addInstruction: (UziPopInstruction arg: variable)]

@@ -6,5 +6,5 @@ script
 		name: scriptName
 		ticking: ticking
 		delay: delay
-		locals: args, locals
+		locals: (args, locals) asArray
 		instructions: instructions 

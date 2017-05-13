@@ -4,5 +4,5 @@ push: arg
 		ifFound: [:variable |
 			self addInstruction: (UziReadLocalInstruction arg: variable)]
 		ifNone: [| variable |
-			variable := program registerVariable: arg.
+			variable := program registerGlobal: arg.
 			self addInstruction: (UziPushInstruction arg: variable)]
