@@ -1,3 +1,0 @@
-accessing
-detail
-	^ self summary

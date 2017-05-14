@@ -1,3 +1,0 @@
-accessing
-summary
-	^ self link

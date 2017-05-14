@@ -1,3 +1,0 @@
-accessing
-serverHostname
-	^ self subclassResponsibility 
