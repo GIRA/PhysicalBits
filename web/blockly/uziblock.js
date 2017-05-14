@@ -1,10 +1,17 @@
 var UziBlock = (function () {
+	
+	var blocklyArea, blocklyDiv, workspace;	
 
-	function initToolbox(toolbox) {		
-		var blocklyArea = document.getElementById('editor');
-		var blocklyDiv = document.getElementById('blockly');
-		var workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-		var onresize = function(e) {
+	function initToolbox(toolbox) {
+		workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+	}
+	
+	function initBlocks(blocks) {		
+		Blockly.defineBlocksWithJsonArray(blocks);
+	}	
+	
+	function makeResizable() {
+		var onresize = function (e) {
 			// Compute the absolute coordinates and dimensions of blocklyArea.
 			var element = blocklyArea;
 			var x = 0;
@@ -19,30 +26,36 @@ var UziBlock = (function () {
 			blocklyDiv.style.top = y + 'px';
 			blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
 			blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-		};
+		}
 		window.addEventListener('resize', onresize, false);
 		onresize();
-		Blockly.svgResize(workspace);		
+		Blockly.svgResize(workspace);
 	}
 	
-	function initBlocks(blocks) {		
-		Blockly.defineBlocksWithJsonArray(blocks);
+	function init(area, div) {
+		blocklyArea = area;
+		blocklyDiv = div;
+		
+		ajax.request({
+			type: 'GET',
+			url: 'toolbox.xml',
+			success: function (xml) {
+				initToolbox(xml);
+				makeResizable();
+			}
+		});
+		
+		ajax.request({
+			type: 'GET',
+			url: 'blocks.json',
+			success: function (json) {
+				initBlocks(JSON.parse(json));
+			}
+		});
 	}
 	
-	ajax.request({
-		type: 'GET',
-		url: 'toolbox.xml',
-		success: function (xml) {
-			initToolbox(xml);
-		}
-	});
-	
-	ajax.request({
-		type: 'GET',
-		url: 'blocks.json',
-		success: function (json) {
-			initBlocks(JSON.parse(json));
-		}
-	});
+	return {
+		init: init
+	};
 	
 })();
