@@ -1,16 +1,26 @@
-(function () {
+var Uzi = (function () {
+			
+	var Uzi = {
+		isConnected: false,
+		portName: undefined,
+		
+		onUpdate: nop,
+		onError: nop,
+		
+		connect: connect,
+		disconnect: disconnect,
+		compile: compile,
+		install: install,
+		run: run
+	};
 	
 	function nop () { /* Do nothing */ }
 	
 	function errorHandler (err) {
 		console.log(err);
-		Alert.danger(err.responseText || "Connection error");
+		Uzi.onError(err);
 	}
-
-	function getSelectedPort() {
-		return port.innerText;
-	}
-	
+		
 	function getUziState(wait, callbacks) {
 		var success = callbacks.success || nop;
 		var complete = callbacks.complete || nop;
@@ -27,140 +37,92 @@
 		}, 2);
 	}
 
-	function connect () {
+	function connect (port, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: "/uzi/actions/connect",
 			data: {
-				port: getSelectedPort()
+				port: port
 			},
 			success: function (uzi) {
-				updateUI(uzi);
-				if (uzi.isConnected) {
-					Alert.success("Arduino connected on port: " + uzi.portName);
-				} else {
-					Alert.danger("Arduino not found");
-				}
+				update(uzi);
+				callback();
 			},
 			error: errorHandler
 		}, 2);
 	}
 
-	function disconnect () {
+	function disconnect (callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: "/uzi/actions/disconnect",
-			data: {
-				port: getSelectedPort()
-			},
+			data: {},
 			success: function (uzi) {
-				updateUI(uzi);
-				if (uzi.isConnected) {
-					Alert.danger("Arduino connected on port: " + uzi.portName);
-				} else {
-					Alert.success("Arduino disconnected");
-				}
+				update(uzi);
+				callback();
 			},
 			error: errorHandler
 		}, 2);
 	}
 
-	function compile() {
+	function compile(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: "/uzi/actions/compile",
 			data: {
-				src: editor.getValue()
+				src: src
 			},
 			success: function (bytecodes) {
-				console.log(bytecodes);
-				Alert.success("Compilation successful");
+				callback(bytecodes);
 			},
 			error: errorHandler
 		}, 2);
 	}
 
-	function install() {
+	function install(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: "/uzi/actions/install",
 			data: {
-				src: editor.getValue()
+				src: src
 			},
 			success: function (bytecodes) {
-				console.log(bytecodes);
-				Alert.success("Installation successful");
+				callback(bytecodes);
 			},
 			error: errorHandler
 		}, 2);
 	}
 
-	function run() {
+	function run(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: "/uzi/actions/run",
 			data: {
-				src: editor.getValue()
+				src: src
 			},
 			success: function (bytecodes) {
-				console.log(bytecodes);
+				callback(bytecodes);
 			},
 			error: errorHandler
 		}, 2);
 	}
-
-	function bindEvents() {
-		//Port list
-		$("#portlist.dropdown-menu li a")
-			.on("click", function () {
-				var selectedPort;
-				if (this.id) {
-					selectedPort = prompt("Port name:", getSelectedPort());
-				} else {
-					selectedPort = this.innerText;
-				}
-				$("#port")
-					.text(selectedPort)
-					.append("\n<span class='caret'></span>");
-			});
-		
-		// Buttons
-		$("#connect").on("click", connect);
-		$("#disconnect").on("click", disconnect);
-		$("#compile").on("click", compile);
-		$("#install").on("click", install);
-		$("#run").on("click", run);
-	}
 	
-	function updateUI(uzi) {
-		if (uzi.isConnected) {
-			$("#connect").attr("disabled", "disabled");
-			$("#port")
-				.attr("disabled", "disabled")
-				.text(uzi.portName)
-				.append("\n<span class='caret'></span>");			
-			$("#disconnect").removeAttr("disabled");					
-			$("#install").removeAttr("disabled");
-			$("#run").removeAttr("disabled");
-			$("#more").removeAttr("disabled");
-		} else {
-			$("#connect").removeAttr("disabled");
-			$("#port").removeAttr("disabled");
-			$("#disconnect").attr("disabled", "disabled");
-			$("#install").attr("disabled", "disabled");
-			$("#run").attr("disabled", "disabled");
-			$("#more").attr("disabled", "disabled");
-		}
+	function update(uzi) {
+		Uzi.portName = uzi.portName;
+		Uzi.isConnected = uzi.isConnected;
+		
+		Uzi.onUpdate();
 	}
 
 	function updateLoop(first) {
 		getUziState(first ? 0 : 45, {
-			success: updateUI,
+			success: update,
 			complete: function () { updateLoop(false); },
 			error: errorHandler
 		});
 	}
 	
-	bindEvents();
 	updateLoop(true);
+	
+	return Uzi;
 })();
