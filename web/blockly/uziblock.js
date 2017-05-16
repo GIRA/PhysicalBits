@@ -36,12 +36,16 @@ var UziBlock = (function () {
 		blocklyArea = area;
 		blocklyDiv = div;
 		
+		var counter = 0;
 		ajax.request({
 			type: 'GET',
 			url: 'toolbox.xml',
 			success: function (xml) {
 				initToolbox(xml);
 				makeResizable();
+				if (++counter == 2) {
+					restore();
+				}
 			}
 		});
 		
@@ -50,12 +54,35 @@ var UziBlock = (function () {
 			url: 'blocks.json',
 			success: function (json) {
 				initBlocks(JSON.parse(json));
+				if (++counter == 2) {
+					restore();
+				}
 			}
 		});
 	}
 	
+	function getGeneratedCode(){
+		return workspace.getTopBlocks().map(function (block) { 
+			var code = Blockly.JavaScript.blockToCode(block);
+			return JSON.parse(code);
+		});
+	}
+	
+	function save() {
+		localStorage["uzi"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+	}
+	
+	function restore(){
+		Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
+		workspace.addChangeListener(save);
+	}
+	
 	return {
-		init: init
+		init: init,
+		getGeneratedCode: getGeneratedCode,
+		getWorkspace: function () { return workspace; },
+		save: save,
+		restore: restore
 	};
 	
 })();
