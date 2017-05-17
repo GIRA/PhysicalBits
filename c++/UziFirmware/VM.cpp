@@ -523,8 +523,7 @@ void VM::unwindStackAndReturn(void)
 {	
 	uint32 value = float_to_uint32(stack->pop());
 	pc = value & 0xFFFF;
-	framePointer = value >> 16;
-
+	
 	float returnValue = stack->pop();
 
 	// INFO(Richo): Pop args/locals
@@ -532,6 +531,8 @@ void VM::unwindStackAndReturn(void)
 	{
 		stack->pop();
 	}
+
+	framePointer = float_to_uint32(stack->top()) >> 16;
 
 	// INFO(Richo): Only push a return value if we were called from other script
 	if (currentScript != currentCoroutine->getScript())
