@@ -143,10 +143,25 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		
 		case SCRIPT_CALL:
 		{
+			/*
+			INFO(Richo): 
+			We know the arguments are already on the stack (it's the compiler's job 
+			to push them). Now we need to push:
+				1) The return value (default: 0)
+				2) The current framePointer and returnAddress (so that when unwinding
+				the stack, they can be set correctly).
+			*/
 			currentScript = currentProgram->getScript(argument);
-			framePointer = stack->getPointer() - currentScript->getLocalCount();
+			int16 fp = stack->getPointer() - currentScript->getLocalCount();
 			stack->push(0); // Return value slot (default: 0)
 			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
+
+			/*
+			INFO(Richo): 
+			After the stack is configured. We set the framePointer and pc to their
+			new values and continue execution.
+			*/
+			framePointer = fp;
 			pc = currentScript->getInstructionStart();
 		} 
 		break;
@@ -523,6 +538,7 @@ void VM::unwindStackAndReturn(void)
 {	
 	uint32 value = float_to_uint32(stack->pop());
 	pc = value & 0xFFFF;
+	framePointer = value >> 16;
 	
 	float returnValue = stack->pop();
 
@@ -531,9 +547,7 @@ void VM::unwindStackAndReturn(void)
 	{
 		stack->pop();
 	}
-
-	framePointer = float_to_uint32(stack->top()) >> 16;
-
+	
 	// INFO(Richo): Only push a return value if we were called from other script
 	if (currentScript != currentCoroutine->getScript())
 	{
