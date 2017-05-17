@@ -988,5 +988,56 @@ namespace SimulatorTest
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
             }
         }
+
+        [TestMethod]
+        public void TestScriptCallWithRecursiveCall4LevelsDeep()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerGlobal: #c;
+	                script: #foo
+	                ticking: false
+	                delay: 0 
+	                instructions: [:s | s
+		                registerArgument: #n;
+		                push: #n;
+		                push: 0;
+		                prim: #equals;
+		                jz: #true;
+		                push: 42;
+		                prim: #retv;
+		                jmp: #end;
+		                label: #true;
+		                push: #n;
+		                push: 1;
+		                prim: #subtract;
+		                call: #foo;
+		                prim: #retv;
+		                label: #end];
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 4;
+		                call: #foo;
+		                pop: #c;
+		                push: #c;
+		                write: 13]].
+                UziProtocol new run: program.
+                */
+                0, 2, 5, 20, 0, 0, 1, 4, 42, 64, 0, 0, 0, 1, 12, 255, 0, 128, 170,
+                241, 3, 132, 187, 240, 5, 255, 0, 130, 168, 192, 187, 128, 0, 3,
+                232, 5, 131, 192, 145, 129, 77
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on (iteration: {0})", i);
+            }
+        }
     }
 }
