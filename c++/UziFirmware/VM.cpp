@@ -63,8 +63,14 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		if (pc > currentScript->getInstructionStop())
 		{
+			bool returnFromScriptCall = framePointer != 0;
 			unwindStackAndReturn();
-			if (currentScript == coroutine->getScript())
+
+			if (returnFromScriptCall)
+			{
+				currentScript = currentProgram->getScriptForPC(pc);
+			}
+			else
 			{
 				/*
 				INFO(Richo):
@@ -77,10 +83,6 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 				coroutine->setPC(currentScript->getInstructionStart());
 				coroutine->saveStack(stack);
 				break;
-			}
-			else
-			{
-				currentScript = currentProgram->getScriptForPC(pc);
 			}
 		}
 		if (yieldFlag)
@@ -478,7 +480,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_RET:
 		{
-			if (currentScript != currentCoroutine->getScript())
+			bool returnFromScriptCall = framePointer != 0;
+			if (returnFromScriptCall)
 			{
 				unwindStackAndReturn();
 				currentScript = currentProgram->getScriptForPC(pc);
@@ -509,7 +512,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			stack->setElementAt(index, value);
 
 			// TODO(Richo): Duplicated code from PRIM_RET
-			if (currentScript != currentCoroutine->getScript())
+			bool returnFromScriptCall = framePointer != 0;
+			if (returnFromScriptCall)
 			{
 				unwindStackAndReturn();
 				currentScript = currentProgram->getScriptForPC(pc);
@@ -535,7 +539,8 @@ void VM::yieldTime(int32 time, bool& yieldFlag)
 }
 
 void VM::unwindStackAndReturn(void)
-{	
+{
+	bool returnFromScriptCall = framePointer != 0;
 	uint32 value = float_to_uint32(stack->pop());
 	pc = value & 0xFFFF;
 	framePointer = value >> 16;
@@ -549,7 +554,7 @@ void VM::unwindStackAndReturn(void)
 	}
 	
 	// INFO(Richo): Only push a return value if we were called from other script
-	if (currentScript != currentCoroutine->getScript())
+	if (returnFromScriptCall)
 	{
 		stack->push(returnValue);
 	}
