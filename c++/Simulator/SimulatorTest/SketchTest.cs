@@ -366,7 +366,7 @@ namespace SimulatorTest
                 UziProtocol new run: program
                 */
                 0, 1, 3, 12, 1, 12, 13, 128, 0, 0, 0, 10, 130, 162,
-                130, 169, 162, 129, 128, 169, 166, 162
+                130, 182, 162, 129, 128, 182, 166, 162
             });
 
             sketch.SetMillis(0);
