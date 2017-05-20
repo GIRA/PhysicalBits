@@ -1,3 +1,3 @@
 accessing
-contents
+sourceCode 
 	^ debugger sourceCode

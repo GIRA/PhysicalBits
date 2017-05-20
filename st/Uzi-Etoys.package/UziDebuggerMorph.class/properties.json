@@ -11,7 +11,8 @@
 		"breakButton",
 		"debugger",
 		"lastPC",
-		"window" ],
+		"window",
+		"printer" ],
 	"name" : "UziDebuggerMorph",
 	"pools" : [
 		 ],
