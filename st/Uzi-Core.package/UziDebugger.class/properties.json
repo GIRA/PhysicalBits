@@ -9,6 +9,7 @@
 		"protocol",
 		"script",
 		"pc",
+		"fp",
 		"stack" ],
 	"name" : "UziDebugger",
 	"pools" : [

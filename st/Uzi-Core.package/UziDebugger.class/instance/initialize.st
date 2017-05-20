@@ -3,5 +3,5 @@ initialize
 	super initialize.
 	protocol 
 		when: self coroutineUpdateEvent 
-		send: #update:pc:stack:
+		send: #update:pc:fp:stack:
 		to: self
