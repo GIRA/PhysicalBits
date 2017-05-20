@@ -1,19 +1,17 @@
 {
-	"category" : "Uzi-Core-Program",
+	"category" : "Uzi-Core-Utils",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"name",
-		"ticking",
-		"delay",
-		"arguments",
-		"locals",
-		"instructions",
-		"node" ],
-	"name" : "UziScript",
+		"stream",
+		"program",
+		"variables",
+		"script",
+		"indent" ],
+	"name" : "UziProgramPrinter",
 	"pools" : [
 		 ],
 	"super" : "Object",
