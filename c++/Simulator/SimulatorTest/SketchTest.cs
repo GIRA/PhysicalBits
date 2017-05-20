@@ -1039,5 +1039,130 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on (iteration: {0})", i);
             }
         }
+
+        [TestMethod]
+        public void TestScriptTickingThatAlsoCallsItself()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerGlobal: #result value: 0;
+	                registerGlobal: #counter value: 0;
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                registerArgument: #call value: 0;
+		                push: #call;
+		                jz: 15;
+		                push: #call;
+		                push: 1;
+		                prim: #equals;
+		                jz: 3;
+		                push: 2;
+		                prim: #retv;
+		                jmp: 7;
+		                push: 2;
+		                push: #call;
+		                push: 1;
+		                prim: #subtract;
+		                call: #main;
+		                prim: #multiply;
+		                prim: #retv;
+		                jmp: 2;
+		                push: 13;
+		                prim: #toggle];
+	                script: #button
+	                ticking: true
+	                delay: 0
+	                instructions: [:s | s
+		                push: 9;
+		                prim: #read;
+		                jz: -3;
+		                push: 9;
+		                prim: #read;
+		                jnz: -3;
+		                push: #counter;
+		                push: 1;
+		                prim: #add;
+		                pop: #counter;
+		                push: #counter;
+		                call: #main;
+		                push: 256;
+		                prim: #divide;
+		                pop: #result;
+		                push: 11;
+		                push: #result;
+		                prim: #write]].
+                UziProtocol new run: program
+                */
+                0, 2, 8, 28, 0, 0, 1, 2, 9, 11, 13, 5, 1, 0, 192, 0, 3, 232, 1, 19, 255, 0, 241, 15,
+                255, 0, 130, 170, 241, 3, 131, 187, 240, 7, 131, 255, 0, 130, 168, 192, 165, 187, 240,
+                2, 134, 162, 128, 0, 0, 0, 18, 132, 160, 241, 253, 132, 160, 242, 253, 128, 130, 166,
+                144, 128, 192, 135, 167, 145, 133, 129, 161
+            });
+            
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            // Press button
+            sketch.SetPinValue(9, 1023);
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            // Release button
+            sketch.SetPinValue(9, 0);
+
+            sketch.SetMillis(1750);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            
+            sketch.SetMillis(2500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            // By now D11 should have its value increased
+            Assert.AreEqual(8, sketch.GetPinValue(11));
+            
+            // Press button
+            sketch.SetPinValue(9, 1023);
+
+            sketch.SetMillis(3500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            // Release button
+            sketch.SetPinValue(9, 0);
+
+            sketch.SetMillis(4500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            // By now D11 should have its value increased
+            Assert.AreEqual(16, sketch.GetPinValue(11));
+
+
+            // Press button
+            sketch.SetPinValue(9, 1023);
+
+            sketch.SetMillis(4501);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            // Release button
+            sketch.SetPinValue(9, 0);
+
+            sketch.SetMillis(4502);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            // By now D11 should have its value increased
+            Assert.AreEqual(32, sketch.GetPinValue(11));
+
+        }
     }
 }
