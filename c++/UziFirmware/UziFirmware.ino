@@ -166,6 +166,8 @@ void sendVMState(void)
 			uint8 val2 = pc & 0xFF;	// LSB
 			Serial.write(val1);
 			Serial.write(val2);
+			uint8 fp = coroutine->getFramePointer();
+			Serial.write(fp);
 			uint16 stackSize = coroutine->getStackSize();
 			Serial.write(stackSize);
 			for (uint16 j = 0; j < stackSize; j++)
