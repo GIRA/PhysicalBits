@@ -1,4 +1,4 @@
 encoding instructions
 visitTurnOffInstruction: instruction
 	self indent;
-		write: 'turnOff: {1}' format: { instruction argument }
+		saveInterval: [self write: 'turnOff: {1}' format: { instruction argument }]

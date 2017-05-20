@@ -6,4 +6,4 @@ visitProgram: anUziProgram
 		during: [
 			self writeGlobals: anUziProgram variables.
 			self writeScripts: anUziProgram scripts.
-			self write: '].'].
+			self write: '].']

@@ -1,4 +1,4 @@
 encoding instructions
 visitJLTEInstruction: instruction
 	self indent;
-		write: 'jlte: {1}' format: { instruction argument }
+		saveInterval: [self write: 'jlte: {1}' format: { instruction argument }]

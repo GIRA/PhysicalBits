@@ -10,7 +10,8 @@
 		"program",
 		"variables",
 		"script",
-		"indent" ],
+		"indent",
+		"intervals" ],
 	"name" : "UziProgramPrinter",
 	"pools" : [
 		 ],

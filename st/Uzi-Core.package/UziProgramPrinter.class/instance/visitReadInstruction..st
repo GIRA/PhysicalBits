@@ -1,4 +1,4 @@
 encoding instructions
 visitReadInstruction: instruction	
 	self indent;
-		write: 'read: {1}' format: { instruction argument }
+		saveInterval: [self write: 'read: {1}' format: { instruction argument }]
