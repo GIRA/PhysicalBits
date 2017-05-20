@@ -5,8 +5,10 @@
 		"accept:" : "Richo 10/8/2014 18:03",
 		"arguments" : "Richo 5/20/2017 14:42",
 		"delay" : "Richo 9/25/2014 10:07",
+		"hasArguments" : "Richo 5/20/2017 15:36",
 		"hasLocals" : "Richo 4/7/2017 21:09",
-		"indexOfLocal:" : "Richo 5/20/2017 14:42",
+		"hasVariables" : "Richo 5/20/2017 15:47",
+		"indexOfLocal:" : "Richo 5/20/2017 15:33",
 		"initializeWithName:ticking:delay:arguments:locals:instructions:" : "Richo 5/20/2017 14:40",
 		"instructionAt:" : "Richo 8/22/2016 09:49",
 		"instructions" : "Richo 8/22/2016 09:50",
@@ -15,4 +17,5 @@
 		"name" : "Richo 9/25/2014 10:06",
 		"node" : "Richo 12/31/2016 19:57",
 		"node:" : "Richo 12/31/2016 19:57",
-		"printOn:" : "Richo 12/22/2016 18:36" } }
+		"printOn:" : "Richo 12/22/2016 18:36",
+		"variables" : "Richo 5/20/2017 15:47" } }

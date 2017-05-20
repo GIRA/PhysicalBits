@@ -2,5 +2,5 @@ encoding scripts
 visitScript: anUziScript 
 	script := anUziScript.
 	self writeScriptHeader: anUziScript;
-		writeLocals: anUziScript;
+		writeVariables: anUziScript;
 		writeInstructions: anUziScript

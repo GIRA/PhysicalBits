@@ -8,8 +8,8 @@
 	"instvars" : [
 		"stream",
 		"program",
-		"variables",
-		"script" ],
+		"script",
+		"globals" ],
 	"name" : "UziEncoder",
 	"pools" : [
 		 ],

@@ -2,5 +2,5 @@ encoding programs
 visitProgram: anUziProgram
 	program := anUziProgram.
 	self writeProgramScriptCount: anUziProgram;
-		writeVariables: anUziProgram;
+		writeGlobals: anUziProgram;
 		visitCollection: anUziProgram scripts

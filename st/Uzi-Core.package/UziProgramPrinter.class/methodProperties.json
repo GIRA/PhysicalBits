@@ -12,7 +12,7 @@
 		"visitJMPInstruction:" : "Richo 5/19/2017 12:03",
 		"visitJNZInstruction:" : "Richo 5/19/2017 12:03",
 		"visitJZInstruction:" : "Richo 5/19/2017 12:03",
-		"visitPopInstruction:" : "Richo 5/19/2017 12:03",
+		"visitPopInstruction:" : "Richo 5/20/2017 15:12",
 		"visitPrimitiveCallInstruction:" : "Richo 5/19/2017 12:03",
 		"visitProgram:" : "Richo 5/20/2017 14:31",
 		"visitPushInstruction:" : "Richo 5/20/2017 14:48",
