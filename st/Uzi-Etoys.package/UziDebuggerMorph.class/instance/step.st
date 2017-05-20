@@ -2,7 +2,8 @@ stepping
 step
 	lastPC ~= debugger pc
 		ifTrue: [lastPC := debugger pc.
-			self changed: #sourceCodeSelection;
+			self changed: #stackString;
+				changed: #sourceCodeSelection;
 				changed: #textualFormSelection;
-				changed: #stackString;
+				changed: #locals;
 				rebuild]

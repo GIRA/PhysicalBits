@@ -28,7 +28,7 @@ openInWindow
 			accept: nil
 			readSelection: #sourceCodeSelection
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.5@1) offsets: (0@0 corner: 0@0)).	
+		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.5@0.85) offsets: (0@0 corner: 0@0)).
 	window
 		addMorph: (PluggableTextMorph 
 			on: self
@@ -36,6 +36,14 @@ openInWindow
 			accept: nil
 			readSelection: #textualFormSelection 
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@1) offsets: (0@0 corner: 0@0)).
-	window extent: 600 @ 400.
+		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@0.85) offsets: (0@0 corner: 0@0)).
+	window
+		addMorph: (PluggableTextMorph 
+			on: self
+			text: #locals
+			accept: nil
+			readSelection: nil
+			menu: nil)
+		fullFrame: (LayoutFrame fractions: (0@0.85 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
+	window extent: 600 @ 600.
 	window openInHand
