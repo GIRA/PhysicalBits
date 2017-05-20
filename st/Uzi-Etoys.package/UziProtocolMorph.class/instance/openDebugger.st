@@ -1,5 +1,6 @@
 button actions
 openDebugger
+	self isConnected ifFalse: [^ self].
 	self tickingScripts ifNotEmpty: [:options |
 		(UIManager default
 			chooseFrom: (options collect: [:each | each name printString])
