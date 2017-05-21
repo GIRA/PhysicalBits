@@ -1,19 +1,18 @@
 receiving
 processCoroutineState
-	| index pc fp pcLSB pcMSB stack stackSize val val1 val2 val3 val4 |
+	| index pc fp pcLSB pcMSB stack stackSize val1 val2 val3 val4 |
 	index := serial next.
 	pcMSB := serial next.
 	pcLSB := serial next.
 	pc := (pcMSB << 8) bitOr: pcLSB.
 	fp := serial next.
 	stackSize := serial next.
-	stack := OrderedCollection new.
-	stackSize timesRepeat: [
+	stack := FloatArray new: stackSize.
+	1 to: stackSize do: [:i |
 		val1 := serial next.
 		val2 := serial next.
 		val3 := serial next.
 		val4 := serial next.
-		val := Float fromIEEE32Bit: (val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4))).
-		stack add: val].
+		stack basicAt: i put: (val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4)))].
 	self triggerEvent: #coroutineUpdate
 		withArguments: { index . pc . fp. stack }

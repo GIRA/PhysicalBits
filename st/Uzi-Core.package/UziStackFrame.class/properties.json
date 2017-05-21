@@ -6,12 +6,12 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"protocol",
 		"script",
 		"pc",
 		"fp",
-		"stack" ],
-	"name" : "UziDebugger",
+		"stack",
+		"locals" ],
+	"name" : "UziStackFrame",
 	"pools" : [
 		 ],
 	"super" : "Object",

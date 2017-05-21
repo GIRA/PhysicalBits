@@ -1,0 +1,10 @@
+{
+	"class" : {
+		"readFrom:stack:pc:fp:" : "Richo 5/21/2017 14:43",
+		"script:pc:fp:stack:" : "Richo 5/21/2017 10:21" },
+	"instance" : {
+		"initialize" : "Richo 5/21/2017 14:30",
+		"initializeLocals" : "Richo 5/21/2017 14:31",
+		"initializeWithScript:pc:fp:stack:" : "Richo 5/21/2017 10:22",
+		"locals" : "Richo 5/21/2017 14:30",
+		"printOn:" : "Richo 5/21/2017 14:44" } }
