@@ -11,7 +11,7 @@ openInWindow
 			on: self
 			list: #stackFrames
 			selected: #stackFrameSelection 
-			changeSelected: nil)
+			changeSelected: #stackFrameSelection:)
 		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.2) offsets: (0@height corner: 0@0)).
 	window
 		addMorph: (PluggableTextMorph 

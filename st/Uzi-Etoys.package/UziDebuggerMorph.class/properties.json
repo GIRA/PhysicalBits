@@ -12,7 +12,9 @@
 		"debugger",
 		"lastPC",
 		"window",
-		"printer" ],
+		"printer",
+		"stackFrameSelection",
+		"stackFrame" ],
 	"name" : "UziDebuggerMorph",
 	"pools" : [
 		 ],

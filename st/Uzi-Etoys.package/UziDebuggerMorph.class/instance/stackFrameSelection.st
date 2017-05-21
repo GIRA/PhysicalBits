@@ -1,3 +1,3 @@
 accessing
 stackFrameSelection
-	^ 1
+	^ stackFrameSelection

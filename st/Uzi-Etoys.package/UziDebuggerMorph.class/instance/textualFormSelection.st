@@ -1,4 +1,4 @@
 accessing
 textualFormSelection
-	^ (printer intervalAt: debugger pc)
+	^ (printer intervalAt: (stackFrame ifNotNil: [stackFrame pc]))
 		ifNil: [1 to: 0]
