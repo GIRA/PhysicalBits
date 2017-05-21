@@ -7,6 +7,29 @@ openInWindow
 		addMorph: self
 		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.0) offsets: (0@0 corner: 0@height)).
 	window 
+		addMorph: (PluggableListMorph
+			on: self
+			list: #stackFrames
+			selected: #stackFrameSelection 
+			changeSelected: nil)
+		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.2) offsets: (0@height corner: 0@0)).
+	window
+		addMorph: (PluggableTextMorph 
+			on: self
+			text: #sourceCode
+			accept: nil
+			readSelection: #sourceCodeSelection
+			menu: nil)
+		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.5@0.8) offsets: (0@0 corner: 0@0)).
+	window
+		addMorph: (PluggableTextMorph 
+			on: self
+			text: #textualForm
+			accept: nil
+			readSelection: #textualFormSelection 
+			menu: nil)
+		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@0.8) offsets: (0@0 corner: 0@0)).
+	window 
 		addMorph: (AlignmentMorph newRow
 			cellPositioning: #topCenter;
 			cellInset: 5;
@@ -20,23 +43,7 @@ openInWindow
 				vResizing: #spaceFill;
 				yourself);
 			yourself)
-		fullFrame: (LayoutFrame fractions: (0@0 corner: 1.0@0.2) offsets: (0@height corner: 0@0)).
-	window
-		addMorph: (PluggableTextMorph 
-			on: self
-			text: #sourceCode
-			accept: nil
-			readSelection: #sourceCodeSelection
-			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.5@0.85) offsets: (0@0 corner: 0@0)).
-	window
-		addMorph: (PluggableTextMorph 
-			on: self
-			text: #textualForm
-			accept: nil
-			readSelection: #textualFormSelection 
-			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@0.85) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0@0.8 corner: 0.5@1.0) offsets: (0@0 corner: 0@0)).
 	window
 		addMorph: (PluggableTextMorph 
 			on: self
@@ -44,6 +51,6 @@ openInWindow
 			accept: nil
 			readSelection: nil
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0@0.85 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0.5@0.8 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
 	window extent: 600 @ 600.
 	window openInHand
