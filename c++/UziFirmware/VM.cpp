@@ -35,7 +35,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			stack->push(0);
 		}
 		stack->push(0); // Return value slot (default: 0)
-		stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
+		stack->push(uint32_to_float((uint32)-1 << 16 | pc));
 	}
 	bool yieldFlag = false;
 	while (true)
