@@ -59,6 +59,8 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		if (stack->hasError())
 		{
 			// TODO(Richo): Notify client of stack error
+			coroutine->setError(stack->getError());
+			coroutine->getScript()->setStepping(false);
 			break;
 		}
 		if (pc > currentScript->getInstructionStop())

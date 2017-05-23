@@ -2,6 +2,7 @@
 #include "SerialReader.h"
 #include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
+#include "Errors.h"
 
 #define MAJOR_VERSION		0
 #define MINOR_VERSION		3
@@ -61,7 +62,7 @@ inline void executeSetBreakCount(void);
 inline void sendPinValues(void);
 inline void sendGlobalValues(void);
 inline void sendTickingScripts(void);
-inline void sendError(uint8);
+inline void sendError(uint8, uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
 inline void initSerial(void);
@@ -152,10 +153,15 @@ void sendReport(void)
 
 void sendVMState(void)
 {
-	int16 count = program->getCoroutineCount();
+	uint8 count = program->getCoroutineCount();
 	Coroutine* coroutine = program->getCoroutine();
-	for (int16 i = 0; i < count; i++)
+	for (uint8 i = 0; i < count; i++)
 	{
+		if (coroutine->getError() != NO_ERROR)
+		{
+			sendError(i, coroutine->getError());
+			coroutine->reset();
+		}
 		if (coroutine->getDumpState())
 		{
 			coroutine->clearDumpState();
@@ -193,9 +199,10 @@ void checkKeepAlive(void)
 	}
 }
 
-void sendError(uint8 errorCode)
+void sendError(uint8 coroutineIndex, uint8 errorCode)
 {
 	Serial.write(RS_ERROR);
+	Serial.write(coroutineIndex);
 	Serial.write(errorCode);
 }
 

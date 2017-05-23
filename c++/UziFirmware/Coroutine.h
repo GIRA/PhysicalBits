@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "StackArray.h"
 #include "Script.h"
+#include "Errors.h"
 
 class Coroutine
 {
@@ -32,6 +33,10 @@ public:
 	uint16 getStackSize(void);
 	float getStackElementAt(uint16);
 
+	Error getError(void);
+	void setError(Error);
+	void reset(void);
+
 private:
 
 	Script* activeScript;
@@ -47,4 +52,6 @@ private:
 
 	int8 breakCount;
 	bool dumpState = false;
+
+	Error error = NO_ERROR;
 };

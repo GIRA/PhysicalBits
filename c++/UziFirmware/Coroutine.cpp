@@ -137,3 +137,24 @@ float Coroutine::getStackElementAt(uint16 index)
 	if (index >= stackSize) return 0;
 	return stackElements[index];
 }
+
+Error Coroutine::getError(void)
+{
+	return error;
+}
+
+void Coroutine::setError(Error err)
+{
+	error = err;
+}
+
+void Coroutine::reset(void)
+{
+	error = NO_ERROR;
+	activeScript = script;
+	framePointer = -1;
+	pc = script->getInstructionStart();
+	stackSize = 0;
+	delete stackElements;
+	stackElements = 0;
+}

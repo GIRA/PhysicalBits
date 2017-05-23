@@ -1,0 +1,10 @@
+#pragma once
+
+enum Error
+{
+	NO_ERROR,
+
+	STACK_OVERFLOW,
+	STACK_UNDERFLOW,
+	STACK_ACCESS_VIOLATION
+};

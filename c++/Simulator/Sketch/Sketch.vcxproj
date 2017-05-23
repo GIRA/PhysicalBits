@@ -141,6 +141,7 @@
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingReader.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWearLevelingWriter.h" />
     <ClInclude Include="..\..\UziFirmware\EEPROMWriter.h" />
+    <ClInclude Include="..\..\UziFirmware\Errors.h" />
     <ClInclude Include="..\..\UziFirmware\GPIO.h" />
     <ClInclude Include="..\..\UziFirmware\Instruction.h" />
     <ClInclude Include="..\..\UziFirmware\Program.h" />

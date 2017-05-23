@@ -29,15 +29,15 @@ float StackArray::top(void)
 void StackArray::reset(void)
 {
 	pointer = 0;
-	error = STACK_NO_ERROR;
+	error = NO_ERROR;
 }
 
 bool StackArray::hasError(void)
 {
-	return error != STACK_NO_ERROR;
+	return error != NO_ERROR;
 }
 
-StackError StackArray::getError(void)
+Error StackArray::getError(void)
 {
 	return error;
 }

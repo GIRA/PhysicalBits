@@ -4,6 +4,7 @@
 #include "GPIO.h"
 #include "StackArray.h"
 #include "Program.h"
+#include "Errors.h"
 
 class VM
 {

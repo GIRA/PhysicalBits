@@ -132,5 +132,8 @@
     <ClInclude Include="..\..\UziFirmware\Instruction.h">
       <Filter>Sketch</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\Errors.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
