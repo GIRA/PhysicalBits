@@ -45,7 +45,10 @@
 		"scriptReference",
 		"return",
 		"argumentList",
-		"variableDefinitionList" ],
+		"variableDefinitionList",
+		"importsList",
+		"importPath",
+		"import" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

@@ -1,8 +1,9 @@
 grammar-start
 start
-	^ (variableDefinitionList , script plus) token , ws end
+	^ (importsList, variableDefinitionList , script plus) token , ws end
 		map: [:token :ign | 
 			(UziProgramNode 
-				variableDefinitions: token parsedValue first
-				scripts: token parsedValue second)
+				imports: token parsedValue first
+				variableDefinitions: token parsedValue second
+				scripts: token parsedValue third)
 				token: token]

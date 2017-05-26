@@ -6,10 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"variableDefinitions",
-		"scripts",
-		"imports" ],
-	"name" : "UziProgramNode",
+		"name",
+		"path" ],
+	"name" : "UziImportNode",
 	"pools" : [
 		 ],
 	"super" : "UziParseNode",
