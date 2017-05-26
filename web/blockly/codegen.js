@@ -62,13 +62,89 @@ Blockly.JavaScript.scrub_ = function(block, code) {
 };
 
 Blockly.JavaScript['math_number'] = function(block) {
-  // Numeric value.
-  var code = NumberNode(parseFloat(block.getFieldValue('NUM')));
-  code = JSON.stringify(code);
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+	// Numeric value.
+	var code = NumberNode(parseFloat(block.getFieldValue('NUM')));
+	code = JSON.stringify(code);
+	return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 
+Blockly.JavaScript['math_arithmetic'] = function(block) {
+	// Basic arithmetic operators, and power.
+	var OPERATORS = {
+		'ADD': '+',
+		'MINUS': '-',
+		'MULTIPLY': '*',
+		'DIVIDE': '/',
+		'POWER': '**'
+	};
+	var order = Blockly.JavaScript.ORDER_NONE;
+	var operator = OPERATORS[block.getFieldValue('OP')];
+	var argument0 = Blockly.JavaScript.valueToCode(block, 'A', order) || '0';
+	var argument1 = Blockly.JavaScript.valueToCode(block, 'B', order) || '0';
+	var code = MessageSendNode({
+		receiver: eval(argument0),
+		selector: operator,
+		arguments: [eval(argument1)]
+	});
+	code = JSON.stringify(code);
+	return [code, order];
+};
+
+Blockly.JavaScript['math_single'] = function(block) {
+	// Math operators with single operand.
+	var operator = block.getFieldValue('OP');
+	var rcvr = Blockly.JavaScript.valueToCode(block, 'NUM', Blockly.JavaScript.ORDER_NONE) || '0';	
+	var selector;
+	var args = [];
+	switch (operator) {
+		case 'NEG': selector = "negated"; break;
+		case 'SIN': selector = "sin"; break;
+		case 'COS': selector = "cos"; break;
+		case 'TAN': selector = "tan"; break;
+		case 'ABS': selector = "abs"; break;
+		case 'ROOT': selector = "sqrt"; break;
+		case 'LN': selector = "ln"; break;
+		case 'EXP': selector = "exp"; break;
+		case 'POW10':
+			args = [rcvr];
+			rcvr = 10;
+			selector = '**';
+			break;
+		case 'ROUND': selector = "round"; break;
+		case 'ROUNDUP': selector = "ceiling"; break;
+		case 'ROUNDDOWN': selector = "floor"; break;
+		case 'LOG10': selector = "log"; break;
+		case 'ASIN': selector = "arcSin"; break;
+		case 'ACOS': selector = "arcCos"; break;
+		case 'ATAN': selector = "arcTan"; break;
+		default:
+			throw 'Unknown math operator: ' + operator;
+	}
+	var code = MessageSendNode({
+		receiver: rcvr,
+		selector: selector,
+		arguments: args
+	});
+	code = JSON.stringify(code);
+	return [code, Blockly.JavaScript.ORDER_NONE];
+};
+
+Blockly.JavaScript['math_constant'] = function(block) {
+	// Constants: PI, E, the Golden Ratio, sqrt(2), 1/sqrt(2), INFINITY.
+	var CONSTANTS = {
+		'PI': Math.PI,
+		'E': Math.E,
+		'GOLDEN_RATIO': (1 + Math.sqrt(5)) / 2,
+		'SQRT2': Math.SQRT2,
+		'SQRT1_2': Math.SQRT1_2,
+		'INFINITY': Infinity
+	};
+	var val = CONSTANTS[block.getFieldValue('CONSTANT')];
+	var code = NumberNode(val);
+	code = JSON.stringify(code);
+	return [code, Blockly.JavaScript.ORDER_NONE];
+};
 
 
 
