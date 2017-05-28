@@ -7,7 +7,7 @@ testScriptCallAsLoopCondition
 	self assert: script instructions = {
 		call arg: #foo.
 		jz arg: 3.
-		push arg: (program variables detect: [:var | var value = 13]).
+		push arg: (program globals detect: [:var | var value = 13]).
 		prim arg: (UziPrimitive named: #toggle).
 		jmp arg: -5
 	}

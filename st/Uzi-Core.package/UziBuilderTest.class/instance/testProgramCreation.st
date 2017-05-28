@@ -11,7 +11,7 @@ testProgramCreation
 			prim: #read;
 			prim: #write]].
 	self assert: 1 equals: program scripts size.
-	self assert: #(9 10) equals: (program variables collect: #value).
+	self assert: #(9 10) equals: (program globals collect: #value).
 	script := program scripts first.
 	self assert: script name = #main.
 	self assert: script isTicking.
@@ -19,8 +19,8 @@ testProgramCreation
 	instructions := script instructions.
 	self assert: instructions size = 4.
 	self assert: instructions = {
-		push arg: program variables first.
-		push arg: program variables second.
+		push arg: program globals first.
+		push arg: program globals second.
 		prim arg: (UziPrimitive named: #read).
 		prim arg: (UziPrimitive named: #write)
 	}

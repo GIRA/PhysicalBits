@@ -1,11 +1,14 @@
 {
 	"class" : {
+		"defaultLibrariesDirectory" : "Richo 5/26/2017 10:04",
 		"exampleBlinkLed9" : "Richo 8/10/2016 18:53",
 		"exampleBlinkLed9On:" : "Richo 8/22/2016 09:56",
 		"exampleButton10Led9" : "Richo 8/10/2016 18:53",
 		"exampleButton10Led9On:" : "Richo 8/22/2016 09:56",
 		"examplePot15Led9" : "Richo 8/10/2016 18:54",
 		"examplePot15Led9On:" : "Richo 8/22/2016 09:56",
+		"librariesDirectory" : "Richo 5/26/2017 10:04",
+		"librariesDirectory:" : "Richo 5/26/2017 10:04",
 		"program:" : "Richo 8/10/2016 16:57" },
 	"instance" : {
 		 } }

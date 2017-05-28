@@ -48,7 +48,8 @@
 		"variableDefinitionList",
 		"importsList",
 		"importPath",
-		"import" ],
+		"import",
+		"libraries" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

@@ -13,7 +13,7 @@
 		"currentProgram" : "Richo 5/20/2017 16:51",
 		"debuggerOn:" : "Richo 1/9/2017 06:18",
 		"disconnect" : "Richo 8/10/2015 10:19",
-		"getGlobal:" : "Richo 5/20/2017 15:44",
+		"getGlobal:" : "Richo 5/27/2017 13:11",
 		"getGlobalReport:" : "Richo 10/9/2016 18:20",
 		"getPinMode:" : "Richo 10/29/2014 16:55",
 		"getPinReport:" : "Richo 10/9/2016 18:17",
@@ -43,8 +43,8 @@
 		"send:" : "Richo 7/17/2016 19:20",
 		"sendPinsReporting" : "Richo 8/10/2015 11:16",
 		"setBreakCount:value:" : "Richo 12/28/2016 13:42",
-		"setGlobal:report:" : "Richo 10/6/2016 10:26",
-		"setGlobal:value:" : "Richo 5/21/2017 11:02",
+		"setGlobal:report:" : "Richo 5/27/2017 13:12",
+		"setGlobal:value:" : "Richo 5/27/2017 13:13",
 		"setPin:mode:" : "Richo 7/17/2016 19:21",
 		"setPin:report:" : "Richo 7/17/2016 19:23",
 		"setPin:value:" : "Richo 7/17/2016 19:23",
@@ -59,4 +59,4 @@
 		"stopProfiling" : "Richo 7/17/2016 19:24",
 		"stopReporting" : "Richo 7/17/2016 19:24",
 		"stopSteppingProcess" : "Richo 10/21/2014 14:11",
-		"variables" : "Richo 10/4/2016 12:48" } }
+		"variables" : "Richo 5/27/2017 13:13" } }

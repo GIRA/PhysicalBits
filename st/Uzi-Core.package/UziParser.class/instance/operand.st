@@ -1,3 +1,3 @@
 grammar-expressions
 operand
-	^ literal / variable / specialVariable / subexpression / scriptReference 
+	^ scriptReference / literal / variable / specialVariable / subexpression
