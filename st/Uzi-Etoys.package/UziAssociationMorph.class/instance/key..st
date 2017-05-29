@@ -1,4 +1,4 @@
 accessing
 key: newKey
 	key := newKey.
-	keyText contents: key printString
+	keyText contents: key asString

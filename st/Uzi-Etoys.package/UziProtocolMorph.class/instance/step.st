@@ -14,6 +14,6 @@ step
 		text privateValue: (self getGlobal: var)].
 	scriptTexts keysAndValuesDo: [:script :text |
 		text contents: (((self isTicking: script)
-				ifTrue: [' @{1} -> ticking']
-				ifFalse: [' @{1}']) 
+				ifTrue: [' {1} -> ticking']
+				ifFalse: [' {1}']) 
 			format: {script name})]

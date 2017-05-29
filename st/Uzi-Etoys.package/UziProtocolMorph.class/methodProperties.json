@@ -7,7 +7,7 @@
 	"instance" : {
 		"buildButtons" : "Richo 12/31/2016 19:41",
 		"buildConnectionPanel" : "Richo 10/9/2016 21:50",
-		"buildGlobalsList" : "Richo 10/13/2016 10:27",
+		"buildGlobalsList" : "Richo 5/29/2017 10:41",
 		"buildGlobalsPanel" : "Richo 10/9/2016 21:52",
 		"buildInspectorButton" : "Richo 12/16/2016 21:26",
 		"buildPinsList" : "Richo 10/13/2016 10:27",
@@ -54,7 +54,7 @@
 		"setGlobal:value:" : "Richo 10/13/2016 10:22",
 		"setPin:report:" : "Richo 10/9/2016 17:27",
 		"setPin:value:" : "Richo 10/9/2016 17:26",
-		"step" : "Richo 5/8/2017 12:49",
+		"step" : "Richo 5/29/2017 10:37",
 		"stepTime" : "Richo 10/4/2016 12:28",
 		"tickingScripts" : "Richo 5/8/2017 12:56",
 		"toggleConnection" : "Richo 10/9/2016 23:58",
