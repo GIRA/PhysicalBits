@@ -6,7 +6,7 @@
 		"testArgumentList" : "Richo 4/8/2017 12:10",
 		"testBinaryExpression" : "Richo 12/22/2016 16:57",
 		"testBinaryExpressionWithLiteralReceiverAndArgument" : "Richo 12/22/2016 16:57",
-		"testBinarySelector" : "Richo 12/22/2016 16:15",
+		"testBinarySelector" : "Richo 5/29/2017 11:01",
 		"testBinarySend" : "Richo 12/22/2016 16:26",
 		"testBlockLocals" : "Richo 5/8/2017 19:15",
 		"testChainedMessageSendsShouldPreserveTheirOriginalTokens" : "Richo 3/26/2017 09:38",

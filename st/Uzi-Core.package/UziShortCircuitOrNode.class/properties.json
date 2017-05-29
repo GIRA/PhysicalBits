@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"left",
+		"right" ],
+	"name" : "UziShortCircuitOrNode",
+	"pools" : [
+		 ],
+	"super" : "UziParseNode",
+	"type" : "normal" }

@@ -28,6 +28,8 @@
 		"visitScriptRefNode:" : "Richo 3/26/2017 21:42",
 		"visitScriptStartNode:" : "Richo 3/26/2017 21:40",
 		"visitScriptStopNode:" : "Richo 3/26/2017 21:40",
+		"visitShortCircuitAndNode:" : "Richo 5/29/2017 11:02",
+		"visitShortCircuitOrNode:" : "Richo 5/29/2017 11:04",
 		"visitSpecialVariableNode:" : "Richo 3/24/2017 17:47",
 		"visitTickingRateNode:" : "Richo 12/30/2016 16:32",
 		"visitVariableDefinitionNode:" : "Richo 12/30/2016 16:39",
