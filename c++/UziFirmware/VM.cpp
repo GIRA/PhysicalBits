@@ -530,6 +530,12 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			}
 		}
 		break;
+
+		case PRIM_COROUTINE: 
+		{
+			stack->push(currentCoroutine->getScript()->getIndex());
+		}
+		break;
 	}
 
 }

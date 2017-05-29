@@ -117,6 +117,7 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 					case 0x19: instructions[i].opcode = PRIM_RET; break;
 					case 0x1A: instructions[i].opcode = PRIM_POP; break;
 					case 0x1B: instructions[i].opcode = PRIM_RETV; break;
+					case 0x1C: instructions[i].opcode = PRIM_COROUTINE; break;
 				}
 			}
 			break;

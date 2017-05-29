@@ -1164,5 +1164,65 @@ namespace SimulatorTest
             Assert.AreEqual(32, sketch.GetPinValue(11));
 
         }
+
+
+
+        [TestMethod]
+        public void TestPrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+                    script: #foo
+                    ticking: true
+                    delay: 0
+                    instructions: [:s | s
+                        call: #writeCoroutine;
+                        prim: #pop;
+                        push: 1000;
+                        prim: #yieldTime;
+                        stop: #foo;
+                        start: #bar];
+                    script: #bar
+                    ticking: false
+                    delay: 0
+                    instructions: [:s | s
+                        call: #writeCoroutine;
+                        prim: #pop;
+                        push: 1000;
+                        prim: #yieldTime;
+                        stop: #bar;
+                        start: #foo];
+                    script: #writeCoroutine
+                    ticking: false
+                    delay: 0
+                    instructions: [:s | s
+                        push: 11;
+                        prim: #coroutine;
+                        prim: #write]].
+                UziProtocol new run: program
+                */
+                0, 3, 2, 4, 11, 5, 3, 232, 128, 0, 0, 0, 6, 194, 186, 129, 183, 224, 209,
+                0, 0, 0, 0, 6, 194, 186, 129, 183, 225, 208, 0, 0, 0, 0, 3, 128, 188, 161
+            });
+
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+            sketch.Loop(); // Run twice because of yield
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+
+            sketch.SetMillis(2000);
+            sketch.Loop();
+            sketch.Loop(); // Run twice because of yield
+            Assert.AreEqual(1023, sketch.GetPinValue(11));
+
+            sketch.SetMillis(3000);
+            sketch.Loop();
+            sketch.Loop(); // Run twice because of yield
+            Assert.AreEqual(0, sketch.GetPinValue(11));
+        }
     }
 }
