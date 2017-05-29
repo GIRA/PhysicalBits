@@ -1,8 +1,9 @@
 #include "Script.h"
 
-Script::Script(uint8 start, Reader * rs, bool& timeout)
+Script::Script(uint8 start, uint8 scriptIndex, Reader * rs, bool& timeout)
 {
 	instructionStart = start;
+	index = scriptIndex;
 	int32 n = rs->nextLong(4, timeout);
 	if (!timeout)
 	{
@@ -86,4 +87,9 @@ int32 Script::getStepTime(void)
 uint8 Script::getLocalCount(void)
 {
 	return localCount;
+}
+
+uint8 Script::getIndex(void)
+{
+	return index;
 }
