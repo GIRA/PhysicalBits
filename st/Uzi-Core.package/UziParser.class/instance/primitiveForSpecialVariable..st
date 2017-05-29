@@ -1,7 +1,7 @@
 accessing
 primitiveForSpecialVariable: variableName
 	| primName validNames |
-	validNames := #(seconds millis).
+	validNames := #(seconds millis coroutine).
 	primName := (validNames includes: variableName)
 		ifTrue: [variableName]
 		ifFalse: nil.

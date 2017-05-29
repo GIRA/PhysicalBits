@@ -30,4 +30,5 @@ primSpec
 		(ret 16r19 false)
 		(pop 16r1A false)
 		(retv 16r1B false)
+		(coroutine 16r1C true)
 	)
