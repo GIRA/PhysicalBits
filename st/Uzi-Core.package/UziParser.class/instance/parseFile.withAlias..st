@@ -7,4 +7,4 @@ parseFile: fileName withAlias: alias
 			ast := self parse: file contents.
 			ast isPetitFailure 
 				ifTrue: [ast]
-				ifFalse: [ast applyAlias: alias]]
+				ifFalse: [UziAliasApplier apply: alias on: ast]]

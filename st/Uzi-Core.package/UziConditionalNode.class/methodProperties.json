@@ -5,7 +5,6 @@
 		"condition:true:false:" : "Richo 12/30/2016 15:56" },
 	"instance" : {
 		"accept:" : "Richo 12/30/2016 16:17",
-		"applyAlias:" : "Richo 5/27/2017 21:58",
 		"condition" : "Richo 12/30/2016 16:12",
 		"falseBranch" : "Richo 12/30/2016 16:16",
 		"initializeWithCondition:trueBranch:falseBranch:" : "Richo 12/30/2016 15:57",

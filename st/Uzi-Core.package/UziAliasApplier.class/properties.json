@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"alias",
+		"program",
+		"script" ],
+	"name" : "UziAliasApplier",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
