@@ -1,3 +1,5 @@
 accessing
 stack
-	^ stackFrame ifNotNil: [stackFrame stack]
+	^ stackFrame
+		ifNil: [debugger stack]
+		ifNotNil: [stackFrame stack]

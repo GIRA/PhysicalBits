@@ -1,3 +1,5 @@
 accessing
 currentInstruction
-	^ stackFrame ifNotNil: [(debugger instructionAtPC: stackFrame pc)]
+	^ (debugger instructionAtPC: (stackFrame 
+		ifNil: [debugger pc]
+		ifNotNil: [stackFrame pc]))
