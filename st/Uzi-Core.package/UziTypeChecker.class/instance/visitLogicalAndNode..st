@@ -1,5 +1,5 @@
 visiting
-visitShortCircuitAndNode: node
+visitLogicalAndNode: node
 	self assertExpression: node left.
 	self assertExpression: node right.
 		

@@ -1,5 +1,5 @@
 visiting
-visitShortCircuitOrNode: node
+visitLogicalOrNode: node
 	| labelEnd labelTrue |
 	labelTrue := self newLabel.
 	labelEnd := self newLabel.

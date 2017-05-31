@@ -8,7 +8,7 @@
 	"instvars" : [
 		"left",
 		"right" ],
-	"name" : "UziShortCircuitAndNode",
+	"name" : "UziLogicalOrNode",
 	"pools" : [
 		 ],
 	"super" : "UziParseNode",

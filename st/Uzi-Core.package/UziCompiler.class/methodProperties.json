@@ -18,6 +18,8 @@
 		"visitBlockNode:" : "Richo 5/6/2017 19:08",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
 		"visitConditionalNode:" : "Richo 12/31/2016 13:33",
+		"visitLogicalAndNode:" : "Richo 5/31/2017 18:37",
+		"visitLogicalOrNode:" : "Richo 5/31/2017 18:37",
 		"visitLoopNode:" : "Richo 5/6/2017 19:33",
 		"visitMessageSend:" : "Richo 12/31/2016 20:19",
 		"visitNumberNode:" : "Richo 12/31/2016 20:19",
@@ -28,8 +30,6 @@
 		"visitScriptRefNode:" : "Richo 5/2/2017 18:57",
 		"visitScriptStartNode:" : "Richo 4/5/2017 08:37",
 		"visitScriptStopNode:" : "Richo 4/5/2017 08:38",
-		"visitShortCircuitAndNode:" : "Richo 5/29/2017 11:10",
-		"visitShortCircuitOrNode:" : "Richo 5/29/2017 11:10",
 		"visitSpecialVariableNode:" : "Richo 3/24/2017 17:35",
 		"visitVariableDefinitionNode:" : "Richo 5/8/2017 19:32",
 		"visitVariableNode:" : "Richo 4/8/2017 12:23" } }
