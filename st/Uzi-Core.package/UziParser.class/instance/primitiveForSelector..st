@@ -28,6 +28,8 @@ primitiveForSelector: selector
 		[#<] -> [#lessThan].
 		[#<=] -> [#lessThanOrEquals].
 		[#negated] -> [#negate].
-		[#msDelay] -> [#yieldTime]
+		[#msDelay] -> [#yieldTime].
+		[#&] -> [#bitwiseAnd].
+		[#|] -> [#bitwiseOr].
 	} otherwise: nil.
 	^ primName ifNotNil: [UziPrimitive named: primName]

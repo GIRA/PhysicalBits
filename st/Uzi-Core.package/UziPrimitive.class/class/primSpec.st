@@ -31,4 +31,8 @@ primSpec
 		(pop 16r1A false)
 		(retv 16r1B false)
 		(coroutine 16r1C true)
+		(logicalAnd 16r1D true)
+		(logicalOr 16r1E true)
+		(bitwiseAnd 16r1F true)
+		(bitwiseOr 16r20 true)
 	)
