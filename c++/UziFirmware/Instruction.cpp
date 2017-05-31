@@ -89,6 +89,7 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 			{
 				switch (argument)
 				{
+					// TODO(Richo): Reorder this so that most-used primitives go first
 					case 0x00: instructions[i].opcode = PRIM_READ_PIN; break;
 					case 0x01: instructions[i].opcode = PRIM_WRITE_PIN; break;
 					case 0x02: instructions[i].opcode = PRIM_TOGGLE_PIN; break;
@@ -118,6 +119,10 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 					case 0x1A: instructions[i].opcode = PRIM_POP; break;
 					case 0x1B: instructions[i].opcode = PRIM_RETV; break;
 					case 0x1C: instructions[i].opcode = PRIM_COROUTINE; break;
+					case 0x1D: instructions[i].opcode = PRIM_LOGICAL_AND; break;
+					case 0x1E: instructions[i].opcode = PRIM_LOGICAL_OR; break;
+					case 0x1F: instructions[i].opcode = PRIM_BITWISE_AND; break;
+					case 0x20: instructions[i].opcode = PRIM_BITWISE_OR; break;
 				}
 			}
 			break;

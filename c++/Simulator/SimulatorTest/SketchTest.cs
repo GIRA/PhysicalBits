@@ -1165,8 +1165,6 @@ namespace SimulatorTest
 
         }
 
-
-
         [TestMethod]
         public void TestPrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript()
         {
@@ -1223,6 +1221,204 @@ namespace SimulatorTest
             sketch.Loop();
             sketch.Loop(); // Run twice because of yield
             Assert.AreEqual(0, sketch.GetPinValue(11));
+        }
+
+        [TestMethod]
+        public void TestPrimitiveBitwiseAnd()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerGlobal: #n value: 0;
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 11;
+		                push: #n;
+		                push: 7;
+		                prim: #bitwiseAnd;
+		                push: 10;
+		                prim: #divide;
+		                prim: #write;
+		                push: #n;
+		                push: 1;
+		                prim: #add;
+		                pop: #n]].
+                UziProtocol new run: program
+                */
+                0, 1, 5, 20, 0, 1, 7, 10, 11, 128, 0, 3, 232, 11, 132, 128, 130,
+                191, 131, 167, 161, 128, 129, 166, 144
+            });
+            
+            /*
+             * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
+             */
+            int[] values = new int[]
+            {
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409, 512, 614, 716, 0, 102, 205, 307, 409, 512, 614, 716, 0,
+                102, 205, 307, 409
+            };
+
+            sketch.SetMillis(0);
+            sketch.Loop();
+            for (int i = 0; i < values.Length; i++)
+            {
+                sketch.SetMillis((i + 1) * 1000 + 50);
+                sketch.Loop();
+                short pinValue = sketch.GetPinValue(11);
+                Assert.IsTrue(pinValue >= values[i] - 2,
+                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+                Assert.IsTrue(pinValue <= values[i] + 2,
+                    "D11 is larger than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+            }
+        }
+
+        [TestMethod]
+        public void TestPrimitiveBitwiseOr()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                registerGlobal: #n value: 0;
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 11;
+		                push: #n;
+		                push: 1;
+		                prim: #bitwiseOr;
+		                push: 100;
+		                prim: #divide;
+		                prim: #write;
+		                push: #n;
+		                push: 1;
+		                prim: #add;
+		                pop: #n]].
+                UziProtocol new run: program
+                */
+                0, 1, 4, 16, 0, 1, 11, 100, 128, 0, 3, 232, 11, 130, 128, 129,
+                250, 0, 131, 167, 161, 128, 129, 166, 144
+            });
+
+            /*
+             * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
+             */
+            int[] values = new int[]
+            {
+                10, 31, 31, 51, 51, 72, 72, 92, 92, 113, 113, 133, 133, 153, 153, 174, 174,
+                194, 194, 215, 215, 235, 235, 256, 256, 276, 276, 297, 297, 317, 317, 338,
+                338, 358, 358, 379, 379, 399, 399, 419, 419, 440, 440, 460, 460, 481, 481,
+                501, 501, 522, 522, 542, 542, 563, 563, 583, 583, 604, 604, 624, 624, 644,
+                644, 665, 665, 685, 685, 706, 706, 726, 726, 747, 747, 767, 767, 788, 788,
+                808, 808, 829, 829, 849, 849, 870, 870, 890, 890, 910, 910, 931, 931, 951,
+                951, 972, 972, 992, 992, 1013, 1013
+            };
+
+            sketch.SetMillis(0);
+            sketch.Loop();
+            for (int i = 0; i < values.Length; i++)
+            {
+                sketch.SetMillis((i + 1) * 1000 + 50);
+                sketch.Loop();
+                short pinValue = sketch.GetPinValue(11);
+                Assert.IsTrue(pinValue >= values[i] - 2,
+                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+                Assert.IsTrue(pinValue <= values[i] + 2,
+                    "D11 is larger than expected (iteration: {0}, expected: {1}, actual: {2})",
+                    i,
+                    values[i],
+                    pinValue);
+            }
+        }
+
+        [TestMethod]
+        public void TestPrimitiveLogicalAnd()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 1;
+		                push: 0;
+		                prim: #logicalAnd;
+		                jz: 3;
+		                push: 13;
+		                prim: #toggle;
+		                jmp: 2;
+		                push: 11;
+		                prim: #toggle]].
+                UziProtocol new run: program
+                */
+                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 3, 232, 9, 129, 128,
+                189, 241, 3, 131, 162, 240, 2, 130, 162
+            });
+            
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                short pinValue = sketch.GetPinValue(11);
+                Assert.AreEqual(1023 * (1 - (i % 2)) , pinValue);
+                Assert.AreEqual(0, sketch.GetPinValue(13));
+            }
+        }
+
+        [TestMethod]
+        public void TestPrimitiveLogicalOr()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #main
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                push: 1;
+		                push: 0;
+		                prim: #logicalOr;
+		                jz: 3;
+		                push: 13;
+		                prim: #toggle;
+		                jmp: 2;
+		                push: 11;
+		                prim: #toggle]].
+                UziProtocol new run: program
+                */
+                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 3, 232, 9, 129, 128,
+                190, 241, 3, 131, 162, 240, 2, 130, 162
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                short pinValue = sketch.GetPinValue(13);
+                Assert.AreEqual(1023 * (1 - (i % 2)), pinValue);
+                Assert.AreEqual(0, sketch.GetPinValue(11));
+            }
         }
     }
 }

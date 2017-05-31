@@ -536,6 +536,38 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			stack->push(currentCoroutine->getScript()->getIndex());
 		}
 		break;
+
+		case PRIM_LOGICAL_AND:
+		{
+			float a = stack->pop();
+			float b = stack->pop();
+			stack->push(a && b);
+		}
+		break;
+
+		case PRIM_LOGICAL_OR:
+		{
+			float a = stack->pop();
+			float b = stack->pop();
+			stack->push(a || b);
+		}
+		break;
+
+		case PRIM_BITWISE_AND:
+		{
+			uint32 a = (uint32)stack->pop();
+			uint32 b = (uint32)stack->pop();
+			stack->push(a & b);
+		}
+		break;
+
+		case PRIM_BITWISE_OR:
+		{
+			uint32 a = (uint32)stack->pop();
+			uint32 b = (uint32)stack->pop();
+			stack->push(a | b);
+		}
+		break;
 	}
 
 }
