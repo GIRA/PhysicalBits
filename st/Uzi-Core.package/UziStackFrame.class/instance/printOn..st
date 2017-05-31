@@ -1,8 +1,6 @@
 printing
 printOn: aStream
-	aStream
-		nextPut: $@;
-		nextPutAll: script name.
+	aStream nextPutAll: script name.
 	script arguments do: [:arg |
 		aStream space;
 			nextPutAll: arg name;
