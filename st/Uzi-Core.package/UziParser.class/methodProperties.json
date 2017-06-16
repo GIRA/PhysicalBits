@@ -2,10 +2,16 @@
 	"class" : {
 		 },
 	"instance" : {
+		"argsList" : "Richo 6/16/2017 19:56",
+		"call" : "Richo 6/16/2017 19:55",
+		"comments" : "Richo 6/16/2017 19:34",
 		"constant" : "Richo 6/16/2017 17:52",
 		"digits" : "Richo 6/16/2017 17:49",
+		"expression" : "Richo 6/16/2017 19:52",
 		"float" : "Richo 6/16/2017 17:49",
 		"identifier" : "Richo 6/16/2017 17:55",
 		"integer" : "Richo 6/16/2017 17:49",
+		"literal" : "Richo 6/16/2017 19:53",
 		"number" : "Richo 6/16/2017 17:49",
-		"start" : "Richo 6/16/2017 17:50" } }
+		"start" : "Richo 6/16/2017 17:50",
+		"ws" : "Richo 6/16/2017 19:34" } }
