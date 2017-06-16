@@ -1,9 +1,9 @@
 accessing
 locals
 	^ String streamContents: [:stream |
-		stackFrame ifNotNil: [
-			stackFrame script variables do: [:var |
+		stackFrame ifNotNil: [:sf |
+			sf script variables do: [:var |
 				stream print: var name;
 					nextPutAll: ' -> ';
-					print: (stackFrame localAt: var);
+					print: (sf localAt: var);
 					cr]]]

@@ -2,4 +2,4 @@ accessing
 stack
 	^ stackFrame
 		ifNil: [debugger stack]
-		ifNotNil: [stackFrame stack]
+		ifNotNil: [:sf | sf stack]
