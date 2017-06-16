@@ -1,3 +1,3 @@
 private
 start
-	^ number
+	^ expression end

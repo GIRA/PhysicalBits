@@ -16,7 +16,8 @@
 		"argsList",
 		"expression",
 		"literal",
-		"constant" ],
+		"constant",
+		"call" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

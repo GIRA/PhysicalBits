@@ -1,7 +1,7 @@
 tests
 test006CallWithMultipleArguments
 	| pp ast |
-	pp := parser call.
+	pp := parser call end.
 	ast := pp parse: 'toggle(D13, 1, 0.5,-3)'.
 	self assert: #toggle equals: ast selector.
 	self assert: 4 equals: ast arguments size.

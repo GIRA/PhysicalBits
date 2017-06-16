@@ -1,3 +1,3 @@
 grammar-expressions
 expression 
-	^ literal
+	^ literal / call
