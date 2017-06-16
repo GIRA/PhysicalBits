@@ -1,3 +1,3 @@
 utils
 check: aString
-	^ UziTypeChecker check: (UziParser parse: aString)
+	^ UziTypeChecker check: (UziOldParser parse: aString)

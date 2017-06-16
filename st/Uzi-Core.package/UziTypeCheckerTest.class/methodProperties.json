@@ -3,7 +3,7 @@
 		 },
 	"instance" : {
 		"assertInvalid:" : "Richo 12/31/2016 13:45",
-		"check:" : "Richo 12/31/2016 13:40",
+		"check:" : "Richo 6/16/2017 17:40",
 		"testAssignmentValueShouldBeAnExpression" : "Richo 3/24/2017 17:07",
 		"testAssignmentsAreNotExpressions" : "Richo 3/25/2017 22:59",
 		"testBlockOnlyContainsStatements" : "Richo 3/24/2017 17:08",
