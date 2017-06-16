@@ -4,7 +4,8 @@ specialVariable
 		map: [:token || varName primitive |
 			varName := token parsedValue last. 
 			primitive := self primitiveForSpecialVariable: varName.
-			(UziSpecialVariableNode 
-				name: varName asSymbol
+			(UziPrimitiveCallNode 
+				selector: varName asSymbol
+				arguments: #()
 				primitive: primitive) 
 				token: token]

@@ -1,3 +1,3 @@
 accessing
 isStatement 
-	^ isExpression not
+	^ self isExpression not

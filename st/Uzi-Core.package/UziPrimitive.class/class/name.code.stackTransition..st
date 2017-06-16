@@ -1,7 +1,7 @@
 private
-name: nameSymbol code: codeInteger isExpression: isExpressionBool
+name: nameSymbol code: codeInteger stackTransition: stackTransition
 	"Private! You should use #named: instead"
 	^ self basicNew 
 		initializeWithName: nameSymbol 
 		code: codeInteger
-		isExpression: isExpressionBool
+		stackTransition: stackTransition

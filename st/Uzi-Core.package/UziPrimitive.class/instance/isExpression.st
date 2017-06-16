@@ -1,3 +1,3 @@
 accessing
 isExpression 
-	^ isExpression 
+	^ stackTransition value = 1
