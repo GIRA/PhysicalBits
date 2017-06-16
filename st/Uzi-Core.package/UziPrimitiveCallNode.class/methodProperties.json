@@ -6,7 +6,6 @@
 		"arguments" : "Richo 9/23/2014 13:04",
 		"initializeWithSelector:arguments:primitive:" : "Richo 6/16/2017 18:06",
 		"isExpression" : "Richo 12/31/2016 12:07",
-		"isMessageSend" : "Richo 12/30/2016 15:03",
 		"isStatement" : "Richo 12/31/2016 12:07",
 		"primitive" : "Richo 12/30/2016 15:41",
 		"printOn:" : "Richo 9/7/2016 10:38",
