@@ -13,4 +13,12 @@
 		"test008EmptyScript" : "Richo 6/16/2017 20:28",
 		"test009ScriptWithOneStatement" : "Richo 6/16/2017 20:56",
 		"test010ScriptWithMultipleStatements" : "Richo 6/16/2017 20:58",
-		"test011CallWithRecursiveArgument" : "Richo 6/16/2017 21:00" } }
+		"test011CallWithRecursiveArgument" : "Richo 6/16/2017 21:00",
+		"test012ScriptTicking" : "Richo 6/16/2017 21:05",
+		"test013ScriptOnce" : "Richo 6/16/2017 21:08",
+		"test014ScriptStopped" : "Richo 6/16/2017 21:10",
+		"test015TickingRateDays" : "Richo 6/16/2017 21:11",
+		"test016TickingRateHours" : "Richo 6/16/2017 21:11",
+		"test017TickingRateMinutes" : "Richo 6/16/2017 21:11",
+		"test018TickingRateSeconds" : "Richo 6/16/2017 21:11",
+		"test019ScriptWithTickingRate" : "Richo 6/16/2017 21:14" } }

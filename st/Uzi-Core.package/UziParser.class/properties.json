@@ -22,7 +22,9 @@
 		"scriptBody",
 		"variable",
 		"statementsList",
-		"statement" ],
+		"statement",
+		"scriptState",
+		"tickingRate" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
