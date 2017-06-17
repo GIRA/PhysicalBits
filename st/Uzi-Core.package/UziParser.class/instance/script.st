@@ -7,5 +7,5 @@ script
 			name: nodes third
 			state: nil
 			tickingRate: nil
-			body: nil)
+			body: nodes fifth)
 			token: token]

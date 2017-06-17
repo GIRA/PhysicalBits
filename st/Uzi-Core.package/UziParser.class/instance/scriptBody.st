@@ -1,3 +1,12 @@
 grammar-scripts
 scriptBody
-	^ ws , ${ asParser , ws , $} asParser
+	^ ws , 
+	(${ asParser , statementsList , $} asParser) token,
+	 ws
+	map: [:ign1 :token :ign2 || stmts |
+		stmts := token parsedValue second.
+		(UziBlockNode 
+			arguments: #()
+			locals: #()
+			statements: stmts) 
+			token: token]

@@ -20,7 +20,9 @@
 		"call",
 		"paramsList",
 		"scriptBody",
-		"variable" ],
+		"variable",
+		"statementsList",
+		"statement" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
