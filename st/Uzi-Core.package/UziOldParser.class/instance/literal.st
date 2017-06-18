@@ -1,3 +1,3 @@
 grammar-literals
 literal
-	^ constant / number / block
+	^ constant / number / blockWithoutArgs

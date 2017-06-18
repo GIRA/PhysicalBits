@@ -5,4 +5,4 @@ block
 			args := (token parsedValue at: 3) ifNil: [#()].
 			locals := token parsedValue at: 5.
 			stmts := token parsedValue at: 7.
-			(UziBlockNode arguments: args locals: locals statements: stmts) token: token]
+			args -> ((UziBlockNode locals: locals statements: stmts) token: token)]

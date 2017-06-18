@@ -2,8 +2,8 @@
 	"class" : {
 		 },
 	"instance" : {
-		"assertInvalid:" : "Richo 12/31/2016 13:45",
-		"check:" : "Richo 6/16/2017 17:40",
+		"assertInvalid:" : "Richo 6/18/2017 19:39",
+		"check:" : "Richo 6/18/2017 19:38",
 		"testAssignmentValueShouldBeAnExpression" : "Richo 3/24/2017 17:07",
 		"testAssignmentsAreNotExpressions" : "Richo 3/25/2017 22:59",
 		"testBlockOnlyContainsStatements" : "Richo 3/24/2017 17:08",

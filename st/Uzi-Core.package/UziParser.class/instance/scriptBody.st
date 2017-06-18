@@ -6,7 +6,6 @@ scriptBody
 	map: [:ign1 :token :ign2 || stmts |
 		stmts := token parsedValue second.
 		(UziBlockNode 
-			arguments: #()
 			locals: #()
 			statements: stmts) 
 			token: token]

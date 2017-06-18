@@ -1,3 +1,6 @@
 utils
 check: aString
-	^ UziTypeChecker check: (UziOldParser parse: aString)
+	| ast |
+	ast := UziOldParser parse: aString.
+	ast isPetitFailure ifTrue: [^ ast].
+	^ UziTypeChecker check: ast

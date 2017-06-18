@@ -1,11 +1,11 @@
 {
 	"class" : {
-		"name:state:tickingRate:body:" : "Richo 9/23/2014 11:11" },
+		"name:arguments:state:tickingRate:body:" : "Richo 6/18/2017 19:24" },
 	"instance" : {
 		"accept:" : "Richo 9/23/2014 17:36",
-		"arguments" : "Richo 5/7/2017 12:05",
+		"arguments" : "Richo 6/18/2017 19:25",
 		"body" : "Richo 9/23/2014 16:22",
-		"initializeWithName:state:tickingRate:body:" : "Richo 9/23/2014 11:13",
+		"initializeWithName:arguments:state:tickingRate:body:" : "Richo 6/18/2017 19:24",
 		"isScript" : "Richo 12/30/2016 15:03",
 		"locals" : "Richo 5/8/2017 19:41",
 		"name" : "Richo 9/23/2014 11:13",

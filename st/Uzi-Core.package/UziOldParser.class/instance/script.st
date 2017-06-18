@@ -5,7 +5,8 @@ script
 		nodes := token parsedValue.
 		(UziScriptNode
 			name: nodes first
+			arguments: nodes seventh key
 			state: nodes third
 			tickingRate: nodes fifth
-			body: nodes seventh)
+			body: nodes seventh value)
 			token: token]
