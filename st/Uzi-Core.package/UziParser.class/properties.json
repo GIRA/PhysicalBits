@@ -24,7 +24,10 @@
 		"statementsList",
 		"statement",
 		"scriptState",
-		"tickingRate" ],
+		"tickingRate",
+		"binarySelector",
+		"binary",
+		"expressionNotBinary" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
