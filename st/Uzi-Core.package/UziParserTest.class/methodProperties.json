@@ -26,4 +26,6 @@
 		"test021BinaryExpression" : "Richo 6/19/2017 09:01",
 		"test022BinaryExpression2" : "Richo 6/19/2017 09:01",
 		"test023BinaryExpression3" : "Richo 6/19/2017 09:00",
-		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34" } }
+		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34",
+		"test025VariableDeclaration" : "Richo 6/19/2017 09:58",
+		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57" } }
