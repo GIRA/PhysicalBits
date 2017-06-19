@@ -23,7 +23,7 @@
 		"testImportAssignmentsAreAliased" : "Richo 6/16/2017 17:40",
 		"testImportScriptReferencesAreAliased" : "Richo 6/16/2017 17:40",
 		"testImportVariableReferencesAreAliased" : "Richo 6/16/2017 17:40",
-		"testImportsAreParsedCorrectly" : "Richo 6/16/2017 17:40",
+		"testImportsAreParsedCorrectly" : "Richo 6/19/2017 10:11",
 		"testKeywordExpression" : "Richo 6/16/2017 18:29",
 		"testKeywordExpression2" : "Richo 6/16/2017 18:30",
 		"testKeywordExpression3" : "Richo 6/16/2017 18:30",
@@ -60,4 +60,4 @@
 		"testTrailingSpacesAreAccepted" : "Richo 3/24/2017 17:05",
 		"testUnarySelector" : "Richo 12/22/2016 16:18",
 		"testUnarySend" : "Richo 6/16/2017 18:37",
-		"testVariableDefinitions" : "Richo 5/8/2017 17:48" } }
+		"testVariableDefinitions" : "Richo 6/19/2017 10:11" } }

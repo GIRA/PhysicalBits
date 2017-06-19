@@ -1,3 +1,3 @@
 visiting
-visitVariableDefinitionNode: node
+visitVariableDeclarationNode: node
 	"program registerVariable: node name value: node value"

@@ -5,7 +5,7 @@ testVariableDefinitions
 	ast := pp parse: '
 		| d, a = 4, b = 3, c |
 		@script1 ticking 1/s [foo]'.
-	vars := ast variableDefinitions.
+	vars := ast variableDeclarations.
 	self assert: vars size equals: 4.
 	self assert: #d equals: vars first name.
 	self assert: #a equals: vars second name.

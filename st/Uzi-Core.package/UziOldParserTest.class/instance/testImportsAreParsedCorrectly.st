@@ -9,6 +9,6 @@ testImportsAreParsedCorrectly
 	self assert: 2 equals: ast scripts size.
 	self assert: 'a@foo' equals: ast scripts first name.
 	self assert: 'blink' equals: ast scripts second name.
-	self assert: 2 equals: ast variableDefinitions size.
-	self assert: 'a@var' equals: ast variableDefinitions first name.
-	self assert: 'var' equals: ast variableDefinitions second name	
+	self assert: 2 equals: ast variableDeclarations size.
+	self assert: 'a@var' equals: ast variableDeclarations first name.
+	self assert: 'var' equals: ast variableDeclarations second name	

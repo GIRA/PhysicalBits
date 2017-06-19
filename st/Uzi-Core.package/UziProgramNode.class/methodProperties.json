@@ -1,10 +1,10 @@
 {
 	"class" : {
-		"variableDefinitions:scripts:" : "Richo 5/27/2017 19:38" },
+		"variableDeclarations:scripts:" : "Richo 6/19/2017 10:12" },
 	"instance" : {
 		"accept:" : "Richo 12/30/2016 14:38",
-		"initializeWithVariableDefinitions:scripts:" : "Richo 5/27/2017 19:29",
+		"initializeWithVariableDeclarations:scripts:" : "Richo 6/19/2017 10:12",
 		"isProgram" : "Richo 12/30/2016 15:03",
 		"scriptNamed:" : "Richo 5/7/2017 12:41",
 		"scripts" : "Richo 12/30/2016 14:40",
-		"variableDefinitions" : "Richo 12/30/2016 14:40" } }
+		"variableDeclarations" : "Richo 6/19/2017 10:10" } }

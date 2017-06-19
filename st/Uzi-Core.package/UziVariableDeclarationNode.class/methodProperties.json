@@ -2,9 +2,8 @@
 	"class" : {
 		"name:value:" : "Richo 10/10/2016 16:22" },
 	"instance" : {
-		"accept:" : "Richo 10/10/2016 15:53",
-		"applyAlias:" : "Richo 5/27/2017 21:09",
+		"accept:" : "Richo 6/19/2017 10:09",
 		"initializeWithName:value:" : "Richo 10/10/2016 16:23",
-		"isVariableDefinition" : "Richo 12/30/2016 15:04",
+		"isVariableDeclaration" : "Richo 6/19/2017 10:10",
 		"name" : "Richo 10/10/2016 16:23",
 		"value" : "Richo 10/10/2016 16:08" } }

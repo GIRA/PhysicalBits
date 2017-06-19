@@ -8,7 +8,7 @@
 	"instvars" : [
 		"name",
 		"value" ],
-	"name" : "UziVariableDefinitionNode",
+	"name" : "UziVariableDeclarationNode",
 	"pools" : [
 		 ],
 	"super" : "UziParseNode",

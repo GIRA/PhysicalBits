@@ -7,7 +7,7 @@ start
 			imports isPetitFailure ifTrue: [^ imports].
 			"Collect all variables (imported first)"
 			variables := Array streamContents: [:stream |
-				imports do: [:p | stream nextPutAll: p variableDefinitions].
+				imports do: [:p | stream nextPutAll: p variableDeclarations].
 				stream nextPutAll: token parsedValue second].
 			"Collect all scripts (imported first)"
 			scripts := Array streamContents: [:stream |
@@ -15,6 +15,6 @@ start
 				stream nextPutAll: token parsedValue third].
 			"Assemble the parse tree"
 			(UziProgramNode 
-				variableDefinitions: variables
+				variableDeclarations: variables
 				scripts: scripts)
 				token: token]

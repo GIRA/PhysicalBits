@@ -1,5 +1,5 @@
 visiting
-visitVariableDefinitionNode: node
+visitVariableDeclarationNode: node
 	^ (node class 
 		name: ((self isLocal: node name) 
 			ifTrue: [node name]

@@ -15,7 +15,7 @@
 		"visitLoopNode:" : "Richo 5/31/2017 19:23",
 		"visitNumberNode:" : "Richo 5/31/2017 19:24",
 		"visitPrimitiveCall:" : "Richo 6/16/2017 18:04",
-		"visitProgramNode:" : "Richo 5/31/2017 19:56",
+		"visitProgramNode:" : "Richo 6/19/2017 10:10",
 		"visitReturnNode:" : "Richo 5/31/2017 19:25",
 		"visitScriptCallNode:" : "Richo 5/31/2017 19:43",
 		"visitScriptNode:" : "Richo 6/18/2017 19:24",
@@ -23,5 +23,5 @@
 		"visitScriptStartNode:" : "Richo 5/31/2017 19:27",
 		"visitScriptStopNode:" : "Richo 5/31/2017 19:27",
 		"visitTickingRateNode:" : "Richo 5/31/2017 19:29",
-		"visitVariableDefinitionNode:" : "Richo 5/31/2017 19:57",
+		"visitVariableDeclarationNode:" : "Richo 6/19/2017 10:09",
 		"visitVariableNode:" : "Richo 5/31/2017 19:56" } }
