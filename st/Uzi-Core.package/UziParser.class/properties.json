@@ -27,7 +27,8 @@
 		"tickingRate",
 		"binarySelector",
 		"binary",
-		"expressionNotBinary" ],
+		"expressionNotBinary",
+		"subexpression" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

@@ -1,7 +1,7 @@
 tests
 test022BinaryExpression2
 	| pp ast ast2 |
-	pp := parser binary end.
+	pp := parser expression end.
 	ast := pp parse: '3 + 4 * 6'.
 	self assert: #* equals: ast selector.
 	self assert: 2 equals: ast arguments size.

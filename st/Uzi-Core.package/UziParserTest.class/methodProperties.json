@@ -23,6 +23,7 @@
 		"test018TickingRateSeconds" : "Richo 6/16/2017 21:11",
 		"test019ScriptWithTickingRate" : "Richo 6/16/2017 21:14",
 		"test020ScriptWithArguments" : "Richo 6/18/2017 20:09",
-		"test021BinaryExpression" : "Richo 6/18/2017 20:34",
-		"test022BinaryExpression2" : "Richo 6/18/2017 21:05",
-		"test023BinaryExpression3" : "Richo 6/19/2017 08:29" } }
+		"test021BinaryExpression" : "Richo 6/19/2017 09:01",
+		"test022BinaryExpression2" : "Richo 6/19/2017 09:01",
+		"test023BinaryExpression3" : "Richo 6/19/2017 09:00",
+		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34" } }

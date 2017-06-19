@@ -1,3 +1,3 @@
 grammar-expressions
 expressionNotBinary
-	^ literal / call
+	^ literal / call / subexpression 

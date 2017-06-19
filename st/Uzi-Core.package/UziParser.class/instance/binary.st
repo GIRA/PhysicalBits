@@ -1,6 +1,6 @@
 grammar-binary
 binary
-	^ ws , (expressionNotBinary , (ws , binarySelector , expression) token plus) token, ws
+	^ ws , (expressionNotBinary , (ws , binarySelector , expressionNotBinary) token plus) token, ws
 	map: [:ign1 :token :ign2 || left |
 		left := token parsedValue first.
 		token parsedValue second 

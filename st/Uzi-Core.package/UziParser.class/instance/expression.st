@@ -1,3 +1,3 @@
 grammar-expressions
 expression 
-	^ expressionNotBinary / binary
+	^ binary / expressionNotBinary

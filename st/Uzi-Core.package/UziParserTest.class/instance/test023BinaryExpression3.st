@@ -1,7 +1,7 @@
 tests
 test023BinaryExpression3
 	| pp ast left right |
-	pp := parser binary end.
+	pp := parser expression end.
 	ast := pp parse: 'read(D13) + 4 * read(6)'.
 	self assert: #* equals: ast selector.
 	left := ast arguments first.
