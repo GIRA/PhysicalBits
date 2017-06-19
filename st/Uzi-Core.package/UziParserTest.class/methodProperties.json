@@ -28,4 +28,5 @@
 		"test023BinaryExpression3" : "Richo 6/19/2017 09:00",
 		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34",
 		"test025VariableDeclaration" : "Richo 6/19/2017 09:58",
-		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57" } }
+		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57",
+		"test027Assignment" : "Richo 6/19/2017 10:00" } }
