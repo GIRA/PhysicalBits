@@ -19,7 +19,6 @@
 		"constant",
 		"call",
 		"paramsList",
-		"scriptBody",
 		"variable",
 		"statementsList",
 		"statement",
@@ -28,7 +27,8 @@
 		"binarySelector",
 		"binary",
 		"expressionNotBinary",
-		"subexpression" ],
+		"subexpression",
+		"block" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

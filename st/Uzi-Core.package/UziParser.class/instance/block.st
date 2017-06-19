@@ -1,5 +1,5 @@
 grammar-scripts
-scriptBody
+block
 	^ ws , 
 	(${ asParser , statementsList , $} asParser) token,
 	 ws
