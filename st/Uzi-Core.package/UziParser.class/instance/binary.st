@@ -11,5 +11,9 @@ binary
 					selector: token2 parsedValue second
 					arguments: { left . right }
 					primitive: nil)
-					token: token].
+					token: (PPToken 
+						on: token collection
+						start: token start
+						stop: token2 stop
+						value: token2 parsedValue)].
 		left]
