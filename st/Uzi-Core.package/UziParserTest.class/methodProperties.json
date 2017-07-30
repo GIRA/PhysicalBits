@@ -32,4 +32,6 @@
 		"test027Assignment" : "Richo 6/19/2017 10:00",
 		"test028Return" : "Richo 6/19/2017 10:18",
 		"test029Conditional" : "Richo 6/19/2017 10:26",
-		"test030ConditionalWithElseBranch" : "Richo 6/19/2017 11:39" } }
+		"test030ConditionalWithElseBranch" : "Richo 6/19/2017 11:39",
+		"test031Negate" : "Richo 7/30/2017 16:50",
+		"test032NegateConditional" : "Richo 7/30/2017 16:52" } }
