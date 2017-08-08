@@ -1,13 +1,13 @@
 grammar-statements
 conditional
 	^ ws , 
-	('if' asParser , ws , $( asParser , ws , expression , ws , $) asParser , ws ,
+	('if' asParser , ws , expression , ws ,
 	block , ws , ('else' asParser , ws , block) optional) token ,
 	ws
 	map: [:ign :token : ign2 || condition trueBranch falseBranch |
-		condition := token parsedValue at: 5.
-		trueBranch := token parsedValue at: 9.
-		falseBranch := (token parsedValue at: 11)
+		condition := token parsedValue at: 3.
+		trueBranch := token parsedValue at: 5.
+		falseBranch := (token parsedValue at: 7)
 			ifNil: [UziBlockNode empty]
 			ifNotNil: [:nodes | nodes last].
 		(UziConditionalNode 

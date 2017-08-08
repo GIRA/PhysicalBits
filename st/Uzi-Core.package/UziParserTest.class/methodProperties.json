@@ -31,7 +31,11 @@
 		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57",
 		"test027Assignment" : "Richo 6/19/2017 10:00",
 		"test028Return" : "Richo 6/19/2017 10:18",
-		"test029Conditional" : "Richo 6/19/2017 10:26",
+		"test029Conditional" : "Richo 8/8/2017 10:39",
 		"test030ConditionalWithElseBranch" : "Richo 6/19/2017 11:39",
 		"test031Negate" : "Richo 7/30/2017 16:50",
-		"test032NegateConditional" : "Richo 7/30/2017 16:52" } }
+		"test032NegateConditional" : "Richo 7/30/2017 16:52",
+		"test033LogicalAndOperator" : "Richo 7/30/2017 18:32",
+		"test034LogicalOrOperator" : "Richo 7/30/2017 18:32",
+		"test035While" : "Richo 8/8/2017 10:39",
+		"test036Parens" : "Richo 8/8/2017 10:33" } }

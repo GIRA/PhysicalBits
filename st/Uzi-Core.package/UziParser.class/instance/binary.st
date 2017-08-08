@@ -7,11 +7,15 @@ binary
 			do: [:token2 || selector right |
 				selector := token2 parsedValue second.
 				right := token2 parsedValue third.
-				left := (UziPrimitiveCallNode
-					selector: token2 parsedValue second
-					arguments: { left . right }
-					primitive: nil)
-					token: (PPToken 
+				left := selector = #'&&'
+					ifTrue: [UziLogicalAndNode left: left right: right]
+					ifFalse: [selector = #'||'
+						ifTrue: [UziLogicalOrNode left: left right: right]
+						ifFalse: [UziPrimitiveCallNode
+							selector: selector
+							arguments: { left . right }
+							primitive: nil]].
+				left token: (PPToken 
 						on: token collection
 						start: token start
 						stop: token2 stop
