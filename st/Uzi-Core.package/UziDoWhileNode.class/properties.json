@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziDoWhileNode",
+	"pools" : [
+		 ],
+	"super" : "UziLoopNode",
+	"type" : "normal" }

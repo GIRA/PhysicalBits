@@ -37,7 +37,8 @@
 		"test032NegateConditional" : "Richo 7/30/2017 16:52",
 		"test033LogicalAndOperator" : "Richo 7/30/2017 18:32",
 		"test034LogicalOrOperator" : "Richo 7/30/2017 18:32",
-		"test035While" : "Richo 8/8/2017 10:39",
+		"test035While" : "Richo 8/9/2017 11:31",
 		"test036Parens" : "Richo 8/8/2017 10:33",
 		"test037Program" : "Richo 8/9/2017 08:59",
-		"test038Statements" : "Richo 8/9/2017 09:01" } }
+		"test038Statements" : "Richo 8/9/2017 11:35",
+		"test039DoWhile" : "Richo 8/9/2017 11:32" } }

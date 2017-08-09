@@ -35,7 +35,8 @@
 		"assignment",
 		"return",
 		"variableDeclaration",
-		"expressionStatement" ],
+		"expressionStatement",
+		"doWhile" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

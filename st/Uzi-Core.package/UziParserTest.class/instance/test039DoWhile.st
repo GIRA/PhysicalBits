@@ -1,10 +1,10 @@
 tests
-test035While
+test039DoWhile
 	| ast body pp |
-	pp := parser while end.
-	ast := pp parse: 'while 1 { turnOn(D13); }'.
+	pp := parser doWhile end.
+	ast := pp parse: 'do { turnOn(D13); } while 1'.
 	self assert: 1 equals: ast condition value.
-	self assert: ast body equals: ast post.
+	self assert: ast body equals: ast pre.
 	self assert: 1 equals: ast body statements size.
 	body := ast body.
 	self assert: #turnOn equals: body statements first selector.
