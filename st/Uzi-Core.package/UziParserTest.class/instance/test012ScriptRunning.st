@@ -1,8 +1,8 @@
 tests
-test012ScriptTicking
+test012ScriptRunning
 	| pp ast |
 	pp := parser script end.
-	ast := pp parse: 'task foo() ticking {}'.
+	ast := pp parse: 'task foo() running {}'.
 	self assert: #foo equals: ast name.
-	self assert: #ticking equals: ast state.
+	self assert: #running equals: ast state.
 	self assert: nil equals: ast tickingRate
