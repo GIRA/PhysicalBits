@@ -1,5 +1,7 @@
 assertions
 assertScriptReference: node
-	^ self assert: node isScriptReference
-		description: 'Script reference expected'
+	| validScriptNames |
+	validScriptNames := program scripts collect: [:each | each name].
+	self assert: (validScriptNames includes: node scriptName)
+		description: 'Invalid script'
 		node: node

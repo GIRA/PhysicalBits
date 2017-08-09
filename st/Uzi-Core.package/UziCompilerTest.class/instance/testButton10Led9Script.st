@@ -1,10 +1,10 @@
 tests
 testButton10Led9Script
-	| cc program script1 instructions |
-	cc := UziCompiler new.
-	program := cc compile: '@button10Led9 ticking 100/s [
-			9 write: 10 read
-		]'.
+	| program script1 instructions |
+	program := cc compile: '
+	task button10Led9() running 100/s {
+		write(9, read(10));
+	}'.
 	self assert: program scripts size = 1.	
 	self assert:  #(9 10) equals: (program sortedGlobals collect: #value).
 	script1 := program scripts first.

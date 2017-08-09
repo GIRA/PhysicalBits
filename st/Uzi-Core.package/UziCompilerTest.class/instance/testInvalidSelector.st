@@ -1,7 +1,5 @@
 tests
 testInvalidSelector
-	| cc |
-	cc := UziCompiler new.
-	self should: [cc compile: '@main ticking 1/s [1 primitiveThatDoesNotExist]'] 
+	self should: [cc compile: 'task main() running 1/s {primitiveThatDoesNotExist(1);}'] 
 		raise: UziCompileError
 	

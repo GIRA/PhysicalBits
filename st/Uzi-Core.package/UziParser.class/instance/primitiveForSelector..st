@@ -22,7 +22,7 @@ primitiveForSelector: selector
 		[#squared] -> [#squared].
 		[#sqrt] -> [#sqrt].
 		[#=] -> [#equals].
-		[#~=] -> [#notEquals].
+		[#!=] -> [#notEquals].
 		[#>] -> [#greaterThan].
 		[#>=] -> [#greaterThanOrEquals].
 		[#<] -> [#lessThan].
@@ -31,5 +31,6 @@ primitiveForSelector: selector
 		[#delayMs] -> [#yieldTime].
 		[#&] -> [#bitwiseAnd].
 		[#|] -> [#bitwiseOr].
+		[#millis] -> [#millis]
 	} otherwise: nil.
 	^ primName ifNotNil: [UziPrimitive named: primName]

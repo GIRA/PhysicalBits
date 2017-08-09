@@ -4,8 +4,8 @@ visitScriptCallNode: node
 	self flag: #Richo. "This treats locals as arguments and compiles a push instruction
 	for each local. That is clearly a waste of space because the vm should be able to initialize
 	these variables itself."
-	scriptArgs := (ast scriptNamed: node script name) arguments, 
-		(ast scriptNamed: node script name) locals.
+	scriptArgs := (ast scriptNamed: node scriptName) arguments, 
+		(ast scriptNamed: node scriptName) locals.
 	callArgs := node arguments.
 	
 	"Fix the argument names"

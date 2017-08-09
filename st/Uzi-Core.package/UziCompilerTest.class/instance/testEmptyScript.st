@@ -1,8 +1,7 @@
 tests
 testEmptyScript
-	| cc program script1 |
-	cc := UziCompiler new.
-	program := cc compile: '@main ticking 1/s []'.
+	| program script1 |
+	program := cc compile: 'task main() running 1/s {}'.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
 	self assert: script1 name = #main.

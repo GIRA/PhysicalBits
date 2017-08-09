@@ -1,12 +1,14 @@
 tests
 testBlinkLed9Script
-	| cc program script1 |
-	cc := UziCompiler new.
-	program := cc compile: '@blinkLed9 ticking 1/s [
-		D9 read
-			ifTrue: [D9 off]
-			ifFalse: [D9 on]
-	]'.
+	| program script1 |
+	program := cc compile: '
+	task blinkLed9() running 1/s {
+		if read(D9) {
+			turnOff(D9);
+		} else {
+			turnOn(D9);
+		}
+	}'.
 	self assert: 1 equals: program scripts size.
 	script1 := program scripts first.
 	self assert: script1 name = #blinkLed9.
