@@ -41,4 +41,8 @@
 		"test036Parens" : "Richo 8/8/2017 10:33",
 		"test037Program" : "Richo 8/9/2017 08:59",
 		"test038Statements" : "Richo 8/9/2017 11:35",
-		"test039DoWhile" : "Richo 8/9/2017 11:32" } }
+		"test039DoWhile" : "Richo 8/9/2017 11:32",
+		"test040BlockWithStatements" : "Richo 8/9/2017 12:01",
+		"test040EmptyBlock" : "Richo 8/9/2017 11:38",
+		"test041BlockWithVariableDeclarations" : "Richo 8/9/2017 12:03",
+		"test042VariableReferences" : "Richo 8/9/2017 12:10" } }
