@@ -14,7 +14,7 @@ binary
 						ifFalse: [UziPrimitiveCallNode
 							selector: selector
 							arguments: { left . right }
-							primitive: nil]].
+							primitive: (self primitiveForSelector: selector)]].
 				left token: (PPToken 
 						on: token collection
 						start: token start
