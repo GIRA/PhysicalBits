@@ -1,8 +1,9 @@
 tests
 testLoops1
-	| cc program script |
-	cc := UziCompiler new.
-	program := cc compile: '@main ticking [[D13 read] whileTrue: [D11 on]]'.
+	| program script |
+	program := cc compile: 'task main() running {
+		while read (D13) { turnOn(D11); }
+	}'.
 	script := program scripts first.
 	self assert: script instructions = {
 		push arg: (program globals detect: [:var | var value = 13]).

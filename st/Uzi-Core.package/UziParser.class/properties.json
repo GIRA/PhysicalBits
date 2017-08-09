@@ -39,7 +39,9 @@
 		"taskState",
 		"task",
 		"function",
-		"procedure" ],
+		"procedure",
+		"until",
+		"doUntil" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
