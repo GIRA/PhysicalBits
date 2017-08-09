@@ -1,4 +1,4 @@
-grammar-scripts
+grammar-block
 block
 	^ ws , 
 	(${ asParser, variableDeclaration star , statementsList , $} asParser) token,

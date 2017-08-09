@@ -45,4 +45,6 @@
 		"test040BlockWithStatements" : "Richo 8/9/2017 12:01",
 		"test040EmptyBlock" : "Richo 8/9/2017 11:38",
 		"test041BlockWithVariableDeclarations" : "Richo 8/9/2017 12:03",
-		"test042VariableReferences" : "Richo 8/9/2017 12:10" } }
+		"test042VariableReferences" : "Richo 8/9/2017 12:10",
+		"test043Function" : "Richo 8/9/2017 12:24",
+		"test043Procedure" : "Richo 8/9/2017 12:25" } }
