@@ -1,4 +1,4 @@
 tests
 testConditionsShouldBeExpressions
-	self assertInvalid: '@foo [D13 on ifTrue: [D13 off]]'.
-	self assertInvalid: '@foo [(a := 3) ifTrue: [D13 off]]'.
+	self assertInvalid: 'task foo() { if turnOn(D13) { turnOff(D13); }}'.
+	self assertInvalid: 'var a; task foo() { if a = 3 { turnOff(D13); }}'.

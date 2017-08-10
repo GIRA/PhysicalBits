@@ -1,5 +1,5 @@
 tests
 testAssignmentsAreNotExpressions
-	self assertInvalid: '@foo [D13 write: (a := 5)]'.
-	self assertInvalid: '@foo [b := (a := 5)]'.
-	self assertInvalid: '@foo [(a := 5) ifTrue: [D13 off]]'.
+	self assertInvalid: 'var a; proc foo() { write(D13, a = 5); }'.
+	self assertInvalid: 'var a; var b; proc foo() { b = (a = 5); }'.
+	self assertInvalid: 'var a; proc foo() { if (a = 5) { turnOff(D13); }}'.

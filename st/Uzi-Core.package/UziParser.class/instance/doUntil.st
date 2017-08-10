@@ -1,7 +1,7 @@
 grammar-statements
 doUntil
 	^ ws , 
-	('do' asParser , ws , block , ws , 'until' asParser , ws , expression) token ,
+	('do' asParser , ws , block , ws , 'until' asParser , ws , expression , ws , $; asParser) token ,
 	ws
 	map: [:ign :token : ign2 || body condition |
 		body := token parsedValue at: 3.

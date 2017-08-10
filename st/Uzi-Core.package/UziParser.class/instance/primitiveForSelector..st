@@ -21,7 +21,7 @@ primitiveForSelector: selector
 		[#arcTan] -> [#arcTan].
 		[#squared] -> [#squared].
 		[#sqrt] -> [#sqrt].
-		[#=] -> [#equals].
+		[#==] -> [#equals].
 		[#!=] -> [#notEquals].
 		[#>] -> [#greaterThan].
 		[#>=] -> [#greaterThanOrEquals].

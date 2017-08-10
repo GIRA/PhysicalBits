@@ -6,7 +6,7 @@ test040BlockWithStatements
 		1; D13; toggle(D13);
 		a = 0;
 		if1{}else{}
-		do{}while1
+		do{}while1;
 		while1{}
 		return 1;
 	}'.

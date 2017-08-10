@@ -1,3 +1,3 @@
 tests
 testScriptArgumentsAndLocalsMustNotCollide
-	self assertInvalid: '@foo [:a || a | D13 off]'
+	self assertInvalid: 'task foo(a) { var a; turnOff(D13); }'

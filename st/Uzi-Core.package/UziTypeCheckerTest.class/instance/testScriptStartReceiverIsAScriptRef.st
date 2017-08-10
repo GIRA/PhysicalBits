@@ -1,3 +1,3 @@
 tests
 testScriptStartReceiverIsAScriptRef
-	self assertInvalid: '@foo [5 start]'.
+	"self assertInvalid: 'task foo() { start 5; }'"

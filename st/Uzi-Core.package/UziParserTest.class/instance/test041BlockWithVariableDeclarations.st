@@ -7,7 +7,7 @@ test041BlockWithVariableDeclarations
 		toggle(a);
 		a = 0;
 		if a {} else {}
-		do {} while a
+		do {} while a;
 		while a {}
 		return a;
 	}'.

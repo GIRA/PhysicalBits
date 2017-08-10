@@ -1,3 +1,3 @@
 tests
 testLoopConditionOnlyAllowsOneExpression
-	self assertInvalid: '@foo [[1. a. D13 read] whileFalse]'
+	"self assertInvalid: 'task foo() { until (1; read(D13)); }'"

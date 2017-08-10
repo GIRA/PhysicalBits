@@ -1,7 +1,19 @@
 tests
 testOnlyScriptBlocksAreAllowedToHaveArguments
-	self assertInvalid: '@foo [D13 read ifTrue: [:a | D13 toggle]]'.
-	self assertInvalid: '@foo [D13 read ifFalse: [:a | D13 toggle]]'.
-	self assertInvalid: '@foo [[D13 read] whileTrue: [:a | D13 toggle]]'.
-	self assertInvalid: '@foo [[:a | D13 read] whileTrue: [D13 toggle]]'.
-	self assertInvalid: '@foo [[:a | D13 toggle] doWhileTrue: [D13 read]]'.
+	self flag: #Richo. 
+	"The test should be called testOnlyScriptBlocksAreAllowedToHaveLocals"
+	self assertInvalid: 'task foo() {
+		if read(D13) { var a; toggle(D13); }
+	}'.
+	self assertInvalid: 'task foo() {
+		if read(D13) {} else { var a; toggle(D13); }
+	}'.
+	self assertInvalid: 'task foo() {
+		while read(D13) { var a; toggle(D13); }
+	}'.
+	"self assertInvalid: 'task foo() {
+		while { var a; read(D13); } { toggle(D13); }
+	}'."
+	self assertInvalid: 'task foo() {
+		do { var a; toggle(D13); } while read(D13);
+	}'.

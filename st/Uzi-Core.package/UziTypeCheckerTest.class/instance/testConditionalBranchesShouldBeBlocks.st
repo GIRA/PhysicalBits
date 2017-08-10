@@ -1,10 +1,4 @@
 tests
 testConditionalBranchesShouldBeBlocks
-	self assertInvalid: '@foo [D13 read ifTrue: D13 off]'.
-	self assertInvalid: '@foo [D13 read ifFalse: D13 on]'.
-	self assertInvalid: '@foo [D13 read ifTrue: [D13 off] ifFalse: D13 on]'.
-	self assertInvalid: '@foo [D13 read ifTrue: D13 off ifFalse: [D13 on]]'.
-	self assertInvalid: '@foo [D13 read ifFalse: [D13 on] ifTrue: D13 off]'.
-	self assertInvalid: '@foo [D13 read ifFalse: D13 on ifTrue: [D13 off]]'.
-	self assertInvalid: '@foo [D13 read ifTrue: D13 off ifFalse: D13 on]'.
-	self assertInvalid: '@foo [D13 read ifFalse: D13 on ifTrue: D13 off]'.
+	"self assertInvalid: 'task foo() { if read(D13) turnOff(D13); }'.
+	self assertInvalid: 'task foo() { if read(D13) {} else turnOn(D13); }'."

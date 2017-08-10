@@ -1,5 +1,5 @@
 tests
 testLoopConditionShouldBeABlock
-	self assertInvalid: '@foo [D13 on whileTrue: [D13 off]]'.
-	self assertInvalid: '@foo [(a := 3) whileFalse: [D13 off]]'.
-	self assertInvalid: '@foo [[D13 off] doWhileTrue: a]'
+	self assertInvalid: 'task foo() { while turnOn(D13) { turnOff(D13); }}'.
+	self assertInvalid: 'var a; task foo() { while a = 3 { turnOff(D13); }}'.
+	"self assertInvalid: 'var a; task foo() { do { turnOff(D13); } while a; }'"

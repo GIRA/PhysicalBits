@@ -1,5 +1,5 @@
 tests
 testMessageSendReceiverShouldBeAnExpression
-	self assertInvalid: '@foo [(a := 5) on]'.
-	self assertInvalid: '@foo [[D13 on] on]'.
-	self assertInvalid: '@foo [D13 on on]'
+	self assertInvalid: 'var a; task foo() { turnOn(a = 5); }'.
+	self assertInvalid: 'task foo() { turnOn(turnOn(D13)); }'.
+	"self assertInvalid: 'task foo() { turnOn({turnOn(D13);});}'"

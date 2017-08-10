@@ -1,3 +1,3 @@
 tests
 testScriptReferenceShouldReferenceExistingScript
-	self assertInvalid: '@foo [@main stop]'
+	self assertInvalid: 'task foo() { stop main; }'

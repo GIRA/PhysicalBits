@@ -1,4 +1,4 @@
 tests
 testAssignmentValueShouldBeAnExpression
-	self assertInvalid: '@foo [a := D13 off]'.
-	self assertInvalid: '@foo [b := 3 > 4 ifTrue: [3] ifFalse: [4]]'.
+	self assertInvalid: 'var a; proc foo() { a = turnOff(D13); }'.
+	"self assertInvalid: 'var b; proc foo() { b = if 3 > 4 {3} else {4}}'."

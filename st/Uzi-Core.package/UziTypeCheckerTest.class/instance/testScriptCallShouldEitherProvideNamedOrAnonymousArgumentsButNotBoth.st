@@ -1,6 +1,7 @@
 tests
 testScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth
 	self assertInvalid: '
-@foo [:a :b :c | ^ a * b + c]
-@main ticking [@foo value: 1 value: 2 c: 3]
-'
+	func foo(a, b, c) { return a * b + c; }
+	task main() running {
+		foo(1, 2, c: 3);
+	}'
