@@ -7,6 +7,6 @@ visitScriptCallNode: node
 			callArgs := node arguments collect: [:arg | arg key].
 			scriptArgs := script arguments collect: [:arg | arg name].
 			self assert: ((scriptArgs includesAllOf: callArgs)
-					or: [callArgs allSatisfy: [:arg | arg = #value]])
+					or: [callArgs allSatisfy: [:arg | arg isNil]])
 				description: 'Explicit argument names expected'
 				node: node]

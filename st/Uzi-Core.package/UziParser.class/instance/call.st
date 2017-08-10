@@ -5,11 +5,13 @@ call
 			selector := token parsedValue first.
 			arguments := token parsedValue second.
 			((self primitiveForSelector: selector)
-				ifNil: [UziScriptCallNode script: selector]
+				ifNil: [UziScriptCallNode 
+					script: selector
+					arguments: arguments]
 				ifNotNil: [:primitive |
 					UziPrimitiveCallNode
 						selector: selector
-						arguments: arguments
+						arguments: (arguments collect: [:kvp | kvp value])
 						primitive: primitive])
 				token: token]
 		

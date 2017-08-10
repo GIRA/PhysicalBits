@@ -2,7 +2,7 @@ grammar-calls
 argsList
 	^ ws, 
 	($( asParser , ws , 
-		(expression separatedBy: (ws , $, asParser , ws)) optional, 
+		(namedArg separatedBy: (ws , $, asParser , ws)) optional, 
 		ws , $) asParser) token, 
 	ws
 	map: [:ign1 :token :ign2 |

@@ -1,8 +1,10 @@
 tests
 testScriptCallWithAnonymousArguments
-	| cc program script |
-	cc := UziCompiler new.
-	program := cc compile: '|a| @main [a := @foo value: 3]. @foo [:a | ^ a * 2]'.
+	| program script |
+	program := cc compile: '
+	var a;
+	task main() { a = foo(3); }
+	func foo(a) { return a + 2; }'.
 	script := program scripts first.
 	self assert: script instructions = {
 		push arg: (program globals detect: [:var | var value = 3]).

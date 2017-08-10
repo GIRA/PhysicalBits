@@ -1,8 +1,9 @@
 tests
 testScriptCallAsLoopCondition
-	| cc program script |
-	cc := UziCompiler new.
-	program := cc compile: '@main [[@foo value] whileTrue: [D13 toggle]]. @foo [^ 1]'.
+	| program script |
+	program := cc compile: '
+	proc main() { while foo() { toggle(D13); }}
+	func foo() { return 1; }'.
 	script := program scripts first.
 	self assert: script instructions = {
 		call arg: #foo.

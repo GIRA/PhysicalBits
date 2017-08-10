@@ -41,7 +41,8 @@
 		"function",
 		"procedure",
 		"until",
-		"doUntil" ],
+		"doUntil",
+		"namedArg" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

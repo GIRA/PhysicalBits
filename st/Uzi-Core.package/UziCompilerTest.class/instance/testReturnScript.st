@@ -1,8 +1,7 @@
 tests
 testReturnScript
-	| cc program script1 |
-	cc := UziCompiler new.
-	program := cc compile: '@main ticking [ ^ 1 ]'.
+	| program script1 |
+	program := cc compile: 'task main() running { return 1; }'.
 	script1 := program scripts first.
 	self assert: script1 instructions = {
 		push arg: (program globals detect: [:var | var value = 1]).

@@ -9,7 +9,7 @@ visitScriptCallNode: node
 	callArgs := node arguments.
 	
 	"Fix the argument names"
-	(callArgs allSatisfy: [:arg | arg key = #value])
+	(callArgs allSatisfy: [:arg | arg key isNil])
 		ifTrue: [callArgs := callArgs withIndexCollect: [:arg :index |
 				(scriptArgs at: index) name -> arg value]].
 		
