@@ -1,11 +1,11 @@
 tests
 testVariableDefinitionsScript
-	| cc program |
-	cc := UziCompiler new.
+	| program |
 	program := cc compile: '
-	| a = 3,  b = 4 |
+	var a = 3;
+	var b = 4;
 	
-	@main ticking [ D13 write: a + b]'.
+	task main() running { write(D13, a + b); }'.
 	self assert: 3 equals: program globals size.
 	self assert: #(3 4 13) equals: (program sortedGlobals collect: #value).
 	self assert: #(a b nil) equals: (program sortedGlobals collect: #name)

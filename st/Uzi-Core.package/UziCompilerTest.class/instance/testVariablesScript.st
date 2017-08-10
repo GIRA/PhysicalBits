@@ -1,8 +1,7 @@
 tests
 testVariablesScript
-	| cc program script1 |
-	cc := UziCompiler new.
-	program := cc compile: '| a, b | @main ticking [ a write: b ]'.
+	| program script1 |
+	program := cc compile: 'var a; var b; task main() running { write(a, b); }'.
 	self assert: 2 equals: program globals size.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.

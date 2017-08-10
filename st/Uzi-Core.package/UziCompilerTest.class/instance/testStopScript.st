@@ -1,8 +1,7 @@
 tests
 testStopScript
-	| cc program script |
-	cc := UziCompiler new.
-	program := cc compile: '@main ticking [@main stop]'.
+	| program script |
+	program := cc compile: 'task main() running {stop main;}'.
 	script := program scripts first.
 	self assert: script instructions = {
 		stop arg: #main

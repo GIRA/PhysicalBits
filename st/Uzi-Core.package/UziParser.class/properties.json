@@ -42,7 +42,9 @@
 		"procedure",
 		"until",
 		"doUntil",
-		"namedArg" ],
+		"namedArg",
+		"startTask",
+		"stopTask" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

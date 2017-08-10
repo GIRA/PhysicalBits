@@ -1,3 +1,3 @@
 accessing
 script
-	^ script
+	self halt

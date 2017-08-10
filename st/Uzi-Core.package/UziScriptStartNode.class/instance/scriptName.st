@@ -1,3 +1,3 @@
 accessing
 scriptName
-	^ script name
+	^ script
