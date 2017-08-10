@@ -1,8 +1,9 @@
 tests
 testScriptRunWithoutParameters
-	| cc program script |
-	cc := UziCompiler new.
-	program := cc compile: '@main [@foo value]. @foo [D13 toggle]'.
+	| program script |
+	program := cc compile: '
+	task main() { foo(); }
+	proc foo() { toggle(D13); }'.
 	script := program scripts first.
 	self assert: script instructions = {
 		call arg: #foo.

@@ -2,7 +2,7 @@ visiting
 visitScriptNode: node
 	(program 
 		script: node name 
-		ticking: (node state = #ticking or: [node tickingRate notNil])
+		ticking: (node state = #running or: [node tickingRate notNil])
 		delay: (node tickingRate ifNil: [0] ifNotNil: [:tickingRate | tickingRate delayMs]) 
 		instructions: [:s |
 			script := s.
