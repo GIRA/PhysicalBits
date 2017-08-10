@@ -1,3 +1,0 @@
-grammar-statements
-statement
-	^ expression 

@@ -1,3 +1,3 @@
 as yet unclassified
 defaultParser
-	^ UziOldParser new
+	^ UziParser new

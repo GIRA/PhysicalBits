@@ -1,3 +1,0 @@
-grammar-unary
-unarySelector
-	^ identifier 
