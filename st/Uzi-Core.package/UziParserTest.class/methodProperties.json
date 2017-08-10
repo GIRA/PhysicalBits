@@ -27,7 +27,7 @@
 		"test022BinaryExpression2" : "Richo 6/19/2017 09:01",
 		"test023BinaryExpression3" : "Richo 6/19/2017 09:00",
 		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34",
-		"test025VariableDeclaration" : "Richo 6/19/2017 09:58",
+		"test025VariableDeclaration" : "Richo 8/10/2017 09:57",
 		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57",
 		"test027Assignment" : "Richo 6/19/2017 10:00",
 		"test028Return" : "Richo 6/19/2017 10:18",
@@ -39,7 +39,7 @@
 		"test034LogicalOrOperator" : "Richo 7/30/2017 18:32",
 		"test035While" : "Richo 8/9/2017 11:31",
 		"test036Parens" : "Richo 8/8/2017 10:33",
-		"test037Program" : "Richo 8/9/2017 08:59",
+		"test037Program" : "Richo 8/10/2017 09:56",
 		"test038Statements" : "Richo 8/9/2017 11:35",
 		"test039DoWhile" : "Richo 8/9/2017 11:32",
 		"test040BlockWithStatements" : "Richo 8/9/2017 12:01",
@@ -48,4 +48,5 @@
 		"test042VariableReferences" : "Richo 8/9/2017 12:10",
 		"test043Function" : "Richo 8/9/2017 12:24",
 		"test043Procedure" : "Richo 8/9/2017 12:25",
-		"test044ReturnWithNoValue" : "Richo 8/9/2017 12:31" } }
+		"test044ReturnWithNoValue" : "Richo 8/9/2017 12:31",
+		"test045VariableDeclarationWithExpressionValue" : "Richo 8/10/2017 09:53" } }

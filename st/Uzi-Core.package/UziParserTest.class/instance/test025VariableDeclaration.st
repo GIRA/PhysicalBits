@@ -4,4 +4,4 @@ test025VariableDeclaration
 	pp := parser variableDeclaration end.
 	ast := pp parse: 'var a;'.
 	self assert: #a equals: ast name.
-	self assert: 0 equals: ast value value
+	self assert: nil equals: ast value value

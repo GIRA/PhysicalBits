@@ -7,7 +7,6 @@ visitScriptNode: node
 		instructions: [:s |
 			script := s.
 			node arguments do: [:var | script registerArgument: var name].
-			node locals do: [:var | script registerLocal: var name].
 			self visit: node body.
 			script := nil])
 		node: node

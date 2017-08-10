@@ -14,6 +14,8 @@
 		"testConditionals3" : "Richo 8/9/2017 14:36",
 		"testEmptyScript" : "Richo 8/9/2017 14:37",
 		"testInvalidSelector" : "Richo 8/9/2017 14:37",
+		"testLocalDeclaredWithExpressionValue" : "Richo 8/10/2017 10:10",
+		"testLocalsDeclaredAndDefinedInSameLine" : "Richo 8/10/2017 10:08",
 		"testLogicalAndWithShortCircuit" : "Richo 8/9/2017 14:38",
 		"testLogicalAndWithoutShortCircuit" : "Richo 8/9/2017 19:37",
 		"testLogicalOrWithShortCircuit" : "Richo 8/9/2017 19:38",
