@@ -20,7 +20,7 @@
 		"doUntil",
 		"start",
 		"stop" ],
-	"name" : "UziTypeCheckerTest",
+	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],
 	"super" : "TestCase",

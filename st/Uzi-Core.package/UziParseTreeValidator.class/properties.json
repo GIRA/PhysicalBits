@@ -1,5 +1,5 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Core-Parser",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
@@ -9,7 +9,7 @@
 		"errors",
 		"program",
 		"script" ],
-	"name" : "UziTypeChecker",
+	"name" : "UziParseTreeValidator",
 	"pools" : [
 		 ],
 	"super" : "Object",
