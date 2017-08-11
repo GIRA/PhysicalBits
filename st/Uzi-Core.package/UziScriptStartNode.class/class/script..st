@@ -1,4 +1,3 @@
 instance creation
-script: anUziScriptRefNode 
-	^ self basicNew 
-		initializeWith: anUziScriptRefNode
+script: scriptName 
+	^ self basicNew initializeWith: scriptName 

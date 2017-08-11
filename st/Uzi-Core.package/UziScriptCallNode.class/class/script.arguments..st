@@ -1,5 +1,5 @@
 instance creation
-script: anUziScriptRefNode arguments: anArrayOfAssociations
+script: scriptName arguments: anArrayOfAssociations
 	^ self basicNew 
-		initializeWithScript: anUziScriptRefNode
+		initializeWithScript: scriptName
 		arguments: anArrayOfAssociations

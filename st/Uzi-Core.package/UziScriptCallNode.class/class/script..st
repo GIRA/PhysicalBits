@@ -1,4 +1,4 @@
 instance creation
-script: anUziScriptRefNode
-	^ self script: anUziScriptRefNode
+script: scriptName
+	^ self script: scriptName
 		arguments: #()

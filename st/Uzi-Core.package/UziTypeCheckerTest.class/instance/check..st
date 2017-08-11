@@ -1,6 +1,9 @@
 utils
-check: aString
+check: aStringOrParseNode
 	| ast |
-	ast := UziParser parse: aString.
+
+	ast := aStringOrParseNode isString 
+		ifTrue: [UziParser parse: aStringOrParseNode]
+		ifFalse: [aStringOrParseNode].
 	ast isPetitFailure ifTrue: [^ ast].
 	^ UziTypeChecker check: ast
