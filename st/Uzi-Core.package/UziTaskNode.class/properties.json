@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziTaskNode",
+	"pools" : [
+		 ],
+	"super" : "UziScriptNode",
+	"type" : "normal" }

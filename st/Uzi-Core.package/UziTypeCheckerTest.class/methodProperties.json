@@ -20,4 +20,5 @@
 		"testScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth" : "Richo 8/10/2017 16:59",
 		"testScriptReferenceShouldReferenceExistingScript" : "Richo 8/10/2017 17:00",
 		"testScriptStartReceiverIsAScriptRef" : "Richo 8/10/2017 17:00",
-		"testScriptStopReceiverIsAScriptRef" : "Richo 8/10/2017 17:00" } }
+		"testScriptStopReceiverIsAScriptRef" : "Richo 8/10/2017 17:00",
+		"testStartingAndStoppingCanOnlyBePerformedOnTasks" : "Richo 8/11/2017 12:45" } }

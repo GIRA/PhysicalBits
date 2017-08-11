@@ -4,10 +4,8 @@ function
 	map: [:ign1 :token :ign2 || nodes |
 		nodes := token parsedValue.
 		self flag: #Richo. "Verify that a return value is present in the body?"
-		(UziScriptNode
+		(UziFunctionNode
 			name: nodes third
 			arguments: nodes fourth
-			state: nil
-			tickingRate: nil
 			body: nodes fifth)
 			token: token]
