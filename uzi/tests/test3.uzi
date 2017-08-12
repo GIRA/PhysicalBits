@@ -1,7 +1,0 @@
-| var = 42 |
-@foo [
-	@bar start.
-	@bar stop.
-	@bar value
-]
-@bar [@bar value]

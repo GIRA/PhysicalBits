@@ -1,2 +1,3 @@
-| var = 42 |
-@foo [^ 42]
+var v = 42;
+
+func foo() { return 42; }

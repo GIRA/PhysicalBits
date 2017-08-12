@@ -1,6 +1,0 @@
-| var |
-@foo [var := 42]
-@bar ticking 10/s [:a :b || c, d |
-	@foo value ifTrue: [^ var].
-	[D11 read] untilTrue.
-	D9 write: var * 2]

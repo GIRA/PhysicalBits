@@ -44,7 +44,10 @@
 		"doUntil",
 		"namedArg",
 		"startTask",
-		"stopTask" ],
+		"stopTask",
+		"importPath",
+		"program",
+		"import" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

@@ -1,5 +1,5 @@
 instance creation
 variableDeclarations: varsArray scripts: scriptsArray
-	^ self basicNew 
-		initializeWithVariableDeclarations: varsArray
+	^ self imports: #()
+		variableDeclarations: varsArray
 		scripts: scriptsArray
