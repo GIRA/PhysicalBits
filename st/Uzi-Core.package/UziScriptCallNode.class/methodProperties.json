@@ -3,9 +3,11 @@
 		"script:" : "Richo 8/11/2017 19:11",
 		"script:arguments:" : "Richo 8/11/2017 19:11" },
 	"instance" : {
+		"=" : "Richo 8/12/2017 19:13",
 		"accept:" : "Richo 4/5/2017 08:34",
 		"arguments" : "Richo 5/1/2017 19:04",
 		"hasSideEffects" : "Richo 5/31/2017 18:51",
+		"hash" : "Richo 8/12/2017 19:13",
 		"initializeWithScript:arguments:" : "Richo 5/2/2017 18:25",
 		"isExpression" : "Richo 5/2/2017 18:26",
 		"isStatement" : "Richo 5/2/2017 18:26",

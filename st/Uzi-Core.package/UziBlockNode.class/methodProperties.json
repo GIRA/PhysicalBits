@@ -4,9 +4,11 @@
 		"locals:statements:" : "Richo 6/18/2017 19:25",
 		"statements:" : "Richo 8/11/2017 18:08" },
 	"instance" : {
+		"=" : "Richo 8/12/2017 18:26",
 		"accept:" : "Richo 9/7/2016 15:49",
 		"concat:" : "Richo 6/18/2017 19:26",
 		"copyWithoutLastStatement" : "Richo 6/18/2017 19:26",
+		"hash" : "Richo 8/12/2017 18:27",
 		"initializeWithLocals:statements:" : "Richo 6/18/2017 19:29",
 		"isBlock" : "Richo 12/30/2016 15:03",
 		"isEmpty" : "Richo 12/31/2016 13:33",

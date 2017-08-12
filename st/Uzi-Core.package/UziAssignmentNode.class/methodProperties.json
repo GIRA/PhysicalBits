@@ -2,7 +2,9 @@
 	"class" : {
 		"left:right:" : "Richo 9/7/2016 11:23" },
 	"instance" : {
+		"=" : "Richo 8/12/2017 18:06",
 		"accept:" : "Richo 9/7/2016 11:30",
+		"hash" : "Richo 8/12/2017 18:27",
 		"initializeWithLeft:right:" : "Richo 9/7/2016 11:23",
 		"isAssignment" : "Richo 12/30/2016 15:03",
 		"isStatement" : "Richo 12/30/2016 15:23",

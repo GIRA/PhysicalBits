@@ -1,0 +1,32 @@
+{
+	"category" : "Uzi-Core-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"program",
+		"varDec",
+		"proc",
+		"assignment",
+		"var",
+		"prim",
+		"number",
+		"block",
+		"conditional",
+		"task",
+		"until",
+		"doUntil",
+		"start",
+		"stop",
+		"import",
+		"call",
+		"func",
+		"return",
+		"ir" ],
+	"name" : "UziImportResolverTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }

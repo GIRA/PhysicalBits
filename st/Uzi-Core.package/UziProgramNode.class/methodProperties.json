@@ -3,8 +3,10 @@
 		"globals:scripts:" : "Richo 8/11/2017 21:27",
 		"imports:globals:scripts:" : "Richo 8/11/2017 21:27" },
 	"instance" : {
+		"=" : "Richo 8/12/2017 19:35",
 		"accept:" : "Richo 12/30/2016 14:38",
 		"globals" : "Richo 8/11/2017 21:28",
+		"hash" : "Richo 8/12/2017 19:04",
 		"imports" : "Richo 8/11/2017 21:22",
 		"initializeWithImports:globals:scripts:" : "Richo 8/11/2017 21:27",
 		"isProgram" : "Richo 12/30/2016 15:03",

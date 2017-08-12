@@ -2,8 +2,10 @@
 	"class" : {
 		"pre:condition:negated:post:" : "Richo 5/6/2017 19:26" },
 	"instance" : {
+		"=" : "Richo 8/12/2017 18:33",
 		"accept:" : "Richo 3/24/2017 19:16",
 		"condition" : "Richo 3/24/2017 19:12",
+		"hash" : "Richo 8/12/2017 18:33",
 		"initializeWithCondition:body:negated:evaluateBodyFirst:" : "Richo 3/24/2017 22:57",
 		"initializeWithPre:condition:negated:post:" : "Richo 5/6/2017 19:27",
 		"isStatement" : "Richo 3/24/2017 19:21",

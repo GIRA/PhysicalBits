@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"parser",
+		"librariesDirectory" ],
+	"name" : "UziImportResolver",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

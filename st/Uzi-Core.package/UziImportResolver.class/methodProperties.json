@@ -1,0 +1,7 @@
+{
+	"class" : {
+		"parser:librariesPath:" : "Richo 8/12/2017 19:36" },
+	"instance" : {
+		"applyOn:" : "Richo 8/12/2017 19:40",
+		"initializeWithParser:librariesDirectory:" : "Richo 8/12/2017 19:37",
+		"resolveImport:" : "Richo 8/12/2017 19:38" } }
