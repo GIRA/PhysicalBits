@@ -1,3 +1,2 @@
 var v = 42;
-
 func foo() { return 42; }

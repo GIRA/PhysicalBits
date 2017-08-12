@@ -1,2 +1,2 @@
-var v = 42;
-func foo() { return v; }
+import t1 = 'test.uzi';
+func bar(a) { return t1.v + a; }

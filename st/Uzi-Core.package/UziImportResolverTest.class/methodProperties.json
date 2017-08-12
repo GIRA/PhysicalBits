@@ -3,4 +3,6 @@
 		 },
 	"instance" : {
 		"setUp" : "Richo 8/12/2017 19:37",
-		"test001" : "Richo 8/12/2017 19:40" } }
+		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 8/12/2017 20:04",
+		"test002ImportingSameLibraryTwice" : "Richo 8/12/2017 20:03",
+		"test003ImportingNestedLibraries" : "Richo 8/12/2017 20:19" } }

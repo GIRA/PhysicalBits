@@ -1,5 +1,5 @@
 tests
-test001
+test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 	"
 	import test = 'test.uzi';
 	task main() { write(D13, test.foo()); }
