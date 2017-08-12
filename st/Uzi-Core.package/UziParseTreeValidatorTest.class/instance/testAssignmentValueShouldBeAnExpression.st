@@ -2,7 +2,7 @@ tests
 testAssignmentValueShouldBeAnExpression
 	"self assertInvalid: 'var a; proc foo() { a = turnOff(D13); }'."
 	self assertInvalid: (program
-		variableDeclarations: { varDec name: #a }
+		globals: { varDec name: #a }
 		scripts: { 
 			proc 
 				name: #foo 
@@ -20,7 +20,7 @@ testAssignmentValueShouldBeAnExpression
 
 	"self assertInvalid: 'var b; proc foo() { b = if 3 > 4 {3} else {4}}'."
 	self assertInvalid: (program
-		variableDeclarations: { varDec name: #b }
+		globals: { varDec name: #b }
 		scripts: { 
 			proc 
 				name: #foo 

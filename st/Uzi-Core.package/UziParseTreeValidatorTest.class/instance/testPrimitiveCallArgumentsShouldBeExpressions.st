@@ -5,7 +5,7 @@ testPrimitiveCallArgumentsShouldBeExpressions
 	
 	"self assertInvalid: 'task foo() { turnOn({turnOn(D13);});}'."
 	self assertInvalid: (program
-		variableDeclarations: #()
+		globals: #()
 		scripts: { 
 			proc 
 				name: #foo 

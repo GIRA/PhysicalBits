@@ -2,7 +2,7 @@ tests
 testScriptStartReceiverIsAScriptRef
 	"self assertInvalid: 'task foo() { start 5; }'"
 	self assertInvalid: (program
-		variableDeclarations: #()
+		globals: #()
 		scripts: { 
 			proc 
 				name: #foo 

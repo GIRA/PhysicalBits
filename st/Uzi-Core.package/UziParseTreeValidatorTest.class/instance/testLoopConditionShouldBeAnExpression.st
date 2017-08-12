@@ -5,7 +5,7 @@ testLoopConditionShouldBeAnExpression
 	
 	"self assertInvalid: 'var a; task foo() { do { turnOff(D13); } while {a}; }'"
 	self assertInvalid: (program
-		variableDeclarations: { varDec name: #a }
+		globals: { varDec name: #a }
 		scripts: { 
 			task
 				name: #foo 

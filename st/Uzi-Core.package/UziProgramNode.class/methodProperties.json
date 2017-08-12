@@ -1,12 +1,12 @@
 {
 	"class" : {
-		"imports:variableDeclarations:scripts:" : "Richo 8/11/2017 21:23",
-		"variableDeclarations:scripts:" : "Richo 8/11/2017 21:23" },
+		"globals:scripts:" : "Richo 8/11/2017 21:27",
+		"imports:globals:scripts:" : "Richo 8/11/2017 21:27" },
 	"instance" : {
 		"accept:" : "Richo 12/30/2016 14:38",
+		"globals" : "Richo 8/11/2017 21:28",
 		"imports" : "Richo 8/11/2017 21:22",
-		"initializeWithImports:variableDeclarations:scripts:" : "Richo 8/11/2017 21:23",
+		"initializeWithImports:globals:scripts:" : "Richo 8/11/2017 21:27",
 		"isProgram" : "Richo 12/30/2016 15:03",
 		"scriptNamed:" : "Richo 5/7/2017 12:41",
-		"scripts" : "Richo 12/30/2016 14:40",
-		"variableDeclarations" : "Richo 6/19/2017 10:10" } }
+		"scripts" : "Richo 12/30/2016 14:40" } }

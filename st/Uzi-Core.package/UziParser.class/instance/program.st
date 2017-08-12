@@ -1,12 +1,12 @@
 grammar-program
 program
 	^ (ws , import star, ws, variableDeclaration star , ws , script star, ws) token end
-		==> [:token || imports vars scripts |
+		==> [:token || imports globals scripts |
 			imports := token parsedValue at: 2.
-			vars := token parsedValue at: 4.
+			globals := token parsedValue at: 4.
 			scripts := token parsedValue at: 6.
 			(UziProgramNode 
 				imports: imports
-				variableDeclarations: vars
+				globals: globals
 				scripts: scripts)
 				token: token]

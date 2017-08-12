@@ -6,9 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"variableDeclarations",
-		"scripts",
-		"imports" ],
+		"imports",
+		"globals",
+		"scripts" ],
 	"name" : "UziProgramNode",
 	"pools" : [
 		 ],

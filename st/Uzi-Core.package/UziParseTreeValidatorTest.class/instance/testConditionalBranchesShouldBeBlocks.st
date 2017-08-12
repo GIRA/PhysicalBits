@@ -2,7 +2,7 @@ tests
 testConditionalBranchesShouldBeBlocks
 	"self assertInvalid: 'task foo() { if read(D13) turnOff(D13); }'."
 	self assertInvalid: (program
-		variableDeclarations: #()
+		globals: #()
 		scripts: { 
 			task 
 				name: #foo 
@@ -21,7 +21,7 @@ testConditionalBranchesShouldBeBlocks
 	
 	"self assertInvalid: 'task foo() { if read(D13) {} else turnOn(D13); }'."
 	self assertInvalid: (program
-		variableDeclarations: #()
+		globals: #()
 		scripts: { 
 			task 
 				name: #foo 

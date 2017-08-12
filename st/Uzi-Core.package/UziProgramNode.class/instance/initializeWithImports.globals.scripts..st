@@ -1,9 +1,9 @@
 initializing
 initializeWithImports: importsArray 
-variableDeclarations: globalsArray 
+globals: globalsArray 
 scripts: scriptsArray 
 
 	imports := importsArray.
-	variableDeclarations := globalsArray.
+	globals := globalsArray.
 	scripts := scriptsArray.
 	self initialize 

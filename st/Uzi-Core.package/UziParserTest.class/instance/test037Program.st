@@ -14,7 +14,7 @@ test037Program
 		delay(1000);
 	}
 	'.
-	self assert: 2 equals: program variableDeclarations size.
-	self assert: #(1 2) equals: (program variableDeclarations collect: [:v | v value value]).
+	self assert: 2 equals: program globals size.
+	self assert: #(1 2) equals: (program globals collect: [:v | v value value]).
 	self assert: 1 equals: program scripts size.
 	self assert: 2 equals: program scripts first body statements size.

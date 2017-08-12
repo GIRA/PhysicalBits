@@ -2,7 +2,7 @@ tests
 testLoopConditionOnlyAllowsOneExpression
 	"self assertInvalid: 'task foo() { until (1; read(D13)); }'"
 	self assertInvalid: (program
-		variableDeclarations: #()
+		globals: #()
 		scripts: { 
 			task
 				name: #foo 
