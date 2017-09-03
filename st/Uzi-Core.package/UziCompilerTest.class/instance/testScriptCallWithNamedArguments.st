@@ -1,7 +1,7 @@
 tests
 testScriptCallWithNamedArguments
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	var a;
 	task main() { a = foo(arg1: 3, arg2: 4);}
 	func foo(arg1,arg2){return arg1*arg2;}'.

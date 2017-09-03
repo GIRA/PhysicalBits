@@ -1,7 +1,7 @@
 tests
 testScriptRunWithoutParameters
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	task main() { foo(); }
 	proc foo() { toggle(D13); }'.
 	script := program scripts first.

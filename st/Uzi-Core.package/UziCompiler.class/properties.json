@@ -8,8 +8,7 @@
 	"instvars" : [
 		"program",
 		"script",
-		"ast",
-		"parser" ],
+		"ast" ],
 	"name" : "UziCompiler",
 	"pools" : [
 		 ],

@@ -1,0 +1,3 @@
+config
+defaultParser
+	^ UziParser 

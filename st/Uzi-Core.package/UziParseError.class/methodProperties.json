@@ -1,5 +1,7 @@
 {
 	"class" : {
-		 },
+		"failure:source:" : "Richo 9/2/2017 20:29" },
 	"instance" : {
-		 } }
+		"initialize" : "Richo 9/2/2017 20:31",
+		"initializeWithFailure:source:" : "Richo 9/2/2017 20:30",
+		"positionOf:in:" : "Richo 9/2/2017 20:32" } }

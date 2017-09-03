@@ -1,7 +1,7 @@
 tests
 testLoops3
 	| program script |
-	program := cc compile: 'task main() running {
+	program := self compile: 'task main() running {
 		while read(D13);
 	}'.
 	script := program scripts first.

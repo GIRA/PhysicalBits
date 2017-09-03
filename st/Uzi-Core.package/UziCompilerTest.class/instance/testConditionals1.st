@@ -1,7 +1,7 @@
 tests
 testConditionals1
 	| program script |
-	program := cc compile: 'task main() running { if read(D13) { turnOff(D13); } else { turnOn(D13); }}'.
+	program := self compile: 'task main() running { if read(D13) { turnOff(D13); } else { turnOn(D13); }}'.
 	script := program scripts first.
 	self assert: script instructions = {
 		push arg: (program globals detect: [:var | var value = 13]).

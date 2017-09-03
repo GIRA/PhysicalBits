@@ -1,7 +1,7 @@
 tests
 testArgumentsWrite
 	| program script |
-	program := cc compile: 'proc mul(a, b) { b = a * b; }'.
+	program := self compile: 'proc mul(a, b) { b = a * b; }'.
 	script := program scripts first.
 	self assert: #(a b) equals: (script arguments collect: [:each | each name]).
 	self assert: script instructions = {

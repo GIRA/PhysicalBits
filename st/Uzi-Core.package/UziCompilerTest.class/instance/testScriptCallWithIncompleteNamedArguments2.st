@@ -1,7 +1,7 @@
 tests
 testScriptCallWithIncompleteNamedArguments2
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	var a;
 	task main() { a = foo(arg2: 3); }
 	func foo(arg1, arg2) { return arg1 * arg2;}'.

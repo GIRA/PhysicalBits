@@ -1,7 +1,7 @@
 tests
 testVariablesScript
 	| program script1 |
-	program := cc compile: 'var a; var b; task main() running { write(a, b); }'.
+	program := self compile: 'var a; var b; task main() running { write(a, b); }'.
 	self assert: 2 equals: program globals size.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.

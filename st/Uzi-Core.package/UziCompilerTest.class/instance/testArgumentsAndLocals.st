@@ -1,7 +1,7 @@
 tests
 testArgumentsAndLocals
 	| program script |
-	program := cc compile: 'func mul(a) { var b; b = 2; return a * b; }'.
+	program := self compile: 'func mul(a) { var b; b = 2; return a * b; }'.
 	script := program scripts first.
 	self assert: #(a) equals: (script arguments collect: [:each | each name]).
 	self assert: #(b) equals: (script locals collect: [:each | each name]).

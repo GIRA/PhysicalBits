@@ -1,7 +1,7 @@
 tests
 testVariableDefinitionsScript
 	| program |
-	program := cc compile: '
+	program := self compile: '
 	var a;
 	var b = 4;
 	

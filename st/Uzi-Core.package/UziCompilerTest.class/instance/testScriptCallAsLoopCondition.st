@@ -1,7 +1,7 @@
 tests
 testScriptCallAsLoopCondition
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	proc main() { while foo() { toggle(D13); }}
 	func foo() { return 1; }'.
 	script := program scripts first.

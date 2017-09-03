@@ -1,19 +1,12 @@
 {
 	"class" : {
-		"defaultParser" : "Richo 8/9/2017 21:43",
-		"new" : "Richo 8/9/2017 12:39",
-		"parser:" : "Richo 8/9/2017 12:39" },
+		 },
 	"instance" : {
-		"check:" : "Richo 8/11/2017 19:18",
-		"compile:" : "Richo 12/30/2016 16:29",
+		"compile:" : "Richo 9/2/2017 20:16",
 		"handleIfFalse:" : "Richo 12/31/2016 20:17",
 		"handleIfTrue:" : "Richo 1/4/2017 14:06",
 		"handleIfTrueIfFalse:" : "Richo 12/31/2016 20:18",
-		"initializeWithParser:" : "Richo 8/9/2017 12:38",
 		"newLabel" : "Richo 9/7/2016 15:53",
-		"parse:" : "Richo 8/9/2017 12:38",
-		"positionOf:in:" : "Richo 5/29/2017 10:28",
-		"signalParseError:source:" : "Richo 9/7/2016 17:32",
 		"visit:" : "Richo 12/31/2016 20:05",
 		"visitAssignmentNode:" : "Richo 12/31/2016 20:16",
 		"visitBlockNode:" : "Richo 8/10/2017 10:04",

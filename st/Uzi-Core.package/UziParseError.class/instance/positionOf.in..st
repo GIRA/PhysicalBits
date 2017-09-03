@@ -1,4 +1,4 @@
-private
+initialization
 positionOf: parseFailure in: src 
 	"
 	Returns an association whose key is the line on the src where the 

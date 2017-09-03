@@ -1,7 +1,7 @@
 tests
 testButton10Led9Script
 	| program script1 instructions |
-	program := cc compile: '
+	program := self compile: '
 	task button10Led9() running 100/s {
 		write(9, read(10));
 	}'.

@@ -1,7 +1,7 @@
 tests
 testLogicalOrWithShortCircuit
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	func foo() { return 1 || bar();}
 	func bar() { return 42; }'.
 	script := program scripts first.

@@ -1,8 +1,6 @@
 initialize-release
 initialize
-	super initialize.	
-	encoder := UziEncoder new.
-	compiler := UziCompiler new.
+	super initialize.
 	protocol := UziProtocol new.
 	protocol 
 		when: #connect send: #update to: self;

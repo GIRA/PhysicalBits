@@ -1,7 +1,7 @@
 tests
 testScriptCallAsCondition
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	proc main() { if foo() { toggle(D13); }}
 	func foo() { return 1; }'.
 	script := program scripts first.

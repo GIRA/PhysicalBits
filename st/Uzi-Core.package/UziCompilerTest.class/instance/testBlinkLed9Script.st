@@ -1,7 +1,7 @@
 tests
 testBlinkLed9Script
 	| program script1 |
-	program := cc compile: '
+	program := self compile: '
 	task blinkLed9() running 1/s {
 		if read(D9) {
 			turnOff(D9);

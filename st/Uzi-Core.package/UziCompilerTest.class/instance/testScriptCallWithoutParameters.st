@@ -1,7 +1,7 @@
 tests
 testScriptCallWithoutParameters
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	var a;
 	task main() { a = foo(); }
 	func foo() { return 42; }'.

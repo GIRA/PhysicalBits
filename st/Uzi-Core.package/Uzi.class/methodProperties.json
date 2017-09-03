@@ -1,6 +1,15 @@
 {
 	"class" : {
+		"check:" : "Richo 9/2/2017 20:28",
+		"compile:" : "Richo 9/2/2017 19:34",
+		"compileString:" : "Richo 9/2/2017 19:26",
+		"defaultCompiler" : "Richo 9/2/2017 19:28",
+		"defaultEncoder" : "Richo 9/2/2017 20:11",
+		"defaultImportResolver" : "Richo 9/2/2017 19:28",
 		"defaultLibrariesDirectory" : "Richo 5/26/2017 10:04",
+		"defaultParseTreeValidator" : "Richo 9/2/2017 19:35",
+		"defaultParser" : "Richo 9/2/2017 19:28",
+		"encode:" : "Richo 9/2/2017 20:11",
 		"exampleBlinkLed9" : "Richo 8/10/2016 18:53",
 		"exampleBlinkLed9On:" : "Richo 8/22/2016 09:56",
 		"exampleButton10Led9" : "Richo 8/10/2016 18:53",
@@ -9,6 +18,8 @@
 		"examplePot15Led9On:" : "Richo 8/22/2016 09:56",
 		"librariesDirectory" : "Richo 5/26/2017 10:04",
 		"librariesDirectory:" : "Richo 5/26/2017 10:04",
-		"program:" : "Richo 8/10/2016 16:57" },
+		"parse:" : "Richo 9/2/2017 20:54",
+		"program:" : "Richo 8/10/2016 16:57",
+		"resolveImports:" : "Richo 9/2/2017 19:37" },
 	"instance" : {
 		 } }

@@ -6,10 +6,7 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"encoder",
-		"compiler",
 		"protocol",
-		"simulator",
 		"sema",
 		"changed" ],
 	"name" : "UziResource",

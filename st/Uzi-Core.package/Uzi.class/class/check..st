@@ -1,5 +1,5 @@
-compiling
+building
 check: ast
 	| errors |
-	errors := UziParseTreeValidator check: ast.
+	errors := self defaultParseTreeValidator new check: ast.	
 	errors ifNotEmpty: [(UziCompileError errors: errors) signal]

@@ -1,7 +1,7 @@
 tests
 testScriptCallWithAnonymousArguments
 	| program script |
-	program := cc compile: '
+	program := self compile: '
 	var a;
 	task main() { a = foo(3); }
 	func foo(a) { return a + 2; }'.

@@ -1,5 +1,4 @@
 instance creation
 parser: anUziParser librariesPath: pathString
-	^ self basicNew 
-		initializeWithParser: anUziParser
+	^ self parser: anUziParser
 		librariesDirectory: (FileDirectory on: pathString)

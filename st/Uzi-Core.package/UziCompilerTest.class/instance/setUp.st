@@ -1,7 +1,5 @@
-setup
+private
 setUp
-	cc := UziCompiler parser: UziParser new.
-
 	push := UziPushInstruction.
 	pop := UziPopInstruction.
 	prim := UziPrimitiveCallInstruction.

@@ -1,7 +1,7 @@
 tests
 testLoops2
 	| program script |
-	program := cc compile: 'task main() running {
+	program := self compile: 'task main() running {
 		until read (D13) { turnOn(D11); }
 	}'.
 	script := program scripts first.
