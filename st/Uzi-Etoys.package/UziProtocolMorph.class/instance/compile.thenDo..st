@@ -1,7 +1,7 @@
 running programs
 compile: aString thenDo: aBlock
 	[| encoded program |
-	aBlock value: (program := UziCompiler new compile: aString).
+	aBlock value: (program := Uzi compileString: aString).
 	encoded := UziEncoder new encode: program.
 	Transcript 
 		cr; 
