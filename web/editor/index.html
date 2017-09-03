@@ -129,10 +129,14 @@
 	<div id="editor">
 "Example: Blinking two leds"
 	
-@blink13 ticking 1 / s [ D13 toggle ]
+task blink13() running 1/s {
+    toggle(D13);
+}
 
-@blink11 ticking 2 / s [ D11 toggle ]
-	</div>
+task blink11() running 2/s {
+    toggle(D11);
+}
+</div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
