@@ -34,6 +34,7 @@
 		"testScriptCallWithNamedArguments" : "Richo 9/2/2017 20:20",
 		"testScriptCallWithNamedArgumentsIncorrectOrder" : "Richo 9/2/2017 20:20",
 		"testScriptCallWithoutParameters" : "Richo 9/2/2017 20:20",
+		"testScriptRunOnce" : "Richo 9/4/2017 00:19",
 		"testScriptRunWithoutParameters" : "Richo 9/2/2017 20:20",
 		"testScriptWithOptionalTickingState" : "Richo 9/3/2017 22:40",
 		"testStartScript" : "Richo 9/2/2017 20:19",
