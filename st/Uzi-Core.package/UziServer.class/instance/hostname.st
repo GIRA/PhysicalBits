@@ -1,3 +1,3 @@
 accessing
-serverHostname
+hostname
 	^ 'localhost'

@@ -6,4 +6,5 @@ processRun: req
 	protocol run: program]
 		on: Error
 		do: [:err | ^ req send400Response: err description].	
-	req sendJSONResponse: (Uzi encode: program) asArray 
+	self sendJSONResponse: (Uzi encode: program) asArray 
+		for: req

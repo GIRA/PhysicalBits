@@ -3,9 +3,11 @@
 		"directory:" : "Richo 8/4/2015 14:35",
 		"directoryNamed:" : "Richo 8/11/2015 20:07" },
 	"instance" : {
+		"certName" : "Richo 9/6/2017 17:27",
+		"hostname" : "Richo 9/6/2017 17:27",
+		"httpPort" : "Richo 9/6/2017 17:27",
+		"httpsPort" : "Richo 9/6/2017 17:27",
 		"initialize" : "Richo 8/10/2015 12:25",
 		"initializeResources" : "Richo 8/4/2015 18:14",
 		"initializeWithDirectory:" : "Richo 8/4/2015 14:35",
-		"protocol" : "Richo 9/7/2016 15:30",
-		"serverHostname" : "Richo 3/29/2016 16:42",
-		"serverPort" : "Richo 3/29/2016 16:43" } }
+		"protocol" : "Richo 9/7/2016 15:30" } }

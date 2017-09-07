@@ -1,3 +1,3 @@
 accessing
-serverPort
+httpPort
 	^ 8080
