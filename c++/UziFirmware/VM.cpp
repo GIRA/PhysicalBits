@@ -182,10 +182,31 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case SCRIPT_STOP:
 		{
-			Script* script = currentProgram->getScript(argument);
-			if (script != 0)
+			Coroutine* coroutine = currentProgram->getCoroutine(argument);
+			if (coroutine != 0)
 			{
+				Script* script = coroutine->getScript();
 				script->setStepping(false);
+								
+				if (currentCoroutine == coroutine)
+				{
+					/*
+					If we're stopping the current coroutine we need to stop execution
+					right now. So, we set the yield flag and reset the vm state.
+					*/
+					yieldFlag = true;
+					stack->reset();
+					pc = script->getInstructionStart();
+					framePointer = -1;
+				}
+				else
+				{
+					/*
+					If we're stopping another coroutine just resetting the coroutine 
+					state is enough.
+					*/
+					coroutine->reset();
+				}
 			}
 		} 
 		break;

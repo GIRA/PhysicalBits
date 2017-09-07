@@ -1180,8 +1180,8 @@ namespace SimulatorTest
                         prim: #pop;
                         push: 1000;
                         prim: #yieldTime;
-                        stop: #foo;
-                        start: #bar];
+                        start: #bar;
+                        stop: #foo];
                     script: #bar
                     ticking: false
                     delay: 0
@@ -1190,8 +1190,8 @@ namespace SimulatorTest
                         prim: #pop;
                         push: 1000;
                         prim: #yieldTime;
-                        stop: #bar;
-                        start: #foo];
+                        start: #foo;
+                        stop: #bar];
                     script: #writeCoroutine
                     ticking: false
                     delay: 0
@@ -1201,8 +1201,8 @@ namespace SimulatorTest
                         prim: #write]].
                 UziProtocol new run: program
                 */
-                0, 3, 2, 4, 11, 5, 3, 232, 128, 0, 0, 0, 6, 194, 186, 129, 183, 224, 209,
-                0, 0, 0, 0, 6, 194, 186, 129, 183, 225, 208, 0, 0, 0, 0, 3, 128, 188, 161
+                0, 3, 2, 4, 11, 5, 3, 232, 128, 0, 0, 0, 6, 194, 186, 129, 183, 209, 224,
+                0, 0, 0, 0, 6, 194, 186, 129, 183, 208, 225, 0, 0, 0, 0, 3, 128, 188, 161
             });
 
             Assert.AreEqual(0, sketch.GetPinValue(11));
@@ -1418,6 +1418,89 @@ namespace SimulatorTest
                 short pinValue = sketch.GetPinValue(13);
                 Assert.AreEqual(1023 * (1 - (i % 2)), pinValue);
                 Assert.AreEqual(0, sketch.GetPinValue(11));
+            }
+        }
+
+        [TestMethod]
+        public void TestStopScriptAndRestartShouldResetPCAndStuff()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink13
+	                ticking: true
+	                delay: 0
+	                instructions: [:s | s
+		                push: 13;
+		                prim: #toggle;
+		                push: 1000;
+		                prim: #yieldTime;
+		                push: 11;
+		                prim: #toggle];
+	                script: #sleepAwake
+	                ticking: true
+	                delay: 0
+	                instructions: [:s | s
+		                stop: #blink13;
+		                push: 500;
+		                prim: #yieldTime;
+		                start: #blink13;
+		                push: 500;
+		                prim: #yieldTime]].
+                UziProtocol new run: program
+                */
+                0, 2, 4, 8, 11, 13, 9, 1, 244, 3, 232, 128, 0, 0, 0, 6, 129, 162, 131, 183, 128,
+                162, 128, 0, 0, 0, 6, 224, 130, 183, 208, 130, 183
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
+
+                sketch.SetMillis(i * 1000 + 550);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
+            }
+        }
+
+        [TestMethod]
+        public void TestStopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart()
+        {
+            sketch.WriteSerial(new byte[]
+            {
+                /*
+                program := Uzi program: [:p | p
+	                script: #blink13
+	                ticking: true
+	                delay: 0
+	                instructions: [:s | s
+		                push: 13;
+		                prim: #toggle;
+		                stop: #blink13;
+		                push: 11;
+		                prim: #toggle];
+	                script: #awake
+	                ticking: true
+	                delay: 1000
+	                instructions: [:s | s
+		                start: #blink13]].
+                UziProtocol new run: program
+                */
+                0, 2, 2, 8, 11, 13, 128, 0, 0, 0, 5, 129, 162, 224, 128,
+                162, 128, 0, 3, 232, 1, 208
+            });
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
             }
         }
     }
