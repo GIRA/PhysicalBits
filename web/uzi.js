@@ -1,6 +1,7 @@
 var Uzi = (function () {
 			
 	var Uzi = {
+		baseUrl: "",
 		isConnected: false,
 		portName: undefined,
 		
@@ -11,7 +12,11 @@ var Uzi = (function () {
 		disconnect: disconnect,
 		compile: compile,
 		install: install,
-		run: run
+		run: run,
+		
+		start: function () {
+			updateLoop(true);
+		}
 	};
 	
 	function nop () { /* Do nothing */ }
@@ -27,7 +32,7 @@ var Uzi = (function () {
 		var error = callbacks.error || nop;
 		ajax.request({ 
 			type: 'GET', 
-			url: "/uzi",
+			url: Uzi.baseUrl + "/uzi",
 			data: {
 				wait: wait
 			},
@@ -40,7 +45,7 @@ var Uzi = (function () {
 	function connect (port, callback) {
 		ajax.request({ 
 			type: 'POST', 
-			url: "/uzi/actions/connect",
+			url: Uzi.baseUrl + "/uzi/actions/connect",
 			data: {
 				port: port
 			},
@@ -55,7 +60,7 @@ var Uzi = (function () {
 	function disconnect (callback) {
 		ajax.request({ 
 			type: 'POST', 
-			url: "/uzi/actions/disconnect",
+			url: Uzi.baseUrl + "/uzi/actions/disconnect",
 			data: {},
 			success: function (uzi) {
 				update(uzi);
@@ -68,7 +73,7 @@ var Uzi = (function () {
 	function compile(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
-			url: "/uzi/actions/compile",
+			url: Uzi.baseUrl + "/uzi/actions/compile",
 			data: {
 				src: src
 			},
@@ -82,7 +87,7 @@ var Uzi = (function () {
 	function install(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
-			url: "/uzi/actions/install",
+			url: Uzi.baseUrl + "/uzi/actions/install",
 			data: {
 				src: src
 			},
@@ -96,7 +101,7 @@ var Uzi = (function () {
 	function run(src, callback) {
 		ajax.request({ 
 			type: 'POST', 
-			url: "/uzi/actions/run",
+			url: Uzi.baseUrl + "/uzi/actions/run",
 			data: {
 				src: src
 			},
@@ -121,8 +126,6 @@ var Uzi = (function () {
 			error: errorHandler
 		});
 	}
-	
-	updateLoop(true);
 	
 	return Uzi;
 })();

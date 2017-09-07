@@ -60,7 +60,7 @@ Uzi.onUpdate = function () {
 		$("#port")
 			.attr("disabled", "disabled")
 			.text(Uzi.portName)
-			.append("\n<span class='caret'></span>");			
+			.append("\n<span class='caret'></span>");
 		$("#disconnect").removeAttr("disabled");					
 		$("#install").removeAttr("disabled");
 		$("#run").removeAttr("disabled");
