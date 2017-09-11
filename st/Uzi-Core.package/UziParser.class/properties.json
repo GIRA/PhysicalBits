@@ -48,7 +48,8 @@
 		"importPath",
 		"program",
 		"import",
-		"scriptList" ],
+		"scriptList",
+		"scriptReference" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

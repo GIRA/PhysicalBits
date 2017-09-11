@@ -19,6 +19,6 @@
 		"testScriptArgumentsAndLocalsMustNotCollide" : "Richo 8/10/2017 16:57",
 		"testScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth" : "Richo 8/10/2017 16:59",
 		"testScriptReferenceShouldReferenceExistingScript" : "Richo 8/10/2017 17:00",
-		"testScriptStartReceiverIsAScriptRef" : "Richo 9/11/2017 08:06",
-		"testScriptStopReceiverIsAScriptRef" : "Richo 9/11/2017 08:02",
+		"testScriptStartReceiverIsAScriptRef" : "Richo 9/11/2017 08:16",
+		"testScriptStopReceiverIsAScriptRef" : "Richo 9/11/2017 08:16",
 		"testStartingAndStoppingCanOnlyBePerformedOnTasks" : "Richo 8/11/2017 12:45" } }

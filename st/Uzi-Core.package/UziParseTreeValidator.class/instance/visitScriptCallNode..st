@@ -1,6 +1,6 @@
 visiting
 visitScriptCallNode: node
-	self assertScriptReference: node scriptName node: node.
+	self assertScriptReference: node script.
 	
 	(program scriptNamed: node scriptName)
 		ifNotNil: [:script || callArgs scriptArgs |

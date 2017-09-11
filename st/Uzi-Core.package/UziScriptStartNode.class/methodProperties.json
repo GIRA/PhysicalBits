@@ -1,11 +1,11 @@
 {
 	"class" : {
-		"script:" : "Richo 8/11/2017 19:10",
-		"scriptNames:" : "Richo 9/11/2017 08:04" },
+		"scripts:" : "Richo 9/11/2017 08:13" },
 	"instance" : {
-		"=" : "Richo 9/11/2017 08:05",
+		"=" : "Richo 9/11/2017 08:15",
 		"accept:" : "Richo 3/26/2017 21:14",
-		"hash" : "Richo 9/11/2017 08:05",
-		"initializeWithScriptNames:" : "Richo 9/11/2017 08:04",
+		"hash" : "Richo 9/11/2017 08:15",
+		"initializeWithScripts:" : "Richo 9/11/2017 08:14",
 		"isStatement" : "Richo 3/26/2017 21:15",
-		"scriptNames" : "Richo 9/11/2017 08:04" } }
+		"scriptNames" : "Richo 9/11/2017 08:14",
+		"scripts" : "Richo 9/11/2017 08:20" } }

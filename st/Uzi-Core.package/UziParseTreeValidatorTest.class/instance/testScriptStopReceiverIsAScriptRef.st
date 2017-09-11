@@ -9,5 +9,5 @@ testScriptStopReceiverIsAScriptRef
 				arguments: #() 
 				body: (block 
 					locals: #() 
-					statements: { stop scriptNames: { UziNumberNode value: 5 }})
+					statements: { stop scripts: { UziNumberNode value: 5 }})
 		}).

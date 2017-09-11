@@ -1,16 +1,16 @@
-grammar-calls
+grammar-scriptRefs
 call
-	^ ws , (identifier, argsList) token , ws
-		map: [:ign1 :token :ign2 || selector arguments |
-			selector := token parsedValue first.
+	^ ws , (scriptReference, argsList) token , ws
+		map: [:ign1 :token :ign2 || ref arguments |
+			ref := token parsedValue first.
 			arguments := token parsedValue second.
-			((self primitiveForSelector: selector)
+			((self primitiveForSelector: ref scriptName)
 				ifNil: [UziScriptCallNode 
-					script: selector
+					script: ref
 					arguments: arguments]
 				ifNotNil: [:primitive |
 					UziPrimitiveCallNode
-						selector: selector
+						selector: ref scriptName
 						arguments: (arguments collect: [:kvp | kvp value])
 						primitive: primitive])
 				token: token]

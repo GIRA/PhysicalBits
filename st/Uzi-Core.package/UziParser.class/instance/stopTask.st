@@ -3,5 +3,5 @@ stopTask
 	^ ws , ('stop' asParser , ws , scriptList , ws , $; asParser) token , ws		
 		map: [:ign1 :token :ign2 |
 			(UziScriptStopNode
-				scriptNames: token parsedValue third)
+				scripts: token parsedValue third)
 				token: token]
