@@ -9,5 +9,5 @@ testScriptStartReceiverIsAScriptRef
 				arguments: #() 
 				body: (block 
 					locals: #() 
-					statements: { start script: (UziNumberNode value: 5)})
+					statements: { start scriptNames: { UziNumberNode value: 5 }})
 		}).

@@ -1,9 +1,11 @@
 visiting
 visitScriptStartNode: node
-	self assertScriptReference: node.
+	node scriptNames do: [:scriptName |
+		self assertScriptReference: scriptName node: node].
 	
-	(program scriptNamed: node scriptName)
-		ifNotNil: [:script |
-			self assert: script isTask
-				description: 'Task reference expected'
-				node: node]
+	node scriptNames do: [:scriptName |
+		(program scriptNamed: scriptName)
+			ifNotNil: [:script |
+				self assert: script isTask
+					description: 'Task reference expected'
+					node: node]]

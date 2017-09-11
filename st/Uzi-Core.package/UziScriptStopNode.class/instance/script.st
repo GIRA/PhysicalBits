@@ -1,3 +1,0 @@
-accessing
-script
-	^ self halt

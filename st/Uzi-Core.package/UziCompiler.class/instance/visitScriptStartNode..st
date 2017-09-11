@@ -1,3 +1,4 @@
 visiting
 visitScriptStartNode: node
-	(script start: node scriptName) node: node
+	node scriptNames do: [:scriptName |
+		(script start: scriptName) node: node]

@@ -1,7 +1,7 @@
 grammar-statements
 stopTask
-	^ ws , ('stop' asParser , ws , identifier , $; asParser) token , ws		
+	^ ws , ('stop' asParser , ws , scriptList , ws , $; asParser) token , ws		
 		map: [:ign1 :token :ign2 |
 			(UziScriptStopNode
-				script: token parsedValue third)
+				scriptNames: token parsedValue third)
 				token: token]

@@ -47,7 +47,8 @@
 		"stopTask",
 		"importPath",
 		"program",
-		"import" ],
+		"import",
+		"scriptList" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
