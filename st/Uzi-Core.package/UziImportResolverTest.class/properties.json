@@ -24,7 +24,8 @@
 		"call",
 		"func",
 		"return",
-		"ir" ],
+		"ir",
+		"ref" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

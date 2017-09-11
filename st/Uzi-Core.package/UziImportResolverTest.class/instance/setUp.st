@@ -22,3 +22,4 @@ setUp
 	call := UziScriptCallNode.
 	func := UziFunctionNode.
 	return := UziReturnNode.
+	ref := UziScriptRefNode.
