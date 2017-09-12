@@ -2,7 +2,7 @@ tests
 test050StartKeywordAcceptsMultipleTasks
 	| program script |
 	program := parser parse: '
-		task main() {
+		task main() running {
 			start t1, t2, t3;
 		}'.
 	script := program scriptNamed: 'main'.

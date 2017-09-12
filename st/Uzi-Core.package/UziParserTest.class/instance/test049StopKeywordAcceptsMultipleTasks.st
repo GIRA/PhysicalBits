@@ -2,7 +2,7 @@ tests
 test049StopKeywordAcceptsMultipleTasks
 	| program script |
 	program := parser parse: '
-		task main() {
+		task main() running {
 			stop t1, t2, t3;
 		}'.
 	script := program scriptNamed: 'main'.

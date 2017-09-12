@@ -3,7 +3,7 @@ testScriptCallWithAnonymousArguments
 	| program script |
 	program := self compile: '
 	var a;
-	task main() { a = foo(3); }
+	task main() running { a = foo(3); }
 	func foo(a) { return a + 2; }'.
 	script := program scripts first.
 	self assert: script instructions = {

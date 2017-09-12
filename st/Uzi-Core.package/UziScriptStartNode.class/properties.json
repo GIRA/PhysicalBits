@@ -6,7 +6,6 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"scriptNames",
 		"scripts" ],
 	"name" : "UziScriptStartNode",
 	"pools" : [

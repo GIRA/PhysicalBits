@@ -5,7 +5,7 @@ test037Program
 	var a = 1;
 	var b = 2;
 	
-	task blink() {
+	task blink() running {
 		if read(D13) {
 			turnOff(D13);
 		} else {

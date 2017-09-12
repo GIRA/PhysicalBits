@@ -1,7 +1,7 @@
 tests
 testPrimitiveCallArgumentsShouldBeExpressions
-	self assertInvalid: 'var a; task foo() { turnOn(a = 5); }'.
-	self assertInvalid: 'task foo() { turnOn(turnOn(D13)); }'.
+	self assertInvalid: 'var a; task foo() stopped { turnOn(a = 5); }'.
+	self assertInvalid: 'task foo() stopped { turnOn(turnOn(D13)); }'.
 	
 	"self assertInvalid: 'task foo() { turnOn({turnOn(D13);});}'."
 	self assertInvalid: (program

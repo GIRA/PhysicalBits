@@ -2,13 +2,13 @@ tests
 testStartingAndStoppingCanOnlyBePerformedOnTasks
 	self assertInvalid: '
 	func foo() { return 42; }
-	task main() { start foo; }'.
+	task main() stopped { start foo; }'.
 	self assertInvalid: '
 	func foo() { return 42; }
-	task main() { stop foo; }'.
+	task main() stopped { stop foo; }'.
 	self assertInvalid: '
 	proc foo() { turnOn(D13); }
-	task main() { start foo; }'.
+	task main() stopped { start foo; }'.
 	self assertInvalid: '
 	proc foo() { turnOn(D13); }
-	task main() { stop foo; }'
+	task main() stopped { stop foo; }'

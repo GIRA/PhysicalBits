@@ -3,7 +3,7 @@ testScriptCallWithNamedArgumentsIncorrectOrder
 	| program script |
 	program := self compile: '
 	var a;
-	task main() { a = foo(arg2: 4, arg1: 3);}
+	task main() running { a = foo(arg2: 4, arg1: 3);}
 	func foo(arg1, arg2) { return arg1 * arg2; }'.
 	script := program scripts first.
 	self assert: script instructions = {

@@ -4,7 +4,7 @@ test048ProgramWithImports
 	program := parser parse: '
 		import foo = ''Foo.uzi'';
 		import bar = ''Bar.uzi'';
-		task main() {}'.
+		task main() running {}'.
 	self assert: 2 equals: program imports size.
 	self assert: 1 equals: program scripts size.
 	self assert: 0 equals: program globals size.

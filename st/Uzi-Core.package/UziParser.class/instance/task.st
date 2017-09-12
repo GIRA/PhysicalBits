@@ -1,6 +1,6 @@
 grammar-scripts
 task
-	^ ws , ('task' asParser, ws , identifier , paramsList, taskState optional , tickingRate optional , block) token , ws
+	^ ws , ('task' asParser, ws , identifier , paramsList, taskState , tickingRate optional , block) token , ws
 	map: [:ign1 :token :ign2 || nodes |
 		nodes := token parsedValue.
 		(UziTaskNode
