@@ -1,0 +1,8 @@
+
+proc stopTask() {
+	stop blink;
+}
+
+task blink() running {
+	toggle(D13);
+}

@@ -1,3 +1,3 @@
 visiting
 visitScriptStopNode: node
-	^ (node class script: (alias, node scriptName)) token: node token
+	^ (node class scripts: (self visitCollection: node scripts)) token: node token

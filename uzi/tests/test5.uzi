@@ -1,0 +1,8 @@
+
+proc startTask() {
+	start blink;
+}
+
+task blink() stopped {
+	toggle(D13);
+}
