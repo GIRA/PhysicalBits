@@ -1,4 +1,4 @@
-tests
+private
 setUp
 	program := UziProgramNode.
 	varDec := UziVariableDeclarationNode.

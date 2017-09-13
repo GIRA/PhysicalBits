@@ -3,9 +3,9 @@
 		 },
 	"instance" : {
 		"setUp" : "Richo 8/22/2016 09:44",
-		"testBranchingToNonExistingLabelShouldSignalError" : "Richo 8/22/2016 10:20",
-		"testDuplicatedLabelsShouldSignalError" : "Richo 8/22/2016 10:19",
-		"testLabelsAreUpdatedCorrectly" : "Richo 8/22/2016 10:02",
-		"testProgramCreation" : "Richo 5/27/2017 13:00",
-		"testProgramCreation2" : "Richo 5/27/2017 13:01",
-		"testVariablesAndLiteralsDoNotCollide" : "Richo 5/27/2017 13:04" } }
+		"test001ProgramCreation" : "Richo 9/13/2017 10:30",
+		"test002ProgramCreation2" : "Richo 9/13/2017 10:30",
+		"test003LabelsAreUpdatedCorrectly" : "Richo 9/13/2017 10:30",
+		"test004DuplicatedLabelsShouldSignalError" : "Richo 9/13/2017 10:30",
+		"test005BranchingToNonExistingLabelShouldSignalError" : "Richo 9/13/2017 10:30",
+		"test006VariablesAndLiteralsDoNotCollide" : "Richo 9/13/2017 10:30" } }

@@ -2,11 +2,11 @@
 	"class" : {
 		 },
 	"instance" : {
-		"testButton10Led9Encoding" : "Richo 8/22/2016 09:58",
-		"testEmptyProgram" : "Richo 8/10/2016 18:47",
-		"testProgramHeader" : "Richo 8/10/2016 18:55",
-		"testProgramHeader2" : "Richo 8/10/2016 18:55",
-		"testProgramWithFloatVars" : "Richo 8/22/2016 09:58",
-		"testProgramWithJumpsCountsInstructionsCorrectly" : "Richo 3/30/2017 23:31",
-		"testProgramWithOneByteVars" : "Richo 8/22/2016 09:59",
-		"testProgramWithVarsLargerThanOneByte" : "Richo 8/22/2016 09:59" } }
+		"test001EmptyProgram" : "Richo 9/13/2017 10:33",
+		"test002ProgramHeader" : "Richo 9/13/2017 10:33",
+		"test003ProgramHeader2" : "Richo 9/13/2017 10:33",
+		"test004Button10Led9Encoding" : "Richo 9/13/2017 10:33",
+		"test005ProgramWithFloatVars" : "Richo 9/13/2017 10:33",
+		"test006ProgramWithJumpsCountsInstructionsCorrectly" : "Richo 9/13/2017 10:33",
+		"test007ProgramWithOneByteVars" : "Richo 9/13/2017 10:33",
+		"test008ProgramWithVarsLargerThanOneByte" : "Richo 9/13/2017 10:33" } }
