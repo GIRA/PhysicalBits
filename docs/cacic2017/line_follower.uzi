@@ -1,0 +1,58 @@
+import leftMotor = 'L293.uzi';
+import rightMotor = 'L293.uzi';
+
+var sensor = A1;
+var buzzer = D6;
+
+var victims;
+
+task setup() once {
+	"Configure motors (pins are configured 
+	automatically)"
+	leftMotor.init(D9, D8, D7);
+	rightMotor.init(D10, D11, D12);
+}
+
+task followLine() running {
+	"Wait until black while moving right"
+	until (isOnBlack()) { moveRight(); }
+	"Wait until white, still moving right"
+	until (isOnWhite()) { moveRight(); }
+	"Wait until black while moving left"
+	until (isOnBlack()) { moveLeft(); }
+	"Wait until white, still moving left"
+	until (isOnWhite()) { moveLeft(); }
+}
+
+task detectVictims() running {
+	if (isOnVictim()) {
+		"Stop following the line"
+		pause followLine;
+		leftMotor.brake(); rightMotor.brake();
+		"Increment victim counter"
+		victims = victims + 1;
+		"Play alarm"
+		repeat (victims) {
+			turnOn(buzzer); delay(500);
+			turnOff(buzzer); delay(500);
+		}
+		"Resume following the line"
+		resume followLine;
+		"Wait 100 ms before detecting next victim"
+		delay(100);
+	}
+}
+
+func isOnBlack() { return read(sensor) < 0.2; }
+func isOnWhite() { return read(sensor) > 0.5; }
+func isOnVictim() { return !isOnBlack() && !isOnWhite(); }
+
+proc moveRight() {
+	leftMotor.forward(1);
+	rightMotor.forward(0.5);	
+}
+
+proc moveLeft() {
+	leftMotor.forward(0.5);
+	rightMotor.forward(1);
+}
