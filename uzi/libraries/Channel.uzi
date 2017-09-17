@@ -1,0 +1,32 @@
+var value;
+var state;
+var rturn = -1;
+var wturn = -1;
+
+proc write(val) {
+	while (coroutine() != wturn) {
+		if (wturn == -1) {
+			wturn = coroutine();
+		}
+	}
+	while (state != 0);
+	
+	wturn = -1;
+	delayMs(0); "TODO(Richo): Add yield instruction!"
+	value = val;
+	state = 1;
+}
+
+func read() {
+	while (coroutine() != rturn) {
+		if (rturn == -1) {
+			rturn = coroutine();
+		}
+	}
+	while (state != 1);
+	
+	rturn = -1;
+	delayMs(0); "TODO(Richo): Add yield instruction!"
+	state = 0;
+	return value;
+}

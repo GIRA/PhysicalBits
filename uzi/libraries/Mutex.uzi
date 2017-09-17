@@ -1,0 +1,15 @@
+var lock;
+var owner = -1;
+
+proc acquire() {
+	"If acquisition is successful the execution of the
+	entire procedure should	be atomic"
+	until (lock == 0 || owner == coroutine());
+	lock = 1;
+	owner = coroutine();
+}
+
+proc release() {
+	lock = 0;
+	owner = -1;
+}
