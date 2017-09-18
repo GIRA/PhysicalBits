@@ -3,35 +3,35 @@
 
 \# | Name | Binary encoding | Stack [before] → [after] | Description
 ---|------|-----------------|--------------------------|------------
-0 | TURN_ON | `000xxxxx` *(x = pin)* | no change | Write a HIGH value to *pin*
-1 | TURN_OFF | `001xxxxx` *(x = pin)* | no change | Write a LOW value to *pin*
-2 | WRITE_PIN | `010xxxxx` *(x = pin)* | value → | Write *value* to *pin*
-3 | READ_PIN | `011xxxxx` *(x = pin)* | → value | Read *value* from *pin*
-4 | READ_GLOBAL | `1000xxxx` *(x = index)* | → value | Read the *value* of the global variable at *index* and push it on the stack
-5 | WRITE_GLOBAL | `1001xxxx` *(x = index)* | value → | Write the *value* on the top of the stack to the global variable at *index*
-6 | SCRIPT_CALL | `1100xxxx` *(x = index)* | ret_val, (fp << 16 \| pc) → | Call the script at *index*
-7 | SCRIPT_START | `11010xxx` *(x = index)* | no change | Start script at *index*
-8 | SCRIPT_RESUME | `11011xxx` *(x = index)* | no change | Resume script at *index*
-9 | SCRIPT_STOP | `11100xxx` *(x = index)* | no change | Stop script at *index*
-10 | SCRIPT_PAUSE | `11101xxx` *(x = index)* | no change | Pause script at *index*
-11 | JMP | `11110000 xxxxxxxx` *(x = instr)* | no change | Jump to the instruction at *pc* + *instr*
-12 | JZ | `11110001 xxxxxxxx` *(x = instr)* | value → | Jump to the instruction at *pc* + *instr* if *value* equals zero
-13 | JNZ | `11110010 xxxxxxxx` *(x = instr)* | value → | Jump to the instruction at *pc* + *instr* if *value* doesn't equal zero
-14 | JNE | `11110011 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* doesn't equal *value2*
-15 | JLT | `11110100 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is less than *value2*
-16 | JLTE | `11110101 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is less than or equals to *value2*
-17 | JGT | `11110110 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than *value2*
-18 | JGTE | `11110111 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than or equals *value2*
-19 | JGTE | `11110111 xxxxxxxx` *(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than or equals *value2*
-20 | READ_GLOBAL_EXT | `11111000 xxxxxxxx` *(x = index)* | ? | Read the *value* of the global variable at *index* and push it on the stack
-21 | WRITE_GLOBAL_EXT | `11111001 xxxxxxxx` *(x = index)* | ? | Write the *value* on the top of the stack to the global variable at *index*
-22 | SCRIPT_CALL_EXT | `11111100 xxxxxxxx` *(x = index)* | ? | Call the script at *index*
-23 | SCRIPT_START_EXT | `11111101 0xxxxxxx` *(x = index)* | ? | Start script at *index*
-24 | SCRIPT_RESUME_EXT | `11111101 1xxxxxxx` *(x = index)* | ? | Resume script at *index*
-25 | SCRIPT_STOP_EXT | `11111110 0xxxxxxx` *(x = index)* | ? | Stop script at *index*
-26 | SCRIPT_PAUSE_EXT | `11111110 1xxxxxxx` *(x = index)* | ? | Pause script at *index*
-27 | READ_LOCAL | `11111111 0xxxxxxx` *(x = offset)* | → value | Read the *value* of the local variable at *fp* + *offset* and push it on the stack
-28 | WRITE_LOCAL | `11111111 1xxxxxxx` *(x = offset)* | value → | Write the *value* on the top of the stack to the local variable at *fp* + *offset*
+0 | TURN_ON | `000xxxxx`<br />*(x = pin)* | no change | Write a HIGH value to *pin*
+1 | TURN_OFF | `001xxxxx`<br />*(x = pin)* | no change | Write a LOW value to *pin*
+2 | WRITE_PIN | `010xxxxx`<br />*(x = pin)* | value → | Write *value* to *pin*
+3 | READ_PIN | `011xxxxx`<br />*(x = pin)* | → value | Read *value* from *pin*
+4 | READ_GLOBAL | `1000xxxx`<br />*(x = index)* | → value | Read the *value* of the global variable at *index* and push it on the stack
+5 | WRITE_GLOBAL | `1001xxxx`<br />*(x = index)* | value → | Write the *value* on the top of the stack to the global variable at *index*
+6 | SCRIPT_CALL | `1100xxxx`<br />*(x = index)* | ret_val, (fp << 16 \| pc) → | Call the script at *index*
+7 | SCRIPT_START | `11010xxx`<br />*(x = index)* | no change | Start script at *index*
+8 | SCRIPT_RESUME | `11011xxx`<br />*(x = index)* | no change | Resume script at *index*
+9 | SCRIPT_STOP | `11100xxx`<br />*(x = index)* | no change | Stop script at *index*
+10 | SCRIPT_PAUSE | `11101xxx`<br />*(x = index)* | no change | Pause script at *index*
+11 | JMP | `11110000 xxxxxxxx`<br />*(x = instr)* | no change | Jump to the instruction at *pc* + *instr*
+12 | JZ | `11110001 xxxxxxxx`<br />*(x = instr)* | value → | Jump to the instruction at *pc* + *instr* if *value* equals zero
+13 | JNZ | `11110010 xxxxxxxx`<br />*(x = instr)* | value → | Jump to the instruction at *pc* + *instr* if *value* doesn't equal zero
+14 | JNE | `11110011 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* doesn't equal *value2*
+15 | JLT | `11110100 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is less than *value2*
+16 | JLTE | `11110101 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is less than or equals to *value2*
+17 | JGT | `11110110 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than *value2*
+18 | JGTE | `11110111 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than or equals *value2*
+19 | JGTE | `11110111 xxxxxxxx`<br />*(x = instr)* | value1, value2 → | Jump to the instruction at *pc* + *instr* if *value1* is greater than or equals *value2*
+20 | READ_GLOBAL_EXT | `11111000 xxxxxxxx`<br />*(x = index)* | ? | Read the *value* of the global variable at *index* and push it on the stack
+21 | WRITE_GLOBAL_EXT | `11111001 xxxxxxxx`<br />*(x = index)* | ? | Write the *value* on the top of the stack to the global variable at *index*
+22 | SCRIPT_CALL_EXT | `11111100 xxxxxxxx`<br />*(x = index)* | ? | Call the script at *index*
+23 | SCRIPT_START_EXT | `11111101 0xxxxxxx`<br />*(x = index)* | ? | Start script at *index*
+24 | SCRIPT_RESUME_EXT | `11111101 1xxxxxxx`<br />*(x = index)* | ? | Resume script at *index*
+25 | SCRIPT_STOP_EXT | `11111110 0xxxxxxx`<br />*(x = index)* | ? | Stop script at *index*
+26 | SCRIPT_PAUSE_EXT | `11111110 1xxxxxxx`<br />*(x = index)* | ? | Pause script at *index*
+27 | READ_LOCAL | `11111111 0xxxxxxx`<br />*(x = offset)* | → value | Read the *value* of the local variable at *fp* + *offset* and push it on the stack
+28 | WRITE_LOCAL | `11111111 1xxxxxxx`<br />*(x = offset)* | value → | Write the *value* on the top of the stack to the local variable at *fp* + *offset*
 29 | PRIM_READ_PIN | `10100000` | pin → value | Read *value* from *pin*
 30 | PRIM_WRITE_PIN | `10100001` | value, pin → | Write *value* to *pin*
 31 | PRIM_TOGGLE_PIN | `10100010` | pin → | Toggle *pin*
