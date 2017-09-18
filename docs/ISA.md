@@ -11,7 +11,7 @@
 5 | WRITE_GLOBAL | `1001xxxx` (x = var_index) | value -> | Write the value on the top of the stack to the global variable at var_index
 6 | PRIM_CALL_0 | `1010xxxx` (x = prim_index) | ? | Call the primitive at prim_index
 7 | PRIM_CALL_1 | `1011xxxx` (x = prim_index + 16) | ? | Call the primitive at prim_index
-8 | SCRIPT_CALL | `1100xxxx` (x = script_index) | "ret_val | Call the script at script_index
+8 | SCRIPT_CALL | `1100xxxx` (x = script_index) | ret_val, (fp << 16 | pc) -> | Call the script at script_index
 9 | SCRIPT_START | `11010xxx` (x = script_index) | no change | Start script at script_index
 10 | SCRIPT_RESUME | `11011xxx` (x = script_index) | no change | Resume script at script_index
 11 | SCRIPT_STOP | `11100xxx` (x = script_index) | no change | Stop script at script_index
