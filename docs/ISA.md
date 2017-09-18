@@ -19,11 +19,12 @@
 13 | JMP | `11110000 xxxxxxxx` (x = instr_to_jump) | no change | Jump to the instruction at pc + instr_to_jump
 14 | JZ | `11110001 xxxxxxxx` (x = instr_to_jump) | value -> | Jump to the instruction at pc + instr_to_jump if value equals zero
 15 | JNZ | `11110010 xxxxxxxx` (x = instr_to_jump) | value -> | Jump to the instruction at pc + instr_to_jump if value doesn't equal zero
-16 | JNE | `11110011 xxxxxxxx` (x = instr_to_jump) | "value1 | Jump to the instruction at pc + instr_to_jump if value1 doesn't equal value2
-17 | JLT | `11110100 xxxxxxxx` (x = instr_to_jump) | "value1 | Jump to the instruction at pc + instr_to_jump if value1 is less than value2
-18 | JLTE | `11110101 xxxxxxxx` (x = instr_to_jump) | "value1 | Jump to the instruction at pc + instr_to_jump if value1 is less than or equals to value2
-19 | JGT | `11110110 xxxxxxxx` (x = instr_to_jump) | "value1 | Jump to the instruction at pc + instr_to_jump if value1 is greater than value2
-20 | JGTE | `11110111 xxxxxxxx` (x = instr_to_jump) | "value1 | Jump to the instruction at pc + instr_to_jump if value1 is greater than or equals value2
+16 | JNE | `11110011 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 doesn't equal value2
+17 | JLT | `11110100 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 is less than value2
+18 | JLTE | `11110101 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 is less than or equals to value2
+19 | JGT | `11110110 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 is greater than value2
+20 | JGTE | `11110111 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 is greater than or equals value2
+20 | JGTE | `11110111 xxxxxxxx` (x = instr_to_jump) | value1, value2 -> | Jump to the instruction at pc + instr_to_jump if value1 is greater than or equals value2
 21 | READ_GLOBAL_EXT | `11111000 xxxxxxxx` (x = var_index) | ? | Read the value of the global variable at var_index and push it on the stack
 22 | WRITE_GLOBAL_EXT | `11111001 xxxxxxxx` (x = var_index) | ? | Write the value on the top of the stack to the global variable at var_index
 23 | PRIM_CALL_2 | `11111010 xxxxxxxx` (x = prim_index + 32) | ? | Call the primitive at prim_index
