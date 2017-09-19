@@ -1,0 +1,31 @@
+var enablePin;
+var forwardPin;
+var reversePin;
+
+proc init(en, f, r) {
+	enablePin = en;
+	forwardPin = f;
+	reversePin = r;
+}
+
+proc forward(speed) {
+	write(enablePin, speed);
+	turnOn(forwardPin);
+	turnOff(reversePin);
+}
+
+proc backward(speed) {
+	write(enablePin, speed);
+	turnOff(forwardPin);
+	turnOn(reversePin);
+}
+
+proc break(speed) {
+	turnOff(enablePin);
+	turnOff(forwardPin);
+	turnOff(reversePin);
+}
+
+proc speed(speed) {
+	write(enablePin, speed);
+}
