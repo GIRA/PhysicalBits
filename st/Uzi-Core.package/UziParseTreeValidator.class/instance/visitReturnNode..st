@@ -1,4 +1,5 @@
 visiting
 visitReturnNode: node
-	self assertExpression: node value;
-		visit: node value
+	node value 
+		ifNotNil: [self assertExpression: node value;
+			visit: node value]
