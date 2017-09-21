@@ -2,6 +2,8 @@
 	"class" : {
 		"times:body:" : "Richo 9/21/2017 18:11" },
 	"instance" : {
+		"accept:" : "Richo 9/21/2017 18:40",
 		"body" : "Richo 9/21/2017 18:12",
 		"initializeWithTimes:body:" : "Richo 9/21/2017 18:11",
+		"isStatement" : "Richo 9/21/2017 18:42",
 		"times" : "Richo 9/21/2017 18:12" } }
