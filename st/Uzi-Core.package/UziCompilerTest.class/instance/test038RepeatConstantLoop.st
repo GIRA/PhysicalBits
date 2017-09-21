@@ -10,6 +10,8 @@ test038RepeatConstantLoop
 	script := program scripts first.
 	self assert: 1 equals: script locals size.
 	self assert: script instructions = {
+		push arg: (program globals detect: [:var | var value = 0]).
+		writeLocal arg: script locals first.
 		readLocal arg: script locals first.
 		push arg: (program globals detect: [:var | var value = 5]).
 		prim arg: (UziPrimitive named: #lessThan).
