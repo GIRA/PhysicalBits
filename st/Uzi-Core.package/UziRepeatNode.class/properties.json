@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"times",
+		"body" ],
+	"name" : "UziRepeatNode",
+	"pools" : [
+		 ],
+	"super" : "UziParseNode",
+	"type" : "normal" }

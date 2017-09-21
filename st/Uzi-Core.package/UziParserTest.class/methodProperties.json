@@ -54,4 +54,5 @@
 		"test047Import" : "Richo 8/11/2017 21:10",
 		"test048ProgramWithImports" : "Richo 9/12/2017 20:13",
 		"test049StopKeywordAcceptsMultipleTasks" : "Richo 9/12/2017 20:13",
-		"test050StartKeywordAcceptsMultipleTasks" : "Richo 9/12/2017 20:13" } }
+		"test050StartKeywordAcceptsMultipleTasks" : "Richo 9/12/2017 20:13",
+		"test051RepeatLoop" : "Richo 9/21/2017 18:08" } }
