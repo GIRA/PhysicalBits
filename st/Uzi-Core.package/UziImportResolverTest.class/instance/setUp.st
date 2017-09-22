@@ -24,3 +24,5 @@ setUp
 	return := UziReturnNode.
 	ref := UziScriptRefNode.
 	repeat := UziRepeatNode.
+	pause := UziScriptPauseNode.
+	resume := UziScriptResumeNode 

@@ -1,0 +1,8 @@
+
+proc resumeTask() {
+	resume blink;
+}
+
+task blink() running {
+	toggle(D13);
+}
