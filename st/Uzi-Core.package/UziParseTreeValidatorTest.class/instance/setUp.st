@@ -13,4 +13,5 @@ setUp
 	until := UziUntilNode.
 	doUntil := UziDoUntilNode.
 	start := UziScriptStartNode.
-	stop := UziScriptStopNode 
+	stop := UziScriptStopNode.
+	repeat := UziRepeatNode 

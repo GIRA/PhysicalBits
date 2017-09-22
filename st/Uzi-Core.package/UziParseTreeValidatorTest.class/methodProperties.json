@@ -4,7 +4,7 @@
 	"instance" : {
 		"assertInvalid:" : "Richo 8/10/2017 10:30",
 		"check:" : "Richo 8/11/2017 19:18",
-		"setUp" : "Richo 8/11/2017 19:11",
+		"setUp" : "Richo 9/22/2017 10:34",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
 		"test002AssignmentsAreNotExpressions" : "Richo 9/13/2017 10:35",
 		"test003ConditionalsAreNotExpressions" : "Richo 9/13/2017 10:35",
@@ -21,4 +21,6 @@
 		"test014StartingAndStoppingCanOnlyBePerformedOnTasks" : "Richo 9/13/2017 10:35",
 		"test015LoopConditionShouldBeAnExpression" : "Richo 9/13/2017 10:35",
 		"test016OnlyScriptBlocksAreAllowedToHaveLocals" : "Richo 9/13/2017 10:35",
-		"test017PrimitiveCallArgumentsShouldBeExpressions" : "Richo 9/13/2017 10:35" } }
+		"test017PrimitiveCallArgumentsShouldBeExpressions" : "Richo 9/13/2017 10:35",
+		"test018RepeatTimesShouldBeAnExpression" : "Richo 9/22/2017 10:26",
+		"test019RepeatBodyShouldBeABlock" : "Richo 9/22/2017 10:33" } }

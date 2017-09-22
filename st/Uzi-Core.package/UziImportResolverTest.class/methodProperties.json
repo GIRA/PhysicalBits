@@ -2,11 +2,12 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 9/11/2017 10:18",
+		"setUp" : "Richo 9/22/2017 10:38",
 		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 8/12/2017 20:04",
 		"test002ImportingSameLibraryTwice" : "Richo 8/12/2017 20:03",
 		"test003ImportingNestedLibraries" : "Richo 8/12/2017 20:19",
 		"test004StoppingImportedTask" : "Richo 9/11/2017 10:27",
 		"test005StartingImportedTask" : "Richo 9/11/2017 10:31",
 		"test006ImportingScriptThatStopsATask" : "Richo 9/12/2017 18:06",
-		"test007ImportingScriptThatStartsATask" : "Richo 9/12/2017 19:03" } }
+		"test007ImportingScriptThatStartsATask" : "Richo 9/12/2017 19:03",
+		"test008ImportingScriptThatContainsRepeatLoop" : "Richo 9/22/2017 10:38" } }

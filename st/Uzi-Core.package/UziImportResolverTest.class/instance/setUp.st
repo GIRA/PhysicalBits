@@ -23,3 +23,4 @@ setUp
 	func := UziFunctionNode.
 	return := UziReturnNode.
 	ref := UziScriptRefNode.
+	repeat := UziRepeatNode.
