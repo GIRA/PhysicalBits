@@ -1,4 +1,3 @@
 comparing
 = anObject 
-	(anObject isKindOf: UziScriptStartNode) ifFalse: [^ false].
-	^ self scripts = anObject scripts
+	^ super = anObject and: [anObject isKindOf: UziScriptStartNode]

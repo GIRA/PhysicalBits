@@ -6,9 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
-	"name" : "UziScriptStopNode",
+		"scripts" ],
+	"name" : "UziScriptControlNode",
 	"pools" : [
 		 ],
-	"super" : "UziScriptControlNode",
+	"super" : "UziParseNode",
 	"type" : "normal" }

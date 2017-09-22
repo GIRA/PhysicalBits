@@ -10,4 +10,6 @@ setUp
 	stop := UziStopScriptInstruction.
 	writeLocal := UziWriteLocalInstruction.
 	readLocal := UziReadLocalInstruction.
-	call := UziScriptCallInstruction 
+	call := UziScriptCallInstruction.
+	pause := UziPauseScriptInstruction.
+	resume := UziResumeScriptInstruction

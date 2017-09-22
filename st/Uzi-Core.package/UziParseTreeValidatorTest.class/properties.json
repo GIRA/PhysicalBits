@@ -20,7 +20,9 @@
 		"doUntil",
 		"start",
 		"stop",
-		"repeat" ],
+		"repeat",
+		"pause",
+		"resume" ],
 	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],

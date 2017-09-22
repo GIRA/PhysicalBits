@@ -29,6 +29,8 @@
 		"visitReturnNode:" : "Richo 9/19/2017 15:59",
 		"visitScriptCallNode:" : "Richo 9/11/2017 08:23",
 		"visitScriptNode:" : "Richo 5/8/2017 20:02",
+		"visitScriptPauseNode:" : "Richo 9/22/2017 11:07",
+		"visitScriptResumeNode:" : "Richo 9/22/2017 11:07",
 		"visitScriptStartNode:" : "Richo 9/11/2017 08:40",
 		"visitScriptStopNode:" : "Richo 9/11/2017 08:40",
 		"visitTickingRateNode:" : "Richo 12/30/2016 16:32",

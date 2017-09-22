@@ -3,7 +3,7 @@
 		 },
 	"instance" : {
 		"compile:" : "Richo 9/2/2017 20:21",
-		"setUp" : "Richo 9/2/2017 20:18",
+		"setUp" : "Richo 9/22/2017 11:00",
 		"test001EmptyScript" : "Richo 9/13/2017 10:32",
 		"test002InvalidSelector" : "Richo 9/13/2017 10:32",
 		"test003Button10Led9Script" : "Richo 9/13/2017 10:32",
@@ -41,4 +41,6 @@
 		"test035LocalsDeclaredAndDefinedInSameLine" : "Richo 9/13/2017 10:32",
 		"test036LocalDeclaredWithExpressionValue" : "Richo 9/13/2017 10:32",
 		"test037ScriptRunOnce" : "Richo 9/13/2017 10:32",
-		"test038RepeatConstantLoop" : "Richo 9/21/2017 19:47" } }
+		"test038RepeatConstantLoop" : "Richo 9/21/2017 19:47",
+		"test039PauseScript" : "Richo 9/22/2017 10:59",
+		"test040ResumeScript" : "Richo 9/22/2017 11:00" } }

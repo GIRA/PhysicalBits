@@ -50,7 +50,9 @@
 		"import",
 		"scriptList",
 		"scriptReference",
-		"repeat" ],
+		"repeat",
+		"pauseTask",
+		"resumeTask" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

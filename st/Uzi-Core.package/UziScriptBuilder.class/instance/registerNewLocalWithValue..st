@@ -1,4 +1,4 @@
-as yet unclassified
+variables
 registerNewLocalWithValue: value
 	| name |
 	name := (((1 to: locals size + 1) collect: [:n | '@', n asString])
