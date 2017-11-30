@@ -176,8 +176,19 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			if (script != 0)
 			{
 				script->setStepping(true);
+				// TODO(Richo): We should change this to start executing from the beginning
 			}
 		} 
+		break;
+
+		case SCRIPT_RESUME:
+		{
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
+			{
+				script->setStepping(true);
+			}
+		}
 		break;
 
 		case SCRIPT_STOP:
@@ -210,6 +221,28 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			}
 		} 
 		break;
+
+		case SCRIPT_PAUSE:
+		{
+			Coroutine* coroutine = currentProgram->getCoroutine(argument);
+			if (coroutine != 0)
+			{
+				Script* script = coroutine->getScript();
+				script->setStepping(false);
+
+				/*
+				If we're stopping the current coroutine we need to stop execution
+				right now. But we don't need to reset the coroutine because we will
+				resume execution from this point.
+				*/
+				if (currentCoroutine == coroutine)
+				{
+					yieldFlag = true;
+				}
+			}
+		}
+		break;
+
 
 		case JMP:
 		{
