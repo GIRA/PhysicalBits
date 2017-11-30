@@ -12,9 +12,15 @@ visitVariableDeclarationNode: node
 	self flag: #Richo. "Early optimization!"
 	node value 
 		ifNil: [script registerLocal: node name]
-		ifNotNil: [:value | 
+		ifNotNil: [:value |
 			value isNumber
-				ifTrue: [script registerLocal: node name value: value value]
+				ifTrue: [script registerLocal: node name value: value value.
+					"This optimization doesn't currently work because local variables are not
+					encoded with their initial value yet. So I'm also going through the slow path 
+					of compiling the assignment after the declaration" 
+					self flag: #Richo.
+					self visit: value.
+					(script pop: node name) node: node]
 				ifFalse: [script registerLocal: node name.
 					self visit: value.
 					(script pop: node name) node: node]]
