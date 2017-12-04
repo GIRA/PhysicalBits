@@ -10,7 +10,7 @@ test003Button10Led9Script
 	script1 := program scripts first.
 	self assert: script1 name = #button10Led9.
 	self assert: script1 isTicking.
-	self assert: script1 delay = 10.
+	self assert: script1 delay value = 10.
 	instructions := script1 instructions.
 	self assert: instructions size = 4.
 	self assert: instructions = {

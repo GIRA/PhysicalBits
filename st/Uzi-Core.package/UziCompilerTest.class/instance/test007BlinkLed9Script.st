@@ -13,15 +13,15 @@ test007BlinkLed9Script
 	script1 := program scripts first.
 	self assert: script1 name = #blinkLed9.
 	self assert: script1 isTicking.
-	self assert: script1 delay = 1000.
-	self assert: #(9) equals: (program globals collect: #value).
+	self assert: script1 delay value = 1000.
+	self assert: #(1000 9) equals: (program globals collect: #value).
 	self assert: script1 instructions = {
-		push arg: program globals first.
+		push arg: (program globals detect: [:v | v value = 9]).
 		prim arg: (UziPrimitive named: #read).
 		jz arg: 3.
-		push arg: program globals first.
+		push arg: (program globals detect: [:v | v value = 9]).
 		prim arg: (UziPrimitive named: #turnOff).
 		jmp arg: 2.		
-		push arg: program globals first.
+		push arg: (program globals detect: [:v | v value = 9]).
 		prim arg: (UziPrimitive named: #turnOn).
 	}

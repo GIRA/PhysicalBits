@@ -9,5 +9,5 @@ test008ProgramWithVarsLargerThanOneByte
 			push: 256;		
 			write: 13]].
 	encoded := UziEncoder new encode: program.
-	vars := encoded copyFrom: 2 to: 5.
-	self assert: #[1 5 1 0] equals: vars
+	vars := encoded copyFrom: 2 to: 7.
+	self assert: #[2 4 0 5 1 0] equals: vars

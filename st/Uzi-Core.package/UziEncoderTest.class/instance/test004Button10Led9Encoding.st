@@ -20,8 +20,7 @@ test004Button10Led9Encoding
 		
 		"Script 1:
 		======"
-		"Stepping and steptime (true, 10)"
-		16r80 16r00 16r00 16r0A
+		16rC0 16r01		
 		
 		"Bytecode count"
 		16r04

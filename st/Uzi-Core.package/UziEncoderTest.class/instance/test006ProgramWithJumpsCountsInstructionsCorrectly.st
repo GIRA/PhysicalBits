@@ -14,8 +14,9 @@ test006ProgramWithJumpsCountsInstructionsCorrectly
 	encoded := UziEncoder new encode: program.
 	expected :=  #[
 		1 "Script count"
-		0 "Globals count"
-		128 0 1 244 "Script header (ticking 2 / s)"
+		1 "Globals count"
+		5 16r01 16rF4
+		192 0 "Script header (running 2/s, no args, no locals)"
 		5 "Instruction count"
 		109 "read: 13"
 		242 2 "jnz: 2"

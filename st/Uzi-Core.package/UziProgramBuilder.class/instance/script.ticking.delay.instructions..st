@@ -1,10 +1,11 @@
 script creation
 script: scriptName ticking: isTicking delay: delayMs instructions: aBlock
-	| builder |
+	| builder delayVar |
+	delayVar := self registerGlobal: delayMs.
 	builder := UziScriptBuilder
 		program: self
 		scriptName: scriptName
 		ticking: isTicking
-		delay: delayMs.
+		delay: delayVar.
 	aBlock value: builder.
 	^ scripts add: builder script

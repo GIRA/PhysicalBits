@@ -16,11 +16,11 @@ test002ProgramCreation2
 			push: 0;
 			prim: #write]].
 	self assert: 1 equals: program scripts size.
-	self assert: #(0 9 255) equals: (program sortedGlobals collect: #value).
+	self assert: #(0 9 255 1000) equals: (program sortedGlobals collect: #value).
 	script := program scripts first.
 	self assert: script name = #main.
 	self assert: script isTicking.
-	self assert: script delay = 1000.
+	self assert: script delay value = 1000.
 	self assert: script instructions = {
 		push arg: program sortedGlobals second.
 		prim arg: (UziPrimitive named: #read).

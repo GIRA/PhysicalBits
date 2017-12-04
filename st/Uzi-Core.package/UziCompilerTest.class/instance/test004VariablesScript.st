@@ -2,7 +2,8 @@ tests
 test004VariablesScript
 	| program script1 |
 	program := self compile: 'var a; var b; task main() running { write(a, b); }'.
-	self assert: 2 equals: program globals size.
+	"We have 3 globals because the task interval (0) is also a global"
+	self assert: 3 equals: program globals size.
 	self assert: program scripts size = 1.
 	script1 := program scripts first.
 	self assert: script1 instructions = {

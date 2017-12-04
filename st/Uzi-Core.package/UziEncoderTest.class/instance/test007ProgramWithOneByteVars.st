@@ -9,5 +9,5 @@ test007ProgramWithOneByteVars
 			push: 255;
 			push: 1]].
 	encoded := UziEncoder new encode: program.
-	vars := encoded copyFrom: 2 to: 5.
-	self assert: #[2 8 1 255] equals: vars
+	vars := encoded copyFrom: 2 to: 6.
+	self assert: #[3 12 0 1 255] equals: vars
