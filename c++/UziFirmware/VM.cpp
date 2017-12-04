@@ -13,7 +13,7 @@ void VM::executeProgram(Program * program, GPIO * io)
 		Script* script = coroutine->getScript();
 		if (script->isStepping() && now >= coroutine->getNextRun())
 		{
-			coroutine->setNextRun(now + script->getStepTime());
+			coroutine->setNextRun(now + script->getInterval());
 			executeCoroutine(coroutine, io);
 		}
 		coroutine = coroutine->getNext();
@@ -30,9 +30,13 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 	if (framePointer == -1)
 	{
 		framePointer = stack->getPointer();
-		for (int i = 0; i < currentScript->getLocalCount(); i++)
+		for (int i = 0; i < currentScript->getArgCount(); i++)
 		{
 			stack->push(0);
+		}
+		for (int i = 0; i < currentScript->getLocalCount(); i++)
+		{
+			stack->push(currentScript->getLocal(i));
 		}
 		stack->push(0); // Return value slot (default: 0)
 		stack->push(uint32_to_float((uint32)-1 << 16 | pc));
@@ -151,12 +155,17 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			INFO(Richo): 
 			We know the arguments are already on the stack (it's the compiler's job 
 			to push them). Now we need to push:
-				1) The return value (default: 0)
-				2) The current framePointer and returnAddress (so that when unwinding
+				1) The local variables with their default values.
+				2) The return value (default: 0)
+				3) The current framePointer and returnAddress (so that when unwinding
 				the stack, they can be set correctly).
 			*/
 			currentScript = currentProgram->getScript(argument);
-			int16 fp = stack->getPointer() - currentScript->getLocalCount();
+			int16 fp = stack->getPointer() - currentScript->getArgCount();
+			for (int i = 0; i < currentScript->getLocalCount(); i++)
+			{
+				stack->push(currentScript->getLocal(i));
+			}
 			stack->push(0); // Return value slot (default: 0)
 			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
 
@@ -562,8 +571,10 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_RETV:
 		{
+			uint16 index = framePointer + 
+				currentScript->getArgCount() + 
+				currentScript->getLocalCount();
 			// TODO(Richo): Duplicated code from WRITE_LOCAL 
-			uint16 index = framePointer + currentScript->getLocalCount();
 			float value = stack->pop();
 			stack->setElementAt(index, value);
 
@@ -642,12 +653,13 @@ void VM::unwindStackAndReturn(void)
 	float returnValue = stack->pop();
 
 	// INFO(Richo): Pop args/locals
-	for (int i = 0; i < currentScript->getLocalCount(); i++)
+	int varCount = currentScript->getArgCount() + currentScript->getLocalCount();
+	for (int i = 0; i < varCount; i++)
 	{
 		stack->pop();
 	}
 	
-	// INFO(Richo): Only push a return value if we were called from other script
+	// INFO(Richo): Only push a return value if we were called from another script
 	if (returnFromScriptCall)
 	{
 		stack->push(returnValue);

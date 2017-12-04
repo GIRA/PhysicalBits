@@ -7,7 +7,7 @@ class Script
 {
 
 public:
-	Script(uint8, uint8, Reader*, bool&);
+	Script(uint8, uint8, float*, Reader*, bool&);
 	Script(void);
 	~Script(void);
 
@@ -18,8 +18,12 @@ public:
 	Instruction getInstructionAt(int16);
 	bool isStepping(void);
 	void setStepping(bool);
-	int32 getStepTime(void);
+	float getInterval(void);
+	
+	uint8 getArgCount(void);
+
 	uint8 getLocalCount(void);
+	float getLocal(uint8);
 
 	void setNext(Script*);
 	Script* getNext(void);
@@ -27,8 +31,12 @@ public:
 private:
 	uint8 index;
 	bool stepping;
-	int32 stepTime;
+	float interval;
+
+	uint8 argCount;
+
 	uint8 localCount;
+	float* locals;
 
 	uint8 instructionStart;
 	uint8 instructionCount;

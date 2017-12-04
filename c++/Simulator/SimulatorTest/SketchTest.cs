@@ -36,11 +36,11 @@ namespace SimulatorTest
 	                    script: #test
 	                    ticking: true
 	                    delay: 0
-	                    bytecodes: [:s | s
+	                    instructions: [:s | s
 		                    turnOn: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 1, 13
+                0, 1, 1, 4, 0, 128, 1, 13
             });
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
@@ -58,11 +58,11 @@ namespace SimulatorTest
 	                    script: #test
 	                    ticking: true
 	                    delay: 0
-	                    bytecodes: [:s | s
+	                    instructions: [:s | s
 		                    turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 1, 45
+                0, 1, 1, 4, 0, 128, 1, 45
             });
             sketch.SetPinValue(13, 1023);
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -81,12 +81,12 @@ namespace SimulatorTest
 	                    script: #test
 	                    ticking: true
 	                    delay: 0
-	                    bytecodes: [:s | s
+	                    instructions: [:s | s
 		                    read: 15;
 		                    write: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 2, 111, 77
+                0, 1, 1, 4, 0, 128, 2, 111, 77
             });
             /*
             INFO(Richo):
@@ -112,12 +112,12 @@ namespace SimulatorTest
 	                script: #blink
 	                ticking: true
 	                delay: 0
-	                bytecodes: [:s | s
+	                instructions: [:s | s
 		                push: 1;		
 		                write: 13]].
                 UziProtocol new run: program.
                 */
-                0, 1, 1, 4, 1, 128, 0, 0, 0, 2, 128, 77
+                0, 1, 2, 8, 0, 1, 128, 2, 129, 77
             });
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
@@ -134,12 +134,12 @@ namespace SimulatorTest
 	                script: #blink
 	                ticking: true
 	                delay: 0
-	                bytecodes: [:s | s
+	                instructions: [:s | s
 		                push: 0.2;		
 		                write: 13]].
                 UziProtocol new run: program.
                 */
-                0, 1, 1, 7, 62, 76, 204, 205, 128, 0, 0, 0, 2, 128, 77
+                0, 1, 2, 4, 0, 7, 62, 76, 204, 205, 128, 2, 129, 77
             });
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
@@ -156,14 +156,14 @@ namespace SimulatorTest
 	                script: #blink
 	                ticking: true 
 	                delay: 0
-	                bytecodes: [:s | s
+	                instructions: [:s | s
 		                push: #a;
 		                write: 13;
 		                push: 1;
 		                pop: #a]].
                 UziProtocol new run: program.
                 */
-                0, 1, 2, 8, 0, 1, 128, 0, 0, 0, 4, 128, 77, 129, 144
+                0, 1, 3, 12, 0, 0, 1, 128, 4, 128, 77, 130, 144
             });
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop(); // The first loop sets the var to 1
@@ -182,12 +182,12 @@ namespace SimulatorTest
 	                script: #blink
 	                ticking: true 
 	                delay: 0
-	                bytecodes: [:s | s
+	                instructions: [:s | s
 		                push: 13;
 		                prim: #toggle]].
                 UziProtocol new run: program.
                 */
-                0, 1, 1, 4, 13, 128, 0, 0, 0, 2, 128, 162
+                0, 1, 2, 8, 0, 13, 128, 2, 129, 162
             });
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
@@ -216,7 +216,7 @@ namespace SimulatorTest
 		                label: #end]].
                 UziProtocol new run: program.
                 */
-                0, 1, 0, 128, 0, 0, 0, 5, 109, 241, 2, 45, 240, 1, 13
+                0, 1, 1, 4, 0, 128, 5, 109, 241, 2, 45, 240, 1, 13
             });
             sketch.SetPinValue(13, 0);
             sketch.Loop();
@@ -240,7 +240,7 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program.
                 */
-                0, 1, 1, 4, 13, 128, 0, 3, 232, 2, 128, 162
+                0, 1, 2, 4, 13, 5, 3, 232, 192, 1, 2, 128, 162
             });
 
             sketch.SetMillis(0);
@@ -281,7 +281,7 @@ namespace SimulatorTest
 		                write: 9]].
                 UziProtocol new run: program.
                 */
-                0, 2, 1, 4, 13, 128, 0, 3, 232, 2, 128, 162, 128, 0, 0, 100, 2, 111, 73
+                0, 2, 3, 8, 13, 100, 5, 3, 232, 192, 2, 2, 128, 162, 192, 1, 2, 111, 73
             });
 
             sketch.SetMillis(0);
@@ -326,7 +326,7 @@ namespace SimulatorTest
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 0, 0, 3, 13, 182, 45
+                0, 1, 1, 4, 0, 128, 3, 13, 182, 45
             });
 
             sketch.SetMillis(0);
@@ -365,8 +365,8 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
-                0, 1, 3, 12, 1, 12, 13, 128, 0, 0, 0, 10, 130, 162,
-                130, 182, 162, 129, 128, 182, 166, 162
+                0, 1, 4, 16, 0, 1, 12, 13, 128, 10, 131, 162, 131, 182,
+                162, 130, 129, 182, 166, 162
             });
 
             sketch.SetMillis(0);
@@ -399,7 +399,7 @@ namespace SimulatorTest
 		                turnOff: 12]].
                 UziProtocol new run: program
                 */
-                0, 1, 0, 128, 0, 3, 232, 3, 12, 182, 44
+                0, 1, 1, 5, 3, 232, 192, 0, 3, 12, 182, 44
             });
 
             sketch.SetMillis(1000);
@@ -413,7 +413,7 @@ namespace SimulatorTest
             sketch.SetMillis(1002);
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(12));
-            
+
             sketch.SetMillis(2001);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(12));
@@ -436,7 +436,7 @@ namespace SimulatorTest
 		                turnOff: 13]].
                 UziProtocol new run: program
                 */
-                0, 1, 1, 5, 3, 232, 128, 0, 0, 100, 4, 13, 128, 183, 45
+                0, 1, 2, 4, 100, 5, 3, 232, 192, 0, 4, 13, 129, 183, 45
             });
 
             sketch.SetMillis(100);
@@ -484,8 +484,8 @@ namespace SimulatorTest
 		                label: #label2; read: 15; jnz: #label2]].
                 UziProtocol new run: program
                 */
-                0, 2, 2, 8, 11, 13, 128, 0, 3, 232, 2, 128, 162, 128, 0,
-                0, 0, 6, 129, 162, 111, 241, 254, 111, 242, 254
+                0, 2, 4, 12, 0, 11, 13, 5, 3, 232, 192, 3, 2, 129, 162,
+                128, 6, 130, 162, 111, 241, 254, 111, 242, 254
             });
 
             sketch.SetMillis(500);
@@ -546,8 +546,8 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program.
                 */
-                0, 2, 2, 8, 10, 11, 0, 0, 0, 0, 4, 128, 162, 185, 13,
-                128, 0, 3, 232, 4, 192, 186, 129, 162
+                0, 2, 4, 12, 0, 10, 11, 5, 3, 232, 0, 4, 129, 162, 185,
+                13, 192, 3, 4, 192, 186, 130, 162
             });
 
             /*
@@ -575,7 +575,7 @@ namespace SimulatorTest
             {
                 /*
                 program := Uzi program: [:p | p
-	                registerVariable: #counter value: 5;
+	                registerGlobal: #counter value: 5;
 	
 	                script: #incr
 	                ticking: false
@@ -600,14 +600,14 @@ namespace SimulatorTest
 		                write: 11]].
                 UziProtocol new run: program.
                 */
-                0, 2, 4, 16, 1, 5, 13, 100, 0, 0, 0, 0, 8, 129, 128, 166, 145, 129, 187,
-                130, 162, 128, 0, 0, 100, 4, 192, 131, 167, 75
+                0, 2, 5, 20, 0, 1, 5, 13, 100, 0, 8, 130, 129, 166, 146,
+                130, 187, 131, 162, 192, 4, 4, 192, 132, 167, 75
             });
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
              */
-            int[] values = new int[] 
+            int[] values = new int[]
             {
                 61, 72, 82, 92, 102, 113, 123, 133, 143, 153, 164, 174, 184, 194, 205, 215,
                 225, 235, 246, 256, 266, 276, 286, 297, 307, 317, 327, 338, 348, 358, 368,
@@ -624,8 +624,8 @@ namespace SimulatorTest
                 sketch.Loop();
                 Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (iteration: {0})", i);
                 short pinValue = sketch.GetPinValue(11);
-                Assert.IsTrue(pinValue >= values[i] - 2, 
-                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})", 
+                Assert.IsTrue(pinValue >= values[i] - 2,
+                    "D11 is smaller than expected (iteration: {0}, expected: {1}, actual: {2})",
                     i,
                     values[i],
                     pinValue);
@@ -636,7 +636,7 @@ namespace SimulatorTest
                     pinValue);
             }
         }
-        
+
         [TestMethod]
         public void TestScriptTickingWithExplicitReturn()
         {
@@ -660,7 +660,7 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
-                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 0, 1, 10, 131, 162, 128,
+                0, 1, 4, 16, 0, 1, 11, 13, 192, 1, 10, 131, 162, 128,
                 129, 166, 144, 128, 187, 130, 162
             });
 
@@ -703,8 +703,8 @@ namespace SimulatorTest
 					    prim: #yieldTime]].
                 UziProtocol new run: program
                 */
-                0, 2, 2, 8, 11, 100, 0, 0, 0, 0, 2, 128, 162, 128,
-                0, 0, 0, 4, 192, 186, 129, 183
+                0, 2, 3, 12, 0, 11, 100, 0, 2, 129, 162, 128, 4, 192, 186,
+                130, 183
             });
 
             for (int i = 0; i < 100; i++)
@@ -744,8 +744,8 @@ namespace SimulatorTest
 	                script: #toggle
 	                ticking: false
 	                delay: 0
-	                args: #(n)
 	                instructions: [:s | s
+		                registerArgument: #n;
 		                push: 1;
 		                push: #n;
 		                prim: #subtract;
@@ -762,10 +762,9 @@ namespace SimulatorTest
 		                write: 13]].
                 UziProtocol new run: program.
                 */
-                0, 3, 2, 8, 1, 11, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 1, 6, 128,
-                255, 0, 168, 187, 129, 162, 0, 152, 150, 128, 3 ,109, 193, 77
+                0, 3, 5, 12, 0, 1, 11, 5, 3, 232, 6, 152, 150, 128, 192, 3, 2, 194, 186, 32, 1, 6, 129, 255, 0, 168, 187, 130, 162, 64, 4, 3, 109, 193, 77
             });
-            
+
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 50);
@@ -796,8 +795,8 @@ namespace SimulatorTest
 	                script: #toggle
 	                ticking: false
 	                delay: 0
-	                args: #(n)
 	                instructions: [:s | s
+                        registerArgument: #n;
 		                push: 1;
 		                push: #n;
 		                prim: #subtract;
@@ -812,8 +811,7 @@ namespace SimulatorTest
 		                prim: #pop]].
                 UziProtocol new run: program.
                 */
-                0, 3, 1, 4, 1, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 1, 4, 128, 255,
-                0, 168, 77, 0, 152, 150, 128, 3, 109, 193, 186
+                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 1, 4, 129, 255, 0, 168, 77, 64, 3, 3, 109, 193, 186
             });
 
             for (int i = 0; i < 100; i++)
@@ -846,8 +844,8 @@ namespace SimulatorTest
 	                script: #toggle
 	                ticking: false
 	                delay: 0
-	                args: #(n)
 	                instructions: [:s | s
+                        registerArgument: #n;
 		                push: 1;
 		                push: #n;
 		                prim: #subtract;
@@ -864,8 +862,7 @@ namespace SimulatorTest
 		                write: 11]].
                 UziProtocol new run: program.
                 */
-                0, 3, 1, 4, 1, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 1, 6, 128, 255,
-                0, 168, 77, 185, 11, 0, 152, 150, 128, 3, 109, 193, 75
+                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 1, 6, 129, 255, 0, 168, 77, 185, 11, 64, 3, 3, 109, 193, 75
             });
 
             for (int i = 0; i < 100; i++)
@@ -898,8 +895,9 @@ namespace SimulatorTest
 	                script: #toggle
 	                ticking: false
 	                delay: 0
-	                args: #(a b)
 	                instructions: [:s | s
+                        registerArgument: #a;
+                        registerArgument: #b;
 		                push: #a;
 		                push: #b;
 		                prim: #subtract;
@@ -917,8 +915,7 @@ namespace SimulatorTest
 		                write: 11]].
                 UziProtocol new run: program.
                 */
-                0, 3, 1, 4, 1, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 2, 6, 255, 0, 255, 1,
-                168, 77, 185, 11, 0, 152, 150, 128, 4, 128, 109, 193, 75
+                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 2, 6, 255, 0, 255, 1, 168, 77, 185, 11, 64, 3, 4, 129, 109, 193, 75
             });
 
             for (int i = 0; i < 100; i++)
@@ -951,8 +948,9 @@ namespace SimulatorTest
 	                script: #toggle
 	                ticking: false
 	                delay: 0
-	                args: #(a b)
 	                instructions: [:s | s
+                        registerArgument: #a;
+                        registerArgument: #b;
 		                push: #a;
 		                push: #a;
 		                push: #b;
@@ -972,8 +970,7 @@ namespace SimulatorTest
 		                write: 13]].
                 UziProtocol new run: program.
                 */
-                0, 3, 2, 8, 1, 11, 128, 0, 3, 232, 2, 194, 186, 64, 0, 0, 0, 2, 8, 255, 0, 255,
-                0, 255, 1, 168, 165, 187, 129, 162, 0, 152, 150, 128, 4, 128, 109, 193, 77
+                0, 3, 5, 12, 0, 1, 11, 5, 3, 232, 6, 152, 150, 128, 192, 3, 2, 194, 186, 32, 2, 8, 255, 0, 255, 0, 255, 1, 168, 165, 187, 130, 162, 64, 4, 4, 129, 109, 193, 77
             });
 
             for (int i = 0; i < 100; i++)
@@ -1027,9 +1024,7 @@ namespace SimulatorTest
 		                write: 13]].
                 UziProtocol new run: program.
                 */
-                0, 2, 5, 20, 0, 0, 1, 4, 42, 64, 0, 0, 0, 1, 12, 255, 0, 128, 170,
-                241, 3, 132, 187, 240, 5, 255, 0, 130, 168, 192, 187, 128, 0, 3,
-                232, 5, 131, 192, 145, 129, 77
+                0, 2, 6, 20, 0, 0, 1, 4, 42, 5, 3, 232, 32, 1, 12, 255, 0, 128, 170, 241, 3, 132, 187, 240, 5, 255, 0, 130, 168, 192, 187, 192, 5, 5, 131, 192, 145, 129, 77
             });
 
             for (int i = 0; i < 100; i++)
@@ -1097,12 +1092,9 @@ namespace SimulatorTest
 		                prim: #write]].
                 UziProtocol new run: program
                 */
-                0, 2, 8, 28, 0, 0, 1, 2, 9, 11, 13, 5, 1, 0, 192, 0, 3, 232, 1, 19, 255, 0, 241, 15,
-                255, 0, 130, 170, 241, 3, 131, 187, 240, 7, 131, 255, 0, 130, 168, 192, 165, 187, 240,
-                2, 134, 162, 128, 0, 0, 0, 18, 132, 160, 241, 253, 132, 160, 242, 253, 128, 130, 166,
-                144, 128, 192, 135, 167, 145, 133, 129, 161
+                0, 2, 10, 32, 0, 0, 0, 1, 2, 9, 11, 13, 9, 1, 0, 3, 232, 224, 9, 1, 19, 255, 0, 241, 15, 255, 0, 131, 170, 241, 3, 132, 187, 240, 7, 132, 255, 0, 131, 168, 192, 165, 187, 240, 2, 135, 162, 128, 18, 133, 160, 241, 253, 133, 160, 242, 253, 129, 131, 166, 145, 129, 192, 136, 167, 146, 134, 130, 161
             });
-            
+
             sketch.SetMillis(500);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -1120,14 +1112,14 @@ namespace SimulatorTest
             sketch.SetMillis(1750);
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
-            
+
             sketch.SetMillis(2500);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
 
             // By now D11 should have its value increased
             Assert.AreEqual(8, sketch.GetPinValue(11));
-            
+
             // Press button
             sketch.SetPinValue(9, 1023);
 
@@ -1201,8 +1193,7 @@ namespace SimulatorTest
                         prim: #write]].
                 UziProtocol new run: program
                 */
-                0, 3, 2, 4, 11, 5, 3, 232, 128, 0, 0, 0, 6, 194, 186, 129, 183, 209, 224,
-                0, 0, 0, 0, 6, 194, 186, 129, 183, 208, 225, 0, 0, 0, 0, 3, 128, 188, 161
+                0, 3, 3, 8, 0, 11, 5, 3, 232, 128, 6, 194, 186, 130, 183, 209, 224, 0, 6, 194, 186, 130, 183, 208, 225, 0, 3, 129, 188, 161
             });
 
             Assert.AreEqual(0, sketch.GetPinValue(11));
@@ -1248,10 +1239,9 @@ namespace SimulatorTest
 		                pop: #n]].
                 UziProtocol new run: program
                 */
-                0, 1, 5, 20, 0, 1, 7, 10, 11, 128, 0, 3, 232, 11, 132, 128, 130,
-                191, 131, 167, 161, 128, 129, 166, 144
+                0, 1, 6, 20, 0, 1, 7, 10, 11, 5, 3, 232, 192, 5, 11, 132, 128, 130, 191, 131, 167, 161, 128, 129, 166, 144
             });
-            
+
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
              */
@@ -1311,8 +1301,7 @@ namespace SimulatorTest
 		                pop: #n]].
                 UziProtocol new run: program
                 */
-                0, 1, 4, 16, 0, 1, 11, 100, 128, 0, 3, 232, 11, 130, 128, 129,
-                250, 0, 131, 167, 161, 128, 129, 166, 144
+                0, 1, 5, 16, 0, 1, 11, 100, 5, 3, 232, 192, 4, 11, 130, 128, 129, 250, 0, 131, 167, 161, 128, 129, 166, 144
             });
 
             /*
@@ -1371,16 +1360,15 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
-                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 3, 232, 9, 129, 128,
-                189, 241, 3, 131, 162, 240, 2, 130, 162
+                0, 1, 5, 16, 0, 1, 11, 13, 5, 3, 232, 192, 4, 9, 129, 128, 189, 241, 3, 131, 162, 240, 2, 130, 162
             });
-            
+
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 50);
                 sketch.Loop();
                 short pinValue = sketch.GetPinValue(11);
-                Assert.AreEqual(1023 * (1 - (i % 2)) , pinValue);
+                Assert.AreEqual(1023 * (1 - (i % 2)), pinValue);
                 Assert.AreEqual(0, sketch.GetPinValue(13));
             }
         }
@@ -1407,8 +1395,7 @@ namespace SimulatorTest
 		                prim: #toggle]].
                 UziProtocol new run: program
                 */
-                0, 1, 4, 16, 0, 1, 11, 13, 128, 0, 3, 232, 9, 129, 128,
-                190, 241, 3, 131, 162, 240, 2, 130, 162
+                0, 1, 5, 16, 0, 1, 11, 13, 5, 3, 232, 192, 4, 9, 129, 128, 190, 241, 3, 131, 162, 240, 2, 130, 162
             });
 
             for (int i = 0; i < 100; i++)
@@ -1450,8 +1437,7 @@ namespace SimulatorTest
 		                prim: #yieldTime]].
                 UziProtocol new run: program
                 */
-                0, 2, 4, 8, 11, 13, 9, 1, 244, 3, 232, 128, 0, 0, 0, 6, 129, 162, 131, 183, 128,
-                162, 128, 0, 0, 0, 6, 224, 130, 183, 208, 130, 183
+                0, 2, 5, 12, 0, 11, 13, 9, 1, 244, 3, 232, 128, 6, 130, 162, 132, 183, 129, 162, 128, 6, 224, 131, 183, 208, 131, 183
             });
 
             for (int i = 0; i < 100; i++)
@@ -1491,8 +1477,7 @@ namespace SimulatorTest
 		                start: #blink13]].
                 UziProtocol new run: program
                 */
-                0, 2, 2, 8, 11, 13, 128, 0, 0, 0, 5, 129, 162, 224, 128,
-                162, 128, 0, 3, 232, 1, 208
+                0, 2, 4, 12, 0, 11, 13, 5, 3, 232, 128, 5, 130, 162, 224, 129, 162, 192, 3, 1, 208
             });
 
             for (int i = 0; i < 100; i++)

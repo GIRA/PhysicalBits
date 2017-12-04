@@ -1,40 +1,72 @@
 #include "Script.h"
 
-Script::Script(uint8 start, uint8 scriptIndex, Reader * rs, bool& timeout)
+Script::Script(uint8 start, uint8 scriptIndex, float* globals, Reader * rs, bool& timeout)
 {
 	instructionStart = start;
 	index = scriptIndex;
-	int32 n = rs->nextLong(4, timeout);
-	if (!timeout)
+
+	stepping = false;
+	interval = 0;
+	argCount = localCount = 0;
+	locals = 0; 
+	instructionCount = 0;
+	instructions = 0;
+	nextScript = 0;
+
+	uint8 h = rs->next(timeout);
+	if (timeout) return;
+
+	stepping = (h >> 7) & 1;
+	
+	if ((h >> 6) & 1) // Has delay
 	{
-		stepTime = n & 0x3FFFFFFF;
-		stepping = (n >> 31) & 1;
-		if ((n >> 30) & 1)
+		uint8 index = rs->next(timeout);
+		if (timeout) return;
+		interval = globals[index];
+	}
+
+	if ((h >> 5) & 1) // Has arguments
+	{
+		argCount = rs->next(timeout);
+		if (timeout) return;
+	}
+
+	if ((h >> 4) & 1) // Has locals
+	{
+		localCount = rs->next(timeout);
+		if (timeout) return;
+		locals = new float[localCount];
+		for (int i = 0; i < localCount; i++)
 		{
-			localCount = rs->next(timeout);
-		}
-		else
-		{
-			localCount = 0;
+			uint8 index = rs->next(timeout);
+			if (timeout) return;
+			locals[i] = globals[index];
 		}
 	}
-	if (!timeout) { instructionCount = rs->next(timeout); }
-	if (!timeout) { instructions = readInstructions(rs, instructionCount, timeout); }
 
-	nextScript = 0;
+	instructionCount = rs->next(timeout);
+	if (timeout) return;
+
+	instructions = readInstructions(rs, instructionCount, timeout);
+	if (timeout) return;
 }
+
 
 Script::Script()
 {
 	// Initializes current script as NOP
 	stepping = false;
-	stepTime = instructionCount = localCount = 0;
+	interval = 0;
+	argCount = localCount = 0;
+	locals = 0;
+	instructionCount = 0;
 	instructions = 0;
 	nextScript = 0;
 }
 
 Script::~Script(void)
 {
+	delete[] locals;
 	delete[] instructions;
 	delete nextScript;
 }
@@ -79,14 +111,24 @@ void Script::setNext(Script* next)
 	nextScript = next;
 }
 
-int32 Script::getStepTime(void)
+float Script::getInterval(void)
 {
-	return stepTime;
+	return interval;
+}
+
+uint8 Script::getArgCount(void)
+{
+	return argCount;
 }
 
 uint8 Script::getLocalCount(void)
 {
 	return localCount;
+}
+
+float Script::getLocal(uint8 index)
+{
+	return locals[index];
 }
 
 uint8 Script::getIndex(void)

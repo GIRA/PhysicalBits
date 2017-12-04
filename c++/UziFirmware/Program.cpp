@@ -124,7 +124,7 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 	Script* last = 0;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
-		Script* temp = new Script(instructionCount, i, rs, timeout);
+		Script* temp = new Script(instructionCount, i, globals, rs, timeout);
 		instructionCount += temp->getInstructionCount();
 		if (i == 0)
 		{
