@@ -25,4 +25,5 @@
 		"test018RepeatTimesShouldBeAnExpression" : "Richo 9/22/2017 10:26",
 		"test019RepeatBodyShouldBeABlock" : "Richo 9/22/2017 10:33",
 		"test020ScriptPauseReceiverIsAScriptRef" : "Richo 9/22/2017 11:04",
-		"test021ScriptResumeReceiverIsAScriptRef" : "Richo 9/22/2017 11:04" } }
+		"test021ScriptResumeReceiverIsAScriptRef" : "Richo 9/22/2017 11:04",
+		"test022FunctionArgumentShouldNotBeRegisteredAsGlobal" : "Richo 12/5/2017 21:50" } }

@@ -1,5 +1,6 @@
 visiting
 visitScriptCallNode: node
+	| args |
 	self assertScriptReference: node script.
 	
 	(program scriptNamed: node scriptName)
@@ -9,4 +10,7 @@ visitScriptCallNode: node
 			self assert: ((scriptArgs includesAllOf: callArgs)
 					or: [callArgs allSatisfy: [:arg | arg isNil]])
 				description: 'Explicit argument names expected'
-				node: node]
+				node: node].
+			
+	args := node arguments collect: [:each | each value].
+	self visitCollection: args
