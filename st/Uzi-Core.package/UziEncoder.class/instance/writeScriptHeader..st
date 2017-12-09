@@ -15,7 +15,7 @@ writeScriptHeader: anUziScript
 	stream nextPut: (header bitAnd: 16rFF).
 	"If the script has a delay write its index on the global list"
 	anUziScript hasDelay 
-		ifTrue: [stream nextPut: (globals indexOf: anUziScript delay) - 1].
+		ifTrue: [stream nextPut: (self indexOfGlobal: anUziScript delay)].
 	"If the script has arguments write the argument count"
 	anUziScript hasArguments 
 		ifTrue: [stream nextPut: anUziScript arguments size].
@@ -24,5 +24,5 @@ writeScriptHeader: anUziScript
 		ifTrue: [stream nextPut: anUziScript locals size.
 			anUziScript locals do: [:local || var |
 				var := globals detect: [:g | g isConstant and: [g value = local value]].
-				stream nextPut: (globals indexOf: var) - 1]]
+				stream nextPut: (self indexOfGlobal: var)]]
 	

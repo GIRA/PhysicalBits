@@ -1,7 +1,8 @@
 encoding programs
 writeGlobals: anUziProgram
 	| grouped |
-	globals := anUziProgram sortedGlobals.
+	globals := anUziProgram sortedGlobals 
+		reject: [:each | each isConstant and: [self defaultGlobals includes: each value]].
 	stream nextPut: globals size.
 	grouped := globals groupBy: [:var | var size] having: [:ign | true].
 	(1 to: 4) do: [:size |

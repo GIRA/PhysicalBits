@@ -20,10 +20,10 @@ test004Button10Led9Encoding
 		
 		"Script 1:
 		======"
-		16rC0 16r01		
+		16rC0 16r04
 		
 		"Bytecode count"
 		16r04
 		
 		"Bytecodes"
-		16r80 16r81 16rA0 16rA1]
+		16r83 16r84 16rA0 16rA1]

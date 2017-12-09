@@ -3,7 +3,9 @@
 		 },
 	"instance" : {
 		"asTwoComplement:" : "Richo 3/24/2017 12:27",
+		"defaultGlobals" : "Richo 12/9/2017 16:27",
 		"encode:" : "Richo 8/22/2016 08:25",
+		"indexOfGlobal:" : "Richo 12/9/2017 16:40",
 		"visit:" : "Richo 10/8/2014 18:03",
 		"visitCollection:" : "Richo 10/30/2014 21:58",
 		"visitJLTEInstruction:" : "Richo 3/24/2017 12:28",
@@ -11,10 +13,10 @@
 		"visitJNZInstruction:" : "Richo 3/24/2017 12:28",
 		"visitJZInstruction:" : "Richo 3/24/2017 12:28",
 		"visitPauseScriptInstruction:" : "Richo 12/7/2017 09:42",
-		"visitPopInstruction:" : "Richo 12/7/2017 09:32",
+		"visitPopInstruction:" : "Richo 12/9/2017 16:52",
 		"visitPrimitiveCallInstruction:" : "Richo 5/29/2017 14:17",
 		"visitProgram:" : "Richo 5/20/2017 15:48",
-		"visitPushInstruction:" : "Richo 12/7/2017 09:31",
+		"visitPushInstruction:" : "Richo 12/9/2017 16:29",
 		"visitReadInstruction:" : "Richo 12/7/2017 09:47",
 		"visitReadLocalInstruction:" : "Richo 4/7/2017 20:50",
 		"visitResumeScriptInstruction:" : "Richo 12/7/2017 09:42",
@@ -26,7 +28,7 @@
 		"visitTurnOnInstruction:" : "Richo 12/7/2017 09:47",
 		"visitWriteInstruction:" : "Richo 12/7/2017 09:47",
 		"visitWriteLocalInstruction:" : "Richo 4/7/2017 20:50",
-		"writeGlobals:" : "Richo 5/27/2017 13:09",
+		"writeGlobals:" : "Richo 12/9/2017 16:32",
 		"writeInstructions:" : "Richo 8/22/2016 10:04",
 		"writeProgramScriptCount:" : "Richo 10/30/2014 16:49",
-		"writeScriptHeader:" : "Richo 12/4/2017 09:27" } }
+		"writeScriptHeader:" : "Richo 12/9/2017 16:29" } }

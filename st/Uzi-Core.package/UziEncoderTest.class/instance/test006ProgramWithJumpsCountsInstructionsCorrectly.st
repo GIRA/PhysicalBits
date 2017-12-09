@@ -16,7 +16,7 @@ test006ProgramWithJumpsCountsInstructionsCorrectly
 		1 "Script count"
 		1 "Globals count"
 		5 16r01 16rF4
-		192 0 "Script header (running 2/s, no args, no locals)"
+		192 3 "Script header (running 2/s, no args, no locals)"
 		5 "Instruction count"
 		109 "read: 13"
 		242 2 "jnz: 2"
