@@ -85,12 +85,19 @@ Coroutine* Program::getCoroutine(int16 index)
 
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
-	globalCount = rs->next(timeout);
+	globalCount = rs->next(timeout) + 3;
 	if (timeout) return;
 		
 	globals = new float[globalCount];
+	globals[0] = 0;
+	globals[1] = 1;
+	globals[2] = -1;
 	globalsReport = new bool[globalCount];
-	uint8 i = 0;
+	globalsReport[0] = false;
+	globalsReport[1] = false;
+	globalsReport[2] = false;
+
+	uint8 i = 3;
 	while (i < globalCount)
 	{
 		uint8 sec = rs->next(timeout);
