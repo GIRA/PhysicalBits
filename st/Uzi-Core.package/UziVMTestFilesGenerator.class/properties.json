@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Tests",
+	"classinstvars" : [
+		"outputPath" ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziVMTestFilesGenerator",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }
