@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simulator;
+using System.IO;
+using System.Linq;
 
 namespace SimulatorTest
 {
@@ -25,45 +27,27 @@ namespace SimulatorTest
             }
         }
 
-        [TestMethod]
-        public void TestTurnOnBytecode()
+        private byte[] ReadFile(string fileName)
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi
-                    program: [:p | p
-	                    script: #test
-	                    ticking: true
-	                    delay: 0
-	                    instructions: [:s | s
-		                    turnOn: 13]].
-                UziProtocol new run: program
-                */
-                0, 1, 1, 4, 0, 128, 1, 13
-            });
+            var str = File.ReadAllText(Path.Combine("TestFiles", fileName));
+            return str.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(each => byte.Parse(each))
+                .ToArray();
+        }
+
+        [TestMethod]
+        public void Test001TurnOnBytecode()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test001TurnOnBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
         [TestMethod]
-        public void TestTurnOffBytecode()
+        public void Test002TurnOffBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi 
-                    program: [:p | p
-	                    script: #test
-	                    ticking: true
-	                    delay: 0
-	                    instructions: [:s | s
-		                    turnOff: 13]].
-                UziProtocol new run: program
-                */
-                0, 1, 1, 4, 0, 128, 1, 45
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test002TurnOffBytecode)));
             sketch.SetPinValue(13, 1023);
             Assert.AreEqual(1023, sketch.GetPinValue(13));
             sketch.Loop();
@@ -71,23 +55,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestReadWriteBytecode()
+        public void Test003ReadWriteBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi 
-                    program: [:p | p
-	                    script: #test
-	                    ticking: true
-	                    delay: 0
-	                    instructions: [:s | s
-		                    read: 15;
-		                    write: 13]].
-                UziProtocol new run: program
-                */
-                0, 1, 1, 4, 0, 128, 2, 111, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test003ReadWriteBytecode)));
             /*
             INFO(Richo):
             The choice of 120 as expected value is not casual. Since analogRead() and
@@ -103,68 +73,27 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPushBytecode()
+        public void Test004PushBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 1;		
-		                write: 13]].
-                UziProtocol new run: program.
-                */
-                0, 1, 2, 8, 0, 1, 128, 2, 129, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test004PushBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
 
         [TestMethod]
-        public void TestPushWithFloatingPointVariable()
+        public void Test005PushWithFloatingPointVariable()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 0.2;		
-		                write: 13]].
-                UziProtocol new run: program.
-                */
-                0, 1, 2, 4, 0, 7, 62, 76, 204, 205, 128, 2, 129, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test005PushWithFloatingPointVariable)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(Math.Round(0.2 * 1023), sketch.GetPinValue(13));
         }
 
         [TestMethod]
-        public void TestPopBytecode()
+        public void Test006PopBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true 
-	                delay: 0
-	                instructions: [:s | s
-		                push: #a;
-		                write: 13;
-		                push: 1;
-		                pop: #a]].
-                UziProtocol new run: program.
-                */
-                0, 1, 3, 12, 0, 0, 1, 128, 4, 128, 77, 130, 144
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test006PopBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop(); // The first loop sets the var to 1
             Assert.AreEqual(0, sketch.GetPinValue(13));
@@ -173,22 +102,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimBytecode()
+        public void Test007PrimBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true 
-	                delay: 0
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle]].
-                UziProtocol new run: program.
-                */
-                0, 1, 2, 8, 0, 13, 128, 2, 129, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test007PrimBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -197,27 +113,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestJZBytecode()
+        public void Test008JZBytecode()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true 
-	                delay: 0
-	                instructions: [:s | s
-		                read: 13;
-		                jz: #zero;
-		                turnOff: 13;
-		                jmp: #end;
-		                label: #zero;
-		                turnOn: 13;
-		                label: #end]].
-                UziProtocol new run: program.
-                */
-                0, 1, 1, 4, 0, 128, 5, 109, 241, 2, 45, 240, 1, 13
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test008JZBytecode)));
             sketch.SetPinValue(13, 0);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -226,22 +124,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestTickingRate()
+        public void Test009TickingRate()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true 
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle]].
-                UziProtocol new run: program.
-                */
-                0, 1, 2, 4, 13, 5, 3, 232, 192, 1, 2, 128, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test009TickingRate)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -261,28 +146,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestMultipleScriptsWithDifferentTickingRates()
+        public void Test010MultipleScriptsWithDifferentTickingRates()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true 
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle];
-	                script: #pot
-	                ticking: true
-	                delay: 100
-	                instructions: [:s | s
-		                read: 15;
-		                write: 9]].
-                UziProtocol new run: program.
-                */
-                0, 2, 3, 8, 13, 100, 5, 3, 232, 192, 2, 2, 128, 162, 192, 1, 2, 111, 73
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test010MultipleScriptsWithDifferentTickingRates)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -311,23 +177,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestYieldInstruction()
+        public void Test011YieldInstruction()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #yieldTest
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                turnOn: 13;
-		                prim: #yield;
-		                turnOff: 13]].
-                UziProtocol new run: program
-                */
-                0, 1, 1, 4, 0, 128, 3, 13, 182, 45
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test011YieldInstruction)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -343,31 +195,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestYieldInstructionPreservesStack()
+        public void Test012YieldInstructionPreservesStack()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #yieldTest
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle;
-		                push: 13;
-		                prim: #yield;
-		                prim: #toggle;
-		                push: 12;
-		                push: 1;
-		                prim: #yield;
-		                prim: #add;
-		                prim: #toggle]].
-                UziProtocol new run: program
-                */
-                0, 1, 4, 16, 0, 1, 12, 13, 128, 10, 131, 162, 131, 182,
-                162, 130, 129, 182, 166, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test012YieldInstructionPreservesStack)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -384,23 +214,9 @@ namespace SimulatorTest
 
 
         [TestMethod]
-        public void TestYieldInstructionResumesOnNextTick()
+        public void Test013YieldInstructionResumesOnNextTick()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #yieldTest
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                turnOn: 12;
-		                prim: #yield;
-		                turnOff: 12]].
-                UziProtocol new run: program
-                */
-                0, 1, 1, 5, 3, 232, 192, 0, 3, 12, 182, 44
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test013YieldInstructionResumesOnNextTick)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -420,24 +236,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveYieldTime()
+        public void Test014PrimitiveYieldTime()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #yieldTest
-	                ticking: true
-	                delay: 100
-	                instructions: [:s | s
-		                turnOn: 13;
-		                push: 1000;
-		                prim: #yieldTime;
-		                turnOff: 13]].
-                UziProtocol new run: program
-                */
-                0, 1, 2, 4, 100, 5, 3, 232, 192, 0, 4, 13, 129, 183, 45
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test014PrimitiveYieldTime)));
 
             sketch.SetMillis(100);
             sketch.Loop();
@@ -465,28 +266,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestYieldAfterBackwardsJump()
+        public void Test015YieldAfterBackwardsJump()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink 
-	                ticking: true 
-	                delay: 1000
-	                instructions: [:s | s push: 11; prim: #toggle];
-	                script: #main
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 13; prim: #toggle;
-		                label: #label1; read: 15; jz: #label1;
-		                label: #label2; read: 15; jnz: #label2]].
-                UziProtocol new run: program
-                */
-                0, 2, 4, 12, 0, 11, 13, 5, 3, 232, 192, 3, 2, 129, 162,
-                128, 6, 130, 162, 111, 241, 254, 111, 242, 254
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test015YieldAfterBackwardsJump)));
 
             sketch.SetMillis(500);
             sketch.Loop();
@@ -522,33 +304,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithoutParametersOrReturnValue()
+        public void Test016ScriptCallWithoutParametersOrReturnValue()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-		                push: 10;
-		                prim: #toggle;
-		                prim: #ret;
-		                turnOn: 13];
-	                script: #loop
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #toggle;
-                        prim: #pop;
-		                push: 11;
-		                prim: #toggle]].
-                UziProtocol new run: program.
-                */
-                0, 2, 4, 12, 0, 10, 11, 5, 3, 232, 0, 4, 129, 162, 185,
-                13, 192, 3, 4, 192, 186, 130, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test016ScriptCallWithoutParametersOrReturnValue)));
 
             /*
              * INFO(Richo): This loop allows me to detect stack overflow
@@ -569,40 +327,9 @@ namespace SimulatorTest
 
 
         [TestMethod]
-        public void TestScriptCallWithoutParametersWithReturnValueAndExplicitReturn()
+        public void Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                registerGlobal: #counter value: 5;
-	
-	                script: #incr
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-		                push: #counter;
-		                push: 1;
-		                prim: #add;
-		                pop: #counter;
-		                push: #counter;
-		                prim: #retv;
-		                push: 13;
-		                prim: #toggle];
-	
-	                script: #loop
-	                ticking: true
-	                delay: 100
-	                instructions: [:s | s
-		                call: #incr;
-		                push: 100;
-		                prim: #divide;
-		                write: 11]].
-                UziProtocol new run: program.
-                */
-                0, 2, 5, 20, 0, 1, 5, 13, 100, 0, 8, 130, 129, 166, 146,
-                130, 187, 131, 162, 192, 4, 4, 192, 132, 167, 75
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -638,31 +365,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptTickingWithExplicitReturn()
+        public void Test018ScriptTickingWithExplicitReturn()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p	
-	                script: #incr
-	                ticking: true
-	                delay: 1
-	                instructions: [:s | s
-					    push: 13;
-					    prim: #toggle;
-		                push: #counter;
-		                push: 1;
-		                prim: #add;
-		                pop: #counter;
-		                push: #counter;
-		                prim: #retv;
-		                push: 11;
-		                prim: #toggle]].
-                UziProtocol new run: program
-                */
-                0, 1, 4, 16, 0, 1, 11, 13, 192, 1, 10, 131, 162, 128,
-                129, 166, 144, 128, 187, 130, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test018ScriptTickingWithExplicitReturn)));
 
             /*
              * INFO(Richo): This loop allows me to detect stack overflow
@@ -681,31 +386,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptWithYieldBeforeEndOfScript()
+        public void Test019ScriptWithYieldBeforeEndOfScript()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p	
-	                script: #blink11
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-					    push: 11;
-					    prim: #toggle];
-				    script: #main
-				    ticking: true
-				    delay: 0
-				    instructions: [:s | s
-					    call: #blink11;
-					    prim: #pop;
-					    push: 100;
-					    prim: #yieldTime]].
-                UziProtocol new run: program
-                */
-                0, 2, 3, 12, 0, 11, 100, 0, 2, 129, 162, 128, 4, 192, 186,
-                130, 183
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test019ScriptWithYieldBeforeEndOfScript)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -728,42 +411,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithOneParameterAndReturnValue()
+        public void Test020ScriptCallWithOneParameterAndReturnValue()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #main;
-		                prim: #pop];
-	
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-		                registerArgument: #n;
-		                push: 1;
-		                push: #n;
-		                prim: #subtract;
-		                prim: #retv;
-		                push: 11;
-		                prim: #toggle];
-	
-	                script: #main 
-	                ticking: false 
-	                delay: 10000000
-	                instructions: [:s | s
-		                read: 13;
-		                call: #toggle;
-		                write: 13]].
-                UziProtocol new run: program.
-                */
-                0, 3, 5, 12, 0, 1, 11, 5, 3, 232, 6, 152, 150, 128, 192, 3, 2, 194, 186, 32, 1, 6, 129, 255, 0, 168, 187, 130, 162, 64, 4, 3, 109, 193, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test020ScriptCallWithOneParameterAndReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -779,40 +429,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithOneParameterWithoutReturnValue()
+        public void Test021ScriptCallWithOneParameterWithoutReturnValue()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #main;
-		                prim: #pop];
-	
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-                        registerArgument: #n;
-		                push: 1;
-		                push: #n;
-		                prim: #subtract;
-		                write: 13];
-	
-	                script: #main 
-	                ticking: false 
-	                delay: 10000000
-	                instructions: [:s | s
-		                read: 13;
-		                call: #toggle;
-		                prim: #pop]].
-                UziProtocol new run: program.
-                */
-                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 1, 4, 129, 255, 0, 168, 77, 64, 3, 3, 109, 193, 186
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test021ScriptCallWithOneParameterWithoutReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -828,42 +447,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn()
+        public void Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #main;
-		                prim: #pop];
-	
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-                        registerArgument: #n;
-		                push: 1;
-		                push: #n;
-		                prim: #subtract;
-		                write: 13;
-		                prim: #ret;
-		                turnOn: 11];
-	
-	                script: #main 
-	                ticking: false 
-	                delay: 10000000
-	                instructions: [:s | s
-		                read: 13;
-		                call: #toggle;
-		                write: 11]].
-                UziProtocol new run: program.
-                */
-                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 1, 6, 129, 255, 0, 168, 77, 185, 11, 64, 3, 3, 109, 193, 75
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -879,44 +465,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn()
+        public void Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #main;
-		                prim: #pop];
-	
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-                        registerArgument: #a;
-                        registerArgument: #b;
-		                push: #a;
-		                push: #b;
-		                prim: #subtract;
-		                write: 13;
-		                prim: #ret;
-		                turnOn: 11];
-	
-	                script: #main 
-	                ticking: false 
-	                delay: 10000000
-	                instructions: [:s | s
-		                push: 1;
-		                read: 13;
-		                call: #toggle;
-		                write: 11]].
-                UziProtocol new run: program.
-                */
-                0, 3, 4, 8, 0, 1, 5, 3, 232, 6, 152, 150, 128, 192, 2, 2, 194, 186, 32, 2, 6, 255, 0, 255, 1, 168, 77, 185, 11, 64, 3, 4, 129, 109, 193, 75
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -932,46 +483,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithTwoParametersWithReturnValue()
+        public void Test024ScriptCallWithTwoParametersWithReturnValue()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                call: #main;
-		                prim: #pop];
-	
-	                script: #toggle
-	                ticking: false
-	                delay: 0
-	                instructions: [:s | s
-                        registerArgument: #a;
-                        registerArgument: #b;
-		                push: #a;
-		                push: #a;
-		                push: #b;
-		                prim: #subtract;
-		                prim: #multiply;
-		                prim: #retv;
-		                push: 11;
-		                prim: #toggle];
-	
-	                script: #main 
-	                ticking: false 
-	                delay: 10000000
-	                instructions: [:s | s
-		                push: 1;
-		                read: 13;
-		                call: #toggle;
-		                write: 13]].
-                UziProtocol new run: program.
-                */
-                0, 3, 5, 12, 0, 1, 11, 5, 3, 232, 6, 152, 150, 128, 192, 3, 2, 194, 186, 32, 2, 8, 255, 0, 255, 0, 255, 1, 168, 165, 187, 130, 162, 64, 4, 4, 129, 109, 193, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test024ScriptCallWithTwoParametersWithReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -987,45 +501,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptCallWithRecursiveCall4LevelsDeep()
+        public void Test025ScriptCallWithRecursiveCall4LevelsDeep()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                registerGlobal: #c;
-	                script: #foo
-	                ticking: false
-	                delay: 0 
-	                instructions: [:s | s
-		                registerArgument: #n;
-		                push: #n;
-		                push: 0;
-		                prim: #equals;
-		                jz: #true;
-		                push: 42;
-		                prim: #retv;
-		                jmp: #end;
-		                label: #true;
-		                push: #n;
-		                push: 1;
-		                prim: #subtract;
-		                call: #foo;
-		                prim: #retv;
-		                label: #end];
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 4;
-		                call: #foo;
-		                pop: #c;
-		                push: #c;
-		                write: 13]].
-                UziProtocol new run: program.
-                */
-                0, 2, 6, 20, 0, 0, 1, 4, 42, 5, 3, 232, 32, 1, 12, 255, 0, 128, 170, 241, 3, 132, 187, 240, 5, 255, 0, 130, 168, 192, 187, 192, 5, 5, 131, 192, 145, 129, 77
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test025ScriptCallWithRecursiveCall4LevelsDeep)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1036,64 +514,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestScriptTickingThatAlsoCallsItself()
+        public void Test026ScriptTickingThatAlsoCallsItself()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                registerGlobal: #result value: 0;
-	                registerGlobal: #counter value: 0;
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                registerArgument: #call value: 0;
-		                push: #call;
-		                jz: 15;
-		                push: #call;
-		                push: 1;
-		                prim: #equals;
-		                jz: 3;
-		                push: 2;
-		                prim: #retv;
-		                jmp: 7;
-		                push: 2;
-		                push: #call;
-		                push: 1;
-		                prim: #subtract;
-		                call: #main;
-		                prim: #multiply;
-		                prim: #retv;
-		                jmp: 2;
-		                push: 13;
-		                prim: #toggle];
-	                script: #button
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 9;
-		                prim: #read;
-		                jz: -3;
-		                push: 9;
-		                prim: #read;
-		                jnz: -3;
-		                push: #counter;
-		                push: 1;
-		                prim: #add;
-		                pop: #counter;
-		                push: #counter;
-		                call: #main;
-		                push: 256;
-		                prim: #divide;
-		                pop: #result;
-		                push: 11;
-		                push: #result;
-		                prim: #write]].
-                UziProtocol new run: program
-                */
-                0, 2, 10, 32, 0, 0, 0, 1, 2, 9, 11, 13, 9, 1, 0, 3, 232, 224, 9, 1, 19, 255, 0, 241, 15, 255, 0, 131, 170, 241, 3, 132, 187, 240, 7, 132, 255, 0, 131, 168, 192, 165, 187, 240, 2, 135, 162, 128, 18, 133, 160, 241, 253, 133, 160, 242, 253, 129, 131, 166, 145, 129, 192, 136, 167, 146, 134, 130, 161
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test026ScriptTickingThatAlsoCallsItself)));
 
             sketch.SetMillis(500);
             sketch.Loop();
@@ -1158,43 +581,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript()
+        public void Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-                    script: #foo
-                    ticking: true
-                    delay: 0
-                    instructions: [:s | s
-                        call: #writeCoroutine;
-                        prim: #pop;
-                        push: 1000;
-                        prim: #yieldTime;
-                        start: #bar;
-                        stop: #foo];
-                    script: #bar
-                    ticking: false
-                    delay: 0
-                    instructions: [:s | s
-                        call: #writeCoroutine;
-                        prim: #pop;
-                        push: 1000;
-                        prim: #yieldTime;
-                        start: #foo;
-                        stop: #bar];
-                    script: #writeCoroutine
-                    ticking: false
-                    delay: 0
-                    instructions: [:s | s
-                        push: 11;
-                        prim: #coroutine;
-                        prim: #write]].
-                UziProtocol new run: program
-                */
-                0, 3, 3, 8, 0, 11, 5, 3, 232, 128, 6, 194, 186, 130, 183, 209, 224, 0, 6, 194, 186, 130, 183, 208, 225, 0, 3, 129, 188, 161
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript)));
 
             Assert.AreEqual(0, sketch.GetPinValue(11));
 
@@ -1215,32 +604,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveBitwiseAnd()
+        public void Test028PrimitiveBitwiseAnd()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                registerGlobal: #n value: 0;
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 11;
-		                push: #n;
-		                push: 7;
-		                prim: #bitwiseAnd;
-		                push: 10;
-		                prim: #divide;
-		                prim: #write;
-		                push: #n;
-		                push: 1;
-		                prim: #add;
-		                pop: #n]].
-                UziProtocol new run: program
-                */
-                0, 1, 6, 20, 0, 1, 7, 10, 11, 5, 3, 232, 192, 5, 11, 132, 128, 130, 191, 131, 167, 161, 128, 129, 166, 144
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test028PrimitiveBitwiseAnd)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -1277,32 +643,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveBitwiseOr()
+        public void Test029PrimitiveBitwiseOr()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                registerGlobal: #n value: 0;
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 11;
-		                push: #n;
-		                push: 1;
-		                prim: #bitwiseOr;
-		                push: 100;
-		                prim: #divide;
-		                prim: #write;
-		                push: #n;
-		                push: 1;
-		                prim: #add;
-		                pop: #n]].
-                UziProtocol new run: program
-                */
-                0, 1, 5, 16, 0, 1, 11, 100, 5, 3, 232, 192, 4, 11, 130, 128, 129, 250, 0, 131, 167, 161, 128, 129, 166, 144
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test029PrimitiveBitwiseOr)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -1339,29 +682,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveLogicalAnd()
+        public void Test030PrimitiveLogicalAnd()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 1;
-		                push: 0;
-		                prim: #logicalAnd;
-		                jz: 3;
-		                push: 13;
-		                prim: #toggle;
-		                jmp: 2;
-		                push: 11;
-		                prim: #toggle]].
-                UziProtocol new run: program
-                */
-                0, 1, 5, 16, 0, 1, 11, 13, 5, 3, 232, 192, 4, 9, 129, 128, 189, 241, 3, 131, 162, 240, 2, 130, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test030PrimitiveLogicalAnd)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1374,29 +697,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestPrimitiveLogicalOr()
+        public void Test031PrimitiveLogicalOr()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #main
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                push: 1;
-		                push: 0;
-		                prim: #logicalOr;
-		                jz: 3;
-		                push: 13;
-		                prim: #toggle;
-		                jmp: 2;
-		                push: 11;
-		                prim: #toggle]].
-                UziProtocol new run: program
-                */
-                0, 1, 5, 16, 0, 1, 11, 13, 5, 3, 232, 192, 4, 9, 129, 128, 190, 241, 3, 131, 162, 240, 2, 130, 162
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test031PrimitiveLogicalOr)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1409,36 +712,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestStopScriptAndRestartShouldResetPCAndStuff()
+        public void Test032StopScriptAndRestartShouldResetPCAndStuff()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink13
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle;
-		                push: 1000;
-		                prim: #yieldTime;
-		                push: 11;
-		                prim: #toggle];
-	                script: #sleepAwake
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                stop: #blink13;
-		                push: 500;
-		                prim: #yieldTime;
-		                start: #blink13;
-		                push: 500;
-		                prim: #yieldTime]].
-                UziProtocol new run: program
-                */
-                0, 2, 5, 12, 0, 11, 13, 9, 1, 244, 3, 232, 128, 6, 130, 162, 132, 183, 129, 162, 128, 6, 224, 131, 183, 208, 131, 183
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test032StopScriptAndRestartShouldResetPCAndStuff)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1455,30 +731,9 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void TestStopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart()
+        public void Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart()
         {
-            sketch.WriteSerial(new byte[]
-            {
-                /*
-                program := Uzi program: [:p | p
-	                script: #blink13
-	                ticking: true
-	                delay: 0
-	                instructions: [:s | s
-		                push: 13;
-		                prim: #toggle;
-		                stop: #blink13;
-		                push: 11;
-		                prim: #toggle];
-	                script: #awake
-	                ticking: true
-	                delay: 1000
-	                instructions: [:s | s
-		                start: #blink13]].
-                UziProtocol new run: program
-                */
-                0, 2, 4, 12, 0, 11, 13, 5, 3, 232, 128, 5, 130, 162, 224, 129, 162, 192, 3, 1, 208
-            });
+            sketch.WriteSerial(ReadFile(nameof(Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart)));
 
             for (int i = 0; i < 100; i++)
             {
