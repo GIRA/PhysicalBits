@@ -181,11 +181,31 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case SCRIPT_START:
 		{
-			Script* script = currentProgram->getScript(argument);
-			if (script != 0)
+			Coroutine* coroutine = currentProgram->getCoroutine(argument);
+			if (coroutine != 0)
 			{
+				Script* script = currentProgram->getScript(argument);
 				script->setStepping(true);
-				// TODO(Richo): We should change this to start executing from the beginning
+
+				if (currentCoroutine == coroutine)
+				{
+					/*
+					If we're starting the current coroutine we need to restart execution
+					right now. So, we set the yield flag and reset the vm state.
+					*/
+					yieldFlag = true;
+					stack->reset();
+					pc = script->getInstructionStart();
+					framePointer = -1;
+				}
+				else
+				{
+					/*
+					If we're starting another coroutine just resetting the coroutine
+					state is enough.
+					*/
+					coroutine->reset();
+				}
 			}
 		} 
 		break;
@@ -207,7 +227,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			{
 				Script* script = coroutine->getScript();
 				script->setStepping(false);
-								
+
 				if (currentCoroutine == coroutine)
 				{
 					/*

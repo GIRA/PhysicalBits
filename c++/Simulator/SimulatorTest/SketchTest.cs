@@ -743,5 +743,32 @@ namespace SimulatorTest
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
             }
         }
+
+        [TestMethod]
+        public void Test034StartOnTheCurrentTaskShouldJumpToTheBeginning()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test034StartOnTheCurrentTaskShouldJumpToTheBeginning)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
+            }
+        }
+
+
+        [TestMethod]
+        public void Test035StartOnAnotherTaskShouldResetToBeginning()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test035StartOnAnotherTaskShouldResetToBeginning)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
+            }
+        }
     }
 }
