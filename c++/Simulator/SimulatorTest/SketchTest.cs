@@ -756,8 +756,7 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
             }
         }
-
-
+        
         [TestMethod]
         public void Test035StartOnAnotherTaskShouldResetToBeginning()
         {
@@ -794,6 +793,45 @@ namespace SimulatorTest
                 sketch.SetMillis(i * 1000 + 50);
                 sketch.Loop();
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+            }
+        }
+
+        [TestMethod]
+        public void Test038ResumeOnStoppedTaskShouldJumpToBeginning()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test038ResumeOnStoppedTaskShouldJumpToBeginning)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
+            }
+        }
+
+        [TestMethod]
+        public void Test039StartOnStoppedTaskShouldJumpToBeginning()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test039StartOnStoppedTaskShouldJumpToBeginning)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
+            }
+        }
+
+        [TestMethod]
+        public void Test040StartOnPausedTaskShouldJumpToBeginning()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test040StartOnPausedTaskShouldJumpToBeginning)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
             }
         }
     }
