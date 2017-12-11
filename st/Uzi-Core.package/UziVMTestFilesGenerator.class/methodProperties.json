@@ -36,4 +36,6 @@
 		"test031PrimitiveLogicalOr" : "Richo 12/9/2017 14:24",
 		"test032StopScriptAndRestartShouldResetPCAndStuff" : "Richo 12/9/2017 14:24",
 		"test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" : "Richo 12/9/2017 16:00",
+		"test034StartOnTheCurrentTaskShouldJumpToTheBeginning" : "Richo 12/10/2017 22:10",
+		"test035StartOnAnotherTaskShouldResetToBeginning" : "Richo 12/10/2017 22:21",
 		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
