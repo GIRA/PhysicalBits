@@ -40,4 +40,7 @@
 		"test035StartOnAnotherTaskShouldResetToBeginning" : "Richo 12/10/2017 22:21",
 		"test036ResumeOnARunningTaskShouldHaveNoEffect" : "Richo 12/10/2017 22:42",
 		"test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC" : "Richo 12/10/2017 22:50",
+		"test038ResumeOnStoppedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:25",
+		"test039StartOnStoppedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:29",
+		"test040StartOnPausedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:30",
 		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
