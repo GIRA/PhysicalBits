@@ -770,5 +770,31 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
             }
         }
+
+        [TestMethod]
+        public void Test036ResumeOnARunningTaskShouldHaveNoEffect()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test036ResumeOnARunningTaskShouldHaveNoEffect)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 100 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+            }
+        }
+
+        [TestMethod]
+        public void Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+            }
+        }
     }
 }

@@ -64,7 +64,7 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 			case 0xF5: instructions[i].opcode = JLTE; break;
 			case 0xF6: instructions[i].opcode = JGT; break;
 			case 0xF7: instructions[i].opcode = JGTE; break;
-				
+
 			case 0xFF:
 			{
 				instructions[i].opcode = argument >> 7 ? WRITE_LOCAL : READ_LOCAL;
@@ -133,13 +133,21 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 				break;
 
 			case 0xFD:
+				instructions[i].opcode = argument & 0x80 ? SCRIPT_RESUME : SCRIPT_START;
+				argument = argument & 0x7F;
+				break;
 			case 0x0D:
-				instructions[i].opcode = SCRIPT_START;
+				instructions[i].opcode = argument & 0x08 ? SCRIPT_RESUME : SCRIPT_START;
+				argument = argument & 0x07;
 				break;
 
 			case 0xFE:
+				instructions[i].opcode = argument & 0x80 ? SCRIPT_PAUSE : SCRIPT_STOP;
+				argument = argument & 0x7F;
+				break;
 			case 0x0E:
-				instructions[i].opcode = SCRIPT_STOP;
+				instructions[i].opcode = argument & 0x08 ? SCRIPT_PAUSE : SCRIPT_STOP;
+				argument = argument & 0x07;
 				break;
 
 		}
