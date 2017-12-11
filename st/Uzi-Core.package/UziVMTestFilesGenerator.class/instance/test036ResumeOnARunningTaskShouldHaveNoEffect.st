@@ -1,0 +1,25 @@
+tests
+test036ResumeOnARunningTaskShouldHaveNoEffect
+	| program |
+	program := Uzi program: [:p | p
+		script: #main
+		ticking: true
+		delay: 0
+		instructions: [:s | s
+			resume: #main;
+			push: 13;
+			prim: #turnOn;
+			push: 100;
+			prim: #yieldTime;
+			resume: #main;
+			push: 13;
+			prim: #turnOff;
+			push: 100;
+			prim: #yieldTime];
+		script: #awake
+		ticking: true
+		delay: 0
+		instructions: [:s | s
+			resume: #main]].
+	self writeFile: 'Test036ResumeOnARunningTaskShouldHaveNoEffect'
+		contents: (UziProtocol new run: program)
