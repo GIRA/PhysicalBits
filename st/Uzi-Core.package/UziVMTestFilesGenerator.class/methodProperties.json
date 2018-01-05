@@ -43,4 +43,5 @@
 		"test038ResumeOnStoppedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:25",
 		"test039StartOnStoppedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:29",
 		"test040StartOnPausedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:30",
+		"test041PausingShouldPreserveTheStack" : "Richo 12/11/2017 13:07",
 		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
