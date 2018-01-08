@@ -7,5 +7,6 @@ buildViewerButton
 		image: form;
 		offImage: form;
 		pressedImage: (pressedForm ifNil: [form]))
+		extent: form extent;
 		target: self;
 		actionSelector: #beViewed
