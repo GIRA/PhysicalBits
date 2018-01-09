@@ -2,7 +2,7 @@ reporting
 setGlobal: name report: report
 	| index |
 	^ currentProgram ifNotNil: [| sortedGlobals |
-		sortedGlobals := currentProgram sortedGlobals.
+		sortedGlobals := currentProgram allGlobals.
 		index := sortedGlobals indexOf: (sortedGlobals detect: [:var | var name = name]).
 		globals at: index - 1 put: nil.
 		report 

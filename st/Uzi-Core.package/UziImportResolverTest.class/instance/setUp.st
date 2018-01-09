@@ -2,7 +2,7 @@ private
 setUp
 	ir := UziImportResolver 
 		parser: UziParser new  
-		librariesPath: 'D:\UAI\GIRA\Uzi\uzi\tests'.
+		librariesPath: 'C:\UAI\GIRA\Uzi\uzi\tests'.
 
 	program := UziProgramNode.
 	varDec := UziVariableDeclarationNode.

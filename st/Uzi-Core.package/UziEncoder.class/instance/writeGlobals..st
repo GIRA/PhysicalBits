@@ -2,7 +2,7 @@ encoding programs
 writeGlobals: anUziProgram
 	| grouped |
 	globals := anUziProgram sortedGlobals 
-		reject: [:each | each isConstant and: [self defaultGlobals includes: each value]].	
+		copyWithoutAll: anUziProgram defaultGlobals.	
 	stream nextPut: globals size.
 	grouped := globals groupBy: [:var | var size] having: [:ign | true].
 	(1 to: 4) do: [:size |
@@ -17,4 +17,4 @@ writeGlobals: anUziProgram
 			stream nextPut: ((group size bitShift: 2) bitOr: size - 1).
 			group do: [:var | var writeOn: stream]]].
 	"Add the default globals to the list after encoding in order to simplify indexing all globals later"
-	globals := (self defaultGlobals collect: [:each | UziVariable value: each]), globals.
+	globals := anUziProgram defaultGlobals, globals.

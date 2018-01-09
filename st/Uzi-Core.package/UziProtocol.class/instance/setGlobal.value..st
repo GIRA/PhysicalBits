@@ -1,7 +1,7 @@
 accessing-globals
 setGlobal: name value: value
 	| sortedGlobals index msg |
-	sortedGlobals := currentProgram sortedGlobals.
+	sortedGlobals := currentProgram allGlobals.
 	index := sortedGlobals indexOf: (sortedGlobals detect: [:var | var name = name]).
 	msg := ByteArray streamContents: [:stream | | actualValue |
 		stream nextPut: 10.

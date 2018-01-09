@@ -4,4 +4,4 @@ outputPath
 	outputPath := nil
 	"
 	^ outputPath 
-	ifNil: [outputPath := 'D:\UAI\GIRA\Uzi\c++\Simulator\SimulatorTest\TestFiles']
+	ifNil: [outputPath := 'C:\UAI\GIRA\Uzi\c++\Simulator\SimulatorTest\TestFiles']
