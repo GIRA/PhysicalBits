@@ -30,6 +30,7 @@
 #define RS_TRACE										4
 #define RS_COROUTINE_STATE								5
 #define RS_TICKING_SCRIPTS								6
+#define RS_FREE_RAM										7
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
@@ -62,6 +63,7 @@ inline void executeSetBreakCount(void);
 inline void sendPinValues(void);
 inline void sendGlobalValues(void);
 inline void sendTickingScripts(void);
+inline void sendFreeRAM(void);
 inline void sendError(uint8, uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
@@ -77,7 +79,7 @@ inline void executeSetGlobalReport(void);
 inline void trace(const char*);
 
 void setup()
-{	
+{
 	loadInstalledProgram();
 	initSerial();
 }
@@ -147,6 +149,7 @@ void sendReport(void)
 		sendPinValues();
 		sendGlobalValues();
 		sendTickingScripts();
+		sendFreeRAM();
 		lastTimeReport = now;
 	}
 }
@@ -157,7 +160,7 @@ void sendVMState(void)
 	for (uint8 i = 0; i < count; i++)
 	{
 		Script* script = program->getScript(i);
-		if (script->hasCoroutine()) 
+		if (script->hasCoroutine())
 		{
 			Coroutine* coroutine = script->getCoroutine();
 			if (coroutine->getError() != NO_ERROR)
@@ -221,7 +224,7 @@ void sendPinValues(void)
 		}
 	}
 	if (count == 0) return;
-	
+
 	Serial.write(RS_PIN_VALUE);
 	Serial.write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
@@ -293,52 +296,73 @@ void sendTickingScripts(void)
 	}
 }
 
+/*
+INFO(Richo): This function returns the space between the heap and the stack.
+Taken from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-memory#sram
+*/
+int freeRam()
+{
+	extern int __heap_start, *__brkval;
+	int v;
+	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
+}
+
+void sendFreeRAM(void)
+{
+	Serial.write(RS_FREE_RAM);
+	uint32 value = freeRam();
+	Serial.write((value >> 24) & 0xFF);
+	Serial.write((value >> 16) & 0xFF);
+	Serial.write((value >> 8) & 0xFF);
+	Serial.write(value & 0xFF);
+}
+
 void executeCommand(uint8 cmd)
 {
 	switch (cmd)
 	{
-		case RQ_SET_PROGRAM:
-			executeSetProgram();
-			break;
-		case RQ_SET_VALUE:
-			executeSetValue();
-			break;
-		case RQ_SET_MODE:
-			executeSetMode();
-			break;
-		case RQ_START_REPORTING:
-			executeStartReporting();
-			break;
-		case RQ_STOP_REPORTING:
-			executeStopReporting();
-			break;
-		case RQ_SET_REPORT:
-			executeSetReport();
-			break;
-		case RQ_SAVE_PROGRAM:
-			executeSaveProgram();
-			break;
-		case RQ_KEEP_ALIVE:
-			executeKeepAlive();
-			break;
-		case RQ_PROFILE:
-			executeProfile();
-			break;
-		case RQ_RUN_PROGRAM:
-			executeRunProgram();
-			break;
-		case RQ_SET_GLOBAL:
-			executeSetGlobal();
-			break;
-		case RQ_SET_GLOBAL_REPORT:
-			executeSetGlobalReport();
-			break;
-		case RQ_SET_BREAK_COUNT:
-			executeSetBreakCount();
-			break;
-		default:
-			// TODO(Richo): Return RS_ERROR
-			break;
+	case RQ_SET_PROGRAM:
+		executeSetProgram();
+		break;
+	case RQ_SET_VALUE:
+		executeSetValue();
+		break;
+	case RQ_SET_MODE:
+		executeSetMode();
+		break;
+	case RQ_START_REPORTING:
+		executeStartReporting();
+		break;
+	case RQ_STOP_REPORTING:
+		executeStopReporting();
+		break;
+	case RQ_SET_REPORT:
+		executeSetReport();
+		break;
+	case RQ_SAVE_PROGRAM:
+		executeSaveProgram();
+		break;
+	case RQ_KEEP_ALIVE:
+		executeKeepAlive();
+		break;
+	case RQ_PROFILE:
+		executeProfile();
+		break;
+	case RQ_RUN_PROGRAM:
+		executeRunProgram();
+		break;
+	case RQ_SET_GLOBAL:
+		executeSetGlobal();
+		break;
+	case RQ_SET_GLOBAL_REPORT:
+		executeSetGlobalReport();
+		break;
+	case RQ_SET_BREAK_COUNT:
+		executeSetBreakCount();
+		break;
+	default:
+		// TODO(Richo): Return RS_ERROR
+		break;
 	}
 }
 
@@ -457,7 +481,7 @@ void loadProgramFromReader(Reader* reader)
 	}
 }
 
-void executeSetGlobal(void) 
+void executeSetGlobal(void)
 {
 	bool timeout;
 	uint8 index = stream->next(timeout);
