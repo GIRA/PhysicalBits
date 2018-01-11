@@ -1,0 +1,3 @@
+accessing
+estimatedSize
+	^ 4
