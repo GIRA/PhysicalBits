@@ -9,7 +9,8 @@ processInput
 		[self class rsGlobalValue] -> [self processGlobalValue].
 		[self class rsTrace] -> [self processTrace].
 		[self class rsCoroutineState] -> [self processCoroutineState].
-		[self class rsTickingScripts] -> [self processTickingScripts]
+		[self class rsTickingScripts] -> [self processTickingScripts].
+		[self class rsFreeRAM] -> [self processFreeRAM]
 	} otherwise: [WorldState 
 		addDeferredUIMessage: [Transcript 
 			show: 'Uzi - Invalid response code: '; 

@@ -16,7 +16,8 @@
 		"currentProgram",
 		"globals",
 		"globalsReporting",
-		"tickingScripts" ],
+		"tickingScripts",
+		"freeRAM" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
