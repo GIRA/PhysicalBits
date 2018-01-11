@@ -8,6 +8,7 @@ step
 		ifFalse: ['Connect...']).
 	connectedText contents: self isConnected asString.
 	portText contents: self portName.
+	freeRAMText contents: self freeRAM asString.
 	pinTexts keysAndValuesDo: [:pin :text |
 		text privateValue: (self getPinValue: pin)].
 	globalTexts keysAndValuesDo: [:var :text |

@@ -17,7 +17,8 @@
 		"globalTexts",
 		"portName",
 		"debuggerButton",
-		"scriptTexts" ],
+		"scriptTexts",
+		"freeRAMText" ],
 	"name" : "UziProtocolMorph",
 	"pools" : [
 		 ],
