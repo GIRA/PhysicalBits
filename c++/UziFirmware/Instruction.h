@@ -29,8 +29,8 @@ enum Opcode
 };
 
 struct Instruction
-{
-	Opcode opcode;
+{	
+	uint8 opcode; // INFO(Richo): Originally an Opcode, but changed to uint8 to save 1 byte.
 	int16 argument;
 };
 

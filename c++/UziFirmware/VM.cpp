@@ -110,7 +110,7 @@ Instruction VM::nextInstruction(void)
 
 void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 {
-	Opcode opcode = instruction.opcode;
+	Opcode opcode = (Opcode)instruction.opcode;
 	int16 argument = instruction.argument;
 	switch (opcode)
 	{
