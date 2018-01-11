@@ -31,7 +31,7 @@ enum Opcode
 struct Instruction
 {	
 	uint8 opcode; // INFO(Richo): Originally an Opcode, but changed to uint8 to save 1 byte.
-	int16 argument;
+	int8 argument;
 };
 
 Instruction* readInstructions(Reader* rs, uint8 count, bool& timeout);

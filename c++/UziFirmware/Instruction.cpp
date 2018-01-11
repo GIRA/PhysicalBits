@@ -124,6 +124,7 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 					case 0x1F: instructions[i].opcode = PRIM_BITWISE_AND; break;
 					case 0x20: instructions[i].opcode = PRIM_BITWISE_OR; break;
 				}
+				argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 			}
 			break;
 
@@ -151,7 +152,7 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 				break;
 
 		}
-		instructions[i].argument = argument;
+		instructions[i].argument = (int8)argument;
 	}
 	return instructions;
 }
