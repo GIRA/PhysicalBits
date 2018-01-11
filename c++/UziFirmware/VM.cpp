@@ -3,17 +3,20 @@
 void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
-	int16 count = program->getCoroutineCount();
+	int16 count = program->getScriptCount();
 	
 	int32 now = millis();
 	for (int16 i = 0; i < count; i++)
 	{
-		Coroutine* coroutine = program->getCoroutine(i);
-		Script* script = coroutine->getScript();
-		if (script->isStepping() && now >= coroutine->getNextRun())
+		Script* script = program->getScript(i);
+		if (script->isStepping()) 
 		{
-			coroutine->setNextRun(now + script->getInterval());
-			executeCoroutine(coroutine, io);
+			Coroutine* coroutine = script->getCoroutine();
+			if (now >= coroutine->getNextRun())
+			{
+				coroutine->setNextRun(now + script->getInterval());
+				executeCoroutine(coroutine, io);
+			}
 		}
 	}
 }
@@ -179,12 +182,12 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case SCRIPT_START:
 		{
-			Coroutine* coroutine = currentProgram->getCoroutine(argument);
-			if (coroutine != 0)
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
 			{
-				Script* script = currentProgram->getScript(argument);
 				script->setStepping(true);
 
+				Coroutine* coroutine = script->getCoroutine();
 				if (currentCoroutine == coroutine)
 				{
 					/*
@@ -220,12 +223,12 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case SCRIPT_STOP:
 		{
-			Coroutine* coroutine = currentProgram->getCoroutine(argument);
-			if (coroutine != 0)
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
 			{
-				Script* script = coroutine->getScript();
 				script->setStepping(false);
 
+				Coroutine* coroutine = script->getCoroutine();
 				if (currentCoroutine == coroutine)
 				{
 					/*
@@ -251,10 +254,9 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case SCRIPT_PAUSE:
 		{
-			Coroutine* coroutine = currentProgram->getCoroutine(argument);
-			if (coroutine != 0)
+			Script* script = currentProgram->getScript(argument);
+			if (script != 0)
 			{
-				Script* script = coroutine->getScript();
 				script->setStepping(false);
 
 				/*
@@ -262,6 +264,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				right now. But we don't need to reset the coroutine because we will
 				resume execution from this point.
 				*/
+				Coroutine* coroutine = script->getCoroutine();
 				if (currentCoroutine == coroutine)
 				{
 					yieldFlag = true;

@@ -27,6 +27,7 @@ public:
 	float getLocal(uint8);
 
 	Coroutine* getCoroutine(void);
+	bool hasCoroutine(void);
 
 private:
 	uint8 index;

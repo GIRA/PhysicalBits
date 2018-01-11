@@ -134,3 +134,8 @@ Coroutine* Script::getCoroutine(void)
 	}
 	return coroutine;
 }
+
+bool Script::hasCoroutine(void) 
+{
+	return coroutine != 0;
+}

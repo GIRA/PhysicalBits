@@ -44,19 +44,6 @@ Script * Program::getScript(int16 index)
 	return &scripts[index];
 }
 
-uint8 Program::getCoroutineCount(void)
-{
-	// INFO(Richo): For now, we'll use the same var
-	return scriptCount;
-}
-
-Coroutine* Program::getCoroutine(int16 index)
-{
-	Script* script = getScript(index);
-	if (script == 0) return 0;
-	return script->getCoroutine();
-}
-
 void Program::parseGlobals(Reader * rs, bool& timeout)
 {
 	const int defaultGlobalsCount = 3;

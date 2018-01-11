@@ -77,7 +77,7 @@ inline void executeSetGlobalReport(void);
 inline void trace(const char*);
 
 void setup()
-{
+{	
 	loadInstalledProgram();
 	initSerial();
 }
@@ -153,36 +153,40 @@ void sendReport(void)
 
 void sendVMState(void)
 {
-	uint8 count = program->getCoroutineCount();
+	uint8 count = program->getScriptCount();
 	for (uint8 i = 0; i < count; i++)
 	{
-		Coroutine* coroutine = program->getCoroutine(i);
-		if (coroutine->getError() != NO_ERROR)
+		Script* script = program->getScript(i);
+		if (script->hasCoroutine()) 
 		{
-			sendError(i, coroutine->getError());
-			coroutine->reset();
-		}
-		if (coroutine->getDumpState())
-		{
-			coroutine->clearDumpState();
-			Serial.write(RS_COROUTINE_STATE);
-			Serial.write(i);
-			int16 pc = coroutine->getPC();
-			uint8 val1 = pc >> 8 & 0xFF; // MSB
-			uint8 val2 = pc & 0xFF;	// LSB
-			Serial.write(val1);
-			Serial.write(val2);
-			uint8 fp = coroutine->getFramePointer();
-			Serial.write(fp);
-			uint16 stackSize = coroutine->getStackSize();
-			Serial.write(stackSize);
-			for (uint16 j = 0; j < stackSize; j++)
+			Coroutine* coroutine = script->getCoroutine();
+			if (coroutine->getError() != NO_ERROR)
 			{
-				uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
-				Serial.write((value >> 24) & 0xFF);
-				Serial.write((value >> 16) & 0xFF);
-				Serial.write((value >> 8) & 0xFF);
-				Serial.write(value & 0xFF);
+				sendError(i, coroutine->getError());
+				coroutine->reset();
+			}
+			if (coroutine->getDumpState())
+			{
+				coroutine->clearDumpState();
+				Serial.write(RS_COROUTINE_STATE);
+				Serial.write(i);
+				int16 pc = coroutine->getPC();
+				uint8 val1 = pc >> 8 & 0xFF; // MSB
+				uint8 val2 = pc & 0xFF;	// LSB
+				Serial.write(val1);
+				Serial.write(val2);
+				uint8 fp = coroutine->getFramePointer();
+				Serial.write(fp);
+				uint16 stackSize = coroutine->getStackSize();
+				Serial.write(stackSize);
+				for (uint16 j = 0; j < stackSize; j++)
+				{
+					uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
+					Serial.write((value >> 24) & 0xFF);
+					Serial.write((value >> 16) & 0xFF);
+					Serial.write((value >> 8) & 0xFF);
+					Serial.write(value & 0xFF);
+				}
 			}
 		}
 	}
@@ -483,9 +487,11 @@ void executeSetBreakCount(void)
 	int8 value = stream->next(timeout) - 127;
 	if (timeout) return;
 
-	Coroutine* coroutine = program->getCoroutine(index);
-	if (coroutine != 0)
+	Script* script = program->getScript(index);
+	if (script != 0)
 	{
+		// TODO(Richo): Should I check that the script has a coroutine here?
+		Coroutine* coroutine = script->getCoroutine();
 		coroutine->setBreakCount(value);
 	}
 }
