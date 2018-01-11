@@ -25,9 +25,6 @@ public:
 	uint8 getLocalCount(void);
 	float getLocal(uint8);
 
-	void setNext(Script*);
-	Script* getNext(void);
-
 private:
 	uint8 index;
 	bool stepping;
@@ -41,7 +38,5 @@ private:
 	uint8 instructionStart;
 	uint8 instructionCount;
 	Instruction* instructions;
-
-	Script * nextScript;
 };
 

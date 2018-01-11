@@ -11,7 +11,6 @@ Script::Script(uint8 start, uint8 scriptIndex, float* globals, Reader * rs, bool
 	locals = 0; 
 	instructionCount = 0;
 	instructions = 0;
-	nextScript = 0;
 
 	uint8 h = rs->next(timeout);
 	if (timeout) return;
@@ -61,14 +60,12 @@ Script::Script()
 	locals = 0;
 	instructionCount = 0;
 	instructions = 0;
-	nextScript = 0;
 }
 
 Script::~Script(void)
 {
 	delete[] locals;
 	delete[] instructions;
-	delete nextScript;
 }
 
 uint8 Script::getInstructionStart(void)
@@ -99,16 +96,6 @@ bool Script::isStepping(void)
 void Script::setStepping(bool val)
 {
 	stepping = val;
-}
-
-Script* Script::getNext(void)
-{
-	return nextScript;
-}
-
-void Script::setNext(Script* next)
-{
-	nextScript = next;
 }
 
 float Script::getInterval(void)

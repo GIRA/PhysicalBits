@@ -270,11 +270,11 @@ void sendTickingScripts(void)
 	Serial.write(RS_TICKING_SCRIPTS);
 	uint8 scriptCount = program->getScriptCount();
 	Serial.write(scriptCount);
-	Script* script = program->getScript();
 	uint8 result = 0;
 	int8 bit = -1;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
+		Script* script = program->getScript(i);
 		uint8 isStepping = script->isStepping() ? 1 : 0;
 		result |= isStepping << ++bit;
 		if (bit == 7)
@@ -283,7 +283,6 @@ void sendTickingScripts(void)
 			bit = -1;
 			result = 0;
 		}
-		script = script->getNext();
 	}
 	if (bit != -1)
 	{

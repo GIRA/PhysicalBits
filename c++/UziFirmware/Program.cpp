@@ -5,7 +5,7 @@ Program::Program(Reader * rs, bool& timeout)
 	globalCount = 0;
 	globals = 0;
 	globalsReport = 0;
-	script = 0;
+	scripts = 0;
 	coroutine = 0;
 
 	scriptCount = rs->next(timeout);
@@ -25,7 +25,7 @@ Program::Program(Reader * rs, bool& timeout)
 Program::Program()
 {
 	scriptCount = 0;
-	script = 0;
+	scripts = 0;
 	coroutine = 0;
 	globalCount = 0;
 	globals = 0;
@@ -36,8 +36,8 @@ Program::~Program(void)
 {
 	delete[] globalsReport;
 	delete[] globals;
+	delete[] scripts;
 	delete coroutine;
-	delete script;
 }
 
 uint8 Program::getScriptCount(void)
@@ -45,20 +45,10 @@ uint8 Program::getScriptCount(void)
 	return scriptCount;
 }
 
-Script * Program::getScript(void)
-{
-	return script;
-}
-
 Script * Program::getScript(int16 index)
 {
 	if (index >= scriptCount) return 0;
-	Script* result = script;
-	for (int i = 0; i < index; i++)
-	{
-		result = result->getNext();
-	}
-	return result;
+	return &scripts[index];
 }
 
 uint8 Program::getCoroutineCount(void)
@@ -129,21 +119,13 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 
 void Program::parseScripts(Reader * rs, bool& timeout)
 {
+	scripts = new Script[scriptCount];
 	uint8 instructionCount = 0;
-	Script* last = 0;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
-		Script* temp = new Script(instructionCount, i, globals, rs, timeout);
-		instructionCount += temp->getInstructionCount();
-		if (i == 0)
-		{
-			script = last = temp;
-		}
-		else
-		{
-			last->setNext(temp);
-			last = temp;
-		}
+		Script* script = new Script(instructionCount, i, globals, rs, timeout);
+		instructionCount += script->getInstructionCount();
+		scripts[i] = *script;
 
 		if (timeout) return;
 	}
@@ -151,11 +133,10 @@ void Program::parseScripts(Reader * rs, bool& timeout)
 
 void Program::initializeCoroutines(void)
 {
-	Script* current = script;
 	Coroutine* last = 0;
 	for (int i = 0; i < scriptCount; i++)
 	{
-		Coroutine* temp = new Coroutine(current);
+		Coroutine* temp = new Coroutine(getScript(i));
 		if (i == 0)
 		{
 			coroutine = last = temp;
@@ -165,7 +146,6 @@ void Program::initializeCoroutines(void)
 			last->setNext(temp);
 			last = temp;
 		}
-		current = current->getNext();
 	}
 }
 
@@ -196,15 +176,14 @@ uint8 Program::getGlobalCount(void)
 
 Script* Program::getScriptForPC(int16 pc)
 {
-	Script* current = script;
 	for (int i = 0; i < scriptCount; i++)
 	{
+		Script* current = getScript(i);
 		if (pc >= current->getInstructionStart()
 			&& pc <= current->getInstructionStop())
 		{
 			return current;
 		}
-		current = current->getNext();
 	}
 	return NULL;
 }

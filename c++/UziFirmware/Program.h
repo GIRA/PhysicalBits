@@ -14,7 +14,6 @@ public:
 	~Program(void);
 
 	uint8 getScriptCount(void);
-	Script* getScript(void);
 	Script* getScript(int16);
 	Script* getScriptForPC(int16);
 	uint8 getCoroutineCount(void);
@@ -30,7 +29,7 @@ public:
 private:
 
 	uint8 scriptCount;
-	Script* script;
+	Script* scripts;
 	Coroutine* coroutine;
 
 	uint8 globalCount;
