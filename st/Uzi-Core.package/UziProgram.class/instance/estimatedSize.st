@@ -1,5 +1,5 @@
 accessing
 estimatedSize
-	^ 10 + 
+	^ 8 + 
 	(self allGlobals size * 5) +
 	(self scripts collect: #estimatedSize) sum
