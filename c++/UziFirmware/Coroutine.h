@@ -2,8 +2,9 @@
 
 #include "Arduino.h"
 #include "StackArray.h"
-#include "Script.h"
 #include "Errors.h"
+
+class Script;
 
 class Coroutine
 {

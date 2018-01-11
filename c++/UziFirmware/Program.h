@@ -29,7 +29,6 @@ private:
 
 	uint8 scriptCount;
 	Script* scripts;
-	Coroutine* coroutines;
 
 	uint8 globalCount;
 	float* globals;
@@ -37,6 +36,5 @@ private:
 
 	void parseGlobals(Reader*, bool&);
 	void parseScripts(Reader*, bool&);
-	void initializeCoroutines(void);
 };
 

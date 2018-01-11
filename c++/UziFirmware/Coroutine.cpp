@@ -1,4 +1,5 @@
 #include "Coroutine.h"
+#include "Script.h"
 
 Coroutine::Coroutine(Script* script)
 {

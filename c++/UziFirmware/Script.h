@@ -2,6 +2,7 @@
 
 #include "Reader.h"
 #include "Instruction.h"
+#include "Coroutine.h"
 
 class Script
 {
@@ -25,6 +26,8 @@ public:
 	uint8 getLocalCount(void);
 	float getLocal(uint8);
 
+	Coroutine* getCoroutine(void);
+
 private:
 	uint8 index;
 	bool stepping;
@@ -38,5 +41,7 @@ private:
 	uint8 instructionStart;
 	uint8 instructionCount;
 	Instruction* instructions;
+
+	Coroutine* coroutine;
 };
 

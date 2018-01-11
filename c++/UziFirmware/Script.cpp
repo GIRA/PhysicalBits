@@ -11,6 +11,7 @@ Script::Script(uint8 start, uint8 scriptIndex, float* globals, Reader * rs, bool
 	locals = 0; 
 	instructionCount = 0;
 	instructions = 0;
+	coroutine = 0;
 
 	uint8 h = rs->next(timeout);
 	if (timeout) return;
@@ -60,12 +61,14 @@ Script::Script()
 	locals = 0;
 	instructionCount = 0;
 	instructions = 0;
+	coroutine = 0;
 }
 
 Script::~Script(void)
 {
 	delete[] locals;
 	delete[] instructions;
+	delete coroutine;
 }
 
 uint8 Script::getInstructionStart(void)
@@ -121,4 +124,13 @@ float Script::getLocal(uint8 index)
 uint8 Script::getIndex(void)
 {
 	return index;
+}
+
+Coroutine* Script::getCoroutine(void) 
+{
+	if (coroutine == 0) 
+	{
+		coroutine = new Coroutine(this);
+	}
+	return coroutine;
 }
