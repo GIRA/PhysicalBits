@@ -12,8 +12,6 @@ public:
 	Coroutine(void);
 	~Coroutine(void);
 
-	void setNext(Coroutine*);
-	Coroutine* getNext(void);
 	Script* getScript(void);
 
 	Script* getActiveScript(void);
@@ -47,8 +45,6 @@ private:
 
 	Script* script;
 	int32 nextRun;
-
-	Coroutine* next;
 
 	int8 breakCount;
 	bool dumpState = false;

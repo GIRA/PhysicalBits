@@ -17,7 +17,6 @@ public:
 	Script* getScript(int16);
 	Script* getScriptForPC(int16);
 	uint8 getCoroutineCount(void);
-	Coroutine* getCoroutine(void);
 	Coroutine* getCoroutine(int16);
 	
 	float getGlobal(int16);
@@ -30,7 +29,7 @@ private:
 
 	uint8 scriptCount;
 	Script* scripts;
-	Coroutine* coroutine;
+	Coroutine* coroutines;
 
 	uint8 globalCount;
 	float* globals;

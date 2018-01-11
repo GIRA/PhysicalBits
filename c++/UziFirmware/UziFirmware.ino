@@ -154,9 +154,9 @@ void sendReport(void)
 void sendVMState(void)
 {
 	uint8 count = program->getCoroutineCount();
-	Coroutine* coroutine = program->getCoroutine();
 	for (uint8 i = 0; i < count; i++)
 	{
+		Coroutine* coroutine = program->getCoroutine(i);
 		if (coroutine->getError() != NO_ERROR)
 		{
 			sendError(i, coroutine->getError());
@@ -185,7 +185,6 @@ void sendVMState(void)
 				Serial.write(value & 0xFF);
 			}
 		}
-		coroutine = coroutine->getNext();
 	}
 }
 

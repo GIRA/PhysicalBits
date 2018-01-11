@@ -9,7 +9,6 @@ Coroutine::Coroutine(Script* script)
 	stackElements = 0;
 	stackSize = 0;
 	nextRun = 0;
-	next = 0;
 	breakCount = -1;
 }
 
@@ -20,14 +19,12 @@ Coroutine::Coroutine()
 	stackElements = 0;
 	stackSize = 0;
 	script = activeScript = 0;
-	next = 0;
 	breakCount = 0;
 }
 
 Coroutine::~Coroutine(void)
 {
 	delete stackElements;
-	delete next;
 }
 
 Script* Coroutine::getScript(void)
@@ -84,16 +81,6 @@ void Coroutine::restoreStack(StackArray* stack)
 	{
 		stack->push(stackElements[i]);
 	}
-}
-
-Coroutine* Coroutine::getNext(void)
-{
-	return next;
-}
-
-void Coroutine::setNext(Coroutine* value)
-{
-	next = value;
 }
 
 int32 Coroutine::getNextRun(void)

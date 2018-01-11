@@ -3,20 +3,18 @@
 void VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
-	Coroutine * coroutine = 0;
 	int16 count = program->getCoroutineCount();
 	
 	int32 now = millis();
-	coroutine = program->getCoroutine();
 	for (int16 i = 0; i < count; i++)
 	{
+		Coroutine* coroutine = program->getCoroutine(i);
 		Script* script = coroutine->getScript();
 		if (script->isStepping() && now >= coroutine->getNextRun())
 		{
 			coroutine->setNextRun(now + script->getInterval());
 			executeCoroutine(coroutine, io);
 		}
-		coroutine = coroutine->getNext();
 	}
 }
 
