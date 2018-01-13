@@ -1,3 +1,3 @@
 accessing
 estimatedSize
-	^ 4
+	^ 2
