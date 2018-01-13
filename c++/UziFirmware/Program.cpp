@@ -51,13 +51,21 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 
 	globalCount = rs->next(timeout) + 3;
 	if (timeout) return;
+
+	// Initialize globals report
+	{
+		int globalsReportCount = 1 + (int)floor((double)globalCount / 8);
+		globalsReport = new uint8[globalsReportCount];
+		for (int i = 0; i < globalsReportCount; i++)
+		{
+			globalsReport[i] = 0;
+		}
+	}
 		
 	globals = new float[globalCount];
-	globalsReport = new bool[globalCount];
 	for (int i = 0; i < defaultGlobalsCount; i++)
 	{
 		globals[i] = defaultGlobals[i];
-		globalsReport[i] = false;
 	}
 
 	uint8 i = defaultGlobalsCount;
@@ -70,7 +78,6 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 		int16 size = (sec & 0x03) + 1;
 		while (count > 0)
 		{
-			globalsReport[i] = false;
 			if (size == 4)
 			{
 				// Special case: float
@@ -114,12 +121,15 @@ void Program::setGlobal(int16 index, float value)
 
 bool Program::getReport(uint8 index)
 {
-	return globalsReport[index];
+	uint8 actualIndex = (int)floor((double)index / 8);
+	uint8 byteValue = globalsReport[actualIndex];
+	return byteValue & (1 << (index % 8));
 }
 
 void Program::setReport(uint8 index, bool report)
 {
-	globalsReport[index] = report;
+	uint8 actualIndex = (int)floor((double)index / 8);
+	globalsReport[actualIndex] |= report ? 1 << (index % 8) : 0;
 }
 
 uint8 Program::getGlobalCount(void)

@@ -30,7 +30,7 @@ private:
 
 	uint8 globalCount;
 	float* globals;
-	bool* globalsReport;
+	uint8* globalsReport;
 
 	void parseGlobals(Reader*, bool&);
 	void parseScripts(Reader*, bool&);
