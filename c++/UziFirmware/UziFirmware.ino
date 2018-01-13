@@ -302,7 +302,8 @@ Taken from: https://learn.adafruit.com/memories-of-an-arduino/measuring-free-mem
 */
 int freeRam()
 {
-	extern int __heap_start, *__brkval;
+	extern unsigned int __heap_start;
+	extern void*__brkval;
 	int v;
 	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
@@ -310,11 +311,13 @@ int freeRam()
 void sendFreeRAM(void)
 {
 	Serial.write(RS_FREE_RAM);
-	uint32 value = freeRam();
-	Serial.write((value >> 24) & 0xFF);
-	Serial.write((value >> 16) & 0xFF);
-	Serial.write((value >> 8) & 0xFF);
-	Serial.write(value & 0xFF);
+	{
+		uint32 value = freeRam();
+		Serial.write((value >> 24) & 0xFF);
+		Serial.write((value >> 16) & 0xFF);
+		Serial.write((value >> 8) & 0xFF);
+		Serial.write(value & 0xFF);
+	}
 }
 
 void executeCommand(uint8 cmd)

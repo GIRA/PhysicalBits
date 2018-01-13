@@ -9,8 +9,8 @@
 #include <time.h>
 
 // INFO(Richo): To simulate calculating the available RAM
-int __heap_start = 0;
-int* __brkval = 0;
+unsigned int __heap_start = 0;
+void* __brkval = 0;
 
 CSerial Serial;
 long millisMock = -1;
