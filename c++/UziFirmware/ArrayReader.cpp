@@ -22,34 +22,3 @@ int16 ArrayReader::getPosition(void)
 {
 	return position;
 }
-
-uint8 * ArrayReader::upTo(uint8 aCharacter, bool inclusive, bool& timeout)
-{
-	int16 arraySize = remaining();
-	uint8 * result = new uint8[arraySize];
-	int16 i = 0;
-	bool found = false;
-	while (i < arraySize && !found)
-	{
-		uint8 nextChar = next(timeout);
-		found = (nextChar == aCharacter) || timeout;
-		if (!found || inclusive)
-		{
-			result[i] = nextChar;
-			i++;
-		}
-	}
-	if (i < arraySize)
-	{
-		uint8 * temp = new uint8[i];
-		memcpy(temp, result, i);
-		delete[] result;
-		result = temp;
-	}
-	return result;
-}
-
-int16 ArrayReader::remaining(void)
-{
-	return size - position;
-}
