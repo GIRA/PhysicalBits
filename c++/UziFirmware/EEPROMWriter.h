@@ -6,15 +6,12 @@ class EEPROMWriter
 {
 
 public:
-	EEPROMWriter();
-	EEPROMWriter(int16);
-	virtual ~EEPROMWriter(void) {}
-
 	void nextPut(uint8);
 	int16 getPosition(void);
+	void setPosition(int16);
 
 private:
-	int16 position;
+	int16 position = 0;
 
 	void incrementPosition(void);
 

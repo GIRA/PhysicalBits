@@ -3,17 +3,16 @@
 
 EEPROMWearLevelingWriter::EEPROMWearLevelingWriter()
 {
-	writer = new EEPROMWriter(findPosition());
-	beginPosition = writer->getPosition();
+	writer.setPosition(findPosition());
+	beginPosition = writer.getPosition();
 	// Erase previous end mark and then write the begin mark"
-	writer->nextPut(0);
-	writer->nextPut(EEPROM_BEGIN_MARK);
+	writer.nextPut(0);
+	writer.nextPut(EEPROM_BEGIN_MARK);
 }
 
 EEPROMWearLevelingWriter::~EEPROMWearLevelingWriter()
 {
 	close();
-	delete writer;
 }
 
 void EEPROMWearLevelingWriter::nextPut(uint8 byte)
@@ -26,20 +25,20 @@ void EEPROMWearLevelingWriter::nextPut(uint8 byte)
 	else
 	{
 		escapeIfNecessary(byte);
-		writer->nextPut(byte);
+		writer.nextPut(byte);
 	}
 }
 
 bool EEPROMWearLevelingWriter::atEnd()
 {
-	return writer->getPosition() == beginPosition;
+	return writer.getPosition() == beginPosition;
 }
 
 void EEPROMWearLevelingWriter::escapeIfNecessary(uint8 byte)
 {
 	if (byte == EEPROM_BEGIN_MARK || byte == EEPROM_END_MARK)
 	{
-		writer->nextPut(byte);
+		writer.nextPut(byte);
 	}
 }
 
@@ -48,11 +47,11 @@ void EEPROMWearLevelingWriter::close()
 	if (closed) return;
 	closed = true;
 
-	writer->nextPut(EEPROM_END_MARK);
+	writer.nextPut(EEPROM_END_MARK);
 	// Make sure it's not escaped
-	if (EEPROM.read(writer->getPosition()) == EEPROM_END_MARK)
+	if (EEPROM.read(writer.getPosition()) == EEPROM_END_MARK)
 	{
-		EEPROM.write(writer->getPosition(), 0);
+		EEPROM.write(writer.getPosition(), 0);
 	}
 }
 

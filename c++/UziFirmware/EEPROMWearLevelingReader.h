@@ -8,7 +8,6 @@ class EEPROMWearLevelingReader : public Reader
 
 public:
 	EEPROMWearLevelingReader();
-	~EEPROMWearLevelingReader();
 	
 	uint8 next(void);
 	uint8 next(bool&);
@@ -17,7 +16,7 @@ public:
 
 private:
 
-	EEPROMReader * reader;
+	EEPROMReader reader;
 	int16 endPosition;
 
 	int16 findPosition(void);

@@ -1,15 +1,9 @@
 
 #include "EEPROMReader.h"
 
-
-EEPROMReader::EEPROMReader(void)
+void EEPROMReader::setPosition(int16 value)
 {
-	position = 0;
-}
-
-EEPROMReader::EEPROMReader(int16 position)
-{
-	EEPROMReader::position = position;
+	position = value;
 }
 
 int16 EEPROMReader::getPosition(void)

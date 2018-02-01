@@ -16,7 +16,7 @@ public:
 
 private:
 
-	EEPROMWriter * writer;
+	EEPROMWriter writer;
 	int16 beginPosition;
 	bool closed = false;
 

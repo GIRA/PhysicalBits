@@ -3,13 +3,8 @@
 
 EEPROMWearLevelingReader::EEPROMWearLevelingReader()
 {
-	reader = new EEPROMReader(findPosition());
-	reader->next(); // We know the next byte is the begin mark, so just skip it
-}
-
-EEPROMWearLevelingReader::~EEPROMWearLevelingReader()
-{
-	delete reader;
+	reader.setPosition(findPosition());
+	reader.next(); // We know the next byte is the begin mark, so just skip it
 }
 
 uint8 EEPROMWearLevelingReader::next()
@@ -20,7 +15,7 @@ uint8 EEPROMWearLevelingReader::next()
 	}
 	else
 	{
-		return escapeIfNecessary(reader->next());
+		return escapeIfNecessary(reader.next());
 	}
 }
 
@@ -32,15 +27,15 @@ uint8 EEPROMWearLevelingReader::next(bool& timeout)
 
 bool EEPROMWearLevelingReader::atEnd()
 {
-	return reader->getPosition() == endPosition;
+	return reader.getPosition() == endPosition;
 }
 
 uint8 EEPROMWearLevelingReader::escapeIfNecessary(uint8 byte)
 {
-	if ((byte == EEPROM_BEGIN_MARK && reader->peek() == EEPROM_BEGIN_MARK)
-		|| (byte == EEPROM_END_MARK && reader->peek() == EEPROM_END_MARK))
+	if ((byte == EEPROM_BEGIN_MARK && reader.peek() == EEPROM_BEGIN_MARK)
+		|| (byte == EEPROM_END_MARK && reader.peek() == EEPROM_END_MARK))
 	{
-		reader->next();
+		reader.next();
 	}
 	return byte;
 }

@@ -7,10 +7,6 @@ class EEPROMReader : public Reader
 {
 
 public:
-	EEPROMReader(void);
-	EEPROMReader(int16);
-	virtual ~EEPROMReader(void) {}
-
 	uint8 next(bool&);
 
 	uint8 next(void);
@@ -18,9 +14,10 @@ public:
 	uint8 back(void);
 	uint8 peekBack(void);
 	int16 getPosition();
+	void setPosition(int16);
 
 private:
-	int16 position;
+	int16 position = 0;
 
 	void incrementPosition(void);
 	void decrementPosition(void);

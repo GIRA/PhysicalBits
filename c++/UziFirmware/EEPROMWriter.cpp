@@ -1,14 +1,9 @@
 
 #include "EEPROMWriter.h"
 
-EEPROMWriter::EEPROMWriter()
+void EEPROMWriter::setPosition(int16 value)
 {
-	position = 0;
-}
-
-EEPROMWriter::EEPROMWriter(int16 position)
-{
-	EEPROMWriter::position = position;
+	position = value;
 }
 
 int16 EEPROMWriter::getPosition()
