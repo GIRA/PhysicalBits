@@ -5,13 +5,14 @@
 #include "Coroutine.h"
 #include "GPIO.h"
 
-class Program
+struct Program
 {
+	uint8 scriptCount = 0;
+	Script* scripts = 0;
 
-public:
-	Program(Reader*, bool&);
-	Program(void);
-	~Program(void);
+	uint8 globalCount = 0;
+	float* globals = 0;
+	uint8* globalsReport = 0;
 
 	uint8 getScriptCount(void);
 	Script* getScript(int16);
@@ -22,17 +23,6 @@ public:
 	bool getReport(uint8);
 	void setReport(uint8, bool);
 	uint8 getGlobalCount(void);
-
-private:
-
-	uint8 scriptCount;
-	Script* scripts;
-
-	uint8 globalCount;
-	float* globals;
-	uint8* globalsReport;
-
-	void parseGlobals(Reader*, bool&);
-	void parseScripts(Reader*, bool&);
 };
 
+void readProgram(Reader* rs, Program* program, bool& timeout);

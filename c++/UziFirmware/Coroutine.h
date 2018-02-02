@@ -4,14 +4,24 @@
 #include "StackArray.h"
 #include "Errors.h"
 
-class Script;
+struct Script;
 
-class Coroutine
+struct Coroutine
 {
-public:
-	Coroutine(Script*);
-	Coroutine(void);
-	~Coroutine(void);
+	Script* activeScript = 0;
+	int16 framePointer = 0;
+	int16 pc = 0;
+	float* stackElements = 0;
+	uint16 stackSize = 0;
+
+	Script* script = 0;
+	int32 nextRun = 0;
+
+	int8 breakCount = 0;
+	bool dumpState = false;
+
+	Error error = NO_ERROR;
+
 
 	Script* getScript(void);
 
@@ -34,21 +44,5 @@ public:
 
 	Error getError(void);
 	void setError(Error);
-	void reset(void);
-
-private:
-
-	Script* activeScript;
-	int16 framePointer;
-	int16 pc;
-	float* stackElements;
-	uint16 stackSize;
-
-	Script* script;
-	int32 nextRun;
-
-	int8 breakCount;
-	bool dumpState = false;
-
-	Error error = NO_ERROR;
+	void reset(void);	
 };

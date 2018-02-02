@@ -37,7 +37,7 @@
 #define REPORT_INTERVAL									100
 #define KEEP_ALIVE_INTERVAL							   2000
 
-Program * program;
+Program * program = new Program();
 VM vm;
 GPIO io;
 SerialReader stream;
@@ -467,7 +467,8 @@ void executeProfile(void)
 void executeRunProgram(void)
 {
 	bool timeout;
-	Program program(&stream, timeout);
+	Program program;
+	readProgram(&stream, &program, timeout);
 	if (timeout) return;
 	vm.executeProgram(&program, &io);
 }
@@ -475,7 +476,8 @@ void executeRunProgram(void)
 void loadProgramFromReader(Reader* reader)
 {
 	bool timeout;
-	Program * p = new Program(reader, timeout);
+	Program * p = new Program();
+	readProgram(reader, p, timeout);
 	if (!timeout)
 	{
 		delete program;

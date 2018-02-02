@@ -1,74 +1,54 @@
 #include "Script.h"
 
-Script::Script(uint8 start, uint8 scriptIndex, float* globals, Reader * rs, bool& timeout)
+void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals, bool& timeout)
 {
-	instructionStart = start;
-	index = scriptIndex;
+	script->instructionStart = start;
+	script->index = scriptIndex;
 
-	stepping = false;
-	interval = 0;
-	argCount = localCount = 0;
-	locals = 0; 
-	instructionCount = 0;
-	instructions = 0;
-	coroutine = 0;
+	script->stepping = false;
+	script->interval = 0;
+	script->argCount = script->localCount = 0;
+	script->locals = 0; 
+	script->instructionCount = 0;
+	script->instructions = 0;
+	script->coroutine = 0;
 
 	uint8 h = rs->next(timeout);
 	if (timeout) return;
 
-	stepping = (h >> 7) & 1;
+	script->stepping = (h >> 7) & 1;
 	
 	if ((h >> 6) & 1) // Has delay
 	{
 		uint8 index = rs->next(timeout);
 		if (timeout) return;
-		interval = globals[index];
+		script->interval = globals[index];
 	}
 
 	if ((h >> 5) & 1) // Has arguments
 	{
-		argCount = rs->next(timeout);
+		script->argCount = rs->next(timeout);
 		if (timeout) return;
 	}
 
 	if ((h >> 4) & 1) // Has locals
 	{
-		localCount = rs->next(timeout);
+		script->localCount = rs->next(timeout);
 		if (timeout) return;
-		locals = new float[localCount];
-		for (int i = 0; i < localCount; i++)
+		script->locals = new float[script->localCount];
+		for (int i = 0; i < script->localCount; i++)
 		{
 			uint8 index = rs->next(timeout);
 			if (timeout) return;
-			locals[i] = globals[index];
+			script->locals[i] = globals[index];
 		}
 	}
 
-	instructionCount = rs->next(timeout);
+	script->instructionCount = rs->next(timeout);
 	if (timeout) return;
 
-	instructions = readInstructions(rs, instructionCount, timeout);
+	script->instructions = readInstructions(rs, script->instructionCount, timeout);
 	if (timeout) return;
-}
-
-
-Script::Script()
-{
-	// Initializes current script as NOP
-	stepping = false;
-	interval = 0;
-	argCount = localCount = 0;
-	locals = 0;
-	instructionCount = 0;
-	instructions = 0;
-	coroutine = 0;
-}
-
-Script::~Script(void)
-{
-	delete[] locals;
-	delete[] instructions;
-	delete coroutine;
 }
 
 uint8 Script::getInstructionStart(void)
@@ -130,7 +110,16 @@ Coroutine* Script::getCoroutine(void)
 {
 	if (coroutine == 0) 
 	{
-		coroutine = new Coroutine(this);
+		coroutine = new Coroutine();
+
+		coroutine->script = this;
+		coroutine->activeScript = this;
+		coroutine->framePointer = -1;
+		coroutine->pc = instructionStart;
+		coroutine->stackElements = 0;
+		coroutine->stackSize = 0;
+		coroutine->nextRun = 0;
+		coroutine->breakCount = -1;
 	}
 	return coroutine;
 }

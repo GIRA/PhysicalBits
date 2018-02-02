@@ -1,33 +1,6 @@
 #include "Coroutine.h"
 #include "Script.h"
 
-Coroutine::Coroutine(Script* script)
-{
-	this->script = script;
-	activeScript = script;
-	framePointer = -1;
-	pc = script->getInstructionStart();
-	stackElements = 0;
-	stackSize = 0;
-	nextRun = 0;
-	breakCount = -1;
-}
-
-Coroutine::Coroutine()
-{
-	framePointer = 0;
-	pc = 0;
-	stackElements = 0;
-	stackSize = 0;
-	script = activeScript = 0;
-	breakCount = 0;
-}
-
-Coroutine::~Coroutine(void)
-{
-	delete stackElements;
-}
-
 Script* Coroutine::getScript(void)
 {
 	return script;
@@ -66,7 +39,7 @@ void Coroutine::setPC(int16 value)
 
 void Coroutine::saveStack(StackArray* stack)
 {
-	delete stackElements;
+	delete[] stackElements;
 	stackSize = stack->getPointer();
 	stackElements = new float[stackSize];
 	for (uint16 i = 0; i < stackSize; i++)

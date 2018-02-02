@@ -1,75 +1,51 @@
 #include "Program.h"
 
-Program::Program(Reader * rs, bool& timeout)
-{
-	globalCount = 0;
-	globals = 0;
-	globalsReport = 0;
-	scripts = 0;
+void readGlobals(Reader* rs, Program* program, bool& timeout);
+void readScripts(Reader* rs, Program* program, bool& timeout);
 
-	scriptCount = rs->next(timeout);
-	if (!timeout) { parseGlobals(rs, timeout); }
-	if (!timeout) { parseScripts(rs, timeout); }
+void readProgram(Reader* rs, Program* program, bool& timeout)
+{
+	program->globalCount = 0;
+	program->globals = 0;
+	program->globalsReport = 0;
+	program->scripts = 0;
+
+	program->scriptCount = rs->next(timeout);
+	if (!timeout) { readGlobals(rs, program, timeout); }
+	if (!timeout) { readScripts(rs, program, timeout); }
 
 	if (timeout)
 	{
-		scriptCount = 0;
+		program->scriptCount = 0;
 	}
 }
 
-Program::Program()
-{
-	scriptCount = 0;
-	scripts = 0;
-	globalCount = 0;
-	globals = 0;
-	globalsReport = 0;
-}
-
-Program::~Program(void)
-{
-	delete[] globalsReport;
-	delete[] globals;
-	delete[] scripts;
-}
-
-uint8 Program::getScriptCount(void)
-{
-	return scriptCount;
-}
-
-Script * Program::getScript(int16 index)
-{
-	if (index >= scriptCount) return 0;
-	return &scripts[index];
-}
-
-void Program::parseGlobals(Reader * rs, bool& timeout)
+void readGlobals(Reader* rs, Program* program, bool& timeout)
 {
 	const int defaultGlobalsCount = 3;
 	float defaultGlobals[defaultGlobalsCount] = { 0, 1, -1 };
 
-	globalCount = rs->next(timeout) + 3;
+	program->globalCount = rs->next(timeout) + 3;
 	if (timeout) return;
 
 	// Initialize globals report
 	{
-		int globalsReportCount = 1 + (int)floor((double)globalCount / 8);
-		globalsReport = new uint8[globalsReportCount];
+		int globalsReportCount = 1 + (int)floor((double)program->globalCount / 8);
+		program->globalsReport = new uint8[globalsReportCount];
 		for (int i = 0; i < globalsReportCount; i++)
 		{
-			globalsReport[i] = 0;
+			program->globalsReport[i] = 0;
 		}
 	}
-		
-	globals = new float[globalCount];
+
+	program->globals = new float[program->globalCount];
 	for (int i = 0; i < defaultGlobalsCount; i++)
 	{
-		globals[i] = defaultGlobals[i];
+		program->globals[i] = defaultGlobals[i];
 	}
 
 	uint8 i = defaultGlobalsCount;
-	while (i < globalCount)
+	while (i < program->globalCount)
 	{
 		uint8 sec = rs->next(timeout);
 		if (timeout) return;
@@ -81,11 +57,11 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 			if (size == 4)
 			{
 				// Special case: float
-				globals[i] = rs->nextFloat(timeout);
+				program->globals[i] = rs->nextFloat(timeout);
 			}
 			else
 			{
-				globals[i] = (float)rs->nextLong(size, timeout);
+				program->globals[i] = (float)rs->nextLong(size, timeout);
 			}
 			if (timeout) return;
 
@@ -95,18 +71,30 @@ void Program::parseGlobals(Reader * rs, bool& timeout)
 	}
 }
 
-void Program::parseScripts(Reader * rs, bool& timeout)
+void readScripts(Reader * rs, Program* program, bool& timeout)
 {
-	scripts = new Script[scriptCount];
+	program->scripts = new Script[program->scriptCount];
 	uint8 instructionCount = 0;
-	for (int16 i = 0; i < scriptCount; i++)
+	for (int16 i = 0; i < program->scriptCount; i++)
 	{
-		Script* script = new Script(instructionCount, i, globals, rs, timeout);
+		Script* script = new Script();
+		readScript(rs, script, instructionCount, i, program->globals, timeout);
 		instructionCount += script->getInstructionCount();
-		scripts[i] = *script;
+		program->scripts[i] = *script;
 
 		if (timeout) return;
 	}
+}
+
+uint8 Program::getScriptCount(void)
+{
+	return scriptCount;
+}
+
+Script * Program::getScript(int16 index)
+{
+	if (index >= scriptCount) return 0;
+	return &scripts[index];
 }
 
 float Program::getGlobal(int16 index)
