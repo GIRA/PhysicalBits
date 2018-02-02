@@ -37,10 +37,10 @@
 #define REPORT_INTERVAL									100
 #define KEEP_ALIVE_INTERVAL							   2000
 
-Program * program = new Program();
-VM * vm = new VM();
-GPIO * io = new GPIO();
-Reader * stream = new SerialReader();
+Program * program;
+VM vm;
+GPIO io;
+SerialReader stream;
 
 uint8 reporting = 0;
 uint32 lastTimeReport = 0;
@@ -87,7 +87,7 @@ void setup()
 void loop()
 {
 	checkForIncomingMessages();
-	vm->executeProgram(program, io);
+	vm.executeProgram(program, &io);
 	sendReport();
 	//checkKeepAlive();
 	sendProfile();
@@ -115,7 +115,7 @@ void checkForIncomingMessages(void)
 	if (Serial.available())
 	{
 		bool timeout;
-		uint8 in = stream->next(timeout);
+		uint8 in = stream.next(timeout);
 		if (!timeout) { executeCommand(in); }
 	}
 }
@@ -218,7 +218,7 @@ void sendPinValues(void)
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
 		uint8 pin = PIN_NUMBER(i);
-		if (io->getReport(pin))
+		if (io.getReport(pin))
 		{
 			count++;
 		}
@@ -230,11 +230,11 @@ void sendPinValues(void)
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
 		uint8 pin = PIN_NUMBER(i);
-		if (io->getReport(pin))
+		if (io.getReport(pin))
 		{
 			// GPIO.getValue(..) returns a float between 0 and 1
 			// but we send back a value between 0 and 1023.
-			uint16 val = (uint16)(io->getValue(pin) * 1023);
+			uint16 val = (uint16)(io.getValue(pin) * 1023);
 			uint8 val1 = (pin << 2) | (val >> 8); 	// MSB
 			uint8 val2 = val & 0xFF;	// LSB
 			Serial.write(val1);
@@ -371,33 +371,33 @@ void executeCommand(uint8 cmd)
 
 void executeSetProgram(void)
 {
-	loadProgramFromReader(stream);
+	loadProgramFromReader(&stream);
 }
 
 void executeSetValue(void)
 {
 	bool timeout;
 
-	uint8 pin = stream->next(timeout);
+	uint8 pin = stream.next(timeout);
 	if (timeout) return;
 
 	// We receive a value between 0 and 255 but GPIO.setValue(..) expects 0..1
-	float value = (float)stream->next(timeout) / 255;
+	float value = (float)stream.next(timeout) / 255;
 	if (timeout) return;
 
-	io->setValue(pin, value);
+	io.setValue(pin, value);
 }
 
 void executeSetMode(void)
 {
 	bool timeout;
 
-	uint8 pin = stream->next(timeout);
+	uint8 pin = stream.next(timeout);
 	if (timeout) return;
-	uint8 mode = stream->next(timeout);
+	uint8 mode = stream.next(timeout);
 	if (timeout) return;
 
-	io->setMode(pin, mode);
+	io.setMode(pin, mode);
 }
 
 void executeStartReporting(void)
@@ -413,23 +413,23 @@ void executeStopReporting(void)
 void executeSetReport(void)
 {
 	bool timeout;
-	uint8 pin = stream->next(timeout);
+	uint8 pin = stream.next(timeout);
 	if (timeout) return;
-	uint8 report = stream->next(timeout);
+	uint8 report = stream.next(timeout);
 	if (timeout) return;
 
-	io->setReport(pin, report != 0);
+	io.setReport(pin, report != 0);
 }
 
 void executeSaveProgram(void)
 {
 	bool timeout;
-	int32 size = stream->nextLong(2, timeout);
+	int32 size = stream.nextLong(2, timeout);
 	if (timeout) return;
 	uint8* buf = new uint8[size];
 	for (int i = 0; i < size; i++)
 	{
-		buf[i] = stream->next(timeout);
+		buf[i] = stream.next(timeout);
 		if (timeout)
 		{
 			delete[] buf;
@@ -457,7 +457,7 @@ void executeKeepAlive(void)
 void executeProfile(void)
 {
 	bool timeout;
-	profiling = stream->next(timeout);
+	profiling = stream.next(timeout);
 	if (timeout) return;
 
 	tickCount = 0;
@@ -467,29 +467,29 @@ void executeProfile(void)
 void executeRunProgram(void)
 {
 	bool timeout;
-	Program program(stream, timeout);
+	Program program(&stream, timeout);
 	if (timeout) return;
-	vm->executeProgram(&program, io);
+	vm.executeProgram(&program, &io);
 }
 
 void loadProgramFromReader(Reader* reader)
 {
 	bool timeout;
-	Program* p = new Program(reader, timeout);
+	Program * p = new Program(reader, timeout);
 	if (!timeout)
 	{
 		delete program;
 		program = p;
-		io->reset();
+		io.reset();
 	}
 }
 
 void executeSetGlobal(void)
 {
 	bool timeout;
-	uint8 index = stream->next(timeout);
+	uint8 index = stream.next(timeout);
 	if (timeout) return;
-	float value = stream->nextFloat(timeout);
+	float value = stream.nextFloat(timeout);
 	if (timeout) return;
 
 	program->setGlobal(index, value);
@@ -498,9 +498,9 @@ void executeSetGlobal(void)
 void executeSetGlobalReport(void)
 {
 	bool timeout;
-	uint8 index = stream->next(timeout);
+	uint8 index = stream.next(timeout);
 	if (timeout) return;
-	uint8 report = stream->next(timeout);
+	uint8 report = stream.next(timeout);
 	if (timeout) return;
 
 	program->setReport(index, report != 0);
@@ -509,9 +509,9 @@ void executeSetGlobalReport(void)
 void executeSetBreakCount(void)
 {
 	bool timeout;
-	uint8 index = stream->next(timeout);
+	uint8 index = stream.next(timeout);
 	if (timeout) return;
-	int8 value = stream->next(timeout) - 127;
+	int8 value = stream.next(timeout) - 127;
 	if (timeout) return;
 
 	Script* script = program->getScript(index);
