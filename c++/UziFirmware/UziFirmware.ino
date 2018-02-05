@@ -324,6 +324,13 @@ void sendFreeRAM(void)
 		Serial.write((value >> 8) & 0xFF);
 		Serial.write(value & 0xFF);
 	}
+	{
+		uint32 value = uzi_available();
+		Serial.write((value >> 24) & 0xFF);
+		Serial.write((value >> 16) & 0xFF);
+		Serial.write((value >> 8) & 0xFF);
+		Serial.write(value & 0xFF);
+	}
 }
 
 void executeCommand(uint8 cmd)
