@@ -15,6 +15,11 @@ void* uzi_malloc(size_t size)
 
 	uint8* tmp = cur;
 	cur += size;
+
+	for (uint16 i = 0; i < size; i++) 
+	{
+		tmp[i] = 0;
+	}
 	return tmp;
 }
 
