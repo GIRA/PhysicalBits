@@ -24,23 +24,23 @@ void VM::executeProgram(Program * program, GPIO * io)
 void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 {
 	currentCoroutine = coroutine;
-	coroutine->restoreStack(stack);
+	coroutine->restoreStack(&stack);
 	pc = coroutine->getPC();
 	currentScript = coroutine->getActiveScript();
 	framePointer = coroutine->getFramePointer();
 	if (framePointer == -1)
 	{
-		framePointer = stack->getPointer();
+		framePointer = stack.getPointer();
 		for (int i = 0; i < currentScript->getArgCount(); i++)
 		{
-			stack->push(0);
+			stack.push(0);
 		}
 		for (int i = 0; i < currentScript->getLocalCount(); i++)
 		{
-			stack->push(currentScript->getLocal(i));
+			stack.push(currentScript->getLocal(i));
 		}
-		stack->push(0); // Return value slot (default: 0)
-		stack->push(uint32_to_float((uint32)-1 << 16 | pc));
+		stack.push(0); // Return value slot (default: 0)
+		stack.push(uint32_to_float((uint32)-1 << 16 | pc));
 	}
 	bool yieldFlag = false;
 	while (true)
@@ -53,7 +53,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(framePointer);
 				coroutine->setPC(pc);
-				coroutine->saveStack(stack);
+				coroutine->saveStack(&stack);
 				coroutine->setNextRun(millis());
 				break;
 			}
@@ -61,10 +61,10 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		Instruction next = nextInstruction();
 		executeInstruction(next, io, yieldFlag);
-		if (stack->hasError())
+		if (stack.hasError())
 		{
 			// TODO(Richo): Notify client of stack error
-			coroutine->setError(stack->getError());
+			coroutine->setError(stack.getError());
 			coroutine->getScript()->setStepping(false);
 			break;
 		}
@@ -88,7 +88,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(-1);
 				coroutine->setPC(currentScript->getInstructionStart());
-				coroutine->saveStack(stack);
+				coroutine->saveStack(&stack);
 				break;
 			}
 		}
@@ -97,7 +97,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			coroutine->setActiveScript(currentScript);
 			coroutine->setFramePointer(framePointer);
 			coroutine->setPC(pc);
-			coroutine->saveStack(stack);
+			coroutine->saveStack(&stack);
 			break;
 		}
 	}
@@ -128,25 +128,25 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case WRITE_PIN:
 		{
-			io->setValue((uint8)argument, stack->pop());
+			io->setValue((uint8)argument, stack.pop());
 		} 
 		break;
 
 		case READ_PIN:
 		{
-			stack->push(io->getValue((uint8)argument));
+			stack.push(io->getValue((uint8)argument));
 		} 
 		break;
 
 		case READ_GLOBAL:
 		{
-			stack->push(currentProgram->getGlobal(argument));
+			stack.push(currentProgram->getGlobal(argument));
 		} 
 		break;
 
 		case WRITE_GLOBAL:
 		{
-			currentProgram->setGlobal(argument, stack->pop());
+			currentProgram->setGlobal(argument, stack.pop());
 		} 
 		break;
 		
@@ -162,13 +162,13 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				the stack, they can be set correctly).
 			*/
 			currentScript = currentProgram->getScript(argument);
-			int16 fp = stack->getPointer() - currentScript->getArgCount();
+			int16 fp = stack.getPointer() - currentScript->getArgCount();
 			for (int i = 0; i < currentScript->getLocalCount(); i++)
 			{
-				stack->push(currentScript->getLocal(i));
+				stack.push(currentScript->getLocal(i));
 			}
-			stack->push(0); // Return value slot (default: 0)
-			stack->push(uint32_to_float((uint32)framePointer << 16 | pc));
+			stack.push(0); // Return value slot (default: 0)
+			stack.push(uint32_to_float((uint32)framePointer << 16 | pc));
 
 			/*
 			INFO(Richo): 
@@ -195,7 +195,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 					right now. So, we set the yield flag and reset the vm state.
 					*/
 					yieldFlag = true;
-					stack->reset();
+					stack.reset();
 					pc = script->getInstructionStart();
 					framePointer = -1;
 				}
@@ -236,7 +236,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 					right now. So, we set the yield flag and reset the vm state.
 					*/
 					yieldFlag = true;
-					stack->reset();
+					stack.reset();
 					pc = script->getInstructionStart();
 					framePointer = -1;
 				}
@@ -283,7 +283,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JZ:
 		{
-			if (stack->pop() == 0) // TODO(Richo): Float comparison
+			if (stack.pop() == 0) // TODO(Richo): Float comparison
 			{
 				pc += argument;
 				if (argument < 0) { yieldTime(0, yieldFlag); }
@@ -293,7 +293,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JNZ:
 		{
-			if (stack->pop() != 0) // TODO(Richo): Float comparison
+			if (stack.pop() != 0) // TODO(Richo): Float comparison
 			{
 				pc += argument;
 				if (argument < 0) { yieldTime(0, yieldFlag); }
@@ -303,8 +303,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JNE:
 		{
-			float a = stack->pop();
-			float b = stack->pop();
+			float a = stack.pop();
+			float b = stack.pop();
 			if (a != b) // TODO(Richo): float comparison
 			{
 				pc += argument;
@@ -315,8 +315,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JLT:
 		{
-			float b = stack->pop();
-			float a = stack->pop();
+			float b = stack.pop();
+			float a = stack.pop();
 			if (a < b)
 			{
 				pc += argument;
@@ -327,8 +327,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JLTE:
 		{
-			float b = stack->pop();
-			float a = stack->pop();
+			float b = stack.pop();
+			float a = stack.pop();
 			if (a <= b)
 			{
 				pc += argument;
@@ -339,8 +339,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JGT:
 		{
-			float b = stack->pop();
-			float a = stack->pop();
+			float b = stack.pop();
+			float a = stack.pop();
 			if (a > b)
 			{
 				pc += argument;
@@ -351,8 +351,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case JGTE:
 		{
-			float b = stack->pop();
-			float a = stack->pop();
+			float b = stack.pop();
+			float a = stack.pop();
 			if (a >= b)
 			{
 				pc += argument;
@@ -364,182 +364,182 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case READ_LOCAL:
 		{
 			uint16 index = framePointer + argument;
-			float value = stack->getElementAt(index);
-			stack->push(value);
+			float value = stack.getElementAt(index);
+			stack.push(value);
 		} 
 		break;
 
 		case WRITE_LOCAL:
 		{
 			uint16 index = framePointer + argument;
-			float value = stack->pop();
-			stack->setElementAt(index, value);
+			float value = stack.pop();
+			stack.setElementAt(index, value);
 		}
 		break;
 
 		case PRIM_READ_PIN:
 		{
-			uint8 pin = (uint8)stack->pop();
-			stack->push(io->getValue(pin));
+			uint8 pin = (uint8)stack.pop();
+			stack.push(io->getValue(pin));
 		}
 		break;
 
 		case PRIM_WRITE_PIN:
 		{
-			float value = stack->pop();
-			uint8 pin = (uint8)stack->pop();
+			float value = stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			io->setValue(pin, value);
 		}
 		break;
 
 		case PRIM_TOGGLE_PIN:
 		{
-			uint8 pin = (uint8)stack->pop();
+			uint8 pin = (uint8)stack.pop();
 			io->setValue(pin, 1 - io->getValue(pin));
 		}
 		break;
 
 		case PRIM_SERVO_DEGREES:
 		{
-			float value = stack->pop() / 180.0f;
-			uint8 pin = (uint8)stack->pop();
+			float value = stack.pop() / 180.0f;
+			uint8 pin = (uint8)stack.pop();
 			io->servoWrite(pin, value);
 		}
 		break;
 
 		case PRIM_SERVO_WRITE:
 		{
-			float value = stack->pop();
-			uint8 pin = (uint8)stack->pop();
+			float value = stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			io->servoWrite(pin, value);
 		}
 		break;
 
 		case PRIM_MULTIPLY:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 * val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 * val2);
 		}
 		break;
 
 		case PRIM_ADD:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 + val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 + val2);
 		}
 		break;
 
 		case PRIM_DIVIDE:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 / val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 / val2);
 		}
 		break;
 
 		case PRIM_SUBTRACT:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 - val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 - val2);
 		}
 		break;
 
 		case PRIM_SECONDS:
 		{
 			float time = (float)millis() / 1000.0;
-			stack->push(time);
+			stack.push(time);
 		}
 		break;
 
 		case PRIM_EQ:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 == val2); // TODO(Richo)
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 == val2); // TODO(Richo)
 		}
 		break;
 
 		case PRIM_NEQ:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 != val2); // TODO(Richo)
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 != val2); // TODO(Richo)
 		}
 		break;
 
 		case PRIM_GT:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 > val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 > val2);
 		}
 		break;
 
 		case PRIM_GTEQ:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 >= val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 >= val2);
 		}
 		break;
 
 		case PRIM_LT:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 < val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 < val2);
 		}
 		break;
 
 		case PRIM_LTEQ:
 		{
-			float val2 = stack->pop();
-			float val1 = stack->pop();
-			stack->push(val1 <= val2);
+			float val2 = stack.pop();
+			float val1 = stack.pop();
+			stack.push(val1 <= val2);
 		}
 		break;
 
 		case PRIM_NEGATE:
 		{
-			float val = stack->pop();
-			stack->push(-1 * val);
+			float val = stack.pop();
+			stack.push(-1 * val);
 		}
 		break;
 
 		case PRIM_SIN:
 		{
-			float val = stack->pop();
-			stack->push(sinf(val));
+			float val = stack.pop();
+			stack.push(sinf(val));
 		} 
 		break;
 
 		case PRIM_COS:
 		{
-			float val = stack->pop();
-			stack->push(cosf(val));
+			float val = stack.pop();
+			stack.push(cosf(val));
 		}
 		break;
 
 		case PRIM_TAN:
 		{
-			float val = stack->pop();
-			stack->push(tanf(val));
+			float val = stack.pop();
+			stack.push(tanf(val));
 		}
 		break;
 
 		case PRIM_TURN_ON:
 		{
-			uint8 pin = (uint8)stack->pop();
+			uint8 pin = (uint8)stack.pop();
 			io->setValue(pin, 1);
 		}
 		break;
 
 		case PRIM_TURN_OFF:
 		{
-			uint8 pin = (uint8)stack->pop();
+			uint8 pin = (uint8)stack.pop();
 			io->setValue(pin, 0);
 		}
 		break;
@@ -552,7 +552,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_YIELD_TIME:
 		{
-			int32 time = (int32)stack->pop();
+			int32 time = (int32)stack.pop();
 			yieldTime(time, yieldFlag);
 		}
 		break;
@@ -560,7 +560,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case PRIM_MILLIS:
 		{
 			float time = (float)millis();
-			stack->push(time);
+			stack.push(time);
 		}
 		break;
 
@@ -586,7 +586,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 		case PRIM_POP:
 		{
 			// Throw value away
-			stack->pop();
+			stack.pop();
 		}
 		break;
 
@@ -596,8 +596,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				currentScript->getArgCount() + 
 				currentScript->getLocalCount();
 			// TODO(Richo): Duplicated code from WRITE_LOCAL 
-			float value = stack->pop();
-			stack->setElementAt(index, value);
+			float value = stack.pop();
+			stack.setElementAt(index, value);
 
 			// TODO(Richo): Duplicated code from PRIM_RET
 			bool returnFromScriptCall = framePointer != 0;
@@ -619,39 +619,39 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 
 		case PRIM_COROUTINE: 
 		{
-			stack->push(currentCoroutine->getScript()->getIndex());
+			stack.push(currentCoroutine->getScript()->getIndex());
 		}
 		break;
 
 		case PRIM_LOGICAL_AND:
 		{
-			float a = stack->pop();
-			float b = stack->pop();
-			stack->push(a && b);
+			float a = stack.pop();
+			float b = stack.pop();
+			stack.push(a && b);
 		}
 		break;
 
 		case PRIM_LOGICAL_OR:
 		{
-			float a = stack->pop();
-			float b = stack->pop();
-			stack->push(a || b);
+			float a = stack.pop();
+			float b = stack.pop();
+			stack.push(a || b);
 		}
 		break;
 
 		case PRIM_BITWISE_AND:
 		{
-			uint32 a = (uint32)stack->pop();
-			uint32 b = (uint32)stack->pop();
-			stack->push(a & b);
+			uint32 a = (uint32)stack.pop();
+			uint32 b = (uint32)stack.pop();
+			stack.push(a & b);
 		}
 		break;
 
 		case PRIM_BITWISE_OR:
 		{
-			uint32 a = (uint32)stack->pop();
-			uint32 b = (uint32)stack->pop();
-			stack->push(a | b);
+			uint32 a = (uint32)stack.pop();
+			uint32 b = (uint32)stack.pop();
+			stack.push(a | b);
 		}
 		break;
 	}
@@ -667,22 +667,22 @@ void VM::yieldTime(int32 time, bool& yieldFlag)
 void VM::unwindStackAndReturn(void)
 {
 	bool returnFromScriptCall = framePointer != 0;
-	uint32 value = float_to_uint32(stack->pop());
+	uint32 value = float_to_uint32(stack.pop());
 	pc = value & 0xFFFF;
 	framePointer = value >> 16;
 	
-	float returnValue = stack->pop();
+	float returnValue = stack.pop();
 
 	// INFO(Richo): Pop args/locals
 	int varCount = currentScript->getArgCount() + currentScript->getLocalCount();
 	for (int i = 0; i < varCount; i++)
 	{
-		stack->pop();
+		stack.pop();
 	}
 	
 	// INFO(Richo): Only push a return value if we were called from another script
 	if (returnFromScriptCall)
 	{
-		stack->push(returnValue);
+		stack.push(returnValue);
 	}
 }

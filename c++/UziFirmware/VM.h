@@ -10,26 +10,16 @@ class VM
 {
 
 public:
-	VM(void) 
-	{
-		pc = 0;
-		stack = new StackArray();
-	}
-	~VM(void)
-	{
-		delete stack;
-	}
-
 	void executeProgram(Program*, GPIO*);
 
 private:
 
-	int16 framePointer;
-	int16 pc;
-	StackArray* stack;
-	Program* currentProgram;
-	Coroutine* currentCoroutine;
-	Script* currentScript;
+	int16 framePointer = 0;
+	int16 pc = 0;
+	StackArray stack;
+	Program* currentProgram = 0;
+	Coroutine* currentCoroutine = 0;
+	Script* currentScript = 0;
 
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*, bool&);
