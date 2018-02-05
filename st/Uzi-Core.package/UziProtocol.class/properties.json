@@ -17,7 +17,8 @@
 		"globals",
 		"globalsReporting",
 		"tickingScripts",
-		"freeRAM" ],
+		"freeArduinoRAM",
+		"freeUziRAM" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
