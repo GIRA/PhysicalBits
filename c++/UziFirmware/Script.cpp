@@ -48,8 +48,11 @@ void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, flo
 	if (timeout) return;
 
 	script->instructions = uzi_createArray(Instruction, script->instructionCount);
-	readInstructions(rs, script->instructions, script->instructionCount, timeout);
-	if (timeout) return;
+	for (int i = 0; i < script->instructionCount; i++) 
+	{
+		readInstruction(rs, &script->instructions[i], timeout);
+		if (timeout) return;
+	}
 }
 
 uint8 Script::getInstructionStart(void)

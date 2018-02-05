@@ -34,4 +34,4 @@ struct Instruction
 	int8 argument;
 };
 
-void readInstructions(Reader* rs, Instruction* instructions, uint8 instructionCount, bool& timeout);
+void readInstruction(Reader* rs, Instruction* instruction, bool& timeout);
