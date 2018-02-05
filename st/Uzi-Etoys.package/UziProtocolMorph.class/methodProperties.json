@@ -7,7 +7,7 @@
 	"instance" : {
 		"buildButtons" : "Richo 12/31/2016 19:41",
 		"buildConnectionPanel" : "Richo 10/9/2016 21:50",
-		"buildFreeRAMPanel" : "Richo 1/11/2018 14:27",
+		"buildFreeRAMPanel" : "Richo 2/5/2018 18:54",
 		"buildGlobalsList" : "Richo 5/29/2017 10:41",
 		"buildGlobalsPanel" : "Richo 10/9/2016 21:52",
 		"buildInspectorButton" : "Richo 1/8/2018 09:39",
@@ -26,7 +26,7 @@
 		"connectOnSocket:" : "Richo 10/9/2016 17:43",
 		"delete" : "Richo 10/9/2016 17:43",
 		"disconnect" : "Richo 10/9/2016 17:41",
-		"freeRAM" : "Richo 1/11/2018 14:29",
+		"freeRAM" : "Richo 2/5/2018 18:54",
 		"getGlobal:" : "Richo 10/9/2016 17:54",
 		"getGlobalReport:" : "Richo 10/9/2016 18:19",
 		"getPinReport:" : "Richo 10/9/2016 18:16",
