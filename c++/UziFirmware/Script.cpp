@@ -120,11 +120,12 @@ Coroutine* Script::getCoroutine(void)
 		coroutine->activeScript = this;
 		coroutine->framePointer = -1;
 		coroutine->pc = instructionStart;
-		coroutine->stackElements = 0;
-		coroutine->stackSize = 0;
 		coroutine->nextRun = 0;
 		coroutine->breakCount = -1;
 		coroutine->error = NO_ERROR;
+		coroutine->stackSize = 0;
+		coroutine->stackAllocated = 1; // Start with one element
+		coroutine->stackElements = uzi_createArray(float, coroutine->stackAllocated);
 	}
 	return coroutine;
 }

@@ -39,9 +39,14 @@ void Coroutine::setPC(int16 value)
 
 void Coroutine::saveStack(StackArray* stack)
 {
-	//delete[] stackElements;
 	stackSize = stack->getPointer();
-	stackElements = uzi_createArray(float, stackSize);
+	if (stackSize > stackAllocated)
+	{
+		// We need to grow!
+		stackAllocated = stackSize;
+		stackElements = uzi_createArray(float, stackAllocated);
+	}
+
 	for (uint16 i = 0; i < stackSize; i++)
 	{
 		stackElements[i] = stack->getElementAt(i);
@@ -116,6 +121,4 @@ void Coroutine::reset(void)
 	framePointer = -1;
 	pc = script->getInstructionStart();
 	stackSize = 0;
-	//delete stackElements;
-	stackElements = 0;
 }
