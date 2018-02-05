@@ -3,6 +3,7 @@
 #include "Reader.h"
 #include "Instruction.h"
 #include "Coroutine.h"
+#include "Memory.h"
 
 struct Script
 {

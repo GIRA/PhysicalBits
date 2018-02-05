@@ -3,6 +3,7 @@
 #include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
 #include "Errors.h"
+#include "Memory.h"
 
 #define MAJOR_VERSION		0
 #define MINOR_VERSION		4
@@ -37,7 +38,7 @@
 #define REPORT_INTERVAL									100
 #define KEEP_ALIVE_INTERVAL							   2000
 
-Program * program = new Program();
+Program * program;
 VM vm;
 GPIO io;
 SerialReader stream;
@@ -102,6 +103,11 @@ void loadInstalledProgram(void)
 		&& eeprom.next() == MINOR_VERSION)
 	{
 		loadProgramFromReader(&eeprom);
+	}
+	else 
+	{
+		uzi_memreset();
+		program = uzi_create(Program);
 	}
 }
 
@@ -476,14 +482,15 @@ void executeRunProgram(void)
 void loadProgramFromReader(Reader* reader)
 {
 	bool timeout;
-	Program * p = new Program();
+	uzi_memreset();
+	Program * p = uzi_create(Program);
 	readProgram(reader, p, timeout);
 	if (!timeout)
 	{
-		delete program;
 		program = p;
 		io.reset();
 	}
+	// TODO(Richo): What to do if reading fails?
 }
 
 void executeSetGlobal(void)

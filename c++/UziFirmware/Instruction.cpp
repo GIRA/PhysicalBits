@@ -1,8 +1,7 @@
 #include "Instruction.h"
 
-Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
+void readInstructions(Reader* rs, Instruction* instructions, uint8 instructionCount, bool& timeout)
 {
-	Instruction* instructions = new Instruction[instructionCount];
 	for (int16 i = 0; i < instructionCount; i++)
 	{
 		uint8 bytecode = rs->next(timeout);
@@ -154,5 +153,4 @@ Instruction* readInstructions(Reader* rs, uint8 instructionCount, bool& timeout)
 		}
 		instructions[i].argument = (int8)argument;
 	}
-	return instructions;
 }

@@ -31,14 +31,14 @@ void readGlobals(Reader* rs, Program* program, bool& timeout)
 	// Initialize globals report
 	{
 		int globalsReportCount = 1 + (int)floor((double)program->globalCount / 8);
-		program->globalsReport = new uint8[globalsReportCount];
+		program->globalsReport = uzi_createArray(uint8, globalsReportCount);
 		for (int i = 0; i < globalsReportCount; i++)
 		{
 			program->globalsReport[i] = 0;
 		}
 	}
 
-	program->globals = new float[program->globalCount];
+	program->globals = uzi_createArray(float, program->globalCount);
 	for (int i = 0; i < defaultGlobalsCount; i++)
 	{
 		program->globals[i] = defaultGlobals[i];
@@ -73,14 +73,13 @@ void readGlobals(Reader* rs, Program* program, bool& timeout)
 
 void readScripts(Reader * rs, Program* program, bool& timeout)
 {
-	program->scripts = new Script[program->scriptCount];
+	program->scripts = uzi_createArray(Script, program->scriptCount);
 	uint8 instructionCount = 0;
 	for (int16 i = 0; i < program->scriptCount; i++)
 	{
-		Script* script = new Script();
+		Script* script = &program->scripts[i];
 		readScript(rs, script, instructionCount, i, program->globals, timeout);
 		instructionCount += script->getInstructionCount();
-		program->scripts[i] = *script;
 
 		if (timeout) return;
 	}

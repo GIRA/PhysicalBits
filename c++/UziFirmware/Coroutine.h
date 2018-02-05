@@ -3,6 +3,7 @@
 #include "Arduino.h"
 #include "StackArray.h"
 #include "Errors.h"
+#include "Memory.h"
 
 struct Script;
 

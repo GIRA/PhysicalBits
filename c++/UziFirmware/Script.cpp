@@ -35,7 +35,7 @@ void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, flo
 	{
 		script->localCount = rs->next(timeout);
 		if (timeout) return;
-		script->locals = new float[script->localCount];
+		script->locals = uzi_createArray(float, script->localCount);
 		for (int i = 0; i < script->localCount; i++)
 		{
 			uint8 index = rs->next(timeout);
@@ -47,7 +47,8 @@ void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, flo
 	script->instructionCount = rs->next(timeout);
 	if (timeout) return;
 
-	script->instructions = readInstructions(rs, script->instructionCount, timeout);
+	script->instructions = uzi_createArray(Instruction, script->instructionCount);
+	readInstructions(rs, script->instructions, script->instructionCount, timeout);
 	if (timeout) return;
 }
 
@@ -110,7 +111,7 @@ Coroutine* Script::getCoroutine(void)
 {
 	if (coroutine == 0) 
 	{
-		coroutine = new Coroutine();
+		coroutine = uzi_create(Coroutine);
 
 		coroutine->script = this;
 		coroutine->activeScript = this;
@@ -120,6 +121,7 @@ Coroutine* Script::getCoroutine(void)
 		coroutine->stackSize = 0;
 		coroutine->nextRun = 0;
 		coroutine->breakCount = -1;
+		coroutine->error = NO_ERROR;
 	}
 	return coroutine;
 }

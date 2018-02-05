@@ -4,6 +4,7 @@
 #include "Script.h"
 #include "Coroutine.h"
 #include "GPIO.h"
+#include "Memory.h"
 
 struct Program
 {
