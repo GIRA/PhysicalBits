@@ -8,11 +8,13 @@ processError
 		caseOf: {
 			[1] -> ['STACK_OVERFLOW'].
 			[2] -> ['STACK_UNDERFLOW'].
-			[3] -> ['STACK_ACCESS_VIOLATION']
+			[3] -> ['STACK_ACCESS_VIOLATION'].
+			[4] -> ['OUT_OF_MEMORY']
 		} otherwise: ['UNKNOWN_ERROR'].
-	WorldState addDeferredUIMessage: [
-		Transcript 
-			cr;
-			show: ('{1} detected on script @{2}. The script has been stopped.'
-				format: { errorMsg . script ifNotNil: [script name] });
-			cr]
+	WorldState addDeferredUIMessage: [| msg |
+		msg := script 
+			ifNil: ['{1} detected. The program has been stopped.'
+				format: { errorMsg }]
+			ifNotNil: ['{1} detected on script {2}. The script has been stopped.'
+				format: { errorMsg . script name }].
+		Transcript cr; show: msg; cr]
