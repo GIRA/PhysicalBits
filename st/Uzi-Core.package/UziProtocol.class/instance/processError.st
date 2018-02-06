@@ -2,7 +2,7 @@ receiving
 processError
 	| scriptIndex errorCode errorMsg script |
 	scriptIndex := serial next.
-	script := currentProgram scripts at: scriptIndex + 1 ifAbsent: [nil].
+	script := currentProgram ifNotNil: [:p | p scripts at: scriptIndex + 1 ifAbsent: [nil]].
 	errorCode := serial next.
 	errorMsg := errorCode 
 		caseOf: {
