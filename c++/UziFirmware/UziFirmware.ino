@@ -439,6 +439,7 @@ void executeSaveProgram(void)
 	bool timeout;
 	int32 size = stream.nextLong(2, timeout);
 	if (timeout) return;
+	// TODO(Richo): Remove this allocation!
 	uint8* buf = new uint8[size];
 	for (int i = 0; i < size; i++)
 	{
@@ -480,7 +481,8 @@ void executeProfile(void)
 void executeRunProgram(void)
 {
 	bool timeout;
-	Program program;
+	Program program; 
+	// TODO(Richo): This is dangerous! Fix ASAP
 	readProgram(&stream, &program, timeout);
 	if (timeout) return;
 	vm.executeProgram(&program, &io);
@@ -491,6 +493,11 @@ void loadProgramFromReader(Reader* reader)
 	bool timeout;
 	uzi_memreset();
 	Program * p = uzi_create(Program);
+	if (p == 0) 
+	{
+		sendError(255, OUT_OF_MEMORY);
+		return;
+	}
 	readProgram(reader, p, timeout);
 	if (!timeout)
 	{
