@@ -124,8 +124,8 @@ Coroutine* Script::getCoroutine(void)
 		coroutine->breakCount = -1;
 		coroutine->error = NO_ERROR;
 		coroutine->stackSize = 0;
-		coroutine->stackAllocated = 1; // Start with one element
-		coroutine->stackElements = uzi_createArray(float, coroutine->stackAllocated);
+		coroutine->stackAllocated = 0;
+		coroutine->stackElements = 0;
 	}
 	return coroutine;
 }
