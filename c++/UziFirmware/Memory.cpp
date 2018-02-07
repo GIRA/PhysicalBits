@@ -8,7 +8,7 @@ uint8* cur = buf;
 
 void* uzi_malloc(size_t size) 
 {
-	if ((cur + size) > (buf + BUFFER_SIZE)) 
+	if (size == 0 || (cur + size) > (buf + BUFFER_SIZE)) 
 	{
 		return 0;
 	}

@@ -40,4 +40,4 @@ struct Script
 	bool hasCoroutine(void);
 };
 
-void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals, bool& timeout);
+Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals);

@@ -6,7 +6,6 @@ Script* Coroutine::getScript(void)
 	return script;
 }
 
-
 Script* Coroutine::getActiveScript(void)
 {
 	return activeScript;
@@ -45,6 +44,12 @@ void Coroutine::saveStack(StackArray* stack)
 		// We need to grow!
 		stackAllocated = stackSize;
 		stackElements = uzi_createArray(float, stackAllocated);
+		if (stackElements == 0) 
+		{
+			setError(OUT_OF_MEMORY);
+			stackAllocated = stackSize = 0;			
+			return;
+		}
 	}
 
 	for (uint16 i = 0; i < stackSize; i++)
@@ -112,6 +117,7 @@ Error Coroutine::getError(void)
 void Coroutine::setError(Error err)
 {
 	error = err;
+	script->setStepping(false);
 }
 
 void Coroutine::reset(void)

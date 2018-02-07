@@ -1,6 +1,6 @@
 #include "Script.h"
 
-void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals, bool& timeout)
+Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals)
 {
 	script->instructionStart = start;
 	script->index = scriptIndex;
@@ -13,46 +13,60 @@ void readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, flo
 	script->instructions = 0;
 	script->coroutine = 0;
 
+	bool timeout;
 	uint8 h = rs->next(timeout);
-	if (timeout) return;
+	if (timeout) return READER_TIMEOUT;
 
 	script->stepping = (h >> 7) & 1;
 	
 	if ((h >> 6) & 1) // Has delay
 	{
 		uint8 index = rs->next(timeout);
-		if (timeout) return;
+		if (timeout) return READER_TIMEOUT;
 		script->interval = globals[index];
 	}
 
 	if ((h >> 5) & 1) // Has arguments
 	{
 		script->argCount = rs->next(timeout);
-		if (timeout) return;
+		if (timeout) return READER_TIMEOUT;
 	}
 
 	if ((h >> 4) & 1) // Has locals
 	{
 		script->localCount = rs->next(timeout);
-		if (timeout) return;
-		script->locals = uzi_createArray(float, script->localCount);
-		for (int i = 0; i < script->localCount; i++)
+		if (timeout) return READER_TIMEOUT;
+		
+		if (script->localCount > 0)
 		{
-			uint8 index = rs->next(timeout);
-			if (timeout) return;
-			script->locals[i] = globals[index];
+			script->locals = uzi_createArray(float, script->localCount);
+			if (script->locals == 0) return OUT_OF_MEMORY;
+
+			for (int i = 0; i < script->localCount; i++)
+			{
+				uint8 index = rs->next(timeout);
+				if (timeout) return READER_TIMEOUT;
+				script->locals[i] = globals[index];
+			}
 		}
 	}
 
 	script->instructionCount = rs->next(timeout);
-	if (timeout) return;
+	if (timeout) return READER_TIMEOUT;
 
-	script->instructions = uzi_createArray(Instruction, script->instructionCount);
-	for (int i = 0; i < script->instructionCount; i++) 
+	if (script->instructionCount > 0)
 	{
-		readInstruction(rs, &script->instructions[i], timeout);
-		if (timeout) return;
+		script->instructions = uzi_createArray(Instruction, script->instructionCount);
+		if (script->instructions == 0) return OUT_OF_MEMORY;
+
+		for (int i = 0; i < script->instructionCount; i++)
+		{
+			readInstruction(rs, &script->instructions[i], timeout);
+			if (timeout) return READER_TIMEOUT;
+		}
 	}
+
+	return NO_ERROR;
 }
 
 uint8 Script::getInstructionStart(void)
@@ -115,6 +129,7 @@ Coroutine* Script::getCoroutine(void)
 	if (coroutine == 0) 
 	{
 		coroutine = uzi_create(Coroutine);
+		if (coroutine == 0) return 0; // TODO(Richo): Notify user of OUT_OF_MEMORY!
 
 		coroutine->script = this;
 		coroutine->activeScript = this;

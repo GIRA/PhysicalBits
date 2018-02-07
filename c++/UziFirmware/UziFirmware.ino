@@ -66,6 +66,7 @@ inline void sendGlobalValues(void);
 inline void sendTickingScripts(void);
 inline void sendFreeRAM(void);
 inline void sendError(uint8, uint8);
+inline void sendError(uint8);
 inline void loadProgramFromReader(Reader*);
 inline void loadInstalledProgram(void);
 inline void initSerial(void);
@@ -216,6 +217,11 @@ void sendError(uint8 coroutineIndex, uint8 errorCode)
 	Serial.write(RS_ERROR);
 	Serial.write(coroutineIndex);
 	Serial.write(errorCode);
+}
+
+void sendError(uint8 errorCode)
+{
+	sendError(255, errorCode);
 }
 
 void sendPinValues(void)
@@ -480,31 +486,40 @@ void executeProfile(void)
 
 void executeRunProgram(void)
 {
-	bool timeout;
 	Program program; 
 	// TODO(Richo): This is dangerous! Fix ASAP
-	readProgram(&stream, &program, timeout);
-	if (timeout) return;
-	vm.executeProgram(&program, &io);
+	Error result = readProgram(&stream, &program);
+	if (result == NO_ERROR) 
+	{
+		vm.executeProgram(&program, &io);
+	}
+	else 
+	{
+		sendError(result);
+	}
 }
 
 void loadProgramFromReader(Reader* reader)
 {
-	bool timeout;
+	io.reset();
 	uzi_memreset();
 	Program * p = uzi_create(Program);
 	if (p == 0) 
 	{
-		sendError(255, OUT_OF_MEMORY);
+		sendError(OUT_OF_MEMORY);
 		return;
 	}
-	readProgram(reader, p, timeout);
-	if (!timeout)
+	Error result = readProgram(reader, p);
+	if (result == NO_ERROR)
 	{
 		program = p;
-		io.reset();
 	}
-	// TODO(Richo): What to do if reading fails?
+	else 
+	{
+		uzi_memreset();
+		program = uzi_create(Program);
+		sendError(result);
+	}
 }
 
 void executeSetGlobal(void)

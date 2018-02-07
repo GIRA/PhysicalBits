@@ -1,37 +1,54 @@
 #include "Program.h"
 
-void readGlobals(Reader* rs, Program* program, bool& timeout);
-void readScripts(Reader* rs, Program* program, bool& timeout);
+Error readGlobals(Reader* rs, Program* program);
+Error readScripts(Reader* rs, Program* program);
 
-void readProgram(Reader* rs, Program* program, bool& timeout)
+Error readProgram(Reader* rs, Program* program)
 {
 	program->globalCount = 0;
 	program->globals = 0;
 	program->globalsReport = 0;
 	program->scripts = 0;
 
+	bool timeout;
 	program->scriptCount = rs->next(timeout);
-	if (!timeout) { readGlobals(rs, program, timeout); }
-	if (!timeout) { readScripts(rs, program, timeout); }
-
 	if (timeout)
 	{
 		program->scriptCount = 0;
+		return READER_TIMEOUT;
 	}
+
+	Error result;
+	result = readGlobals(rs, program);
+	if (result != NO_ERROR) return result;
+
+	if (program->scriptCount > 0)
+	{
+		result = readScripts(rs, program);
+		if (result != NO_ERROR) return result;
+	}
+	return NO_ERROR;
 }
 
-void readGlobals(Reader* rs, Program* program, bool& timeout)
+Error readGlobals(Reader* rs, Program* program)
 {
 	const int defaultGlobalsCount = 3;
 	float defaultGlobals[defaultGlobalsCount] = { 0, 1, -1 };
-
-	program->globalCount = rs->next(timeout) + 3;
-	if (timeout) return;
-
-	// Initialize globals report
+	
+	// Initialize globalCount
+	{
+		bool timeout;
+		program->globalCount = rs->next(timeout) + defaultGlobalsCount;
+		if (timeout) return READER_TIMEOUT;
+	}
+	
+	// Initialize globalsReport
 	{
 		int globalsReportCount = 1 + (int)floor((double)program->globalCount / 8);
+
 		program->globalsReport = uzi_createArray(uint8, globalsReportCount);
+		if (program->globalsReport == 0) return OUT_OF_MEMORY;
+
 		for (int i = 0; i < globalsReportCount; i++)
 		{
 			program->globalsReport[i] = 0;
@@ -39,6 +56,8 @@ void readGlobals(Reader* rs, Program* program, bool& timeout)
 	}
 
 	program->globals = uzi_createArray(float, program->globalCount);
+	if (program->globals == 0) return OUT_OF_MEMORY;
+
 	for (int i = 0; i < defaultGlobalsCount; i++)
 	{
 		program->globals[i] = defaultGlobals[i];
@@ -47,8 +66,9 @@ void readGlobals(Reader* rs, Program* program, bool& timeout)
 	uint8 i = defaultGlobalsCount;
 	while (i < program->globalCount)
 	{
+		bool timeout;
 		uint8 sec = rs->next(timeout);
-		if (timeout) return;
+		if (timeout) return READER_TIMEOUT;
 
 		int16 count = (sec >> 2) & 0x3F;
 		int16 size = (sec & 0x03) + 1;
@@ -63,26 +83,31 @@ void readGlobals(Reader* rs, Program* program, bool& timeout)
 			{
 				program->globals[i] = (float)rs->nextLong(size, timeout);
 			}
-			if (timeout) return;
+			if (timeout) return READER_TIMEOUT;
 
 			count--;
 			i++;
 		}
 	}
+	return NO_ERROR;
 }
 
-void readScripts(Reader * rs, Program* program, bool& timeout)
+Error readScripts(Reader * rs, Program* program)
 {
 	program->scripts = uzi_createArray(Script, program->scriptCount);
+	if (program->scripts == 0) return OUT_OF_MEMORY;
+
 	uint8 instructionCount = 0;
 	for (int16 i = 0; i < program->scriptCount; i++)
 	{
 		Script* script = &program->scripts[i];
-		readScript(rs, script, instructionCount, i, program->globals, timeout);
+
+		Error result = readScript(rs, script, instructionCount, i, program->globals);
 		instructionCount += script->getInstructionCount();
 
-		if (timeout) return;
+		if (result != NO_ERROR) return result;
 	}
+	return NO_ERROR;
 }
 
 uint8 Program::getScriptCount(void)

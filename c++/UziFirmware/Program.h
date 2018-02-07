@@ -26,4 +26,4 @@ struct Program
 	uint8 getGlobalCount(void);
 };
 
-void readProgram(Reader* rs, Program* program, bool& timeout);
+Error readProgram(Reader* rs, Program* program);
