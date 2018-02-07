@@ -9,4 +9,5 @@
 		"test005ProgramWithFloatVars" : "Richo 12/9/2017 16:47",
 		"test006ProgramWithJumpsCountsInstructionsCorrectly" : "Richo 12/9/2017 16:50",
 		"test007ProgramWithOneByteVars" : "Richo 12/9/2017 16:51",
-		"test008ProgramWithVarsLargerThanOneByte" : "Richo 12/9/2017 16:51" } }
+		"test008ProgramWithVarsLargerThanOneByte" : "Richo 12/9/2017 16:51",
+		"test009ProgramWithMoreThan63GlobalsOfTheSameSize" : "Richo 2/7/2018 19:58" } }
