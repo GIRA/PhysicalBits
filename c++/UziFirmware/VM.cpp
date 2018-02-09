@@ -1,6 +1,6 @@
 #include "VM.h"
 
-void VM::executeProgram(Program * program, GPIO * io)
+Error VM::executeProgram(Program * program, GPIO * io)
 {
 	currentProgram = program;
 	int16 count = program->getScriptCount();
@@ -12,6 +12,10 @@ void VM::executeProgram(Program * program, GPIO * io)
 		if (script->isStepping()) 
 		{
 			Coroutine* coroutine = script->getCoroutine();
+			if (coroutine == 0) 
+			{
+				return OUT_OF_MEMORY;
+			}
 			if (now >= coroutine->getNextRun())
 			{
 				coroutine->setNextRun(now + script->getInterval());
@@ -19,6 +23,7 @@ void VM::executeProgram(Program * program, GPIO * io)
 			}
 		}
 	}
+	return NO_ERROR;
 }
 
 void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
@@ -61,6 +66,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		}
 		Instruction next = nextInstruction();
 		executeInstruction(next, io, yieldFlag);
+		if (coroutine->hasError()) break;
 		if (stack.hasError())
 		{
 			coroutine->setError(stack.getError());
@@ -186,7 +192,11 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				script->setStepping(true);
 
 				Coroutine* coroutine = script->getCoroutine();
-				if (currentCoroutine == coroutine)
+				if (coroutine == 0)
+				{
+					currentCoroutine->setError(OUT_OF_MEMORY);
+				}
+				else if (currentCoroutine == coroutine)
 				{
 					/*
 					If we're starting the current coroutine we need to restart execution
@@ -227,7 +237,11 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				script->setStepping(false);
 
 				Coroutine* coroutine = script->getCoroutine();
-				if (currentCoroutine == coroutine)
+				if (coroutine == 0)
+				{
+					currentCoroutine->setError(OUT_OF_MEMORY);
+				}
+				else if (currentCoroutine == coroutine)
 				{
 					/*
 					If we're stopping the current coroutine we need to stop execution
@@ -263,7 +277,11 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 				resume execution from this point.
 				*/
 				Coroutine* coroutine = script->getCoroutine();
-				if (currentCoroutine == coroutine)
+				if (coroutine == 0)
+				{
+					currentCoroutine->setError(OUT_OF_MEMORY);
+				}
+				else if (currentCoroutine == coroutine)
 				{
 					yieldFlag = true;
 				}

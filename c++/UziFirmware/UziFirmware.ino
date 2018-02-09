@@ -89,7 +89,13 @@ void setup()
 void loop()
 {
 	checkForIncomingMessages();
-	vm.executeProgram(program, &io);
+	Error result = vm.executeProgram(program, &io);
+	if (result != NO_ERROR)
+	{
+		sendError(result);
+		uzi_memreset();
+		program = uzi_create(Program);
+	}
 	sendReport();
 	//checkKeepAlive();
 	sendProfile();
@@ -502,19 +508,23 @@ void executeRunProgram(void)
 void loadProgramFromReader(Reader* reader)
 {
 	io.reset();
+	Error result = NO_ERROR;
 	uzi_memreset();
 	Program * p = uzi_create(Program);
 	if (p == 0) 
 	{
-		sendError(OUT_OF_MEMORY);
-		return;
+		result = OUT_OF_MEMORY;
 	}
-	Error result = readProgram(reader, p);
+	else
+	{
+		result = readProgram(reader, p);
+	}
+
 	if (result == NO_ERROR)
 	{
 		program = p;
 	}
-	else 
+	else
 	{
 		uzi_memreset();
 		program = uzi_create(Program);

@@ -10,7 +10,7 @@ class VM
 {
 
 public:
-	void executeProgram(Program*, GPIO*);
+	Error executeProgram(Program*, GPIO*);
 
 private:
 

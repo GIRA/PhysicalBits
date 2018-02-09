@@ -109,6 +109,11 @@ float Coroutine::getStackElementAt(uint16 index)
 	return stackElements[index];
 }
 
+bool Coroutine::hasError()
+{
+	return error != NO_ERROR;
+}
+
 Error Coroutine::getError(void)
 {
 	return error;

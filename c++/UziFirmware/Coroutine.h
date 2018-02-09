@@ -45,6 +45,7 @@ struct Coroutine
 	uint16 getStackSize(void);
 	float getStackElementAt(uint16);
 
+	bool hasError();
 	Error getError(void);
 	void setError(Error);
 	void reset(void);	
