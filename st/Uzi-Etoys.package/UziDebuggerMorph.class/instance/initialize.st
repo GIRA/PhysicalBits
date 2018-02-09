@@ -6,9 +6,10 @@ initialize
 		at: stackFrameSelection
 		ifAbsent: [nil].
 	printer := UziProgramPrinter new.
-	self color: Color transparent;
+	self 
 		hResizing: #shrinkWrap;
 		vResizing: #shrinkWrap;
 		listDirection: #leftToRight;
 		buildSubmorphs;
+		color: self defaultBackgroundColor;
 		break

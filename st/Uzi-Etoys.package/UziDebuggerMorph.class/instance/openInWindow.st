@@ -31,6 +31,7 @@ openInWindow
 		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@0.8) offsets: (0@0 corner: 0@0)).
 	window 
 		addMorph: (AlignmentMorph newRow
+			color: Color white;
 			cellPositioning: #topCenter;
 			cellInset: 5;
 			addMorphBack: (Text string: 'Stack:' attributes: { TextEmphasis normal }) asMorph;
