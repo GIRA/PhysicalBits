@@ -73,6 +73,9 @@
     <ClCompile Include="..\..\UziFirmware\Memory.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\UziFirmware\Monitor.cpp">
+      <Filter>Sketch</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EEPROM.h">
@@ -139,6 +142,9 @@
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\Memory.h">
+      <Filter>Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\UziFirmware\Monitor.h">
       <Filter>Sketch</Filter>
     </ClInclude>
   </ItemGroup>

@@ -124,6 +124,7 @@
     <ClCompile Include="..\..\UziFirmware\GPIO.cpp" />
     <ClCompile Include="..\..\UziFirmware\Instruction.cpp" />
     <ClCompile Include="..\..\UziFirmware\Memory.cpp" />
+    <ClCompile Include="..\..\UziFirmware\Monitor.cpp" />
     <ClCompile Include="..\..\UziFirmware\Program.cpp" />
     <ClCompile Include="..\..\UziFirmware\Reader.cpp" />
     <ClCompile Include="..\..\UziFirmware\Script.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="..\..\UziFirmware\GPIO.h" />
     <ClInclude Include="..\..\UziFirmware\Instruction.h" />
     <ClInclude Include="..\..\UziFirmware\Memory.h" />
+    <ClInclude Include="..\..\UziFirmware\Monitor.h" />
     <ClInclude Include="..\..\UziFirmware\Program.h" />
     <ClInclude Include="..\..\UziFirmware\Reader.h" />
     <ClInclude Include="..\..\UziFirmware\Script.h" />
