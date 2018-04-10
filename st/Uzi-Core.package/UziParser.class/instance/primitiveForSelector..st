@@ -31,6 +31,7 @@ primitiveForSelector: selector
 		[#delayMs] -> [#yieldTime].
 		[#&] -> [#bitwiseAnd].
 		[#|] -> [#bitwiseOr].
-		[#millis] -> [#millis]
+		[#millis] -> [#millis].
+		[#coroutine] -> [#coroutine]
 	} otherwise: nil.
 	^ primName ifNotNil: [UziPrimitive named: primName]
