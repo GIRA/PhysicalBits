@@ -16,7 +16,7 @@ test008ImportingScriptThatContainsRepeatLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't6.foo' }
+					call script: (ref scriptName: 't6.foo')
 				})
 		}.
 	expected := program 
@@ -39,7 +39,7 @@ test008ImportingScriptThatContainsRepeatLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't6.foo' }
+					call script: (ref scriptName: 't6.foo')
 				})
 		}.
 	actual := ir applyOn: original.

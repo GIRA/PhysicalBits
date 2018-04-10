@@ -17,9 +17,8 @@ test003ImportingNestedLibraries
 					prim selector: #write
 						arguments: {
 							number value: 13.
-							call script: #'t2.bar' arguments: {
-								number value: 1
-							}
+							call script: (ref scriptName: #'t2.bar')
+								arguments: { nil -> (number value: 1) }
 						}
 				})
 		}.
@@ -52,9 +51,8 @@ test003ImportingNestedLibraries
 					prim selector: #write
 						arguments: {
 							number value: 13.
-							call script: #'t2.bar' arguments: {
-								number value: 1
-							}
+							call script: (ref scriptName: #'t2.bar') 
+								arguments: { nil -> (number value: 1) }
 						}
 				})
 		}.

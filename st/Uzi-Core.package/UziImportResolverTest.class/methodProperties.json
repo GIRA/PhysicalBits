@@ -2,14 +2,15 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 1/9/2018 18:42",
-		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 8/12/2017 20:04",
-		"test002ImportingSameLibraryTwice" : "Richo 8/12/2017 20:03",
-		"test003ImportingNestedLibraries" : "Richo 8/12/2017 20:19",
+		"setUp" : "Richo 4/10/2018 15:41",
+		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 4/10/2018 16:13",
+		"test002ImportingSameLibraryTwice" : "Richo 4/10/2018 16:14",
+		"test003ImportingNestedLibraries" : "Richo 4/10/2018 16:32",
 		"test004StoppingImportedTask" : "Richo 9/11/2017 10:27",
 		"test005StartingImportedTask" : "Richo 9/11/2017 10:31",
-		"test006ImportingScriptThatStopsATask" : "Richo 9/12/2017 18:06",
-		"test007ImportingScriptThatStartsATask" : "Richo 9/12/2017 19:03",
-		"test008ImportingScriptThatContainsRepeatLoop" : "Richo 9/22/2017 10:38",
-		"test009ImportingScriptThatPausesATask" : "Richo 9/22/2017 11:26",
-		"test010ImportingScriptThatResumesATask" : "Richo 9/22/2017 11:27" } }
+		"test006ImportingScriptThatStopsATask" : "Richo 4/10/2018 16:16",
+		"test007ImportingScriptThatStartsATask" : "Richo 4/10/2018 16:16",
+		"test008ImportingScriptThatContainsRepeatLoop" : "Richo 4/10/2018 16:16",
+		"test009ImportingScriptThatPausesATask" : "Richo 4/10/2018 16:17",
+		"test010ImportingScriptThatResumesATask" : "Richo 4/10/2018 16:17",
+		"test011ImportingAScriptThatCallsAnInternalProc" : "Richo 4/10/2018 16:31" } }

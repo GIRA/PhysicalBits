@@ -1,7 +1,7 @@
 visiting
 visitScriptCallNode: node
 	^ (node class 
-		script: alias , node scriptName
+		script: (self visit: node script)
 		arguments: (node arguments 
 			collect: [:kvp | kvp key -> (self visit: kvp value)]))
 		token: node token

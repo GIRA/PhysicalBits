@@ -17,7 +17,7 @@ test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 					prim selector: #write
 						arguments: {
 							number value: 13.
-							call script: #'test.foo' arguments: #()
+							call script: (ref scriptName: #'test.foo')
 						}
 				})
 		}.
@@ -35,7 +35,7 @@ test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 					prim selector: #write
 						arguments: {
 							number value: 13.
-							call script: #'test.foo' arguments: #()
+							call script: (ref scriptName: #'test.foo')
 						}
 				})
 		}.

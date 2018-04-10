@@ -18,8 +18,8 @@ test002ImportingSameLibraryTwice
 				body: (block statements: {
 					prim selector: #write
 						arguments: {
-							call script: #'test2.foo' arguments: #().
-							call script: #'test1.foo' arguments: #()
+							call script: (ref scriptName: #'test2.foo').
+							call script: (ref scriptName: #'test1.foo')
 						}
 				})
 		}.
@@ -44,8 +44,8 @@ test002ImportingSameLibraryTwice
 				body: (block statements: {
 					prim selector: #write
 						arguments: {
-							call script: #'test2.foo' arguments: #().
-							call script: #'test1.foo' arguments: #()
+							call script: (ref scriptName: #'test2.foo').
+							call script: (ref scriptName: #'test1.foo')
 						}
 				})
 		}.

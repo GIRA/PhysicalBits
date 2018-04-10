@@ -16,7 +16,7 @@ test007ImportingScriptThatStartsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't5.startTask' }
+					call script: (ref scriptName: 't5.startTask')
 				})
 		}.
 	expected := program 
@@ -40,7 +40,7 @@ test007ImportingScriptThatStartsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't5.startTask' }
+					call script: (ref scriptName: 't5.startTask')
 				})
 		}.
 	actual := ir applyOn: original.

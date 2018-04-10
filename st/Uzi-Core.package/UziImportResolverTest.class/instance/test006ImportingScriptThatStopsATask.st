@@ -16,7 +16,7 @@ test006ImportingScriptThatStopsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't4.stopTask' }
+					call script: (ref scriptName: 't4.stopTask')
 				})
 		}.
 	expected := program 
@@ -40,7 +40,7 @@ test006ImportingScriptThatStopsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: { ref scriptName: 't4.stopTask' }
+					call script: (ref scriptName: 't4.stopTask')
 				})
 		}.
 	actual := ir applyOn: original.
