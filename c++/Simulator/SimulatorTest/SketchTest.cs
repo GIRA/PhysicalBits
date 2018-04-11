@@ -834,5 +834,22 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
             }
         }
+
+
+        [TestMethod]
+        public void Test041PausingShouldPreserveTheStack()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test041PausingShouldPreserveTheStack)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                // INFO(Richo): Run several times to give it the chance of pausing and resuming
+                sketch.Loop();
+                sketch.Loop();
+                sketch.Loop();
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+            }
+        }
     }
 }
