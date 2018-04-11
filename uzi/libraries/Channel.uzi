@@ -28,6 +28,8 @@ proc write(val) {
 	value = val;
 	"Set the state to ready-to-read"
 	state = 1;
+	"Wait until the state is ready-to-write again"
+	while (state != 0);	
 }
 
 func read() {
