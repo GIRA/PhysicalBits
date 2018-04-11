@@ -1,28 +1,49 @@
 var value;
-var state;
+var state; "0 : write, 1 : read"
 var rturn = -1;
 var wturn = -1;
 
 proc write(val) {
+	"Wait until it's our turn to write by checking
+	wturn, if it matches our coroutine index then we
+	can continue (it's our turn!). If not, we look for
+	wturn == -1, which means nobody is attempting to
+	write to the channel. If that's the case we simply
+	set wturn = to our coroutine index so that nobody
+	else can claim it"
 	while (coroutine() != wturn) {
 		if (wturn == -1) {
 			wturn = coroutine();
 		}
 	}
+	"Now we wait until it's time to write. It might be
+	our turn to write but someone might be reading"
 	while (state != 0);
 	
+	"Release wturn so that the next coroutine in line 
+	can get their turn"
 	wturn = -1;
 	delayMs(0); "TODO(Richo): Add yield instruction!"
+	"Write the value to the channel"
 	value = val;
+	"Set the state to ready-to-read"
 	state = 1;
 }
 
 func read() {
+	"Wait until it's our turn to read by checking
+	rturn, if it matches our coroutine index then we
+	can continue (it's our turn!). If not, we look for
+	rturn == -1, which means nobody is attempting to
+	read from the channel. If that's the case we simply
+	set rturn = to our coroutine index so that nobody
+	else can claim it"
 	while (coroutine() != rturn) {
 		if (rturn == -1) {
 			rturn = coroutine();
 		}
 	}
+	"Now we wait until it's time to read"
 	while (state != 1);
 	
 	rturn = -1;
