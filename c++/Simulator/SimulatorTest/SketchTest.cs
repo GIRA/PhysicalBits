@@ -835,7 +835,6 @@ namespace SimulatorTest
             }
         }
 
-
         [TestMethod]
         public void Test041PausingShouldPreserveTheStack()
         {
@@ -850,6 +849,13 @@ namespace SimulatorTest
                 sketch.Loop();
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
             }
+        }
+
+        [TestMethod]
+        public void Test042EmptyScriptShouldNotCrashTheVM()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test042EmptyScriptShouldNotCrashTheVM)));
+            sketch.Loop();
         }
     }
 }
