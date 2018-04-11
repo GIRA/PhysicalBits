@@ -69,12 +69,12 @@ Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, fl
 	return NO_ERROR;
 }
 
-uint8 Script::getInstructionStart(void)
+int8 Script::getInstructionStart(void)
 {
 	return instructionStart;
 }
 
-uint8 Script::getInstructionStop(void)
+int8 Script::getInstructionStop(void)
 {
 	return instructionStart + instructionCount - 1;
 }

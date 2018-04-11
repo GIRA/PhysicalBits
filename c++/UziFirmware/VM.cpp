@@ -64,8 +64,11 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 			}
 			coroutine->setBreakCount(breakCount - 1);
 		}
-		Instruction next = nextInstruction();
-		executeInstruction(next, io, yieldFlag);
+		if (pc <= currentScript->getInstructionStop()) 
+		{
+			Instruction next = nextInstruction();
+			executeInstruction(next, io, yieldFlag);
+		}
 		if (coroutine->hasError()) break;
 		if (stack.hasError())
 		{

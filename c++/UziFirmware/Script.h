@@ -23,8 +23,8 @@ struct Script
 	Coroutine* coroutine = 0;
 
 	uint8 getIndex(void);
-	uint8 getInstructionStart(void);
-	uint8 getInstructionStop(void);
+	int8 getInstructionStart(void);
+	int8 getInstructionStop(void);
 	uint8 getInstructionCount(void);
 	Instruction getInstructionAt(int16);
 	bool isStepping(void);
