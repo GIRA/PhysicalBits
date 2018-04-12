@@ -7,7 +7,8 @@ privateConnectOn: portString usingSerial: aSerialPort
 				openPort: portString.
 	serial
 		ifNotNil: [portName := portString.
-			self startSteppingProcess; 
+			self requestConnection;
+				startSteppingProcess; 
 				startKeepAliveProcess.
 			3000 milliSeconds asDelay wait.
 			self startReporting;
