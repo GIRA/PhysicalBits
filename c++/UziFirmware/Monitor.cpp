@@ -5,6 +5,7 @@
 #define MINOR_VERSION		4
 
 /* REQUEST COMMANDS */
+#define RQ_CONNECTION_REQUEST						  255
 #define RQ_SET_PROGRAM									0
 #define RQ_SET_VALUE									1
 #define RQ_SET_MODE										2
@@ -63,16 +64,54 @@ void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 		bool timeout;
 		uint8 in = stream.next(timeout);
 		if (!timeout) 
-		{ 
-			executeCommand(in, program, io, vm); 
+		{
+			if (state == CONNECTED) 
+			{
+				executeCommand(in, program, io, vm);
+			}
+			else if (state == DISCONNECTED)
+			{
+				connectionRequest(in);
+			}
+			else if (state == CONNECTION_REQUESTED) 
+			{
+				acceptConnection(in);
+			}
 		}
 	}
+}
+
+void Monitor::connectionRequest(uint8 cmd)
+{
+	if (cmd != RQ_CONNECTION_REQUEST) return;
+
+	bool timeout;
+	uint8 in;
+
+	in = stream.next(timeout);
+	if (in != MAJOR_VERSION || timeout) return;
+	in = stream.next(timeout);
+	if (in != MINOR_VERSION || timeout) return;
+
+	handshake = millis() % 256;
+	Serial.write(handshake);
+	state = CONNECTION_REQUESTED;
+}
+
+void Monitor::acceptConnection(uint8 cmd)
+{
+	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
+	if (cmd != expected) return;
+
+	state = CONNECTED; 
+	executeKeepAlive();
+	Serial.write(expected);
 }
 
 void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm) 
 {
 	checkKeepAlive();
-	if (connected) 
+	if (state == CONNECTED) 
 	{
 		sendReport(io, program);
 		sendProfile();
@@ -169,8 +208,11 @@ void Monitor::sendVMState(Program* program)
 
 void Monitor::checkKeepAlive()
 {
-	connected = lastTimeKeepAlive > 0 
-		&& millis() - lastTimeKeepAlive <= KEEP_ALIVE_INTERVAL;
+	if (state == CONNECTED && 
+		millis() - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
+	{
+		state = DISCONNECTED;
+	}
 }
 
 void Monitor::sendPinValues(GPIO* io)

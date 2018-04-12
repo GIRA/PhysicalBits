@@ -9,6 +9,13 @@
 #include "EEPROMWearLevelingReader.h"
 #include "VM.h"
 
+enum MonitorState
+{
+	DISCONNECTED,
+	CONNECTION_REQUESTED,
+	CONNECTED
+};
+
 class Monitor 
 {
 public: 
@@ -21,7 +28,8 @@ public:
 private:
 	SerialReader stream;
 
-	uint8 connected = 0;
+	uint8 state = DISCONNECTED;
+	uint8 handshake = 0;
 
 	uint8 reporting = 0;
 	uint32 lastTimeReport = 0;
@@ -30,6 +38,9 @@ private:
 	uint8 profiling = 0;
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
+
+	void connectionRequest(uint8 cmd);
+	void acceptConnection(uint8 cmd);
 
 	void executeCommand(uint8 cmd, Program** program, GPIO* io, VM* vm);
 	void executeSetProgram(Program** program, GPIO* io);
@@ -60,3 +71,4 @@ private:
 };
 
 void trace(const char*);
+
