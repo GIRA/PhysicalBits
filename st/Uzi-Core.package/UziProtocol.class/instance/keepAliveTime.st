@@ -1,3 +1,3 @@
 keep alive
 keepAliveTime
-	^ 1000
+	^ 100
