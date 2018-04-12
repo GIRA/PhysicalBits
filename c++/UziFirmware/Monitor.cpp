@@ -1,39 +1,39 @@
 #include "Monitor.h"
 
 /* VERSION NUMBER */
-#define MAJOR_VERSION		0
-#define MINOR_VERSION		4
+#define MAJOR_VERSION                                   0
+#define MINOR_VERSION                                   4
 
 /* REQUEST COMMANDS */
-#define RQ_CONNECTION_REQUEST						  255
-#define RQ_SET_PROGRAM									0
-#define RQ_SET_VALUE									1
-#define RQ_SET_MODE										2
-#define RQ_START_REPORTING								3
-#define RQ_STOP_REPORTING								4
-#define RQ_SET_REPORT									5
-#define RQ_SAVE_PROGRAM									6
-#define RQ_KEEP_ALIVE									7
-#define RQ_PROFILE										8
-#define RQ_RUN_PROGRAM									9
-#define RQ_SET_GLOBAL								   10
-#define RQ_SET_GLOBAL_REPORT						   11
-#define RQ_SET_BREAK_COUNT							   12
+#define RQ_CONNECTION_REQUEST                         255
+#define RQ_SET_PROGRAM                                  0
+#define RQ_SET_VALUE                                    1
+#define RQ_SET_MODE                                     2
+#define RQ_START_REPORTING                              3
+#define RQ_STOP_REPORTING                               4
+#define RQ_SET_REPORT                                   5
+#define RQ_SAVE_PROGRAM                                 6
+#define RQ_KEEP_ALIVE                                   7
+#define RQ_PROFILE                                      8
+#define RQ_RUN_PROGRAM                                  9
+#define RQ_SET_GLOBAL                                  10
+#define RQ_SET_GLOBAL_REPORT                           11
+#define RQ_SET_BREAK_COUNT                             12
 
 /* RESPONSE COMMANDS */
-#define RS_ERROR										0
-#define RS_PIN_VALUE									1
-#define RS_PROFILE										2
-#define RS_GLOBAL_VALUE									3
-#define RS_TRACE										4
-#define RS_COROUTINE_STATE								5
-#define RS_TICKING_SCRIPTS								6
-#define RS_FREE_RAM										7
+#define RS_ERROR                                        0
+#define RS_PIN_VALUE                                    1
+#define RS_PROFILE                                      2
+#define RS_GLOBAL_VALUE                                 3
+#define RS_TRACE                                        4
+#define RS_COROUTINE_STATE                              5
+#define RS_TICKING_SCRIPTS                              6
+#define RS_FREE_RAM                                     7
 
 /* OTHER CONSTANTS */
-#define PROGRAM_START 					(uint8)0xC3
-#define REPORT_INTERVAL									100
-#define KEEP_ALIVE_INTERVAL							    150
+#define PROGRAM_START                         (uint8)0xC3
+#define REPORT_INTERVAL                               100
+#define KEEP_ALIVE_INTERVAL                           150
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -59,49 +59,47 @@ void Monitor::initSerial()
 
 void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
-	if (Serial.available())
+	if (!Serial.available()) return;
+	
+	if (state == DISCONNECTED)
 	{
-		bool timeout;
-		uint8 in = stream.next(timeout);
-		if (!timeout) 
-		{
-			if (state == CONNECTED) 
-			{
-				executeCommand(in, program, io, vm);
-			}
-			else if (state == DISCONNECTED)
-			{
-				connectionRequest(in);
-			}
-			else if (state == CONNECTION_REQUESTED) 
-			{
-				acceptConnection(in);
-			}
-		}
+		connectionRequest();
+	}
+	else if (state == CONNECTION_REQUESTED) 
+	{
+		acceptConnection();
+	}
+	else if (state == CONNECTED)
+	{
+		executeCommand(program, io, vm);
 	}
 }
 
-void Monitor::connectionRequest(uint8 cmd)
+void Monitor::connectionRequest()
 {
-	if (cmd != RQ_CONNECTION_REQUEST) return;
-
 	bool timeout;
 	uint8 in;
-
+		
 	in = stream.next(timeout);
-	if (in != MAJOR_VERSION || timeout) return;
+	if (timeout || in != RQ_CONNECTION_REQUEST) return;
 	in = stream.next(timeout);
-	if (in != MINOR_VERSION || timeout) return;
+	if (timeout || in != MAJOR_VERSION) return;
+	in = stream.next(timeout);
+	if (timeout || in != MINOR_VERSION) return;
 
 	handshake = millis() % 256;
 	Serial.write(handshake);
 	state = CONNECTION_REQUESTED;
 }
 
-void Monitor::acceptConnection(uint8 cmd)
+void Monitor::acceptConnection()
 {
+	bool timeout;
+	uint8 in = stream.next(timeout);
+	if (timeout) return;
+
 	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
-	if (cmd != expected) return;
+	if (in != expected) return;
 
 	state = CONNECTED; 
 	executeKeepAlive();
@@ -331,8 +329,12 @@ void Monitor::sendFreeRAM()
 }
 
 
-void Monitor::executeCommand(uint8 cmd, Program** program, GPIO* io, VM* vm)
+void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 {
+	bool timeout;
+	uint8 cmd = stream.next(timeout);
+	if (timeout) return;
+
 	switch (cmd)
 	{
 	case RQ_SET_PROGRAM:

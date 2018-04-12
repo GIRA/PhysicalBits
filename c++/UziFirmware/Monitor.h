@@ -39,10 +39,10 @@ private:
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
-	void connectionRequest(uint8 cmd);
-	void acceptConnection(uint8 cmd);
+	void connectionRequest();
+	void acceptConnection();
 
-	void executeCommand(uint8 cmd, Program** program, GPIO* io, VM* vm);
+	void executeCommand(Program** program, GPIO* io, VM* vm);
 	void executeSetProgram(Program** program, GPIO* io);
 	void executeSetValue(GPIO* io);
 	void executeSetMode(GPIO* io);
