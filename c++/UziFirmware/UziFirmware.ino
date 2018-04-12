@@ -25,8 +25,5 @@ void loop()
 		uzi_memreset();
 		program = uzi_create(Program);
 	}
-	monitor.sendReport(&io, program);
-	//monitor.checkKeepAlive();
-	monitor.sendProfile();
-	monitor.sendVMState(program);
+	monitor.sendOutgoingMessages(program, &io, &vm);
 }

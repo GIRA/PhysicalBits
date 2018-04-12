@@ -15,15 +15,13 @@ public:
 	void loadInstalledProgram(Program** program);
 	void initSerial();
 	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
-	void sendError(uint8 coroutineIndex, uint8 errorCode);
+	void sendOutgoingMessages(Program* program, GPIO* io, VM* vm);
 	void sendError(uint8 errorCode);
-	void sendReport(GPIO* io, Program* program);
-	void checkKeepAlive();
-	void sendProfile();
-	void sendVMState(Program* program);
 
 private:
 	SerialReader stream;
+
+	uint8 connected = 0;
 
 	uint8 reporting = 0;
 	uint32 lastTimeReport = 0;
@@ -48,6 +46,11 @@ private:
 	void executeSetGlobalReport(Program* program);
 	void executeSetBreakCount(Program* program);
 
+	void sendError(uint8 coroutineIndex, uint8 errorCode);
+	void sendReport(GPIO* io, Program* program);
+	void checkKeepAlive();
+	void sendProfile();
+	void sendVMState(Program* program);
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendTickingScripts(Program* program);

@@ -32,7 +32,7 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START 					(uint8)0xC3
 #define REPORT_INTERVAL									100
-#define KEEP_ALIVE_INTERVAL							   2000
+#define KEEP_ALIVE_INTERVAL							    150
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -69,6 +69,16 @@ void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 	}
 }
 
+void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm) 
+{
+	checkKeepAlive();
+	if (connected) 
+	{
+		sendReport(io, program);
+		sendProfile();
+		sendVMState(program);
+	}
+}
 
 void Monitor::sendError(uint8 coroutineIndex, uint8 errorCode)
 {
@@ -159,12 +169,8 @@ void Monitor::sendVMState(Program* program)
 
 void Monitor::checkKeepAlive()
 {
-	if (!reporting) return;
-	uint32 now = millis();
-	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
-	{
-		executeStopReporting();
-	}
+	connected = lastTimeKeepAlive > 0 
+		&& millis() - lastTimeKeepAlive <= KEEP_ALIVE_INTERVAL;
 }
 
 void Monitor::sendPinValues(GPIO* io)
