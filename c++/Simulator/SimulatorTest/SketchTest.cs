@@ -9,14 +9,46 @@ namespace SimulatorTest
     [TestClass]
     public class SketchTest
     {
-        private Sketch sketch = Sketch.Current;
+        private static readonly Sketch sketch = Sketch.Current;
+
+        private const byte RQ_CONNECTION_REQUEST = 255;
+        private const byte MAJOR_VERSION = 0;
+        private const byte MINOR_VERSION = 4;
 
         [TestInitialize]
         public void Setup()
         {
-            sketch.SetMillis(-1);
+            sketch.SetMillis(0);
             sketch.Setup();
+
+            /*
+             * INFO(Richo): Perform connection request and handshake.
+             * Otherwise, when we send a program later we will be rejected.
+             */
+            sketch.WriteSerial(new byte[] 
+            {
+                RQ_CONNECTION_REQUEST, MAJOR_VERSION, MINOR_VERSION
+            });
+            sketch.Loop();
+            byte handshake = sketch.ReadSerial().Item2[0];
+            byte send = (byte)((MAJOR_VERSION + MINOR_VERSION + handshake) % 256);
+            sketch.WriteSerial(new byte[] { send });
+            sketch.Loop();
+            byte ack = sketch.ReadSerial().Item2[0];
+            Assert.AreEqual(send, ack);
+            
             TurnOffAllPins();
+        }
+
+        [TestCleanup]
+        public void TearDown()
+        {
+            // INFO(Richo): Make sure we get disconnected before the next test.
+            sketch.SetMillis(int.MaxValue);
+            for (int i = 0; i < 1000; i++)
+            {
+                sketch.Loop();
+            }
         }
 
         private void TurnOffAllPins()
