@@ -11,14 +11,14 @@ proc write(val) {
 	write to the channel. If that's the case we simply
 	set wturn = to our coroutine index so that nobody
 	else can claim it"
-	while (coroutine() != wturn) {
-		if (wturn == -1) {
+	while coroutine() != wturn {
+		if wturn == -1 {
 			wturn = coroutine();
 		}
 	}
 	"Now we wait until it's time to write. It might be
 	our turn to write but someone might be reading"
-	while (state != 0);
+	while state != 0;
 	
 	"Release wturn so that the next coroutine in line 
 	can get their turn"
@@ -29,7 +29,7 @@ proc write(val) {
 	"Set the state to ready-to-read"
 	state = 1;
 	"Wait until the state is ready-to-write again"
-	while (state != 0);	
+	while state != 0;	
 }
 
 func read() {
@@ -40,13 +40,13 @@ func read() {
 	read from the channel. If that's the case we simply
 	set rturn = to our coroutine index so that nobody
 	else can claim it"
-	while (coroutine() != rturn) {
-		if (rturn == -1) {
+	while coroutine() != rturn {
+		if rturn == -1 {
 			rturn = coroutine();
 		}
 	}
 	"Now we wait until it's time to read"
-	while (state != 1);
+	while state != 1;
 	
 	rturn = -1;
 	yield;
