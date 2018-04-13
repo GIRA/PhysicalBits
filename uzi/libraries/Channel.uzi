@@ -23,7 +23,7 @@ proc write(val) {
 	"Release wturn so that the next coroutine in line 
 	can get their turn"
 	wturn = -1;
-	delayMs(0); "TODO(Richo): Add yield instruction!"
+	yield;
 	"Write the value to the channel"
 	value = val;
 	"Set the state to ready-to-read"
@@ -49,7 +49,7 @@ func read() {
 	while (state != 1);
 	
 	rturn = -1;
-	delayMs(0); "TODO(Richo): Add yield instruction!"
+	yield;
 	state = 0;
 	return value;
 }
