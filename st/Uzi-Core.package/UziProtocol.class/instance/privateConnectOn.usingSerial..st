@@ -5,12 +5,13 @@ privateConnectOn: portString usingSerial: aSerialPort
 	serial := (UziSerialStream on: aSerialPort)
 				baudRate: 57600;
 				openPort: portString.
-	serial
-		ifNotNil: [portName := portString.
-			self requestConnection;
-				startSteppingProcess; 
-				startKeepAliveProcess.
-			3000 milliSeconds asDelay wait.
-			self startReporting;
-				sendPinsReporting;
-				triggerEvent: #connect]
+	serial ifNil: [^ self].
+	portName := portString.
+	self requestConnection.
+	serial ifNil: [^ self].
+	self startSteppingProcess; 
+		startKeepAliveProcess.
+	3000 milliSeconds asDelay wait.
+	self startReporting;
+		sendPinsReporting;
+		triggerEvent: #connect
