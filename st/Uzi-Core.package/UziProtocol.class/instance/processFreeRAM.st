@@ -10,21 +10,15 @@ processFreeRAM
 	
 	valueArduino := next value.
 	freeArduinoRAM ~= valueArduino
-		ifTrue: [	WorldState 
-			addDeferredUIMessage: [Transcript 
-				show: 'Free Arduino RAM: ';
-				show: valueArduino;
-				show: ' bytes';
-				cr]].
+		ifTrue: [	UziTranscript 
+			log: 'Free Arduino RAM: {1} bytes' 
+			format: { valueArduino }].
 	freeArduinoRAM := valueArduino.
 	
 	valueUzi := next value.
 	freeUziRAM ~= valueUzi
-		ifTrue: [	WorldState 
-			addDeferredUIMessage: [Transcript 
-				show: 'Free Uzi RAM: ';
-				show: valueUzi;
-				show: ' bytes';
-				cr]].
+		ifTrue: [	UziTranscript 
+			log: 'Free Uzi RAM: {1} bytes' 
+			format: { valueUzi }].
 	freeUziRAM := valueUzi.
 	

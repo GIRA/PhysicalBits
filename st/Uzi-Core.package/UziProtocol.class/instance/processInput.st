@@ -11,8 +11,6 @@ processInput
 		[self class rsCoroutineState] -> [self processCoroutineState].
 		[self class rsTickingScripts] -> [self processTickingScripts].
 		[self class rsFreeRAM] -> [self processFreeRAM]
-	} otherwise: [WorldState 
-		addDeferredUIMessage: [Transcript 
-			show: 'Uzi - Invalid response code: '; 
-			show: cmd; 
-			cr]]
+	} otherwise: [UziTranscript 
+		log: 'Uzi - Invalid response code: {1}' 
+		format: { cmd }]
