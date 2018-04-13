@@ -28,7 +28,8 @@
 		"ref",
 		"repeat",
 		"pause",
-		"resume" ],
+		"resume",
+		"yield" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

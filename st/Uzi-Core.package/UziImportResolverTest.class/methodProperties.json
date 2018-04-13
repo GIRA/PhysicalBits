@@ -2,7 +2,7 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 4/10/2018 15:41",
+		"setUp" : "Richo 4/13/2018 12:10",
 		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 4/10/2018 16:13",
 		"test002ImportingSameLibraryTwice" : "Richo 4/10/2018 16:14",
 		"test003ImportingNestedLibraries" : "Richo 4/10/2018 16:32",
@@ -13,4 +13,5 @@
 		"test008ImportingScriptThatContainsRepeatLoop" : "Richo 4/10/2018 16:16",
 		"test009ImportingScriptThatPausesATask" : "Richo 4/10/2018 16:17",
 		"test010ImportingScriptThatResumesATask" : "Richo 4/10/2018 16:17",
-		"test011ImportingAScriptThatCallsAnInternalProc" : "Richo 4/10/2018 16:31" } }
+		"test011ImportingAScriptThatCallsAnInternalProc" : "Richo 4/10/2018 16:31",
+		"test012ImportingAScriptThatExecutesAYieldInstruction" : "Richo 4/13/2018 12:11" } }

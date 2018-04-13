@@ -4,6 +4,7 @@ statement
 		(assignment / return / conditional / 
 		startTask / stopTask / pauseTask / resumeTask /
 		while / doWhile / until / doUntil / repeat /
+		yield /
 		expressionStatement) , 
 		ws
 		map: [:ign1 :stmt :ign2 | stmt]

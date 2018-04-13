@@ -27,4 +27,5 @@
 		"visitScriptStopNode:" : "Richo 9/12/2017 19:04",
 		"visitTickingRateNode:" : "Richo 5/31/2017 19:29",
 		"visitVariableDeclarationNode:" : "Richo 6/19/2017 10:09",
-		"visitVariableNode:" : "Richo 5/31/2017 19:56" } }
+		"visitVariableNode:" : "Richo 5/31/2017 19:56",
+		"visitYieldNode:" : "Richo 4/13/2018 12:14" } }

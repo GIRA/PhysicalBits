@@ -26,4 +26,5 @@ setUp
 	ref := UziScriptRefNode.
 	repeat := UziRepeatNode.
 	pause := UziScriptPauseNode.
-	resume := UziScriptResumeNode 
+	resume := UziScriptResumeNode.
+	yield := UziYieldNode 

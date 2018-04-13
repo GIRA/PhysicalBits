@@ -52,7 +52,8 @@
 		"scriptReference",
 		"repeat",
 		"pauseTask",
-		"resumeTask" ],
+		"resumeTask",
+		"yield" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

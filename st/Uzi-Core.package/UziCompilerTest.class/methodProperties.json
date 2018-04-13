@@ -44,4 +44,5 @@
 		"test038RepeatConstantLoop" : "Richo 9/21/2017 19:47",
 		"test039PauseScript" : "Richo 9/22/2017 10:59",
 		"test040ResumeScript" : "Richo 9/22/2017 11:00",
-		"test041PrimitiveCoroutine" : "Richo 4/10/2018 16:48" } }
+		"test041PrimitiveCoroutine" : "Richo 4/10/2018 16:48",
+		"test042YieldInstruction" : "Richo 4/12/2018 21:39" } }
