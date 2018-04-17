@@ -1,11 +1,16 @@
 visiting
 visitProgramNode: node
-	| scriptNames |
+	| scriptNames globals |
 	program := node.
 	
+	globals := Set new.
 	node globals do: [:each | 
 		self assertVariableDeclaration: each.
-		each value ifNotNil: [:v | self assertNumber: v]].
+		each value ifNotNil: [:v | self assertNumber: v].
+		self assert: (globals includes: each name) not
+			description: 'Global variable already declared'
+			node: each.
+		globals add: each name].
 	
 	scriptNames := Set new.
 	node scripts do: [:each | 
