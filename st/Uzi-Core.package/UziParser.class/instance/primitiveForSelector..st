@@ -32,6 +32,7 @@ primitiveForSelector: selector
 		[#&] -> [#bitwiseAnd].
 		[#|] -> [#bitwiseOr].
 		[#millis] -> [#millis].
-		[#coroutine] -> [#coroutine]
+		[#coroutine] -> [#coroutine].
+		[#serialWrite] -> [#serialWrite].
 	} otherwise: nil.
 	^ primName ifNotNil: [UziPrimitive named: primName]

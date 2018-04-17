@@ -35,4 +35,5 @@ primSpec
 		{#logicalOr . 16r1E . 2 -> 1}.
 		{#bitwiseAnd . 16r1F . 2 -> 1}.
 		{#bitwiseOr . 16r20 . 2 -> 1}.
+		{#serialWrite . 16r21 . 1 -> 0}
 	}

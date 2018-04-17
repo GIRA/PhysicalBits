@@ -10,7 +10,8 @@ processInput
 		[self class rsTrace] -> [self processTrace].
 		[self class rsCoroutineState] -> [self processCoroutineState].
 		[self class rsTickingScripts] -> [self processTickingScripts].
-		[self class rsFreeRAM] -> [self processFreeRAM]
+		[self class rsFreeRAM] -> [self processFreeRAM].
+		[self class rsSerialTunnel] -> [self processSerialTunnel]
 	} otherwise: [UziTranscript 
 		log: 'Uzi - Invalid response code: {1}' 
 		format: { cmd }]
