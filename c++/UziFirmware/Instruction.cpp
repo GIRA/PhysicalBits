@@ -120,6 +120,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x1E: instruction->opcode = PRIM_LOGICAL_OR; break;
 				case 0x1F: instruction->opcode = PRIM_BITWISE_AND; break;
 				case 0x20: instruction->opcode = PRIM_BITWISE_OR; break;
+				case 0x21: instruction->opcode = PRIM_SERIAL_WRITE; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}
