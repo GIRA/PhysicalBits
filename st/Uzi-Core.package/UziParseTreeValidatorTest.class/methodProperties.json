@@ -27,4 +27,5 @@
 		"test020ScriptPauseReceiverIsAScriptRef" : "Richo 9/22/2017 11:04",
 		"test021ScriptResumeReceiverIsAScriptRef" : "Richo 9/22/2017 11:04",
 		"test022FunctionArgumentShouldNotBeRegisteredAsGlobal" : "Richo 12/5/2017 21:50",
-		"test023YieldShouldNotBeUsedAsExpression" : "Richo 4/12/2018 21:07" } }
+		"test023YieldShouldNotBeUsedAsExpression" : "Richo 4/12/2018 21:07",
+		"test024DuplicateScriptNamesAreNotValid" : "Richo 4/17/2018 09:34" } }

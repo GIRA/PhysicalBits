@@ -9,11 +9,11 @@ visitProgramNode: node
 	
 	scriptNames := Set new.
 	node scripts do: [:each | 
-		self assertScript: each.
-		(self assert: (scriptNames includes: each name) not
+		self assertScript: each;
+			assert: (scriptNames includes: each name) not
 			description: 'Script name already in use'
-			node: each)
-			ifTrue: [scriptNames add: each name]].
+			node: each.
+		scriptNames add: each name].
 		
 	self visitCollection: node globals;
 		visitCollection: node scripts 
