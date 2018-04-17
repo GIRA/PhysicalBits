@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Monitor.h"
 #include "GPIO.h"
 #include "StackArray.h"
 #include "Program.h"
@@ -10,7 +11,7 @@ class VM
 {
 
 public:
-	Error executeProgram(Program*, GPIO*);
+	Error executeProgram(Program*, GPIO*, Monitor*);
 
 private:
 
@@ -22,8 +23,8 @@ private:
 	Script* currentScript = 0;
 
 	Instruction nextInstruction(void);
-	void executeInstruction(Instruction, GPIO*, bool&);
-	void executeCoroutine(Coroutine*, GPIO*);
+	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
+	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
 	void yieldTime(int32, bool&);
 	void unwindStackAndReturn(void);
 };

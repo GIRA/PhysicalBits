@@ -7,7 +7,6 @@
 #include "Script.h"
 #include "EEPROMWearLevelingWriter.h"
 #include "EEPROMWearLevelingReader.h"
-#include "VM.h"
 
 enum MonitorState
 {
@@ -21,9 +20,11 @@ class Monitor
 public: 
 	void loadInstalledProgram(Program** program);
 	void initSerial();
-	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
-	void sendOutgoingMessages(Program* program, GPIO* io, VM* vm);
+	void checkForIncomingMessages(Program** program, GPIO* io);
+	void sendOutgoingMessages(Program* program, GPIO* io);
 	void sendError(uint8 errorCode);
+
+	void serialWrite(uint8 value);
 
 private:
 	SerialReader stream;
@@ -42,7 +43,7 @@ private:
 	void connectionRequest();
 	void acceptConnection();
 
-	void executeCommand(Program** program, GPIO* io, VM* vm);
+	void executeCommand(Program** program, GPIO* io);
 	void executeSetProgram(Program** program, GPIO* io);
 	void executeSetValue(GPIO* io);
 	void executeSetMode(GPIO* io);
@@ -52,7 +53,6 @@ private:
 	void executeSaveProgram();
 	void executeKeepAlive();
 	void executeProfile();
-	void executeRunProgram(VM* vm, GPIO* io);
 	void executeSetGlobal(Program* program);
 	void executeSetGlobalReport(Program* program);
 	void executeSetBreakCount(Program* program);

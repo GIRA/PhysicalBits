@@ -1,6 +1,6 @@
 #include "VM.h"
 
-Error VM::executeProgram(Program * program, GPIO * io)
+Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 {
 	currentProgram = program;
 	int16 count = program->getScriptCount();
@@ -19,14 +19,14 @@ Error VM::executeProgram(Program * program, GPIO * io)
 			if (now >= coroutine->getNextRun())
 			{
 				coroutine->setNextRun(now + script->getInterval());
-				executeCoroutine(coroutine, io);
+				executeCoroutine(coroutine, io, monitor);
 			}
 		}
 	}
 	return NO_ERROR;
 }
 
-void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
+void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 {
 	currentCoroutine = coroutine;
 	coroutine->restoreStack(&stack);
@@ -67,7 +67,7 @@ void VM::executeCoroutine(Coroutine * coroutine, GPIO * io)
 		if (pc <= currentScript->getInstructionStop()) 
 		{
 			Instruction next = nextInstruction();
-			executeInstruction(next, io, yieldFlag);
+			executeInstruction(next, io, monitor, yieldFlag);
 		}
 		if (coroutine->hasError()) break;
 		if (stack.hasError())
@@ -115,7 +115,7 @@ Instruction VM::nextInstruction(void)
 	return currentScript->getInstructionAt(pc++);
 }
 
-void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
+void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor, bool& yieldFlag)
 {
 	Opcode opcode = (Opcode)instruction.opcode;
 	int16 argument = instruction.argument;
@@ -671,6 +671,13 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, bool& yieldFlag)
 			uint32 a = (uint32)stack.pop();
 			uint32 b = (uint32)stack.pop();
 			stack.push(a | b);
+		}
+		break;
+
+		case PRIM_SERIAL_WRITE:
+		{
+			uint8 a = stack.pop();
+			monitor->serialWrite(a);
 		}
 		break;
 	}

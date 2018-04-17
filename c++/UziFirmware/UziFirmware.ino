@@ -17,13 +17,13 @@ void setup()
 
 void loop()
 {
-	monitor.checkForIncomingMessages(&program, &io, &vm);
-	Error result = vm.executeProgram(program, &io);
+	monitor.checkForIncomingMessages(&program, &io);
+	Error result = vm.executeProgram(program, &io, &monitor);
 	if (result != NO_ERROR)
 	{
 		monitor.sendError(result);
 		uzi_memreset();
 		program = uzi_create(Program);
 	}
-	monitor.sendOutgoingMessages(program, &io, &vm);
+	monitor.sendOutgoingMessages(program, &io);
 }

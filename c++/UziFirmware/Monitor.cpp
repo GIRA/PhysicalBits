@@ -29,6 +29,7 @@
 #define RS_COROUTINE_STATE                              5
 #define RS_TICKING_SCRIPTS                              6
 #define RS_FREE_RAM                                     7
+#define RS_SERIAL_TUNNEL                                8
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                         (uint8)0xC3
@@ -57,7 +58,7 @@ void Monitor::initSerial()
 }
 
 
-void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
+void Monitor::checkForIncomingMessages(Program** program, GPIO* io)
 {
 	if (!Serial.available()) return;
 	
@@ -71,7 +72,7 @@ void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 	}
 	else if (state == CONNECTED)
 	{
-		executeCommand(program, io, vm);
+		executeCommand(program, io);
 	}
 }
 
@@ -106,7 +107,7 @@ void Monitor::acceptConnection()
 	Serial.write(expected);
 }
 
-void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm) 
+void Monitor::sendOutgoingMessages(Program* program, GPIO* io) 
 {
 	checkKeepAlive();
 	if (state == CONNECTED) 
@@ -329,7 +330,7 @@ void Monitor::sendFreeRAM()
 }
 
 
-void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
+void Monitor::executeCommand(Program** program, GPIO* io)
 {
 	bool timeout;
 	uint8 cmd = stream.next(timeout);
@@ -363,9 +364,6 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		break;
 	case RQ_PROFILE:
 		executeProfile();
-		break;
-	case RQ_RUN_PROGRAM:
-		executeRunProgram(vm, io);
 		break;
 	case RQ_SET_GLOBAL:
 		executeSetGlobal(*program);
@@ -480,21 +478,6 @@ void Monitor::executeProfile()
 	lastTimeProfile = millis();
 }
 
-void Monitor::executeRunProgram(VM* vm, GPIO* io)
-{
-	Program program;
-	// TODO(Richo): This is dangerous! Fix ASAP
-	Error result = readProgram(&stream, &program);
-	if (result == NO_ERROR)
-	{
-		vm->executeProgram(&program, io);
-	}
-	else
-	{
-		sendError(result);
-	}
-}
-
 void Monitor::executeSetGlobal(Program* program)
 {
 	bool timeout;
@@ -569,4 +552,13 @@ void trace(const char* str)
 	{
 		Serial.write(str[i]);
 	}
+}
+
+void Monitor::serialWrite(uint8 value) 
+{
+	if (state == CONNECTED) 
+	{
+		Serial.write(RS_SERIAL_TUNNEL);
+	}
+	Serial.write(value);
 }
