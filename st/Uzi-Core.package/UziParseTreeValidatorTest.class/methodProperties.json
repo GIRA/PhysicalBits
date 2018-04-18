@@ -20,7 +20,6 @@
 		"test013ScriptArgumentsAndLocalsMustNotCollide" : "Richo 9/13/2017 10:35",
 		"test014StartingAndStoppingCanOnlyBePerformedOnTasks" : "Richo 9/13/2017 10:35",
 		"test015LoopConditionShouldBeAnExpression" : "Richo 4/18/2018 10:22",
-		"test016OnlyScriptBlocksAreAllowedToHaveLocals" : "Richo 9/13/2017 10:35",
 		"test017PrimitiveCallArgumentsShouldBeExpressions" : "Richo 9/13/2017 10:35",
 		"test018RepeatTimesShouldBeAnExpression" : "Richo 9/22/2017 10:26",
 		"test019RepeatBodyShouldBeABlock" : "Richo 9/22/2017 10:33",
