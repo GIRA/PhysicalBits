@@ -1,40 +1,40 @@
 #include "Monitor.h"
 
 /* VERSION NUMBER */
-#define MAJOR_VERSION                                   0
-#define MINOR_VERSION                                   4
+#define MAJOR_VERSION                                       0
+#define MINOR_VERSION                                       4
 
-/* REQUEST COMMANDS */
-#define RQ_CONNECTION_REQUEST                         255
-#define RQ_SET_PROGRAM                                  0
-#define RQ_SET_VALUE                                    1
-#define RQ_SET_MODE                                     2
-#define RQ_START_REPORTING                              3
-#define RQ_STOP_REPORTING                               4
-#define RQ_SET_REPORT                                   5
-#define RQ_SAVE_PROGRAM                                 6
-#define RQ_KEEP_ALIVE                                   7
-#define RQ_PROFILE                                      8
-#define RQ_RUN_PROGRAM                                  9
-#define RQ_SET_GLOBAL                                  10
-#define RQ_SET_GLOBAL_REPORT                           11
-#define RQ_SET_BREAK_COUNT                             12
+/* INCOMING */
+#define MSG_IN_CONNECTION_REQUEST                         255
+#define MSG_IN_SET_PROGRAM                                  0
+#define MSG_IN_SET_VALUE                                    1
+#define MSG_IN_SET_MODE                                     2
+#define MSG_IN_START_REPORTING                              3
+#define MSG_IN_STOP_REPORTING                               4
+#define MSG_IN_SET_REPORT                                   5
+#define MSG_IN_SAVE_PROGRAM                                 6
+#define MSG_IN_KEEP_ALIVE                                   7
+#define MSG_IN_PROFILE                                      8
+// TODO(Richo): Available spot here!
+#define MSG_IN_SET_GLOBAL                                  10
+#define MSG_IN_SET_GLOBAL_REPORT                           11
+#define MSG_IN_SET_BREAK_COUNT                             12
 
-/* RESPONSE COMMANDS */
-#define RS_ERROR                                        0
-#define RS_PIN_VALUE                                    1
-#define RS_PROFILE                                      2
-#define RS_GLOBAL_VALUE                                 3
-#define RS_TRACE                                        4
-#define RS_COROUTINE_STATE                              5
-#define RS_TICKING_SCRIPTS                              6
-#define RS_FREE_RAM                                     7
-#define RS_SERIAL_TUNNEL                                8
+/* OUTGOING */
+#define MSG_OUT_ERROR                                       0
+#define MSG_OUT_PIN_VALUE                                   1
+#define MSG_OUT_PROFILE                                     2
+#define MSG_OUT_GLOBAL_VALUE                                3
+#define MSG_OUT_TRACE                                       4
+#define MSG_OUT_COROUTINE_STATE                             5
+#define MSG_OUT_TICKING_SCRIPTS                             6
+#define MSG_OUT_FREE_RAM                                    7
+#define MSG_OUT_SERIAL_TUNNEL                               8
 
 /* OTHER CONSTANTS */
-#define PROGRAM_START                         (uint8)0xC3
-#define REPORT_INTERVAL                               100
-#define KEEP_ALIVE_INTERVAL                           500
+#define PROGRAM_START                             (uint8)0xC3
+#define REPORT_INTERVAL                                   100
+#define KEEP_ALIVE_INTERVAL                               500
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -82,7 +82,7 @@ void Monitor::connectionRequest()
 	uint8 in;
 		
 	in = stream.next(timeout);
-	if (timeout || in != RQ_CONNECTION_REQUEST) return;
+	if (timeout || in != MSG_IN_CONNECTION_REQUEST) return;
 	in = stream.next(timeout);
 	if (timeout || in != MAJOR_VERSION) return;
 	in = stream.next(timeout);
@@ -120,7 +120,7 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io)
 
 void Monitor::sendError(uint8 coroutineIndex, uint8 errorCode)
 {
-	Serial.write(RS_ERROR);
+	Serial.write(MSG_OUT_ERROR);
 	Serial.write(coroutineIndex);
 	Serial.write(errorCode);
 }
@@ -137,7 +137,7 @@ void Monitor::sendProfile()
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		Serial.write(RS_PROFILE);
+		Serial.write(MSG_OUT_PROFILE);
 
 		uint16 val = tickCount;
 		uint8 val1 = val >> 7;  // MSB
@@ -181,7 +181,7 @@ void Monitor::sendVMState(Program* program)
 			if (coroutine->getDumpState())
 			{
 				coroutine->clearDumpState();
-				Serial.write(RS_COROUTINE_STATE);
+				Serial.write(MSG_OUT_COROUTINE_STATE);
 				Serial.write(i);
 				int16 pc = coroutine->getPC();
 				uint8 val1 = pc >> 8 & 0xFF; // MSB
@@ -227,7 +227,7 @@ void Monitor::sendPinValues(GPIO* io)
 	}
 	if (count == 0) return;
 
-	Serial.write(RS_PIN_VALUE);
+	Serial.write(MSG_OUT_PIN_VALUE);
 	Serial.write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
@@ -257,7 +257,7 @@ void Monitor::sendGlobalValues(Program* program)
 	}
 	if (count == 0) return;
 
-	Serial.write(RS_GLOBAL_VALUE);
+	Serial.write(MSG_OUT_GLOBAL_VALUE);
 	Serial.write(count);
 	for (uint8 i = 0; i < program->getGlobalCount(); i++)
 	{
@@ -275,7 +275,7 @@ void Monitor::sendGlobalValues(Program* program)
 
 void Monitor::sendTickingScripts(Program* program)
 {
-	Serial.write(RS_TICKING_SCRIPTS);
+	Serial.write(MSG_OUT_TICKING_SCRIPTS);
 	uint8 scriptCount = program->getScriptCount();
 	Serial.write(scriptCount);
 	uint8 result = 0;
@@ -312,7 +312,7 @@ int freeRam()
 
 void Monitor::sendFreeRAM()
 {
-	Serial.write(RS_FREE_RAM);
+	Serial.write(MSG_OUT_FREE_RAM);
 	{
 		uint32 value = freeRam();
 		Serial.write((value >> 24) & 0xFF);
@@ -338,44 +338,44 @@ void Monitor::executeCommand(Program** program, GPIO* io)
 
 	switch (cmd)
 	{
-	case RQ_SET_PROGRAM:
+	case MSG_IN_SET_PROGRAM:
 		executeSetProgram(program, io);
 		break;
-	case RQ_SET_VALUE:
+	case MSG_IN_SET_VALUE:
 		executeSetValue(io);
 		break;
-	case RQ_SET_MODE:
+	case MSG_IN_SET_MODE:
 		executeSetMode(io);
 		break;
-	case RQ_START_REPORTING:
+	case MSG_IN_START_REPORTING:
 		executeStartReporting();
 		break;
-	case RQ_STOP_REPORTING:
+	case MSG_IN_STOP_REPORTING:
 		executeStopReporting();
 		break;
-	case RQ_SET_REPORT:
+	case MSG_IN_SET_REPORT:
 		executeSetReport(io);
 		break;
-	case RQ_SAVE_PROGRAM:
+	case MSG_IN_SAVE_PROGRAM:
 		executeSaveProgram();
 		break;
-	case RQ_KEEP_ALIVE:
+	case MSG_IN_KEEP_ALIVE:
 		executeKeepAlive();
 		break;
-	case RQ_PROFILE:
+	case MSG_IN_PROFILE:
 		executeProfile();
 		break;
-	case RQ_SET_GLOBAL:
+	case MSG_IN_SET_GLOBAL:
 		executeSetGlobal(*program);
 		break;
-	case RQ_SET_GLOBAL_REPORT:
+	case MSG_IN_SET_GLOBAL_REPORT:
 		executeSetGlobalReport(*program);
 		break;
-	case RQ_SET_BREAK_COUNT:
+	case MSG_IN_SET_BREAK_COUNT:
 		executeSetBreakCount(*program);
 		break;
 	default:
-		// TODO(Richo): Return RS_ERROR
+		// TODO(Richo): Return MSG_OUT_ERROR
 		break;
 	}
 }
@@ -545,7 +545,7 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 
 void trace(const char* str)
 {
-	Serial.write(RS_TRACE);
+	Serial.write(MSG_OUT_TRACE);
 	uint8 size = strlen(str);
 	Serial.write(size);
 	for (int i = 0; i < size; i++)
@@ -558,7 +558,7 @@ void Monitor::serialWrite(uint8 value)
 {
 	if (state == CONNECTED) 
 	{
-		Serial.write(RS_SERIAL_TUNNEL);
+		Serial.write(MSG_OUT_SERIAL_TUNNEL);
 	}
 	Serial.write(value);
 }
