@@ -6,7 +6,6 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"locals",
 		"statements" ],
 	"name" : "UziBlockNode",
 	"pools" : [

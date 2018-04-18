@@ -1,3 +1,3 @@
 accessing
 locals
-	^ locals
+	^ self statements select: [:stmt | stmt isVariableDeclaration]

@@ -1,6 +1,5 @@
 visiting
 visitBlockNode: node
-	self visitCollection: node locals.
 	node statements do: [:stmt |
 		self visit: stmt.
 		

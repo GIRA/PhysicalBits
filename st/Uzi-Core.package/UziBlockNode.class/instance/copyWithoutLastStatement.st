@@ -1,6 +1,3 @@
 copying
 copyWithoutLastStatement
-	^ (self class 
-		locals: locals
-		statements: statements allButLast)
-			token: token
+	^ (self class statements: statements allButLast) token: token

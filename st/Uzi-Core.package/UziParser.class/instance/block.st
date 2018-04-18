@@ -1,12 +1,8 @@
 grammar-block
 block
 	^ ws , 
-	(${ asParser, variableDeclaration star , statementsList , $} asParser) token,
+	(${ asParser, statementsList , $} asParser) token,
 	 ws
-	map: [:ign1 :token :ign2 || locals stmts |
-		locals := token parsedValue at: 2.
-		stmts := token parsedValue at: 3.
-		(UziBlockNode 
-			locals: locals
-			statements: stmts) 
-			token: token]
+	map: [:ign1 :token :ign2 || stmts |
+		stmts := token parsedValue at: 2.
+		(UziBlockNode statements: stmts) token: token]

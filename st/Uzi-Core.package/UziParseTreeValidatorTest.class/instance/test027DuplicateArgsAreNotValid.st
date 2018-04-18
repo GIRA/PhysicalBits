@@ -9,6 +9,5 @@ test027DuplicateArgsAreNotValid.
 					var named: #a 
 				}
 				body: (block 
-					locals: #()
 					statements: {})
 		}).

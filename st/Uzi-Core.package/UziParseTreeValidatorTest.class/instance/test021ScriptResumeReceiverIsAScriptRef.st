@@ -8,6 +8,5 @@ test021ScriptResumeReceiverIsAScriptRef
 				name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: { resume scripts: { UziNumberNode value: 5 }})
 		}).

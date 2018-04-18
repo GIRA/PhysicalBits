@@ -1,7 +1,8 @@
 grammar-statements
 statement
 	^ ws , 
-		(assignment / return / conditional / 
+		(variableDeclaration /
+		assignment / return / conditional / 
 		startTask / stopTask / pauseTask / resumeTask /
 		while / doWhile / until / doUntil / repeat /
 		yield /

@@ -8,7 +8,6 @@ test004AssignmentValueShouldBeAnExpression
 				name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: {
 						assignment 
 							left: (var named: #a)

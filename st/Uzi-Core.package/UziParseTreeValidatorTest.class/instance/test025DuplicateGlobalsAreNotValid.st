@@ -9,6 +9,5 @@ test025DuplicateGlobalsAreNotValid.
 			proc name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: {})
 		}).

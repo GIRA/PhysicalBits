@@ -1,17 +1,16 @@
 {
 	"class" : {
-		"empty" : "Richo 6/18/2017 19:25",
-		"locals:statements:" : "Richo 6/18/2017 19:25",
-		"statements:" : "Richo 8/11/2017 18:08" },
+		"empty" : "Richo 4/18/2018 10:06",
+		"statements:" : "Richo 4/18/2018 10:05" },
 	"instance" : {
-		"=" : "Richo 8/12/2017 18:26",
+		"=" : "Richo 4/18/2018 10:07",
 		"accept:" : "Richo 9/7/2016 15:49",
-		"concat:" : "Richo 6/18/2017 19:26",
-		"copyWithoutLastStatement" : "Richo 6/18/2017 19:26",
-		"hash" : "Richo 8/12/2017 18:27",
-		"initializeWithLocals:statements:" : "Richo 6/18/2017 19:29",
+		"concat:" : "Richo 4/18/2018 10:08",
+		"copyWithoutLastStatement" : "Richo 4/18/2018 10:07",
+		"hash" : "Richo 4/18/2018 10:06",
+		"initializeWithStatements:" : "Richo 4/18/2018 10:06",
 		"isBlock" : "Richo 12/30/2016 15:03",
 		"isEmpty" : "Richo 12/31/2016 13:33",
 		"lastStatement" : "Richo 5/6/2017 19:25",
-		"locals" : "Richo 5/8/2017 19:14",
+		"locals" : "Richo 4/18/2018 10:07",
 		"statements" : "Richo 10/28/2014 18:19" } }

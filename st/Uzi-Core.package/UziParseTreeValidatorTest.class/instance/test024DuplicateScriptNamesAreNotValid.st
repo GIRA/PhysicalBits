@@ -9,12 +9,10 @@ test024DuplicateScriptNamesAreNotValid
 			proc name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: {}).
 			
 			task name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: {})
 		}).

@@ -6,9 +6,8 @@ test026DuplicateLocalsAreNotValid.
 			proc name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: {
+					statements: {
 						varDec name: #a. 
 						varDec name: #a 
-					}
-					statements: {})
+					})
 		}).

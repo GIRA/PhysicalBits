@@ -11,7 +11,6 @@ test015LoopConditionShouldBeAnExpression
 				name: #foo 
 				arguments: #() 
 				body: (block 
-					locals: #() 
 					statements: {
 						doUntil
 							condition: (block statements: { var named: #a })
