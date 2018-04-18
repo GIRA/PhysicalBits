@@ -1,3 +1,0 @@
-accessing
-lastStatement
-	^ statements last
