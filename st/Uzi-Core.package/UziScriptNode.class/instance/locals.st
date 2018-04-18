@@ -1,3 +1,3 @@
 accessing
 locals
-	^ body locals
+	^ self body locals
