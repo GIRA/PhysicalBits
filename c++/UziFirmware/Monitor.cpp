@@ -34,7 +34,7 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START                         (uint8)0xC3
 #define REPORT_INTERVAL                               100
-#define KEEP_ALIVE_INTERVAL                           150
+#define KEEP_ALIVE_INTERVAL                           500
 
 void Monitor::loadInstalledProgram(Program** program)
 {
