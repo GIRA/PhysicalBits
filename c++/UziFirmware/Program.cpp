@@ -141,7 +141,13 @@ bool Program::getReport(uint8 index)
 void Program::setReport(uint8 index, bool report)
 {
 	uint8 actualIndex = (int)floor((double)index / 8);
-	globalsReport[actualIndex] |= report ? 1 << (index % 8) : 0;
+	uint8 mask = 1 << (index % 8);
+	if (report) {
+		globalsReport[actualIndex] |= mask;
+	}
+	else {
+		globalsReport[actualIndex] &= ~(mask);
+	}
 }
 
 uint8 Program::getGlobalCount(void)
