@@ -1,64 +1,64 @@
 var value;
-var state; "0 : write, 1 : read"
-var rturn = -1;
-var wturn = -1;
+var state; "0 : send, 1 : receive"
+var r_turn = -1;
+var s_turn = -1;
 
-proc write(val) {
-	"Wait until it's our turn to write by checking
-	wturn, if it matches our coroutine index then we
+proc send(val) {
+	"Wait until it's our turn to send by checking
+	s_turn, if it matches our coroutine index then we
 	can continue (it's our turn!). If not, we look for
-	wturn == -1, which means nobody is attempting to
-	write to the channel. If that's the case we simply
-	set wturn = to our coroutine index so that nobody
+	s_turn == -1, which means nobody is attempting to
+	send to the channel. If that's the case we simply
+	set s_turn = to our coroutine index so that nobody
 	else can claim it"
-	while coroutine() != wturn {
-		if wturn == -1 {
-			wturn = coroutine();
+	while coroutine() != s_turn {
+		if s_turn == -1 {
+			s_turn = coroutine();
 			"TODO(Richo): The following yield is not required 
 			right now but if the vm implementation changes the 
-			behavior of backwards jumps it will ensure the
-			correct functionality"
+			behavior of backwards jumps it should ensure the
+			correct functionality (I think...)"
 			yield;
 		}
 	}
-	"Now we wait until it's time to write. It might be
-	our turn to write but someone might be reading"
+	"Now we wait until it's time to send. It might be
+	our turn to send but someone might be receiving"
 	while state != 0;
 	
-	"Release wturn so that the next coroutine in line 
+	"Release s_turn so that the next coroutine in line 
 	can get their turn"
-	wturn = -1;
+	s_turn = -1;
 	yield;
-	"Write the value to the channel"
+	"Send the value to the channel"
 	value = val;
-	"Set the state to ready-to-read"
+	"Set the state to ready-to-receive"
 	state = 1;
-	"Wait until the state is ready-to-write again"
+	"Wait until the state is ready-to-send again"
 	while state != 0;	
 }
 
-func read() {
-	"Wait until it's our turn to read by checking
-	rturn, if it matches our coroutine index then we
+func receive() {
+	"Wait until it's our turn to receive by checking
+	r_turn, if it matches our coroutine index then we
 	can continue (it's our turn!). If not, we look for
-	rturn == -1, which means nobody is attempting to
-	read from the channel. If that's the case we simply
-	set rturn = to our coroutine index so that nobody
+	r_turn == -1, which means nobody is attempting to
+	receive from the channel. If that's the case we simply
+	set r_turn = to our coroutine index so that nobody
 	else can claim it"
-	while coroutine() != rturn {
-		if rturn == -1 {
-			rturn = coroutine();
+	while coroutine() != r_turn {
+		if r_turn == -1 {
+			r_turn = coroutine();
 			"TODO(Richo): The following yield is not required 
 			right now but if the vm implementation changes the 
-			behavior of backwards jumps it will ensure the
-			correct functionality"
+			behavior of backwards jumps it should ensure the
+			correct functionality (I think...)"
 			yield;
 		}
 	}
-	"Now we wait until it's time to read"
+	"Now we wait until it's time to receive"
 	while state != 1;
 	
-	rturn = -1;
+	r_turn = -1;
 	yield;
 	state = 0;
 	return value;
