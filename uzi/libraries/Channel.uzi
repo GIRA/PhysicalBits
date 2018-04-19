@@ -14,6 +14,11 @@ proc write(val) {
 	while coroutine() != wturn {
 		if wturn == -1 {
 			wturn = coroutine();
+			"TODO(Richo): The following yield is not required 
+			right now but if the vm implementation changes the 
+			behavior of backwards jumps it will ensure the
+			correct functionality"
+			yield;
 		}
 	}
 	"Now we wait until it's time to write. It might be
@@ -43,6 +48,11 @@ func read() {
 	while coroutine() != rturn {
 		if rturn == -1 {
 			rturn = coroutine();
+			"TODO(Richo): The following yield is not required 
+			right now but if the vm implementation changes the 
+			behavior of backwards jumps it will ensure the
+			correct functionality"
+			yield;
 		}
 	}
 	"Now we wait until it's time to read"
