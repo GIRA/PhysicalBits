@@ -23,7 +23,8 @@
 		"repeat",
 		"pause",
 		"resume",
-		"forever" ],
+		"forever",
+		"for" ],
 	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],

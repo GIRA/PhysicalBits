@@ -4,7 +4,7 @@
 	"instance" : {
 		"assertInvalid:" : "Richo 8/10/2017 10:30",
 		"check:" : "Richo 8/11/2017 19:18",
-		"setUp" : "Richo 4/21/2018 18:26",
+		"setUp" : "Richo 4/21/2018 19:13",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
 		"test002AssignmentsAreNotExpressions" : "Richo 9/13/2017 10:35",
 		"test003ConditionalsAreNotExpressions" : "Richo 9/13/2017 10:35",
@@ -31,4 +31,9 @@
 		"test025DuplicateGlobalsAreNotValid" : "Richo 4/18/2018 10:23",
 		"test026DuplicateLocalsAreNotValid" : "Richo 4/18/2018 10:19",
 		"test027DuplicateArgsAreNotValid" : "Richo 4/18/2018 10:23",
-		"test028ForeverBodyShouldBeABlock" : "Richo 4/21/2018 18:26" } }
+		"test028ForeverBodyShouldBeABlock" : "Richo 4/21/2018 18:26",
+		"test029ForBodyShouldBeABlock" : "Richo 4/21/2018 19:12",
+		"test030ForCounterShouldBeAVariable" : "Richo 4/21/2018 19:23",
+		"test031ForStartShouldBeAnExpression" : "Richo 4/21/2018 19:38",
+		"test032ForStopShouldBeAnExpression" : "Richo 4/21/2018 19:38",
+		"test033ForStepShouldBeAnExpression" : "Richo 4/21/2018 19:42" } }

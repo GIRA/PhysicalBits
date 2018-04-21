@@ -28,4 +28,5 @@ setUp
 	pause := UziScriptPauseNode.
 	resume := UziScriptResumeNode.
 	yield := UziYieldNode.
-	forever := UziForeverNode
+	forever := UziForeverNode.
+	for := UziForNode 

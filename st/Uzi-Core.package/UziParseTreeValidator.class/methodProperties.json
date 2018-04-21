@@ -2,7 +2,7 @@
 	"class" : {
 		"check:" : "Richo 12/30/2016 14:45" },
 	"instance" : {
-		"assert:description:node:" : "Richo 9/11/2017 08:41",
+		"assert:description:node:" : "Richo 4/21/2018 19:38",
 		"assertBlock:" : "Richo 5/8/2017 19:46",
 		"assertExpression:" : "Richo 5/8/2017 19:48",
 		"assertNumber:" : "Richo 8/10/2017 10:01",
@@ -15,9 +15,10 @@
 		"check:" : "Richo 5/8/2017 18:05",
 		"visit:" : "Richo 12/30/2016 14:29",
 		"visitAssignmentNode:" : "Richo 12/31/2016 13:03",
-		"visitBlockNode:" : "Richo 8/10/2017 10:21",
+		"visitBlockNode:" : "Richo 4/21/2018 19:42",
 		"visitCollection:" : "Richo 12/30/2016 14:52",
 		"visitConditionalNode:" : "Richo 4/18/2018 10:53",
+		"visitForNode:" : "Richo 4/21/2018 19:42",
 		"visitForeverNode:" : "Richo 4/21/2018 18:28",
 		"visitLogicalAndNode:" : "Richo 5/31/2017 18:37",
 		"visitLogicalOrNode:" : "Richo 5/31/2017 18:37",

@@ -63,4 +63,6 @@
 		"test056VariableDeclarationsInNestedBlocksAreAllowed" : "Richo 4/21/2018 18:40",
 		"test057IdentifierAcceptsUnderscore" : "Richo 4/21/2018 18:01",
 		"test058InvalidBinarySelectors" : "Richo 4/21/2018 18:11",
-		"test059ForeverLoop" : "Richo 4/21/2018 18:18" } }
+		"test059ForeverLoop" : "Richo 4/21/2018 18:18",
+		"test060ForLoopWithImplicitStep" : "Richo 4/21/2018 19:10",
+		"test061ForLoopWithExplicitStep" : "Richo 4/21/2018 19:46" } }

@@ -30,7 +30,8 @@
 		"pause",
 		"resume",
 		"yield",
-		"forever" ],
+		"forever",
+		"for" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

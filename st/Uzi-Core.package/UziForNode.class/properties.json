@@ -1,0 +1,18 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"counter",
+		"start",
+		"stop",
+		"step",
+		"body" ],
+	"name" : "UziForNode",
+	"pools" : [
+		 ],
+	"super" : "UziParseNode",
+	"type" : "normal" }

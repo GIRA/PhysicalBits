@@ -4,7 +4,7 @@ statement
 		(variableDeclaration /
 		assignment / return / conditional / 
 		startTask / stopTask / pauseTask / resumeTask /
-		while / doWhile / until / doUntil / repeat / forever /
+		while / doWhile / until / doUntil / repeat / forever / for /
 		yield /
 		expressionStatement) , 
 		ws

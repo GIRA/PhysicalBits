@@ -1,0 +1,17 @@
+{
+	"class" : {
+		"counter:start:stop:body:" : "Richo 4/21/2018 19:46",
+		"counter:start:stop:step:body:" : "Richo 4/21/2018 19:46" },
+	"instance" : {
+		"=" : "Richo 4/21/2018 19:54",
+		"accept:" : "Richo 4/21/2018 19:13",
+		"body" : "Richo 4/21/2018 19:11",
+		"counter" : "Richo 4/21/2018 19:11",
+		"counterDeclaration" : "Richo 4/21/2018 19:29",
+		"hash" : "Richo 4/21/2018 19:55",
+		"initializeWithCounter:start:stop:step:body:" : "Richo 4/21/2018 19:10",
+		"isStatement" : "Richo 4/21/2018 19:23",
+		"start" : "Richo 4/21/2018 19:11",
+		"step" : "Richo 4/21/2018 19:11",
+		"stop" : "Richo 4/21/2018 19:11",
+		"variableDeclarations" : "Richo 4/21/2018 19:29" } }

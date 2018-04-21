@@ -54,7 +54,8 @@
 		"pauseTask",
 		"resumeTask",
 		"yield",
-		"forever" ],
+		"forever",
+		"for" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
