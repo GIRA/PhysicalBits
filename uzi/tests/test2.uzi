@@ -1,2 +1,2 @@
-import t1 = 'test.uzi';
+import t1 from 'test.uzi';
 func bar(a) { return t1.v + a; }
