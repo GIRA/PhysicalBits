@@ -1,3 +1,4 @@
 grammar
 identifier
-	^ ((#letter asParser , #word asParser star) separatedBy: $. asParser) flatten
+	^ ((($_ asParser / #letter asParser) , ($_ asParser / #word asParser) star) 
+		separatedBy: $. asParser) flatten
