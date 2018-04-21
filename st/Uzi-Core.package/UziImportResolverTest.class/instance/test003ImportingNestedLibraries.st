@@ -1,7 +1,7 @@
 tests
 test003ImportingNestedLibraries
 	"
-	import t2 = 'test2.uzi';
+	import t2 from 'test2.uzi';
 	task main() { write(D13, t2.bar(1)); }
 	"
 	| original expected actual |
