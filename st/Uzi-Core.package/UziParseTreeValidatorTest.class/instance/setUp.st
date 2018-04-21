@@ -16,4 +16,5 @@ setUp
 	stop := UziScriptStopNode.
 	repeat := UziRepeatNode.
 	pause := UziScriptPauseNode.
-	resume := UziScriptResumeNode 
+	resume := UziScriptResumeNode.
+	forever := UziForeverNode.

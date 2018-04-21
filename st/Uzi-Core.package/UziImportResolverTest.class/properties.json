@@ -29,7 +29,8 @@
 		"repeat",
 		"pause",
 		"resume",
-		"yield" ],
+		"yield",
+		"forever" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],
