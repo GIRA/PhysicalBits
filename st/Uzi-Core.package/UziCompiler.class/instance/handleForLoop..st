@@ -10,15 +10,15 @@ handleForLoop: node
 	(script pop: node counter name) node: node.
 	"We declare a temp var to hold the step value for this iteration"	
 	temp := script registerNewLocalWithValue: 0.
-	"We set the temp variable. This is where the loop begins"
+	"This is where the loop begins"
 	script label: labelBegin.
-	self visit: node step.
-	(script pop: temp name) node: node.	
 	"Now we compare counter with stop. The comparison 
 	can either be GTEQ or LTEQ depending on the sign of the 
 	step (which is stored on temp)"
 	(script push: node counter name) node: node.
 	self visit: node stop.
+	self visit: node step.
+	(script pop: temp name) node: node.
 	(script push: temp name) node: node.
 	(script push: 0) node: node.
 	(script jlte: 2) node: node.
