@@ -26,7 +26,7 @@ handleForLoop: node
 	(script jmp: 1) node: node.
 	(script prim: #greaterThanOrEquals) node: node.
 	(script jz: labelEnd) node: node.
-	"While counter is doesn't reath the stop we execute the body"
+	"While counter doesn't reach the stop we execute the body"
 	self visit: node body.
 	"Before jumping back to the comparison, we increment counter by step"
 	(script push: node counter name) node: node.
