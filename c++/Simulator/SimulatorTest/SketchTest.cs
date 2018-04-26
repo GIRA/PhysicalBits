@@ -890,7 +890,6 @@ namespace SimulatorTest
             sketch.Loop();
         }
 
-
         [TestMethod]
         public void Test043ForLoop()
         {
@@ -907,6 +906,76 @@ namespace SimulatorTest
                     string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
                     Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void Test044ReversedForLoop()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test044ReversedForLoop)));
+
+            for (int i = 11; i >= 7; i--)
+            {
+                sketch.SetMillis(100 - i);
+                sketch.Loop();
+
+                for (int j = 11; j >= 7; j--)
+                {
+                    bool shouldBeOn = j >= i;
+                    string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
+                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test045ForLoopWithoutConstantStep()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test045ForLoopWithoutConstantStep)));
+
+            for (int i = 7; i <= 11; i++)
+            {
+                sketch.SetMillis(i);
+                sketch.Loop();
+
+                for (int j = 7; j <= 11; j++)
+                {
+                    bool shouldBeOn = j <= i;
+                    string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
+                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test046ReverseForLoopWithoutConstantStep()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test046ReverseForLoopWithoutConstantStep)));
+
+            for (int i = 11; i >= 7; i--)
+            {
+                sketch.SetMillis(100 - i);
+                sketch.Loop();
+
+                for (int j = 11; j >= 7; j--)
+                {
+                    bool shouldBeOn = j >= i;
+                    string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
+                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Test047ForLoopShouldOnlyEvaluateStepOncePerIteration()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test047ForLoopShouldOnlyEvaluateStepOncePerIteration)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+                Assert.AreEqual(1023 * (i % 2), sketch.GetPinValue(13), "D13 should blink on each tick");
             }
         }
     }
