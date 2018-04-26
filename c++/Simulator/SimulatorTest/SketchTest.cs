@@ -889,5 +889,25 @@ namespace SimulatorTest
             sketch.WriteSerial(ReadFile(nameof(Test042EmptyScriptShouldNotCrashTheVM)));
             sketch.Loop();
         }
+
+
+        [TestMethod]
+        public void Test043ForLoop()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test043ForLoop)));
+
+            for (int i = 7; i <= 11; i++)
+            {
+                sketch.SetMillis(i);
+                sketch.Loop();
+
+                for (int j = 7; j <= 11; j++)
+                {
+                    bool shouldBeOn = j <= i;
+                    string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
+                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
+                }
+            }
+        }
     }
 }

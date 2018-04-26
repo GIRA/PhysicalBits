@@ -45,4 +45,5 @@
 		"test040StartOnPausedTaskShouldJumpToBeginning" : "Richo 12/11/2017 12:30",
 		"test041PausingShouldPreserveTheStack" : "Richo 12/11/2017 13:07",
 		"test042EmptyScriptShouldNotCrashTheVM" : "Richo 4/11/2018 09:59",
+		"test043ForLoop" : "Richo 4/25/2018 21:21",
 		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
