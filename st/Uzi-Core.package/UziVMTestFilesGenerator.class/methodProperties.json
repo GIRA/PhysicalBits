@@ -1,7 +1,6 @@
 {
 	"class" : {
-		"outputPath" : "Richo 1/9/2018 18:37",
-		"outputPath:" : "Richo 12/9/2017 13:49" },
+		"outputDirectory" : "Richo 4/30/2018 15:14" },
 	"instance" : {
 		"test001TurnOnBytecode" : "Richo 12/9/2017 14:24",
 		"test002TurnOffBytecode" : "Richo 12/9/2017 14:24",
@@ -56,4 +55,4 @@
 		"test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer" : "Richo 4/29/2018 21:18",
 		"test052ChannelWithMultipleProducersAndOneConsumer" : "Richo 4/29/2018 22:43",
 		"test053ChannelWithMultipleConsumersAndOneProducer" : "Richo 4/29/2018 22:48",
-		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
+		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }

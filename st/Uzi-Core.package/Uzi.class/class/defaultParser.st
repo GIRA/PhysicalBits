@@ -1,3 +1,3 @@
-config
+config-default tools
 defaultParser
 	^ UziParser 

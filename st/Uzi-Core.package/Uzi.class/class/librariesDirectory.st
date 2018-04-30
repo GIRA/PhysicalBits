@@ -1,3 +1,3 @@
-config
+config-paths
 librariesDirectory
-	^ librariesDirectory ifNil: [self defaultLibrariesDirectory]
+	^ librariesDirectory ifNil: [self gitDirectory / 'uzi' / 'libraries']
