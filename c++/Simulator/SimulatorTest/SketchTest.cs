@@ -1014,5 +1014,154 @@ namespace SimulatorTest
                 Assert.AreEqual(pattern[i], sketch.GetPinValue(11) / 1023.0, 0.05, "D11 should be {0}", pattern[i]);
             }
         }
+
+        [TestMethod]
+        public void Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer)));
+            /*
+                D13 should blink every second.
+                D11 should always be off.
+             */
+            for (int i = 0; i < 100; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+                Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should always be on");
+            }
+        }
+
+        [TestMethod]
+        public void Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers)));
+            /*
+                D13 should blink every second.
+                D11 should always be 0.5.
+             */
+            for (int i = 0; i < 100; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+                Assert.AreEqual(0.5, sketch.GetPinValue(11) / 1023.0, 0.05, "D11 should always be 0.5");
+            }
+        }
+
+        [TestMethod]
+        public void Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer)));
+            /*
+                D13 should blink every second.
+                D11 should always be opposite of D13
+             */
+            for (int i = 0; i < 100; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 900; j++) // TODO(Richo): This works but if the condition is j < 100 it doesn't, why?
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+                Assert.AreEqual(1023 * (i % 2), sketch.GetPinValue(11), "D11 should always be opposite of D13");
+            }
+        }
+
+        [TestMethod]
+        public void Test052ChannelWithMultipleProducersAndOneConsumer()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test052ChannelWithMultipleProducersAndOneConsumer)));
+            /*
+                D13 should blink every second.
+                D11 should follow the pattern:
+                0 s -> 0
+                1 s -> 0.25
+                2 s -> 0.5
+                3 s -> 0.75
+                4 s -> 1
+                5 s -> 0
+             */
+            double[] pattern = new[] { 0, 0.25, 0.5, 0.75, 1 };
+            for (int i = 0; i < 20; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                double d11 = pattern[i % pattern.Length];
+                Assert.AreEqual(d11, sketch.GetPinValue(11) / 1023.0, 0.05, "D11 should be {0}", d11);
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+            }
+        }
+
+        [TestMethod]
+        public void Test053ChannelWithMultipleConsumersAndOneProducer()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test053ChannelWithMultipleConsumersAndOneProducer)));
+            /*
+                D10, D11, D12, and D13 should follow the pattern:
+                0 s -> D10: 0.00, D11: 0.00, D12: 0.00, D13: 0.00
+                1 s -> D10: 0.25, D11: 0.00, D12: 0.00, D13: 0.00
+                2 s -> D10: 0.25, D11: 0.50, D12: 0.00, D13: 0.00
+                3 s -> D10: 0.25, D11: 0.50, D12: 0.75, D13: 0.00
+                4 s -> D10: 0.25, D11: 0.50, D12: 0.75, D13: 1.00
+                5 s -> D10: 0.00, D11: 0.50, D12: 0.75, D13: 1.00
+                6 s -> D10: 0.00, D11: 0.25, D12: 0.75, D13: 1.00
+                7 s -> D10: 0.00, D11: 0.25, D12: 0.50, D13: 1.00
+                8 s -> D10: 0.00, D11: 0.25, D12: 0.50, D13: 0.75
+             */
+            double[][] pattern = new[] 
+            {
+                /*       D10   D11   D12   D13 */
+                new[] { 0.00, 0.00, 0.00, 0.00 },
+                new[] { 0.25, 0.00, 0.00, 0.00 },
+                new[] { 0.25, 0.50, 0.00, 0.00 },
+                new[] { 0.25, 0.50, 0.75, 0.00 },
+                new[] { 0.25, 0.50, 0.75, 1.00 },
+                new[] { 0.00, 0.50, 0.75, 1.00 },
+                new[] { 0.00, 0.25, 0.75, 1.00 },
+                new[] { 0.00, 0.25, 0.50, 1.00 },
+                new[] { 0.00, 0.25, 0.50, 0.75 },
+            };
+            for (int i = 0; i < pattern.Length; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                double[] pins = pattern[i];
+                for (int pinIndex = 0; pinIndex < pins.Length; pinIndex++)
+                {
+                    double pinExpected = pins[pinIndex];
+                    int pinNumber = pinIndex + 10;
+                    Assert.AreEqual(pinExpected, sketch.GetPinValue(pinNumber) / 1023.0, 0.05, "D{0} should be {1}", pinNumber, pinExpected);
+                }
+            }
+        }
     }
 }

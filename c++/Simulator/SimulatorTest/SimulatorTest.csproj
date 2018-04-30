@@ -236,6 +236,21 @@
     <None Include="TestFiles\Test048MutexShouldGuaranteeACriticalSection">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestFiles\Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\Test052ChannelWithMultipleProducersAndOneConsumer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\Test053ChannelWithMultipleConsumersAndOneProducer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
