@@ -978,5 +978,41 @@ namespace SimulatorTest
                 Assert.AreEqual(1023 * (i % 2), sketch.GetPinValue(13), "D13 should blink on each tick");
             }
         }
+
+        [TestMethod]
+        public void Test048MutexShouldGuaranteeACriticalSection()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test048MutexShouldGuaranteeACriticalSection)));
+            /*
+                D13 should blink every second.
+                D11 should follow the pattern:
+                0 s -> 0
+                1 s -> 0.25
+                2 s -> 0.5
+                3 s -> 0.75
+                4 s -> 1
+                5 s -> 1
+                6 s -> 1
+                7 s -> 0.5
+                8 s -> 0.5
+                9 s -> 0
+                10 s -> 0
+                11 s -> 0
+             */
+            double[] pattern = new [] { 0, 0.25, 0.5, 0.75, 1, 1, 1, 0.5, 0.5, 0, 0, 0 };
+            for (int i = 0; i < 12; i++)
+            {
+                // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
+                int time = i * 1000;
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.SetMillis(time++);
+                    sketch.Loop();
+                }
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+                Assert.AreEqual(pattern[i], sketch.GetPinValue(11) / 1023.0, 0.05, "D11 should be {0}", pattern[i]);
+            }
+        }
     }
 }

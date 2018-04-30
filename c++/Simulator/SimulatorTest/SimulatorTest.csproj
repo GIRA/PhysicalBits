@@ -233,6 +233,9 @@
     <None Include="TestFiles\Test047ForLoopShouldOnlyEvaluateStepOncePerIteration">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestFiles\Test048MutexShouldGuaranteeACriticalSection">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
