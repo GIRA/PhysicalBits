@@ -1,7 +1,7 @@
 encoding scripts
 visitScript: anUziScript 
 	script := anUziScript.
-	self indent; writeLine: 'script: #{1}' format: { anUziScript name };
+	self indent; writeLine: 'script: {1}' format: { anUziScript name asSymbol storeString };
 		indent; writeLine: 'ticking: {1}' format: { anUziScript isTicking };
 		indent; writeLine: 'delay: {1}' format: { anUziScript delay value };
 		indent; writeLine: 'instructions: [:s | s'.

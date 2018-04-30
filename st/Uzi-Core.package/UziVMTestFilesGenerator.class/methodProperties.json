@@ -50,4 +50,10 @@
 		"test045ForLoopWithoutConstantStep" : "Richo 4/25/2018 22:03",
 		"test046ReverseForLoopWithoutConstantStep" : "Richo 4/25/2018 22:04",
 		"test047ForLoopShouldOnlyEvaluateStepOncePerIteration" : "Richo 4/25/2018 22:37",
+		"test048MutexShouldGuaranteeACriticalSection" : "Richo 4/29/2018 20:21",
+		"test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer" : "Richo 4/29/2018 21:09",
+		"test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers" : "Richo 4/29/2018 21:14",
+		"test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer" : "Richo 4/29/2018 21:18",
+		"test052ChannelWithMultipleProducersAndOneConsumer" : "Richo 4/29/2018 22:43",
+		"test053ChannelWithMultipleConsumersAndOneProducer" : "Richo 4/29/2018 22:48",
 		"writeFile:contents:" : "Richo 12/9/2017 16:39" } }
