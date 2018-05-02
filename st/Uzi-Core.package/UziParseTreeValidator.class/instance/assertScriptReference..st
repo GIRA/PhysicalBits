@@ -6,7 +6,7 @@ assertScriptReference: node
 		node: node)
 		ifFalse: [^ false].
 	
-	validScriptNames := program scripts collect: [:each | each name].
+	validScriptNames := self program scripts collect: [:each | each name].
 	^ self assert: (validScriptNames includes: node scriptName)
 		description: 'Invalid script'
 		node: node

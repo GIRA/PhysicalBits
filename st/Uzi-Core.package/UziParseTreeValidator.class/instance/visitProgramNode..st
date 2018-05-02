@@ -1,8 +1,6 @@
 visiting
 visitProgramNode: node
-	| scriptNames globals |
-	program := node.
-	
+	| scriptNames globals |	
 	globals := Set new.
 	node globals do: [:each | 
 		self assertVariableDeclaration: each.

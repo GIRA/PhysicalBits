@@ -3,7 +3,7 @@ visitScriptCallNode: node
 	| args |
 	self assertScriptReference: node script.
 	
-	(program scriptNamed: node scriptName)
+	(self program scriptNamed: node scriptName)
 		ifNotNil: [:script || callArgs scriptArgs |
 			callArgs := node arguments collect: [:arg | arg key].
 			scriptArgs := script arguments collect: [:arg | arg name].
