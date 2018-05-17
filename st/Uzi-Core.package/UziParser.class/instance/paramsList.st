@@ -2,7 +2,7 @@ grammar-scripts
 paramsList
 	^ ws, 
 	($( asParser , ws , 
-		(variable separatedBy: (ws , $, asParser , ws)) optional, 
+		(argument separatedBy: (ws , $, asParser , ws)) optional, 
 		ws , $) asParser) token, 
 	ws
 	map: [:ign1 :token :ign2 |

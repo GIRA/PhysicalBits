@@ -24,8 +24,8 @@ test011ImportingAScriptThatCallsAnInternalProc
 		scripts: {
 			proc name: #'t9.toggleAndWait'
 				arguments: {
-					var named: 'pin'.
-					var named: 'ms'.
+					varDec name: 'pin'.
+					varDec name: 'ms'.
 				}
 				body: (block statements: {
 					prim selector: #toggle

@@ -34,7 +34,7 @@ test003ImportingNestedLibraries
 				}).
 			func name: #'t2.bar'
 				arguments: {
-					var named: #a
+					varDec name: #a
 				}
 				body: (block statements: {
 					return value: (prim

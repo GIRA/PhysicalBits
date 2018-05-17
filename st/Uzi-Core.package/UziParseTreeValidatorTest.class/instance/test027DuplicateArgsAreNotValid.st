@@ -5,8 +5,8 @@ test027DuplicateArgsAreNotValid.
 		scripts: { 
 			proc name: #foo 
 				arguments: {
-					var named: #a. 
-					var named: #a 
+					varDec name: #a. 
+					varDec name: #a 
 				}
 				body: (block 
 					statements: {})

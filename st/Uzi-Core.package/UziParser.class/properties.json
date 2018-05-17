@@ -55,7 +55,8 @@
 		"resumeTask",
 		"yield",
 		"forever",
-		"for" ],
+		"for",
+		"argument" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

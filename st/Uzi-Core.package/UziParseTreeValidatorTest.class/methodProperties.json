@@ -30,10 +30,11 @@
 		"test024DuplicateScriptNamesAreNotValid" : "Richo 4/18/2018 10:23",
 		"test025DuplicateGlobalsAreNotValid" : "Richo 4/18/2018 10:23",
 		"test026DuplicateLocalsAreNotValid" : "Richo 4/18/2018 10:19",
-		"test027DuplicateArgsAreNotValid" : "Richo 4/18/2018 10:23",
+		"test027DuplicateArgsAreNotValid" : "Richo 5/17/2018 09:56",
 		"test028ForeverBodyShouldBeABlock" : "Richo 4/21/2018 18:26",
 		"test029ForBodyShouldBeABlock" : "Richo 4/21/2018 19:12",
 		"test030ForCounterShouldBeAVariable" : "Richo 4/21/2018 19:23",
 		"test031ForStartShouldBeAnExpression" : "Richo 4/21/2018 19:38",
 		"test032ForStopShouldBeAnExpression" : "Richo 4/21/2018 19:38",
-		"test033ForStepShouldBeAnExpression" : "Richo 4/21/2018 19:42" } }
+		"test033ForStepShouldBeAnExpression" : "Richo 4/21/2018 19:42",
+		"test034AVariableShouldBeDeclaredBeforeItsFirstUse" : "Richo 5/2/2018 20:29" } }

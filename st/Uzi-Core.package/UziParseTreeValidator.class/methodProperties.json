@@ -16,6 +16,7 @@
 		"path" : "Richo 5/1/2018 21:58",
 		"program" : "Richo 5/1/2018 21:58",
 		"script" : "Richo 5/1/2018 21:58",
+		"variablesInScope" : "Richo 5/2/2018 22:06",
 		"visit:" : "Richo 5/1/2018 21:54",
 		"visitAssignmentNode:" : "Richo 12/31/2016 13:03",
 		"visitBlockNode:" : "Richo 4/21/2018 19:42",
@@ -39,5 +40,5 @@
 		"visitScriptStopNode:" : "Richo 5/1/2018 21:57",
 		"visitTickingRateNode:" : "Richo 12/30/2016 16:32",
 		"visitVariableDeclarationNode:" : "Richo 8/10/2017 10:22",
-		"visitVariableNode:" : "Richo 5/1/2018 21:55",
+		"visitVariableNode:" : "Richo 5/2/2018 21:29",
 		"visitYieldNode:" : "Richo 4/12/2018 22:49" } }
