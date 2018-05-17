@@ -14,7 +14,7 @@ test031ForStartShouldBeAnExpression
 				body: (block 
 					statements: {
 						for 
-							counter: (var named: #a)
+							counter: (varDec name: #a)
 							start: (prim
 								selector: #toggle
 								arguments: { number value: 13 })

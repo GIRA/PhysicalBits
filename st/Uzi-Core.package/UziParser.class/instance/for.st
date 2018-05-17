@@ -14,7 +14,9 @@ for
 		step := (token parsedValue at: 13) ifNotNil: [:a | a last].
 		body := token parsedValue at: 15.
 		(UziForNode 
-			counter: counter
+			counter: ((UziVariableDeclarationNode 
+				name: counter name) 
+				token: counter token)
 			start: start
 			stop: stop
 			step: step

@@ -25,7 +25,7 @@ test014ImportingAScriptThatExecutesAForLoop
 			proc name: #'t12.foo'
 				arguments: #()
 				body: (block statements: {
-					for counter: (var named: #i)
+					for counter: (varDec name: #i)
 						start: (number value: 1)
 						stop: (number value: 10)
 						step: (number value: 1)

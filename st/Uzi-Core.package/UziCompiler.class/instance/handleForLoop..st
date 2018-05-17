@@ -2,7 +2,7 @@ visiting
 handleForLoop: node	
 	| labelBegin labelEnd temp |	
 	"First, we need to declare the counter variable"
-	self visit: node counterDeclaration.	
+	self visit: node counter.
 	labelBegin := self newLabel.
 	labelEnd := self newLabel.
 	"Then we initialize counter"

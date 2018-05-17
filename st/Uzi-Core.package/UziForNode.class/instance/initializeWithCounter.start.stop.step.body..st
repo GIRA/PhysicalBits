@@ -1,11 +1,11 @@
 initializing
-initializeWithCounter: counterVariable
+initializeWithCounter: counterVariableDeclaration
 start: startExpression
 stop: stopExpression
 step: stepExpression
 body: bodyBlock
 	
-	counter := counterVariable.
+	counter := counterVariableDeclaration.
 	start := startExpression.
 	stop := stopExpression.
 	step := stepExpression.

@@ -1,6 +1,6 @@
 visiting
 visitForNode: node
-	self assertVariable: node counter;
+	self assertVariableDeclaration: node counter;
 		assertExpression: node start;
 		assertExpression: node stop;
 		assertExpression: node step;

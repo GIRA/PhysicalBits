@@ -1,10 +1,10 @@
 instance creation
-counter: variable
+counter: variableDeclaration
 start: startExpression 
 stop: stopExpression
 body: body
 
-	^ self counter: variable
+	^ self counter: variableDeclaration
 		start: startExpression
 		stop: stopExpression
 		step: nil

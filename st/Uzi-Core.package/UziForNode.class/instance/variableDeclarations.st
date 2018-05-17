@@ -1,3 +1,3 @@
 accessing
 variableDeclarations 
-	^ { self counterDeclaration } , body variableDeclarations 
+	^ { self counter } , body variableDeclarations 

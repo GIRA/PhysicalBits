@@ -14,7 +14,7 @@ test029ForBodyShouldBeABlock
 				body: (block 
 					statements: {
 						for 
-							counter: (var named: #a)
+							counter: (varDec name: #a)
 							start: (number value: 1)
 							stop: (number value: 10)
 							body: (prim

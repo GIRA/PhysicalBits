@@ -14,7 +14,7 @@ test032ForStopShouldBeAnExpression
 				body: (block 
 					statements: {
 						for 
-							counter: (var named: #a)
+							counter: (varDec name: #a)
 							start: (number value: 1)
 							stop: (prim
 								selector: #toggle
