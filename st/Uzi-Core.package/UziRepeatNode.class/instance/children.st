@@ -1,3 +1,3 @@
 accessing
 children
-	self halt
+	^ { self times . self body }

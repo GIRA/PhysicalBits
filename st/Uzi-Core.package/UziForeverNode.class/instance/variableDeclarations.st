@@ -1,3 +1,0 @@
-accessing
-variableDeclarations 
-	^ body variableDeclarations 

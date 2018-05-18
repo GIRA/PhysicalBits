@@ -1,3 +1,3 @@
 accessing
 scriptNames
-	^ scripts collect: [:each | each scriptName]
+	^ self scripts collect: [:each | each scriptName]

@@ -1,3 +1,3 @@
 accessing
 children
-	self halt
+	^ { self left . self right }

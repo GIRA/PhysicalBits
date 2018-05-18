@@ -1,3 +1,3 @@
 accessing
 locals
-	^ self variableDeclarations
+	^ self allChildren select: [:each | each isVariableDeclaration]
