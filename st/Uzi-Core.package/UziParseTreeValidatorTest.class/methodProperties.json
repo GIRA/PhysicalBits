@@ -3,6 +3,7 @@
 		 },
 	"instance" : {
 		"assertInvalid:" : "Richo 8/10/2017 10:30",
+		"assertValid:" : "Richo 5/19/2018 15:22",
 		"check:" : "Richo 8/11/2017 19:18",
 		"setUp" : "Richo 4/21/2018 19:13",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
@@ -39,4 +40,6 @@
 		"test033ForStepShouldBeAnExpression" : "Richo 5/17/2018 12:21",
 		"test034AVariableShouldBeDeclaredBeforeItsFirstUse" : "Richo 5/2/2018 20:29",
 		"test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside" : "Richo 5/19/2018 15:14",
-		"test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside" : "Richo 5/19/2018 15:19" } }
+		"test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside" : "Richo 5/19/2018 15:19",
+		"test037VariablesDeclaredInsideABlockShouldNotCollideWithVariablesDeclaredOutsideAfterTheBlock" : "Richo 5/19/2018 15:24",
+		"test038LocalsAndArgsWithTheSameNameAreNotValid" : "Richo 5/19/2018 15:26" } }

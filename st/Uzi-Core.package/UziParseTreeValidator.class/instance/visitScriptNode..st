@@ -1,6 +1,6 @@
 visiting
 visitScriptNode: node
-	| locals args |
+	| args |
 	node tickingRate ifNotNil: [:rate | self assertTickingRate: rate].
 	self assertBlock: node body.
 	
@@ -10,7 +10,7 @@ visitScriptNode: node
 			description: 'Argument name alredy specified'
 			node: arg.
 		args add: arg name].
-	
+	"
 	locals := Set new.
 	node locals do: [:local |
 		self assert: (node arguments allSatisfy: [:arg | arg name ~= local name])
@@ -20,6 +20,7 @@ visitScriptNode: node
 			description: 'Variable already declared'
 			node: local.
 		locals add: local name].
-	
+	"
 	node tickingRate ifNotNil: [:rate | self visit: rate].
-	self visit: node body
+	self visitCollection: node arguments;
+		visit: node body
