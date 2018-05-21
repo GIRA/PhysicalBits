@@ -58,7 +58,7 @@
 		"test051RepeatLoop" : "Richo 9/21/2017 18:08",
 		"test052PauseKeywordAcceptsMultipleTasks" : "Richo 9/22/2017 10:58",
 		"test053ResumeKeywordAcceptsMultipleTasks" : "Richo 9/22/2017 10:58",
-		"test054YieldKeyword" : "Richo 4/12/2018 20:28",
+		"test054YieldKeyword" : "Richo 5/21/2018 14:58",
 		"test055VariableDeclarationsShouldBeAllowedAnywhere" : "Richo 4/18/2018 10:32",
 		"test056VariableDeclarationsInNestedBlocksAreAllowed" : "Richo 4/21/2018 18:40",
 		"test057IdentifierAcceptsUnderscore" : "Richo 4/21/2018 18:01",

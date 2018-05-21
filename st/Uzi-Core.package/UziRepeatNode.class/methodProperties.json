@@ -2,11 +2,9 @@
 	"class" : {
 		"times:body:" : "Richo 9/21/2017 18:11" },
 	"instance" : {
-		"=" : "Richo 9/22/2017 10:41",
 		"accept:" : "Richo 9/21/2017 18:40",
 		"body" : "Richo 9/21/2017 18:12",
 		"children" : "Richo 5/18/2018 08:51",
-		"hash" : "Richo 9/22/2017 10:41",
 		"initializeWithTimes:body:" : "Richo 9/21/2017 18:11",
 		"isStatement" : "Richo 9/21/2017 18:42",
 		"times" : "Richo 9/21/2017 18:12" } }

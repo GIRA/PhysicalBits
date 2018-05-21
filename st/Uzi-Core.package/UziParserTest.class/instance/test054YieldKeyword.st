@@ -7,5 +7,5 @@ test054YieldKeyword
 	self assert: script isTask.
 	self assert: 1 equals: script body statements size.
 	yield := script body statements first.
-	self assert: UziYieldNode new equals: yield.
+	self assert: (yield isKindOf: UziYieldNode).
 	self assert: yield isStatement 

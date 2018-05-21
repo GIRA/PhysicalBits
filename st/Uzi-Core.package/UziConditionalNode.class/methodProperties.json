@@ -4,12 +4,10 @@
 		"condition:true:" : "Richo 12/31/2016 13:24",
 		"condition:true:false:" : "Richo 12/30/2016 15:56" },
 	"instance" : {
-		"=" : "Richo 8/12/2017 18:29",
 		"accept:" : "Richo 12/30/2016 16:17",
 		"children" : "Richo 5/2/2018 22:25",
 		"condition" : "Richo 12/30/2016 16:12",
 		"falseBranch" : "Richo 12/30/2016 16:16",
-		"hash" : "Richo 8/12/2017 18:29",
 		"initializeWithCondition:trueBranch:falseBranch:" : "Richo 12/30/2016 15:57",
 		"isStatement" : "Richo 12/30/2016 16:40",
 		"trueBranch" : "Richo 12/30/2016 16:15" } }

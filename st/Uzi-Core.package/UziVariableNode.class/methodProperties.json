@@ -2,10 +2,8 @@
 	"class" : {
 		"named:" : "Richo 9/7/2016 10:33" },
 	"instance" : {
-		"=" : "Richo 8/12/2017 19:34",
 		"accept:" : "Richo 9/7/2016 11:15",
 		"children" : "Richo 5/18/2018 08:50",
-		"hash" : "Richo 8/12/2017 19:33",
 		"initializeWith:" : "Richo 9/7/2016 10:33",
 		"isExpression" : "Richo 12/30/2016 15:24",
 		"isVariable" : "Richo 12/30/2016 15:04",

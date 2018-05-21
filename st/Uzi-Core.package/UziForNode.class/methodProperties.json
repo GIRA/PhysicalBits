@@ -3,12 +3,10 @@
 		"counter:start:stop:body:" : "Richo 5/17/2018 12:16",
 		"counter:start:stop:step:body:" : "Richo 4/21/2018 19:46" },
 	"instance" : {
-		"=" : "Richo 4/21/2018 19:54",
 		"accept:" : "Richo 4/21/2018 19:13",
 		"body" : "Richo 4/21/2018 19:11",
 		"children" : "Richo 5/17/2018 12:15",
 		"counter" : "Richo 5/17/2018 12:15",
-		"hash" : "Richo 5/17/2018 12:15",
 		"initializeWithCounter:start:stop:step:body:" : "Richo 5/17/2018 12:16",
 		"isStatement" : "Richo 4/21/2018 19:23",
 		"start" : "Richo 5/17/2018 12:16",

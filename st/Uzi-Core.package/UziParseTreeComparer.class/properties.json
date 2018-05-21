@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Core-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"parseTrees",
+		"nodes",
+		"nodesByIndex",
+		"nodesDict" ],
+	"name" : "UziParseTreeComparer",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

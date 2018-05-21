@@ -3,10 +3,8 @@
 		"name:" : "Richo 8/11/2017 17:52",
 		"name:value:" : "Richo 10/10/2016 16:22" },
 	"instance" : {
-		"=" : "Richo 8/12/2017 19:34",
 		"accept:" : "Richo 6/19/2017 10:09",
 		"children" : "Richo 5/2/2018 22:24",
-		"hash" : "Richo 8/12/2017 19:33",
 		"initializeWithName:value:" : "Richo 10/10/2016 16:23",
 		"isStatement" : "Richo 4/18/2018 10:10",
 		"isVariableDeclaration" : "Richo 6/19/2017 10:10",
