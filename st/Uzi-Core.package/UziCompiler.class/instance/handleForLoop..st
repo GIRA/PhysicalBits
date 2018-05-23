@@ -1,13 +1,14 @@
 visiting
 handleForLoop: node	
-	| labelBegin labelEnd temp |	
+	| labelBegin labelEnd temp counterName |	
 	"First, we need to declare the counter variable"
 	self visit: node counter.
+	counterName := variableNames at: node counter.
 	labelBegin := self newLabel.
 	labelEnd := self newLabel.
 	"Then we initialize counter"
 	self visit: node start.
-	(script pop: node counter name) node: node.
+	(script pop: counterName) node: node.
 	"We declare a temp var to hold the step value for this iteration"	
 	temp := script registerNewLocalWithValue: 0.
 	"This is where the loop begins"
@@ -15,7 +16,7 @@ handleForLoop: node
 	"Now we compare counter with stop. The comparison 
 	can either be GTEQ or LTEQ depending on the sign of the 
 	step (which is stored on temp)"
-	(script push: node counter name) node: node.
+	(script push: counterName) node: node.
 	self visit: node stop.
 	self visit: node step.
 	(script pop: temp name) node: node.
@@ -29,9 +30,9 @@ handleForLoop: node
 	"While counter doesn't reach the stop we execute the body"
 	self visit: node body.
 	"Before jumping back to the comparison, we increment counter by step"
-	(script push: node counter name) node: node.
+	(script push: counterName) node: node.
 	(script push: temp name) node: node.
 	(script prim: #add) node: node.
-	(script pop: node counter name) node: node.
+	(script pop: counterName) node: node.
 	(script jmp: labelBegin) node: node.
 	script label: labelEnd

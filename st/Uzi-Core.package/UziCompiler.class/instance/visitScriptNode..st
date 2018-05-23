@@ -6,7 +6,7 @@ visitScriptNode: node
 		delay: (node tickingRate ifNil: [0] ifNotNil: [:tickingRate | tickingRate delayMs]) 
 		instructions: [:s |
 			script := s.
-			node arguments do: [:var | script registerArgument: var name].
+			node arguments do: [:var | script registerArgument: (self varNameFor: var)].
 			self visit: node body.
 			(node state = #once)
 				ifTrue: [(script stop: node name) node: node].

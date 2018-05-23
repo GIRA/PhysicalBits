@@ -1163,5 +1163,37 @@ namespace SimulatorTest
                 }
             }
         }
+
+        [TestMethod]
+        public void Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(7), "D7 should blink every second");
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(6), "D6 should blink every second");
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off");
+            }
+        }
+
+        [TestMethod]
+        public void Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(7), "D7 should blink every second");
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(6), "D6 should blink every second");
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off");
+            }
+        }
     }
 }

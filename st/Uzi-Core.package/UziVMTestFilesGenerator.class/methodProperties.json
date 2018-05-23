@@ -55,4 +55,6 @@
 		"test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer" : "Richo 4/29/2018 21:18",
 		"test052ChannelWithMultipleProducersAndOneConsumer" : "Richo 4/29/2018 22:43",
 		"test053ChannelWithMultipleConsumersAndOneProducer" : "Richo 4/29/2018 22:48",
+		"test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" : "Richo 5/23/2018 10:02",
+		"test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" : "Richo 5/23/2018 11:20",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }

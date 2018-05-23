@@ -251,6 +251,12 @@
     <None Include="TestFiles\Test053ChannelWithMultipleConsumersAndOneProducer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="TestFiles\Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="TestFiles\Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

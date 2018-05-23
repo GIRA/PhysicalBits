@@ -1,3 +1,5 @@
 visiting-utils
 visit: anUziNode
-	^ anUziNode accept: self
+	path addFirst: anUziNode.
+	[^ anUziNode accept: self] 
+		ensure: [path removeFirst]

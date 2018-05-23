@@ -8,7 +8,9 @@
 	"instvars" : [
 		"program",
 		"script",
-		"ast" ],
+		"ast",
+		"path",
+		"variableNames" ],
 	"name" : "UziCompiler",
 	"pools" : [
 		 ],

@@ -1,5 +1,6 @@
 visiting
 visitVariableDeclarationNode: node
+	| varName |
 	script ifNil: ["Globals can only be initialized with numbers (no expressions).
 		If no value is defined we use 0 as default value"
 		program registerGlobal: node name 
@@ -10,11 +11,12 @@ visitVariableDeclarationNode: node
 	expression, we register the local with default value and then we compile an
 	assignment that evaluates the expression."
 	self flag: #Richo. "Early optimization!"
+	varName := self varNameFor: node.
 	node value 
-		ifNil: [script registerLocal: node name]
+		ifNil: [script registerLocal: varName]
 		ifNotNil: [:value |
 			value isNumber
-				ifTrue: [script registerLocal: node name value: value value]
-				ifFalse: [script registerLocal: node name.
+				ifTrue: [script registerLocal: varName value: value value]
+				ifFalse: [script registerLocal: varName.
 					self visit: value.
-					(script pop: node name) node: node]]
+					(script pop: varName) node: node]]
