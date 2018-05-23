@@ -11,7 +11,7 @@ visitVariableDeclarationNode: node
 	expression, we register the local with default value and then we compile an
 	assignment that evaluates the expression."
 	self flag: #Richo. "Early optimization!"
-	varName := self varNameFor: node.
+	varName := self registerNameFor: node.
 	node value 
 		ifNil: [script registerLocal: varName]
 		ifNotNil: [:value |

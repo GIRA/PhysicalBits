@@ -1,9 +1,6 @@
 private
-varNameFor: variableDeclaration
-	| name |
-	name := '{1}#{2}' format: { 
-		variableDeclaration name.
-		variableNames size + 1 
-	}.
-	variableNames at: variableDeclaration put: name.
-	^ name
+varNameFor: variable
+	^ self localsInScope 
+		detect: [:each | variable name = each name]
+		ifFound: [:var | variableNames at: var]
+		ifNone: [variable name].
