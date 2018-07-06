@@ -357,7 +357,7 @@ void Monitor::executeCommand(Program** program, GPIO* io)
 		executeSetReport(io);
 		break;
 	case MSG_IN_SAVE_PROGRAM:
-		executeSaveProgram();
+		executeSaveProgram(program, io);
 		break;
 	case MSG_IN_KEEP_ALIVE:
 		executeKeepAlive();
@@ -434,23 +434,28 @@ void Monitor::executeSetReport(GPIO* io)
 	io->setReport(pin, report != 0);
 }
 
-void Monitor::executeSaveProgram(void)
+void Monitor::executeSaveProgram(Program** program, GPIO* io)
 {
 	bool timeout;
 	int32 size = stream.nextLong(2, timeout);
 	if (timeout) return;
-	// TODO(Richo): Remove this allocation!
-	uint8* buf = new uint8[size];
+
+	// Load the data into a buffer
+	uzi_memreset();
+	uint8* buf = uzi_createArray(uint8, size);
 	for (int i = 0; i < size; i++)
 	{
 		buf[i] = stream.next(timeout);
 		if (timeout)
 		{
-			delete[] buf;
+			// If we can't read expected number of bytes, reset program
+			uzi_memreset();
+			*program = uzi_create(Program);
 			return;
 		}
 	}
 
+	// Write the buffer into the EEPROM
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
@@ -460,7 +465,11 @@ void Monitor::executeSaveProgram(void)
 		writer.nextPut(buf[i]);
 	}
 	writer.close();
-	delete[] buf;
+
+	// Read the program from the EEPROM
+	io->reset();
+	uzi_memreset();
+	loadInstalledProgram(program);
 }
 
 void Monitor::executeKeepAlive()

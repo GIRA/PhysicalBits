@@ -50,7 +50,7 @@ private:
 	void executeStartReporting();
 	void executeStopReporting();
 	void executeSetReport(GPIO* io);
-	void executeSaveProgram();
+	void executeSaveProgram(Program** program, GPIO* io);
 	void executeKeepAlive();
 	void executeProfile();
 	void executeSetGlobal(Program* program);
