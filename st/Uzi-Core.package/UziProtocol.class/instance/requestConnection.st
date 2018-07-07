@@ -1,9 +1,10 @@
 connection
 requestConnection
-	| majorVersion minorVersion n1 n2 |
+	| connRequest majorVersion minorVersion n1 n2 |
+	connRequest := self class msgOutConnectionRequest.
 	majorVersion := self class majorVersion.
 	minorVersion := self class minorVersion.
-	self send: { 255 . majorVersion . minorVersion }.
+	self send: { connRequest . majorVersion . minorVersion }.
 	n1 := serial next.
 	n2 := (majorVersion + minorVersion + n1) \\ 256.
 	self send: { n2 }.

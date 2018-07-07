@@ -1,3 +1,3 @@
-version number
+constants-versioning
 minorVersion
 	^ 4

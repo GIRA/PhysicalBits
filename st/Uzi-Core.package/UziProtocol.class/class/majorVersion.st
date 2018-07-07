@@ -1,3 +1,3 @@
-version number
+constants-versioning
 majorVersion
 	^ 0

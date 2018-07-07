@@ -9,7 +9,7 @@ setGlobal: name report: report
 			ifTrue: [globalsReporting add: name]
 			ifFalse: [globalsReporting remove: name ifAbsent: ["Do nothing"]].
 		self send: {
-			11. 
+			self class msgOutSetGlobalReport. 
 			index - 1. 
 			report ifTrue: [1] ifFalse: [0]
 		}]

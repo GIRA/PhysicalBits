@@ -1,3 +1,6 @@
 debugging
 setBreakCount: coroutineIndex value: value
-	^ self send: { 12 . coroutineIndex. value + 127 }
+	^ self send: { 
+		self class msgOutSetBreakCount . 
+		coroutineIndex. value + 127 
+	}

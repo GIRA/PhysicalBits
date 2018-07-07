@@ -3,15 +3,15 @@ processInput
 	| cmd |
 	cmd := serial next.
 	cmd caseOf: {
-		[self class rsError] -> [self processError].
-		[self class rsPinValue] -> [self processPinValue].
-		[self class rsProfile] -> [self processProfile].
-		[self class rsGlobalValue] -> [self processGlobalValue].
-		[self class rsTrace] -> [self processTrace].
-		[self class rsCoroutineState] -> [self processCoroutineState].
-		[self class rsTickingScripts] -> [self processTickingScripts].
-		[self class rsFreeRAM] -> [self processFreeRAM].
-		[self class rsSerialTunnel] -> [self processSerialTunnel]
+		[self class msgInError] -> [self processError].
+		[self class msgInPinValue] -> [self processPinValue].
+		[self class msgInProfile] -> [self processProfile].
+		[self class msgInGlobalValue] -> [self processGlobalValue].
+		[self class msgInTrace] -> [self processTrace].
+		[self class msgInCoroutineState] -> [self processCoroutineState].
+		[self class msgInTickingScripts] -> [self processTickingScripts].
+		[self class msgInFreeRam] -> [self processFreeRAM].
+		[self class msgInSerialTunnel] -> [self processSerialTunnel]
 	} otherwise: [UziTranscript 
 		log: 'Uzi - Invalid response code: {1}' 
 		format: { cmd }]

@@ -4,7 +4,7 @@ setGlobal: name value: value
 	sortedGlobals := currentProgram allGlobals.
 	index := sortedGlobals indexOf: (sortedGlobals detect: [:var | var name = name]).
 	msg := ByteArray streamContents: [:stream | | actualValue |
-		stream nextPut: 10.
+		stream nextPut: self class msgOutSetGlobal.
 		stream nextPut: index - 1.
 		actualValue := (FloatArray with: value asFloat) basicAt: 1.
 		(3 to: 0 by: -1) do: [:n |
