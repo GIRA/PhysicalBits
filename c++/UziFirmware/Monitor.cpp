@@ -34,7 +34,7 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
 #define REPORT_INTERVAL                                   100
-#define KEEP_ALIVE_INTERVAL                               500
+#define KEEP_ALIVE_INTERVAL                              1000
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -127,6 +127,9 @@ void Monitor::sendError(uint8 coroutineIndex, uint8 errorCode)
 
 void Monitor::sendError(uint8 errorCode)
 {
+	/*
+	INFO(Richo): Since this is a standalone error we send 255 as coroutine index.
+	*/
 	sendError(255, errorCode);
 }
 
@@ -211,6 +214,7 @@ void Monitor::checkKeepAlive()
 		millis() - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
 	{
 		state = DISCONNECTED;
+		sendError(DISCONNECT_ERROR);
 	}
 }
 
