@@ -1,3 +1,3 @@
 open/close
 close
-	port close
+	port ifNotNil: [:p | p close]

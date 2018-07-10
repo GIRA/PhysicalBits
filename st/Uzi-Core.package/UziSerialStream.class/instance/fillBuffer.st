@@ -1,9 +1,11 @@
 reading
 fillBuffer
-	| tmp |
+	| tmp start |
+	start := Time millisecondClockValue.
 	tmp := self readByteArray.
-	[tmp isEmpty]
-		whileTrue: [10 milliSeconds asDelay wait.
-			tmp := self readByteArray].
-	"Transcript show: tmp printString; cr."
+	[tmp isEmpty] whileTrue: [
+		(Time millisecondsSince: start) > timeout
+			ifTrue: [ConnectionTimedOut signal: 'Trying to fill the Uzi buffer'].
+		10 milliSeconds asDelay wait.
+		tmp := self readByteArray].
 	buffer := tmp readStream

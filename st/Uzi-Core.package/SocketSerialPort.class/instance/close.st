@@ -1,4 +1,4 @@
 as yet unclassified
 close
-	socket closeAndDestroy.
+	socket ifNotNil: [:s | s closeAndDestroy].
 	socket := nil

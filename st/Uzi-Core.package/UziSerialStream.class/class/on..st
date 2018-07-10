@@ -1,3 +1,3 @@
 instance creation
 on: aSerialPort
-	^ self basicNew initializeWith: aSerialPort
+	^ self on: aSerialPort timeout: 3000
