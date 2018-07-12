@@ -2,7 +2,8 @@
 	"class" : {
 		 },
 	"instance" : {
-		"setUp" : "Richo 6/16/2017 17:43",
+		"assert:equals:" : "Richo 7/10/2018 12:06",
+		"setUp" : "Richo 7/10/2018 12:06",
 		"test001LiteralNumber" : "Richo 6/16/2017 20:07",
 		"test002Constant" : "Richo 6/16/2017 20:07",
 		"test003Identifier" : "Richo 8/12/2017 20:12",
@@ -65,4 +66,6 @@
 		"test058InvalidBinarySelectors" : "Richo 4/21/2018 18:11",
 		"test059ForeverLoop" : "Richo 4/21/2018 18:18",
 		"test060ForLoopWithImplicitStep" : "Richo 4/21/2018 19:10",
-		"test061ForLoopWithExplicitStep" : "Richo 4/21/2018 19:46" } }
+		"test061ForLoopWithExplicitStep" : "Richo 4/21/2018 19:46",
+		"test062OperatorPrecedence" : "Richo 7/10/2018 12:07",
+		"test063OperatorPrecedence" : "Richo 7/10/2018 12:08" } }

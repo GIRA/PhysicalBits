@@ -6,7 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"parser" ],
+		"parser",
+		"prim",
+		"number" ],
 	"name" : "UziParserTest",
 	"pools" : [
 		 ],
