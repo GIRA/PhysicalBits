@@ -25,8 +25,8 @@
 		"test019ScriptWithTickingRate" : "Richo 8/9/2017 12:19",
 		"test020ScriptWithArguments" : "Richo 8/9/2017 12:18",
 		"test021BinaryExpression" : "Richo 6/19/2017 09:01",
-		"test022BinaryExpression2" : "Richo 6/19/2017 09:01",
-		"test023BinaryExpression3" : "Richo 6/19/2017 09:00",
+		"test022BinaryExpression2" : "Richo 7/24/2018 17:04",
+		"test023BinaryExpression3" : "Richo 7/24/2018 17:04",
 		"test024BinaryExpressionParens" : "Richo 6/19/2017 08:34",
 		"test025VariableDeclaration" : "Richo 8/10/2017 09:57",
 		"test026VariableDeclarationWithExplicitValue" : "Richo 6/19/2017 09:57",
@@ -68,4 +68,7 @@
 		"test060ForLoopWithImplicitStep" : "Richo 4/21/2018 19:10",
 		"test061ForLoopWithExplicitStep" : "Richo 4/21/2018 19:46",
 		"test062OperatorPrecedence" : "Richo 7/10/2018 12:07",
-		"test063OperatorPrecedence" : "Richo 7/10/2018 12:08" } }
+		"test063OperatorPrecedence" : "Richo 7/10/2018 12:08",
+		"test064OperatorPrecedence" : "Richo 7/24/2018 16:25",
+		"test065OperatorPrecedence" : "Richo 7/24/2018 16:31",
+		"test066OperatorPrecedence" : "Richo 7/24/2018 16:31" } }

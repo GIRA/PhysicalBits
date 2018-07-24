@@ -2,8 +2,8 @@ tests
 test022BinaryExpression2
 	| pp ast ast2 |
 	pp := parser expression end.
-	ast := pp parse: '3 + 4 * 6'.
-	self assert: #* equals: ast selector.
+	ast := pp parse: '3 * 4 + 6'.
+	self assert: #+ equals: ast selector.
 	self assert: 2 equals: ast arguments size.
 	self assert: 6 equals: ast arguments second value.
 	ast2 := ast arguments first.
