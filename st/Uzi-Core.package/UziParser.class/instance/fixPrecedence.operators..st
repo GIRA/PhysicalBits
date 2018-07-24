@@ -1,12 +1,11 @@
 grammar-binary
 fixPrecedence: nodes operators: operators
-	| left op result right stream last expr |
+	| left op result right stream expr |
 	nodes size < 3 ifTrue: [^ nodes].
 	result := OrderedCollection new.
 	stream := nodes readStream.
 	left := stream next.
-	last := nodes size - 1 / 2.
-	1 to: last do: [:i |
+	1 to: nodes size - 1 / 2 do: [:i |
 		op := stream next.
 		right := stream next.
 		(operators isNil or: [operators includes: op])
@@ -18,6 +17,6 @@ fixPrecedence: nodes operators: operators
 					value: { left token . op . right token }).
 				left := expr]
 			ifFalse: [result add: left; add: op.
-				left := right].
-		i = last ifTrue: [result add: left]].
+				left := right]].
+	result add: left.
 	^ result
