@@ -1,5 +1,6 @@
 {
 	"class" : {
+		"debugEnabled" : "Richo 7/24/2018 19:41",
 		"new" : "Richo 10/21/2014 14:48",
 		"on:" : "Richo 7/10/2018 09:44",
 		"on:timeout:" : "Richo 7/8/2018 16:17" },
@@ -7,12 +8,12 @@
 		"baudRate" : "Richo 10/21/2014 14:47",
 		"baudRate:" : "Richo 10/21/2014 14:48",
 		"close" : "Richo 7/8/2018 18:54",
-		"fillBuffer" : "Richo 7/8/2018 16:24",
+		"fillBuffer" : "Richo 7/24/2018 19:18",
 		"initialize" : "Richo 10/21/2014 14:32",
 		"initializeWithPort:timeout:" : "Richo 7/8/2018 16:16",
-		"next" : "Richo 10/21/2014 14:38",
-		"nextPut:" : "Richo 8/10/2015 10:48",
-		"nextPutAll:" : "Richo 8/10/2015 10:23",
+		"next" : "Richo 7/24/2018 19:17",
+		"nextPut:" : "Richo 7/24/2018 19:18",
+		"nextPutAll:" : "Richo 7/24/2018 19:19",
 		"openPort:" : "Richo 10/21/2014 14:51",
 		"peek" : "Richo 10/21/2014 18:23",
 		"readByteArray" : "Richo 8/10/2015 11:06" } }

@@ -22,4 +22,4 @@ processError
 			log: '{1} detected on script "{2}". The script has been stopped.'
 			format: { errorMsg . script name }].
 	errorCode = 6 
-		ifTrue: [self privateDisconnect]
+		ifTrue: [self fork: [self privateDisconnect] named: 'Disconnecting...']

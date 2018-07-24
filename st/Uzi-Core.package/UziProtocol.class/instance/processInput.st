@@ -1,6 +1,7 @@
 receiving
 processInput
 	| cmd |
+	serial ifNil: [^ self].
 	[cmd := serial next]
 		on: ConnectionTimedOut
 		do: ["Nothing. Timeouts are acceptable here"
@@ -20,4 +21,4 @@ processInput
 			format: { cmd }]]
 		on: ConnectionTimedOut
 		do: [UziTranscript log: 'Connection timeout!'.
-			self privateDisconnect]
+			self fork: [self privateDisconnect] named: 'Disconnecting...']

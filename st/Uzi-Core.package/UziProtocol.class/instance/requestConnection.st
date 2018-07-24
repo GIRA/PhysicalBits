@@ -6,9 +6,11 @@ requestConnection
 	minorVersion := self class minorVersion.
 	self send: { connRequest . majorVersion . minorVersion }.
 	UziTranscript log: 'Requesting connection...'.
+	500 milliSeconds asDelay wait.
 	n1 := serial next.
 	n2 := (majorVersion + minorVersion + n1) \\ 256.
 	self send: { n2 }.
+	500 milliSeconds asDelay wait.
 	n2 = serial next
 		ifTrue: [UziTranscript log: 'Connection accepted!'.]
 		ifFalse: [self privateDisconnect.
