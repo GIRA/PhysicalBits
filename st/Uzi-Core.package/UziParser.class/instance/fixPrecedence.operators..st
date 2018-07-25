@@ -13,7 +13,7 @@ fixPrecedence: nodes operators: operators
 						on: left token collection
 						start: left token start
 						stop: right token stop
-					value: { left token . op . right token }).
+						value: { left token . op . right token }).
 					left := expr]
 				ifFalse: [result nextPut: left; nextPut: op.
 					left := right]].
