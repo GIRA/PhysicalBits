@@ -2,7 +2,8 @@
 	"category" : "Uzi-Core",
 	"classinstvars" : [
 		"gitDirectory",
-		"librariesDirectory" ],
+		"librariesDirectory",
+		"serverDirectory" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",

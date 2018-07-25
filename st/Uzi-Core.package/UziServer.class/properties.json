@@ -1,7 +1,7 @@
 {
 	"category" : "Uzi-Core-Server",
 	"classinstvars" : [
-		 ],
+		"default" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
