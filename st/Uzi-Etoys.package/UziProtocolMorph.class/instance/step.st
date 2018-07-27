@@ -6,6 +6,9 @@ step
 	connectButton label: (self isConnected 
 		ifTrue: ['Disconnect']
 		ifFalse: ['Connect...']).
+	serverButton label: (self isServerStarted
+		ifTrue: ['Stop server']
+		ifFalse: ['Start server']).
 	connectedText contents: self isConnected asString.
 	portText contents: self portName.
 	freeRAMText contents: self freeRAM asString.

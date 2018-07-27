@@ -22,4 +22,8 @@ buildButtons
 			label: 'Debugger...';
 			actionSelector: #openDebugger;
 			yourself);
+		addMorphBack: (serverButton := self newButton
+			label: 'Start server';
+			actionSelector: #toggleServer;
+			yourself);
 		addMorphBack: self buildInspectorButton
