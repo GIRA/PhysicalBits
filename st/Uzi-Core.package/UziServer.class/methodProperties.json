@@ -1,7 +1,8 @@
 {
 	"class" : {
-		"directory:" : "Richo 8/4/2015 14:35",
-		"directoryNamed:" : "Richo 8/11/2015 20:07",
+		"directory:" : "Richo 7/27/2018 09:01",
+		"protocol:" : "Richo 7/27/2018 09:03",
+		"protocol:directory:" : "Richo 7/27/2018 09:01",
 		"start" : "Richo 7/25/2018 10:53",
 		"stop" : "Richo 7/25/2018 10:52" },
 	"instance" : {
@@ -10,6 +11,6 @@
 		"httpPort" : "Richo 9/6/2017 17:27",
 		"httpsPort" : "Richo 9/6/2017 17:27",
 		"initialize" : "Richo 8/10/2015 12:25",
-		"initializeResources" : "Richo 8/4/2015 18:14",
-		"initializeWithDirectory:" : "Richo 8/4/2015 14:35",
-		"protocol" : "Richo 9/7/2016 15:30" } }
+		"initializeResources" : "Richo 7/27/2018 09:02",
+		"initializeWithProtocol:directory:" : "Richo 7/27/2018 09:02",
+		"protocol" : "Richo 7/27/2018 09:02" } }

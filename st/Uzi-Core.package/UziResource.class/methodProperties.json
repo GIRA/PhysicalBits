@@ -1,10 +1,12 @@
 {
 	"class" : {
-		 },
+		"new" : "Richo 7/27/2018 08:59",
+		"on:" : "Richo 7/27/2018 08:58" },
 	"instance" : {
 		"detail" : "Richo 8/4/2015 18:26",
-		"initialize" : "Richo 9/2/2017 20:10",
+		"initialize" : "Richo 7/27/2018 08:59",
 		"initializeResources" : "Richo 8/4/2015 18:17",
+		"initializeWith:" : "Richo 7/27/2018 08:58",
 		"processCompile:" : "Richo 9/7/2017 08:31",
 		"processConnect:" : "Richo 9/7/2017 08:31",
 		"processDisconnect:" : "Richo 9/7/2017 08:31",
