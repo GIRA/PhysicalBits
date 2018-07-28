@@ -76,7 +76,8 @@
 						<li><a href="#">COM7</a></li>
 						<li><a href="#">COM8</a></li>
 						<li><a href="#">COM9</a></li>
-						<li role="separator" class="divider"></li>						
+						<li role="separator" class="divider"></li>
+						<li><a href="#">127.0.0.1:4242</a></li>
 						<li><a href="#">Automatic</a></li>
 						<li><a id="otherPort" href="#">Other...</a></li>
 					</ul>
@@ -123,7 +124,7 @@
 			</p>
 		</div>
 	</div>
-	<div id="editor"></div>
+-	<div id="editor"></div>
 	<div id="blockly" style="position: absolute;"></div>
 	
 	<!-- Bootstrap core JavaScript
@@ -152,7 +153,7 @@
 	
 	<!-- UziBlock -->
 	<script src="uziblock.js" type="text/javascript"></script>
-	<script src="codegen.js" type="text/javascript"></script>
+	<script src="editor.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		Uzi.start();
 		UziBlock.init(editor, blockly);
