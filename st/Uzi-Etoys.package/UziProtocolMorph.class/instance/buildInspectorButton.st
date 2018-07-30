@@ -8,5 +8,5 @@ buildInspectorButton
 		offImage: form;
 		pressedImage: (pressedForm ifNil: [form]))
 		extent: form extent;
-		target: protocol;
-		actionSelector: #explore
+		target: self;
+		actionSelector: #exploreMenu
