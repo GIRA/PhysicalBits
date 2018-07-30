@@ -1,12 +1,21 @@
 var Uzi = (function () {
+	
+	var eventList = {
+		update: [],
+		error: []
+	}
 			
 	var Uzi = {
 		baseUrl: "",
 		isConnected: false,
 		portName: undefined,
 		
-		onUpdate: nop,
-		onError: nop,
+		onUpdate: function (callback) {
+			eventList.update.push(callback);
+		},
+		onError: function (callback) {
+			eventList.error.push(callback);
+		},
 		
 		connect: connect,
 		disconnect: disconnect,
@@ -23,7 +32,9 @@ var Uzi = (function () {
 	
 	function errorHandler (err) {
 		console.log(err);
-		Uzi.onError(err);
+		eventList.error.forEach(function (each){
+			each(err);
+		});
 	}
 		
 	function getUziState(wait, callbacks) {
@@ -116,7 +127,9 @@ var Uzi = (function () {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
 		
-		Uzi.onUpdate();
+		eventList.update.forEach(function (each) { 
+			each(); 
+		});
 	}
 
 	function updateLoop(first) {
