@@ -21,7 +21,7 @@
 		"scriptTexts",
 		"freeRAMText",
 		"serverButton" ],
-	"name" : "UziProtocolMorph",
+	"name" : "UziControlPanelMorph",
 	"pools" : [
 		 ],
 	"super" : "AlignmentMorph",

@@ -1,7 +1,7 @@
 accessing
 findNewProtocol
 	| existing |
-	existing := UziProtocolMorph allInstances select: [:each | each isInWorld].
+	existing := UziControlPanelMorph allInstances select: [:each | each isInWorld].
 	^ existing 
 		ifEmpty: [nil] 
 		ifNotEmpty: [existing 
