@@ -1,10 +1,10 @@
 connection
 startProcesses
 	self fork: [
-			self startSteppingProcess; 
+			self triggerEvent: #connect;
+				startSteppingProcess; 
 				startKeepAliveProcess.
 			3000 milliSeconds asDelay wait.
 			self startReporting;
-				sendPinsReporting;
-				triggerEvent: #connect]
+				sendPinsReporting]
 		named: 'Starting...'
