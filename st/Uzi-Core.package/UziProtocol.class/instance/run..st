@@ -3,7 +3,7 @@ run: anUziProgram
 	currentProgram := anUziProgram.
 	globals := Dictionary new.
 	^ [self send: { self class msgOutSetProgram }, 
-			(UziEncoder new encode: anUziProgram)]
+			(Uzi encode: anUziProgram)]
 		ensure: ["Keep reporting the variables that remain"
 			(self variables intersection: globalsReporting) 
 				do: [:var | self setGlobal: var report: true]]
