@@ -9,15 +9,15 @@ $(document).ready(function () {
 	}
 	
 	portList.on("click", function () {
-			var selectedPort;
-			if (this.id) {
-				selectedPort = prompt("Port name:", getSelectedPort());
-			} else {
-				selectedPort = $(this).text();
-			}
-			port.text(selectedPort)
-				.append("\n<span class='caret'></span>");
-		});
+		var selectedPort;
+		if (this.id) {
+			selectedPort = prompt("Port name:", getSelectedPort());
+		} else {
+			selectedPort = $(this).text();
+		}
+		port.text(selectedPort)
+			.append("\n<span class='caret'></span>");
+	});
 
 	connectButton.on("click", function () {
 		Uzi.connect(getSelectedPort(), function () {			
