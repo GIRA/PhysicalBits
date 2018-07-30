@@ -1139,4 +1139,106 @@
         <field name="HUE">120</field>
       </block>
     </value>
+  </block><block type="factory_base" id="W~du2z#}aRT`pj`ISDh^" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="BOTH"></mutation>
+    <field name="NAME">comment_statement</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">BOTH</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="x;/b,5j}xyXYY((8ju/G">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="CW,]Hw43_:ykk7K$$-=j">
+            <field name="TEXT">"</field>
+            <next>
+              <block type="field_input" id="4GeuC(WL+OjUyM$XV:b-">
+                <field name="TEXT">This is a comment</field>
+                <field name="FIELDNAME">comment</field>
+                <next>
+                  <block type="field_static" id="P)O}Ikj]bHT}}yBkb28j">
+                    <field name="TEXT">"</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="/3VW2sFXT!+=uU_QfKPj" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="V[s6S*P;^e)v)XP;TufA" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="TOPTYPE">
+      <shadow type="type_null" id="~z6Y|BbMN/B2sHO~L4+e"></shadow>
+    </value>
+    <value name="BOTTOMTYPE">
+      <shadow type="type_null" id="T(mR7rV2FT-+-NVL:L`9"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="2q?QaQl(ga?D,@/e@!aq">
+        <mutation colour="#a5745b"></mutation>
+        <field name="HUE">20</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="W~du2z#}aRT`pj`ISDh^" deletable="false" movable="false" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">comment_expression</field>
+    <field name="INLINE">INT</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="x;/b,5j}xyXYY((8ju/G">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="CW,]Hw43_:ykk7K$$-=j">
+            <field name="TEXT">"</field>
+            <next>
+              <block type="field_input" id="4GeuC(WL+OjUyM$XV:b-">
+                <field name="TEXT">This is a comment</field>
+                <field name="FIELDNAME">comment</field>
+                <next>
+                  <block type="field_static" id="P)O}Ikj]bHT}}yBkb28j">
+                    <field name="TEXT">"</field>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </statement>
+        <next>
+          <block type="input_value" id="jxO/xejB(%[PlM6YKZ6|">
+            <field name="INPUTNAME">NAME</field>
+            <field name="ALIGN">CENTRE</field>
+            <value name="TYPE">
+              <shadow type="type_null" id="aozO:l10f~Zsc[9A;*rf"></shadow>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="/3VW2sFXT!+=uU_QfKPj" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="V[s6S*P;^e)v)XP;TufA" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="7s(9cKg*rV08z^R^kW`1"></shadow>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="0/x7P(^U3dCA(V+O_?l:">
+        <mutation colour="#a5745b"></mutation>
+        <field name="HUE">20</field>
+      </block>
+    </value>
   </block></xml>
