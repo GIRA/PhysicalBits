@@ -1,4 +1,4 @@
 initialize-release
 delete
 	super delete.
-	self disconnect
+	self disconnect; stopServer
