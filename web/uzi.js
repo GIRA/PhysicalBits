@@ -1,5 +1,6 @@
 var Uzi = (function () {
 	
+	var id = Math.floor(Math.random() * (2**64));
 	var eventList = {
 		update: [],
 		error: []
@@ -45,6 +46,7 @@ var Uzi = (function () {
 			type: 'GET', 
 			url: Uzi.baseUrl + "/uzi",
 			data: {
+				id: id,
 				wait: wait
 			},
 			success: success,
@@ -58,6 +60,7 @@ var Uzi = (function () {
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/connect",
 			data: {
+				id: id,
 				port: port
 			},
 			success: function (uzi) {
@@ -72,7 +75,9 @@ var Uzi = (function () {
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/disconnect",
-			data: {},
+			data: {
+				id: id
+			},
 			success: function (uzi) {
 				update(uzi);
 				callback();
@@ -86,6 +91,7 @@ var Uzi = (function () {
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/compile",
 			data: {
+				id: id,
 				src: src
 			},
 			success: function (bytecodes) {
@@ -100,6 +106,7 @@ var Uzi = (function () {
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/install",
 			data: {
+				id: id,
 				src: src
 			},
 			success: function (bytecodes) {
@@ -114,6 +121,7 @@ var Uzi = (function () {
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/run",
 			data: {
+				id: id,
 				src: src
 			},
 			success: function (bytecodes) {
