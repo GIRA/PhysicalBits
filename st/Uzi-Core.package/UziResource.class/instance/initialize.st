@@ -5,6 +5,6 @@ initialize
 		when: #connect send: #update to: self;
 		when: #disconnect send: #update to: self.
 	
-	sema := Semaphore new.
+	sema := Dictionary new.
 	changed := false.
 	self initializeResources
