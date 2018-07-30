@@ -3,6 +3,7 @@
 		"new" : "Richo 7/27/2018 08:59",
 		"on:" : "Richo 7/27/2018 08:58" },
 	"instance" : {
+		"destroy" : "Richo 7/30/2018 09:38",
 		"detail" : "Richo 8/4/2015 18:26",
 		"initialize" : "Richo 7/27/2018 08:59",
 		"initializeResources" : "Richo 8/4/2015 18:17",
@@ -15,4 +16,4 @@
 		"processRun:" : "Richo 9/7/2017 08:31",
 		"protocol" : "Richo 9/7/2016 15:04",
 		"sendJSONResponse:for:" : "Richo 9/7/2017 08:33",
-		"update" : "Richo 8/10/2015 11:30" } }
+		"update" : "Richo 7/30/2018 09:43" } }
