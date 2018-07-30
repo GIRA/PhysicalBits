@@ -1,6 +1,6 @@
 [{
   "type": "script",
-  "message0": "script %1 %2 ticking %3 times per %4 %5 do %6",
+  "message0": "script %1 %2 running %3 times per %4 %5 do %6",
   "args0": [
     {
       "type": "field_input",
@@ -12,9 +12,10 @@
     },
     {
       "type": "field_number",
-      "name": "tickingTimes",
+      "name": "runningTimes",
       "value": 1000,
-      "min": 0
+      "min": 0,
+      "max": 1999
     },
     {
       "type": "field_dropdown",
