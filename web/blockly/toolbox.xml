@@ -80,6 +80,10 @@
     <block type="wait">
       <field name="negate">false</field>
     </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+    </block>
+    <block type="forever"></block>
     <block type="controls_for">
       <field name="VAR" id="!ZeJHok#E-6C]U3~!7{6" variabletype="">i</field>
       <value name="FROM">
@@ -98,7 +102,6 @@
         </shadow>
       </value>
     </block>
-    <block type="forever"></block>
   </category>
   <category name="Math" colour="#5C68A6">
     <block type="math_round">
