@@ -1,54 +1,4 @@
 [{
-  "type": "script",
-  "message0": "script %1 %2 running %3 times per %4 %5 do %6",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "scriptName",
-      "text": "default"
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "field_number",
-      "name": "runningTimes",
-      "value": 1000,
-      "min": 0,
-      "max": 1999
-    },
-    {
-      "type": "field_dropdown",
-      "name": "tickingScale",
-      "options": [
-        [
-          "second",
-          "s"
-        ],
-        [
-          "minute",
-          "m"
-        ],
-        [
-          "hour",
-          "h"
-        ]
-      ]
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "input_statement",
-      "name": "statements",
-      "align": "RIGHT"
-    }
-  ],
-  "colour": 175,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "toggle",
   "message0": "toggle pin %1",
   "args0": [
@@ -146,22 +96,6 @@
   "helpUrl": ""
 },
 {
-  "type": "start_script",
-  "message0": "start %1",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "scriptName",
-      "text": "script name"
-    }
-  ],
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 175,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "toggle_variable",
   "message0": "toggle pin %1",
   "args0": [
@@ -174,38 +108,6 @@
   "previousStatement": null,
   "nextStatement": null,
   "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "stop_script",
-  "message0": "stop %1",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "scriptName",
-      "text": "script name"
-    }
-  ],
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 175,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "run_script",
-  "message0": "run %1",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "scriptName",
-      "text": "script name"
-    }
-  ],
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 175,
   "tooltip": "",
   "helpUrl": ""
 },
@@ -752,6 +654,193 @@
   "previousStatement": null,
   "nextStatement": null,
   "colour": 0,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "setup_task",
+  "message0": "setup task %1 %2 do %3",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "scriptName",
+      "text": "default"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements",
+      "align": "RIGHT"
+    }
+  ],
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "task",
+  "message0": "task %1 %2 running %3 times per %4 %5 initial state %6 %7 do %8",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "default"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "field_number",
+      "name": "runningTimes",
+      "value": 1000,
+      "min": 0,
+      "max": 1999
+    },
+    {
+      "type": "field_dropdown",
+      "name": "tickingScale",
+      "options": [
+        [
+          "second",
+          "s"
+        ],
+        [
+          "minute",
+          "m"
+        ],
+        [
+          "hour",
+          "h"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "NAME",
+      "options": [
+        [
+          "started",
+          "started"
+        ],
+        [
+          "stopped",
+          "stopped"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements",
+      "align": "RIGHT"
+    }
+  ],
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "start_task",
+  "message0": "start %1",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "task name"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "stop_task",
+  "message0": "stop %1",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "task name"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "run_task",
+  "message0": "run %1",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "task name"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "resume_task",
+  "message0": "resume %1",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "task name"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "pause_task",
+  "message0": "pause %1",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "task name"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "forever",
+  "message0": "forever %1 do %2",
+  "args0": [
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "NAME"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 120,
   "tooltip": "",
   "helpUrl": ""
 }]
