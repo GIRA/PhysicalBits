@@ -1,6 +1,9 @@
 running programs
 run: aString
-	self compile: aString 
-		thenDo: [:program | 
-			protocol run: program.
-			self rebuild]
+	| program |
+	[program := protocol compileString: aString.
+	protocol run: program.
+	self rebuild]
+		on: UziParseError , UziCompileError 
+		do: [:err | UIManager default 
+			inform: 'Compilation error! See transcript for details']
