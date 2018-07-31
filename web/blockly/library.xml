@@ -1595,7 +1595,7 @@
             <next>
               <block type="field_input" id="t0}-[@/SdL;K`ioOPet0">
                 <field name="TEXT">default</field>
-                <field name="FIELDNAME">scriptName</field>
+                <field name="FIELDNAME">taskName</field>
               </block>
             </next>
           </block>

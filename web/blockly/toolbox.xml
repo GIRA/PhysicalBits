@@ -1,7 +1,7 @@
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
-  <category name="Scripts" colour="#5ba5a5">
+  <category name="Tasks" colour="#5ba5a5">
     <block type="task">
-      <field name="scriptName">default</field>
+      <field name="taskName">default</field>
     </block>
     <block type="timer">
       <field name="taskName">default</field>
