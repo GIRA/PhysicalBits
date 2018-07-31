@@ -1,9 +1,9 @@
 initialize
 initializeWithSelector: aSymbol
 arguments: anArrayOfUziParseNodes
-primitive: anUziPrimitive
+primitiveName: primName
 
 	selector := aSymbol.
 	arguments := anArrayOfUziParseNodes.
-	primitive := anUziPrimitive.
+	primitiveName := primName.
 	self initialize

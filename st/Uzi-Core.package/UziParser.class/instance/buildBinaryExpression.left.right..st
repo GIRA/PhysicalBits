@@ -8,4 +8,4 @@ buildBinaryExpression: selector left: left right: right
 	^ UziPrimitiveCallNode
 		selector: selector
 		arguments: { left . right }
-		primitive: (self primitiveForSelector: selector)
+		primitiveName: (self primitiveForSelector: selector)

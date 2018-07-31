@@ -1,7 +1,6 @@
 private
 primitiveForSelector: selector
-	| primName |
-	primName := selector caseOf: {
+	^ selector caseOf: {
 		[#turnOn] -> [#turnOn].
 		[#turnOff] -> [#turnOff].
 		[#read] -> [#read].
@@ -28,11 +27,10 @@ primitiveForSelector: selector
 		[#<] -> [#lessThan].
 		[#<=] -> [#lessThanOrEquals].
 		[#not] -> [#negate].
-		[#delayMs] -> [#yieldTime].
+		[#delayMs] -> [#delayMs].
 		[#&] -> [#bitwiseAnd].
 		[#|] -> [#bitwiseOr].
 		[#millis] -> [#millis].
 		[#coroutine] -> [#coroutine].
 		[#serialWrite] -> [#serialWrite].
-	} otherwise: nil.
-	^ primName ifNotNil: [UziPrimitive named: primName]
+	} otherwise: nil

@@ -9,6 +9,6 @@ test043ForeverLoop
 		push arg: (program globals detect: [:var | var value = 13]).
 		prim arg: (UziPrimitive named: #toggle).
 		push arg: (program globals detect: [:var | var value = 1000]).
-		prim arg: (UziPrimitive named: #yieldTime).
+		prim arg: (UziPrimitive named: #delayMs).
 		jmp arg: -5
 	}

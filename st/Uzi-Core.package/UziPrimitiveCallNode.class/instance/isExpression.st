@@ -1,5 +1,5 @@
 testing
 isExpression
-	^ primitive 
+	^ self primitive
 		ifNil: true
-		ifNotNil: [:prim | prim isExpression ]
+		ifNotNil: [:prim | prim isExpression]

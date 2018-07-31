@@ -35,6 +35,6 @@ test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside
 									var named: #a.
 									number value: 1
 								}
-								primitive: (UziPrimitive named: #add)).
+								primitiveName: #add).
 					})
 		}).

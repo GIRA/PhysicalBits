@@ -22,7 +22,7 @@ test034AVariableShouldBeDeclaredBeforeItsFirstUse
 									var named: #a.
 									number value: 1
 								}
-								primitive: (UziPrimitive named: #add)).
+								primitiveName: #add).
 						varDec 
 							name: #a 
 							value: (number value: 5)

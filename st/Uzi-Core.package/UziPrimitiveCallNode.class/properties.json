@@ -8,7 +8,7 @@
 	"instvars" : [
 		"selector",
 		"arguments",
-		"primitive" ],
+		"primitiveName" ],
 	"name" : "UziPrimitiveCallNode",
 	"pools" : [
 		 ],

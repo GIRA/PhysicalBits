@@ -16,9 +16,9 @@ test064OperatorPrecedence
 							number value: 4.
 							number value: 5
 						}
-						primitive: (UziPrimitive named: #multiply)
+						primitiveName: #multiply
 				}
-				primitive: (UziPrimitive named: #add).
+				primitiveName: #add.
 		}		
-		primitive: (UziPrimitive named: #equals).
+		primitiveName: #equals.
 	self assert: expected equals: actual

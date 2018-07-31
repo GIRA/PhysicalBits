@@ -8,10 +8,10 @@ call
 				ifNil: [UziScriptCallNode 
 					script: ref
 					arguments: arguments]
-				ifNotNil: [:primitive |
+				ifNotNil: [:primName |
 					UziPrimitiveCallNode
 						selector: ref scriptName
 						arguments: (arguments collect: [:kvp | kvp value])
-						primitive: primitive])
+						primitiveName: primName])
 				token: token]
 		

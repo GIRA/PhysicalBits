@@ -1,14 +1,15 @@
 {
 	"class" : {
-		"selector:arguments:" : "Richo 8/11/2017 17:49",
-		"selector:arguments:primitive:" : "Richo 6/16/2017 18:03" },
+		"selector:arguments:" : "Richo 7/31/2018 17:57",
+		"selector:arguments:primitiveName:" : "Richo 7/31/2018 17:52" },
 	"instance" : {
 		"accept:" : "Richo 6/16/2017 18:04",
 		"arguments" : "Richo 9/23/2014 13:04",
 		"children" : "Richo 5/2/2018 22:20",
-		"initializeWithSelector:arguments:primitive:" : "Richo 6/16/2017 18:06",
-		"isExpression" : "Richo 12/31/2016 12:07",
-		"isStatement" : "Richo 12/31/2016 12:07",
-		"primitive" : "Richo 12/30/2016 15:41",
+		"initializeWithSelector:arguments:primitiveName:" : "Richo 7/31/2018 17:57",
+		"isExpression" : "Richo 7/31/2018 18:05",
+		"isStatement" : "Richo 7/31/2018 17:58",
+		"primitive" : "Richo 7/31/2018 18:06",
+		"primitiveName" : "Richo 7/31/2018 18:03",
 		"printOn:" : "Richo 9/7/2016 10:38",
 		"selector" : "Richo 9/23/2014 13:04" } }

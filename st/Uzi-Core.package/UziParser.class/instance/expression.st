@@ -8,6 +8,6 @@ expression
 				ifNotNil: [(UziPrimitiveCallNode 
 					selector: #not 
 					arguments: { expr } 
-					primitive: (self primitiveForSelector: #not))
+					primitiveName: (self primitiveForSelector: #not))
 					token: token]]
 		

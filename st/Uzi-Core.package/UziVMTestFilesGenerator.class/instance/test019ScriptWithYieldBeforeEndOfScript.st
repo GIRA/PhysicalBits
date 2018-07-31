@@ -15,6 +15,6 @@ test019ScriptWithYieldBeforeEndOfScript
 			call: #blink11;
 			prim: #pop;
 			push: 100;
-			prim: #yieldTime]].
+			prim: #delayMs]].
 	self writeFile: 'Test019ScriptWithYieldBeforeEndOfScript'
 		contents: (UziProtocol new run: program)

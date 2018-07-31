@@ -3,5 +3,5 @@ visitPrimitiveCall: node
 	^ (node class
 		selector: node selector
 		arguments: (self visitCollection: node arguments)
-		primitive: node primitive)
+		primitiveName: node primitiveName)
 		token: node token

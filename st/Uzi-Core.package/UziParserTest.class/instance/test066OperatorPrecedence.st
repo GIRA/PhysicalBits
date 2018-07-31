@@ -8,5 +8,5 @@ test066OperatorPrecedence
 			number value: 1.
 			number value: 2
 		} 
-		primitive: (UziPrimitive named: #divide).
+		primitiveName: #divide.
 	self assert: expected equals: actual

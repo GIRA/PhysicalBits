@@ -10,12 +10,12 @@ test036ResumeOnARunningTaskShouldHaveNoEffect
 			push: 13;
 			prim: #turnOn;
 			push: 100;
-			prim: #yieldTime;
+			prim: #delayMs;
 			resume: #main;
 			push: 13;
 			prim: #turnOff;
 			push: 100;
-			prim: #yieldTime];
+			prim: #delayMs];
 		script: #awake
 		ticking: true
 		delay: 0

@@ -8,7 +8,7 @@ test014PrimitiveYieldTime
 		instructions: [:s | s
 			turnOn: 13;
 			push: 1000;
-			prim: #yieldTime;
+			prim: #delayMs;
 			turnOff: 13]].
 	self writeFile: 'Test014PrimitiveYieldTime'
 		contents: (UziProtocol new run: program)

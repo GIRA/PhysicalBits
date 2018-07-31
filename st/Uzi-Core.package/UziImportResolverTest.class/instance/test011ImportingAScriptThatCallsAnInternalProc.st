@@ -32,7 +32,6 @@ test011ImportingAScriptThatCallsAnInternalProc
 						arguments: { var named: 'pin' }.					
 					prim selector: #delayMs
 						arguments: { var named: 'ms' }
-						primitive: (UziPrimitive named: #yieldTime)
 				}).
 			proc name: #'t9.blink'
 				arguments: #()

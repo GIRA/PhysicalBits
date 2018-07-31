@@ -39,6 +39,6 @@ test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclared
 									var named: #a.
 									number value: 1
 								}
-								primitive: (UziPrimitive named: #add)).
+								primitiveName: #add).
 					})
 		}).

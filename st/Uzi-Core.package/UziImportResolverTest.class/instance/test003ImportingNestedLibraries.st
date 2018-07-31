@@ -43,7 +43,7 @@ test003ImportingNestedLibraries
 							var named: #'t2.t1.v'.
 							var named: #a
 						}
-						primitive: (UziPrimitive named: #add))
+						primitiveName: #add)
 				}).
 			task name: #main
 				arguments: #()

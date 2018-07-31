@@ -9,7 +9,7 @@ test032StopScriptAndRestartShouldResetPCAndStuff
 			push: 13;
 			prim: #toggle;
 			push: 1000;
-			prim: #yieldTime;
+			prim: #delayMs;
 			push: 11;
 			prim: #toggle];
 		script: #sleepAwake
@@ -18,9 +18,9 @@ test032StopScriptAndRestartShouldResetPCAndStuff
 		instructions: [:s | s
 			stop: #blink13;
 			push: 500;
-			prim: #yieldTime;
+			prim: #delayMs;
 			start: #blink13;
 			push: 500;
-			prim: #yieldTime]].
+			prim: #delayMs]].
 	self writeFile: 'Test032StopScriptAndRestartShouldResetPCAndStuff'
 		contents: (UziProtocol new run: program)

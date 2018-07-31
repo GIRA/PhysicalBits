@@ -1,5 +1,5 @@
 testing
 isStatement 
-	^ primitive 
+	^ self primitive 
 		ifNil: true
 		ifNotNil: [:prim | prim isStatement ]

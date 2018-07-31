@@ -4,7 +4,7 @@ visitPrimitiveCall: node
 		self assert: node selector
 			equals: each selector
 			description: 'Primitive call selector doesn''t match'.
-		self assert: node primitive
-			equals: each primitive
-			description: 'Primitive doesn''t match'].
+		self assert: node primitiveName
+			equals: each primitiveName
+			description: 'Primitive name doesn''t match'].
 	self compareChildren: node

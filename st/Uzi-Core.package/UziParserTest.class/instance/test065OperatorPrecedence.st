@@ -17,14 +17,14 @@ test065OperatorPrecedence
 									number value: 8.
 									number value: 3.
 								} 
-								primitive: (UziPrimitive named: #add).
+								primitiveName: #add.
 							number value: 4
 						} 
-						primitive: (UziPrimitive named: #add).
+						primitiveName: #add.
 					number value: 5
 				} 
-				primitive: (UziPrimitive named: #add).
+				primitiveName: #add.
 			number value: 6
 		} 
-		primitive: (UziPrimitive named: #add).
+		primitiveName: #add.
 	self assert: expected equals: actual

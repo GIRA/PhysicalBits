@@ -25,7 +25,7 @@ primSpec
 		{#turnOn . 16r14 . 1 -> 0}.
 		{#turnOff . 16r15 . 1 -> 0}.
 		{#yield . 16r16 . 0 -> 0}.
-		{#yieldTime . 16r17 . 1 -> 0}.
+		{#delayMs . 16r17 . 1 -> 0}.
 		{#millis . 16r18 . 0 -> 1}.
 		{#ret . 16r19 . 0 -> 0}.
 		{#pop . 16r1A . 1 -> 0}.

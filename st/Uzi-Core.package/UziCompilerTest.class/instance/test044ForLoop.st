@@ -17,7 +17,7 @@ test044ForLoop
 		readLocal arg: counter.
 		prim arg: (UziPrimitive named: #toggle).
 		push arg: (program globals detect: [:var | var value = 1000]).
-		prim arg: (UziPrimitive named: #yieldTime).
+		prim arg: (UziPrimitive named: #delayMs).
 		readLocal arg: counter.
 		push arg: (program globals detect: [:var | var value = 2]).
 		prim arg: (UziPrimitive named: #add).

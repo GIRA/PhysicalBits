@@ -9,7 +9,7 @@ test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript
 			call: #writeCoroutine;
 			prim: #pop;
 			push: 1000;
-			prim: #yieldTime;
+			prim: #delayMs;
 			start: #bar;
 			stop: #foo];
 		script: #bar
@@ -19,7 +19,7 @@ test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript
 			call: #writeCoroutine;
 			prim: #pop;
 			push: 1000;
-			prim: #yieldTime;
+			prim: #delayMs;
 			start: #foo;
 			stop: #bar];
 		script: #writeCoroutine

@@ -1,8 +1,9 @@
 requests
 processRun: req
-	| src program |
+	| src type program |
 	src := req fields at: 'src' ifAbsent: [^ req send400Response: 'Missing parameter: "src"'].
-	[program := protocol compileString: src.
+	type := req fields at: 'type' ifAbsent: ['text'].
+	[program := self compile: src type: type.
 	protocol run: program]
 		on: Error
 		do: [:err | ^ req send400Response: err description].	

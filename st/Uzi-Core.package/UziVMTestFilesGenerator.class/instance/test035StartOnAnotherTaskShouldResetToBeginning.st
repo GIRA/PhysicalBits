@@ -9,11 +9,11 @@ test035StartOnAnotherTaskShouldResetToBeginning
 			push: 13;
 			prim: #turnOn;
 			push: 100;
-			prim: #yieldTime;
+			prim: #delayMs;
 			push: 13;
 			prim: #turnOff;
 			push: 1000;
-			prim: #yieldTime];
+			prim: #delayMs];
 		script: #awake
 		ticking: true
 		delay: 0

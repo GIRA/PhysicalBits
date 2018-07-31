@@ -25,6 +25,7 @@
 		"msgOutStartReporting" : "Richo 7/6/2018 20:50",
 		"msgOutStopReporting" : "Richo 7/6/2018 20:50" },
 	"instance" : {
+		"compileJSON:" : "Richo 7/31/2018 17:44",
 		"compileString:" : "Richo 7/30/2018 12:02",
 		"connectOnPort:" : "Richo 8/24/2016 18:14",
 		"connectOnSocket:" : "Richo 8/24/2016 18:14",

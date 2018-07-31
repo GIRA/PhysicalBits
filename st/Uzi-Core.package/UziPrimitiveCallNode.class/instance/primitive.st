@@ -1,3 +1,3 @@
 accessing
 primitive
-	^ primitive
+	^ primitiveName ifNotNil: [:name | UziPrimitive named: name]
