@@ -138,7 +138,7 @@
   ],
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 120,
+  "colour": 210,
   "tooltip": "",
   "helpUrl": ""
 },
@@ -834,7 +834,7 @@
 },
 {
   "type": "forever",
-  "message0": "forever %1 do %2",
+  "message0": "repeat forever %1 do %2",
   "args0": [
     {
       "type": "input_dummy"
@@ -846,7 +846,7 @@
   ],
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 120,
+  "colour": 210,
   "tooltip": "",
   "helpUrl": ""
 },
@@ -881,7 +881,7 @@
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 120,
+  "colour": 210,
   "tooltip": "",
   "helpUrl": ""
 },
@@ -922,6 +922,258 @@
   "inputsInline": true,
   "output": null,
   "colour": 20,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "elapsed_time",
+  "message0": "elapsed %1",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "unit",
+      "options": [
+        [
+          "milliseconds",
+          "ms"
+        ],
+        [
+          "seconds",
+          "s"
+        ],
+        [
+          "minutes",
+          "m"
+        ]
+      ]
+    }
+  ],
+  "inputsInline": true,
+  "output": "Number",
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "degrees_servo",
+  "message0": "move servo on pin %1 degrees %2",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "pinNumber",
+      "options": [
+        [
+          "D0",
+          "0"
+        ],
+        [
+          "D1",
+          "1"
+        ],
+        [
+          "D2",
+          "2"
+        ],
+        [
+          "D3",
+          "3"
+        ],
+        [
+          "D4",
+          "4"
+        ],
+        [
+          "D5",
+          "5"
+        ],
+        [
+          "D6",
+          "6"
+        ],
+        [
+          "D7",
+          "7"
+        ],
+        [
+          "D8",
+          "8"
+        ],
+        [
+          "D9",
+          "9"
+        ],
+        [
+          "D10",
+          "10"
+        ],
+        [
+          "D11",
+          "11"
+        ],
+        [
+          "D12",
+          "12"
+        ],
+        [
+          "D13",
+          "13"
+        ],
+        [
+          "A0",
+          "14"
+        ],
+        [
+          "A1",
+          "15"
+        ],
+        [
+          "A2",
+          "16"
+        ],
+        [
+          "A3",
+          "17"
+        ],
+        [
+          "A4",
+          "18"
+        ],
+        [
+          "A5",
+          "19"
+        ]
+      ]
+    },
+    {
+      "type": "input_value",
+      "name": "servoValue",
+      "check": "Number"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 0,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "degrees_servo_variable",
+  "message0": "move servo on pin %1 degrees %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "pinNumber",
+      "check": "Number",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_value",
+      "name": "servoValue",
+      "check": "Number",
+      "align": "RIGHT"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 0,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "repeat",
+  "message0": "repeat %1 %2 %3",
+  "args0": [
+    {
+      "type": "field_dropdown",
+      "name": "negate",
+      "options": [
+        [
+          "while",
+          "false"
+        ],
+        [
+          "until",
+          "true"
+        ]
+      ]
+    },
+    {
+      "type": "input_value",
+      "name": "condition",
+      "check": "Boolean"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "repeat_times",
+  "message0": "repeat %1 times %2 %3",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "times"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "for",
+  "message0": "count with %1 %2 from %3 to %4 by %5 do %6",
+  "args0": [
+    {
+      "type": "field_variable",
+      "name": "variable",
+      "variable": "i"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_value",
+      "name": "start",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "stop",
+      "check": "Number"
+    },
+    {
+      "type": "input_value",
+      "name": "step",
+      "check": "Number"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements"
+    }
+  ],
+  "inputsInline": true,
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 210,
   "tooltip": "",
   "helpUrl": ""
 }]

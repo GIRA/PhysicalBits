@@ -91,24 +91,41 @@
       </value>
     </block>
   </category>
-  <category name="Logic" colour="#5C81A6">
-    <block type="controls_if">
-      <value name="IF0">
+  <category name="Motors" colour="#a55b5b">
+    <block type="degrees_servo">
+      <field name="pinNumber">0</field>
+      <value name="servoValue">
+        <shadow type="math_number">
+          <field name="NUM">90</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="degrees_servo_variable">
+      <value name="pinNumber">
+        <shadow type="math_number">
+          <field name="NUM">9</field>
+        </shadow>
+      </value>
+      <value name="servoValue">
+        <shadow type="math_number">
+          <field name="NUM">90</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Control" colour="#5b80a5">
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
         <shadow type="logic_boolean">
           <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
-    <block type="logic_compare">
-      <field name="OP">EQ</field>
-      <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+    <block type="controls_if">
+      <value name="IF0">
+        <shadow type="logic_boolean">
+          <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
@@ -135,44 +152,26 @@
     <block type="logic_boolean">
       <field name="BOOL">TRUE</field>
     </block>
-  </category>
-  <category name="Loops" colour="#5CA65C">
-    <block type="controls_repeat_ext">
-      <value name="TIMES">
+    <block type="repeat_times">
+      <value name="times">
         <shadow type="math_number">
-          <field name="NUM">10</field>
+          <field name="NUM">5</field>
         </shadow>
       </value>
     </block>
-    <block type="controls_whileUntil">
-      <field name="MODE">WHILE</field>
-      <value name="BOOL">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="forever"></block>
-    <block type="controls_for">
-      <field name="VAR" id="!ZeJHok#E-6C]U3~!7{6" variabletype="">i</field>
-      <value name="FROM">
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+      <value name="A">
         <shadow type="math_number">
           <field name="NUM">1</field>
         </shadow>
       </value>
-      <value name="TO">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
-        </shadow>
-      </value>
-      <value name="BY">
+      <value name="B">
         <shadow type="math_number">
           <field name="NUM">1</field>
         </shadow>
       </value>
     </block>
-  </category>
-  <category name="Delays" colour="#5ba580">
     <block type="wait">
       <field name="negate">false</field>
       <value name="condition">
@@ -189,17 +188,30 @@
         </shadow>
       </value>
     </block>
-  </category>
-  <category name="Math" colour="#5C68A6">
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
+    <block type="elapsed_time">
+      <field name="unit">ms</field>
+    </block>
+    <block type="forever"></block>
+    <block type="for">
+      <field name="variable" id="z/7dtDDbukU^@B[Ir0]r" variabletype="">i</field>
+      <value name="start">
         <shadow type="math_number">
-          <field name="NUM">0</field>
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="stop">
+        <shadow type="math_number">
+          <field name="NUM">10</field>
+        </shadow>
+      </value>
+      <value name="step">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
         </shadow>
       </value>
     </block>
+  </category>
+  <category name="Math" colour="#5C68A6">
     <block type="math_round">
       <field name="OP">ROUND</field>
       <value name="NUM">
@@ -207,6 +219,9 @@
           <field name="NUM">3.1</field>
         </shadow>
       </value>
+    </block>
+    <block type="math_number">
+      <field name="NUM">0</field>
     </block>
     <block type="math_single">
       <field name="OP">ROOT</field>
@@ -227,8 +242,14 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_number">
-      <field name="NUM">0</field>
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
+        <shadow type="math_number">
+          <field name="NUM">0</field>
+        </shadow>
+      </value>
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
