@@ -86,13 +86,14 @@ var Uzi = (function () {
 		}, 2);
 	}
 
-	function compile(src, callback) {
+	function compile(src, type, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/compile",
 			data: {
 				id: id,
-				src: src
+				src: src,
+				type: type
 			},
 			success: function (bytecodes) {
 				callback(bytecodes);
@@ -101,13 +102,14 @@ var Uzi = (function () {
 		}, 2);
 	}
 
-	function install(src, callback) {
+	function install(src, type, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/install",
 			data: {
 				id: id,
-				src: src
+				src: src,
+				type: type
 			},
 			success: function (bytecodes) {
 				callback(bytecodes);
@@ -116,13 +118,14 @@ var Uzi = (function () {
 		}, 2);
 	}
 
-	function run(src, callback) {
+	function run(src, type, callback) {
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/run",
 			data: {
 				id: id,
-				src: src
+				src: src,
+				type: type
 			},
 			success: function (bytecodes) {
 				callback(bytecodes);
