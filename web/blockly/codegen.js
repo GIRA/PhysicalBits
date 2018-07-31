@@ -1,15 +1,15 @@
 var CodeGenerator = (function () {
 	
-	var topLevelBlocks = ["setup_task", "task"];	
+	var topLevelBlocks = ["task", "timer"];	
 	var dispatchTable =  {
-		setup_task : function (block, path) {
+		task : function (block, path) {
 			var id = getId(block);
-			var scriptName = getChildNode(block, "scriptName").innerText;
+			var taskName = getChildNode(block, "taskName").innerText;
 			var statements = generateCodeForStatements(block, path);
 			return {
 				type: "UziTaskNode",
 				id: id,
-				name: scriptName,
+				name: taskName,
 				arguments: [],
 				state: "once",
 				tickingRate: null,
