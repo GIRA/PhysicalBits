@@ -52,7 +52,11 @@ var CodeGenerator = (function () {
 				start: start,
 				stop: stop,
 				step: step,
-				statements: statements
+				body: {
+					type: "UziBlockNode",
+					id: id,
+					statements: statements					
+				}
 			}
 		},
 		math_number: function (block, path) {
@@ -68,11 +72,13 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var pinState = getChildNode(block, "pinState").innerText;
 			var pinNumber = generateCodeForValue(block, path, "pinNumber");
+			var selector = pinState === "on" ? "turnOn" : "turnOff";
 			return {
 				type: "UziPrimitiveCallNode",
 				id: id,
-				selector: pinState === "on" ? "turnOn" : "turnOff",
-				arguments: [pinNumber]				
+				selector: selector,
+				arguments: [pinNumber],
+				primitiveName: selector
 			}
 		},
 		variables_get: function (block, path) {
@@ -99,7 +105,8 @@ var CodeGenerator = (function () {
 				type: "UziPrimitiveCallNode",
 				id: id,
 				selector: selector,
-				arguments: [time]
+				arguments: [time],
+				primitiveName: selector
 			}
 		}
 	};
