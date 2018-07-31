@@ -132,13 +132,16 @@ var CodeGenerator = (function () {
 	
 	function generateCodeForStatements(block, path) {
 		var statements = [];
-		getChildNode(block, "statements").childNodes.forEach(function (each) {
-			var next = each;
-			do {
-				statements.push(generateCodeFor(next, path));
-				next = getNextStatement(next);
-			} while (next !== undefined);
-		});
+		var child = getChildNode(block, "statements");
+		if (child !== undefined) {
+			child.childNodes.forEach(function (each) {
+				var next = each;
+				do {
+					statements.push(generateCodeFor(next, path));
+					next = getNextStatement(next);
+				} while (next !== undefined);
+			});
+		}
 		return statements;
 	}
 	
