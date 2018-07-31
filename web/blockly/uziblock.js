@@ -1,7 +1,67 @@
 var UziBlock = (function () {
 	
 	var blocklyArea, blocklyDiv, workspace;	
+	
+	function init(area, div) {
+		blocklyArea = area;
+		blocklyDiv = div;
+		
+		initButtons();
+		initBlockly();
+	}
+	
+	function initButtons() {		
+		$("#compile").on("click", function () {
+			
+		});
 
+		$("#install").on("click", function () {
+			
+		});
+
+		$("#run").on("click", function () {
+			
+		});
+
+		Uzi.onUpdate(function () {
+			if (Uzi.isConnected) {				
+				$("#install").removeAttr("disabled");
+				$("#run").removeAttr("disabled");
+				$("#more").removeAttr("disabled");
+			} else {
+				$("#install").attr("disabled", "disabled");
+				$("#run").attr("disabled", "disabled");
+				$("#more").attr("disabled", "disabled");
+			}
+		});
+	}
+	
+	function initBlockly() {		
+		var counter = 0;
+		ajax.request({
+			type: 'GET',
+			url: 'toolbox.xml',
+			success: function (xml) {
+				initToolbox(xml);
+				makeResizable();
+				if (++counter == 2) {
+					restore();
+				}
+			}
+		});
+		
+		ajax.request({
+			type: 'GET',
+			url: 'blocks.json',
+			success: function (json) {
+				initBlocks(JSON.parse(json));
+				if (++counter == 2) {
+					restore();
+				}
+			}
+		});
+	}
+	
 	function initToolbox(toolbox) {
 		workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
 	}
@@ -32,40 +92,8 @@ var UziBlock = (function () {
 		Blockly.svgResize(workspace);
 	}
 	
-	function init(area, div) {
-		blocklyArea = area;
-		blocklyDiv = div;
-		
-		var counter = 0;
-		ajax.request({
-			type: 'GET',
-			url: 'toolbox.xml',
-			success: function (xml) {
-				initToolbox(xml);
-				makeResizable();
-				if (++counter == 2) {
-					restore();
-				}
-			}
-		});
-		
-		ajax.request({
-			type: 'GET',
-			url: 'blocks.json',
-			success: function (json) {
-				initBlocks(JSON.parse(json));
-				if (++counter == 2) {
-					restore();
-				}
-			}
-		});
-	}
-	
 	function getGeneratedCode(){
-		return workspace.getTopBlocks().map(function (block) { 
-			var code = Blockly.JavaScript.blockToCode(block);
-			return JSON.parse(code);
-		});
+		// TODO(Richo): workspace -> XML -> JSON
 	}
 	
 	function save() {
