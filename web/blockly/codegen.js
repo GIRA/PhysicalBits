@@ -63,6 +63,44 @@ var CodeGenerator = (function () {
 				id: id,
 				value: value
 			}
+		},
+		turn_pin_variable: function (block, path) {
+			var id = getId(block);
+			var pinState = getChildNode(block, "pinState").innerText;
+			var pinNumber = generateCodeForValue(block, path, "pinNumber");
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: pinState === "on" ? "turnOn" : "turnOff",
+				arguments: [pinNumber]				
+			}
+		},
+		variables_get: function (block, path) {
+			var id = getId(block);
+			var variableName = getChildNode(block, "VAR").innerText;
+			return {
+				type: "UziVariableNode",
+				id: id,
+				name: variableName
+			}
+		},
+		delay: function (block, path) {
+			var id = getId(block);
+			var unit = getChildNode(block, "unit").innerText;
+			var time = generateCodeForValue(block, path, "time");
+			var selector;
+			if (unit === "ms") { selector = "delayMs"; }
+			else if (unit === "s") { selector = "delayS"; }
+			else if (unit === "m") { selector = "delayM"; }
+			else {
+				throw "Invalid delay unit: '" + unit + "'";
+			}
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: selector,
+				arguments: [time]
+			}
 		}
 	};
 	
@@ -90,8 +128,8 @@ var CodeGenerator = (function () {
 		getChildNode(block, "statements").childNodes.forEach(function (each) {
 			var next = each;
 			do {
-				statements.push(generateCodeFor(each, path));
-				next = getNextStatement(each);
+				statements.push(generateCodeFor(next, path));
+				next = getNextStatement(next);
 			} while (next !== undefined);
 		});
 		return statements;
@@ -102,9 +140,11 @@ var CodeGenerator = (function () {
 	}
 	
 	function getNextStatement(block) {
-		return getLastChild(block, function (child) {
+		var next = getLastChild(block, function (child) {
 			return child.tagName === "NEXT";
 		});
+		if (next === undefined) { return next; }
+		return next.childNodes[0];
 	}
 	
 	function getChildNode(block, name) {
@@ -129,15 +169,20 @@ var CodeGenerator = (function () {
 	
 	return {
 		generate: function (xml) {
-			var tasks = [];
+			var scripts = [];
 			xml.childNodes.forEach(function (block) {
 				if (isTopLevel(block)) {
 					var path = [xml];
 					var code = generateCodeFor(block, path);
-					tasks.push(code);
+					scripts.push(code);
 				}
 			});
-			return tasks;
+			return {
+				type: "UziProgramNode",
+				imports: [],
+				globals: [],
+				scripts: scripts
+			};
 		}
 	}
 })();
