@@ -1,13 +1,13 @@
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
   <category name="Scripts" colour="#5ba5a5">
     <block type="task">
+      <field name="scriptName">default</field>
+    </block>
+    <block type="timer">
       <field name="taskName">default</field>
       <field name="runningTimes">1000</field>
       <field name="tickingScale">s</field>
       <field name="initialState">started</field>
-    </block>
-    <block type="setup_task">
-      <field name="scriptName">default</field>
     </block>
     <block type="start_task">
       <field name="taskName">task name</field>
@@ -84,23 +84,18 @@
     </block>
   </category>
   <category name="Control" colour="#5b80a5">
-    <block type="controls_if">
-      <value name="IF0">
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
         <shadow type="logic_boolean">
           <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
-    <block type="logic_compare">
-      <field name="OP">EQ</field>
-      <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+    <block type="controls_if">
+      <value name="IF0">
+        <shadow type="logic_boolean">
+          <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
@@ -134,11 +129,16 @@
         </shadow>
       </value>
     </block>
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+      <value name="A">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="B">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
         </shadow>
       </value>
     </block>
@@ -182,17 +182,16 @@
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
-    <block type="math_number">
-      <field name="NUM">0</field>
-    </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
+    <block type="math_round">
+      <field name="OP">ROUND</field>
+      <value name="NUM">
         <shadow type="math_number">
-          <field name="NUM">0</field>
+          <field name="NUM">3.1</field>
         </shadow>
       </value>
+    </block>
+    <block type="math_number">
+      <field name="NUM">0</field>
     </block>
     <block type="math_single">
       <field name="OP">ROOT</field>
@@ -213,11 +212,12 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
         <shadow type="math_number">
-          <field name="NUM">3.1</field>
+          <field name="NUM">0</field>
         </shadow>
       </value>
     </block>

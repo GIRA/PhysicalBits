@@ -664,95 +664,6 @@
   "helpUrl": ""
 },
 {
-  "type": "setup_task",
-  "message0": "setup task %1 %2 do %3",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "scriptName",
-      "text": "default"
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "input_statement",
-      "name": "statements",
-      "align": "RIGHT"
-    }
-  ],
-  "colour": 175,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "task",
-  "message0": "task %1 %2 running %3 times per %4 %5 initial state %6 %7 do %8",
-  "args0": [
-    {
-      "type": "field_input",
-      "name": "taskName",
-      "text": "default"
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "field_number",
-      "name": "runningTimes",
-      "value": 1000,
-      "min": 0,
-      "max": 1999
-    },
-    {
-      "type": "field_dropdown",
-      "name": "tickingScale",
-      "options": [
-        [
-          "second",
-          "s"
-        ],
-        [
-          "minute",
-          "m"
-        ],
-        [
-          "hour",
-          "h"
-        ]
-      ]
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "field_dropdown",
-      "name": "initialState",
-      "options": [
-        [
-          "started",
-          "started"
-        ],
-        [
-          "stopped",
-          "stopped"
-        ]
-      ]
-    },
-    {
-      "type": "input_dummy"
-    },
-    {
-      "type": "input_statement",
-      "name": "statements",
-      "align": "RIGHT"
-    }
-  ],
-  "colour": 175,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "start_task",
   "message0": "start %1",
   "args0": [
@@ -1174,6 +1085,95 @@
   "previousStatement": null,
   "nextStatement": null,
   "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "timer",
+  "message0": "timer named %1 %2 running %3 times per %4 %5 initial state %6 %7 do %8",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "taskName",
+      "text": "default"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "field_number",
+      "name": "runningTimes",
+      "value": 1000,
+      "min": 0,
+      "max": 1999
+    },
+    {
+      "type": "field_dropdown",
+      "name": "tickingScale",
+      "options": [
+        [
+          "second",
+          "s"
+        ],
+        [
+          "minute",
+          "m"
+        ],
+        [
+          "hour",
+          "h"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "field_dropdown",
+      "name": "initialState",
+      "options": [
+        [
+          "started",
+          "started"
+        ],
+        [
+          "stopped",
+          "stopped"
+        ]
+      ]
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements",
+      "align": "RIGHT"
+    }
+  ],
+  "colour": 175,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "task",
+  "message0": "task named %1 %2 do %3",
+  "args0": [
+    {
+      "type": "field_input",
+      "name": "scriptName",
+      "text": "default"
+    },
+    {
+      "type": "input_dummy"
+    },
+    {
+      "type": "input_statement",
+      "name": "statements",
+      "align": "RIGHT"
+    }
+  ],
+  "colour": 175,
   "tooltip": "",
   "helpUrl": ""
 }]
