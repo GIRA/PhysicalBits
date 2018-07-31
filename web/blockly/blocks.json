@@ -727,7 +727,7 @@
     },
     {
       "type": "field_dropdown",
-      "name": "NAME",
+      "name": "initialState",
       "options": [
         [
           "started",
@@ -841,7 +841,7 @@
     },
     {
       "type": "input_statement",
-      "name": "NAME"
+      "name": "statements"
     }
   ],
   "previousStatement": null,
@@ -1117,7 +1117,7 @@
 },
 {
   "type": "repeat_times",
-  "message0": "repeat %1 times %2 %3",
+  "message0": "repeat %1 times %2 do %3",
   "args0": [
     {
       "type": "input_value",

@@ -811,7 +811,7 @@
                     <next>
                       <block type="field_dropdown" id="p%eB=6X%]z`g9d(yf@aE">
                         <mutation options="[&quot;text&quot;,&quot;text&quot;]"></mutation>
-                        <field name="FIELDNAME">NAME</field>
+                        <field name="FIELDNAME">initialState</field>
                         <field name="USER0">started</field>
                         <field name="CPU0">started</field>
                         <field name="USER1">stopped</field>
@@ -1056,7 +1056,7 @@
         </statement>
         <next>
           <block type="input_statement" id="cKdNRU2#q.oh3v3NXgr6">
-            <field name="INPUTNAME">NAME</field>
+            <field name="INPUTNAME">statements</field>
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="UHz,qpYF3()P5enwoM!i">
@@ -1506,6 +1506,11 @@
               <block type="input_statement" id="ZsZif8C#6^[h9kCEXFqo">
                 <field name="INPUTNAME">statements</field>
                 <field name="ALIGN">LEFT</field>
+                <statement name="FIELDS">
+                  <block type="field_static" id="wRd*kz%)+r*h1a5uSz6l">
+                    <field name="TEXT">do</field>
+                  </block>
+                </statement>
                 <value name="TYPE">
                   <shadow type="type_null" id="IoZjncSyu]VE~s[?mb_h"></shadow>
                 </value>
