@@ -51,7 +51,15 @@
 		#connectionPanel, #editorButtons {
 			padding: 0px 10px;
 			font-size: large;
-		}		
+		}
+		
+		svg:not(:root) {
+			/*
+			Fix for workspace scroll bug. Solution found here:
+			https://groups.google.com/forum/#!topic/blockly/9ZgoHVfYW5g
+			*/
+			overflow: visible;
+		}
 	</style>
   </head>
 
