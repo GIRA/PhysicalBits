@@ -10,19 +10,25 @@ var UziBlock = (function () {
 		initBlockly();
 	}
 	
-	function initButtons() {		
+	function initButtons() {	
 		$("#compile").on("click", function () {
-			var code = getGeneratedCode();
-			console.log("GENERATED CODE:");
-			console.log(code);
+			Uzi.compile(getGeneratedCodeAsJSON(), "json", function (bytecodes) {			
+				console.log(bytecodes);
+				Alert.success("Compilation successful");
+			});
 		});
 
 		$("#install").on("click", function () {
-			
+			Uzi.install(getGeneratedCodeAsJSON(), "json", function (bytecodes) {			
+				console.log(bytecodes);
+				Alert.success("Installation successful");
+			});
 		});
 
 		$("#run").on("click", function () {
-			
+			Uzi.run(getGeneratedCodeAsJSON(), "json", function (bytecodes) {			
+				console.log(bytecodes);
+			});
 		});
 
 		Uzi.onUpdate(function () {
@@ -95,10 +101,14 @@ var UziBlock = (function () {
 	}
 	
 	function getGeneratedCode(){
-		// TODO(Richo): workspace -> XML -> JSON
 		var wks = Blockly.getMainWorkspace();
 		var xml = Blockly.Xml.workspaceToDom(wks);
 		return CodeGenerator.generate(xml);
+	}
+	
+	function getGeneratedCodeAsJSON() {
+		var code = getGeneratedCode();
+		return JSON.stringify(code);
 	}
 	
 	function save() {
