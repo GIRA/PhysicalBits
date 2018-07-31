@@ -12,7 +12,9 @@ var UziBlock = (function () {
 	
 	function initButtons() {		
 		$("#compile").on("click", function () {
-			
+			var code = getGeneratedCode();
+			console.log("GENERATED CODE:");
+			console.log(code);
 		});
 
 		$("#install").on("click", function () {
@@ -94,6 +96,9 @@ var UziBlock = (function () {
 	
 	function getGeneratedCode(){
 		// TODO(Richo): workspace -> XML -> JSON
+		var wks = Blockly.getMainWorkspace();
+		var xml = Blockly.Xml.workspaceToDom(wks);
+		return CodeGenerator.generate(xml);
 	}
 	
 	function save() {
