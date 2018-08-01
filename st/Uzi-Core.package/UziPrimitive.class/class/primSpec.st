@@ -35,5 +35,26 @@ primSpec
 		{#logicalOr . 16r1E . 2 -> 1}.
 		{#bitwiseAnd . 16r1F . 2 -> 1}.
 		{#bitwiseOr . 16r20 . 2 -> 1}.
-		{#serialWrite . 16r21 . 1 -> 0}
+		{#serialWrite . 16r21 . 1 -> 0}.
+		
+		"TODO"
+		{#round . 16r22 . 1 -> 1}.
+		{#ceil . 16r23 . 1 -> 1}.
+		{#floor . 16r24 . 1 -> 1}.
+		{#sqrt . 16r25 . 1 -> 1}.
+		{#abs . 16r26 . 1 -> 1}.
+		{#ln . 16r27 . 1 -> 1}.
+		{#log10 . 16r28 . 1 -> 1}.
+		{#exp . 16r29 . 1 -> 1}.
+		{#pow10 . 16r2A . 1 -> 1}.
+		{#asin . 16r2B . 1 -> 1}.
+		{#acos . 16r2C . 1 -> 1}.
+		{#atan. 16r2D . 1 -> 1}.
+		{#power . 16r2E . 2 -> 1}.
+		{#isOn . 16r2F . 1 -> 1}.
+		{#isOff . 16r30 . 1 -> 1}.
+		{#mod . 16r31 . 2 -> 1}.
+		{#constrain . 16r32 . 3 -> 1}.
+		{#randomInt . 16r33 . 2 -> 1}.
+		{#random . 16r34 . 0 -> 1}.
 	}
