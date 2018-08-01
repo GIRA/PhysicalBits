@@ -1176,4 +1176,50 @@
   "colour": 175,
   "tooltip": "",
   "helpUrl": ""
+},
+{
+  "type": "conditional_simple",
+  "message0": "if %1 do %2",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "condition",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_statement",
+      "name": "trueBranch"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
+},
+{
+  "type": "conditional_full",
+  "message0": "if %1 do %2 else %3",
+  "args0": [
+    {
+      "type": "input_value",
+      "name": "condition",
+      "check": "Boolean",
+      "align": "RIGHT"
+    },
+    {
+      "type": "input_statement",
+      "name": "falseBranch"
+    },
+    {
+      "type": "input_statement",
+      "name": "trueBranch"
+    }
+  ],
+  "previousStatement": null,
+  "nextStatement": null,
+  "colour": 210,
+  "tooltip": "",
+  "helpUrl": ""
 }]

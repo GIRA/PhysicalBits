@@ -84,16 +84,24 @@
     </block>
   </category>
   <category name="Control" colour="#5b80a5">
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+    <block type="conditional_simple"></block>
+    <block type="conditional_full"></block>
+    <block type="logic_compare">
+      <field name="OP">EQ</field>
+      <value name="A">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
+        </shadow>
+      </value>
+      <value name="B">
+        <shadow type="math_number">
+          <field name="NUM">1</field>
         </shadow>
       </value>
     </block>
-    <block type="controls_if">
-      <value name="IF0">
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
         <shadow type="logic_boolean">
           <field name="BOOL">TRUE</field>
         </shadow>
@@ -126,19 +134,6 @@
       <value name="times">
         <shadow type="math_number">
           <field name="NUM">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="logic_compare">
-      <field name="OP">EQ</field>
-      <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
         </shadow>
       </value>
     </block>
@@ -182,6 +177,15 @@
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
+        <shadow type="math_number">
+          <field name="NUM">0</field>
+        </shadow>
+      </value>
+    </block>
     <block type="math_round">
       <field name="OP">ROUND</field>
       <value name="NUM">
@@ -189,9 +193,6 @@
           <field name="NUM">3.1</field>
         </shadow>
       </value>
-    </block>
-    <block type="math_number">
-      <field name="NUM">0</field>
     </block>
     <block type="math_single">
       <field name="OP">ROOT</field>
@@ -212,14 +213,8 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
-        <shadow type="math_number">
-          <field name="NUM">0</field>
-        </shadow>
-      </value>
+    <block type="math_number">
+      <field name="NUM">0</field>
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
