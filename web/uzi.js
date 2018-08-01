@@ -10,6 +10,7 @@ var Uzi = (function () {
 		baseUrl: "",
 		isConnected: false,
 		portName: undefined,
+		currentProgram: undefined,
 		
 		onUpdate: function (callback) {
 			eventList.update.push(callback);
@@ -96,7 +97,7 @@ var Uzi = (function () {
 				type: type
 			},
 			success: function (bytecodes) {
-				callback(bytecodes);
+				callback(bytecodes);				
 			},
 			error: errorHandler
 		}, 2);
@@ -128,6 +129,10 @@ var Uzi = (function () {
 				type: type
 			},
 			success: function (bytecodes) {
+				Uzi.currentProgram = {
+					src: src,
+					type: type
+				};
 				callback(bytecodes);
 			},
 			error: errorHandler
