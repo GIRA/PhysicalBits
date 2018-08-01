@@ -187,6 +187,11 @@ var CodeGenerator = (function () {
 					type: "UziBlockNode",
 					id: id,
 					statements: trueBranch
+				},
+				falseBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: []
 				}
 			}
 		},
