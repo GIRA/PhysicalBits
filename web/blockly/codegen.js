@@ -538,7 +538,7 @@ var CodeGenerator = (function () {
 		timer: function (block, ctx) {
 			var id = getId(block);
 			var taskName = getChildNode(block, "taskName").innerText;
-			var runningTimes = parseInt(getChildNode(block, "runningTimes").innerText);
+			var runningTimes = parseFloat(getChildNode(block, "runningTimes").innerText);
 			var tickingScale = getChildNode(block, "tickingScale").innerText;
 			var initialState = getChildNode(block, "initialState").innerText;
 			var statements = generateCodeForStatements(block, ctx);			
@@ -900,6 +900,8 @@ var CodeGenerator = (function () {
 	};
 	
 	function generateCodeFor(block, ctx) {
+		if (isDisabled(block)) return undefined;
+		
 		var type = block.getAttribute("type");
 		var func = dispatchTable[type];
 		if (func == undefined) {
@@ -970,6 +972,10 @@ var CodeGenerator = (function () {
 		return topLevelBlocks.indexOf(block.getAttribute("type")) != -1;
 	}
 	
+	function isDisabled(block) {
+		return block.getAttribute("disabled") === "true";
+	}
+	
 	return {
 		generate: function (xml) {
 			var scripts = [];
@@ -986,7 +992,9 @@ var CodeGenerator = (function () {
 			xml.childNodes.forEach(function (block) {
 				if (isTopLevel(block)) {
 					var code = generateCodeFor(block, ctx);
-					scripts.push(code);
+					if (code !== undefined) {
+						scripts.push(code);
+					}
 				}
 			});
 			return {
