@@ -174,6 +174,110 @@ var CodeGenerator = (function () {
 				},
 				arguments: []
 			}
+		},
+		conditional_simple: function (block, path) {
+			var id = getId(block);
+			var condition = generateCodeForValue(block, path, "condition");
+			var trueBranch = generateCodeForStatements(block, path, "trueBranch");
+			return {
+				type: "UziConditionalNode",
+				id: id,
+				condition: condition,
+				trueBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: trueBranch
+				}
+			}
+		},
+		conditional_full: function (block, path) {
+			var id = getId(block);
+			var condition = generateCodeForValue(block, path, "condition");
+			var trueBranch = generateCodeForStatements(block, path, "trueBranch");
+			var falseBranch = generateCodeForStatements(block, path, "falseBranch");
+			return {
+				type: "UziConditionalNode",
+				id: id,
+				condition: condition,
+				trueBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: trueBranch
+				},
+				falseBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: falseBranch
+				}
+			}
+		},
+		logic_compare: function (block, path) {
+			var id = getId(block);
+			var type = getChildNode(block, "OP").innerText;
+			var left = generateCodeForValue(block, path, "A");
+			var right = generateCodeForValue(block, path, "B");
+			var selector, primName;
+			if (type === "EQ") {
+				selector = "=";
+				primName = "equals";
+			} else if (type === "NEQ") {
+				selector = "!=";
+				primName = "notEquals";
+			} else if (type === "LT") {
+				selector = "<";
+				primName = "lessThan";
+			} else if (type === "LTE") {
+				selector = "<=";
+				primName = "lessThanOrEquals";
+			} else if (type === "GTE") {
+				selector = ">=";
+				primName = "greaterThanOrEquals";
+			} else if (type === "GT") {
+				selector = ">";
+				primName = "greaterThan";
+			} else {
+				throw "Logical operator not found: '" + type + "'";
+			}
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: selector,
+				arguments: [left, right],
+				primitiveName: primName
+			}
+		},
+		elapsed_time: function (block, path) {
+			var id = getId(block);
+			var unit = getChildNode(block, "unit").innerText;
+			var selector, primName;
+			if (unit === "ms") {
+				selector = "millis";
+				primName = "millis";
+			} else if (unit === "s") {
+				selector = "seconds";
+				primName = "seconds";
+			} else if (unit === "m") {
+				selector = "minutes";
+				primName = "minutes";
+			}
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: selector,
+				arguments: [],
+				primitiveName: primName
+			};
+		},
+		toggle_variable: function (block, path) {
+			var id = getId(block);
+			var pinNumber = generateCodeForValue(block, path, "pinNumber");
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: "toggle",
+				arguments: [pinNumber],
+				primitiveName: "toggle"
+			};
 		}
 	};
 	
@@ -196,9 +300,9 @@ var CodeGenerator = (function () {
 		return generateCodeFor(getLastChild(getChildNode(block, name)), path);
 	}
 	
-	function generateCodeForStatements(block, path) {
+	function generateCodeForStatements(block, path, name) {
 		var statements = [];
-		var child = getChildNode(block, "statements");
+		var child = getChildNode(block, name || "statements");
 		if (child !== undefined) {
 			child.childNodes.forEach(function (each) {
 				var next = each;
