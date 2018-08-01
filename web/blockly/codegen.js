@@ -2,7 +2,7 @@ var CodeGenerator = (function () {
 	
 	var topLevelBlocks = ["task", "timer"];	
 	var dispatchTable =  {
-		task : function (block, path) {
+		task: function (block, path) {
 			var id = getId(block);
 			var taskName = getChildNode(block, "taskName").innerText;
 			var statements = generateCodeForStatements(block, path);
@@ -107,6 +107,72 @@ var CodeGenerator = (function () {
 				selector: selector,
 				arguments: [time],
 				primitiveName: selector
+			}
+		},
+		start_task: function (block, path) {
+			var id = getId(block);
+			var taskName = getChildNode(block, "taskName").innerText;
+			return {
+				type: "UziScriptStartNode",
+				id: id,
+				scripts: [{
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: taskName
+				}]
+			}
+		},
+		stop_task: function (block, path) {
+			var id = getId(block);
+			var taskName = getChildNode(block, "taskName").innerText;
+			return {
+				type: "UziScriptStopNode",
+				id: id,
+				scripts: [{
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: taskName
+				}]
+			}
+		},
+		resume_task: function (block, path) {
+			var id = getId(block);
+			var taskName = getChildNode(block, "taskName").innerText;
+			return {
+				type: "UziScriptResumeNode",
+				id: id,
+				scripts: [{
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: taskName
+				}]
+			}
+		},
+		pause_task: function (block, path) {
+			var id = getId(block);
+			var taskName = getChildNode(block, "taskName").innerText;
+			return {
+				type: "UziScriptPauseNode",
+				id: id,
+				scripts: [{
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: taskName
+				}]
+			}
+		},
+		run_task: function (block, path) {
+			var id = getId(block);
+			var taskName = getChildNode(block, "taskName").innerText;
+			return {
+				type: "UziScriptCallNode",
+				id: id,
+				script: {
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: taskName
+				},
+				arguments: []
 			}
 		}
 	};
