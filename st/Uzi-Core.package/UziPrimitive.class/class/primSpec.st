@@ -57,4 +57,11 @@ primSpec
 		{#constrain . 16r32 . 3 -> 1}.
 		{#randomInt . 16r33 . 2 -> 1}.
 		{#random . 16r34 . 0 -> 1}.
+		{#isEven . 16r35 . 1 -> 1}.
+		{#isOdd . 16r36 . 1 -> 1}.
+		{#isPrime . 16r37 . 1 -> 1}.
+		{#isWhole . 16r38 . 1 -> 1}.
+		{#isPositive . 16r39 . 1 -> 1}.
+		{#isNegative . 16r3A . 1 -> 1}.
+		{#isDivisibleBy . 16r3B . 2 -> 1}.
 	}
