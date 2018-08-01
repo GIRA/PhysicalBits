@@ -524,7 +524,7 @@ var CodeGenerator = (function () {
 		},
 		timer: function (block, path) {
 			var id = getId(block);
-			var name = getChildNode(block, "taskName").innerText;
+			var taskName = getChildNode(block, "taskName").innerText;
 			var runningTimes = parseInt(getChildNode(block, "runningTimes").innerText);
 			var tickingScale = getChildNode(block, "tickingScale").innerText;
 			var initialState = getChildNode(block, "initialState").innerText;
@@ -603,6 +603,125 @@ var CodeGenerator = (function () {
 					statements: statements
 				},
 				negated: negated
+			};
+		},
+		is_pin_variable: function (block, path) {
+			var id = getId(block);
+			var pinState = getChildNode(block, "pinState").innerText;
+			var pinNumber = generateCodeForValue(block, path, "pinNumber");
+			var selector, primName;
+			primName = selector = pinState === "on" ? "isOn" : "isOff";			
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: selector,
+				arguments: [pinNumber],
+				primitiveName: primName
+			};
+		},
+		wait: function (block, path) {
+			var id = getId(block);
+			var negated = getChildNode(block, "negate").innerText === "true";
+			var condition = generateCodeForValue(block, path, "condition");
+			return {
+				type: "UziWhileNode",
+				id: id,
+				pre: {
+					type: "UziBlockNode",
+					id: id,
+					statements: []
+				},
+				condition: condition,
+				post: {
+					type: "UziBlockNode",
+					id: id,
+					statements: []
+				},
+				negated: negated
+			};
+		},
+		math_modulo: function (block, path) {
+			var id = getId(block);
+			var left = generateCodeForValue(block, path, "DIVIDEND");
+			var right = generateCodeForValue(block, path, "DIVISOR");
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: "%",
+				arguments: [left, right],
+				primitiveName: "mod"
+			};
+		},
+		variables_set: function (block, path) {
+			var id = getId(block);
+			var name = getChildNode(block, "VAR").innerText;
+			var value = generateCodeForValue(block, path, "VALUE");
+			return {
+				type: "UziAssignmentNode",
+				id: id,
+				left: {
+					type: "UziVariableNode",
+					id: id,
+					name: name
+				},
+				right: value
+			};
+		},
+		math_change: function (block, path) {
+			var id = getId(block);
+			var name = getChildNode(block, "VAR").innerText;
+			var delta = generateCodeForValue(block, path, "DELTA");
+			var variable = {
+				type: "UziVariableNode",
+				id: id,
+				name: name
+			};
+			return {
+				type: "UziAssignmentNode",
+				id: id,
+				left: variable,
+				right: {
+					type: "UziPrimitiveCallNode",
+					id: id,
+					selector: "+",
+					arguments: [variable, delta],
+					primitiveName: "add"
+				}
+			};
+		},
+		math_constrain: function (block, path) {
+			var id = getId(block);
+			var value = generateCodeForValue(block, path, "VALUE");
+			var low = generateCodeForValue(block, path, "LOW");
+			var high = generateCodeForValue(block, path, "HIGH");
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: "constrain",
+				arguments: [value, low, high],
+				primitiveName: "constrain"
+			};
+		},
+		math_random_int: function (block, path) {
+			var id = getId(block);
+			var from = generateCodeForValue(block, path, "FROM");
+			var to = generateCodeForValue(block, path, "TO");
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: "randomInt",
+				arguments: [from, to],
+				primitiveName: "randomInt"
+			};
+		},
+		math_random_float: function (block, path) {
+			var id = getId(block);
+			return {
+				type: "UziPrimitiveCallNode",
+				id: id,
+				selector: "random",
+				arguments: [],
+				primitiveName: "random"
 			};
 		}
 	};
