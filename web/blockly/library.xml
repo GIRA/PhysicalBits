@@ -1758,4 +1758,80 @@
         <field name="HUE">210</field>
       </block>
     </value>
+  </block><block type="factory_base" id="Mumy7a9G4b$$Q=`Twx/f" x="10" y="10">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">pin</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="Ic4zxk|]r$Zw^|Lx8K=u">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_dropdown" id="u`L#RbxDZ5u^O|JR;?VW">
+            <mutation options="[&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;,&quot;text&quot;]"></mutation>
+            <field name="FIELDNAME">pinNumber</field>
+            <field name="USER0">D0</field>
+            <field name="CPU0">0</field>
+            <field name="USER1">D1</field>
+            <field name="CPU1">1</field>
+            <field name="USER2">D2</field>
+            <field name="CPU2">2</field>
+            <field name="USER3">D3</field>
+            <field name="CPU3">3</field>
+            <field name="USER4">D4</field>
+            <field name="CPU4">4</field>
+            <field name="USER5">D5</field>
+            <field name="CPU5">5</field>
+            <field name="USER6">D6</field>
+            <field name="CPU6">6</field>
+            <field name="USER7">D7</field>
+            <field name="CPU7">7</field>
+            <field name="USER8">D8</field>
+            <field name="CPU8">8</field>
+            <field name="USER9">D9</field>
+            <field name="CPU9">9</field>
+            <field name="USER10">D10</field>
+            <field name="CPU10">10</field>
+            <field name="USER11">D11</field>
+            <field name="CPU11">11</field>
+            <field name="USER12">D12</field>
+            <field name="CPU12">12</field>
+            <field name="USER13">D13</field>
+            <field name="CPU13">13</field>
+            <field name="USER14">A0</field>
+            <field name="CPU14">14</field>
+            <field name="USER15">A1</field>
+            <field name="CPU15">15</field>
+            <field name="USER16">A2</field>
+            <field name="CPU16">16</field>
+            <field name="USER17">A3</field>
+            <field name="CPU17">17</field>
+            <field name="USER18">A4</field>
+            <field name="CPU18">18</field>
+            <field name="USER19">A5</field>
+            <field name="CPU19">19</field>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="bT)3FrA03X5cy,}!CzQt">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="wr1jB:l[ez+ZYHF}MpHs">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="@],GahN[9vxyX/Y{7Rje"></shadow>
+      <block type="type_number" id="9z3z-Zjs.9HsqnFDY@(x"></block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="Sq}g)];`5szQ@iM_~756">
+        <mutation colour="#a55b5b"></mutation>
+        <field name="HUE">0</field>
+      </block>
+    </value>
   </block></xml>

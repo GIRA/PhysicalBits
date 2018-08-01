@@ -897,6 +897,15 @@ var CodeGenerator = (function () {
 		comment_expression: function (block, ctx) {
 			return generateCodeForValue(block, ctx, "NAME");
 		},
+		pin: function (block, ctx) {
+			var id = getId(block);
+			var num = parseInt(getChildNode(block, "pinNumber").innerText);
+			return {
+				type: "UziNumberNode",
+				id: id,
+				value: num
+			};
+		}
 	};
 	
 	function generateCodeFor(block, ctx) {

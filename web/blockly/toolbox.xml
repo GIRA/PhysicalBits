@@ -28,31 +28,31 @@
   <category name="GPIO" colour="#a55b5b">
     <block type="toggle_variable">
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">13</field>
+        <shadow type="pin">
+          <field name="pinNumber">13</field>
         </shadow>
       </value>
     </block>
     <block type="turn_pin_variable">
       <field name="pinState">on</field>
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">13</field>
+        <shadow type="pin">
+          <field name="pinNumber">13</field>
         </shadow>
       </value>
     </block>
     <block type="is_pin_variable">
       <field name="pinState">on</field>
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">13</field>
+        <shadow type="pin">
+          <field name="pinNumber">13</field>
         </shadow>
       </value>
     </block>
     <block type="write_pin_variable">
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">13</field>
+        <shadow type="pin">
+          <field name="pinNumber">13</field>
         </shadow>
       </value>
       <value name="pinValue">
@@ -63,17 +63,23 @@
     </block>
     <block type="read_pin_variable">
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">13</field>
+        <shadow type="pin">
+          <field name="pinNumber">13</field>
         </shadow>
       </value>
     </block>
+    <block type="pin">
+      <field name="pinNumber">13</field>
+    </block>
+    <shadow type="math_number">
+      <field name="NUM">13</field>
+    </shadow>
   </category>
   <category name="Motors" colour="#a55b5b">
     <block type="degrees_servo_variable">
       <value name="pinNumber">
-        <shadow type="math_number">
-          <field name="NUM">9</field>
+        <shadow type="pin">
+          <field name="pinNumber">3</field>
         </shadow>
       </value>
       <value name="servoValue">
@@ -84,8 +90,23 @@
     </block>
   </category>
   <category name="Control" colour="#5b80a5">
-    <block type="conditional_simple"></block>
-    <block type="conditional_full"></block>
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="logic_boolean">
+          <field name="BOOL">TRUE</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="logic_boolean">
+          <field name="BOOL">TRUE</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logic_boolean">
+      <field name="BOOL">TRUE</field>
+    </block>
     <block type="logic_compare">
       <field name="OP">EQ</field>
       <value name="A">
@@ -96,14 +117,6 @@
       <value name="B">
         <shadow type="math_number">
           <field name="NUM">1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
@@ -127,13 +140,19 @@
         </shadow>
       </value>
     </block>
-    <block type="logic_boolean">
-      <field name="BOOL">TRUE</field>
-    </block>
+    <block type="forever"></block>
     <block type="repeat_times">
       <value name="times">
         <shadow type="math_number">
           <field name="NUM">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="logic_boolean">
+          <field name="BOOL">TRUE</field>
         </shadow>
       </value>
     </block>
@@ -156,7 +175,6 @@
     <block type="elapsed_time">
       <field name="unit">ms</field>
     </block>
-    <block type="forever"></block>
     <block type="for">
       <field name="variable" id="z/7dtDDbukU^@B[Ir0]r" variabletype="">i</field>
       <value name="start">
@@ -177,20 +195,15 @@
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
     <block type="math_number_property">
       <mutation divisor_input="false"></mutation>
       <field name="PROPERTY">EVEN</field>
       <value name="NUMBER_TO_CHECK">
         <shadow type="math_number">
           <field name="NUM">0</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">3.1</field>
         </shadow>
       </value>
     </block>
@@ -213,8 +226,13 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_number">
-      <field name="NUM">0</field>
+    <block type="math_round">
+      <field name="OP">ROUND</field>
+      <value name="NUM">
+        <shadow type="math_number">
+          <field name="NUM">3.1</field>
+        </shadow>
+      </value>
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
