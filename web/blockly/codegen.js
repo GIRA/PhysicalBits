@@ -1,6 +1,6 @@
 var CodeGenerator = (function () {
 	
-	var topLevelBlocks = ["task", "timer"];	
+	var topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];	
 	var dispatchTable =  {
 		task: function (block, ctx) {
 			var id = getId(block);
@@ -330,6 +330,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var type = getChildNode(block, "PROPERTY").innerText;
 			var num = generateCodeForValue(block, ctx, "NUMBER_TO_CHECK");
+			var args = [num];
 			var selector, primName;
 			if (type === "EVEN") {
 				selector = "isEven";
@@ -349,15 +350,20 @@ var CodeGenerator = (function () {
 			} else if (type === "NEGATIVE") {
 				selector = "isNegative";
 				primName = "isNegative";
+			} else if (type === "DIVISIBLE_BY") {
+				selector = "isDivisibleBy";
+				primName = "isDivisibleBy";
+				var divisor = generateCodeForValue(block, ctx, "DIVISOR");
+				args.push(divisor);
 			} else {
 				throw "Math number property not found: '" + type + "'";
 			}
 			return {
 				type: "UziPrimitiveCallNode",
 				id: id,
-				selector: "not",
-				arguments: [num],
-				primitiveName: "negate"
+				selector: selector,
+				arguments: args,
+				primitiveName: primName
 			};
 		},
 		repeat_times: function (block, ctx) {
@@ -731,7 +737,166 @@ var CodeGenerator = (function () {
 				arguments: [],
 				primitiveName: "random"
 			};
-		}
+		},
+		procedures_defnoreturn: function (block, ctx) {
+			var id = getId(block);
+			var name = getChildNode(block, "NAME").innerText;
+			var mutation = getLastChild(block, function (child) {
+				return child.tagName === "MUTATION";
+			});
+			var args = [];
+			mutation.childNodes.forEach(function (each) {
+				args.push(each.getAttribute("name"));
+			});			
+			var statements = generateCodeForStatements(block, ctx, "STACK");
+			return {
+				type: "UziProcedureNode",
+				id: id,
+				name: name,
+				arguments: args.map(function (varName) {
+					return {
+						type: "UziVariableDeclarationNode",
+						id: id,
+						name: varName,
+						value: null
+					};
+				}),
+				body: {
+					type: "UziBlockNode",
+					id: id,
+					statements: statements
+				}
+			};
+		},
+		comment_statement: function (block, ctx) {
+			return undefined;
+		},
+		procedures_callnoreturn: function (block, ctx) {
+			var id = getId(block);
+			var mutation = getLastChild(block, function (child) {
+				return child.tagName === "MUTATION";
+			});
+			var scriptName = mutation.getAttribute("name");
+			var argNames = [];
+			mutation.childNodes.forEach(function (each) {
+				argNames.push(each.getAttribute("name"));
+			});
+			var args = [];
+			for (var i = 0; i < argNames.length; i++) {
+				var value = generateCodeForValue(block, ctx, "ARG" + i);
+				var key = argNames[i];
+				args.push({
+					type: "Association",
+					key: key,
+					value: value
+				});
+			}
+			return {
+				type: "UziScriptCallNode",
+				id: id,
+				script:  {
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: scriptName
+				},
+				arguments: args
+			};
+		},
+		procedures_callreturn: function (block, ctx) {
+			var id = getId(block);
+			var mutation = getLastChild(block, function (child) {
+				return child.tagName === "MUTATION";
+			});
+			var scriptName = mutation.getAttribute("name");
+			var argNames = [];
+			mutation.childNodes.forEach(function (each) {
+				argNames.push(each.getAttribute("name"));
+			});
+			var args = [];
+			for (var i = 0; i < argNames.length; i++) {
+				var value = generateCodeForValue(block, ctx, "ARG" + i);
+				var key = argNames[i];
+				args.push({
+					type: "Association",
+					key: key,
+					value: value
+				});
+			}
+			return {
+				type: "UziScriptCallNode",
+				id: id,
+				script:  {
+					type: "UziScriptRefNode",
+					id: id,
+					scriptName: scriptName
+				},
+				arguments: args
+			};
+		},
+		procedures_ifreturn: function (block, ctx) {
+			var id = getId(block);
+			var condition = generateCodeForValue(block, ctx, "CONDITION");
+			var value = generateCodeForValue(block, ctx, "VALUE");
+			return {
+				type: "UziConditionalNode",
+				id: id,
+				condition: condition,
+				trueBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: [{
+						type: "UziReturnNode",
+						id: id,
+						value: value || null
+					}]
+				},
+				falseBranch: {
+					type: "UziBlockNode",
+					id: id,
+					statements: []
+				}
+			};
+		},
+		procedures_defreturn: function (block, ctx) {
+			var id = getId(block);
+			var name = getChildNode(block, "NAME").innerText;
+			var mutation = getLastChild(block, function (child) {
+				return child.tagName === "MUTATION";
+			});
+			var args = [];
+			mutation.childNodes.forEach(function (each) {
+				args.push(each.getAttribute("name"));
+			});
+			var statements = generateCodeForStatements(block, ctx, "STACK");
+			// TODO(Richo): Decide what to do if the return block is not defined
+			var returnExpr = generateCodeForValue(block, ctx, "RETURN");
+			statements.push({
+				type: "UziReturnNode",
+				id: id,
+				value: returnExpr
+			});
+			return {
+				type: "UziFunctionNode",
+				id: id,
+				name: name,
+				arguments: args.map(function (varName) {
+					return {
+						type: "UziVariableDeclarationNode",
+						id: id,
+						name: varName,
+						value: null
+					};
+				}),
+				body: {
+					type: "UziBlockNode",
+					id: id,
+					statements: statements
+				}
+			};
+		},
+		comment_expression: function (block, ctx) {
+			return generateCodeForValue(block, ctx, "NAME");
+		},
 	};
 	
 	function generateCodeFor(block, ctx) {
@@ -750,7 +915,9 @@ var CodeGenerator = (function () {
 	}
 	
 	function generateCodeForValue(block, ctx, name) {
-		return generateCodeFor(getLastChild(getChildNode(block, name)), ctx);
+		var child = getChildNode(block, name);
+		if (child === undefined) return undefined;
+		return generateCodeFor(getLastChild(child), ctx);
 	}
 	
 	function generateCodeForStatements(block, ctx, name) {
@@ -760,7 +927,10 @@ var CodeGenerator = (function () {
 			child.childNodes.forEach(function (each) {
 				var next = each;
 				do {
-					statements.push(generateCodeFor(next, ctx));
+					var code = generateCodeFor(next, ctx);
+					if (code !== undefined) {
+						statements.push(code);
+					}
 					next = getNextStatement(next);
 				} while (next !== undefined);
 			});
