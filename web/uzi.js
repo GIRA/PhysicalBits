@@ -142,6 +142,9 @@ var Uzi = (function () {
 	function update(uzi) {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
+		if (!Uzi.isConnected) {
+			Uzi.currentProgram = undefined;
+		}
 		
 		eventList.update.forEach(function (each) { 
 			each(); 

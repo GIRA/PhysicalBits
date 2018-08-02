@@ -1,7 +1,7 @@
 var UziBlock = (function () {
 	
 	var blocklyArea, blocklyDiv, workspace;
-	var autorun = false;
+	var autorunEnabled = false;
 	
 	function init(area, div) {
 		blocklyArea = area;
@@ -33,7 +33,8 @@ var UziBlock = (function () {
 		});
 		
 		$("#autorunCheckbox").on("change", function () {
-			autorun = this.checked;
+			autorunEnabled = this.checked;
+			autorun();
 		});
 
 		Uzi.onUpdate(function () {
@@ -41,6 +42,7 @@ var UziBlock = (function () {
 				$("#install").removeAttr("disabled");
 				$("#run").removeAttr("disabled");
 				$("#more").removeAttr("disabled");
+				autorun();
 			} else {
 				$("#install").attr("disabled", "disabled");
 				$("#run").attr("disabled", "disabled");
@@ -116,9 +118,16 @@ var UziBlock = (function () {
 	}
 	
 	function workspaceChanged() {
+		save();
+		autorun();
+	}
+	
+	function save() {
 		localStorage["uzi"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
-		
-		if (autorun) {
+	}
+	
+	function autorun() {
+		if (autorunEnabled && Uzi.isConnected) {
 			var old = Uzi.currentProgram;
 			var cur = getGeneratedCodeAsJSON();
 			if (old === undefined || old.src !== cur) {
