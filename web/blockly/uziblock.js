@@ -33,6 +33,12 @@ var UziBlock = (function () {
 			});
 		});
 		
+		$("#newButton").on("click", function () {
+			if (confirm("You will lose all your unsaved changes. Are you sure?")) {
+				workspace.clear();
+			}
+		});
+		
 		$("#autorunCheckbox").on("change", function () {
 			if (this.checked && autorunInterval === undefined) {
 				autorunInterval = setInterval(autorun, 100);
@@ -158,7 +164,8 @@ var UziBlock = (function () {
 	}
 	
 	function autorun() {
-		if (!Uzi.isConnected) return;
+		if (!Uzi.isConnected) return;		
+		if (autorunNextTime === undefined) return;
 		
 		var currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
@@ -167,6 +174,7 @@ var UziBlock = (function () {
 		var cur = getGeneratedCodeAsJSON();
 		if (old !== undefined && old.src === cur) return;
 		
+		autorunNextTime = undefined;
 		Uzi.run(cur, "json", function (bytecodes) {
 			console.log(bytecodes);
 		});
