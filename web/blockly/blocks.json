@@ -1210,11 +1210,11 @@
     },
     {
       "type": "input_statement",
-      "name": "falseBranch"
+      "name": "trueBranch"
     },
     {
       "type": "input_statement",
-      "name": "trueBranch"
+      "name": "falseBranch"
     }
   ],
   "previousStatement": null,

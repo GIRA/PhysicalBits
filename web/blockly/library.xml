@@ -1708,7 +1708,7 @@
         </value>
         <next>
           <block type="input_statement" id="$D[jaR1zi/#n[YYH~1dw">
-            <field name="INPUTNAME">falseBranch</field>
+            <field name="INPUTNAME">trueBranch</field>
             <field name="ALIGN">LEFT</field>
             <statement name="FIELDS">
               <block type="field_static" id="YCdLYu4@*m|03D2tsihW">
@@ -1720,7 +1720,7 @@
             </value>
             <next>
               <block type="input_statement" id="%V(o7%{jY{SA#?PkWFjs">
-                <field name="INPUTNAME">trueBranch</field>
+                <field name="INPUTNAME">falseBranch</field>
                 <field name="ALIGN">LEFT</field>
                 <statement name="FIELDS">
                   <block type="field_static" id="~5dWnoqiE8:|Qr.?*Aad">

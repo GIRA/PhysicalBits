@@ -5,7 +5,7 @@
     </block>
     <block type="timer">
       <field name="taskName">default</field>
-      <field name="runningTimes">1000</field>
+      <field name="runningTimes">1</field>
       <field name="tickingScale">s</field>
       <field name="initialState">started</field>
     </block>
@@ -195,17 +195,16 @@
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
-    <block type="math_number">
-      <field name="NUM">0</field>
-    </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
+    <block type="math_round">
+      <field name="OP">ROUND</field>
+      <value name="NUM">
         <shadow type="math_number">
-          <field name="NUM">0</field>
+          <field name="NUM">3.1</field>
         </shadow>
       </value>
+    </block>
+    <block type="math_number">
+      <field name="NUM">0</field>
     </block>
     <block type="math_single">
       <field name="OP">ROOT</field>
@@ -226,11 +225,12 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
         <shadow type="math_number">
-          <field name="NUM">3.1</field>
+          <field name="NUM">0</field>
         </shadow>
       </value>
     </block>
