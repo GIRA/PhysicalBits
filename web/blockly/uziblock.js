@@ -2,6 +2,7 @@ var UziBlock = (function () {
 	
 	var blocklyArea, blocklyDiv, workspace;
 	var autorunEnabled = false;
+	var lastFileName;
 	
 	function init(area, div) {
 		blocklyArea = area;
@@ -35,6 +36,28 @@ var UziBlock = (function () {
 		$("#autorunCheckbox").on("change", function () {
 			autorunEnabled = this.checked;
 			autorun();
+		});
+		
+		$("#openButton").on("change", function () {
+			var file = this.files[0];
+			this.value = null;
+			if (file === undefined) return;
+			
+			var reader = new FileReader();			
+			reader.onload = function(e) {
+				var xml = e.target.result;
+				var dom = Blockly.Xml.textToDom(xml);
+				workspace.clear();
+				Blockly.Xml.domToWorkspace(dom, workspace);
+			};
+			reader.readAsText(file);
+		});
+		
+		$("#saveButton").on("click", function () {
+			lastFileName = prompt("File name:", lastFileName || "program.xml");
+			var xml = Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));
+			var blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
+			saveAs(blob, lastFileName);
 		});
 
 		Uzi.onUpdate(function () {
