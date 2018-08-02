@@ -48,7 +48,7 @@
 			padding: 0px 10px;
 		}
 		
-		#connectionPanel, #editorButtons {
+		.controls {
 			padding: 0px 10px;
 			font-size: large;
 		}
@@ -68,7 +68,7 @@
 		<div id="title">
 			<h1>UziBlock</h1>
 		</div>
-		<div id="connectionPanel">
+		<div class="controls">
 			<div>
 				<span style="display:inline-block;">Arduino port:</span>
 				<div style="display:inline-block;" class="dropdown">
@@ -101,7 +101,7 @@
 				</div>
 			</p>
 		</div>
-		<div id="editorButtons">
+		<div class="controls">
 			<p>
 				<div class="btn-group " role="toolbar" aria-label="...">
 					<div class="btn-group">
@@ -131,6 +131,12 @@
 					</div>					
 				</div>
 			</p>
+		</div>
+		<div class="controls">
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" value="" id="autorunCheckbox">
+				<label class="form-check-label" for="autorunCheckbox">Run automatically</label>
+			</div>
 		</div>
 	</div>
 -	<div id="editor"></div>

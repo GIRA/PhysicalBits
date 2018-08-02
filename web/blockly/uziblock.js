@@ -1,6 +1,7 @@
 var UziBlock = (function () {
 	
-	var blocklyArea, blocklyDiv, workspace;	
+	var blocklyArea, blocklyDiv, workspace;
+	var autorun = false;
 	
 	function init(area, div) {
 		blocklyArea = area;
@@ -29,6 +30,10 @@ var UziBlock = (function () {
 			Uzi.run(getGeneratedCodeAsJSON(), "json", function (bytecodes) {			
 				console.log(bytecodes);
 			});
+		});
+		
+		$("#autorunCheckbox").on("change", function () {
+			autorun = this.checked;
 		});
 
 		Uzi.onUpdate(function () {
@@ -101,8 +106,7 @@ var UziBlock = (function () {
 	}
 	
 	function getGeneratedCode(){
-		var wks = Blockly.getMainWorkspace();
-		var xml = Blockly.Xml.workspaceToDom(wks);
+		var xml = Blockly.Xml.workspaceToDom(workspace);
 		return CodeGenerator.generate(xml);
 	}
 	
@@ -111,21 +115,29 @@ var UziBlock = (function () {
 		return JSON.stringify(code);
 	}
 	
-	function save() {
+	function workspaceChanged() {
 		localStorage["uzi"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+		
+		if (autorun) {
+			var old = Uzi.currentProgram;
+			var cur = getGeneratedCodeAsJSON();
+			if (old === undefined || old.src !== cur) {
+				Uzi.run(cur, "json", function (bytecodes) {			
+					console.log(bytecodes);
+				});
+			}
+		}
 	}
 	
 	function restore(){
 		Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
-		workspace.addChangeListener(save);
+		workspace.addChangeListener(workspaceChanged);
 	}
 	
 	return {
 		init: init,
 		getGeneratedCode: getGeneratedCode,
-		getWorkspace: function () { return workspace; },
-		save: save,
-		restore: restore
+		getWorkspace: function () { return workspace; }
 	};
 	
 })();
