@@ -1,7 +1,7 @@
 var UziBlock = (function () {
 	
-	var blocklyArea, blocklyDiv, workspace;
-	var autorunEnabled = false;
+	var blocklyArea, blocklyDiv, workspace;	
+	var autorunInterval, autorunNextTime;	
 	var lastFileName;
 	
 	function init(area, div) {
@@ -34,8 +34,11 @@ var UziBlock = (function () {
 		});
 		
 		$("#autorunCheckbox").on("change", function () {
-			autorunEnabled = this.checked;
-			autorun();
+			if (this.checked && autorunInterval === undefined) {
+				autorunInterval = setInterval(autorun, 100);
+			} else {
+				autorunInterval = clearInterval(autorunInterval);
+			}
 		});
 		
 		$("#openButton").on("change", function () {
@@ -65,7 +68,7 @@ var UziBlock = (function () {
 				$("#install").removeAttr("disabled");
 				$("#run").removeAttr("disabled");
 				$("#more").removeAttr("disabled");
-				autorun();
+				scheduleAutorun();
 			} else {
 				$("#install").attr("disabled", "disabled");
 				$("#run").attr("disabled", "disabled");
@@ -142,23 +145,31 @@ var UziBlock = (function () {
 	
 	function workspaceChanged() {
 		save();
-		autorun();
+		scheduleAutorun();
 	}
 	
 	function save() {
 		localStorage["uzi"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
 	}
 	
+	function scheduleAutorun(deltaTime) {
+		var currentTime = +new Date();
+		autorunNextTime = currentTime + (deltaTime || 200);
+	}
+	
 	function autorun() {
-		if (autorunEnabled && Uzi.isConnected) {
-			var old = Uzi.currentProgram;
-			var cur = getGeneratedCodeAsJSON();
-			if (old === undefined || old.src !== cur) {
-				Uzi.run(cur, "json", function (bytecodes) {			
-					console.log(bytecodes);
-				});
-			}
-		}
+		if (!Uzi.isConnected) return;
+		
+		var currentTime = +new Date();
+		if (currentTime < autorunNextTime) return;
+		
+		var old = Uzi.currentProgram;
+		var cur = getGeneratedCodeAsJSON();
+		if (old !== undefined && old.src === cur) return;
+		
+		Uzi.run(cur, "json", function (bytecodes) {
+			console.log(bytecodes);
+		});
 	}
 	
 	function restore(){
