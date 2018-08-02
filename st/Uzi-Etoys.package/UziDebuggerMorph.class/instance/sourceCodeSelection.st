@@ -1,7 +1,6 @@
 accessing
 sourceCodeSelection
-	^ self currentInstruction
-		ifNil: [1 to: 0]
+	^ (self currentInstruction
 		ifNotNil: [:instruction | instruction node
-			ifNil: [1 to: 0]
-			ifNotNil: [:node | node interval]]
+		ifNotNil: [:node | node interval]])
+		ifNil: [1 to: 0]
