@@ -2,8 +2,10 @@ initialize-release
 initialize
 	super initialize.
 	protocol 
-		when: #connect send: #update to: self;
-		when: #disconnect send: #update to: self.
+		when: UziProtocolEvents connect 
+		send: #update to: self;
+		when: UziProtocolEvents disconnect 
+		send: #update to: self.
 	
 	sema := Dictionary new.
 	changed := false.

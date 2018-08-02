@@ -4,4 +4,4 @@ privateDisconnect
 	self stopSteppingProcess.
 	serial ifNotNil: [:s | s close].
 	serial := portName := nil.
-	self triggerEvent: #disconnect
+	self triggerEvent: UziProtocolEvents disconnect
