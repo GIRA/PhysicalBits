@@ -1255,6 +1255,8 @@ namespace SimulatorTest
             sketch.Loop();
 
             Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(9) - 512) < 5, "D9 should be close to 512");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(10) - 512) < 5, "D10 should be close to 512");
         }
     }
 }
