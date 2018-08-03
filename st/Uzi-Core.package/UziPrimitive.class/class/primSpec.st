@@ -36,13 +36,13 @@ primSpec
 		{#bitwiseAnd . 16r1F . 2 -> 1}.
 		{#bitwiseOr . 16r20 . 2 -> 1}.
 		{#serialWrite . 16r21 . 1 -> 0}.
-		
-		"TODO"
 		{#round . 16r22 . 1 -> 1}.
 		{#ceil . 16r23 . 1 -> 1}.
 		{#floor . 16r24 . 1 -> 1}.
 		{#sqrt . 16r25 . 1 -> 1}.
 		{#abs . 16r26 . 1 -> 1}.
+		
+		"TODO"
 		{#ln . 16r27 . 1 -> 1}.
 		{#log10 . 16r28 . 1 -> 1}.
 		{#exp . 16r29 . 1 -> 1}.
