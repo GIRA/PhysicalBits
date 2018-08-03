@@ -33,4 +33,30 @@ primitiveForSelector: selector
 		[#millis] -> [#millis].
 		[#coroutine] -> [#coroutine].
 		[#serialWrite] -> [#serialWrite].
+		[#round] -> [#round]. 
+		[#ceil] -> [#ceil]. 
+		[#floor] -> [#floor]. 
+		[#sqrt] -> [#sqrt]. 
+		[#abs] -> [#abs]. 
+		[#ln] -> [#ln]. 
+		[#log10] -> [#log10]. 
+		[#exp] -> [#exp]. 
+		[#pow10] -> [#pow10]. 
+		[#asin] -> [#asin]. 
+		[#acos] -> [#acos]. 
+		[#atan] -> [#atan].
+		[#**] -> [#power]. 
+		[#isOn] -> [#isOn]. 
+		[#isOff] -> [#isOff]. 
+		[#%] -> [#mod]. 
+		[#constrain] -> [#constrain]. 
+		[#randomInt] -> [#randomInt]. 
+		[#random] -> [#random]. 
+		[#isEven] -> [#isEven]. 
+		[#isOdd] -> [#isOdd]. 
+		[#isPrime] -> [#isPrime]. 
+		[#isWhole] -> [#isWhole]. 
+		[#isPositive] -> [#isPositive]. 
+		[#isNegative] -> [#isNegative]. 
+		[#isDivisibleBy] -> [#isDivisibleBy]. 
 	} otherwise: nil

@@ -57,4 +57,8 @@
 		"test053ChannelWithMultipleConsumersAndOneProducer" : "Richo 4/29/2018 22:48",
 		"test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" : "Richo 5/23/2018 10:02",
 		"test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" : "Richo 5/23/2018 11:20",
+		"test056Round" : "Richo 8/2/2018 21:23",
+		"test057Ceil" : "Richo 8/2/2018 21:22",
+		"test058Floor" : "Richo 8/2/2018 21:23",
+		"test059Sqrt" : "Richo 8/2/2018 21:25",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }
