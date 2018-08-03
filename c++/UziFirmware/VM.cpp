@@ -680,6 +680,34 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			monitor->serialWrite(a);
 		}
 		break;
+
+		case PRIM_ROUND: 
+		{
+			float a = stack.pop();
+			stack.push(round(a));
+		}
+		break;
+
+		case PRIM_CEIL:
+		{
+			float a = stack.pop();
+			stack.push(ceil(a));
+		}
+		break;
+
+		case PRIM_FLOOR:
+		{
+			float a = stack.pop();
+			stack.push(floor(a));
+		}
+		break;
+
+		case PRIM_SQRT:
+		{
+			float a = stack.pop();
+			stack.push(sqrt(a));
+		}
+		break;
 	}
 
 }
