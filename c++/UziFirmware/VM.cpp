@@ -715,6 +715,188 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			stack.push(fabs(a));
 		}
 		break;
+
+		case PRIM_LN:
+		{
+			float a = stack.pop();
+			stack.push(log(a));
+		}
+		break;
+
+		case PRIM_LOG10:
+		{
+			float a = stack.pop();
+			stack.push(log10f(a));
+		}
+		break;
+
+		case PRIM_EXP:
+		{
+			float a = stack.pop();
+			stack.push(expf(a));
+		}
+		break;
+
+		case PRIM_POW10:
+		{
+			float a = stack.pop();
+			stack.push(powf(10, a));
+		}
+		break;
+
+		case PRIM_ASIN: 
+		{
+			float a = stack.pop();
+			stack.push(asinf(a));
+		}
+		break;
+
+		case PRIM_ACOS:
+		{
+			float a = stack.pop();
+			stack.push(acosf(a));
+		}
+		break;
+
+		case PRIM_ATAN:
+		{
+			float a = stack.pop();
+			stack.push(atan(a));
+		}
+		break;
+
+		case PRIM_POWER:
+		{
+			float b = stack.pop();
+			float a = stack.pop();
+			stack.push(pow(a, b));
+		}
+		break;
+
+		case PRIM_IS_ON:
+		{
+			uint8 pin = (uint8)stack.pop();
+			stack.push(io->getValue(pin) > 0);
+		}
+		break;
+
+		case PRIM_IS_OFF:
+		{
+			uint8 pin = (uint8)stack.pop();
+			stack.push(io->getValue(pin) == 0);
+		}
+		break;
+
+		case PRIM_MOD:
+		{
+			float b = stack.pop();
+			float a = stack.pop();
+			stack.push(fmod(a, b));
+		}
+		break;
+
+		case PRIM_CONSTRAIN:
+		{
+			float c = stack.pop();
+			float b = stack.pop();
+			float a = stack.pop();
+			if (a < b) 
+			{ 
+				stack.push(b); 
+			}
+			else if (a > c) 
+			{ 
+				stack.push(c); 
+			}
+			else 
+			{ 
+				stack.push(a); 
+			}
+		}
+		break;
+
+		case PRIM_RANDOM_INT:
+		{
+			int16 b = (int16)stack.pop();
+			int16 a = (int16)stack.pop();
+			stack.push(random(a, b));
+		}
+		break;
+
+		case PRIM_RANDOM:
+		{
+			uint32 max = 1UL << 31;
+			uint32 r1 = random(max);
+			float r2 = (float)((double)r1 / (double)max);
+			stack.push(r2);
+		}
+		break;
+
+		case PRIM_IS_EVEN:
+		{
+			int32 a = (int32)stack.pop();
+			stack.push(a % 2 == 0 ? 1 : 0);
+		}
+		break;
+
+		case PRIM_IS_ODD:
+		{
+			int32 a = (int32)stack.pop();
+			stack.push(a % 2 == 0 ? 0 : 1);
+		}
+		break;
+
+		case PRIM_IS_PRIME:
+		{
+			int32 a = (int32)stack.pop();
+			if (a <= 1) { stack.push(0); }
+			else if (a % 2 == 0) { stack.push(a == 2 ? 1 : 0); }
+			else 
+			{
+				bool result = true;
+				for (int32 i = 3; i <= sqrt(a); i += 2) 
+				{
+					if (a % i == 0) 
+					{
+						result = false;
+						break;
+					}
+				}
+				stack.push(result ? 1 : 0);
+			}
+		}
+		break;
+
+		case PRIM_IS_WHOLE: 
+		{
+			float a = stack.pop();
+			int32 a_int = (int32)a;
+			stack.push(a == a_int ? 1 : 0);
+		}
+
+		case PRIM_IS_POSITIVE:
+		{
+			float a = stack.pop();
+			stack.push(a >= 0 ? 1 : 0);
+		}
+
+		case PRIM_IS_NEGATIVE:
+		{
+			float a = stack.pop();
+			stack.push(a < 0 ? 1 : 0);
+		}
+
+		case PRIM_IS_DIVISIBLE_BY:
+		{
+			float b = stack.pop();
+			float a = stack.pop();
+			if (b == 0) { stack.push(0); }
+			else if (b != (int32)b) { stack.push(0); }
+			else 
+			{
+				stack.push(fmod(a, b) == 0 ? 1 : 0);
+			}			
+		}
 	}
 
 }

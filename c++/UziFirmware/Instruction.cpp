@@ -126,6 +126,27 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x24: instruction->opcode = PRIM_FLOOR; break;
 				case 0x25: instruction->opcode = PRIM_SQRT; break;
 				case 0x26: instruction->opcode = PRIM_ABS; break;
+				case 0x27: instruction->opcode = PRIM_LN; break;
+				case 0x28: instruction->opcode = PRIM_LOG10; break;
+				case 0x29: instruction->opcode = PRIM_EXP; break;
+				case 0x2A: instruction->opcode = PRIM_POW10; break;
+				case 0x2B: instruction->opcode = PRIM_ASIN; break;
+				case 0x2C: instruction->opcode = PRIM_ACOS; break;
+				case 0x2D: instruction->opcode = PRIM_ATAN; break;
+				case 0x2E: instruction->opcode = PRIM_POWER; break;
+				case 0x2F: instruction->opcode = PRIM_IS_ON; break;
+				case 0x30: instruction->opcode = PRIM_IS_OFF; break;
+				case 0x31: instruction->opcode = PRIM_MOD; break;
+				case 0x32: instruction->opcode = PRIM_CONSTRAIN; break;
+				case 0x33: instruction->opcode = PRIM_RANDOM_INT; break;
+				case 0x34: instruction->opcode = PRIM_RANDOM; break;
+				case 0x35: instruction->opcode = PRIM_IS_EVEN; break;
+				case 0x36: instruction->opcode = PRIM_IS_ODD; break;
+				case 0x37: instruction->opcode = PRIM_IS_PRIME; break;
+				case 0x38: instruction->opcode = PRIM_IS_WHOLE; break;
+				case 0x39: instruction->opcode = PRIM_IS_POSITIVE; break;
+				case 0x3A: instruction->opcode = PRIM_IS_NEGATIVE; break;
+				case 0x3B: instruction->opcode = PRIM_IS_DIVISIBLE_BY; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}
