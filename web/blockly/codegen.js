@@ -684,6 +684,7 @@ var CodeGenerator = (function () {
 		math_change: function (block, ctx) {
 			var id = getId(block);
 			var name = getChildNode(block, "VAR").innerText;
+			ctx.addGlobal(name);
 			var delta = generateCodeForValue(block, ctx, "DELTA");
 			var variable = {
 				type: "UziVariableNode",
