@@ -70,6 +70,28 @@ bool digitalRead(int pin)
 }
 
 //--------------------------------------------------------------------
+// WMath
+//--------------------------------------------------------------------
+
+long random(long howbig)
+{
+	if (howbig == 0) {
+		return 0;
+	}	
+	return rand() % howbig;
+}
+
+long random(long howsmall, long howbig)
+{
+	if (howsmall >= howbig) {
+		return howsmall;
+	}
+	long diff = howbig - howsmall;
+	return random(diff) + howsmall;
+}
+
+
+//--------------------------------------------------------------------
 // Serial
 //--------------------------------------------------------------------
 

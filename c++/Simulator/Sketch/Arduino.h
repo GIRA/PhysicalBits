@@ -105,4 +105,7 @@ extern void setup();
 extern void loop();
 
 extern void setMillis(long);
+
+extern long random(long);
+extern long random(long, long);
 #endif
