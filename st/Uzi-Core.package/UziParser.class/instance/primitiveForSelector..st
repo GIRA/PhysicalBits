@@ -58,5 +58,6 @@ primitiveForSelector: selector
 		[#isWhole] -> [#isWhole]. 
 		[#isPositive] -> [#isPositive]. 
 		[#isNegative] -> [#isNegative]. 
-		[#isDivisibleBy] -> [#isDivisibleBy]. 
+		[#isDivisibleBy] -> [#isDivisibleBy].
+		[#seconds] -> [#seconds].
 	} otherwise: nil
