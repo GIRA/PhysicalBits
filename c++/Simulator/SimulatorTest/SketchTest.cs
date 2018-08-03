@@ -1245,5 +1245,16 @@ namespace SimulatorTest
             
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(9) - 512) < 5, "D9 should be close to 512");
         }
+
+        [TestMethod]
+        public void Test060Abs()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test060Abs)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+        }
     }
 }

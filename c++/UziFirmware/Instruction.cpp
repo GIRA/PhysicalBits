@@ -125,6 +125,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x23: instruction->opcode = PRIM_CEIL; break;
 				case 0x24: instruction->opcode = PRIM_FLOOR; break;
 				case 0x25: instruction->opcode = PRIM_SQRT; break;
+				case 0x26: instruction->opcode = PRIM_ABS; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

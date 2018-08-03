@@ -708,6 +708,13 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			stack.push(sqrt(a));
 		}
 		break;
+
+		case PRIM_ABS:
+		{
+			float a = stack.pop();
+			stack.push(fabs(a));
+		}
+		break;
 	}
 
 }
