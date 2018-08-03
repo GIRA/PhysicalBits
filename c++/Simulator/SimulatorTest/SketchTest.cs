@@ -1258,5 +1258,57 @@ namespace SimulatorTest
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(9) - 512) < 5, "D9 should be close to 512");
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(10) - 512) < 5, "D10 should be close to 512");
         }
+
+        [TestMethod]
+        public void Test061NaturalLogarithm()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test061NaturalLogarithm)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test062Log10()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test062Log10)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test063Exp()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test063Exp)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test064Pow10()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test064Pow10)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
     }
 }
