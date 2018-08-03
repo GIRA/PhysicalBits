@@ -4,3 +4,6 @@
 [submodule "web/blockly/google-blockly"]
 	path = web/blockly/google-blockly
 	url = https://github.com/RichoM/blockly.git
+[submodule "web/filesaver"]
+	path = web/filesaver
+	url = https://github.com/RichoM/FileSaver.js
