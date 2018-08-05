@@ -62,4 +62,5 @@ primSpec
 		{#isPositive . 16r39 . 1 -> 1}.
 		{#isNegative . 16r3A . 1 -> 1}.
 		{#isDivisibleBy . 16r3B . 2 -> 1}.
+		{#isCloseTo . 16r3C . 2 -> 1}.
 	}

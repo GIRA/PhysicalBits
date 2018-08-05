@@ -60,4 +60,5 @@ primitiveForSelector: selector
 		[#isNegative] -> [#isNegative]. 
 		[#isDivisibleBy] -> [#isDivisibleBy].
 		[#seconds] -> [#seconds].
+		[#isCloseTo] -> [#isCloseTo]
 	} otherwise: nil
