@@ -1457,5 +1457,46 @@ namespace SimulatorTest
             Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should TOGGLE in the sixth iteration");
             Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the sixth iteration");
         }
+
+        [TestMethod]
+        public void Test073Constrain()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test073Constrain)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(1023, sketch.GetPinValue(7), "D7 should be on");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test074RandomInt()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test074RandomInt)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be ON");
+            }
+        }
+
+        [TestMethod]
+        public void Test075Random()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test075Random)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be ON");
+            }
+        }
     }
 }
