@@ -77,8 +77,10 @@ long random(long howbig)
 {
 	if (howbig == 0) {
 		return 0;
-	}	
-	return rand() % howbig;
+	}
+
+	double rnd = (double)rand() / 0x7FFF;
+	return (long)(rnd * howbig);
 }
 
 long random(long howsmall, long howbig)

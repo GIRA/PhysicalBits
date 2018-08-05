@@ -817,9 +817,16 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_RANDOM_INT:
 		{
-			int16 b = (int16)stack.pop();
-			int16 a = (int16)stack.pop();
-			stack.push(random(a, b));
+			int32 b = (int32)stack.pop();
+			int32 a = (int32)stack.pop();
+			if (b > a) 
+			{
+				stack.push(random(a, b));
+			}
+			else 
+			{
+				stack.push(random(b, a));
+			}
 		}
 		break;
 
