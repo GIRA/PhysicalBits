@@ -832,8 +832,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_RANDOM:
 		{
-			uint32 max = 1UL << 31;
-			uint32 r1 = random(max);
+			int32 max = 0x7FFFFFFF;
+			int32 r1 = fmod(random(max), max);
 			float r2 = (float)((double)r1 / (double)max);
 			stack.push(r2);
 		}
