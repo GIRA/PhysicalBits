@@ -1363,5 +1363,99 @@ namespace SimulatorTest
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
             Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
         }
+
+        [TestMethod]
+        public void Test069Power()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test069Power)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test070IsOn()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test070IsOn)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+            }
+        }
+
+        [TestMethod]
+        public void Test071IsOff()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test071IsOff)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+            }
+        }
+
+        [TestMethod]
+        public void Test072Mod()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test072Mod)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start OFF");
+            Assert.AreEqual(0, sketch.GetPinValue(12), "D12 should start OFF");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should start OFF");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should start OFF");
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should TOGGLE in the first iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(12), "D12 should remain OFF in the first iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should remain OFF in the first iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the first iteration");
+
+            sketch.SetMillis(2000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should remain ON in the second iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(12), "D12 should TOGGLE in the second iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should remain OFF in the second iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the second iteration");
+
+            sketch.SetMillis(3000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should remain ON in the third iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(12), "D12 should remain ON in the third iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should TOGGLE in the third iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the third iteration");
+
+            sketch.SetMillis(4000);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should TOGGLE in the fourth iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(12), "D12 should remain ON in the fourth iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should remain ON in the fourth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the fourth iteration");
+
+            sketch.SetMillis(5000);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should remain OFF in the fifth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(12), "D12 should TOGGLE in the fifth iteration");
+            Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should remain ON in the fourth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the fifth iteration");
+
+            sketch.SetMillis(6000);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should remain OFF in the sixth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(12), "D12 should remain OFF in the sixth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should TOGGLE in the sixth iteration");
+            Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should remain OFF in the sixth iteration");
+        }
     }
 }
