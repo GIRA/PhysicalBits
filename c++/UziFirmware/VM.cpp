@@ -897,6 +897,33 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				stack.push(fmod(a, b) == 0 ? 1 : 0);
 			}			
 		}
+
+		case PRIM_IS_CLOSE_TO:
+		{
+			float epsilon = 0.0001;
+			float b = stack.pop();
+			float a = stack.pop();
+			if (a == 0) 
+			{ 
+				stack.push(b < epsilon ? 1 : 0); 
+			}
+			else if (b == 0) 
+			{ 
+				stack.push(a < epsilon ? 1 : 0); 
+			}
+			else if (a == b) 
+			{
+				stack.push(1);
+			}
+			else 
+			{
+				float a_abs = fabs(a);
+				float b_abs = fabs(b);
+				float max = a_abs > b_abs ? a_abs : b_abs;
+				float diff = fabs(a - b);
+				stack.push(diff/max < epsilon ? 1 : 0);
+			}
+		}
 	}
 
 }
