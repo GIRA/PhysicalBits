@@ -66,7 +66,7 @@ var Uzi = (function () {
 			success: success,
 			complete: complete,
 			error: error
-		}, 2);
+		}, 1);
 	}
 
 	function connect (port, callback) {
@@ -82,7 +82,7 @@ var Uzi = (function () {
 				callback();
 			},
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 
 	function disconnect (callback) {
@@ -97,7 +97,7 @@ var Uzi = (function () {
 				callback();
 			},
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 
 	function compile(src, type, callback) {
@@ -113,7 +113,7 @@ var Uzi = (function () {
 				callback(bytecodes);				
 			},
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 
 	function install(src, type, callback) {
@@ -129,7 +129,7 @@ var Uzi = (function () {
 				callback(bytecodes);
 			},
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 
 	function run(src, type, callback) {
@@ -149,7 +149,7 @@ var Uzi = (function () {
 				callback(bytecodes);
 			},
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 
 	function getPins(callback) {
@@ -174,7 +174,7 @@ var Uzi = (function () {
 			},
 			success: updatePins,
 			error: errorHandler
-		}, 2);
+		}, 0);
 	}
 	
 	function update(uzi) {
