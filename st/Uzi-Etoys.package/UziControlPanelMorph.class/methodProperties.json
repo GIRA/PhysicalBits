@@ -32,7 +32,7 @@
 		"getPinReport:" : "Richo 10/9/2016 18:16",
 		"getPinValue:" : "Richo 10/9/2016 17:25",
 		"globals" : "Richo 10/9/2016 17:33",
-		"initialize" : "Richo 8/2/2018 19:17",
+		"initialize" : "Richo 8/5/2018 20:49",
 		"installCurrentProgram" : "Richo 7/30/2018 12:05",
 		"isConnected" : "Richo 10/9/2016 17:41",
 		"isServerStarted" : "Richo 7/27/2018 09:06",
@@ -67,4 +67,5 @@
 		"togglePinReport:" : "Richo 10/9/2016 18:16",
 		"togglePins" : "Richo 4/18/2018 16:16",
 		"toggleServer" : "Richo 7/27/2018 09:06",
+		"update" : "Richo 8/5/2018 20:49",
 		"validCategories" : "Richo 10/9/2016 23:51" } }
