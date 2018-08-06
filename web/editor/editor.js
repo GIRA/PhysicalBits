@@ -19,7 +19,7 @@ $("#run").on("click", function () {
 	});
 });
 
-Uzi.onUpdate(function () {
+Uzi.onConnectionUpdate(function () {
 	if (Uzi.isConnected) {				
 		$("#install").removeAttr("disabled");
 		$("#run").removeAttr("disabled");

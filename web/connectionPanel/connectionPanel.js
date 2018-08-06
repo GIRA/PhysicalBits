@@ -43,7 +43,7 @@ $(document).ready(function () {
 		Alert.danger(err.responseText || "Connection error");
 	});
 
-	Uzi.onUpdate(function () {
+	Uzi.onConnectionUpdate(function () {
 		if (Uzi.isConnected) {
 			connectButton.attr("disabled", "disabled");
 			port.attr("disabled", "disabled")

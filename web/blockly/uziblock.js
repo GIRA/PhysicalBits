@@ -69,7 +69,7 @@ var UziBlock = (function () {
 			saveAs(blob, lastFileName);
 		});
 
-		Uzi.onUpdate(function () {
+		Uzi.onConnectionUpdate(function () {
 			if (Uzi.isConnected) {				
 				$("#install").removeAttr("disabled");
 				$("#run").removeAttr("disabled");
