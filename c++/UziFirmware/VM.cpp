@@ -473,6 +473,13 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
+		case PRIM_MINUTES:
+		{
+			float time = (float)millis() / 1000.0 / 60.0;
+			stack.push(time);
+		}
+		break;
+
 		case PRIM_EQ:
 		{
 			float val2 = stack.pop();
@@ -572,6 +579,22 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_YIELD_TIME:
 		{
 			int32 time = (int32)stack.pop();
+			yieldTime(time, yieldFlag);
+		}
+		break;
+
+		case PRIM_DELAY_SECONDS:
+		{
+			float seconds = stack.pop();
+			int32 time = seconds * 1000;
+			yieldTime(time, yieldFlag);
+		}
+		break;
+
+		case PRIM_DELAY_MINUTES:
+		{
+			float minutes = stack.pop();
+			int32 time = minutes * 60 * 1000;
 			yieldTime(time, yieldFlag);
 		}
 		break;

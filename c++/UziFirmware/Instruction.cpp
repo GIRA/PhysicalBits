@@ -148,6 +148,9 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x3A: instruction->opcode = PRIM_IS_NEGATIVE; break;
 				case 0x3B: instruction->opcode = PRIM_IS_DIVISIBLE_BY; break;
 				case 0x3C: instruction->opcode = PRIM_IS_CLOSE_TO; break;
+				case 0x3D: instruction->opcode = PRIM_DELAY_SECONDS; break;
+				case 0x3E: instruction->opcode = PRIM_DELAY_MINUTES; break;
+				case 0x3F: instruction->opcode = PRIM_MINUTES; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}
