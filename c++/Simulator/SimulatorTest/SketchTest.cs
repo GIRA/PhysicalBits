@@ -1589,5 +1589,237 @@ namespace SimulatorTest
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
             Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
         }
+        
+        [TestMethod]
+        public void Test083DelayS()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test083DelayS)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+
+            sketch.SetMillis(1500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+        }
+
+        [TestMethod]
+        public void Test084DelayM()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test084DelayM)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+
+            sketch.SetMillis(500);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+
+            sketch.SetMillis(60000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+
+            sketch.SetMillis(60500);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+        }
+
+        [TestMethod]
+        public void Test085Minutes()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test085Minutes)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(0.5 * 60000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(1 * 60000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(1.5 * 60000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(2 * 60000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(2.5 * 60000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(3 * 60000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(3.5 * 60000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(4 * 60000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+        }
+
+        [TestMethod]
+        public void Test086Seconds()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test086Seconds)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(0.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(1 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(1.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(2 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(2.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(3 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(3.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(4 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+        }
+
+        [TestMethod]
+        public void Test087Millis()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test087Millis)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(0.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(1 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(1.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(2 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(2.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(3 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis((int)(3.5 * 1000) + i);
+                sketch.Loop();
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(4 * 1000 + i);
+                sketch.Loop();
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
+            }
+        }
     }
 }
