@@ -6,9 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"protocol",
 		"sema",
-		"changed" ],
+		"changed",
+		"server" ],
 	"name" : "UziResource",
 	"pools" : [
 		 ],

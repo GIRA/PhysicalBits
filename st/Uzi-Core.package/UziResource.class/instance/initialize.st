@@ -1,7 +1,7 @@
 initialize-release
 initialize
 	super initialize.
-	protocol 
+	self protocol 
 		when: UziProtocolEvents connect 
 		send: #update to: self;
 		when: UziProtocolEvents disconnect 

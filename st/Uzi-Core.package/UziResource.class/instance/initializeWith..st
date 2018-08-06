@@ -1,4 +1,4 @@
 initialize-release
-initializeWith: anUziProtocol
-	protocol := anUziProtocol.
+initializeWith: anUziServer
+	server := anUziServer.
 	self initialize 

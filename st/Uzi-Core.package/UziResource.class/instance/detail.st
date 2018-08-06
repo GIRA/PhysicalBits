@@ -1,6 +1,6 @@
 accessing
 detail
 	^ super detail
-		at: #isConnected put: protocol isConnected;
-		at: #portName put: protocol portName;
+		at: #isConnected put: self protocol isConnected;
+		at: #portName put: self protocol portName;
 		yourself 

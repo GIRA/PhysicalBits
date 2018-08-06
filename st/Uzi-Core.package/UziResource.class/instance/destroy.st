@@ -1,3 +1,3 @@
 initialize-release
 destroy
-	protocol removeActionsWithReceiver: self
+	self protocol removeActionsWithReceiver: self

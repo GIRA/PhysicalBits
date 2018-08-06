@@ -1,5 +1,5 @@
 private
 compile: src type: type
 	^ type = 'text' 
-		ifTrue: [protocol compileString: src]
-		ifFalse: [protocol compileJSON: src]
+		ifTrue: [self protocol compileString: src]
+		ifFalse: [self protocol compileJSON: src]
