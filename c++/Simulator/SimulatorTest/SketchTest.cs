@@ -1498,5 +1498,96 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be ON");
             }
         }
+
+        [TestMethod]
+        public void Test076IsEven()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test076IsEven)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test077IsOdd()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test077IsOdd)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test078IsPrime()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test078IsPrime)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test079IsWhole()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test079IsWhole)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test080IsPositive()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test080IsPositive)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test081IsNegative()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test081IsNegative)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
+
+        [TestMethod]
+        public void Test082IsDivisibleBy()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test082IsDivisibleBy)));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off");
+            Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
+            Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
+        }
     }
 }

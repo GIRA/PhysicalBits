@@ -77,4 +77,11 @@
 		"test073Constrain" : "Richo 8/5/2018 14:09",
 		"test074RandomInt" : "Richo 8/5/2018 19:37",
 		"test075Random" : "Richo 8/5/2018 19:38",
+		"test076IsEven" : "Richo 8/5/2018 21:19",
+		"test077IsOdd" : "Richo 8/5/2018 21:19",
+		"test078IsPrime" : "Richo 8/5/2018 21:20",
+		"test079IsWhole" : "Richo 8/5/2018 21:21",
+		"test080IsPositive" : "Richo 8/5/2018 21:22",
+		"test081IsNegative" : "Richo 8/5/2018 21:23",
+		"test082IsDivisibleBy" : "Richo 8/5/2018 21:25",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }
