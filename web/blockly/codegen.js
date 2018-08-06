@@ -411,6 +411,7 @@ var CodeGenerator = (function () {
 			var type = getChildNode(block, "OP").innerText;
 			var num = generateCodeForValue(block, ctx, "NUM");
 			var selector, primName;
+			var args = [num];
 			if (type === "ROOT") {
 				selector = "sqrt";
 				primName = "sqrt";
@@ -418,8 +419,13 @@ var CodeGenerator = (function () {
 				selector = "abs";
 				primName = "abs";
 			} else if (type === "NEG") {
-				selector = "negate";
-				primName = "negate";
+				selector = "*";
+				primName = "multiply";
+				args.push({
+					type: "UziNumberNode",
+					id: id,
+					value: -1
+				});
 			} else if (type === "LN") {
 				selector = "ln";
 				primName = "ln";
@@ -439,7 +445,7 @@ var CodeGenerator = (function () {
 				type: "UziPrimitiveCallNode",
 				id: id,
 				selector: selector,
-				arguments: [num],
+				arguments: args,
 				primitiveName: primName
 			};
 		},
