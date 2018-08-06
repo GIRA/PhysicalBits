@@ -84,4 +84,9 @@
 		"test080IsPositive" : "Richo 8/5/2018 21:22",
 		"test081IsNegative" : "Richo 8/5/2018 21:23",
 		"test082IsDivisibleBy" : "Richo 8/5/2018 21:25",
+		"test083DelayS" : "Richo 8/5/2018 21:50",
+		"test084DelayM" : "Richo 8/5/2018 21:50",
+		"test085Minutes" : "Richo 8/6/2018 10:17",
+		"test086Seconds" : "Richo 8/6/2018 10:18",
+		"test087Millis" : "Richo 8/6/2018 10:18",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }

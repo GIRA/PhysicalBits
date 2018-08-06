@@ -63,4 +63,7 @@ primSpec
 		{#isNegative . 16r3A . 1 -> 1}.
 		{#isDivisibleBy . 16r3B . 2 -> 1}.
 		{#isCloseTo . 16r3C . 2 -> 1}.
+		{#delayS . 16r3D . 1 -> 0 }.
+		{#delayM . 16r3E . 1 -> 0 }.
+		{#minutes . 16r3F . 0 -> 1}.
 	}
