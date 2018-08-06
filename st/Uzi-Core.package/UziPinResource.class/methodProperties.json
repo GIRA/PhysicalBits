@@ -1,0 +1,19 @@
+{
+	"class" : {
+		"server:" : "Richo 8/6/2018 13:27" },
+	"instance" : {
+		"activateReportingFor:" : "Richo 8/6/2018 13:57",
+		"activateReportingForAll" : "Richo 8/6/2018 14:01",
+		"deactivateReportingFor:" : "Richo 8/6/2018 13:59",
+		"deactivateReportingForAll" : "Richo 8/6/2018 14:01",
+		"detail" : "Richo 8/6/2018 13:44",
+		"initialize" : "Richo 8/6/2018 13:48",
+		"initializeWithServer:" : "Richo 8/6/2018 13:28",
+		"processActivateReporting:" : "Richo 8/6/2018 13:55",
+		"processDeactivateReporting:" : "Richo 8/6/2018 13:58",
+		"processToggleReporting:" : "Richo 8/6/2018 13:59",
+		"protocol" : "Richo 8/6/2018 13:28",
+		"sendJSONResponse:for:" : "Richo 8/6/2018 13:57",
+		"summary" : "Richo 8/6/2018 13:33",
+		"toggleReportingFor:" : "Richo 8/6/2018 14:00",
+		"toggleReportingForAll" : "Richo 8/6/2018 14:01" } }
