@@ -880,18 +880,21 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			int32 a_int = (int32)a;
 			stack.push(a == a_int ? 1 : 0);
 		}
+		break;
 
 		case PRIM_IS_POSITIVE:
 		{
 			float a = stack.pop();
 			stack.push(a >= 0 ? 1 : 0);
 		}
+		break;
 
 		case PRIM_IS_NEGATIVE:
 		{
 			float a = stack.pop();
 			stack.push(a < 0 ? 1 : 0);
 		}
+		break;
 
 		case PRIM_IS_DIVISIBLE_BY:
 		{
@@ -904,6 +907,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				stack.push(fmod(a, b) == 0 ? 1 : 0);
 			}			
 		}
+		break;
 
 		case PRIM_IS_CLOSE_TO:
 		{
@@ -931,6 +935,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				stack.push(diff/max < epsilon ? 1 : 0);
 			}
 		}
+		break;
 	}
 
 }
