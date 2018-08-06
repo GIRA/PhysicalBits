@@ -1,3 +1,5 @@
 accessing-pins
 getPinValue: pinNumber 
-	^ pinValues at: pinNumber ifAbsent: [0]
+	^ (self getPinValues: pinNumber) 
+		ifEmpty: [0]
+		ifNotEmpty: [:list | list last value]

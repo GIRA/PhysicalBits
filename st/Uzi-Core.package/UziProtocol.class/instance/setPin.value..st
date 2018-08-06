@@ -1,6 +1,7 @@
 accessing-pins
 setPin: pinNumber value: pinValue 
-	pinValues at: pinNumber put: pinValue.
+	(self getPinValues: pinNumber) 
+		add: DateAndTime now -> pinValue.
 	^ self send: {
 		self class msgOutSetValue. 
 		pinNumber. 
