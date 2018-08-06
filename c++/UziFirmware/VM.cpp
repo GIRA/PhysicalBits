@@ -576,7 +576,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
-		case PRIM_YIELD_TIME:
+		case PRIM_DELAY_MILLIS:
 		{
 			int32 time = (int32)stack.pop();
 			yieldTime(time, yieldFlag);

@@ -110,7 +110,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x14: instruction->opcode = PRIM_TURN_ON; break;
 				case 0x15: instruction->opcode = PRIM_TURN_OFF; break;
 				case 0x16: instruction->opcode = PRIM_YIELD; break;
-				case 0x17: instruction->opcode = PRIM_YIELD_TIME; break;
+				case 0x17: instruction->opcode = PRIM_DELAY_MILLIS; break;
 				case 0x18: instruction->opcode = PRIM_MILLIS; break;
 				case 0x19: instruction->opcode = PRIM_RET; break;
 				case 0x1A: instruction->opcode = PRIM_POP; break;
