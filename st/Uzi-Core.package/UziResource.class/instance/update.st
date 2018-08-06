@@ -1,4 +1,5 @@
 initialize-release
 update
-	changed := true.
-	sema valuesDo: [:each | each signal]
+	clients do: [:client |
+		client at: #changed put: true.
+		(client at: #semaphore) signal]

@@ -1,3 +1,3 @@
 accessing
 semaphoreAt: id
-	^ sema at: id ifAbsentPut: Semaphore new
+	^ (self clientAt: id) at: #semaphore

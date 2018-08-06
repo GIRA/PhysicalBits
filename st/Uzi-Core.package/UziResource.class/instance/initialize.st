@@ -1,14 +1,13 @@
 initialize-release
 initialize
 	super initialize.
-	self protocol 
-		when: UziProtocolEvents connect 
-		send: #update to: self;
-		when: UziProtocolEvents disconnect 
-		send: #update to: self;
-		when: UziProtocolEvents runProgram
-		send: #update to: self.
+	{
+		UziProtocolEvents connect.
+		UziProtocolEvents disconnect.
+		UziProtocolEvents runProgram.
+		UziProtocolEvents reportingChange.
+	}
+	do: [:evt | self protocol when: evt send: #update to: self].
 	
-	sema := Dictionary new.
-	changed := false.
+	clients := Dictionary new.
 	self initializeResources

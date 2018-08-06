@@ -2,19 +2,22 @@
 	"class" : {
 		"on:" : "Richo 8/6/2018 13:00" },
 	"instance" : {
+		"changedAt:" : "Richo 8/6/2018 17:01",
+		"changedAt:put:" : "Richo 8/6/2018 17:01",
+		"clientAt:" : "Richo 8/6/2018 17:02",
 		"compile:type:" : "Richo 8/6/2018 13:01",
 		"destroy" : "Richo 8/6/2018 13:01",
 		"detail" : "Richo 8/6/2018 13:01",
-		"initialize" : "Richo 8/6/2018 13:01",
+		"initialize" : "Richo 8/6/2018 17:12",
 		"initializeResources" : "Richo 8/6/2018 13:27",
 		"initializeWith:" : "Richo 8/6/2018 13:00",
 		"processCompile:" : "Richo 7/31/2018 17:50",
 		"processConnect:" : "Richo 8/6/2018 13:00",
 		"processDisconnect:" : "Richo 8/6/2018 13:01",
-		"processGET:" : "Richo 7/30/2018 10:47",
+		"processGET:" : "Richo 8/6/2018 17:01",
 		"processInstall:" : "Richo 8/6/2018 13:01",
 		"processRun:" : "Richo 8/6/2018 13:01",
 		"protocol" : "Richo 8/6/2018 13:01",
-		"semaphoreAt:" : "Richo 7/30/2018 10:45",
+		"semaphoreAt:" : "Richo 8/6/2018 17:02",
 		"sendJSONResponse:for:" : "Richo 9/7/2017 08:33",
-		"update" : "Richo 7/30/2018 10:46" } }
+		"update" : "Richo 8/6/2018 17:11" } }
