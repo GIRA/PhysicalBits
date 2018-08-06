@@ -20,7 +20,8 @@
 		"debuggerButton",
 		"scriptTexts",
 		"freeRAMText",
-		"serverButton" ],
+		"serverButton",
+		"rebuildFlag" ],
 	"name" : "UziControlPanelMorph",
 	"pools" : [
 		 ],

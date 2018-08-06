@@ -1,14 +1,16 @@
 initialize-release
 initialize
 	super initialize.
+	rebuildFlag := false.
 	protocol := UziProtocol new.
-	protocol 
-		when: UziProtocolEvents connect 
-		send: #update to: self;
-		when: UziProtocolEvents disconnect 
-		send: #update to: self;
-		when: UziProtocolEvents runProgram
-		send: #update to: self.
+	{ 
+		UziProtocolEvents connect.
+		UziProtocolEvents disconnect.
+		UziProtocolEvents runProgram.
+		UziProtocolEvents reportingChange.
+	} 
+	do: [:evt | protocol when: evt send: #update to: self].
+	
 	pinTexts := Dictionary new.
 	globalTexts := Dictionary new.
 	scriptTexts := Dictionary new.
@@ -18,5 +20,5 @@ initialize
 		borderColor: Color red;
 		hResizing: #shrinkWrap;
 		vResizing: #shrinkWrap;
-		listDirection: #topToBottom;
+		listDirection: #topToBottom;		
 		buildSubmorphs

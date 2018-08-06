@@ -1,5 +1,8 @@
 stepping
 step
+	rebuildFlag 
+		ifTrue: [self rebuild.
+			rebuildFlag := false].
 	self borderColor: (self isConnected 
 		ifTrue: [Color green] 
 		ifFalse: [Color red]).
