@@ -531,7 +531,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_NEGATE:
 		{
 			float val = stack.pop();
-			stack.push(-1 * val);
+			stack.push(val == 0 ? 1 : 0);
 		}
 		break;
 
