@@ -13,7 +13,7 @@ namespace SimulatorTest
 
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
-        private const byte MINOR_VERSION = 4;
+        private const byte MINOR_VERSION = 5;
 
         [TestInitialize]
         public void Setup()

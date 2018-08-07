@@ -2,7 +2,7 @@
 
 /* VERSION NUMBER */
 #define MAJOR_VERSION                                       0
-#define MINOR_VERSION                                       4
+#define MINOR_VERSION                                       5
 
 /* INCOMING */
 #define MSG_IN_CONNECTION_REQUEST                         255
@@ -232,6 +232,13 @@ void Monitor::sendPinValues(GPIO* io)
 	if (count == 0) return;
 
 	Serial.write(MSG_OUT_PIN_VALUE);
+
+	uint32 time = millis();
+	Serial.write((time >> 24) & 0xFF);
+	Serial.write((time >> 16) & 0xFF);
+	Serial.write((time >> 8) & 0xFF);
+	Serial.write(time & 0xFF);
+
 	Serial.write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
@@ -263,6 +270,7 @@ void Monitor::sendGlobalValues(Program* program)
 
 	Serial.write(MSG_OUT_GLOBAL_VALUE);
 	Serial.write(count);
+	// TODO(Richo): Send millis like in the MSG_OUT_PIN_VALUE. Maybe merge both msgs??
 	for (uint8 i = 0; i < program->getGlobalCount(); i++)
 	{
 		if (program->getReport(i))
