@@ -7,7 +7,7 @@ detail
 		dict at: #history 
 			put: ((self protocol getPinValues: pinNumber) copy
 				collect: [:kvp | Dictionary new
-					at: #timestamp put: kvp key asString;
+					at: #timestamp put: kvp key;
 					at: #value put: kvp value;
 					yourself] 
 				as: Array)].

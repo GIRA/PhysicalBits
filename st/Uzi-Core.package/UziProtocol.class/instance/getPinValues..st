@@ -1,7 +1,8 @@
 accessing-pins
 getPinValues: pinNumber
-	| list now |
+	| list |
 	list := pinValues at: pinNumber ifAbsentPut: [OrderedCollection new].
-	now := DateAndTime now.
-	list removeAllSuchThat: [:kvp | (now - kvp key) seconds > 10].
+	list ifNotEmpty: [| begin |
+		begin := list last key - 10000.
+		list removeAllSuchThat: [:kvp | kvp key < begin]].
 	^ list

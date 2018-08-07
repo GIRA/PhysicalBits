@@ -1,3 +1,3 @@
 constants-versioning
 minorVersion
-	^ 4
+	^ 5

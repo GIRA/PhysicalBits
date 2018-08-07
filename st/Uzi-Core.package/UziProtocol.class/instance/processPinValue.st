@@ -1,17 +1,14 @@
 receiving
 processPinValue
-	"
-	The PIN_VALUE msg is composed of 3 bytes:
-		- the pin number
-		- the value (MSB)
-		- the value (LSB)
-		
-	However, when saving the value it must be in the range 0..1
-	"
-	| pin value val1 val2 count timestamp |
-	timestamp := DateAndTime now.
+	| count timestamp |
+	timestamp := [| val1 val2 val3 val4 |
+		val1 := serial next.
+		val2 := serial next.
+		val3 := serial next.
+		val4 := serial next.
+		val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4))] value.
 	count := serial next.
-	count timesRepeat: [
+	count timesRepeat: [| val1 val2 pin value |
 		val1 := serial next.
 		val2 := serial next.
 		pin := val1 >> 2.
