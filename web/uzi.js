@@ -33,6 +33,7 @@ var Uzi = (function () {
 		
 		activatePinReport: function (pin) { setPinReport(pin, true); },
 		deactivatePinReport: function (pin) { setPinReport(pin, false); },
+		togglePinReport: function (pin) { togglePinReport(pin); },
 				
 		start: function () {
 			updateLoop(true);
@@ -168,6 +169,19 @@ var Uzi = (function () {
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/pins/reporting/" + (value ? "activate" : "deactivate"),
+			data: {
+				id: id,
+				pin: pin
+			},
+			success: updatePins,
+			error: errorHandler
+		}, 0);
+	}
+	
+	function togglePinReport(pin) {		
+		ajax.request({ 
+			type: 'POST', 
+			url: Uzi.baseUrl + "/uzi/pins/reporting/toggle",
 			data: {
 				id: id,
 				pin: pin
