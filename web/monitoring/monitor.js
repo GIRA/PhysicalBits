@@ -28,7 +28,7 @@ var UziMonitor = (function () {
 						//pointBorderWidth: 1,
 						pointRadius: 0,
 						data: pin.history.map(function (each) {
-							timestamp = Date.parse(each.timestamp);
+							timestamp = each.timestamp;
 							if (timestamp > max) {
 								max = timestamp;
 							}
@@ -67,11 +67,11 @@ var UziMonitor = (function () {
 						}
 					}]
 				},
-				/*elements: {
+				elements: {
 					line: {
 						tension: 0,
 					}
-				}*/
+				}
 			};
 			chart.data = data;
 			chart.options = options;
