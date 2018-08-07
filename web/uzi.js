@@ -232,7 +232,7 @@ var Uzi = (function () {
 		triggerEvent(eventList.monitorUpdate);
 		
 		if (Uzi.pinsReporting.length > 0) {
-			setTimeout(function () { getPins(updatePins); }, 100);
+			setTimeout(function () { getPins(updatePins); }, 200);
 		}
 	}
 	
