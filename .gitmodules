@@ -7,3 +7,6 @@
 [submodule "web/filesaver"]
 	path = web/filesaver
 	url = https://github.com/RichoM/FileSaver.js
+[submodule "web/palette"]
+	path = web/palette
+	url = https://github.com/RichoM/palette.js.git
