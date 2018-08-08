@@ -82,31 +82,47 @@ var UziMonitor = (function () {
 	
 	function buildLineChartFor(pins) {
 		var editor = $("#editor");
-		var monitor = $("<div>").addClass("monitor");
+		var container = $("<div>").addClass("monitor");
+		var closeButton = $("<button>")
+			.attr("type", "button")
+			.attr("aria-label", "Close")
+			.css("position", "absolute")
+			.css("right", "10px")
+			.addClass("close")
+			.append($("<span>")
+				.attr("aria-hidden", "true")
+				.html("&times;"))
+			.on("click", function () {
+				var index = monitors.indexOf(monitor);
+				monitors.splice(index, 1);
+				monitor.container.remove();
+			});
 		var canvas = $("<canvas>");
-		monitor.draggable({
+		container.draggable({
 			containment: "parent",
 			scroll: true,
 			snap: true
 		});
-		monitor.resizable({
+		container.resizable({
 			minHeight: 150,
 			minWidth: 200,
 			handles: "n, e, s, w, ne, se, sw, nw"
 		});
 		
 		// HACK(Richo): JQuery UI seems to add the "position:relative"
-		monitor.attr("style", null);
+		container.attr("style", null);
 		
-		monitor.append(canvas);
-		editor.append(monitor);
+		container.append(closeButton);
+		container.append(canvas);
+		editor.append(container);
 		
 		var chart = createChartOn(canvas.get(0));
-		monitors.push({
-			container: monitor,
+		var monitor = {
+			container: container,
 			pins: pins,
 			chart: chart,
-		});
+		};
+		monitors.push(monitor);
 	}
 
 	function choosePins(callback) {
