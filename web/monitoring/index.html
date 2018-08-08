@@ -53,6 +53,12 @@
 			font-size: large;
 		}
 		
+		.monitor {
+			padding: 0.5em;
+			border-style: ridge;
+			width: 600px;
+		}
+		
 		svg:not(:root) {
 			/*
 			Fix for workspace scroll bug. Solution found here:
@@ -60,6 +66,23 @@
 			*/
 			overflow: visible;
 		}
+		
+		/*
+		JQuery-UI resizable classes
+		*/
+		.ui-icon { width: 16px; height: 16px; background-image: url(http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/images/ui-icons_222222_256x240.png)/*{iconsContent}*/; }
+		.ui-resizable { position: relative;}
+		.ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;}
+		.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
+		.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0px; }
+		.ui-resizable-s { cursor: s-resize; height: 7px; width: 100%; bottom: -5px; left: 0px; }
+		.ui-resizable-e { cursor: e-resize; width: 7px; right: -5px; top: 0px; height: 100%; }
+		.ui-resizable-w { cursor: w-resize; width: 7px; left: -5px; top: 0px; height: 100%; }
+		.ui-resizable-se { cursor: se-resize; width: 12px; height: 12px; right: 1px; bottom: 1px; }
+		.ui-resizable-sw { cursor: sw-resize; width: 9px; height: 9px; left: -5px; bottom: -5px; }
+		.ui-resizable-nw { cursor: nw-resize; width: 9px; height: 9px; left: -5px; top: -5px; }
+		.ui-resizable-ne { cursor: ne-resize; width: 9px; height: 9px; right: -5px; top: -5px;}
+		.ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
 	</style>
   </head>
 
@@ -115,8 +138,8 @@
 		</div>
 	</div>
 	<div id="editor">
-		<div style="width: 600px; border-style: ridge;">
-			<canvas id="myChart" width="600" height="400"></canvas>
+		<div class="monitor">
+			<canvas id="myChart" width="550" height="400"></canvas>
 		<div>
 	</div>
 	
@@ -208,6 +231,11 @@
 			integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
 			crossorigin="anonymous">
 	</script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+			integrity="sha256-T0Vest3yCU7pafRw9r+settMBX6JkKN06dqBnpQ8d30="
+			crossorigin="anonymous">
+	</script>
+  
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../ie10-viewport-bug-workaround.js"></script>
@@ -230,6 +258,16 @@
 	<script type="text/javascript">
 		Uzi.start();
 		UziMonitor.init();
+		
+		// Testing JQuery-UI draggable/resizable
+		$(".monitor").draggable({
+			containment: "parent",
+			scroll: true
+		});
+		$(".monitor").resizable({
+			minHeight: 150,
+			minWidth: 200
+		});
 	</script>
   </body>
 </html>

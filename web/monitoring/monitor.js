@@ -41,18 +41,8 @@ var UziMonitor = (function () {
 				})
 			};
 			var options = {
-				title: {
-					display: true,
-					text: 'ACAACA Nombre a elegir por el usuario?'
-				},
-				tooltips: {
-					mode: 'index',
-					intersect: false,				
-				},
-				hover: {
-					mode: 'nearest',
-					intersect: true,
-				},
+				maintainAspectRatio: false,
+				showTooltips: false,
 				animation: {
 					duration: 0
 				},
