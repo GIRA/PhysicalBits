@@ -1,74 +1,113 @@
 var UziMonitor = (function () {
 	
-	var chart;
+	var monitors = [];
 	
-	function init() {
-		chart = testChart();
-		
+	function init() {		
 		$("#addGraphButton").on("click", function () {
-			choosePins(function (selection) {
-				console.log(selection);
-				for (var i = 0; i < selection.length; i++) {
-					Uzi.togglePinReport(selection[i]);
-				}
-			});	
+			addMonitor();
 		});
 
-		Uzi.onMonitorUpdate(function () {		
-			console.log(Uzi.pins);
-			var colors = palette('rainbow', Uzi.pins.length);
-			var max = 0;
-			var data = { 
-				datasets: Uzi.pins.map(function (pin, i) {
-					return {
-						label: "Pin " + pin.number,
-						fill: false,
-						borderColor: "#" + colors[i],
-						backgroundColor: "#" + colors[i],
-						//pointBorderWidth: 1,
-						pointRadius: 0,
-						data: pin.history.map(function (each) {
-							timestamp = each.timestamp;
-							if (timestamp > max) {
-								max = timestamp;
-							}
-							return {
-								x: timestamp,
-								y: each.value
-							};
-						})
-					}
-				})
-			};
-			var options = {
-				maintainAspectRatio: false,
-				showTooltips: false,
-				animation: {
-					duration: 0
-				},
-				scales: {
-					xAxes: [{
-						display: false,
-						type: 'linear',
-						position: 'bottom',
-						ticks: {
-							min: max - 10000,
-							max: max
+		Uzi.onMonitorUpdate(function () {
+			monitors.forEach(function (monitor) {
+				var colors = palette('rainbow', Uzi.pins.length);
+				var max = 0;
+				var pins = Uzi.pins.filter(function (pin) {
+					return monitor.pins.indexOf(pin.number) !== -1;
+				});
+				var data = { 
+					datasets: pins.map(function (pin) {
+						var i = Uzi.pins.findIndex(function (each) { 
+							return each.number == pin.number; 
+						});
+						var color = "#" + colors[i];
+						return {
+							label: "Pin " + pin.number,
+							fill: false,
+							borderColor: color,
+							backgroundColor: color,
+							//pointBorderWidth: 1,
+							pointRadius: 0,
+							data: pin.history.map(function (each) {
+								timestamp = each.timestamp;
+								if (timestamp > max) {
+									max = timestamp;
+								}
+								return {
+									x: timestamp,
+									y: each.value
+								};
+							})
 						}
-					}]
-				},
-				elements: {
-					line: {
-						tension: 0,
+					})
+				};
+				var options = {
+					maintainAspectRatio: false,
+					showTooltips: false,
+					animation: {
+						duration: 0
+					},
+					scales: {
+						xAxes: [{
+							display: false,
+							type: 'linear',
+							position: 'bottom',
+							ticks: {
+								min: max - 10000,
+								max: max
+							}
+						}]
+					},
+					elements: {
+						line: {
+							tension: 0,
+						}
 					}
-				}
-			};
-			chart.data = data;
-			chart.options = options;
-			chart.update();
+				};
+				monitor.chart.data = data;
+				monitor.chart.options = options;
+				monitor.chart.update();
+			});
 		});
 	}
+
+	function addMonitor() {		
+		choosePins(function (selection) {
+			console.log(selection);
+			for (var i = 0; i < selection.length; i++) {
+				Uzi.activatePinReport(selection[i]);
+			}
+			buildLineChartFor(selection);
+		});	
+	}
 	
+	function buildLineChartFor(pins) {
+		var editor = $("#editor");
+		var monitor = $("<div>").addClass("monitor");
+		var canvas = $("<canvas>");
+		monitor.draggable({
+			containment: "parent",
+			scroll: true,
+			snap: true
+		});
+		monitor.resizable({
+			minHeight: 150,
+			minWidth: 200,
+			handles: "n, e, s, w, ne, se, sw, nw"
+		});
+		
+		// HACK(Richo): JQuery UI seems to add the "position:relative"
+		monitor.attr("style", null);
+		
+		monitor.append(canvas);
+		editor.append(monitor);
+		
+		var chart = createChartOn(canvas.get(0));
+		monitors.push({
+			container: monitor,
+			pins: pins,
+			chart: chart,
+		});
+	}
 
 	function choosePins(callback) {
 		$("#monitorSelectionModal #acceptButton").on("click", function () {
@@ -89,8 +128,8 @@ var UziMonitor = (function () {
 		$("#monitorSelectionModal").modal({});
 	}
 	
-	function testChart() {		
-		var ctx = document.getElementById("myChart").getContext('2d');
+	function createChartOn(canvas) {		
+		var ctx = canvas.getContext('2d');
 		var data = {};
 		var options = {};
 		return new Chart(ctx, {
@@ -101,7 +140,8 @@ var UziMonitor = (function () {
 	}
 
 	return {
-		init: init
+		init: init,
+		monitors: monitors
 	};
 })();
 

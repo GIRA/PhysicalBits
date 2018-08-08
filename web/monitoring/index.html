@@ -57,6 +57,8 @@
 			padding: 0.5em;
 			border-style: ridge;
 			width: 600px;
+			background-color: white;
+			position: absolute;
 		}
 		
 		svg:not(:root) {
@@ -71,7 +73,7 @@
 		JQuery-UI resizable classes
 		*/
 		.ui-icon { width: 16px; height: 16px; background-image: url(http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/images/ui-icons_222222_256x240.png)/*{iconsContent}*/; }
-		.ui-resizable { position: relative;}
+		/*.ui-resizable { position: relative;}*/
 		.ui-resizable-handle { position: absolute;font-size: 0.1px;z-index: 99999; display: block;}
 		.ui-resizable-disabled .ui-resizable-handle, .ui-resizable-autohide .ui-resizable-handle { display: none; }
 		.ui-resizable-n { cursor: n-resize; height: 7px; width: 100%; top: -5px; left: 0px; }
@@ -137,11 +139,7 @@
 			</p>
 		</div>
 	</div>
-	<div id="editor">
-		<div class="monitor">
-			<canvas id="myChart" width="550" height="400"></canvas>
-		<div>
-	</div>
+	<div id="editor"></div>
 	
 	<!-- Pin selection modal -->
 	<div id="monitorSelectionModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="monitorSelection">
@@ -258,16 +256,6 @@
 	<script type="text/javascript">
 		Uzi.start();
 		UziMonitor.init();
-		
-		// Testing JQuery-UI draggable/resizable
-		$(".monitor").draggable({
-			containment: "parent",
-			scroll: true
-		});
-		$(".monitor").resizable({
-			minHeight: 150,
-			minWidth: 200
-		});
 	</script>
   </body>
 </html>
