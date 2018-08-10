@@ -1,5 +1,4 @@
-reporting
-activateReportingFor: pinName
-	| pinNumber |
-	pinNumber := pinName asInteger.
-	self protocol setPin: pinNumber report: true
+accessing
+activateReportingFor: pins
+	(pins copyWithoutAll: self protocol pinsReporting)
+		do: [:pin | self protocol setPin: pin report: true]
