@@ -6,4 +6,4 @@ processDeactivateReporting: req
 		ifNotNil: [self deactivateReportingFor: pin]] value.
 		"on: Error
 		do: [:err | ^ req send400Response: err description]."
-	self sendJSONResponse: self detail for: req
+	self sendJSONResponse: (self detail: req) for: req

@@ -7,5 +7,5 @@ processConnect: req
 		ifFalse: [self protocol connectOnSocket: port]]
 		on: Error
 		do: [:err | ^ req send400Response: err description].
-	self sendJSONResponse: self detail
+	self sendJSONResponse: (self detail: req)
 		for: req

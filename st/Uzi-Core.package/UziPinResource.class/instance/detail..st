@@ -1,7 +1,7 @@
 accessing
-detail 
+detail: req
 	| detail |
-	detail := super detail.
+	detail := super detail: req.
 	(detail at: #elements) do: [:dict || pinNumber |
 		pinNumber := dict at: #number.
 		dict at: #history 
