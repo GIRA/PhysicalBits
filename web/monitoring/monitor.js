@@ -10,7 +10,8 @@ var UziMonitor = (function () {
 		Uzi.onMonitorUpdate(function () {
 			monitors.forEach(function (monitor) {
 				var colors = palette('rainbow', Uzi.pins.length);
-				var max = 0;
+				var min = 0;
+				var max = 0;				
 				var pins = Uzi.pins.filter(function (pin) {
 					return monitor.pins.indexOf(pin.number) !== -1;
 				});
@@ -20,22 +21,31 @@ var UziMonitor = (function () {
 							return each.number == pin.number; 
 						});
 						var color = "#" + colors[i];
+						var dataset = monitor.chart.data.datasets.find(function (each) {
+							return each.id === pin.number;
+						});
+						var oldData = dataset === undefined ? [] : dataset.data;
+						var newData = pin.history.map(function (each) {
+							timestamp = each.timestamp;
+							if (timestamp > max) {
+								max = timestamp;
+								min = max - 10000;
+							}
+							return {
+								x: timestamp,
+								y: each.value
+							};
+						});
 						return {
+							id: pin.number,
 							label: "Pin " + pin.number,
 							fill: false,
 							borderColor: color,
 							backgroundColor: color,
 							//pointBorderWidth: 1,
 							pointRadius: 0,
-							data: pin.history.map(function (each) {
-								timestamp = each.timestamp;
-								if (timestamp > max) {
-									max = timestamp;
-								}
-								return {
-									x: timestamp,
-									y: each.value
-								};
+							data: oldData.concat(newData).filter(function (each) {
+								return each.x >= min;
 							})
 						}
 					})
@@ -52,7 +62,7 @@ var UziMonitor = (function () {
 							type: 'linear',
 							position: 'bottom',
 							ticks: {
-								min: max - 10000,
+								min: min,
 								max: max
 							}
 						}]
