@@ -12,7 +12,7 @@ var Uzi = (function () {
 		isConnected: false,
 		portName: undefined,
 		currentProgram: undefined,
-		pinsReporting: [],
+		pinsReporting: new Set(),
 		pins: [],
 		
 		onError: function (callback) {
@@ -31,12 +31,16 @@ var Uzi = (function () {
 		install: install,
 		run: run,
 		
-		activatePinReport: function (pin) { setPinReport(pin, true); },
-		deactivatePinReport: function (pin) { setPinReport(pin, false); },
-		togglePinReport: function (pin) { togglePinReport(pin); },
+		activatePinReport: function (pin) { 
+			Uzi.pinsReporting.add(pin); 
+		},
+		deactivatePinReport: function (pin) { 
+			Uzi.pinsReporting.delete(pin); 			
+		},
 				
 		start: function () {
 			updateLoop(true);
+			startMonitor();
 		}
 	};
 	
@@ -153,64 +157,27 @@ var Uzi = (function () {
 		}, 0);
 	}
 
-	function getPins(callback) {
+	function getPins(start, pins, callback) {
 		ajax.request({ 
 			type: 'GET', 
 			url: Uzi.baseUrl + "/uzi/pins",
 			data: {
-				id: id
+				id: id,
+				start: start,
+				pins: Array.from(pins).join(",")
 			},
 			success: callback,
 			error: errorHandler
 		}, 2);
 	}
 	
-	function setPinReport(pin, value) {
-		ajax.request({ 
-			type: 'POST', 
-			url: Uzi.baseUrl + "/uzi/pins/reporting/" + (value ? "activate" : "deactivate"),
-			data: {
-				id: id,
-				pin: pin
-			},
-			success: updatePins,
-			error: errorHandler
-		}, 0);
-	}
-	
-	function togglePinReport(pin) {		
-		ajax.request({ 
-			type: 'POST', 
-			url: Uzi.baseUrl + "/uzi/pins/reporting/toggle",
-			data: {
-				id: id,
-				pin: pin
-			},
-			success: updatePins,
-			error: errorHandler
-		}, 0);
-	}
-	
 	function update(uzi) {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
-		
-		var pinsReporting = uzi.pins.elements.map(function(pin) { 
-			return pin.number; 
-		});
-		var startPinMonitor = Uzi.isConnected && 
-			Uzi.pinsReporting.length == 0 && 
-			pinsReporting.length > 0;
-		Uzi.pinsReporting = pinsReporting;
-		
+				
 		if (!Uzi.isConnected) {
 			Uzi.currentProgram = undefined;
-			Uzi.pinsReporting = [];
-		}
-		if (startPinMonitor) {
-			getPins(updatePins);
-		}
-		
+		}		
 		triggerEvent(eventList.connectionUpdate);
 	}
 
@@ -222,18 +189,25 @@ var Uzi = (function () {
 		});
 	}
 	
-	function updatePins(pins) {
-		if (!Uzi.isConnected) return;
-		
-		Uzi.pins = pins.elements;
-		Uzi.pinsReporting = pins.elements.map(function (pin) {
-			return pin.number;
-		});
-		triggerEvent(eventList.monitorUpdate);
-		
-		if (Uzi.pinsReporting.length > 0) {
-			setTimeout(function () { getPins(updatePins); }, 200);
-		}
+	function startMonitor() {
+		var waiting = false;
+		var last = 0;
+		setInterval(function () {
+			if (waiting || Uzi.pinsReporting.size === 0) return;
+			waiting = true;
+			getPins(last, Uzi.pinsReporting, function (pins) {
+				Uzi.pins = pins.elements;
+				last = Math.max.apply(Math, pins.elements
+					.filter(function (each) {
+						return each.history.length > 0;
+					})
+					.map(function (each) {					
+						return each.history[each.history.length-1].timestamp;
+					}));
+				triggerEvent(eventList.monitorUpdate);
+				waiting = false;
+			});
+		}, 200);
 	}
 	
 	return Uzi;
