@@ -2,9 +2,11 @@ building
 buildGlobalsList
 	| globalsList globals |
 	globalsList := self newColumn.
-	globals := self globals.
-	globalTexts := globalTexts 
-		associationsSelect: [:pair | globals includes: pair key].
+	globals := self globals intersection: self globalsReporting.	
+	(globalTexts keys copyWithoutAll: globals)
+		do: [:key |
+			(globalTexts at: key) delete.
+			globalTexts removeKey: key].
 	globals 
 		ifEmpty: [globalsList addMorphBack: '  *no globals available*' asMorph]
 		ifNotEmpty: [globals asSortedCollection 

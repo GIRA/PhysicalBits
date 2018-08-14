@@ -1,3 +1,5 @@
 accessing
-setGlobal: var value: pinValue
-	^ protocol setGlobal: var value: pinValue
+setGlobal: globalName value: value
+	| number |
+	number := protocol getGlobalNumber: globalName.
+	^ number ifNotNil: [protocol setGlobal: number value: value]

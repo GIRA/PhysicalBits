@@ -1,5 +1,6 @@
 accessing
-setGlobal: globalName report: aBoolean
-	[protocol setGlobal: globalName report: aBoolean.
-	self rebuild]
-		on: Error do: ["Nothing"]
+setGlobal: globalName report: reportEnabled
+	reportEnabled
+		ifTrue: [self globalsReporting add: globalName]
+		ifFalse: [self globalsReporting remove: globalName ifAbsent: ["Do nothing"]].
+	self rebuild

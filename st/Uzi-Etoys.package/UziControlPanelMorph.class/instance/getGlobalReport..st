@@ -1,3 +1,3 @@
 accessing
-getGlobalReport: global
-	^ protocol getGlobalReport: global
+getGlobalReport: globalName
+	^ self globalsReporting includes: globalName

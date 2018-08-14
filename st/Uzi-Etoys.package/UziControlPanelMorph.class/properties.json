@@ -22,7 +22,8 @@
 		"freeRAMText",
 		"serverButton",
 		"rebuildFlag",
-		"pinsReporting" ],
+		"pinsReporting",
+		"globalsReporting" ],
 	"name" : "UziControlPanelMorph",
 	"pools" : [
 		 ],

@@ -18,7 +18,7 @@ step
 	pinTexts keysAndValuesDo: [:pin :text |
 		text privateValue: (self getPinValue: pin)].
 	globalTexts keysAndValuesDo: [:var :text |
-		text privateValue: (self getGlobal: var)].
+		text privateValue: (self getGlobalValue: var)].
 	scriptTexts keysAndValuesDo: [:script :text |
 		text contents: (((self isTicking: script)
 				ifTrue: [' {1} -> running']
