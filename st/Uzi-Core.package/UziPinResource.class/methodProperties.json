@@ -2,8 +2,7 @@
 	"class" : {
 		"server:" : "Richo 8/6/2018 13:27" },
 	"instance" : {
-		"activateReportingFor:" : "Richo 8/10/2018 17:19",
-		"detail:" : "Richo 8/14/2018 11:03",
+		"detail:" : "Richo 8/14/2018 11:42",
 		"initializeWithServer:" : "Richo 8/6/2018 13:28",
 		"protocol" : "Richo 8/6/2018 13:28",
 		"sendJSONResponse:for:" : "Richo 8/6/2018 13:57" } }

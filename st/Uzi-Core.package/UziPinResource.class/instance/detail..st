@@ -4,7 +4,6 @@ detail: req
 	start := (req fields at: 'start' ifAbsent: 0) asInteger.
 	pins := ((req fields at: 'pins' ifAbsent: '') subStrings: ',')
 		collect: [:each | each asInteger].
-	self activateReportingFor: pins.
 	^ (super detail: req)
 		at: #elements 
 		put: (pins collect: [:pinNumber | Dictionary new 

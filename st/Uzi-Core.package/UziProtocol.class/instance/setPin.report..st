@@ -7,8 +7,7 @@ setPin: pinNumber report: report
 		report ifTrue: [1] ifFalse: [0]
 	}.
 	report 
-		ifTrue: [pinsReporting add: pinNumber.
-			msg := msg, self startReporting]
+		ifTrue: [pinsReporting add: pinNumber]
 		ifFalse: [pinsReporting remove: pinNumber ifAbsent: ["Do nothing"]].
 	self triggerEvent: UziProtocolEvents reportingChange.
 	^ msg
