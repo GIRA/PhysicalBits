@@ -11,7 +11,7 @@ detail: req
 			at: #number put: pinNumber;
 			at: #history 
 			put: (((self protocol getPinValues: pinNumber) copy
-				reject: [:kvp | kvp key <= start])				
+				reject: [:kvp | kvp key <= start])
 				collect: [:kvp | Dictionary new
 					at: #timestamp put: kvp key;
 					at: #value put: kvp value;

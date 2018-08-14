@@ -1,3 +1,4 @@
 stepping
 step
-	self processInput
+	self cleanUpPins;
+		processInput

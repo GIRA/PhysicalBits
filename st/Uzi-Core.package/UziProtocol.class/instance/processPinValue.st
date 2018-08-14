@@ -14,4 +14,4 @@ processPinValue
 		pin := val1 >> 2.
 		value := val2 bitOr: ((val1 bitAnd: 2r11) << 8).
 		value := value / 1023.0.
-		(self getPinValues: pin) add: timestamp -> value]
+		(self privateGetPinValues: pin) add: timestamp -> value]
