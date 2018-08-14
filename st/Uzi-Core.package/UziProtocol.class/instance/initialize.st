@@ -1,10 +1,7 @@
 initializing
 initialize
 	super initialize.
+	tickingScripts := Set new.
 	globals := Dictionary new.
-	pinLastAccess := Dictionary new.
-	pinValues := Dictionary new.
-	pinModes := Dictionary new.
-	pinsReporting := Set new.
 	globalsReporting := Set new.
-	tickingScripts := Set new
+	pins := Dictionary new.

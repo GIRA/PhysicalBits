@@ -1,0 +1,15 @@
+{
+	"class" : {
+		"name:number:" : "Richo 8/14/2018 15:25",
+		"names" : "Richo 8/14/2018 15:49",
+		"number:" : "Richo 8/14/2018 15:45" },
+	"instance" : {
+		"addValue:" : "Richo 8/14/2018 15:58",
+		"history" : "Richo 8/14/2018 15:57",
+		"initialize" : "Richo 8/14/2018 15:36",
+		"initializeWithName:number:" : "Richo 8/14/2018 15:25",
+		"name" : "Richo 8/14/2018 15:35",
+		"number" : "Richo 8/14/2018 15:35",
+		"privateHistory" : "Richo 8/14/2018 15:57",
+		"shouldStopMonitoring:" : "Richo 8/14/2018 15:42",
+		"value" : "Richo 8/14/2018 15:49" } }

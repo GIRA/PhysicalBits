@@ -1,13 +1,16 @@
 {
 	"category" : "Uzi-Core-Protocol",
 	"classinstvars" : [
-		 ],
+		"names" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		 ],
-	"name" : "UziProtocolEvents",
+		"name",
+		"number",
+		"history",
+		"lastAccess" ],
+	"name" : "UziPin",
 	"pools" : [
 		 ],
 	"super" : "Object",

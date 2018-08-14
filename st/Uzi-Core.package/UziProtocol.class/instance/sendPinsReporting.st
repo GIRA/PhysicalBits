@@ -4,5 +4,5 @@ sendPinsReporting
 	Sends to the arduino the reporting pins. This is called when connecting to
 	an arduino.
 	"
-	pinsReporting do: [:pinNumber |
-		self setPin: pinNumber report: true].
+	self pins do: [:pin |
+		self setPin: pin number report: true].

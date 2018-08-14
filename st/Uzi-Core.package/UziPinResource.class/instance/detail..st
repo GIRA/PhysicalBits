@@ -9,7 +9,7 @@ detail: req
 		put: (pins collect: [:pinNumber | Dictionary new 
 			at: #number put: pinNumber;
 			at: #history 
-			put: (((self protocol getPinValues: pinNumber) copy
+			put: (((self protocol getPin: pinNumber) history
 				reject: [:kvp | kvp key <= start])
 				collect: [:kvp | Dictionary new
 					at: #timestamp put: kvp key;

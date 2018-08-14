@@ -1,5 +1,5 @@
 {
-	"category" : "Uzi-Core",
+	"category" : "Uzi-Core-Protocol",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
@@ -10,16 +10,13 @@
 		"process",
 		"portName",
 		"keepAlive",
-		"pinValues",
-		"pinModes",
-		"pinsReporting",
 		"currentProgram",
 		"globals",
 		"globalsReporting",
 		"tickingScripts",
 		"freeArduinoRAM",
 		"freeUziRAM",
-		"pinLastAccess" ],
+		"pins" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],

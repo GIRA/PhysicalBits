@@ -1,11 +1,8 @@
 stepping
 cleanUpPins
-	| now toRemove |
+	| now |
 	now := Time millisecondClockValue.
-	toRemove := Set new.
-	pinLastAccess keysAndValuesDo: [:pin :lastAccess |
-		now - lastAccess > 1000 ifTrue: [toRemove add: pin]].
-	toRemove do: [:pin |
-		self setPin: pin report: false.
-		pinValues removeKey: pin ifAbsent: ["Do nothing"].
-		pinLastAccess removeKey: pin ifAbsent: ["Do nothing"]]
+	(self pins select: [:pin | pin shouldStopMonitoring: now])
+		do: [:pin |
+			self setPin: pin number report: false.
+			self pins removeKey: pin number ifAbsent: ["Do nothing"]]
