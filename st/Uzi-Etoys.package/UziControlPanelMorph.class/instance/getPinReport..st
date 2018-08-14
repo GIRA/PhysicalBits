@@ -1,3 +1,3 @@
 accessing
 getPinReport: pin
-	^ protocol getPinReport: pin
+	^ self pinsReporting includes: pin

@@ -7,10 +7,10 @@ initialize
 		UziProtocolEvents connect.
 		UziProtocolEvents disconnect.
 		UziProtocolEvents runProgram.
-		UziProtocolEvents reportingChange.
 	} 
 	do: [:evt | protocol when: evt send: #update to: self].
 	
+	pinsReporting := Set new.
 	pinTexts := Dictionary new.
 	globalTexts := Dictionary new.
 	scriptTexts := Dictionary new.
