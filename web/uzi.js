@@ -14,6 +14,9 @@ var Uzi = (function () {
 		currentProgram: undefined,
 		pinsReporting: new Set(),
 		pins: [],
+		availableGlobals: [],
+		globalsReporting: new Set(),
+		globals: [],
 		
 		onError: function (callback) {
 			eventList.error.push(callback);
@@ -31,16 +34,23 @@ var Uzi = (function () {
 		install: install,
 		run: run,
 		
-		activatePinReport: function (pin) { 
-			Uzi.pinsReporting.add(pin); 
+		activatePinReport: function (pinNumber) {
+			Uzi.pinsReporting.add(pinNumber);
 		},
-		deactivatePinReport: function (pin) { 
-			Uzi.pinsReporting.delete(pin); 			
+		deactivatePinReport: function (pinNumber) {
+			Uzi.pinsReporting.delete(pinNumber);
+		},
+		activateGlobalReport: function (globalNumber) {
+			Uzi.globalsReporting.add(globalNumber);
+		},
+		deactivateGlobalReport: function (globalNumber) {
+			Uzi.globalsReporting.delete(globalNumber);
 		},
 				
 		start: function () {
 			updateLoop(true);
-			startMonitor();
+			startPinMonitor();
+			startGlobalMonitor();
 		}
 	};
 	
@@ -170,11 +180,26 @@ var Uzi = (function () {
 			error: errorHandler
 		}, 2);
 	}
+
+	function getGlobals(start, globals, callback) {
+		ajax.request({ 
+			type: 'GET', 
+			url: Uzi.baseUrl + "/uzi/globals",
+			data: {
+				id: id,
+				start: start,
+				globals: Array.from(globals).join(",")
+			},
+			success: callback,
+			error: errorHandler
+		}, 2);
+	}
 	
 	function update(uzi) {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
-				
+		Uzi.availableGlobals = uzi.globals.available;
+		
 		if (!Uzi.isConnected) {
 			Uzi.currentProgram = undefined;
 		}		
@@ -189,7 +214,7 @@ var Uzi = (function () {
 		});
 	}
 	
-	function startMonitor() {
+	function startPinMonitor() {
 		var waiting = false;
 		var last = 0;
 		setInterval(function () {
@@ -199,6 +224,27 @@ var Uzi = (function () {
 				Uzi.pins = pins.elements;
 				if (pins.elements.length > 0) {
 					last = Math.max.apply(Math, pins.elements.map(function (each) {
+						return each.history.length > 0 ?
+							each.history[each.history.length-1].timestamp :
+							0;
+					}));
+				}
+				triggerEvent(eventList.monitorUpdate);
+				waiting = false;
+			});
+		}, 200);
+	}
+	
+	function startGlobalMonitor() {
+		var waiting = false;
+		var last = 0;
+		setInterval(function () {
+			if (waiting || Uzi.globalsReporting.size === 0) return;
+			waiting = true;
+			getGlobals(last, Uzi.globalsReporting, function (globals) {
+				Uzi.globals = globals.reporting;
+				if (globals.reporting.length > 0) {
+					last = Math.max.apply(Math, globals.reporting.map(function (each) {
 						return each.history.length > 0 ?
 							each.history[each.history.length-1].timestamp :
 							0;
