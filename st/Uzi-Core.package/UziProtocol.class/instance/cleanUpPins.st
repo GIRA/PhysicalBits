@@ -7,5 +7,5 @@ cleanUpPins
 		now - lastAccess > 1000 ifTrue: [toRemove add: pin]].
 	toRemove do: [:pin |
 		self setPin: pin report: false.
-		pinValues removeKey: pin.
-		pinLastAccess removeKey: pin]
+		pinValues removeKey: pin ifAbsent: ["Do nothing"].
+		pinLastAccess removeKey: pin ifAbsent: ["Do nothing"]]

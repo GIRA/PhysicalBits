@@ -25,7 +25,7 @@
 		"msgOutStartReporting" : "Richo 7/6/2018 20:50",
 		"msgOutStopReporting" : "Richo 7/6/2018 20:50" },
 	"instance" : {
-		"cleanUpPins" : "Richo 8/14/2018 11:45",
+		"cleanUpPins" : "Richo 8/14/2018 13:41",
 		"compileJSON:" : "Richo 7/31/2018 17:44",
 		"compileString:" : "Richo 7/30/2018 12:02",
 		"connectOnPort:" : "Richo 8/24/2016 18:14",
@@ -41,7 +41,7 @@
 		"getGlobalReport:" : "Richo 10/9/2016 18:20",
 		"getPinMode:" : "Richo 10/29/2014 16:55",
 		"getPinReport:" : "Richo 10/9/2016 18:17",
-		"getPinValue:" : "Richo 8/6/2018 11:48",
+		"getPinValue:" : "Richo 8/14/2018 13:41",
 		"getPinValues:" : "Richo 8/14/2018 11:43",
 		"initialize" : "Richo 8/14/2018 10:40",
 		"install:" : "Richo 7/30/2018 12:04",
