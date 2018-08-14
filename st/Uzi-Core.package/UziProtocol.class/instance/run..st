@@ -1,6 +1,6 @@
 installing
 run: anUziProgram
 	currentProgram := anUziProgram.
-	globals := Dictionary new.
+	globals := globals select: [:g | currentProgram includesGlobalNamed: g name].
 	[^ self send: { self class msgOutSetProgram }, (Uzi encode: anUziProgram)]
 		ensure: [self triggerEvent: UziProtocolEvents runProgram]
