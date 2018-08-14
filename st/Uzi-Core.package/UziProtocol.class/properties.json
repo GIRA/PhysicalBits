@@ -12,7 +12,6 @@
 		"keepAlive",
 		"currentProgram",
 		"globals",
-		"globalsReporting",
 		"tickingScripts",
 		"freeArduinoRAM",
 		"freeUziRAM",

@@ -1,0 +1,17 @@
+{
+	"category" : "Uzi-Core-Protocol",
+	"classinstvars" : [
+		"names" ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"name",
+		"number",
+		"history",
+		"lastAccess" ],
+	"name" : "UziGlobal",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
