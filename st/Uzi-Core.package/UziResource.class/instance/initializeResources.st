@@ -12,5 +12,5 @@ initializeResources
 			at: #run do: [:req | self processRun: req]
 			ifTrue: [self protocol isConnected];
 			yourself);
-		at: #pins
-		put: (UziPinResource server: server)
+		at: #pins put: (UziPinResource server: server);
+		at: #globals put: (UziGlobalResource server: server)

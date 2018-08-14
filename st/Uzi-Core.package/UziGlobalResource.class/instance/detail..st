@@ -1,19 +1,19 @@
 accessing
 detail: req
-	| start pins |
+	| start globals |
 	start := (req fields at: 'start' ifAbsent: 0) asInteger.
-	pins := ((req fields at: 'pins' ifAbsent: '') subStrings: ',')
+	globals := ((req fields at: 'globals' ifAbsent: '') subStrings: ',')
 		collect: [:each | each asInteger].
 	^ (super detail: req)
-		at: #elements 
-		put: (pins 
-			collect: [:pinNumber || pin |
-				pin := self protocol getPin: pinNumber.
+		at: #reporting
+		put: (globals
+			collect: [:globalNumber || global |
+				global := self protocol getGlobal: globalNumber.
 				Dictionary new 
-					at: #name put: pin name;
-					at: #number put: pinNumber;
+					at: #name put: global name;
+					at: #number put: globalNumber;
 					at: #history 
-					put: ((pin history
+					put: ((global history
 						reject: [:kvp | kvp key <= start])
 						collect: [:kvp | Dictionary new
 							at: #timestamp put: kvp key;
