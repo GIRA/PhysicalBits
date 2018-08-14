@@ -197,13 +197,13 @@ var Uzi = (function () {
 			waiting = true;
 			getPins(last, Uzi.pinsReporting, function (pins) {
 				Uzi.pins = pins.elements;
-				last = Math.max.apply(Math, pins.elements
-					.filter(function (each) {
-						return each.history.length > 0;
-					})
-					.map(function (each) {					
-						return each.history[each.history.length-1].timestamp;
+				if (pins.elements.length > 0) {
+					last = Math.max.apply(Math, pins.elements.map(function (each) {
+						return each.history.length > 0 ?
+							each.history[each.history.length-1].timestamp :
+							0;
 					}));
+				}
 				triggerEvent(eventList.monitorUpdate);
 				waiting = false;
 			});
