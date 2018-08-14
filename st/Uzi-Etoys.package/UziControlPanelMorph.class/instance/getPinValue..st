@@ -1,3 +1,3 @@
 accessing
 getPinValue: pinNumber
-	^ protocol getPinValue: pinNumber
+	^ (protocol getPin: pinNumber) value
