@@ -45,7 +45,7 @@ var UziMonitor = (function () {
 							//pointBorderWidth: 1,
 							pointRadius: 0,
 							data: oldData.concat(newData).filter(function (each) {
-								return each.x >= min;
+								return each.x >= min && each.x <= max;
 							})
 						}
 					})
@@ -82,12 +82,31 @@ var UziMonitor = (function () {
 
 	function addMonitor() {		
 		choosePins(function (selection) {
-			console.log(selection);
-			for (var i = 0; i < selection.length; i++) {
-				Uzi.activatePinReport(selection[i]);
-			}
 			buildLineChartFor(selection);
+			updatePinsReporting();
 		});	
+	}
+	
+	function removeMonitor(monitor) {		
+		var index = monitors.indexOf(monitor);
+		monitors.splice(index, 1);
+		monitor.container.remove();
+		updatePinsReporting();
+	}
+	
+	function updatePinsReporting() {
+		var pins = new Set();
+		monitors.forEach(function (monitor) {
+			monitor.pins.forEach(function (pin) {
+				pins.add(pin);
+			}); 
+		});
+		pins.forEach(function (pin) { Uzi.activatePinReport(pin); });
+		var toRemove = [];
+		Uzi.pinsReporting.forEach(function (pin) {
+			if (!pins.has(pin)) { toRemove.push(pin); }
+		});
+		toRemove.forEach(function (pin) { Uzi.deactivatePinReport(pin); });
 	}
 	
 	function buildLineChartFor(pins) {
@@ -103,9 +122,7 @@ var UziMonitor = (function () {
 				.attr("aria-hidden", "true")
 				.html("&times;"))
 			.on("click", function () {
-				var index = monitors.indexOf(monitor);
-				monitors.splice(index, 1);
-				monitor.container.remove();
+				removeMonitor(monitor)
 			});
 		var canvas = $("<canvas>");
 		container.draggable({
