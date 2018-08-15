@@ -42,7 +42,7 @@ var UziMonitor = (function () {
 					}
 					return {
 						id: pin.number,
-						label: pin.name,
+						label: "Pin " + pin.name,
 						fill: false,
 						borderColor: color,
 						backgroundColor: color,
@@ -80,7 +80,7 @@ var UziMonitor = (function () {
 					}
 					return {
 						id: global.name,
-						label: global.name,
+						label: "Global " + global.name,
 						fill: false,
 						borderColor: color,
 						backgroundColor: color,
