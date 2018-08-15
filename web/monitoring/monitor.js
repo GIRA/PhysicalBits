@@ -9,46 +9,89 @@ var UziMonitor = (function () {
 
 		Uzi.onMonitorUpdate(function () {
 			monitors.forEach(function (monitor) {
-				var colors = palette('rainbow', Uzi.pins.length);
+				var colors = palette('rainbow', Uzi.pins.length + Uzi.globals.length);
 				var min = 0;
 				var max = 0;				
 				var pins = Uzi.pins.filter(function (pin) {
 					return monitor.pins.indexOf(pin.number) !== -1;
 				});
-				var data = { 
-					datasets: pins.map(function (pin) {
-						var i = Uzi.pins.findIndex(function (each) { 
-							return each.number == pin.number; 
-						});
-						var color = "#" + colors[i];
-						var dataset = monitor.chart.data.datasets.find(function (each) {
-							return each.id === pin.number;
-						});
-						var oldData = dataset === undefined ? [] : dataset.data;
-						var newData = pin.history.map(function (each) {
-							timestamp = each.timestamp;
-							if (timestamp > max) {
-								max = timestamp;
-								min = max - 10000;
-							}
-							return {
-								x: timestamp,
-								y: each.value
-							};
-						});
-						return {
-							id: pin.number,
-							label: "Pin " + pin.number,
-							fill: false,
-							borderColor: color,
-							backgroundColor: color,
-							//pointBorderWidth: 1,
-							pointRadius: 0,
-							data: oldData.concat(newData).filter(function (each) {
-								return each.x >= min && each.x <= max;
-							})
+				var pins_ds = pins.map(function (pin) {
+					var i = Uzi.pins.findIndex(function (each) { 
+						return each.number == pin.number; 
+					});
+					var color = "#" + colors[i];
+					var dataset = monitor.chart.data.datasets.find(function (each) {
+						return each.id === pin.number;
+					});
+					var oldData = dataset === undefined ? [] : dataset.data;
+					var newData = pin.history.map(function (each) {
+						timestamp = each.timestamp;
+						if (timestamp > max) {
+							max = timestamp;
+							min = max - 10000;
 						}
-					})
+						return {
+							x: timestamp,
+							y: each.value
+						};
+					});
+					if (newData.length > 0) {
+						oldData = oldData.filter(function (each) {
+							return each.x < newData[0].x;
+						});
+					}
+					return {
+						id: pin.number,
+						label: pin.name,
+						fill: false,
+						borderColor: color,
+						backgroundColor: color,
+						pointRadius: 0,
+						data: oldData.concat(newData).filter(function (each) {
+							return each.x >= min && each.x <= max;
+						})
+					}
+				});
+				var globals = Uzi.globals.filter(function (global) {
+					return monitor.globals.indexOf(global.number) !== -1;
+				});
+				var globals_ds = globals.map(function (global) {
+					var i = Uzi.globals.indexOf(global) + Uzi.pins.length;
+					var color = "#" + colors[i];
+					var dataset = monitor.chart.data.datasets.find(function (each) {
+						return each.id === global.name;
+					});
+					var oldData = dataset === undefined ? [] : dataset.data;
+					var newData = global.history.map(function (each) {
+						timestamp = each.timestamp;
+						if (timestamp > max) {
+							max = timestamp;
+							min = max - 10000;
+						}
+						return {
+							x: timestamp,
+							y: each.value
+						};
+					});
+					if (newData.length > 0) {
+						oldData = oldData.filter(function (each) {
+							return each.x < newData[0].x;
+						});
+					}
+					return {
+						id: global.name,
+						label: global.name,
+						fill: false,
+						borderColor: color,
+						backgroundColor: color,
+						pointRadius: 0,
+						data: oldData.concat(newData).filter(function (each) {
+							return each.x >= min && each.x <= max;
+						})
+					}
+				});
+				var data = { 
+					datasets: pins_ds.concat(globals_ds)
 				};
 				var options = {
 					maintainAspectRatio: false,
@@ -84,6 +127,7 @@ var UziMonitor = (function () {
 		choosePins(function (selection) {
 			buildLineChartFor(selection);
 			updatePinsReporting();
+			updateGlobalsReporting();
 		});	
 	}
 	
@@ -92,6 +136,7 @@ var UziMonitor = (function () {
 		monitors.splice(index, 1);
 		monitor.container.remove();
 		updatePinsReporting();
+		updateGlobalsReporting();
 	}
 	
 	function updatePinsReporting() {
@@ -109,7 +154,22 @@ var UziMonitor = (function () {
 		toRemove.forEach(function (pin) { Uzi.deactivatePinReport(pin); });
 	}
 	
-	function buildLineChartFor(pins) {
+	function updateGlobalsReporting() {
+		var globals = new Set();
+		monitors.forEach(function (monitor) {
+			monitor.globals.forEach(function (global) {
+				globals.add(global);
+			}); 
+		});
+		globals.forEach(function (global) { Uzi.activateGlobalReport(global); });
+		var toRemove = [];
+		Uzi.globalsReporting.forEach(function (global) {
+			if (!globals.has(global)) { toRemove.push(global); }
+		});
+		toRemove.forEach(function (global) { Uzi.deactivateGlobalReport(global); });
+	}
+	
+	function buildLineChartFor(selection) {
 		var editor = $("#editor");
 		var container = $("<div>").addClass("monitor");
 		var closeButton = $("<button>")
@@ -146,7 +206,8 @@ var UziMonitor = (function () {
 		var chart = createChartOn(canvas.get(0));
 		var monitor = {
 			container: container,
-			pins: pins,
+			pins: selection.digitalPins.concat(selection.analogPins),
+			globals: selection.globals,
 			chart: chart,
 		};
 		monitors.push(monitor);
@@ -177,6 +238,9 @@ var UziMonitor = (function () {
 			{ text: "A4", value: 18 },
 			{ text: "A5", value: 19 },
 		];
+		var globals = Uzi.availableGlobals.map(function (g) {
+			return { text: g.name, value: g.number };
+		});
 		var modal = $("<div>")
 			.addClass("modal")
 			.addClass("fade")
@@ -206,36 +270,48 @@ var UziMonitor = (function () {
 						.addClass("modal-body")
 						.append($("<h5>").text("Digital pins:"))
 						.append($("<p>")
-							.append(digitalPins1.map(function (pin) {
+							.append(digitalPins1.map(function (each) {
 								return $("<label>")
 									.addClass("checkbox-inline")
 									.append($("<input>")
 										.attr("type", "checkbox")
 										.attr("name", "digitalPins")
-										.attr("value", pin.value))
-									.append($("<span>").text(pin.text));
+										.attr("value", each.value))
+									.append($("<span>").text(each.text));
 							})))
 						.append($("<p>")
-							.append(digitalPins2.map(function (pin) {
+							.append(digitalPins2.map(function (each) {
 								return $("<label>")
 									.addClass("checkbox-inline")
 									.append($("<input>")
 										.attr("type", "checkbox")
 										.attr("name", "digitalPins")
-										.attr("value", pin.value))
-									.append($("<span>").text(pin.text));
+										.attr("value", each.value))
+									.append($("<span>").text(each.text));
 							})))
 						.append("<hr>")
 						.append($("<h5>").text("Analog pins:"))
 						.append($("<p>")
-							.append(analogPins.map(function (pin) {
+							.append(analogPins.map(function (each) {
 								return $("<label>")
 									.addClass("checkbox-inline")
 									.append($("<input>")
 										.attr("type", "checkbox")
 										.attr("name", "analogPins")
-										.attr("value", pin.value))
-									.append($("<span>").text(pin.text));
+										.attr("value", each.value))
+									.append($("<span>").text(each.text));
+							})))
+						.append("<hr>")
+						.append($("<h5>").text("Global variables:"))
+						.append($("<p>")
+							.append(globals.map(function (each) {
+								return $("<label>")
+									.addClass("checkbox-inline")
+									.append($("<input>")
+										.attr("type", "checkbox")
+										.attr("name", "globals")
+										.attr("value", each.value))
+									.append($("<span>").text(each.text));
 							}))))
 					.append($("<div>")
 						.addClass("modal-footer")
@@ -251,9 +327,25 @@ var UziMonitor = (function () {
 							.attr("type", "button")
 							.text("Accept")
 							.on("click", function () {
-								var selected = [];
-								modal.find("input:checked").each(function () { 
-									selected.push(parseInt(this.value));
+								var selected = {
+									digitalPins: [],
+									analogPins: [],
+									globals: []
+								};
+								modal.find("input[name=digitalPins]").each(function () { 
+									if (this.checked) {
+										selected.digitalPins.push(parseInt(this.value));
+									}
+								});
+								modal.find("input[name=analogPins]").each(function () { 
+									if (this.checked) {
+										selected.analogPins.push(parseInt(this.value));
+									}
+								});
+								modal.find("input[name=globals]").each(function () { 
+									if (this.checked) {
+										selected.globals.push(parseInt(this.value));
+									}
 								});
 								callback(selected);
 								modal.modal('hide');
@@ -278,8 +370,7 @@ var UziMonitor = (function () {
 
 	return {
 		init: init,
-		monitors: monitors,
-		choosePins: choosePins
+		monitors: monitors
 	};
 })();
 
