@@ -133,6 +133,7 @@ void Program::setGlobal(int16 index, float value)
 
 bool Program::getReport(uint8 index)
 {
+	if (index < 0 || index >= globalCount) return 0;
 	uint8 actualIndex = (int)floor((double)index / 8);
 	uint8 byteValue = globalsReport[actualIndex];
 	return byteValue & (1 << (index % 8));
@@ -140,12 +141,12 @@ bool Program::getReport(uint8 index)
 
 void Program::setReport(uint8 index, bool report)
 {
+	if (index < 0 || index >= globalCount) return;
 	uint8 actualIndex = (int)floor((double)index / 8);
 	uint8 mask = 1 << (index % 8);
 	if (report) {
 		globalsReport[actualIndex] |= mask;
-	}
-	else {
+	} else {
 		globalsReport[actualIndex] &= ~(mask);
 	}
 }
