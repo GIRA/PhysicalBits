@@ -151,24 +151,118 @@ var UziMonitor = (function () {
 		};
 		monitors.push(monitor);
 	}
-
+	
 	function choosePins(callback) {
-		$("#monitorSelectionModal #acceptButton").on("click", function () {
-			var selected = [];
-			$("#monitorSelectionModal input:checked").each(function () { 
-				selected.push(parseInt(this.value));
-			});
-			callback(selected);
-			$("#monitorSelectionModal").modal('hide');
+		var digitalPins1 = [
+			{ text: "D2", value: 2 },
+			{ text: "D3", value: 3 },
+			{ text: "D4", value: 4 },
+			{ text: "D5", value: 5 },
+			{ text: "D6", value: 6 },
+			{ text: "D7", value: 7 },
+		];
+		var digitalPins2 = [
+			{ text: "D8", value: 8 },
+			{ text: "D9", value: 9 },
+			{ text: "D10", value: 10 },
+			{ text: "D11", value: 11 },
+			{ text: "D12", value: 12 },
+			{ text: "D13", value: 13 },
+		];
+		var analogPins = [
+			{ text: "A0", value: 14 },
+			{ text: "A1", value: 15 },
+			{ text: "A2", value: 16 },
+			{ text: "A3", value: 17 },
+			{ text: "A4", value: 18 },
+			{ text: "A5", value: 19 },
+		];
+		var modal = $("<div>")
+			.addClass("modal")
+			.addClass("fade")
+			.attr("tabindex", "-1")
+			.attr("role", "dialog")
+			.attr("aria-labelledby", "monitorSelection")
+			.append($("<div>")
+				.addClass("modal-dialog")
+				.attr("role", "document")
+				.append($("<div>")
+					.addClass("modal-content")
+					.append($("<div>")
+						.addClass("modal-header")
+						.append($("<button>")
+							.addClass("close")
+							.attr("type", "button")
+							.attr("data-dismiss", "modal")
+							.attr("aria-label", "Close")
+							.append($("<span>")
+								.attr("aria-hidden", "true")
+								.html("&times;")))
+						.append($("<h4>")
+							.addClass("modal-title")
+							.attr("id", "monitorSelection")
+							.text("Choose pins to monitor")))
+					.append($("<div>")
+						.addClass("modal-body")
+						.append($("<h5>").text("Digital pins:"))
+						.append($("<p>")
+							.append(digitalPins1.map(function (pin) {
+								return $("<label>")
+									.addClass("checkbox-inline")
+									.append($("<input>")
+										.attr("type", "checkbox")
+										.attr("name", "digitalPins")
+										.attr("value", pin.value))
+									.append($("<span>").text(pin.text));
+							})))
+						.append($("<p>")
+							.append(digitalPins2.map(function (pin) {
+								return $("<label>")
+									.addClass("checkbox-inline")
+									.append($("<input>")
+										.attr("type", "checkbox")
+										.attr("name", "digitalPins")
+										.attr("value", pin.value))
+									.append($("<span>").text(pin.text));
+							})))
+						.append("<hr>")
+						.append($("<h5>").text("Analog pins:"))
+						.append($("<p>")
+							.append(analogPins.map(function (pin) {
+								return $("<label>")
+									.addClass("checkbox-inline")
+									.append($("<input>")
+										.attr("type", "checkbox")
+										.attr("name", "analogPins")
+										.attr("value", pin.value))
+									.append($("<span>").text(pin.text));
+							}))))
+					.append($("<div>")
+						.addClass("modal-footer")
+						.append($("<button>")
+							.addClass("btn")
+							.addClass("btn-default")
+							.attr("type", "button")
+							.attr("data-dismiss", "modal")
+							.text("Cancel"))
+						.append($("<button>")
+							.addClass("btn")
+							.addClass("btn-primary")
+							.attr("type", "button")
+							.text("Accept")
+							.on("click", function () {
+								var selected = [];
+								modal.find("input:checked").each(function () { 
+									selected.push(parseInt(this.value));
+								});
+								callback(selected);
+								modal.modal('hide');
+							})))));		
+		modal.on("hidden.bs.modal", function () {
+			modal.remove();
 		});
-		$("#monitorSelectionModal").on("hide.bs.modal", function () {
-			$("#monitorSelectionModal #acceptButton").off("click");
-			$("#monitorSelectionModal").off("hide.bs.modal");
-		});
-		$("#monitorSelectionModal input:checkbox").each(function () { 
-			this.checked = false; 
-		});
-		$("#monitorSelectionModal").modal({});
+		$(document.body).append(modal);
+		modal.modal({});
 	}
 	
 	function createChartOn(canvas) {		
@@ -184,7 +278,8 @@ var UziMonitor = (function () {
 
 	return {
 		init: init,
-		monitors: monitors
+		monitors: monitors,
+		choosePins: choosePins
 	};
 })();
 
