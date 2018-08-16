@@ -2,6 +2,7 @@
 	"class" : {
 		"alias:path:" : "Richo 8/11/2017 21:13" },
 	"instance" : {
+		"accept:" : "Richo 8/16/2018 10:21",
 		"alias" : "Richo 8/11/2017 21:14",
 		"children" : "Richo 5/2/2018 22:18",
 		"initializeWithAlias:path:" : "Richo 8/11/2017 21:14",

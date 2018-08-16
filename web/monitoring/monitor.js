@@ -25,7 +25,7 @@ var UziMonitor = (function () {
 					});
 					var oldData = dataset === undefined ? [] : dataset.data;
 					var newData = pin.history.map(function (each) {
-						timestamp = each.timestamp;
+						var timestamp = each.timestamp;
 						if (timestamp > max) {
 							max = timestamp;
 							min = max - 10000;
@@ -63,7 +63,7 @@ var UziMonitor = (function () {
 					});
 					var oldData = dataset === undefined ? [] : dataset.data;
 					var newData = global.history.map(function (each) {
-						timestamp = each.timestamp;
+						var timestamp = each.timestamp;
 						if (timestamp > max) {
 							max = timestamp;
 							min = max - 10000;
