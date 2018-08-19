@@ -1,3 +1,3 @@
 private
-visit: anUziCompiledArtifact
-	^ anUziCompiledArtifact accept: self
+visit: anUziParseNode
+	^ anUziParseNode accept: self
