@@ -4,7 +4,7 @@ var CodeGenerator = (function () {
 	var dispatchTable =  {
 		task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			var statements = generateCodeForStatements(block, ctx);
 			return {
 				__class__: "UziTaskNode",
@@ -35,7 +35,7 @@ var CodeGenerator = (function () {
 		},
 		for: function (block, ctx) {			
 			var id = getId(block);
-			var variableName = getChildNode(block, "variable").innerText;
+			var variableName = asIdentifier(getChildNode(block, "variable").innerText);
 			var start = generateCodeForValue(block, ctx, "start");
 			var stop = generateCodeForValue(block, ctx, "stop");
 			var step = generateCodeForValue(block, ctx, "step");
@@ -83,7 +83,7 @@ var CodeGenerator = (function () {
 		},
 		variables_get: function (block, ctx) {
 			var id = getId(block);
-			var variableName = getChildNode(block, "VAR").innerText;
+			var variableName = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(variableName);
 			return {
 				__class__: "UziVariableNode",
@@ -112,7 +112,7 @@ var CodeGenerator = (function () {
 		},
 		start_task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
 				__class__: "UziScriptStartNode",
 				id: id,
@@ -125,7 +125,7 @@ var CodeGenerator = (function () {
 		},
 		stop_task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
 				__class__: "UziScriptStopNode",
 				id: id,
@@ -138,7 +138,7 @@ var CodeGenerator = (function () {
 		},
 		resume_task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
 				__class__: "UziScriptResumeNode",
 				id: id,
@@ -151,7 +151,7 @@ var CodeGenerator = (function () {
 		},
 		pause_task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
 				__class__: "UziScriptPauseNode",
 				id: id,
@@ -164,7 +164,7 @@ var CodeGenerator = (function () {
 		},
 		run_task: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
 				__class__: "UziScriptCallNode",
 				id: id,
@@ -224,7 +224,7 @@ var CodeGenerator = (function () {
 			var right = generateCodeForValue(block, ctx, "B");
 			var selector, primName;
 			if (type === "EQ") {
-				selector = "=";
+				selector = "==";
 				primName = "equals";
 			} else if (type === "NEQ") {
 				selector = "!=";
@@ -543,7 +543,7 @@ var CodeGenerator = (function () {
 		},
 		timer: function (block, ctx) {
 			var id = getId(block);
-			var taskName = getChildNode(block, "taskName").innerText;
+			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			var runningTimes = parseFloat(getChildNode(block, "runningTimes").innerText);
 			var tickingScale = getChildNode(block, "tickingScale").innerText;
 			var initialState = getChildNode(block, "initialState").innerText;
@@ -673,7 +673,7 @@ var CodeGenerator = (function () {
 		},
 		variables_set: function (block, ctx) {
 			var id = getId(block);
-			var name = getChildNode(block, "VAR").innerText;
+			var name = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var value = generateCodeForValue(block, ctx, "VALUE");
 			return {
@@ -689,7 +689,7 @@ var CodeGenerator = (function () {
 		},
 		math_change: function (block, ctx) {
 			var id = getId(block);
-			var name = getChildNode(block, "VAR").innerText;
+			var name = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var delta = generateCodeForValue(block, ctx, "DELTA");
 			var variable = {
@@ -747,13 +747,13 @@ var CodeGenerator = (function () {
 		},
 		procedures_defnoreturn: function (block, ctx) {
 			var id = getId(block);
-			var name = getChildNode(block, "NAME").innerText;
+			var name = asIdentifier(getChildNode(block, "NAME").innerText);
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
 			mutation.childNodes.forEach(function (each) {
-				args.push(each.getAttribute("name"));
+				args.push(asIdentifier(each.getAttribute("name")));
 			});			
 			var statements = generateCodeForStatements(block, ctx, "STACK");
 			return {
@@ -783,10 +783,10 @@ var CodeGenerator = (function () {
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
-			var scriptName = mutation.getAttribute("name");
+			var scriptName = asIdentifier(mutation.getAttribute("name"));
 			var argNames = [];
 			mutation.childNodes.forEach(function (each) {
-				argNames.push(each.getAttribute("name"));
+				argNames.push(asIdentifier(each.getAttribute("name")));
 			});
 			var args = [];
 			for (var i = 0; i < argNames.length; i++) {
@@ -814,10 +814,10 @@ var CodeGenerator = (function () {
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
-			var scriptName = mutation.getAttribute("name");
+			var scriptName = asIdentifier(mutation.getAttribute("name"));
 			var argNames = [];
 			mutation.childNodes.forEach(function (each) {
-				argNames.push(each.getAttribute("name"));
+				argNames.push(asIdentifier(each.getAttribute("name")));
 			});
 			var args = [];
 			for (var i = 0; i < argNames.length; i++) {
@@ -866,13 +866,13 @@ var CodeGenerator = (function () {
 		},
 		procedures_defreturn: function (block, ctx) {
 			var id = getId(block);
-			var name = getChildNode(block, "NAME").innerText;
+			var name = asIdentifier(getChildNode(block, "NAME").innerText);
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
 			mutation.childNodes.forEach(function (each) {
-				args.push(each.getAttribute("name"));
+				args.push(asIdentifier(each.getAttribute("name")));
 			});
 			var statements = generateCodeForStatements(block, ctx, "STACK");
 			// TODO(Richo): Decide what to do if the return block is not defined
@@ -914,6 +914,10 @@ var CodeGenerator = (function () {
 			};
 		}
 	};
+	
+	function asIdentifier(str) {
+		return str.replace(/ /g, '_');
+	}
 	
 	function generateCodeFor(block, ctx) {
 		if (isDisabled(block)) return undefined;
