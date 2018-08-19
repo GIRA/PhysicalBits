@@ -199,6 +199,7 @@ var Uzi = (function () {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
 		Uzi.availableGlobals = uzi.globals.available;
+		Uzi.program = uzi.program;
 		
 		if (!Uzi.isConnected) {
 			Uzi.currentProgram = undefined;

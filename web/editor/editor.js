@@ -24,6 +24,10 @@ Uzi.onConnectionUpdate(function () {
 		$("#install").removeAttr("disabled");
 		$("#run").removeAttr("disabled");
 		$("#more").removeAttr("disabled");
+		
+		if (editor.getValue() !== Uzi.program.src) {
+			editor.setValue(Uzi.program.src);
+		}
 	} else {
 		$("#install").attr("disabled", "disabled");
 		$("#run").attr("disabled", "disabled");
