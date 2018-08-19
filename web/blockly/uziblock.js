@@ -133,10 +133,10 @@ var UziBlock = (function () {
 			blocklyDiv.style.top = y + 'px';
 			blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
 			blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+			Blockly.svgResize(workspace);
 		}
 		window.addEventListener('resize', onresize, false);
 		onresize();
-		Blockly.svgResize(workspace);
 	}
 	
 	function getGeneratedCode(){
