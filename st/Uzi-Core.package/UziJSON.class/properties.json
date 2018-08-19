@@ -7,7 +7,7 @@
 	"commentStamp" : "",
 	"instvars" : [
 		 ],
-	"name" : "UziJSONParser",
+	"name" : "UziJSON",
 	"pools" : [
 		 ],
 	"super" : "Object",

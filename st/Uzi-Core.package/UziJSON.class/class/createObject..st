@@ -1,4 +1,4 @@
-as yet unclassified
+decode
 createObject: json
 	json isDictionary 
 		ifTrue: [^ self createFromDictionary: json].

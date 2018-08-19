@@ -1,3 +1,3 @@
-as yet unclassified
-parse: jsonString
+decode
+decode: jsonString
 	^ self createObject: (WebUtils jsonDecode: jsonString readStream)

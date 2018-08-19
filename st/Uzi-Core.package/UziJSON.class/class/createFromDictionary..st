@@ -1,4 +1,4 @@
-as yet unclassified
+decode
 createFromDictionary: dict
 	| class instance |
 	dict keys = #('___INF___')

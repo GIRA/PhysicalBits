@@ -1,3 +1,3 @@
 building
 parseJSON: jsonString
-	^ UziJSONParser parse: jsonString
+	^ UziJSON decode: jsonString
