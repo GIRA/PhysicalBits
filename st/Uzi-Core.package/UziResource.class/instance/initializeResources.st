@@ -1,6 +1,9 @@
 initialize-release
 initializeResources 
-	self at: #actions 
+	self at: #pins put: (UziPinResource server: server);
+		at: #globals put: (UziGlobalResource server: server);
+		at: #program put: (UziProgramResource server: server);
+		at: #actions 
 		put: (RESTActionMap new
 			at: #compile do: [:req | self processCompile: req];
 			at: #connect do: [:req | self processConnect: req]
@@ -11,6 +14,4 @@ initializeResources
 			ifTrue: [self protocol isConnected];
 			at: #run do: [:req | self processRun: req]
 			ifTrue: [self protocol isConnected];
-			yourself);
-		at: #pins put: (UziPinResource server: server);
-		at: #globals put: (UziGlobalResource server: server)
+			yourself)
