@@ -1,5 +1,5 @@
 visiting
 visitForNode: node
-	node step isNumber 
+	node step isNumberLiteral
 		ifTrue: [self handleForLoopWithConstantStep: node]
 		ifFalse: [self handleForLoop: node]

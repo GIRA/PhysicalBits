@@ -7,7 +7,7 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"value" ],
-	"name" : "UziNumberNode",
+	"name" : "UziNumberLiteralNode",
 	"pools" : [
 		 ],
 	"super" : "UziParseNode",

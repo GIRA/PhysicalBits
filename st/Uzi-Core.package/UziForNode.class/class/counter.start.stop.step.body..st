@@ -9,5 +9,5 @@ body: body
 		initializeWithCounter: counter
 		start: start
 		stop: stop
-		step: (step ifNil: [UziNumberNode value: 1])
+		step: (step ifNil: [UziNumberLiteralNode value: 1])
 		body: body

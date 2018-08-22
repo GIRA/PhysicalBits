@@ -8,5 +8,5 @@ test009ScriptStartReceiverIsAScriptRef
 				name: #foo 
 				arguments: #() 
 				body: (block 
-					statements: { start scripts: { UziNumberNode value: 5 }})
+					statements: { start scripts: { number value: 5 }})
 		}).

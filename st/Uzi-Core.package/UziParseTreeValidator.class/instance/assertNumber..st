@@ -1,5 +1,5 @@
 assertions
 assertNumber: node
-	^ self assert: node isNumber
+	^ self assert: node isNumberLiteral
 		description: 'Number expected'
 		node: node

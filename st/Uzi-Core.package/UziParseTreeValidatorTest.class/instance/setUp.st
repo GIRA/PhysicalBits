@@ -6,7 +6,7 @@ setUp
 	assignment := UziAssignmentNode.
 	var := UziVariableNode.
 	prim := UziPrimitiveCallNode.
-	number := UziNumberNode.
+	number := UziNumberLiteralNode.
 	block := UziBlockNode.
 	conditional := UziConditionalNode.
 	task := UziTaskNode.

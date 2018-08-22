@@ -15,7 +15,7 @@ visitVariableDeclarationNode: node
 	node value 
 		ifNil: [script registerLocal: varName]
 		ifNotNil: [:value |
-			value isNumber
+			value isNumberLiteral
 				ifTrue: [script registerLocal: varName value: value value]
 				ifFalse: [script registerLocal: varName.
 					self visit: value.

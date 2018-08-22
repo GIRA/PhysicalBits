@@ -5,7 +5,7 @@ createJSONObject: anObject
 			or: [anObject == true
 			or: [anObject == false]]])
 		ifTrue: [^ anObject].
-	(anObject isNumber and: [(anObject isKindOf: UziNumberNode) not])
+	anObject isNumber
 		ifTrue: [	"HACK(Richo): Special case because JSON encodes Infinity as null"
 			anObject isInfinite
 				ifTrue: [^ Dictionary new
