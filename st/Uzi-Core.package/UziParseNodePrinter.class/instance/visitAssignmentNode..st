@@ -1,5 +1,7 @@
 visiting
 visitAssignmentNode: node
-	self visit: node left;
-		write: ' = ';
-		visit: node right
+	self saveIntervalFor: node 
+		during: [self 
+			visit: node left;
+			write: ' = ';
+			visit: node right]

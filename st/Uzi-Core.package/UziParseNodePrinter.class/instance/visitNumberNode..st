@@ -1,3 +1,4 @@
 visiting
 visitNumberNode: node
-	self write: node value asString
+	self saveIntervalFor: node
+		during: [self write: node value asString]

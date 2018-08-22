@@ -1,3 +1,3 @@
 visiting
 visitYieldNode: node
-	self write: 'yield'
+	self saveIntervalFor: node during: [self write: 'yield']

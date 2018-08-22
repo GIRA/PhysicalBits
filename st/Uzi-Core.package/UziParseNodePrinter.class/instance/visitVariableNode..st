@@ -1,3 +1,3 @@
 visiting
 visitVariableNode: node
-	self write: node name
+	self saveIntervalFor: node during: [self write: node name]

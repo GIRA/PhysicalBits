@@ -1,12 +1,14 @@
 building
 parseJSON: jsonString
-	| ast src |
+	| ast src printer |
 	ast := UziJSON decode: jsonString.
-	src := UziParseNodePrinter new print: ast.
-	self flag: #Richo. "HACK! I should set all tokens, not just the top node.."
-	ast token: (PPToken 
-		on: src
-		start: 1
-		stop: src size
-		value: nil).
+	printer := UziParseNodePrinter new.
+	src := printer print: ast.
+	ast do: [:node | (printer intervalAt: node)
+		ifNotNil: [:interval || token |
+			token := PPToken on: src
+				start: interval first
+				stop: interval last
+				value: nil.
+			node token: token]].
 	^ ast

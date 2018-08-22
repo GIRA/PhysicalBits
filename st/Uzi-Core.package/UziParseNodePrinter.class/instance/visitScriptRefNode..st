@@ -1,3 +1,4 @@
 visiting
 visitScriptRefNode: node
-	self write: node scriptName
+	self saveIntervalFor: node 
+		during: [self write: node scriptName]

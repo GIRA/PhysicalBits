@@ -1,6 +1,8 @@
 visiting
 visitRepeatNode: node
-	self write: 'repeat ';
-		visit: node times;
-		write: ' ';
-		visit: node body
+	self saveIntervalFor: node
+		during: [
+			self write: 'repeat ';
+				visit: node times;
+				write: ' ';
+				visit: node body]

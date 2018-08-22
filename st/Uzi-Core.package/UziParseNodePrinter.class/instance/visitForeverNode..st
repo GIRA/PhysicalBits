@@ -1,3 +1,4 @@
 visiting
 visitForeverNode: node
-	self write: 'forever '; visit: node body
+	self saveIntervalFor: node
+		during: [self write: 'forever '; visit: node body]

@@ -7,7 +7,8 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"stream",
-		"indent" ],
+		"indent",
+		"intervals" ],
 	"name" : "UziParseNodePrinter",
 	"pools" : [
 		 ],
