@@ -19,7 +19,7 @@
 		"visitLogicalOrNode:" : "Richo 8/16/2018 10:25",
 		"visitLoopNode:" : "Richo 8/16/2018 10:49",
 		"visitNumberNode:" : "Richo 8/16/2018 09:00",
-		"visitPrimitiveCall:" : "Richo 8/16/2018 09:14",
+		"visitPrimitiveCall:" : "Richo 8/22/2018 11:39",
 		"visitProgramNode:" : "Richo 8/16/2018 10:12",
 		"visitRepeatNode:" : "Richo 8/16/2018 10:38",
 		"visitReturnNode:" : "Richo 8/16/2018 10:31",
@@ -44,6 +44,6 @@
 		"writeLine:format:" : "Richo 8/16/2018 08:31",
 		"writeProcedure:" : "Richo 8/16/2018 10:37",
 		"writeRegularCall:" : "Richo 8/16/2018 09:14",
-		"writeTask:" : "Richo 8/16/2018 10:27",
+		"writeTask:" : "Richo 8/22/2018 11:31",
 		"writeUntil:" : "Richo 8/16/2018 10:51",
 		"writeWhile:" : "Richo 8/16/2018 10:51" } }
