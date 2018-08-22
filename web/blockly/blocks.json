@@ -1,101 +1,4 @@
 [{
-  "type": "toggle",
-  "message0": "toggle pin %1",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    }
-  ],
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "toggle_variable",
   "message0": "toggle pin %1",
   "args0": [
@@ -143,117 +46,6 @@
   "helpUrl": ""
 },
 {
-  "type": "turn_pin",
-  "message0": "turn %1 pin %2",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinState",
-      "options": [
-        [
-          "on",
-          "on"
-        ],
-        [
-          "off",
-          "off"
-        ]
-      ]
-    },
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    }
-  ],
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "turn_pin_variable",
   "message0": "turn %1 pin %2",
   "args0": [
@@ -280,116 +72,6 @@
   "inputsInline": true,
   "previousStatement": null,
   "nextStatement": null,
-  "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "is_pin",
-  "message0": "is %1 pin %2",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinState",
-      "options": [
-        [
-          "on",
-          "on"
-        ],
-        [
-          "off",
-          "off"
-        ]
-      ]
-    },
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    }
-  ],
-  "output": "Boolean",
   "colour": 0,
   "tooltip": "",
   "helpUrl": ""
@@ -425,102 +107,6 @@
   "helpUrl": ""
 },
 {
-  "type": "read_pin",
-  "message0": "read pin %1",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    }
-  ],
-  "output": "Number",
-  "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
   "type": "read_pin_variable",
   "message0": "read pin %1",
   "args0": [
@@ -532,109 +118,6 @@
   ],
   "inputsInline": true,
   "output": "Number",
-  "colour": 0,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "write_pin",
-  "message0": "write pin %1 value %2",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    },
-    {
-      "type": "input_value",
-      "name": "pinValue",
-      "check": "Number"
-    }
-  ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
   "colour": 0,
   "tooltip": "",
   "helpUrl": ""
@@ -862,109 +345,6 @@
   "inputsInline": true,
   "output": "Number",
   "colour": 210,
-  "tooltip": "",
-  "helpUrl": ""
-},
-{
-  "type": "degrees_servo",
-  "message0": "move servo on pin %1 degrees %2",
-  "args0": [
-    {
-      "type": "field_dropdown",
-      "name": "pinNumber",
-      "options": [
-        [
-          "D0",
-          "0"
-        ],
-        [
-          "D1",
-          "1"
-        ],
-        [
-          "D2",
-          "2"
-        ],
-        [
-          "D3",
-          "3"
-        ],
-        [
-          "D4",
-          "4"
-        ],
-        [
-          "D5",
-          "5"
-        ],
-        [
-          "D6",
-          "6"
-        ],
-        [
-          "D7",
-          "7"
-        ],
-        [
-          "D8",
-          "8"
-        ],
-        [
-          "D9",
-          "9"
-        ],
-        [
-          "D10",
-          "10"
-        ],
-        [
-          "D11",
-          "11"
-        ],
-        [
-          "D12",
-          "12"
-        ],
-        [
-          "D13",
-          "13"
-        ],
-        [
-          "A0",
-          "14"
-        ],
-        [
-          "A1",
-          "15"
-        ],
-        [
-          "A2",
-          "16"
-        ],
-        [
-          "A3",
-          "17"
-        ],
-        [
-          "A4",
-          "18"
-        ],
-        [
-          "A5",
-          "19"
-        ]
-      ]
-    },
-    {
-      "type": "input_value",
-      "name": "servoValue",
-      "check": "Number"
-    }
-  ],
-  "inputsInline": true,
-  "previousStatement": null,
-  "nextStatement": null,
-  "colour": 0,
   "tooltip": "",
   "helpUrl": ""
 },
@@ -1233,83 +613,83 @@
       "options": [
         [
           "D0",
-          "0"
+          "D0"
         ],
         [
           "D1",
-          "1"
+          "D1"
         ],
         [
           "D2",
-          "2"
+          "D2"
         ],
         [
           "D3",
-          "3"
+          "D3"
         ],
         [
           "D4",
-          "4"
+          "D4"
         ],
         [
           "D5",
-          "5"
+          "D5"
         ],
         [
           "D6",
-          "6"
+          "D6"
         ],
         [
           "D7",
-          "7"
+          "D7"
         ],
         [
           "D8",
-          "8"
+          "D8"
         ],
         [
           "D9",
-          "9"
+          "D9"
         ],
         [
           "D10",
-          "10"
+          "D10"
         ],
         [
           "D11",
-          "11"
+          "D11"
         ],
         [
           "D12",
-          "12"
+          "D12"
         ],
         [
           "D13",
-          "13"
+          "D13"
         ],
         [
           "A0",
-          "14"
+          "A0"
         ],
         [
           "A1",
-          "15"
+          "A1"
         ],
         [
           "A2",
-          "16"
+          "A2"
         ],
         [
           "A3",
-          "17"
+          "A3"
         ],
         [
           "A4",
-          "18"
+          "A4"
         ],
         [
           "A5",
-          "19"
+          "A5"
         ]
       ]
     }

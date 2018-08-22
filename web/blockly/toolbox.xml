@@ -195,6 +195,9 @@
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
+    <block type="math_number">
+      <field name="NUM">0</field>
+    </block>
     <block type="math_round">
       <field name="OP">ROUND</field>
       <value name="NUM">
@@ -202,9 +205,6 @@
           <field name="NUM">3.1</field>
         </shadow>
       </value>
-    </block>
-    <block type="math_number">
-      <field name="NUM">0</field>
     </block>
     <block type="math_single">
       <field name="OP">ROOT</field>
