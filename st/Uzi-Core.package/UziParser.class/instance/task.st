@@ -6,7 +6,7 @@ task
 		(UziTaskNode
 			name: nodes third
 			arguments: nodes fourth
-			state: nodes fifth
+			state: (nodes fifth ifNil: [#once])
 			tickingRate: nodes sixth 
 			body: nodes seventh)
 			token: token]
