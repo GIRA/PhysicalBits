@@ -63,7 +63,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var value = parseFloat(getChildNode(block, "NUM").innerText);
 			return {
-				__class__: "UziNumberNode",
+				__class__: "UziNumberLiteralNode",
 				id: id,
 				value: value
 			}
@@ -310,7 +310,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var bool = getChildNode(block, "BOOL").innerText;			
 			return {
-				__class__: "UziNumberNode",
+				__class__: "UziNumberLiteralNode",
 				id: id,
 				value: bool === "TRUE" ? 1 : 0
 			};
@@ -422,7 +422,7 @@ var CodeGenerator = (function () {
 				selector = "*";
 				primName = "multiply";
 				args.push({
-					__class__: "UziNumberNode",
+					__class__: "UziNumberLiteralNode",
 					id: id,
 					value: -1
 				});
@@ -504,7 +504,7 @@ var CodeGenerator = (function () {
 				throw "Math constant not found: '" + type + "'";
 			}
 			return {
-				__class__: "UziNumberNode",
+				__class__: "UziNumberLiteralNode",
 				id: id,
 				value: value
 			};
@@ -908,7 +908,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var num = parseInt(getChildNode(block, "pinNumber").innerText);
 			return {
-				__class__: "UziNumberNode",
+				__class__: "UziNumberLiteralNode",
 				id: id,
 				value: num
 			};
