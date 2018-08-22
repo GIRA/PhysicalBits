@@ -906,11 +906,14 @@ var CodeGenerator = (function () {
 		},
 		pin: function (block, ctx) {
 			var id = getId(block);
-			var num = parseInt(getChildNode(block, "pinNumber").innerText);
+			var pin = getChildNode(block, "pinNumber").innerText;
+			var type = pin[0];
+			var number = parseInt(pin.slice(1));
 			return {
-				__class__: "UziNumberLiteralNode",
+				__class__: "UziPinLiteralNode",
 				id: id,
-				value: num
+				type: type,
+				number: number
 			};
 		}
 	};
