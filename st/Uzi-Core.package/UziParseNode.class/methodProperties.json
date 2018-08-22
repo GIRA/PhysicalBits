@@ -1,6 +1,6 @@
 {
 	"class" : {
-		 },
+		"jsonExcludedInstVarNames" : "Richo 8/21/2018 12:26" },
 	"instance" : {
 		"accept:" : "Richo 9/23/2014 17:36",
 		"allChildren" : "Richo 5/18/2018 08:55",

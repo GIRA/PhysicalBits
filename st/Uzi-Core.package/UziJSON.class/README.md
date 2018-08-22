@@ -1,0 +1,1 @@
+UziJSON is a quick hack that uses reflection to encode/decode JSON objects.
