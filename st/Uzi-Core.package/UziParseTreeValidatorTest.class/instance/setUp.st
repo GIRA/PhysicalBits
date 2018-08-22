@@ -18,4 +18,5 @@ setUp
 	pause := UziScriptPauseNode.
 	resume := UziScriptResumeNode.
 	forever := UziForeverNode.
-	for := UziForNode 
+	for := UziForNode.
+	tickingRate := UziTickingRateNode

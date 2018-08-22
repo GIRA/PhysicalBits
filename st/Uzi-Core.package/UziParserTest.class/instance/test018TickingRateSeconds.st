@@ -4,5 +4,5 @@ test018TickingRateSeconds
 	pp := parser tickingRate.
 	self assert: (pp parse: '1/s') delay = 1 second.
 	self assert: (pp parse: '2/s') delay = 500 milliSeconds.
-	self should: [pp parse: '0/s'] raise: UziInvalidTickingRateError.
-	self should: [pp parse: '-1/s'] raise: UziInvalidTickingRateError.
+	self assert: (pp parse: '0/s') delay > (365 days * 1000).
+	self assert: (pp parse: '-1/s') delay < 0 days.

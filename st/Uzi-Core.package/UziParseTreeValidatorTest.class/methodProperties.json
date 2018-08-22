@@ -5,7 +5,7 @@
 		"assertInvalid:" : "Richo 8/10/2017 10:30",
 		"assertValid:" : "Richo 5/19/2018 15:22",
 		"check:" : "Richo 8/11/2017 19:18",
-		"setUp" : "Richo 4/21/2018 19:13",
+		"setUp" : "Richo 8/22/2018 12:05",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
 		"test002AssignmentsAreNotExpressions" : "Richo 9/13/2017 10:35",
 		"test003ConditionalsAreNotExpressions" : "Richo 9/13/2017 10:35",
@@ -42,4 +42,6 @@
 		"test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside" : "Richo 7/31/2018 17:54",
 		"test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside" : "Richo 7/31/2018 17:54",
 		"test037VariablesDeclaredInsideABlockShouldNotCollideWithVariablesDeclaredOutsideAfterTheBlock" : "Richo 5/19/2018 15:24",
-		"test038LocalsAndArgsWithTheSameNameAreNotValid" : "Richo 5/19/2018 15:26" } }
+		"test038LocalsAndArgsWithTheSameNameAreNotValid" : "Richo 5/19/2018 15:26",
+		"test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified" : "Richo 8/22/2018 12:04",
+		"test040TickingRateValueShouldAlwaysBePositive" : "Richo 8/22/2018 12:32" } }

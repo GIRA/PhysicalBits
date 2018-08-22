@@ -1,5 +1,6 @@
 accessing
 delayMs
+	value = 0 ifTrue: [^ Float fmax].
 	^ (scale caseOf: {
 		[#s] -> [1000].
 		[#m] -> [1000 * 60].

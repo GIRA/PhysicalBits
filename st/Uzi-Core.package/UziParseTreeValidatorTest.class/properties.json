@@ -24,7 +24,8 @@
 		"pause",
 		"resume",
 		"forever",
-		"for" ],
+		"for",
+		"tickingRate" ],
 	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],
