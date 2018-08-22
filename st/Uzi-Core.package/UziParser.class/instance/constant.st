@@ -2,8 +2,7 @@ grammar-literals
 constant
 	^ ws, (($D asParser / $A asParser), integer) token, ws
 		map: [:ign1 :token :ign2 || pinType pinNumber  offset |
-			pinType := token parsedValue first.
+			pinType := token parsedValue first asSymbol.
 			pinNumber := token parsedValue second.
-			self flag: #Richo. "This assumes the UNO layout"
-			offset := pinType = $A ifTrue: [14] ifFalse: [0].
-			(UziNumberLiteralNode value: pinNumber + offset) token: token]
+			(UziPinLiteralNode type: pinType number: pinNumber)
+				token: token]

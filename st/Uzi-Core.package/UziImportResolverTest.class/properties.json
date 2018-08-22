@@ -31,7 +31,8 @@
 		"resume",
 		"yield",
 		"forever",
-		"for" ],
+		"for",
+		"pin" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

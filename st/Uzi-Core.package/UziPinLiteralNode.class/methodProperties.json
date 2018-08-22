@@ -1,0 +1,12 @@
+{
+	"class" : {
+		"type:number:" : "Richo 8/22/2018 18:34" },
+	"instance" : {
+		"accept:" : "Richo 8/22/2018 18:28",
+		"children" : "Richo 8/22/2018 18:28",
+		"initializeWithType:number:" : "Richo 8/22/2018 18:34",
+		"isExpression" : "Richo 8/22/2018 18:28",
+		"isPinLiteral" : "Richo 8/22/2018 18:29",
+		"number" : "Richo 8/22/2018 18:39",
+		"type" : "Richo 8/22/2018 18:39",
+		"value" : "Richo 8/22/2018 19:15" } }

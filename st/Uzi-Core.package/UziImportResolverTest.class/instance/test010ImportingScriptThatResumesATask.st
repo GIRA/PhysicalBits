@@ -33,7 +33,7 @@ test010ImportingScriptThatResumesATask
 				tickingRate: nil
 				body: (block statements: {
 					prim selector: #toggle
-						arguments: { number value: 13 }
+						arguments: { pin type: #D number: 13 }
 				}).
 			task name: #main				
 				arguments: #()

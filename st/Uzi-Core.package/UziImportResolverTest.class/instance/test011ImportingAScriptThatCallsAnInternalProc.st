@@ -38,7 +38,7 @@ test011ImportingAScriptThatCallsAnInternalProc
 				body: (block statements: {
 					call script: (ref scriptName: 't9.toggleAndWait')
 						arguments: {
-							nil -> (number value: 13).
+							nil -> (pin type: #D number: 13).
 							nil -> (number value: 100)
 						}
 				}).

@@ -28,4 +28,5 @@ setUp
 	resume := UziScriptResumeNode.
 	yield := UziYieldNode.
 	forever := UziForeverNode.
-	for := UziForNode 
+	for := UziForNode.
+	pin := UziPinLiteralNode 

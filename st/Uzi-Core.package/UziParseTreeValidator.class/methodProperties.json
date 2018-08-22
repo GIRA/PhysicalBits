@@ -29,6 +29,7 @@
 		"visitLogicalOrNode:" : "Richo 5/31/2017 18:37",
 		"visitLoopNode:" : "Richo 4/18/2018 10:53",
 		"visitNumberNode:" : "Richo 12/30/2016 16:31",
+		"visitPinLiteralNode:" : "Richo 8/22/2018 19:17",
 		"visitPrimitiveCall:" : "Richo 6/16/2017 19:08",
 		"visitProgramNode:" : "Richo 5/1/2018 21:57",
 		"visitRepeatNode:" : "Richo 9/22/2017 10:34",
