@@ -29,7 +29,7 @@
     <block type="toggle_variable">
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">13</field>
+          <field name="pinNumber">D13</field>
         </shadow>
       </value>
     </block>
@@ -37,7 +37,7 @@
       <field name="pinState">on</field>
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">13</field>
+          <field name="pinNumber">D13</field>
         </shadow>
       </value>
     </block>
@@ -45,14 +45,14 @@
       <field name="pinState">on</field>
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">13</field>
+          <field name="pinNumber">D13</field>
         </shadow>
       </value>
     </block>
     <block type="write_pin_variable">
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">13</field>
+          <field name="pinNumber">D13</field>
         </shadow>
       </value>
       <value name="pinValue">
@@ -64,22 +64,19 @@
     <block type="read_pin_variable">
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">13</field>
+          <field name="pinNumber">D13</field>
         </shadow>
       </value>
     </block>
     <block type="pin">
-      <field name="pinNumber">13</field>
+      <field name="pinNumber">D13</field>
     </block>
-    <shadow type="math_number">
-      <field name="NUM">13</field>
-    </shadow>
   </category>
   <category name="Motors" colour="#a55b5b">
     <block type="degrees_servo_variable">
       <value name="pinNumber">
         <shadow type="pin">
-          <field name="pinNumber">3</field>
+          <field name="pinNumber">D3</field>
         </shadow>
       </value>
       <value name="servoValue">
@@ -198,11 +195,12 @@
     <block type="math_number">
       <field name="NUM">0</field>
     </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
+    <block type="math_number_property">
+      <mutation divisor_input="false"></mutation>
+      <field name="PROPERTY">EVEN</field>
+      <value name="NUMBER_TO_CHECK">
         <shadow type="math_number">
-          <field name="NUM">3.1</field>
+          <field name="NUM">0</field>
         </shadow>
       </value>
     </block>
@@ -225,12 +223,11 @@
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
+    <block type="math_round">
+      <field name="OP">ROUND</field>
+      <value name="NUM">
         <shadow type="math_number">
-          <field name="NUM">0</field>
+          <field name="NUM">3.1</field>
         </shadow>
       </value>
     </block>
