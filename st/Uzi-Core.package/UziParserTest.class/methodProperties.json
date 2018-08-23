@@ -71,4 +71,5 @@
 		"test063OperatorPrecedence" : "Richo 7/31/2018 17:56",
 		"test064OperatorPrecedence" : "Richo 7/31/2018 17:56",
 		"test065OperatorPrecedence" : "Richo 7/31/2018 17:57",
-		"test066OperatorPrecedence" : "Richo 7/31/2018 17:57" } }
+		"test066OperatorPrecedence" : "Richo 7/31/2018 17:57",
+		"test067UnaryOperatorsHaveHigherPrecedence" : "Richo 8/23/2018 12:41" } }

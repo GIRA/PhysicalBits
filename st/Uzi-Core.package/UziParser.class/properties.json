@@ -56,7 +56,8 @@
 		"yield",
 		"forever",
 		"for",
-		"argument" ],
+		"argument",
+		"unary" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],
