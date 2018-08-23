@@ -63,9 +63,13 @@ var UziBlock = (function () {
 		});
 		
 		$("#saveButton").on("click", function () {
-			lastFileName = prompt("File name:", lastFileName || "program.xml");
+			lastFileName = prompt("File name:", lastFileName || "program.uziblock");
+			if (lastFileName === null) return;
+			if (!lastFileName.endsWith(".uziblock")) {
+				lastFileName += ".uziblock";
+			}
 			var xml = Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));
-			var blob = new Blob([xml], {type: "text/xml;charset=utf-8"});
+			var blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
 			saveAs(blob, lastFileName);
 		});
 
