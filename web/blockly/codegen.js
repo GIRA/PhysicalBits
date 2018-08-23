@@ -321,7 +321,7 @@ var CodeGenerator = (function () {
 			return {
 				__class__: "UziPrimitiveCallNode",
 				id: id,
-				selector: "not",
+				selector: "!",
 				arguments: [bool],
 				primitiveName: "negate"
 			};
