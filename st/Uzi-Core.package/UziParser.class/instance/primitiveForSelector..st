@@ -26,7 +26,7 @@ primitiveForSelector: selector
 		[#>=] -> [#greaterThanOrEquals].
 		[#<] -> [#lessThan].
 		[#<=] -> [#lessThanOrEquals].
-		[#not] -> [#negate].
+		[#!] -> [#negate].
 		[#delayMs] -> [#delayMs].
 		[#&] -> [#bitwiseAnd].
 		[#|] -> [#bitwiseOr].

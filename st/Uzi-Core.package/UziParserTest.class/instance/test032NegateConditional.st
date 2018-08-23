@@ -6,7 +6,7 @@ test032NegateConditional
 	self assert: 1 equals: ast trueBranch statements size.
 	self assert: 1 equals: ast falseBranch statements size.
 	condition := ast condition.
-	self assert: #not equals: condition selector.
+	self assert: #! equals: condition selector.
 	self assert: #read equals: condition arguments first selector.
 	self assert: 13 equals: condition arguments first arguments first value.
 	trueBranch := ast trueBranch.

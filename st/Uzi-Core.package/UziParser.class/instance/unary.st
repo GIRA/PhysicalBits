@@ -5,7 +5,7 @@ unary
 			not := token parsedValue first.
 			expr := token parsedValue third.
 			(UziPrimitiveCallNode 
-				selector: #not 
+				selector: #! 
 				arguments: { expr } 
-				primitiveName: (self primitiveForSelector: #not))
+				primitiveName: (self primitiveForSelector: #!))
 				token: token]

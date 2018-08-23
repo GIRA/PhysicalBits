@@ -10,17 +10,7 @@ visitScriptNode: node
 			description: 'Argument name alredy specified'
 			node: arg.
 		args add: arg name].
-	"
-	locals := Set new.
-	node locals do: [:local |
-		self assert: (node arguments allSatisfy: [:arg | arg name ~= local name])
-			description: 'Variable already in use as script argument'
-			node: local.
-		self assert: (locals includes: local name) not
-			description: 'Variable already declared'
-			node: local.
-		locals add: local name].
-	"
+	
 	node tickingRate ifNotNil: [:rate | self visit: rate].
 	self visitCollection: node arguments;
 		visit: node body

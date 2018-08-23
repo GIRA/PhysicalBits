@@ -7,7 +7,7 @@ test067UnaryOperatorsHaveHigherPrecedence
 		arguments: {
 			number value: 1.
 			prim 
-				selector: #not
+				selector: #!
 				arguments: { number value: 1}
 				primitiveName: #negate
 		} 
