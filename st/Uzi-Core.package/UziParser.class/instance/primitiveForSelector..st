@@ -18,7 +18,6 @@ primitiveForSelector: selector
 		[#arcSin] -> [#arcSin].
 		[#arcCos] -> [#arcCos].
 		[#arcTan] -> [#arcTan].
-		[#squared] -> [#squared].
 		[#sqrt] -> [#sqrt].
 		[#==] -> [#equals].
 		[#!=] -> [#notEquals].
