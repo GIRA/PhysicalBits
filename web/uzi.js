@@ -222,9 +222,9 @@ var Uzi = (function () {
 			if (waiting || Uzi.pinsReporting.size === 0) return;
 			waiting = true;
 			getPins(last, Uzi.pinsReporting, function (pins) {
-				Uzi.pins = pins.elements;
-				if (pins.elements.length > 0) {
-					last = Math.max.apply(Math, pins.elements.map(function (each) {
+				Uzi.pins = fixedInvalidJSONFloats(pins.elements);
+				if (Uzi.pins.length > 0) {
+					last = Math.max.apply(Math, Uzi.pins.map(function (each) {
 						return each.history.length > 0 ?
 							each.history[each.history.length-1].timestamp :
 							0;
@@ -243,9 +243,9 @@ var Uzi = (function () {
 			if (waiting || Uzi.globalsReporting.size === 0) return;
 			waiting = true;
 			getGlobals(last, Uzi.globalsReporting, function (globals) {
-				Uzi.globals = globals.reporting;
-				if (globals.reporting.length > 0) {
-					last = Math.max.apply(Math, globals.reporting.map(function (each) {
+				Uzi.globals = fixedInvalidJSONFloats(globals.reporting);
+				if (Uzi.globals.length > 0) {
+					last = Math.max.apply(Math, Uzi.globals.map(function (each) {
 						return each.history.length > 0 ?
 							each.history[each.history.length-1].timestamp :
 							0;
@@ -255,6 +255,29 @@ var Uzi = (function () {
 				waiting = false;
 			});
 		}, 200);
+	}
+	
+	/*
+	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN 
+	in the JSON object resulting from either the pin or global reports. Since JSON
+	doesn't handle these values correctly I'm encoding them in a special way.
+	*/
+	function fixedInvalidJSONFloats(reporting) {
+		return reporting.map(function (r) { 
+			return {
+				name: r.name, 
+				number: r.number, 
+				history: r.history.map(function (h) {
+					let value = h.value;
+					if (value["___INF___"] !== undefined) {
+						value = Infinity * value["___INF___"];
+					} else if (value["___NAN___"] !== undefined) {
+						value = NaN;
+					}
+					return { timestamp: h.timestamp, value: value };
+				})
+			};
+		});
 	}
 	
 	return Uzi;
