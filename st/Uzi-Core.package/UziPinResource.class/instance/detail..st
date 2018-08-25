@@ -17,7 +17,7 @@ detail: req
 						reject: [:kvp | kvp key <= start])
 						collect: [:kvp | Dictionary new
 							at: #timestamp put: kvp key;
-							at: #value put: kvp value;
+							at: #value put: (UziJSON createObject: kvp value);
 							yourself] 
 						as: Array);
 					yourself]
