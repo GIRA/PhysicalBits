@@ -635,7 +635,7 @@ var CodeGenerator = (function () {
 		},
 		procedures_defnoreturn: function (block, ctx) {
 			var id = getId(block);
-			var name = asIdentifier(getChildNode(block, "NAME").innerText);
+			var name = "_" + asIdentifier(getChildNode(block, "NAME").innerText);
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
@@ -654,7 +654,7 @@ var CodeGenerator = (function () {
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
-			var scriptName = asIdentifier(mutation.getAttribute("name"));
+			var scriptName = "_" + asIdentifier(mutation.getAttribute("name"));
 			var argNames = [];
 			mutation.childNodes.forEach(function (each) {
 				argNames.push(asIdentifier(each.getAttribute("name")));
@@ -672,7 +672,7 @@ var CodeGenerator = (function () {
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
-			var scriptName = asIdentifier(mutation.getAttribute("name"));
+			var scriptName = "_" + asIdentifier(mutation.getAttribute("name"));
 			var argNames = [];
 			mutation.childNodes.forEach(function (each) {
 				argNames.push(asIdentifier(each.getAttribute("name")));
@@ -696,7 +696,7 @@ var CodeGenerator = (function () {
 		},
 		procedures_defreturn: function (block, ctx) {
 			var id = getId(block);
-			var name = asIdentifier(getChildNode(block, "NAME").innerText);
+			var name = "_" + asIdentifier(getChildNode(block, "NAME").innerText);
 			var mutation = getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
@@ -824,9 +824,7 @@ var CodeGenerator = (function () {
 					}
 				}
 			});
-			var program = builder.program(null, [], ctx.globals, scripts);
-			console.log(program);
-			return program;
+			return builder.program(null, [], ctx.globals, scripts);
 		}
 	}
 })();
