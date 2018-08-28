@@ -3,5 +3,5 @@ visitScriptStopNode: node
 	self saveIntervalFor: node during: [
 		self write: 'stop '.
 		node scripts 
-			do: [:each | self visit: each]
+			do: [:each | self write: each]
 			separatedBy: [self write: ', ']]
