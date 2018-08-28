@@ -2,7 +2,7 @@ visiting
 visitCallNode: node
 	self saveIntervalFor: node
 		during: [
-			(node selector allSatisfy: [:char | char isAlphaNumeric])
+			(node selector allSatisfy: [:char | char isAlphaNumeric or: [char == $_]])
 				ifTrue: [^ self writeRegularCall: node].
 			node arguments size = 1
 				ifTrue: [^ self writeUnaryCall: node].
