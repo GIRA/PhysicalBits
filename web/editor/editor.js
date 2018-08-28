@@ -25,7 +25,8 @@ Uzi.onConnectionUpdate(function () {
 		$("#run").removeAttr("disabled");
 		$("#more").removeAttr("disabled");
 		
-		if (editor.getValue() !== Uzi.program.src) {
+		if (Uzi.program.src !== undefined
+			&& editor.getValue() !== Uzi.program.src) {
 			editor.setValue(Uzi.program.src);
 		}
 	} else {
