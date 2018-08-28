@@ -1,6 +1,65 @@
 var CodeGenerator = (function () {
 	
 	var builder = {
+		program: function (id, imports, globals, scripts) {
+			return {
+				__class__: "UziProgramNode",
+				imports: imports,
+				globals: globals.map(function (varName) {
+					return builder.variableDeclaration(id, varName);
+				}),
+				scripts: scripts
+			};
+		},
+		task: function (id, name, argumentNames, state, tickingRate, statements) {
+			return {
+				__class__: "UziTaskNode",
+				id: id,
+				name: name,
+				arguments: argumentNames.map(function (varName) {
+					return builder.variableDeclaration(id, varName);
+				}),
+				state: state,
+				tickingRate: tickingRate,
+				body: builder.block(id, statements)
+			};
+		},
+		procedure: function (id, name, argumentNames, statements) {
+			return {
+				__class__: "UziProcedureNode",
+				id: id,
+				name: name,
+				arguments: argumentNames.map(function (varName) {
+					return builder.variableDeclaration(id, varName);
+				}),
+				body: builder.block(id, statements)
+			};
+		},
+		function: function (id, name, argumentNames, statements) {			
+			return {
+				__class__: "UziFunctionNode",
+				id: id,
+				name: name,
+				arguments: argumentNames.map(function (varName) {
+					return builder.variableDeclaration(id, varName);
+				}),
+				body: builder.block(id, statements)
+			};
+		},
+		scriptCall: function (id, selector, args) {
+			return {
+				__class__: "UziCallNode",
+				id: id,
+				selector: selector,
+				arguments: args.map(function (arg) {
+					return {
+						__class__: "Association",
+						key: arg.name,
+						value: arg.value
+					};
+				})
+			};
+		},
 		primitiveCall: function (id, selector, args, primitiveName) {
 			return {
 				__class__: "UziCallNode",
@@ -16,40 +75,153 @@ var CodeGenerator = (function () {
 				primitiveName: primitiveName || selector
 			};
 		},
-		
+		block: function (id, statements) {
+			return {
+				__class__: "UziBlockNode",
+				id: id,
+				statements: statements					
+			};
+		},
+		tickingRate: function (id, runningTimes, tickingScale) {
+			return {
+				__class__: "UziTickingRateNode",
+				id: id,
+				value: runningTimes,
+				scale: tickingScale
+			};
+		},
+		forever: function (id, statements) {
+			return {
+				__class__: "UziForeverNode",
+				id: id,
+				body: builder.block(id, statements)
+			};
+		},
+		variableDeclaration: function (id, variableName) {
+			return {
+				__class__: "UziVariableDeclarationNode",
+				id: id,
+				name: variableName,
+				value: null
+			};
+		},
+		for: function (id, counterName, start, stop, step, statements) {
+			return {
+				__class__: "UziForNode",
+				id: id,
+				counter: builder.variableDeclaration(id, counterName),
+				start: start,
+				stop: stop,
+				step: step,
+				body: builder.block(id, statements)
+			};
+		},
+		number: function (id, value) {
+			return {
+				__class__: "UziNumberLiteralNode",
+				id: id,
+				value: value
+			};
+		},
+		pin: function (id, type, number) {
+			return {
+				__class__: "UziPinLiteralNode",
+				id: id,
+				type: type,
+				number: number
+			};
+		},
+		variable: function (id, variableName) {
+			return {
+				__class__: "UziVariableNode",
+				id: id,
+				name: variableName
+			};
+		},
+		start: function (id, scripts) {
+			return {
+				__class__: "UziScriptStartNode",
+				id: id,
+				scripts: scripts
+			};
+		},
+		stop: function (id, scripts) {
+			return {
+				__class__: "UziScriptStopNode",
+				id: id,
+				scripts: scripts
+			};
+		},
+		resume: function (id, scripts) {
+			return {
+				__class__: "UziScriptResumeNode",
+				id: id,
+				scripts: scripts
+			};
+		},
+		pause: function (id, scripts) {
+			return {
+				__class__: "UziScriptPauseNode",
+				id: id,
+				scripts: scripts
+			};
+		},
+		conditional: function (id, condition, trueBranch, falseBranch) {
+			return {
+				__class__: "UziConditionalNode",
+				id: id,
+				condition: condition,
+				trueBranch: builder.block(id, trueBranch),
+				falseBranch: builder.block(id, falseBranch)
+			};
+		},
+		repeat: function (id, times, statements) {
+			return {
+				__class__: "UziRepeatNode",
+				id: id,
+				times: times,
+				body: builder.block(id, statements)
+			};
+		},
+		while: function (id, condition, statements, negated) {
+			return {
+				__class__: "UziWhileNode",
+				id: id,
+				pre: builder.block(id, []),
+				condition: condition,
+				post: builder.block(id, statements),
+				negated: negated
+			};
+		},
+		assignment: function (id, name, value) {
+			return {
+				__class__: "UziAssignmentNode",
+				id: id,
+				left: builder.variable(id, name),
+				right: value
+			};
+		},
+		return: function (id, value) {
+			return {
+				__class__: "UziReturnNode",
+				id: id,
+				value: value
+			};
+		}
 	};
+	
 	var topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];	
 	var dispatchTable =  {
 		task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			var statements = generateCodeForStatements(block, ctx);
-			return {
-				__class__: "UziTaskNode",
-				id: id,
-				name: taskName,
-				arguments: [],
-				state: "once",
-				tickingRate: null,
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements					
-				}
-			};
+			return builder.task(id, taskName, [], "once", null, statements);
 		},
 		forever: function (block, ctx) {
 			var id = getId(block);
 			var statements = generateCodeForStatements(block, ctx);
-			return {
-				__class__: "UziForeverNode",
-				id: id,
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements					
-				}
-			};
+			return builder.forever(id, statements);
 		},
 		for: function (block, ctx) {			
 			var id = getId(block);
@@ -58,33 +230,12 @@ var CodeGenerator = (function () {
 			var stop = generateCodeForValue(block, ctx, "stop");
 			var step = generateCodeForValue(block, ctx, "step");
 			var statements = generateCodeForStatements(block, ctx);
-			return {
-				__class__: "UziForNode",
-				id: id,
-				counter: {
-					__class__: "UziVariableDeclarationNode",
-					id: id,
-					name: variableName,
-					value: null
-				},
-				start: start,
-				stop: stop,
-				step: step,
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements					
-				}
-			}
+			return builder.for(id, variableName, start, stop, step, statements);
 		},
 		math_number: function (block, ctx) {
 			var id = getId(block);
 			var value = parseFloat(getChildNode(block, "NUM").innerText);
-			return {
-				__class__: "UziNumberLiteralNode",
-				id: id,
-				value: value
-			}
+			return builder.number(id, value);
 		},
 		turn_pin_variable: function (block, ctx) {
 			var id = getId(block);
@@ -97,11 +248,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var variableName = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(variableName);
-			return {
-				__class__: "UziVariableNode",
-				id: id,
-				name: variableName
-			}
+			return builder.variable(id, variableName);
 		},
 		delay: function (block, ctx) {
 			var id = getId(block);
@@ -119,89 +266,40 @@ var CodeGenerator = (function () {
 		start_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			return {
-				__class__: "UziScriptStartNode",
-				id: id,
-				scripts: [taskName]
-			}
+			return builder.start(id, [taskName]);
 		},
 		stop_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			return {
-				__class__: "UziScriptStopNode",
-				id: id,
-				scripts: [taskName]
-			}
+			return builder.stop(id, [taskName]);
 		},
 		resume_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			return {
-				__class__: "UziScriptResumeNode",
-				id: id,
-				scripts: [taskName]
-			}
+			return builder.resume(id, [taskName]);
 		},
 		pause_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			return {
-				__class__: "UziScriptPauseNode",
-				id: id,
-				scripts: [taskName]
-			}
+			return builder.pause(id, [taskName]);
 		},
 		run_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			return {
-				__class__: "UziCallNode",
-				id: id,
-				selector: taskName,
-				arguments: []
-			}
+			return builder.scriptCall(id, taskName, []);
 		},
 		conditional_simple: function (block, ctx) {
 			var id = getId(block);
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var trueBranch = generateCodeForStatements(block, ctx, "trueBranch");
-			return {
-				__class__: "UziConditionalNode",
-				id: id,
-				condition: condition,
-				trueBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: trueBranch
-				},
-				falseBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: []
-				}
-			}
+			return builder.conditional(id, condition, trueBranch, []);
 		},
 		conditional_full: function (block, ctx) {
 			var id = getId(block);
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var trueBranch = generateCodeForStatements(block, ctx, "trueBranch");
 			var falseBranch = generateCodeForStatements(block, ctx, "falseBranch");
-			return {
-				__class__: "UziConditionalNode",
-				id: id,
-				condition: condition,
-				trueBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: trueBranch
-				},
-				falseBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: falseBranch
-				}
-			}
+			return builder.conditional(id, condition, trueBranch, falseBranch);
 		},
 		logic_compare: function (block, ctx) {
 			var id = getId(block);
@@ -270,12 +368,8 @@ var CodeGenerator = (function () {
 		},
 		logic_boolean: function (block, ctx) {
 			var id = getId(block);
-			var bool = getChildNode(block, "BOOL").innerText;			
-			return {
-				__class__: "UziNumberLiteralNode",
-				id: id,
-				value: bool === "TRUE" ? 1 : 0
-			};
+			var bool = getChildNode(block, "BOOL").innerText;
+			return builder.number(id, bool === "TRUE" ? 1 : 0);
 		},
 		logic_negate: function (block, ctx) {
 			var id = getId(block);
@@ -320,16 +414,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var times = generateCodeForValue(block, ctx, "times");
 			var statements = generateCodeForStatements(block, ctx);
-			return {
-				__class__: "UziRepeatNode",
-				id: id,
-				times: times,
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements
-				}
-			};
+			return builder.repeat(id, times, statements);
 		},
 		math_round: function (block, ctx) {
 			var id = getId(block);
@@ -365,11 +450,7 @@ var CodeGenerator = (function () {
 			} else if (type === "NEG") {
 				selector = "*";
 				primName = "multiply";
-				args.push({
-					__class__: "UziNumberLiteralNode",
-					id: id,
-					value: -1
-				});
+				args.push(builder.number(id, -1));
 			} else if (type === "LN") {
 				selector = "ln";
 				primName = "ln";
@@ -435,11 +516,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math constant not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziNumberLiteralNode",
-				id: id,
-				value: value
-			};
+			return builder.number(id, value);
 		},
 		math_arithmetic: function (block, ctx) {
 			var id = getId(block);
@@ -473,25 +550,11 @@ var CodeGenerator = (function () {
 			var runningTimes = parseFloat(getChildNode(block, "runningTimes").innerText);
 			var tickingScale = getChildNode(block, "tickingScale").innerText;
 			var initialState = getChildNode(block, "initialState").innerText;
-			var statements = generateCodeForStatements(block, ctx);			
-			return {
-				__class__: "UziTaskNode",
-				id: id,
-				name: taskName,
-				arguments: [],
-				state: initialState === "started" ? "running" : "stopped",
-				tickingRate: {
-					__class__: "UziTickingRateNode",
-					id: id,
-					value: runningTimes,
-					scale: tickingScale
-				},
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements					
-				}
-			};
+			var statements = generateCodeForStatements(block, ctx);
+			return builder.task(id, taskName, [], 
+				initialState === "started" ? "running" : "stopped",
+				builder.tickingRate(id, runningTimes, tickingScale),
+				statements);
 		},
 		write_pin_variable: function (block, ctx) {
 			var id = getId(block);
@@ -515,22 +578,7 @@ var CodeGenerator = (function () {
 			var negated = getChildNode(block, "negate").innerText === "true";
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var statements = generateCodeForStatements(block, ctx);
-			return {
-				__class__: "UziWhileNode",
-				id: id,
-				pre: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: []
-				},
-				condition: condition,
-				post: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements
-				},
-				negated: negated
-			};
+			return builder.while(id, condition, statements, negated);
 		},
 		is_pin_variable: function (block, ctx) {
 			var id = getId(block);
@@ -544,22 +592,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var negated = getChildNode(block, "negate").innerText === "true";
 			var condition = generateCodeForValue(block, ctx, "condition");
-			return {
-				__class__: "UziWhileNode",
-				id: id,
-				pre: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: []
-				},
-				condition: condition,
-				post: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: []
-				},
-				negated: negated
-			};
+			return builder.while(id, condition, [], negated);
 		},
 		math_modulo: function (block, ctx) {
 			var id = getId(block);
@@ -572,33 +605,16 @@ var CodeGenerator = (function () {
 			var name = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var value = generateCodeForValue(block, ctx, "VALUE");
-			return {
-				__class__: "UziAssignmentNode",
-				id: id,
-				left: {
-					__class__: "UziVariableNode",
-					id: id,
-					name: name
-				},
-				right: value
-			};
+			return builder.assignment(id, name, value);
 		},
 		math_change: function (block, ctx) {
 			var id = getId(block);
 			var name = asIdentifier(getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var delta = generateCodeForValue(block, ctx, "DELTA");
-			var variable = {
-				__class__: "UziVariableNode",
-				id: id,
-				name: name
-			};
-			return {
-				__class__: "UziAssignmentNode",
-				id: id,
-				left: variable,
-				right: builder.primitiveCall(id, "+", [variable, delta], "add")
-			};
+			var variable = builder.variable(id, name);
+			return builder.assignment(id, name, 
+				builder.primitiveCall(id, "+", [variable, delta], "add"));
 		},
 		math_constrain: function (block, ctx) {
 			var id = getId(block);
@@ -628,24 +644,7 @@ var CodeGenerator = (function () {
 				args.push(asIdentifier(each.getAttribute("name")));
 			});			
 			var statements = generateCodeForStatements(block, ctx, "STACK");
-			return {
-				__class__: "UziProcedureNode",
-				id: id,
-				name: name,
-				arguments: args.map(function (varName) {
-					return {
-						__class__: "UziVariableDeclarationNode",
-						id: id,
-						name: varName,
-						value: null
-					};
-				}),
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements
-				}
-			};
+			return builder.procedure(id, name, args, statements);
 		},
 		comment_statement: function (block, ctx) {
 			return undefined;
@@ -663,19 +662,10 @@ var CodeGenerator = (function () {
 			var args = [];
 			for (var i = 0; i < argNames.length; i++) {
 				var value = generateCodeForValue(block, ctx, "ARG" + i);
-				var key = argNames[i];
-				args.push({
-					__class__: "Association",
-					key: key,
-					value: value
-				});
+				var name = argNames[i];
+				args.push({ name: name, value: value });
 			}
-			return {
-				__class__: "UziCallNode",
-				id: id,
-				selector: scriptName,
-				arguments: args
-			};
+			return builder.scriptCall(id, scriptName, args);
 		},
 		procedures_callreturn: function (block, ctx) {
 			var id = getId(block);
@@ -690,43 +680,19 @@ var CodeGenerator = (function () {
 			var args = [];
 			for (var i = 0; i < argNames.length; i++) {
 				var value = generateCodeForValue(block, ctx, "ARG" + i);
-				var key = argNames[i];
-				args.push({
-					__class__: "Association",
-					key: key,
-					value: value
-				});
+				var name = argNames[i];
+				args.push({ name: name, value: value });
 			}
-			return {
-				__class__: "UziCallNode",
-				id: id,
-				selector: scriptName,
-				arguments: args
-			};
+			return builder.scriptCall(id, scriptName, args);
 		},
 		procedures_ifreturn: function (block, ctx) {
 			var id = getId(block);
 			var condition = generateCodeForValue(block, ctx, "CONDITION");
 			var value = generateCodeForValue(block, ctx, "VALUE");
-			return {
-				__class__: "UziConditionalNode",
-				id: id,
-				condition: condition,
-				trueBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: [{
-						__class__: "UziReturnNode",
-						id: id,
-						value: value || null
-					}]
-				},
-				falseBranch: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: []
-				}
-			};
+			return builder.conditional(id, 
+				condition, 
+				[builder.return(id, value || null)], 
+				[]);
 		},
 		procedures_defreturn: function (block, ctx) {
 			var id = getId(block);
@@ -741,29 +707,8 @@ var CodeGenerator = (function () {
 			var statements = generateCodeForStatements(block, ctx, "STACK");
 			// TODO(Richo): Decide what to do if the return block is not defined
 			var returnExpr = generateCodeForValue(block, ctx, "RETURN");
-			statements.push({
-				__class__: "UziReturnNode",
-				id: id,
-				value: returnExpr
-			});
-			return {
-				__class__: "UziFunctionNode",
-				id: id,
-				name: name,
-				arguments: args.map(function (varName) {
-					return {
-						__class__: "UziVariableDeclarationNode",
-						id: id,
-						name: varName,
-						value: null
-					};
-				}),
-				body: {
-					__class__: "UziBlockNode",
-					id: id,
-					statements: statements
-				}
-			};
+			statements.push(builder.return(id, returnExpr));
+			return builder.function(id, name, args, statements);
 		},
 		comment_expression: function (block, ctx) {
 			return generateCodeForValue(block, ctx, "NAME");
@@ -773,12 +718,7 @@ var CodeGenerator = (function () {
 			var pin = getChildNode(block, "pinNumber").innerText;
 			var type = pin[0];
 			var number = parseInt(pin.slice(1));
-			return {
-				__class__: "UziPinLiteralNode",
-				id: id,
-				type: type,
-				number: number
-			};
+			return builder.pin(id, type, number);
 		}
 	};
 	
@@ -884,18 +824,9 @@ var CodeGenerator = (function () {
 					}
 				}
 			});
-			return {
-				__class__: "UziProgramNode",
-				imports: [],
-				globals: ctx.globals.map(function (varName) {
-					return {
-						__class__: "UziVariableDeclarationNode",
-						name: varName,
-						value: null
-					};
-				}),
-				scripts: scripts
-			};
+			var program = builder.program(null, [], ctx.globals, scripts);
+			console.log(program);
+			return program;
 		}
 	}
 })();
