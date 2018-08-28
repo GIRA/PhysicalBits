@@ -1,5 +1,23 @@
 var CodeGenerator = (function () {
 	
+	var builder = {
+		primitiveCall: function (id, selector, args, primitiveName) {
+			return {
+				__class__: "UziCallNode",
+				id: id,
+				selector: selector,
+				arguments: args.map(function (value) {
+					return {
+						__class__: "Association",
+						key: null,
+						value: value
+					};
+				}),
+				primitiveName: primitiveName || selector
+			};
+		},
+		
+	};
 	var topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];	
 	var dispatchTable =  {
 		task: function (block, ctx) {
@@ -73,13 +91,7 @@ var CodeGenerator = (function () {
 			var pinState = getChildNode(block, "pinState").innerText;
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var selector = pinState === "on" ? "turnOn" : "turnOff";
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [pinNumber],
-				primitiveName: selector
-			}
+			return builder.primitiveCall(id, selector, [pinNumber]);
 		},
 		variables_get: function (block, ctx) {
 			var id = getId(block);
@@ -102,13 +114,7 @@ var CodeGenerator = (function () {
 			else {
 				throw "Invalid delay unit: '" + unit + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [time],
-				primitiveName: selector
-			}
+			return builder.primitiveCall(id, selector, [time]);
 		},
 		start_task: function (block, ctx) {
 			var id = getId(block);
@@ -116,11 +122,7 @@ var CodeGenerator = (function () {
 			return {
 				__class__: "UziScriptStartNode",
 				id: id,
-				scripts: [{
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: taskName
-				}]
+				scripts: [taskName]
 			}
 		},
 		stop_task: function (block, ctx) {
@@ -129,11 +131,7 @@ var CodeGenerator = (function () {
 			return {
 				__class__: "UziScriptStopNode",
 				id: id,
-				scripts: [{
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: taskName
-				}]
+				scripts: [taskName]
 			}
 		},
 		resume_task: function (block, ctx) {
@@ -142,11 +140,7 @@ var CodeGenerator = (function () {
 			return {
 				__class__: "UziScriptResumeNode",
 				id: id,
-				scripts: [{
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: taskName
-				}]
+				scripts: [taskName]
 			}
 		},
 		pause_task: function (block, ctx) {
@@ -155,24 +149,16 @@ var CodeGenerator = (function () {
 			return {
 				__class__: "UziScriptPauseNode",
 				id: id,
-				scripts: [{
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: taskName
-				}]
+				scripts: [taskName]
 			}
 		},
 		run_task: function (block, ctx) {
 			var id = getId(block);
 			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
 			return {
-				__class__: "UziScriptCallNode",
+				__class__: "UziCallNode",
 				id: id,
-				script: {
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: taskName
-				},
+				selector: taskName,
 				arguments: []
 			}
 		},
@@ -244,13 +230,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Logical operator not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [left, right],
-				primitiveName: primName
-			}
+			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		elapsed_time: function (block, ctx) {
 			var id = getId(block);
@@ -266,24 +246,12 @@ var CodeGenerator = (function () {
 				selector = "minutes";
 				primName = "minutes";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [],
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, [], primName);
 		},
 		toggle_variable: function (block, ctx) {
 			var id = getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "toggle",
-				arguments: [pinNumber],
-				primitiveName: "toggle"
-			};
+			return builder.primitiveCall(id, "toggle", [pinNumber]);
 		},
 		logic_operation: function (block, ctx) {
 			var id = getId(block);
@@ -298,13 +266,7 @@ var CodeGenerator = (function () {
 				selector = "||";
 				primName = "logicalOr";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [left, right],
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		logic_boolean: function (block, ctx) {
 			var id = getId(block);
@@ -318,13 +280,7 @@ var CodeGenerator = (function () {
 		logic_negate: function (block, ctx) {
 			var id = getId(block);
 			var bool = generateCodeForValue(block, ctx, "BOOL");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "!",
-				arguments: [bool],
-				primitiveName: "negate"
-			};
+			return builder.primitiveCall(id, "!", [bool], "negate");
 		},
 		math_number_property: function (block, ctx) {
 			var id = getId(block);
@@ -358,13 +314,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math number property not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: args,
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, args, primName);
 		},
 		repeat_times: function (block, ctx) {
 			var id = getId(block);
@@ -398,13 +348,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math round type not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [num],
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, [num], primName);
 		},
 		math_single: function (block, ctx) {
 			var id = getId(block);
@@ -441,13 +385,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math function not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: args,
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, args, primName);
 		},
 		math_trig: function (block, ctx) {
 			var id = getId(block);
@@ -475,13 +413,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math trig function not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [num],
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, [num], primName);
 		},
 		math_constant: function (block, ctx) {
 			var id = getId(block);
@@ -533,13 +465,7 @@ var CodeGenerator = (function () {
 			} else {
 				throw "Math arithmetic function not found: '" + type + "'";
 			}
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [left, right],
-				primitiveName: primName
-			};
+			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		timer: function (block, ctx) {
 			var id = getId(block);
@@ -571,36 +497,18 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var pinValue = generateCodeForValue(block, ctx, "pinValue");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "write",
-				arguments: [pinNumber, pinValue],
-				primitiveName: "write"
-			}
+			return builder.primitiveCall(id, "write", [pinNumber, pinValue]);
 		},
 		read_pin_variable: function (block, ctx) {
 			var id = getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "read",
-				arguments: [pinNumber],
-				primitiveName: "read"
-			};
+			return builder.primitiveCall(id, "read", [pinNumber]);
 		},
 		degrees_servo_variable: function (block, ctx) {
 			var id = getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var servoValue = generateCodeForValue(block, ctx, "servoValue");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "servoDegrees",
-				arguments: [pinNumber, servoValue],
-				primitiveName: "servoDegrees"
-			};
+			return builder.primitiveCall(id, "servoDegrees", [pinNumber, servoValue]);
 		},
 		repeat: function (block, ctx) {
 			var id = getId(block);
@@ -629,14 +537,8 @@ var CodeGenerator = (function () {
 			var pinState = getChildNode(block, "pinState").innerText;
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var selector, primName;
-			primName = selector = pinState === "on" ? "isOn" : "isOff";			
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: selector,
-				arguments: [pinNumber],
-				primitiveName: primName
-			};
+			primName = selector = pinState === "on" ? "isOn" : "isOff";	
+			return builder.primitiveCall(id, selector, [pinNumber], primName);		
 		},
 		wait: function (block, ctx) {
 			var id = getId(block);
@@ -663,13 +565,7 @@ var CodeGenerator = (function () {
 			var id = getId(block);
 			var left = generateCodeForValue(block, ctx, "DIVIDEND");
 			var right = generateCodeForValue(block, ctx, "DIVISOR");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "%",
-				arguments: [left, right],
-				primitiveName: "mod"
-			};
+			return builder.primitiveCall(id, "%", [left, right], "mod");
 		},
 		variables_set: function (block, ctx) {
 			var id = getId(block);
@@ -701,13 +597,7 @@ var CodeGenerator = (function () {
 				__class__: "UziAssignmentNode",
 				id: id,
 				left: variable,
-				right: {
-					__class__: "UziPrimitiveCallNode",
-					id: id,
-					selector: "+",
-					arguments: [variable, delta],
-					primitiveName: "add"
-				}
+				right: builder.primitiveCall(id, "+", [variable, delta], "add")
 			};
 		},
 		math_constrain: function (block, ctx) {
@@ -715,35 +605,17 @@ var CodeGenerator = (function () {
 			var value = generateCodeForValue(block, ctx, "VALUE");
 			var low = generateCodeForValue(block, ctx, "LOW");
 			var high = generateCodeForValue(block, ctx, "HIGH");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "constrain",
-				arguments: [value, low, high],
-				primitiveName: "constrain"
-			};
+			return builder.primitiveCall(id, "constrain", [value, low, high]);
 		},
 		math_random_int: function (block, ctx) {
 			var id = getId(block);
 			var from = generateCodeForValue(block, ctx, "FROM");
 			var to = generateCodeForValue(block, ctx, "TO");
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "randomInt",
-				arguments: [from, to],
-				primitiveName: "randomInt"
-			};
+			return builder.primitiveCall(id, "randomInt", [from, to]);
 		},
 		math_random_float: function (block, ctx) {
 			var id = getId(block);
-			return {
-				__class__: "UziPrimitiveCallNode",
-				id: id,
-				selector: "random",
-				arguments: [],
-				primitiveName: "random"
-			};
+			return builder.primitiveCall(id, "random", []);
 		},
 		procedures_defnoreturn: function (block, ctx) {
 			var id = getId(block);
@@ -799,13 +671,9 @@ var CodeGenerator = (function () {
 				});
 			}
 			return {
-				__class__: "UziScriptCallNode",
+				__class__: "UziCallNode",
 				id: id,
-				script:  {
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: scriptName
-				},
+				selector: scriptName,
 				arguments: args
 			};
 		},
@@ -830,13 +698,9 @@ var CodeGenerator = (function () {
 				});
 			}
 			return {
-				__class__: "UziScriptCallNode",
+				__class__: "UziCallNode",
 				id: id,
-				script:  {
-					__class__: "UziScriptRefNode",
-					id: id,
-					scriptName: scriptName
-				},
+				selector: scriptName,
 				arguments: args
 			};
 		},
