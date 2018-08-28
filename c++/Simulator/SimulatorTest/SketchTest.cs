@@ -1821,5 +1821,24 @@ namespace SimulatorTest
                 Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
             }
         }
+
+
+        [TestMethod]
+        public void Test088ScriptCallOverridingPrimitive()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test088ScriptCallOverridingPrimitive)));
+            
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 500);
+                sketch.Loop();
+                sketch.Loop();
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
+            }
+        }
     }
 }
