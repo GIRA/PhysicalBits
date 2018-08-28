@@ -12,7 +12,7 @@
 		"test006ScriptWithOptionalTickingState" : "Richo 12/4/2017 09:06",
 		"test007BlinkLed9Script" : "Richo 12/4/2017 09:10",
 		"test008VariableDefinitionsScript" : "Richo 12/4/2017 09:12",
-		"test009CompilerPreservesParseNodes" : "Richo 9/13/2017 10:32",
+		"test009CompilerPreservesParseNodes" : "Richo 8/26/2018 14:32",
 		"test010Conditionals1" : "Richo 9/13/2017 10:32",
 		"test011Conditionals3" : "Richo 9/13/2017 10:32",
 		"test012Loops1" : "Richo 9/13/2017 10:32",
@@ -47,4 +47,6 @@
 		"test041PrimitiveCoroutine" : "Richo 4/10/2018 16:48",
 		"test042YieldInstruction" : "Richo 4/12/2018 21:39",
 		"test043ForeverLoop" : "Richo 7/31/2018 18:02",
-		"test044ForLoop" : "Richo 7/31/2018 18:02" } }
+		"test044ForLoop" : "Richo 7/31/2018 18:02",
+		"test045FunctionsOverridePrimitives" : "Richo 8/26/2018 13:48",
+		"test046ProceduresOverridePrimitives" : "Richo 8/28/2018 12:39" } }

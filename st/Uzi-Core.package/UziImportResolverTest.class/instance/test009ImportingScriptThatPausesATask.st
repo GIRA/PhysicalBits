@@ -16,7 +16,7 @@ test009ImportingScriptThatPausesATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't7.pauseTask')
+					call selector: 't7.pauseTask'
 				})
 		}.
 	expected := program 
@@ -25,22 +25,23 @@ test009ImportingScriptThatPausesATask
 			proc name: #'t7.pauseTask'
 				arguments: #()
 				body: (block statements: {
-					pause scripts: { ref scriptName: 't7.blink' }
+					pause scripts: { 't7.blink' }
 				}).
 			task name: #'t7.blink'
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { pin type: #D number: 13 }
+					call selector: #toggle
+						arguments: { nil -> (pin type: #D number: 13) }
+						primitiveName: #toggle
 				}).
 			task name: #main				
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't7.pauseTask')
+					call selector: 't7.pauseTask'
 				})
 		}.
 	actual := ir applyOn: original.

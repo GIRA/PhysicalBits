@@ -4,5 +4,5 @@ test031Negate
 	pp := parser expression end.
 	ast := pp parse: '!read(D13)'.
 	self assert: #! equals: ast selector.
-	self assert: #read equals: ast arguments first selector.
-	self assert: 13 equals: ast arguments first arguments first value.
+	self assert: #read equals: ast arguments first value selector.
+	self assert: 13 equals: ast arguments first value arguments first value value.

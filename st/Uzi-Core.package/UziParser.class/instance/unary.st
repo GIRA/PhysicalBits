@@ -4,8 +4,7 @@ unary
 		map: [:ign :token || not expr |
 			not := token parsedValue first.
 			expr := token parsedValue third.
-			(UziPrimitiveCallNode 
+			(UziCallNode 
 				selector: #! 
-				arguments: { expr } 
-				primitiveName: (self primitiveForSelector: #!))
+				arguments: { nil -> expr })
 				token: token]

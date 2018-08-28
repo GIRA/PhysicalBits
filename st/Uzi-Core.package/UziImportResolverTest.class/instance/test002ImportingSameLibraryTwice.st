@@ -16,11 +16,12 @@ test002ImportingSameLibraryTwice
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							call script: (ref scriptName: #'test2.foo').
-							call script: (ref scriptName: #'test1.foo')
+							nil -> (call selector: #'test2.foo').
+							nil -> (call selector: #'test1.foo')
 						}
+						primitiveName: #write
 				})
 		}.
 	expected := program 
@@ -42,11 +43,12 @@ test002ImportingSameLibraryTwice
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							call script: (ref scriptName: #'test2.foo').
-							call script: (ref scriptName: #'test1.foo')
+							nil -> (call selector: #'test2.foo').
+							nil -> (call selector: #'test1.foo')
 						}
+						primitiveName: #write
 				})
 		}.
 	actual := ir applyOn: original.

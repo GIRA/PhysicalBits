@@ -2,17 +2,15 @@ tests
 test062OperatorPrecedence
 	| actual expected |
 	actual := parser expression parse: '3 + 4 * 5'.
-	expected := prim 
+	expected := call 
 		selector: #+
 		arguments: {
-			number value: 3.
-			prim 
+			nil -> (number value: 3).
+			nil -> (call
 				selector: #*
 				arguments: {
-					number value: 4.
-					number value: 5
-				}
-				primitiveName: #multiply
-		}		
-		primitiveName: #add.
+					nil -> (number value: 4).
+					nil -> (number value: 5)
+				})
+		}.
 	self assert: expected equals: actual

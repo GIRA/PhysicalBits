@@ -9,23 +9,26 @@ test003ConditionalsAreNotExpressions
 				arguments: #() 
 				body: (block 
 					statements: {
-						prim 
+						call 
 							selector: #write
 							arguments: {
-								number value: 13.								
-								conditional
-									condition: (prim
+								nil -> (number value: 13).
+								nil -> (conditional
+									condition: (call
 										selector: #greaterThan
 										arguments: { 
-											number value: 3.
-											number value: 4 
-										})
+											nil -> (number value: 3).
+											nil -> (number value: 4)
+										}
+										primitiveName: #greaterThan)
 									true: (block
-										statements: { prim
+										statements: { call
 											selector: #turnOff
-											arguments: { number value: 13 } 
-										})
+											arguments: { nil -> (number value: 13) } 
+											primitiveName: #turnOff
+										}))
 							}
+							primitiveName: #write
 					})
 		}).
 	

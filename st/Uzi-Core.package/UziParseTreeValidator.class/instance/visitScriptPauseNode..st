@@ -1,8 +1,14 @@
 visiting
 visitScriptPauseNode: node
-	node scripts do: [:ref | (self assertScriptReference: ref)
-		ifTrue: [(self program scriptNamed: ref scriptName)
+	| validScriptNames |
+	validScriptNames := self program scripts collect: [:each | each name].
+	node scripts do: [:scriptName | 
+		self assert: (validScriptNames includes: scriptName)
+			description: 'Invalid script'
+			node: node.
+			
+		(self program scriptNamed: scriptName)
 			ifNotNil: [:script |
 				self assert: script isTask
 					description: 'Task reference expected'
-					node: node]]]
+					node: node]]

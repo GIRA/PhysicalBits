@@ -1,3 +1,5 @@
 visiting
 visitScriptStartNode: node
-	^ (node class scripts: (self visitCollection: node scripts)) token: node token
+	^ (node class 
+		scripts: (node scripts collect: [:scriptName | alias , scriptName])) 
+		token: node token

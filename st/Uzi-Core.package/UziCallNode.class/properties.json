@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-Parser-Nodes",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"selector",
+		"arguments",
+		"primitiveName" ],
+	"name" : "UziCallNode",
+	"pools" : [
+		 ],
+	"super" : "UziParseNode",
+	"type" : "normal" }

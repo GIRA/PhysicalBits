@@ -14,8 +14,9 @@ test028ForeverBodyShouldBeABlock
 				body: (block 
 					statements: {
 						forever
-							body: (prim
+							body: (call
 								selector: #turnOn
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #turnOn)
 					})
 		}).

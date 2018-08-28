@@ -19,12 +19,13 @@ test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclared
 							name: #a 
 							value: (number value: 5).
 						conditional
-							condition: (prim
+							condition: (call
 								selector: #greaterThan
 								arguments: { 
-									number value: 3.
-									number value: 4 
-								})
+									nil -> (number value: 3).
+									nil -> (number value: 4 )
+								}
+								primitiveName: #greaterThan)
 							true: (block
 								statements: { 
 									varDec 
@@ -33,11 +34,11 @@ test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclared
 								}).
 						assignment 
 							left: (var named: #a)
-							right: (prim
+							right: (call
 								selector: #+ 
 								arguments: {
-									var named: #a.
-									number value: 1
+									nil -> (var named: #a).
+									nil -> (number value: 1)
 								}
 								primitiveName: #add).
 					})

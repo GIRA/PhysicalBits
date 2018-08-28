@@ -10,12 +10,14 @@ test005ConditionalBranchesShouldBeBlocks
 				body: (block 
 					statements: {
 						conditional
-							condition: (prim
+							condition: (call
 								selector: #read
-								arguments: { number value: 13 })
-							true: (prim
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #read)
+							true: (call
 								selector: #turnOff
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #turnOff)
 					})
 		}).
 	
@@ -29,11 +31,11 @@ test005ConditionalBranchesShouldBeBlocks
 				body: (block 
 					statements: {
 						conditional
-							condition: (prim
+							condition: (call
 								selector: #read
-								arguments: { number value: 13 })
-							false: (prim
+								arguments: { nil -> (number value: 13) })
+							false: (call
 								selector: #turnOn
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) })
 					})
 		}).

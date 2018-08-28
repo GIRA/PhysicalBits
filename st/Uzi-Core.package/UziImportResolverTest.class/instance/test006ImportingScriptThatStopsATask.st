@@ -16,7 +16,7 @@ test006ImportingScriptThatStopsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't4.stopTask')
+					call selector: 't4.stopTask'
 				})
 		}.
 	expected := program 
@@ -25,22 +25,23 @@ test006ImportingScriptThatStopsATask
 			proc name: #'t4.stopTask'
 				arguments: #()
 				body: (block statements: {
-					stop scripts: { ref scriptName: 't4.blink' }
+					stop scripts: { 't4.blink' }
 				}).
 			task name: #'t4.blink'
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { pin type: #D number: 13 }
+					call selector: #toggle
+						arguments: { nil -> (pin type: #D number: 13) }
+						primitiveName: #toggle
 				}).
 			task name: #main				
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't4.stopTask')
+					call selector: 't4.stopTask'
 				})
 		}.
 	actual := ir applyOn: original.

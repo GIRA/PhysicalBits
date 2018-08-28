@@ -1,3 +1,3 @@
-accessing
+enumerating
 children
 	self subclassResponsibility

@@ -2,11 +2,10 @@ tests
 test066OperatorPrecedence
 	| actual expected |
 	actual := parser expression parse: '1/2'.
-	expected := prim
+	expected := call
 		selector: #/ 
 		arguments: {
-			number value: 1.
-			number value: 2
-		} 
-		primitiveName: #divide.
+			nil -> (number value: 1).
+			nil -> (number value: 2)
+		}.
 	self assert: expected equals: actual

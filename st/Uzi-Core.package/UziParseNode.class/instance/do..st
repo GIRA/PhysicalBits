@@ -1,4 +1,4 @@
-accessing
+enumerating
 do: aBlock
 	"Pre-order traversal"
 	aBlock value: self.

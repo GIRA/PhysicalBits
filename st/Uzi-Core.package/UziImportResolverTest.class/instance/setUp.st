@@ -9,7 +9,6 @@ setUp
 	proc := UziProcedureNode.
 	assignment := UziAssignmentNode.
 	var := UziVariableNode.
-	prim := UziPrimitiveCallNode.
 	number := UziNumberLiteralNode.
 	block := UziBlockNode.
 	conditional := UziConditionalNode.
@@ -19,10 +18,9 @@ setUp
 	start := UziScriptStartNode.
 	stop := UziScriptStopNode.
 	import := UziImportNode.
-	call := UziScriptCallNode.
+	call := UziCallNode.
 	func := UziFunctionNode.
 	return := UziReturnNode.
-	ref := UziScriptRefNode.
 	repeat := UziRepeatNode.
 	pause := UziScriptPauseNode.
 	resume := UziScriptResumeNode.

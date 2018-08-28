@@ -16,11 +16,11 @@ test034AVariableShouldBeDeclaredBeforeItsFirstUse
 					statements: {
 						assignment 
 							left: (var named: #a)
-							right: (prim
+							right: (call
 								selector: #+ 
 								arguments: {
-									var named: #a.
-									number value: 1
+									nil -> (var named: #a).
+									nil -> (number value: 1)
 								}
 								primitiveName: #add).
 						varDec 

@@ -10,6 +10,6 @@ test009CompilerPreservesParseNodes
 	instr1 := script instructions first.
 	self assert: 13 equals: instr1 node value.
 	instr2 := script instructions second.
-	self assert: instr1 node equals: instr2 node arguments first.
+	self assert: instr1 node equals: instr2 node arguments first value.
 	self assert: #toggle equals: instr2 node selector.
 	self assert: instr2 node arguments size = 1

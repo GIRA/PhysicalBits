@@ -16,7 +16,7 @@ test011ImportingAScriptThatCallsAnInternalProc
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't9.blink')
+					call selector: 't9.blink'
 				})
 		}.
 	expected := program 
@@ -28,15 +28,17 @@ test011ImportingAScriptThatCallsAnInternalProc
 					varDec name: 'ms'.
 				}
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { var named: 'pin' }.					
-					prim selector: #delayMs
-						arguments: { var named: 'ms' }
+					call selector: #toggle
+						arguments: { nil -> (var named: 'pin') }
+						primitiveName: #toggle.	
+					call selector: #delayMs
+						arguments: { nil -> (var named: 'ms') }
+						primitiveName: #delayMs
 				}).
 			proc name: #'t9.blink'
 				arguments: #()
 				body: (block statements: {
-					call script: (ref scriptName: 't9.toggleAndWait')
+					call selector: 't9.toggleAndWait'
 						arguments: {
 							nil -> (pin type: #D number: 13).
 							nil -> (number value: 100)
@@ -47,7 +49,7 @@ test011ImportingAScriptThatCallsAnInternalProc
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't9.blink')
+					call selector: 't9.blink'
 				})
 		}.
 	actual := ir applyOn: original.

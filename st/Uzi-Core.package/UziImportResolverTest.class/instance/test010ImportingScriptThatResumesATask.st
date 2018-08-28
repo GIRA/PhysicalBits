@@ -16,7 +16,7 @@ test010ImportingScriptThatResumesATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't8.resumeTask')
+					call selector: 't8.resumeTask'
 				})
 		}.
 	expected := program 
@@ -25,22 +25,23 @@ test010ImportingScriptThatResumesATask
 			proc name: #'t8.resumeTask'
 				arguments: #()
 				body: (block statements: {
-					resume scripts: { ref scriptName: 't8.blink' }
+					resume scripts: { 't8.blink' }
 				}).
 			task name: #'t8.blink'
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { pin type: #D number: 13 }
+					call selector: #toggle
+						arguments: { nil -> (pin type: #D number: 13) }
+						primitiveName: #toggle
 				}).
 			task name: #main				
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't8.resumeTask')
+					call selector: 't8.resumeTask'
 				})
 		}.
 	actual := ir applyOn: original.

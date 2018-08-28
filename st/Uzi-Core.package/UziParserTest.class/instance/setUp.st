@@ -2,5 +2,5 @@ setup
 setUp 
 	parser := UziParser new.
 
-	prim := UziPrimitiveCallNode.
+	call := UziCallNode.
 	number := UziNumberLiteralNode.

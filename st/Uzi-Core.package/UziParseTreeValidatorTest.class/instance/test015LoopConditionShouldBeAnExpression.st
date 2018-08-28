@@ -15,8 +15,9 @@ test015LoopConditionShouldBeAnExpression
 						doUntil
 							condition: (block statements: { var named: #a })
 							body: (block statements: {
-								prim selector: #turnOff
-									arguments: { number value: 13 }
+								call selector: #turnOff
+									arguments: { nil -> (number value: 13) }
+									primitiveName: #turnOff
 							})
 					})
 		}).

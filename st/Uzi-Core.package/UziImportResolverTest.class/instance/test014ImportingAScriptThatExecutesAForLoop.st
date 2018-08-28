@@ -16,7 +16,7 @@ test014ImportingAScriptThatExecutesAForLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't12.foo')
+					call selector: 't12.foo'
 				})
 		}.
 	expected := program 
@@ -38,7 +38,7 @@ test014ImportingAScriptThatExecutesAForLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't12.foo')
+					call selector: 't12.foo'
 				})
 		}.
 	actual := ir applyOn: original.

@@ -16,7 +16,7 @@ test005StartingImportedTask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					start scripts: { ref scriptName: 't3.blink13' }
+					start scripts: { 't3.blink13' }
 				})
 		}.
 	expected := program 
@@ -27,15 +27,16 @@ test005StartingImportedTask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { pin type: #D number: 13 }
+					call selector: #toggle
+						arguments: { nil -> (pin type: #D number: 13) }
+						primitiveName: #toggle
 				}).
 			task name: #main				
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					start scripts: { ref scriptName: 't3.blink13' }
+					start scripts: { 't3.blink13' }
 				})
 		}.
 	actual := ir applyOn: original.

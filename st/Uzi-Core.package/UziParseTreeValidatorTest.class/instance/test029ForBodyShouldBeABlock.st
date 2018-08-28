@@ -17,8 +17,9 @@ test029ForBodyShouldBeABlock
 							counter: (varDec name: #a)
 							start: (number value: 1)
 							stop: (number value: 10)
-							body: (prim
+							body: (call
 								selector: #turnOn
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #turnOn)
 					})
 		}).

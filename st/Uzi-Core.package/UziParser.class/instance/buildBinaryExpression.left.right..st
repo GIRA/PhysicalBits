@@ -4,8 +4,10 @@ buildBinaryExpression: selector left: left right: right
 	selector = #'&&' ifTrue: [^ UziLogicalAndNode left: left right: right].
 	selector = #'||' ifTrue: [^ UziLogicalOrNode left: left right: right].
 	
-	"If no special operator is found, return a prim call"
-	^ UziPrimitiveCallNode
+	"If no special operator is found, return a regular call"
+	^ UziCallNode
 		selector: selector
-		arguments: { left . right }
-		primitiveName: (self primitiveForSelector: selector)
+		arguments: { 
+			nil -> left . 
+			nil -> right 
+		}

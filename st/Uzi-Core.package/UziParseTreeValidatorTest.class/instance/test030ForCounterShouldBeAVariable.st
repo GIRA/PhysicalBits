@@ -18,9 +18,9 @@ test030ForCounterShouldBeAVariable
 							start: (number value: 1)
 							stop: (number value: 10)
 							body: (block statements: {
-								(prim
-									selector: #turnOn
-									arguments: { number value: 13 })
+								(call selector: #turnOn
+									arguments: { nil -> (number value: 13) }
+									primitiveName: #turnOn)
 							})
 					})
 		}).

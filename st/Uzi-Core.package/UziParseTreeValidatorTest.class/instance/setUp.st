@@ -5,7 +5,7 @@ setUp
 	proc := UziProcedureNode.
 	assignment := UziAssignmentNode.
 	var := UziVariableNode.
-	prim := UziPrimitiveCallNode.
+	call := UziCallNode.
 	number := UziNumberLiteralNode.
 	block := UziBlockNode.
 	conditional := UziConditionalNode.

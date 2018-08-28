@@ -1,0 +1,3 @@
+testing
+isPrimitive
+	^ primitiveName notNil

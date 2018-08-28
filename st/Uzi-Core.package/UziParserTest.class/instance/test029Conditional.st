@@ -7,4 +7,4 @@ test029Conditional
 	self assert: 1 equals: ast trueBranch statements size.
 	trueBranch := ast trueBranch.
 	self assert: #turnOn equals: trueBranch statements first selector.
-	self assert: 13 equals: trueBranch statements first arguments first value.
+	self assert: 13 equals: trueBranch statements first arguments first value value.

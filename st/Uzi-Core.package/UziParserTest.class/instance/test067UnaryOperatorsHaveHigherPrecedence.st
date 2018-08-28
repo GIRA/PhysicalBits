@@ -2,14 +2,12 @@ tests
 test067UnaryOperatorsHaveHigherPrecedence
 	| actual expected |
 	actual := parser expression end parse: '1 + !1'.
-	expected := prim
+	expected := call
 		selector: #+
 		arguments: {
-			number value: 1.
-			prim 
+			nil -> (number value: 1).
+			nil -> (call
 				selector: #!
-				arguments: { number value: 1}
-				primitiveName: #negate
-		} 
-		primitiveName: #add.
+				arguments: { nil -> (number value: 1) })
+		}.
 	self assert: expected equals: actual

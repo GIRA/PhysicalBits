@@ -13,8 +13,9 @@ test008LoopConditionOnlyAllowsOneExpression
 							condition: (block
 								statements: {
 									number value: 1.
-									prim selector: #read 
-										arguments: { number value: 13}
+									call selector: #read 
+										arguments: { nil -> (number value: 13) }
+										primitiveName: #read
 								})
 					})
 		}).

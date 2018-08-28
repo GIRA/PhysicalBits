@@ -16,7 +16,7 @@ test007ImportingScriptThatStartsATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't5.startTask')
+					call selector: 't5.startTask'
 				})
 		}.
 	expected := program 
@@ -25,22 +25,23 @@ test007ImportingScriptThatStartsATask
 			proc name: #'t5.startTask'
 				arguments: #()
 				body: (block statements: {
-					start scripts: { ref scriptName: 't5.blink' }
+					start scripts: { 't5.blink' }
 				}).
 			task name: #'t5.blink'
 				arguments: #()
 				state: #stopped
 				tickingRate: nil
 				body: (block statements: {
-					prim selector: #toggle
-						arguments: { pin type: #D number: 13 }
+					call selector: #toggle
+						arguments: { nil -> (pin type: #D number: 13) }
+						primitiveName: #toggle
 				}).
 			task name: #main				
 				arguments: #()
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't5.startTask')
+					call selector: 't5.startTask'
 				})
 		}.
 	actual := ir applyOn: original.

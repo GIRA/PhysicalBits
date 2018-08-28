@@ -9,4 +9,4 @@ test046DoUntil
 	self assert: ast negated.
 	body := ast body.
 	self assert: #turnOn equals: body statements first selector.
-	self assert: 13 equals: body statements first arguments first value.
+	self assert: 13 equals: body statements first arguments first value value.

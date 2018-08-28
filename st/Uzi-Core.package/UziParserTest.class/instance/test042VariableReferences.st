@@ -4,4 +4,4 @@ test042VariableReferences
 	pp := parser statement end.
 	ast := pp parse: 'toggle(a);'.
 	self assert: #toggle equals: ast selector.
-	self assert: #a equals: ast arguments first name
+	self assert: #a equals: ast arguments first value name

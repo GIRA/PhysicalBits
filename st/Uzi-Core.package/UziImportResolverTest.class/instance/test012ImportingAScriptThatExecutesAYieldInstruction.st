@@ -16,7 +16,7 @@ test012ImportingAScriptThatExecutesAYieldInstruction
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't10.foo')
+					call selector: 't10.foo'
 				})
 		}.
 	expected := program 
@@ -32,7 +32,7 @@ test012ImportingAScriptThatExecutesAYieldInstruction
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't10.foo')
+					call selector: 't10.foo'
 				})
 		}.
 	actual := ir applyOn: original.

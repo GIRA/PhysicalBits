@@ -16,7 +16,7 @@ test008ImportingScriptThatContainsRepeatLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't6.foo')
+					call selector: 't6.foo'
 				})
 		}.
 	expected := program 
@@ -29,9 +29,9 @@ test008ImportingScriptThatContainsRepeatLoop
 						times: (number value: 5)
 						body: (block
 							statements: {
-								prim
-									selector: #toggle
-									arguments: { pin type: #D number: 13 }
+								call selector: #toggle
+									arguments: { nil -> (pin type: #D number: 13) }
+									primitiveName: #toggle
 							})
 				}).
 			task name: #main				
@@ -39,7 +39,7 @@ test008ImportingScriptThatContainsRepeatLoop
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call script: (ref scriptName: 't6.foo')
+					call selector: 't6.foo'
 				})
 		}.
 	actual := ir applyOn: original.

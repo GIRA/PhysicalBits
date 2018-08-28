@@ -11,9 +11,10 @@ test004AssignmentValueShouldBeAnExpression
 					statements: {
 						assignment 
 							left: (var named: #a)
-							right: (prim 
+							right: (call 
 								selector: #turnOff 
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #turnOff)
 					})
 		}).
 
@@ -29,12 +30,13 @@ test004AssignmentValueShouldBeAnExpression
 						assignment 
 							left: (var named: #b)
 							right: (conditional
-								condition: (prim
+								condition: (call
 									selector: #lessThan
 									arguments: { 
-										number value: 3.
-										number value: 4 
-									})
+										nil -> (number value: 3).
+										nil -> (number value: 4)
+									}
+									primitiveName: #lessThan)
 								true: (block
 									statements: { number value: 3 })
 								false: (block

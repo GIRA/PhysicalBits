@@ -14,11 +14,12 @@ test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							number value: 13.
-							call script: (ref scriptName: #'test.foo')
+							nil -> (number value: 13).
+							nil -> (call selector: #'test.foo')
 						}
+						primitiveName: #write
 				})
 		}.
 	expected := program 
@@ -32,11 +33,12 @@ test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							number value: 13.
-							call script: (ref scriptName: #'test.foo')
+							nil -> (number value: 13).
+							nil -> (call selector: #'test.foo')
 						}
+						primitiveName: #write
 				})
 		}.
 	actual := ir applyOn: original.

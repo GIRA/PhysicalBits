@@ -14,12 +14,13 @@ test003ImportingNestedLibraries
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							number value: 13.
-							call script: (ref scriptName: #'t2.bar')
-								arguments: { nil -> (number value: 1) }
+							nil -> (number value: 13).
+							nil -> (call selector: #'t2.bar'
+								arguments: { nil -> (number value: 1) })
 						}
+						primitiveName: #write
 				})
 		}.
 	expected := program 
@@ -37,23 +38,24 @@ test003ImportingNestedLibraries
 					varDec name: #a
 				}
 				body: (block statements: {
-					return value: (prim
+					return value: (call
 						selector: #+
 						arguments: {
-							var named: #'t2.t1.v'.
-							var named: #a
+							nil -> (var named: #'t2.t1.v').
+							nil -> (var named: #a)
 						}
 						primitiveName: #add)
 				}).
 			task name: #main
 				arguments: #()
 				body: (block statements: {
-					prim selector: #write
+					call selector: #write
 						arguments: {
-							number value: 13.
-							call script: (ref scriptName: #'t2.bar') 
-								arguments: { nil -> (number value: 1) }
+							nil -> (number value: 13).
+							nil -> (call selector: #'t2.bar'
+								arguments: { nil -> (number value: 1) })
 						}
+						primitiveName: #write
 				})
 		}.
 	actual := ir applyOn: original.

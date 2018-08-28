@@ -12,13 +12,15 @@ test017PrimitiveCallArgumentsShouldBeExpressions
 				arguments: #() 
 				body: (block 
 					statements: {
-						prim
+						call
 							selector: #turnOn
 							arguments: {
 								block statements: {
-									prim selector: #turnOn
-										arguments: { number value: 13 }
+									call selector: #turnOn
+										arguments: { nil -> (number value: 13) }
+										primitiveName: #turnOn
 								}
 							}
+							primitiveName: #turnOn
 					})
 		}).

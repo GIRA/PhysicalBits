@@ -15,14 +15,16 @@ test031ForStartShouldBeAnExpression
 					statements: {
 						for 
 							counter: (varDec name: #a)
-							start: (prim
+							start: (call
 								selector: #toggle
-								arguments: { number value: 13 })
+								arguments: { nil -> (number value: 13) }
+								primitiveName: #toggle)
 							stop: (number value: 10)
 							body: (block statements: {
-								(prim
+								(call
 									selector: #turnOn
-									arguments: { number value: 13 })
+									arguments: { nil -> (number value: 13) }
+									primitiveName: #turnOn)
 							})
 					})
 		}).
