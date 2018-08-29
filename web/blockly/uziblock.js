@@ -145,7 +145,7 @@ var UziBlock = (function () {
 	
 	function getGeneratedCode(){
 		var xml = Blockly.Xml.workspaceToDom(workspace);
-		return CodeGenerator.generate(xml);
+		return BlocksToAST.generate(xml);
 	}
 	
 	function getGeneratedCodeAsJSON() {

@@ -1,4 +1,4 @@
-var CodeGenerator = (function () {
+var BlocksToAST = (function () {
 	
 	var builder = {
 		program: function (id, imports, globals, scripts) {
