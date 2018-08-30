@@ -2,7 +2,7 @@ var UziBlock = (function () {
 	
 	var blocklyArea, blocklyDiv, workspace;	
 	var autorunInterval, autorunNextTime;	
-	var lastFileName;
+	var lastFileName, lastProgram;
 	
 	function init(area, div) {
 		blocklyArea = area;
@@ -174,12 +174,15 @@ var UziBlock = (function () {
 		var currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
 		
-		var old = Uzi.currentProgram;
+		var old = Uzi.program;
+		if (old !== undefined && old.compiled === false) return;
+		
 		var cur = getGeneratedCodeAsJSON();
-		if (old !== undefined && old.src === cur) return;
+		if (cur === lastProgram) return;
 		
 		autorunNextTime = undefined;
 		Uzi.run(cur, "json", function (bytecodes) {
+			lastProgram = cur;
 			console.log(bytecodes);
 		});
 	}

@@ -4,6 +4,7 @@ var Uzi = (function () {
 	var eventList = {
 		error: [],
 		connectionUpdate: [],
+		programUpdate: [],
 		monitorUpdate: [],
 	};
 			
@@ -11,7 +12,12 @@ var Uzi = (function () {
 		baseUrl: "",
 		isConnected: false,
 		portName: undefined,
-		currentProgram: undefined,
+		program: {
+			id: undefined,
+			src: undefined,
+			ast: undefined,
+			bytecodes: undefined,
+		},
 		pinsReporting: new Set(),
 		pins: [],
 		availableGlobals: [],
@@ -23,6 +29,9 @@ var Uzi = (function () {
 		},
 		onConnectionUpdate: function (callback) {
 			eventList.connectionUpdate.push(callback);
+		},
+		onProgramUpdate: function (callback) {
+			eventList.programUpdate.push(callback);
 		},
 		onMonitorUpdate: function (callback) {
 			eventList.monitorUpdate.push(callback);
@@ -148,6 +157,16 @@ var Uzi = (function () {
 	}
 
 	function run(src, type, callback) {
+		var program = {
+			id: undefined,
+			compiled: false			
+		};
+		if (type === "json") {
+			program.ast = src;
+		} else {
+			program.src = src;
+		}
+		Uzi.program = program;
 		ajax.request({ 
 			type: 'POST', 
 			url: Uzi.baseUrl + "/uzi/actions/run",
@@ -157,13 +176,17 @@ var Uzi = (function () {
 				type: type
 			},
 			success: function (bytecodes) {
-				Uzi.currentProgram = {
-					src: src,
-					type: type
-				};
 				callback(bytecodes);
 			},
-			error: errorHandler
+			error: function (err) {
+				Uzi.program = {
+					id: undefined,
+					src: undefined,
+					ast: undefined,
+					bytecodes: undefined,
+				};
+				errorHandler(err);
+			}
 		}, 0);
 	}
 
@@ -198,13 +221,19 @@ var Uzi = (function () {
 	function update(uzi) {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
-		Uzi.availableGlobals = uzi.globals.available;
-		Uzi.program = uzi.program;
-		
-		if (!Uzi.isConnected) {
-			Uzi.currentProgram = undefined;
-		}		
+		Uzi.availableGlobals = uzi.globals.available;		
 		triggerEvent(eventList.connectionUpdate);
+		
+		if (Uzi.program.id !== uzi.program.id) {
+			Uzi.program = {
+				id: uzi.program.id,
+				src: uzi.program.src,
+				ast: uzi.program.ast,
+				bytecodes: uzi.program.bytecodes,
+				compiled: true
+			};
+			triggerEvent(eventList.programUpdate);
+		}		
 	}
 
 	function updateLoop(first) {
