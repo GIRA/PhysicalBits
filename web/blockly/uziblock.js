@@ -2,7 +2,8 @@ var UziBlock = (function () {
 	
 	var blocklyArea, blocklyDiv, workspace;	
 	var autorunInterval, autorunNextTime;	
-	var lastFileName, lastProgram;
+	var lastFileName;
+	var lastProgram = { ast: undefined, bytecodes: undefined };
 	
 	function init(area, div) {
 		blocklyArea = area;
@@ -28,7 +29,12 @@ var UziBlock = (function () {
 		});
 
 		$("#run").on("click", function () {
-			Uzi.run(getGeneratedCodeAsJSON(), "json", function (bytecodes) {			
+			var cur = getGeneratedCodeAsJSON();
+			Uzi.run(cur, "json", function (bytecodes) {
+				lastProgram = {
+					ast: cur,
+					bytecodes: bytecodes
+				};
 				console.log(bytecodes);
 			});
 		});
@@ -83,6 +89,14 @@ var UziBlock = (function () {
 				$("#install").attr("disabled", "disabled");
 				$("#run").attr("disabled", "disabled");
 				$("#more").attr("disabled", "disabled");
+			}
+		});
+		
+		Uzi.onProgramUpdate(function () {
+			var prev = JSON.stringify(lastProgram.bytecodes);
+			var next = JSON.stringify(Uzi.program.bytecodes);
+			if (prev !== next) {
+				console.log("PROGRAM UPDATE! " + +new Date());
 			}
 		});
 	}
@@ -178,11 +192,14 @@ var UziBlock = (function () {
 		if (old !== undefined && old.compiled === false) return;
 		
 		var cur = getGeneratedCodeAsJSON();
-		if (cur === lastProgram) return;
+		if (cur === lastProgram.ast) return;
 		
 		autorunNextTime = undefined;
 		Uzi.run(cur, "json", function (bytecodes) {
-			lastProgram = cur;
+			lastProgram = {
+				ast: cur,
+				bytecodes: bytecodes
+			};
 			console.log(bytecodes);
 		});
 	}
