@@ -212,7 +212,15 @@ var UziBlock = (function () {
 	return {
 		init: init,
 		getGeneratedCode: getGeneratedCode,
-		getWorkspace: function () { return workspace; }
+		getWorkspace: function () { return workspace; },
+		
+		setWorkspaceFromAST: function (ast) {
+			var xml = ASTToBlocks.generate(ast);
+			workspace.clear();
+			Blockly.Xml.domToWorkspace(xml, workspace);
+			workspace.cleanUp();
+			return xml;
+		}
 	};
 	
 })();
