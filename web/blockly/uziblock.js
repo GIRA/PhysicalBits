@@ -96,7 +96,10 @@ var UziBlock = (function () {
 			var prev = JSON.stringify(lastProgram.bytecodes);
 			var next = JSON.stringify(Uzi.program.bytecodes);
 			if (prev !== next) {
-				console.log("PROGRAM UPDATE! " + +new Date());
+				var xml = ASTToBlocks.generate(Uzi.program.ast);
+				workspace.clear();
+				Blockly.Xml.domToWorkspace(xml, workspace);
+				workspace.cleanUp();
 			}
 		});
 	}
@@ -212,15 +215,7 @@ var UziBlock = (function () {
 	return {
 		init: init,
 		getGeneratedCode: getGeneratedCode,
-		getWorkspace: function () { return workspace; },
-		
-		setWorkspaceFromAST: function (ast) {
-			var xml = ASTToBlocks.generate(ast);
-			workspace.clear();
-			Blockly.Xml.domToWorkspace(xml, workspace);
-			workspace.cleanUp();
-			return xml;
-		}
+		getWorkspace: function () { return workspace; }
 	};
 	
 })();
