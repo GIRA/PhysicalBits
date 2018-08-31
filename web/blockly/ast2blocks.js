@@ -23,6 +23,38 @@ var ASTToBlocks = (function () {
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
+		UziProcedureNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "procedures_defnoreturn");
+			var mut = create("mutation");
+			var script = ctx.scriptNamed(json.name);
+			script.arguments.forEach(function (arg) {
+				var argNode = create("arg");
+				argNode.setAttribute("name", arg.name);
+				mut.appendChild(argNode);
+			});
+			node.appendChild(mut);			
+			appendField(node, "NAME", json.name);
+			appendStatements(node, "STACK", json.body, ctx);
+			return node;
+		},
+		UziFunctionNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "procedures_defreturn");
+			var mut = create("mutation");
+			var script = ctx.scriptNamed(json.name);
+			script.arguments.forEach(function (arg) {
+				var argNode = create("arg");
+				argNode.setAttribute("name", arg.name);
+				mut.appendChild(argNode);
+			});
+			node.appendChild(mut);			
+			appendField(node, "NAME", json.name);
+			appendStatements(node, "STACK", json.body, ctx);
+			return node;
+		},
 		UziCallNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
@@ -32,9 +64,29 @@ var ASTToBlocks = (function () {
 				node.setAttribute("type", "run_task");
 				appendField(node, "taskName", json.selector);
 			} else if (ctx.isProcedure(json.selector)) {
-				debugger;
+				node.setAttribute("type", "procedures_callnoreturn");
+				var mut = create("mutation");
+				mut.setAttribute("name", json.selector);
+				var script = ctx.scriptNamed(json.selector);
+				json.arguments.forEach(function (arg, index) {
+					var argNode = create("arg");
+					argNode.setAttribute("name", script.arguments[index].name);
+					mut.appendChild(argNode);
+					appendValue(node, "ARG" + index, generateXMLFor(arg.value, ctx));
+				});
+				node.appendChild(mut);
 			} else if (ctx.isFunction(json.selector)) {
-				debugger;
+				node.setAttribute("type", "procedures_callreturn");
+				var mut = create("mutation");
+				mut.setAttribute("name", json.selector);
+				var script = ctx.scriptNamed(json.selector);
+				json.arguments.forEach(function (arg, index) {
+					var argNode = create("arg");
+					argNode.setAttribute("name", script.arguments[index].name);
+					mut.appendChild(argNode);
+					appendValue(node, "ARG" + index, generateXMLFor(arg.value, ctx));
+				});
+				node.appendChild(mut);
 			} else {
 				throw "Invalid call: "+ json.selector;
 			}
@@ -148,6 +200,31 @@ var ASTToBlocks = (function () {
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
+		UziAssignmentNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			// HACK(Richo): Check if the assignment represents a variable increment
+			if (json.right.__class__ === "UziCallNode" 
+				&& json.right.selector === "+"
+				&& json.right.arguments[0].value.__class__ === "UziVariableNode"
+				&& json.right.arguments[0].value.name == json.left.name) {
+				node.setAttribute("type", "math_change");
+				appendField(node, "VAR", json.left.name);
+				appendValue(node, "DELTA", generateXMLFor(json.right.arguments[1].value, ctx));
+			} else {
+				node.setAttribute("type", "variables_set");
+				appendField(node, "VAR", json.left.name);
+				appendValue(node, "VALUE", generateXMLFor(json.right, ctx));
+			}
+			return node;
+		},
+		UziVariableNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "variables_get");
+			appendField(node, "VAR", json.name);
+			return node;
+		},
 	};
 	
 	function initPrimitive(node, json, ctx) {
@@ -159,6 +236,10 @@ var ASTToBlocks = (function () {
 		} else if (selector === "turnOn") {
 			node.setAttribute("type", "turn_pin_variable");
 			appendField(node, "pinState", "on");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+		} else if (selector === "turnOff") {
+			node.setAttribute("type", "turn_pin_variable");
+			appendField(node, "pinState", "off");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "isOn") {
 			node.setAttribute("type", "is_pin_variable");
@@ -223,6 +304,17 @@ var ASTToBlocks = (function () {
 			node.setAttribute("type", "math_modulo");
 			appendValue(node, "DIVIDEND", generateXMLFor(args[0], ctx));
 			appendValue(node, "DIVISOR", generateXMLFor(args[1], ctx));
+		} else if (selector === "constrain") {
+			node.setAttribute("type", "math_constrain");
+			appendValue(node, "VALUE", generateXMLFor(args[0], ctx));
+			appendValue(node, "LOW", generateXMLFor(args[1], ctx));
+			appendValue(node, "HIGH", generateXMLFor(args[2], ctx));
+		} else if (selector === "randomInt") {
+			node.setAttribute("type", "math_random_int");
+			appendValue(node, "FROM", generateXMLFor(args[0], ctx));
+			appendValue(node, "TO", generateXMLFor(args[1], ctx));
+		} else if (selector === "random") {
+			node.setAttribute("type", "math_random_float");
 		} else {
 			console.log(json);
 			debugger;
