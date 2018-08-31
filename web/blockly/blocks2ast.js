@@ -207,6 +207,22 @@ var BlocksToAST = (function () {
 				id: id,
 				value: value
 			};
+		},
+		logicalAnd: function (id, left, right) {
+			return {
+				__class__: "UziLogicalAndNode",
+				id: id,
+				left: left,
+				right: right
+			};
+		},
+		logicalOr: function (id, left, right) {
+			return {
+				__class__: "UziLogicalOrNode",
+				id: id,
+				left: left,
+				right: right
+			};
 		}
 	};
 	
@@ -356,15 +372,11 @@ var BlocksToAST = (function () {
 			var type = getChildNode(block, "OP").innerText;
 			var left = generateCodeForValue(block, ctx, "A");
 			var right = generateCodeForValue(block, ctx, "B");
-			var selector, primName;
 			if (type === "AND") {
-				selector = "&&";
-				primName = "logicalAnd";
+				return builder.logicalAnd(id, left, right);
 			} else if (type === "OR") {
-				selector = "||";
-				primName = "logicalOr";
+				return builder.logicalOr(id, left, right);
 			}
-			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		logic_boolean: function (block, ctx) {
 			var id = getId(block);
@@ -640,9 +652,11 @@ var BlocksToAST = (function () {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
-			mutation.childNodes.forEach(function (each) {
-				args.push(asIdentifier(each.getAttribute("name")));
-			});			
+			if (mutation !== undefined) {
+				mutation.childNodes.forEach(function (each) {
+					args.push(asIdentifier(each.getAttribute("name")));
+				});
+			}
 			var statements = generateCodeForStatements(block, ctx, "STACK");
 			return builder.procedure(id, name, args, statements);
 		},
@@ -701,9 +715,11 @@ var BlocksToAST = (function () {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
-			mutation.childNodes.forEach(function (each) {
-				args.push(asIdentifier(each.getAttribute("name")));
-			});
+			if (mutation !== undefined) {
+				mutation.childNodes.forEach(function (each) {
+					args.push(asIdentifier(each.getAttribute("name")));
+				});
+			}
 			var statements = generateCodeForStatements(block, ctx, "STACK");
 			// TODO(Richo): Decide what to do if the return block is not defined
 			var returnExpr = generateCodeForValue(block, ctx, "RETURN");
