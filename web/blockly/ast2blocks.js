@@ -34,7 +34,7 @@ var ASTToBlocks = (function () {
 				argNode.setAttribute("name", arg.name);
 				mut.appendChild(argNode);
 			});
-			node.appendChild(mut);			
+			node.appendChild(mut);
 			appendField(node, "NAME", json.name);
 			appendStatements(node, "STACK", json.body, ctx);
 			return node;
@@ -67,6 +67,7 @@ var ASTToBlocks = (function () {
 				node.setAttribute("type", "procedures_callnoreturn");
 				var mut = create("mutation");
 				mut.setAttribute("name", json.selector);
+				node.appendChild(mut);
 				var script = ctx.scriptNamed(json.selector);
 				json.arguments.forEach(function (arg, index) {
 					var argNode = create("arg");
@@ -74,11 +75,11 @@ var ASTToBlocks = (function () {
 					mut.appendChild(argNode);
 					appendValue(node, "ARG" + index, generateXMLFor(arg.value, ctx));
 				});
-				node.appendChild(mut);
 			} else if (ctx.isFunction(json.selector)) {
 				node.setAttribute("type", "procedures_callreturn");
 				var mut = create("mutation");
 				mut.setAttribute("name", json.selector);
+				node.appendChild(mut);
 				var script = ctx.scriptNamed(json.selector);
 				json.arguments.forEach(function (arg, index) {
 					var argNode = create("arg");
@@ -86,14 +87,13 @@ var ASTToBlocks = (function () {
 					mut.appendChild(argNode);
 					appendValue(node, "ARG" + index, generateXMLFor(arg.value, ctx));
 				});
-				node.appendChild(mut);
 			} else {
 				throw "Invalid call: "+ json.selector;
 			}
 			return node;
 		},
 		UziNumberLiteralNode: function (json, ctx) {
-			var node = create("shadow");
+			var node = create("block");
 			node.setAttribute("id", json.id);
 			if (json.value == Math.PI) {			
 				node.setAttribute("type", "math_constant");
@@ -120,7 +120,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziPinLiteralNode: function (json, ctx) {
-			var node = create("shadow");
+			var node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "pin");
 			appendField(node, "pinNumber", json.type + json.number);
@@ -225,6 +225,24 @@ var ASTToBlocks = (function () {
 			appendField(node, "VAR", json.name);
 			return node;
 		},
+		UziLogicalOrNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "OR");
+			appendValue(node, "A", generateXMLFor(json.left, ctx));
+			appendValue(node, "B", generateXMLFor(json.right, ctx));
+			return node;
+		},
+		UziLogicalAndNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "AND");
+			appendValue(node, "A", generateXMLFor(json.left, ctx));
+			appendValue(node, "B", generateXMLFor(json.right, ctx));
+			return node;
+		}
 	};
 	
 	function initPrimitive(node, json, ctx) {
@@ -278,11 +296,6 @@ var ASTToBlocks = (function () {
 		} else if (selector === "+") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "OP", "ADD");
-			appendValue(node, "A", generateXMLFor(args[0], ctx));
-			appendValue(node, "B", generateXMLFor(args[1], ctx));
-		} else if (selector === "&&") {
-			node.setAttribute("type", "logic_operation");
-			appendField(node, "OP", "AND");
 			appendValue(node, "A", generateXMLFor(args[0], ctx));
 			appendValue(node, "B", generateXMLFor(args[1], ctx));
 		} else if (selector === "==") {
@@ -381,7 +394,7 @@ var ASTToBlocks = (function () {
 	return {
 		generate: function (json) {
 			var ctx = {
-				path: [json],
+				path: [],
 				scriptNamed: function (name) {
 					return ctx.path[0].scripts.find(function (each) {
 						return each.name === name;
