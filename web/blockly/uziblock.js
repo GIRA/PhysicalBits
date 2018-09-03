@@ -95,7 +95,7 @@ var UziBlock = (function () {
 		Uzi.onProgramUpdate(function () {
 			var prev = JSON.stringify(lastProgram.bytecodes);
 			var next = JSON.stringify(Uzi.program.bytecodes);
-			if (prev !== next) {
+			if (prev !== next && workspace !== undefined) {
 				var xml = ASTToBlocks.generate(Uzi.program.ast);
 				workspace.clear();
 				Blockly.Xml.domToWorkspace(xml, workspace);
