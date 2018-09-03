@@ -189,6 +189,15 @@ var ASTToBlocks = (function () {
 			appendStatements(node, "statements", json.post, ctx);
 			return node;
 		},
+		UziUntilNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "repeat");
+			appendField(node, "negate", json.negated);
+			appendValue(node, "condition", generateXMLFor(json.condition, ctx));
+			appendStatements(node, "statements", json.post, ctx);
+			return node;
+		},
 		UziForNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
@@ -228,7 +237,7 @@ var ASTToBlocks = (function () {
 		UziLogicalOrNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "logic_compare");
+			node.setAttribute("type", "logic_operation");
 			appendField(node, "OP", "OR");
 			appendValue(node, "A", generateXMLFor(json.left, ctx));
 			appendValue(node, "B", generateXMLFor(json.right, ctx));
@@ -237,10 +246,25 @@ var ASTToBlocks = (function () {
 		UziLogicalAndNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "logic_compare");
+			node.setAttribute("type", "logic_operation");
 			appendField(node, "OP", "AND");
 			appendValue(node, "A", generateXMLFor(json.left, ctx));
 			appendValue(node, "B", generateXMLFor(json.right, ctx));
+			return node;
+		},
+		UziReturnNode: function (json, ctx) {
+			var node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "procedures_ifreturn");
+			var mut = create("mutation");
+			mut.setAttribute("value", "1"); // TODO(Richo): ¿?
+			node.appendChild(mut);
+			var condition = create("block");
+			condition.setAttribute("id", json.id); // TODO(Richo): Can we share ids between blocks?
+			condition.setAttribute("type", "logic_boolean");
+			appendField(condition, "BOOL", "TRUE");
+			appendValue(node, "CONDITION", condition);
+			appendValue(node, "VALUE", generateXMLFor(json.value, ctx));
 			return node;
 		}
 	};
@@ -263,6 +287,10 @@ var ASTToBlocks = (function () {
 			node.setAttribute("type", "is_pin_variable");
 			appendField(node, "pinState", "on");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+		} else if (selector === "isOff") {
+			node.setAttribute("type", "is_pin_variable");
+			appendField(node, "pinState", "off");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "write") {
 			node.setAttribute("type", "write_pin_variable");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
@@ -278,29 +306,136 @@ var ASTToBlocks = (function () {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "ms");
 			appendValue(node, "time", generateXMLFor(args[0], ctx));
+		} else if (selector === "delayS") {
+			node.setAttribute("type", "delay");
+			appendField(node, "unit", "s");
+			appendValue(node, "time", generateXMLFor(args[0], ctx));
+		} else if (selector === "delayM") {
+			node.setAttribute("type", "delay");
+			appendField(node, "unit", "m");
+			appendValue(node, "time", generateXMLFor(args[0], ctx));
+		} else if (selector === "millis") {
+			node.setAttribute("type", "elapsed_time");
+			appendField(node, "unit", "ms");
 		} else if (selector === "seconds") {
 			node.setAttribute("type", "elapsed_time");
 			appendField(node, "unit", "s");
+		} else if (selector === "minutes") {
+			node.setAttribute("type", "elapsed_time");
+			appendField(node, "unit", "m");
 		} else if (selector === "sin") {
 			node.setAttribute("type", "math_trig");
 			appendField(node, "OP", "SIN");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "cos") {
+			node.setAttribute("type", "math_trig");
+			appendField(node, "OP", "COS");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "tan") {
+			node.setAttribute("type", "math_trig");
+			appendField(node, "OP", "TAN");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "asin") {
+			node.setAttribute("type", "math_trig");
+			appendField(node, "OP", "ASIN");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "acos") {
+			node.setAttribute("type", "math_trig");
+			appendField(node, "OP", "ACOS");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "atan") {
+			node.setAttribute("type", "math_trig");
+			appendField(node, "OP", "ATAN");
 			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
 		} else if (selector === "round") {
 			node.setAttribute("type", "math_round");
 			appendField(node, "OP", "ROUND");
 			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "ceil") {
+			node.setAttribute("type", "math_round");
+			appendField(node, "OP", "ROUNDUP");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "floor") {
+			node.setAttribute("type", "math_round");
+			appendField(node, "OP", "ROUNDDOWN");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
 		} else if (selector === "sqrt") {
 			node.setAttribute("type", "math_single");
 			appendField(node, "OP", "ROOT");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "abs") {
+			node.setAttribute("type", "math_single");
+			appendField(node, "OP", "ABS");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "ln") {
+			node.setAttribute("type", "math_single");
+			appendField(node, "OP", "LN");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "log10") {
+			node.setAttribute("type", "math_single");
+			appendField(node, "OP", "LOG10");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "exp") {
+			node.setAttribute("type", "math_single");
+			appendField(node, "OP", "EXP");
+			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
+		} else if (selector === "pow10") {
+			node.setAttribute("type", "math_single");
+			appendField(node, "OP", "POW10");
 			appendValue(node, "NUM", generateXMLFor(args[0], ctx));
 		} else if (selector === "+") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "OP", "ADD");
 			appendValue(node, "A", generateXMLFor(args[0], ctx));
 			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "-") {
+			node.setAttribute("type", "math_arithmetic");
+			appendField(node, "OP", "MINUS");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "*") {
+			node.setAttribute("type", "math_arithmetic");
+			appendField(node, "OP", "MULTIPLY");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "/") {
+			node.setAttribute("type", "math_arithmetic");
+			appendField(node, "OP", "DIVIDE");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "**") {
+			node.setAttribute("type", "math_arithmetic");
+			appendField(node, "OP", "POWER");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
 		} else if (selector === "==") {
 			node.setAttribute("type", "logic_compare");
 			appendField(node, "OP", "EQ");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "!=") {
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "NEQ");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "<=") {
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "LTE");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === "<") {
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "LT");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === ">=") {
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "GTE");
+			appendValue(node, "A", generateXMLFor(args[0], ctx));
+			appendValue(node, "B", generateXMLFor(args[1], ctx));
+		} else if (selector === ">") {
+			node.setAttribute("type", "logic_compare");
+			appendField(node, "OP", "GT");
 			appendValue(node, "A", generateXMLFor(args[0], ctx));
 			appendValue(node, "B", generateXMLFor(args[1], ctx));
 		} else if (selector === "!") {
@@ -313,6 +448,49 @@ var ASTToBlocks = (function () {
 			node.appendChild(mut);
 			appendField(node, "PROPERTY", "EVEN");
 			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isOdd") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "false");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "ODD");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isPrime") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "false");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "PRIME");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isWhole") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "false");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "WHOLE");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isPositive") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "false");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "POSITIVE");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isNegative") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "false");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "NEGATIVE");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+		} else if (selector === "isDivisibleBy") {
+			node.setAttribute("type", "math_number_property");
+			var mut = create("mutation");
+			mut.setAttribute("divisor_input", "true");
+			node.appendChild(mut);
+			appendField(node, "PROPERTY", "DIVISIBLE_BY");
+			appendValue(node, "NUMBER_TO_CHECK", generateXMLFor(args[0], ctx));
+			appendValue(node, "DIVISOR", generateXMLFor(args[1], ctx));
 		} else if (selector === "%") {
 			node.setAttribute("type", "math_modulo");
 			appendValue(node, "DIVIDEND", generateXMLFor(args[0], ctx));
