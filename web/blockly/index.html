@@ -34,7 +34,7 @@
 			font-size: 16px;
 		}
 		
-		#left-bar {
+		#leftBar-expanded {
 			top: 0;
 			left: 0;
 			background-color: white;
@@ -42,6 +42,20 @@
 			position: absolute;
 			height: 100%;
 			width: 274px;
+		}
+		
+		#leftBar-collapsed {
+			top: 0;
+			left: 0;
+			background-color: white;
+			color: #0A0A0A;
+			position: absolute;
+			height: 100%;
+			width: 40px;
+		}
+		
+		#leftBar_collapseButton {
+			float: right;
 		}
 		
 		#title {
@@ -64,7 +78,15 @@
   </head>
 
   <body>
-	<div id="left-bar">
+	<div id="leftBar-collapsed">
+		<button id="leftBar_expandButton" class="btn btn-link">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+		</button>
+	</div>
+	<div id="leftBar-expanded">
+		<button id="leftBar_collapseButton" class="btn btn-link">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+		</button>
 		<div id="title">
 			<h1>UziBlock</h1>
 		</div>
@@ -202,6 +224,19 @@
 	<script type="text/javascript">
 		Uzi.start();
 		UziBlock.init(editor, blockly);
+		
+		$("#leftBar_collapseButton").on("click", function () {
+			$("#leftBar-expanded").css("display", "none");
+			$("#leftBar-collapsed").css("display", "");
+			$("#editor").css("left", $("#leftBar-collapsed").width() + "px");
+			UziBlock.resize();
+		});
+		$("#leftBar_expandButton").on("click", function () {
+			$("#leftBar-collapsed").css("display", "none");
+			$("#leftBar-expanded").css("display", "");
+			$("#editor").css("left", $("#leftBar-expanded").width() + "px");
+			UziBlock.resize();
+		});
 	</script>
   </body>
 </html>

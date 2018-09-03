@@ -138,24 +138,26 @@ var UziBlock = (function () {
 		Blockly.defineBlocksWithJsonArray(blocks);
 	}	
 	
+	function resize() {		
+		// Compute the absolute coordinates and dimensions of blocklyArea.
+		var element = blocklyArea;
+		var x = 0;
+		var y = 0;
+		do {
+		  x += element.offsetLeft;
+		  y += element.offsetTop;
+		  element = element.offsetParent;
+		} while (element);
+		// Position blocklyDiv over blocklyArea.
+		blocklyDiv.style.left = x + 'px';
+		blocklyDiv.style.top = y + 'px';
+		blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+		blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+		Blockly.svgResize(workspace);
+	}
+	
 	function makeResizable() {
-		var onresize = function (e) {
-			// Compute the absolute coordinates and dimensions of blocklyArea.
-			var element = blocklyArea;
-			var x = 0;
-			var y = 0;
-			do {
-			  x += element.offsetLeft;
-			  y += element.offsetTop;
-			  element = element.offsetParent;
-			} while (element);
-			// Position blocklyDiv over blocklyArea.
-			blocklyDiv.style.left = x + 'px';
-			blocklyDiv.style.top = y + 'px';
-			blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-			blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-			Blockly.svgResize(workspace);
-		}
+		var onresize = function (e) { resize(); }
 		window.addEventListener('resize', onresize, false);
 		onresize();
 	}
@@ -214,6 +216,7 @@ var UziBlock = (function () {
 	
 	return {
 		init: init,
+		resize: resize,
 		getGeneratedCode: getGeneratedCode,
 		getWorkspace: function () { return workspace; }
 	};
