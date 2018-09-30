@@ -13,6 +13,7 @@ Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, fl
 	script->instructions = 0;
 	script->coroutine = 0;
 
+
 	bool timeout;
 	uint8 h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
@@ -139,10 +140,38 @@ Coroutine* Script::getCoroutine(void)
 		coroutine->breakCount = -1;
 		coroutine->error = NO_ERROR;
 		coroutine->stackSize = 0;
-		coroutine->stackAllocated = 0;
-		coroutine->stackElements = 0;
+		coroutine->stackAllocated = estimateStackSize();
+		if (coroutine->stackAllocated == 0)
+		{
+			coroutine->stackElements = 0;
+		}
+		else 
+		{
+			coroutine->stackElements = uzi_createArray(float, coroutine->stackAllocated);
+			if (coroutine->stackElements == 0)
+			{
+				coroutine->setError(OUT_OF_MEMORY);
+				coroutine->stackAllocated = coroutine->stackSize = 0;
+				return 0;
+			}
+		}
 	}
 	return coroutine;
+}
+
+uint16 Script::estimateStackSize() 
+{
+	int16 total = 0;
+	int16 max = 0;
+	for (int i = 0; i < instructionCount; i++)
+	{
+		uint8 opcode = instructions[i].opcode;
+		int8 stackImpact = (opcode >> 6) - 2;
+		total += stackImpact;
+		if (max < total) { max = total; }
+	}
+	// TODO(Richo): When all instructions are calculated correctly, total should be 0
+	return max < 0 ? 0 : max;
 }
 
 bool Script::hasCoroutine(void) 

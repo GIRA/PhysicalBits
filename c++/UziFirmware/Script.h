@@ -38,6 +38,8 @@ struct Script
 
 	Coroutine* getCoroutine(void);
 	bool hasCoroutine(void);
+
+	uint16 estimateStackSize();
 };
 
 Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals);
