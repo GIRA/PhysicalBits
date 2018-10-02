@@ -3,6 +3,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simulator;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SimulatorTest
 {
@@ -10,14 +12,24 @@ namespace SimulatorTest
     public class SketchTest
     {
         private static readonly Sketch sketch = Sketch.Current;
+        private static Dictionary<string, RuntimeStats[]> stats;
 
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
 
+        public TestContext TestContext { get; set; }
+
+        [ClassInitialize]
+        public static void ClassInit(TestContext context)
+        {
+            stats = new Dictionary<string, RuntimeStats[]>();
+        }
+
         [TestInitialize]
         public void Setup()
         {
+            sketch.RegisterStats(true);
             sketch.SetMillis(0);
             sketch.Setup();
 
@@ -43,12 +55,44 @@ namespace SimulatorTest
         [TestCleanup]
         public void TearDown()
         {
+            stats[TestContext.TestName] = sketch.Stats.ToArray();
+
             // INFO(Richo): Make sure we get disconnected before the next test.
             sketch.SetMillis(int.MaxValue);
             for (int i = 0; i < 1000; i++)
             {
                 sketch.Loop();
             }
+        }
+
+        [ClassCleanup]
+        public static void ClassCleanup()
+        {
+            var path = Path.Combine("..", "SimulatorTest", "TestFiles", "RuntimeStats.csv");
+            var sb = new StringBuilder();
+            var columns = new[]
+            {
+                "TestName", "Loops",
+                "Min memory available", "Max memory available", "Avg memory available",
+                "Total coroutine resizings"
+            };
+            sb.AppendLine(string.Join(",", columns));
+            var lines = stats
+                .OrderBy(kvp => kvp.Key)
+                .Select(kvp => string.Join(",", new object[]
+                {
+                    kvp.Key,
+                    kvp.Value.Count(),
+                    kvp.Value.Min(each => each.AvailableMemory),
+                    kvp.Value.Max(each => each.AvailableMemory),
+                    kvp.Value.Average(each => each.AvailableMemory),
+                    kvp.Value.Sum(each => each.CoroutineResizeCounter)
+                }));
+            foreach (var line in lines)
+            {
+                sb.AppendLine(line);
+            }
+            File.WriteAllText(path, sb.ToString());
         }
 
         private void TurnOffAllPins()
