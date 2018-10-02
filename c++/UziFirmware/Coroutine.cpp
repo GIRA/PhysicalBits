@@ -39,9 +39,12 @@ void Coroutine::setPC(int16 value)
 void Coroutine::saveStack(StackArray* stack)
 {
 	stackSize = stack->getPointer();
-	if (stackSize > stackAllocated)
+	if (stackSize > stackAllocated) // We need to grow!
 	{
-		// We need to grow!
+#ifdef __SIMULATOR__
+		Stats.coroutineResizeCounter++;
+#endif // __SIMULATOR__
+
 		stackAllocated = stackSize;
 		stackElements = uzi_createArray(float, stackAllocated);
 		if (stackElements == 0) 

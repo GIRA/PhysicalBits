@@ -17,6 +17,10 @@ void setup()
 
 void loop()
 {
+#ifdef __SIMULATOR__
+	Stats.availableMemory = Stats.coroutineResizeCounter = 0;
+#endif // __SIMULATOR__
+
 	monitor.checkForIncomingMessages(&program, &io);
 	Error result = vm.executeProgram(program, &io, &monitor);
 	if (result != NO_ERROR)
@@ -26,4 +30,8 @@ void loop()
 		program = uzi_create(Program);
 	}
 	monitor.sendOutgoingMessages(program, &io);
+
+#ifdef __SIMULATOR__
+	Stats.availableMemory = uzi_available();
+#endif // __SIMULATOR__
 }

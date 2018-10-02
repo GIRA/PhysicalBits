@@ -5,6 +5,8 @@
 unsigned char __pinModes__[__TOTAL_PINS__];
 unsigned short __pinValues__[__TOTAL_PINS__];
 
+RuntimeStats Stats;
+
 unsigned short __getPinValue(unsigned int pin)
 {
 	int index = pin;
@@ -87,4 +89,14 @@ EXTERN void EEPROM_write(int address, unsigned char value)
 EXTERN int EEPROM_size(void)
 {
 	return E2END + 1;
+}
+
+EXTERN uint16_t Stats_availableMemory() 
+{
+	return Stats.availableMemory;
+}
+
+EXTERN uint32_t Stats_coroutineResizeCounter()
+{
+	return Stats.coroutineResizeCounter;
 }

@@ -9,6 +9,12 @@ using System.Diagnostics;
 
 namespace Simulator
 {
+    public class RuntimeStats
+    {
+        public uint AvailableMemory { get; set; }
+        public uint CoroutineResizeCounter { get; set;  }
+    }
+
     public class Sketch
     {
         private static Sketch current = new Sketch();
@@ -21,12 +27,14 @@ namespace Simulator
         private Thread thread;
         private bool running = false;
         private bool paused = false;
+        private List<RuntimeStats> stats;
 
         private Sketch() {}
 
         public bool Running { get { return running; } }
         public bool Paused { get { return paused; } }
         public bool Stopped { get { return !running && !paused; } }
+        public IEnumerable<RuntimeStats> Stats { get { return stats; } }
 
         public short GetPinValue(int pin)
         {
@@ -160,11 +168,24 @@ namespace Simulator
         {
             DLL.Sketch_loop();
             EnqueueSerial();
+            if (stats != null)
+            {
+                stats.Add(new RuntimeStats()
+                {
+                    AvailableMemory = DLL.Stats_availableMemory(),
+                    CoroutineResizeCounter = DLL.Stats_coroutineResizeCounter()
+                });
+            }
         }
 
         public void SetMillis(int millis)
         {
             DLL.Sketch_setMillis(millis);
+        }
+
+        public void RegisterStats(bool enabled)
+        {
+            stats = enabled ? new List<RuntimeStats>() : null;
         }
         
         private static class DLL
@@ -200,6 +221,12 @@ namespace Simulator
 
             [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
             public static extern int EEPROM_size();
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern uint Stats_availableMemory();
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern uint Stats_coroutineResizeCounter();
         }
     }
 }
