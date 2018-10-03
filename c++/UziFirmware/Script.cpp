@@ -161,14 +161,18 @@ Coroutine* Script::getCoroutine(void)
 
 uint16 Script::estimateStackSize() 
 {
-	int16 total = 0;
-	int16 max = 0;
+	// INFO(Richo): We always start with 2 elements (return value, fp + pc)
+	int16 total = 2;
+	int16 max = total;
 	for (int i = 0; i < instructionCount; i++)
 	{
 		uint8 opcode = instructions[i].opcode;
+		// TODO(Richo): Handle special cases like script call and jumps
 		int8 stackImpact = (opcode >> 6) - 2;
 		total += stackImpact;
-		if (max < total) { max = total; }
+		// TODO(Richo): I should only consider instructions which could force a context switch
+		if (total > max) { max = total; }
+		// TODO(Richo): As tera suggested, total should never go below zero, we could check that and raise a warning or something...
 	}
 	// TODO(Richo): When all instructions are calculated correctly, total should be 0
 	return max < 0 ? 0 : max;
