@@ -14,9 +14,12 @@ namespace SimulatorTest
         private static readonly Sketch sketch = Sketch.Current;
         private static Dictionary<string, RuntimeStats[]> stats;
 
+        private static readonly string TEST_FILES_PATH = Path.Combine("..", "SimulatorTest", "TestFiles");
+
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
+
 
         public TestContext TestContext { get; set; }
 
@@ -68,7 +71,7 @@ namespace SimulatorTest
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            var path = Path.Combine("..", "SimulatorTest", "TestFiles", "RuntimeStats.csv");
+            var path = Path.Combine(TEST_FILES_PATH, "RuntimeStats.csv");
             var sb = new StringBuilder();
             var columns = new[]
             {
@@ -105,7 +108,7 @@ namespace SimulatorTest
 
         private byte[] ReadFile(string fileName)
         {
-            var str = File.ReadAllText(Path.Combine("TestFiles", fileName));
+            var str = File.ReadAllText(Path.Combine(TEST_FILES_PATH, fileName));
             return str.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(each => byte.Parse(each))
                 .ToArray();

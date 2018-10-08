@@ -78,284 +78,108 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test001TurnOnBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test002TurnOffBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test003ReadWriteBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test004PushBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test005PushWithFloatingPointVariable">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test006PopBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test007PrimBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test008JZBytecode">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test009TickingRate">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test010MultipleScriptsWithDifferentTickingRates">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test011YieldInstruction">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test012YieldInstructionPreservesStack">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test013YieldInstructionResumesOnNextTick">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test014PrimitiveYieldTime">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test015YieldAfterBackwardsJump">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test016ScriptCallWithoutParametersOrReturnValue">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test018ScriptTickingWithExplicitReturn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test019ScriptWithYieldBeforeEndOfScript">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test020ScriptCallWithOneParameterAndReturnValue">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test021ScriptCallWithOneParameterWithoutReturnValue">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test024ScriptCallWithTwoParametersWithReturnValue">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test025ScriptCallWithRecursiveCall4LevelsDeep">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test026ScriptTickingThatAlsoCallsItself">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test028PrimitiveBitwiseAnd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test029PrimitiveBitwiseOr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test030PrimitiveLogicalAnd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test031PrimitiveLogicalOr">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test032StopScriptAndRestartShouldResetPCAndStuff">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test001TurnOnBytecode" />
+    <None Include="TestFiles\Test002TurnOffBytecode" />
+    <None Include="TestFiles\Test003ReadWriteBytecode" />
+    <None Include="TestFiles\Test004PushBytecode" />
+    <None Include="TestFiles\Test005PushWithFloatingPointVariable" />
+    <None Include="TestFiles\Test006PopBytecode" />
+    <None Include="TestFiles\Test007PrimBytecode" />
+    <None Include="TestFiles\Test008JZBytecode" />
+    <None Include="TestFiles\Test009TickingRate" />
+    <None Include="TestFiles\Test010MultipleScriptsWithDifferentTickingRates" />
+    <None Include="TestFiles\Test011YieldInstruction" />
+    <None Include="TestFiles\Test012YieldInstructionPreservesStack" />
+    <None Include="TestFiles\Test013YieldInstructionResumesOnNextTick" />
+    <None Include="TestFiles\Test014PrimitiveYieldTime" />
+    <None Include="TestFiles\Test015YieldAfterBackwardsJump" />
+    <None Include="TestFiles\Test016ScriptCallWithoutParametersOrReturnValue" />
+    <None Include="TestFiles\Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn" />
+    <None Include="TestFiles\Test018ScriptTickingWithExplicitReturn" />
+    <None Include="TestFiles\Test019ScriptWithYieldBeforeEndOfScript" />
+    <None Include="TestFiles\Test020ScriptCallWithOneParameterAndReturnValue" />
+    <None Include="TestFiles\Test021ScriptCallWithOneParameterWithoutReturnValue" />
+    <None Include="TestFiles\Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn" />
+    <None Include="TestFiles\Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn" />
+    <None Include="TestFiles\Test024ScriptCallWithTwoParametersWithReturnValue" />
+    <None Include="TestFiles\Test025ScriptCallWithRecursiveCall4LevelsDeep" />
+    <None Include="TestFiles\Test026ScriptTickingThatAlsoCallsItself" />
+    <None Include="TestFiles\Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript" />
+    <None Include="TestFiles\Test028PrimitiveBitwiseAnd" />
+    <None Include="TestFiles\Test029PrimitiveBitwiseOr" />
+    <None Include="TestFiles\Test030PrimitiveLogicalAnd" />
+    <None Include="TestFiles\Test031PrimitiveLogicalOr" />
+    <None Include="TestFiles\Test032StopScriptAndRestartShouldResetPCAndStuff" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test034StartOnTheCurrentTaskShouldJumpToTheBeginning">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test035StartOnAnotherTaskShouldResetToBeginning">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test034StartOnTheCurrentTaskShouldJumpToTheBeginning" />
+    <None Include="TestFiles\Test035StartOnAnotherTaskShouldResetToBeginning" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test036ResumeOnARunningTaskShouldHaveNoEffect">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test036ResumeOnARunningTaskShouldHaveNoEffect" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test038ResumeOnStoppedTaskShouldJumpToBeginning">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test038ResumeOnStoppedTaskShouldJumpToBeginning" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TestFiles\Test039StartOnStoppedTaskShouldJumpToBeginning">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="TestFiles\Test040StartOnPausedTaskShouldJumpToBeginning">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestFiles\Test039StartOnStoppedTaskShouldJumpToBeginning" />
+    <None Include="TestFiles\Test040StartOnPausedTaskShouldJumpToBeginning" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TestFiles\Test041PausingShouldPreserveTheStack">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test042EmptyScriptShouldNotCrashTheVM">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test043ForLoop">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test044ReversedForLoop">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test045ForLoopWithoutConstantStep">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test046ReverseForLoopWithoutConstantStep">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test047ForLoopShouldOnlyEvaluateStepOncePerIteration">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test048MutexShouldGuaranteeACriticalSection">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test052ChannelWithMultipleProducersAndOneConsumer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test053ChannelWithMultipleConsumersAndOneProducer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test056Round">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test057Ceil">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test058Floor">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test059Sqrt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test060Abs">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test061NaturalLogarithm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test062Log10">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test063Exp">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test064Pow10">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test065IsCloseTo">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test066Asin">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test067Acos">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test068Atan">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test069Power">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test070IsOn">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test071IsOff">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test072Mod">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test073Constrain">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test074RandomInt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test075Random">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test076IsEven">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test077IsOdd">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test078IsPrime">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test079IsWhole">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test080IsPositive">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test081IsNegative">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test082IsDivisibleBy">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test083DelayS">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test084DelayM">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test085Minutes">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test086Seconds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test087Millis">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="TestFiles\Test088ScriptCallOverridingPrimitive">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="TestFiles\Test041PausingShouldPreserveTheStack" />
+    <None Include="TestFiles\Test042EmptyScriptShouldNotCrashTheVM" />
+    <None Include="TestFiles\Test043ForLoop" />
+    <None Include="TestFiles\Test044ReversedForLoop" />
+    <None Include="TestFiles\Test045ForLoopWithoutConstantStep" />
+    <None Include="TestFiles\Test046ReverseForLoopWithoutConstantStep" />
+    <None Include="TestFiles\Test047ForLoopShouldOnlyEvaluateStepOncePerIteration" />
+    <None Include="TestFiles\Test048MutexShouldGuaranteeACriticalSection" />
+    <None Include="TestFiles\Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer" />
+    <None Include="TestFiles\Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers" />
+    <None Include="TestFiles\Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer" />
+    <None Include="TestFiles\Test052ChannelWithMultipleProducersAndOneConsumer" />
+    <None Include="TestFiles\Test053ChannelWithMultipleConsumersAndOneProducer" />
+    <None Include="TestFiles\Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" />
+    <None Include="TestFiles\Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther" />
+    <None Include="TestFiles\Test056Round" />
+    <None Include="TestFiles\Test057Ceil" />
+    <None Include="TestFiles\Test058Floor" />
+    <None Include="TestFiles\Test059Sqrt" />
+    <None Include="TestFiles\Test060Abs" />
+    <None Include="TestFiles\Test061NaturalLogarithm" />
+    <None Include="TestFiles\Test062Log10" />
+    <None Include="TestFiles\Test063Exp" />
+    <None Include="TestFiles\Test064Pow10" />
+    <None Include="TestFiles\Test065IsCloseTo" />
+    <None Include="TestFiles\Test066Asin" />
+    <None Include="TestFiles\Test067Acos" />
+    <None Include="TestFiles\Test068Atan" />
+    <None Include="TestFiles\Test069Power" />
+    <None Include="TestFiles\Test070IsOn" />
+    <None Include="TestFiles\Test071IsOff" />
+    <None Include="TestFiles\Test072Mod" />
+    <None Include="TestFiles\Test073Constrain" />
+    <None Include="TestFiles\Test074RandomInt" />
+    <None Include="TestFiles\Test075Random" />
+    <None Include="TestFiles\Test076IsEven" />
+    <None Include="TestFiles\Test077IsOdd" />
+    <None Include="TestFiles\Test078IsPrime" />
+    <None Include="TestFiles\Test079IsWhole" />
+    <None Include="TestFiles\Test080IsPositive" />
+    <None Include="TestFiles\Test081IsNegative" />
+    <None Include="TestFiles\Test082IsDivisibleBy" />
+    <None Include="TestFiles\Test083DelayS" />
+    <None Include="TestFiles\Test084DelayM" />
+    <None Include="TestFiles\Test085Minutes" />
+    <None Include="TestFiles\Test086Seconds" />
+    <None Include="TestFiles\Test087Millis" />
+    <None Include="TestFiles\Test088ScriptCallOverridingPrimitive" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
