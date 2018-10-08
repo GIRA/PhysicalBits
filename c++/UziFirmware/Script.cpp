@@ -182,12 +182,21 @@ uint16 Script::estimateStackSize()
 			i += (argument > 0 ? argument : 0);
 		}
 
-		// TODO(Richo): Handle special cases like script call and jumps
 		int8 stackImpact = (opcode >> 6) - 2;
+		if (opcode == SCRIPT_CALL) 
+		{
+			stackImpact = 2; // TODO(Richo): Locals are ignored for now
+		}
 		total += stackImpact;
 				
 		bool contextSwitch = false; // Is a context switch possible at this point?
 		
+		/*
+		INFO(Richo): Although SCRIPT_CALL doesn't force a context switch, the called script
+		could contain an instruction that does.
+		*/
+		contextSwitch |= (opcode == SCRIPT_CALL);
+
 		/*
 		INFO(Richo): SCRIPT_STOP and SCRIPT_START could also force a context switch but they
 		reset the stack anyway so the estimated value for those opcodes should be 0.
