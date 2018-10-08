@@ -14,9 +14,12 @@ namespace SimulatorTest
         private static readonly Sketch sketch = Sketch.Current;
         private static Dictionary<string, RuntimeStats[]> stats;
 
+        private static readonly string TEST_FILES_PATH = Path.Combine("..", "SimulatorTest", "TestFiles");
+
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
+
 
         public TestContext TestContext { get; set; }
 
@@ -68,31 +71,46 @@ namespace SimulatorTest
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            var path = Path.Combine("..", "SimulatorTest", "TestFiles", "RuntimeStats.csv");
-            var sb = new StringBuilder();
-            var columns = new[]
+            var path = Path.Combine(TEST_FILES_PATH, "RuntimeStats.csv");
+            using (var file = new StreamWriter(path, false, Encoding.UTF8))
             {
-                "TestName", "Loops",
-                "Min memory available", "Max memory available", "Avg memory available",
-                "Total coroutine resizings"
-            };
-            sb.AppendLine(string.Join(",", columns));
-            var lines = stats
-                .OrderBy(kvp => kvp.Key)
-                .Select(kvp => string.Join(",", new object[]
+                // Write header
+                var columns = new[]
                 {
-                    kvp.Key,
-                    kvp.Value.Count(),
-                    kvp.Value.Min(each => each.AvailableMemory),
-                    kvp.Value.Max(each => each.AvailableMemory),
-                    kvp.Value.Average(each => each.AvailableMemory),
-                    kvp.Value.Sum(each => each.CoroutineResizeCounter)
+                    "TestName", "Loops",
+                    "Min memory available", "Max memory available", "Avg memory available",
+                    "Total coroutine resizings"
+                };
+                file.WriteLine(string.Join(",", columns));
+
+                // Write data
+                var lines = stats
+                    .OrderBy(kvp => kvp.Key)
+                    .Select(kvp => string.Join(",", new object[]
+                    {
+                        kvp.Key,
+                        kvp.Value.Count(),
+                        kvp.Value.Min(each => each.AvailableMemory),
+                        kvp.Value.Max(each => each.AvailableMemory),
+                        kvp.Value.Average(each => each.AvailableMemory),
+                        kvp.Value.Sum(each => each.CoroutineResizeCounter)
+                    }));
+                foreach (var line in lines)
+                {
+                    file.WriteLine(line);
+                }
+
+                // Write totals
+                file.WriteLine(string.Join(",", new object[]
+                {
+                    "TOTAL",
+                    stats.Sum(kvp => kvp.Value.Count()),
+                    stats.Sum(kvp => kvp.Value.Min(each => each.AvailableMemory)),
+                    stats.Sum(kvp => kvp.Value.Max(each => each.AvailableMemory)),
+                    stats.Sum(kvp => kvp.Value.Average(each => each.AvailableMemory)),
+                    stats.Sum(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
                 }));
-            foreach (var line in lines)
-            {
-                sb.AppendLine(line);
             }
-            File.WriteAllText(path, sb.ToString());
         }
 
         private void TurnOffAllPins()
@@ -105,7 +123,7 @@ namespace SimulatorTest
 
         private byte[] ReadFile(string fileName)
         {
-            var str = File.ReadAllText(Path.Combine("TestFiles", fileName));
+            var str = File.ReadAllText(Path.Combine(TEST_FILES_PATH, fileName));
             return str.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(each => byte.Parse(each))
                 .ToArray();
