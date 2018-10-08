@@ -1,4 +1,4 @@
-TestName,Loops,Min memory available,Max memory available,Avg memory available,Total coroutine resizings
+﻿TestName,Loops,Min memory available,Max memory available,Avg memory available,Total coroutine resizings
 Test001TurnOnBytecode,3,1919,1986,1963.66666666667,0
 Test002TurnOffBytecode,3,1919,1986,1963.66666666667,0
 Test003ReadWriteBytecode,3,1917,1986,1963,0
@@ -87,3 +87,4 @@ Test085Minutes,802,1849,1986,1849.34164588529,1
 Test086Seconds,802,1849,1986,1849.34164588529,1
 Test087Millis,802,1844,1986,1844.35411471322,1
 Test088ScriptCallOverridingPrimitive,202,1851,1986,1852.33663366337,1
+TOTAL,120704,161832,174768,164712.893935165,47
