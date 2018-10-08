@@ -169,10 +169,23 @@ uint16 Script::estimateStackSize()
 		uint8 opcode = instructions[i].opcode;
 		int8 argument = instructions[i].argument;
 
+		// Handle jumps (forward: always true, backward: always false)
+		if (opcode == JMP
+			|| opcode == JZ
+			|| opcode == JNZ
+			|| opcode == JNE
+			|| opcode == JLT
+			|| opcode == JLTE
+			|| opcode == JGT
+			|| opcode == JGTE)
+		{
+			i += (argument > 0 ? argument : 0);
+		}
+
 		// TODO(Richo): Handle special cases like script call and jumps
 		int8 stackImpact = (opcode >> 6) - 2;
 		total += stackImpact;
-		
+				
 		bool contextSwitch = false; // Is a context switch possible at this point?
 		
 		/*
