@@ -33,6 +33,10 @@ The UziScript firmware is a regular Arduino sketch written in C++ that can be up
 
 We initially target the Arduino UNO because it is the most popular model amongst beginners but we plan to support other models in the future.
 
+<p align="center">
+  <img src="./img/uzi_architecture.png?raw=true">
+</p>
+
 Internally, the firmware implements a stack-based high-level language virtual machine that uses a decode and dispatch bytecode interpreter to execute UziScript programs. This implementation was chosen mainly because of its simplicity. Since the purpose of this language is educational, performance is not currently considered a high priority.
 
 For now, the stack and global variables are the only available memory to the user program. There is no heap or dynamic memory allocation implemented yet. This allows for simpler virtual machine code and compact object code. Almost all the instructions can be encoded using one byte for both the opcode and its arguments and just a few special instructions (such as branches) require an extra byte.
