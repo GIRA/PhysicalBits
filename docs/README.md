@@ -1,5 +1,11 @@
 # UziScript Documentation
 
+## Table of contents
+
+* [Description of the language](#description-of-the-language)
+* [Implementation](#implementation)
+* [Task scheduling](#task-scheduling)
+
 ## Description of the language
 
 UziScript syntax is based on C, which is familiar to most programmers including Arduino developers. The `task` keyword has been added to represent behavior that can be executed periodically at a configurable rate. For example, the following code will declare a task that will toggle the LED on pin 13 every second.
