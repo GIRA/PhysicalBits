@@ -22,6 +22,10 @@ Given that the main purpose of this programming language is educational, it was 
 * __Autonomy__: The programs must be able to run without a computer connected to the board.
 * __Debugging__: the toolchain must provide mechanisms for error handling and step by step code execution. Without debugging tools, the process of fixing bugs can be frustrating for an inexperienced user.
 
+## Documentation
+
+You can find more detailed documentation [here](/docs).
+
 ## Installation
 
 The Uzi firmware is a simple sketch that you can upload to your board using the standard Arduino IDE. You can find the source code here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino)
