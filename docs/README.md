@@ -52,3 +52,18 @@ The compilation process transforms UziScript programs into bytecode suitable for
 <p align="center">
   <img src="./img/Uzi_bytecode.png?raw=true">
 </p>
+
+## Task scheduling
+
+As most Arduino boards contain a single microcontroller, they can only execute one thread at a time. This means all the tasks defined in the program must share a single processor. The virtual machine, apart from executing the program instructions, is responsible for handling the task scheduling. It decides which task gets executed and when to preemptively interrupt it. 
+
+The scheduling strategy is simple, the virtual machine will cycle through the task list scheduling the tasks whose time to run is reached. It will then execute each instruction until a blocking operation occurs, in which case it will interrupt the current task and start executing the next one. Each task will store its execution context (stack, program counter, and frame pointer) in order to be able to later resume the execution from the point where it was interrupted. Some of the blocking operations that will force a context switch include: the `yield` instruction, all the `delay()` procedures, a reverse jump, writing to the serial port when the buffer is full, and reading from the serial port when the buffer is empty.
+
+Below is a simplified example of one of the possible ways the scheduler could interleave the execution of the instructions between two tasks.
+
+<p align="center">
+  <img src="./img/uzi_scheduling.png?raw=true">
+</p>
+
+This strategy has the advantage of being simple (which is important, considering this is an educational project) and it guarantees that all of the tasks will have a chance to run. However, it does not provide any real-time guarantees. In the future, we might improve the implementation by incorporating a real-time scheduler.
+
