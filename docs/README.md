@@ -27,6 +27,8 @@ Primitive instructions like `delay()` are provided to allow the user to block th
 
 UziScript also supports external libraries that can extend the primitive functionality of the language. You can find examples [here](/uzi/libraries).
 
+The UziScript grammar, written as a PEG, can be found [here](/docs/uzi.pegjs). Since the actual parser is written in Smalltalk using PetitParser, the grammar provided here is for illustrative purposes only.
+
 ## Implementation
 
 The UziScript firmware is a regular Arduino sketch written in C++ that can be uploaded using the Arduino IDE. The entire source code is open for inspection and modification. We believe this to be very important for the adoption of the platform. First, being open source allows for more advanced students or teachers to learn from its implementation and improve it to suit their own needs. Second, installing the firmware is as simple as uploading any Arduino sketch so the time it takes to test the platform is reduced.
@@ -52,6 +54,8 @@ The compilation process transforms UziScript programs into bytecode suitable for
 <p align="center">
   <img src="./img/Uzi_bytecode.png?raw=true">
 </p>
+
+You can find a detailed description of the instruction set [here](/docs/ISA.md).
 
 ## Task scheduling
 
