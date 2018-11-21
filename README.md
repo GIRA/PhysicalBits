@@ -3,6 +3,25 @@ Uzi
 
 UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform.
 
+## Motivation
+
+Arduino has become one of the most popular platforms for building electronic projects, especially among hobbyists, artists, designers, and people just starting with electronics. The Arduino software library and integrated development environment provide an abstraction layer over the hardware details that makes it possible to build interesting projects without a complete understanding of more advanced microcontroller concepts such as interrupts, ports, registers, timers, and such. At the same time, this abstraction layer can be bypassed to access advanced features if the user needs them. These characteristics make the Arduino platform suitable for both beginners and experts.
+
+However, there is one aspect in which the Arduino language lacks proper abstractions: concurrency. For all but the simplest projects, the setup() and loop() [program structure](http://playground.arduino.cc/ArduinoNotebookTraduccion/Structure) proposed by Arduino is not expressive enough. Even moderately complex problems require some sort of simultaneous task execution.
+
+Furthermore, most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. This poses a limitation on the type of educational projects that can be carried out, especially if the teaching subject is not robotics or programming itself.
+
+## Proposed Solution
+
+We propose the implementation of a concurrent programming language supported by a virtual machine running on the Arduino. We call this language UziScript and we expect it to become a suitable compilation target for visual programming environments such as [Physical Etoys](http://tecnodacta.com.ar/gira/projects/physical-etoys), [Scratch for Arduino](http://s4a.cat), and [Ardublock](http://blog.ardublock.com/), among others.
+
+Given that the main purpose of this programming language is educational, it was designed based on the following principles:
+* __Simplicity__: It should be easy to reason about the virtual machine and understand how it performs its job.
+* __Abstraction__: the language should provide high-level functions that hide away some of the details regarding both beginner and advanced microcontroller concepts (such as timers, interruptions, concurrency, pin modes, and such). These concepts can later be introduced at a pace compatible with the needs of the student.
+* __Monitoring__: It should be possible to monitor the state of the board while it is connected to the computer.
+* __Autonomy__: The programs must be able to run without a computer connected to the board.
+* __Debugging__: the toolchain must provide mechanisms for error handling and step by step code execution. Without debugging tools, the process of fixing bugs can be frustrating for an inexperienced user.
+
 ## Installation
 
 The Uzi firmware is a simple sketch that you can upload to your board using the standard Arduino IDE. You can find the source code here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino)
