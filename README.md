@@ -62,7 +62,7 @@ load := [:ass || repo pckgName versionName version |
 	uzi -> 'Uzi-EEPROM'.
 	uzi -> 'Uzi-Etoys'
 } do: load.
-(Smalltalk at: #Uzi) gitDirectory: git.
+(Smalltalk at: #Uzi) perform: #defaultDirectory: with: git.
 ```
 
 You can open the tools by evaluating:
