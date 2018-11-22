@@ -1,3 +1,3 @@
 config-paths
 serverDirectory
-	^ serverDirectory ifNil: [self gitDirectory / 'web']
+	^ serverDirectory ifNil: [self defaultDirectory / 'web']

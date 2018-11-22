@@ -2,7 +2,7 @@ private
 setUp
 	ir := UziImportResolver 
 		parser: UziParser new  
-		librariesPath: (Uzi gitDirectory / 'uzi' / 'tests') pathName.
+		librariesPath: (Uzi defaultDirectory / 'uzi' / 'tests') pathName.
 
 	program := UziProgramNode.
 	varDec := UziVariableDeclarationNode.

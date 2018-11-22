@@ -1,7 +1,7 @@
 {
 	"category" : "Uzi-Core",
 	"classinstvars" : [
-		"gitDirectory",
+		"defaultDirectory",
 		"librariesDirectory",
 		"serverDirectory" ],
 	"classvars" : [

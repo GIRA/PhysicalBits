@@ -1,3 +1,3 @@
 as yet unclassified
 outputDirectory
-	^ Uzi gitDirectory / 'c++' / 'Simulator' / 'SimulatorTest' / 'TestFiles'
+	^ Uzi defaultDirectory / 'c++' / 'Simulator' / 'SimulatorTest' / 'TestFiles'
