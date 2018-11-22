@@ -3,6 +3,14 @@ Uzi
 
 UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform.
 
+## Table of contents
+
+* [Motivation](#motivation)
+* [Proposed Solution](#proposed-solution)
+* [Documentation](#documentation)
+* [Installation](#installation)
+* [Dependencies](#dependencies)
+
 ## Motivation
 
 Arduino has become one of the most popular platforms for building electronic projects, especially among hobbyists, artists, designers, and people just starting with electronics. The Arduino IDE and software library provide an abstraction layer over the hardware details that makes it possible to build interesting projects without a complete understanding of more advanced microcontroller concepts such as interrupts, ports, registers, timers, and such. At the same time, this abstraction layer can be bypassed to access advanced features if the user needs them. These characteristics make the Arduino platform suitable for both beginners and experts.
