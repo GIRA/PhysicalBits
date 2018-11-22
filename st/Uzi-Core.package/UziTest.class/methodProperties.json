@@ -1,0 +1,8 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"setUp" : "Richo 11/22/2018 13:39",
+		"tearDown" : "Richo 11/22/2018 13:37",
+		"test001DefaultDirectoryAcceptsAnAbsolutePath" : "Richo 11/22/2018 13:38",
+		"test002DefaultDirectoryAcceptsARelativePath" : "Richo 11/22/2018 13:42" } }

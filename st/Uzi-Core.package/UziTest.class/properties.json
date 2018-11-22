@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"defaultDirectory" ],
+	"name" : "UziTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }

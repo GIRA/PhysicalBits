@@ -1,7 +1,7 @@
 {
 	"category" : "Uzi-Core",
 	"classinstvars" : [
-		"defaultDirectory",
+		"defaultPath",
 		"librariesDirectory",
 		"serverDirectory" ],
 	"classvars" : [
