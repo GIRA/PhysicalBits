@@ -66,10 +66,6 @@ var UziHighlightRules = function() {
         regex: "\\\\(?:(?:x[0-9A-F]{2})|(?:[0-7]{1,3})|(?:['\"\\?0abfnrtv\\\\])|" +
             "(?:u[0-9a-fA-F]{4})|(?:U[0-9a-fA-F]{8}))"
     };
-
-    var builtinConstants = (
-        "D[0-9]+"
-    );
     
     var operators = (
         "/|/\\=|&|&\\=|&&|\\|\\|\\=|\\|\\||\\-|\\-\\=|\\-\\-|\\+|" +
@@ -98,7 +94,7 @@ var UziHighlightRules = function() {
             },
 			{
 				token: "constant.language",
-				regex: "D[0-9]+"
+				regex: "[AD][0-9]+"
 			},
             DocCommentHighlightRules.getStartRule("doc-start"),
             {
