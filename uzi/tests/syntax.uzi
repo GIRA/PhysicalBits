@@ -11,7 +11,7 @@ var c;
 task blink13() running 2/s { toggle(D13); }
 task blink12() running 1/s { toggle(D12); }
 
-task setup() once {
+task setup() {
     if a { turnOn(D11); }
     else { turnOff(D11); }
 }
