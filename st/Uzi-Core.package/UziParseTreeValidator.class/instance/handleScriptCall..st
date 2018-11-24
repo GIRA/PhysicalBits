@@ -3,12 +3,15 @@ handleScriptCall: node
 	| args |
 	self assert: (self program scriptNamed: node selector) notNil 
 		description: 'Invalid script'
-		node: node.	
+		node: node.
 	
 	(self program scriptNamed: node selector)
 		ifNotNil: [:script || callArgs scriptArgs |
 			callArgs := node arguments collect: [:arg | arg key].
 			scriptArgs := script arguments collect: [:arg | arg name].
+			self assert: callArgs size <= scriptArgs size
+				description: 'Invalid number of arguments'
+				node: node.
 			self assert: ((scriptArgs includesAllOf: callArgs)
 					or: [callArgs allSatisfy: [:arg | arg isNil]])
 				description: 'Explicit argument names expected'
