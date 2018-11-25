@@ -213,8 +213,12 @@ var UziBlock = (function () {
 		});
 	}
 	
-	function restore(){
-		Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
+	function restore() {
+		try {
+			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
+		} catch (err) {
+			console.error(err);
+		}		
 		workspace.addChangeListener(workspaceChanged);
 	}
 	
