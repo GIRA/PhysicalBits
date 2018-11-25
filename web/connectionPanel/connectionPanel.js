@@ -20,6 +20,10 @@ $(document).ready(function () {
 	});
 
 	connectButton.on("click", function () {
+		if (getSelectedPort() == "Automatic") {
+			Alert.danger("Automatic board lookup is not implemented yet");
+			return;
+		}
 		Uzi.connect(getSelectedPort(), function () {			
 			if (Uzi.isConnected) {
 				Alert.success("Arduino connected on port: " + Uzi.portName);
