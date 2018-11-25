@@ -14,9 +14,13 @@
 	});
 
 	$("#run").on("click", function () {
-		Uzi.run(editor.getValue(), "text", function (bytecodes) {			
+		Uzi.run(editor.getValue(), "text", function (bytecodes) {
 			console.log(bytecodes);
 		});
+	});
+	
+	$("#debug").on("click", function() {
+		Alert.danger("Debugger not implemented yet");
 	});
 
 	Uzi.onConnectionUpdate(function () {

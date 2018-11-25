@@ -38,6 +38,10 @@ var UziBlock = (function () {
 				console.log(bytecodes);
 			});
 		});
+	
+		$("#debug").on("click", function() {
+			Alert.danger("Debugger not implemented yet");
+		});
 		
 		$("#newButton").on("click", function () {
 			if (confirm("You will lose all your unsaved changes. Are you sure?")) {
