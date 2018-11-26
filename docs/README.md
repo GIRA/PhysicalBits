@@ -8,6 +8,9 @@ UziScript is a concurrent programming language and virtual machine for education
 * [Proposed Solution](#proposed-solution)
 * [Download and Installation](#download-and-installation)
 * [Usage](#usage)
+  * [Text editor](#text-editor)
+  * [Visual editor](#visual-editor)
+  * [Monitor](#monitor)
 * [Contributing](#contributing)
   * [Getting started](#getting-started)
   * [Dependencies](#dependencies)
@@ -54,6 +57,30 @@ The control panel is an internal tool that allows us to connect to an Arduino bo
 
 <p align="center">
   <img width="100%" src="./img/uzi_webindex.png?raw=true">
+</p>
+
+### Text editor
+
+This simple editor will allow you to write programs using the [UziScript language](#description-of-the-language). The left bar will allow you to choose a serial port, connect to your board, verify your program, run it on your board, and finally install it on the board's memory so that it runs the next time the board is powered.
+
+<p align="center">
+  <img width="100%" src="./img/uzi_texteditor.png?raw=true">
+</p>
+
+### Visual editor
+
+Since learning a new syntax can be difficult (especially for beginners) we have developed a block-based language. In order to help in the transition to text-based languages we have also implemented automatic code generation from this visual language to the UziScript syntax (and viceversa). You can see this in action by opening this editor alongside the text editor. If also you activate the "Run automatically" checkbox all the changes made to the program will be sent immediately to the board (if connected).
+
+<p align="center">
+  <img width="100%" src="./img/uzi_visualeditor.png?raw=true">
+</p>
+
+### Monitor
+
+This tool allows you to monitor the value over time of any pin on your board or any global variable on your program.
+
+<p align="center">
+  <img width="100%" src="./img/uzi_monitor.png?raw=true">
 </p>
 
 ## Contributing
