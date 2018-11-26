@@ -44,6 +44,10 @@ Before you can start contributing to UziScript, you'll need to clone this reposi
 
 For the firmware, since it is a simple Arduino sketch, you only need the Arduino IDE. However, to make development easier we also use Visual Studio 2017 with a very simple Arduino simulator we developed for this project. The simulator is extremely limited so it's not exactly the same as compiling for the Arduino but it makes things a lot easier especially when it comes to debugging and unit testing. The source code for the Uzi firmware can be found here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino). If you want to use the Visual Studio IDE you can find the solution here: [/c++/Simulator/Simulator.sln](/c++/Simulator/).
 
+<p align="center">
+  <img width="100%" src="./img/uzi_simulator.png?raw=true">
+</p>
+
 #### Compilation tools
 
 All the compilation tools are written in [Squeak Smalltalk](http://squeak.org/). To load them into your image, open up a Workspace and evaluate the following script. Make sure you have [filetree](https://github.com/dalehenrich/filetree) installed, otherwise the script will fail. It will ask you the path to the root of the current repository and it will then load all the necessary packages.
