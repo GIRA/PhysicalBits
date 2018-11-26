@@ -6,6 +6,8 @@ UziScript is a concurrent programming language and virtual machine for education
 
 * [Motivation](#motivation)
 * [Proposed Solution](#proposed-solution)
+* [Download and Installation](#download-and-installation)
+* [Usage](#usage)
 * [Contributing](#contributing)
   * [Getting started](#getting-started)
   * [Dependencies](#dependencies)
@@ -31,6 +33,22 @@ Given that the main purpose of this programming language is educational, it was 
 * __Monitoring__: It should be possible to monitor the state of the board while it is connected to the computer.
 * __Autonomy__: The programs must be able to run without a computer connected to the board.
 * __Debugging__: the toolchain must provide mechanisms for error handling and step by step code execution. Without debugging tools, the process of fixing bugs can be frustrating for an inexperienced user.
+
+## Download and Installation
+
+ACAACA subir el zip y acá meter el link.
+
+## Usage
+
+After unzipping the package you'll find two folders: "firmware" and "tools". 
+
+For every board you want to use with UziScript you'll first need to upload the firmware. This is a very simple procedure, since the UziScript firmware is just an Arduino sketch you can use the Arduino IDE as you would with any other sketch. For more detailed instructions on how to upload sketches, see [here](https://www.arduino.cc/en/Guide/Environment).
+
+Once you have uploaded the firmware to your board you'll need to open the "tools" folder and click on the appropriate file for your platform: `*.bat` for Windows, `*.app` for macOS, and `*.sh` for Linux. This will open a Squeak image like the one below.
+
+<p align="center">
+  <img width="100%" src="./img/uzi_squeak.png?raw=true">
+</p>
 
 ## Contributing
 
