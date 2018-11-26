@@ -50,6 +50,12 @@ Once you have uploaded the firmware to your board you'll need to open the "tools
   <img width="100%" src="./img/uzi_squeak.png?raw=true">
 </p>
 
+The control panel is an internal tool that allows us to connect to an Arduino board, monitor its state, program it in UziScript, and debug it using our experimental debugger. However, you will mostly need it to start/stop the UziServer. This server will allow you to use the web tools. After starting the server (by clicking the "Start server" button), point your browser to [http://localhost:8080](http://localhost:8080) and you should see a website like the one below.
+
+<p align="center">
+  <img width="100%" src="./img/uzi_webindex.png?raw=true">
+</p>
+
 ## Contributing
 
 ACAACA descripción de la organización del repositorio, qué hay en cada carpeta, etc.
