@@ -1,10 +1,14 @@
 # UziScript Documentation
 
-UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform.
+UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform but we plan to support other boards in the future.
 
 ## Table of contents
 
 * [Motivation](#motivation)
+  * [Limited support for concurrency](#limited-support-for-concurrency)
+  * [Interactivity vs Autonomy](#interactivity-vs-autonomy)
+  * [Lack of debugging facilities](#lack-of-debugging-facilities)
+  * [Wrong abstractions](#wrong-abstractions)
 * [Proposed Solution](#proposed-solution)
 * [Download and Installation](#download-and-installation)
 * [Usage](#usage)
@@ -24,9 +28,25 @@ UziScript is a concurrent programming language and virtual machine for education
 
 Arduino has become one of the most popular platforms for building electronic projects, especially among hobbyists, artists, designers, and people just starting with electronics. The Arduino IDE and software library provide an abstraction layer over the hardware details that makes it possible to build interesting projects without a complete understanding of more advanced microcontroller concepts such as interrupts, ports, registers, timers, and such. At the same time, this abstraction layer can be bypassed to access advanced features if the user needs them. These characteristics make the Arduino platform suitable for both beginners and experts.
 
-However, there is one aspect in which the Arduino language lacks proper abstractions: concurrency. For all but the simplest projects, the `setup()` and `loop()` [program structure](http://playground.arduino.cc/ArduinoNotebookTraduccion/Structure) proposed by Arduino is not expressive enough. Even moderately complex problems require some sort of simultaneous task execution.
+However, the Arduino language (based on C++) is still too complex for some of the most inexperienced users, especially young children. For this reason, a lot of educational programming environments have been developed, mostly offering a visual programming language that allows users to start programming without learning a new syntax. Some of these tools have been very successful but, in our experience, most of them suffer from one (or several) of the following issues.
+
+### Limited support for concurrency
+
+There is one aspect in which the Arduino language lacks proper abstractions: concurrency. For all but the simplest projects, the `setup()` and `loop()` [program structure](http://playground.arduino.cc/ArduinoNotebookTraduccion/Structure) proposed by Arduino is not expressive enough. Even moderately complex problems require some sort of simultaneous task execution.
 
 Furthermore, most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. This poses a limitation on the type of educational projects that can be carried out, especially if the teaching subject is not robotics or programming itself.
+
+### Interactivity vs Autonomy
+
+ACAACA problema del modo directo vs modo compilado. Capaz esta sección debería ir antes que la de concurrency, así mencionamos que los problemas de concurrencia también los tienen algunos de los lenguajes visuales que compilan a arduino (como minibloq)
+
+### Lack of debugging facilities
+
+ACAACA Mencionar que sin hardware especial no se puede debugguear. Que estás limitado a hacer tracing por el serie. También tenés una extensión del visual studio que te instrumenta el código para poder meter breakpoints pero anda como el orto.
+
+### Wrong abstractions
+
+ACAACA no se si "wrong" es la forma de describirlo. Capaz "confusing". La idea es plantear acá que la API de arduino es confusa en varios sentidos (sobre todo en los métodos para leer/escribir los pines). No se si es un punto suficientemente fuerte como para incluirlo.
 
 ## Proposed Solution
 
@@ -179,9 +199,7 @@ The UziScript grammar, written as a PEG, can be found [here](/docs/uzi.pegjs). S
 
 ### Firmware
 
-The UziScript firmware is a regular Arduino sketch written in C++ that can be uploaded using the Arduino IDE. The entire source code is open for inspection and modification. We believe this to be very important for the adoption of the platform. First, being open source allows for more advanced students or teachers to learn from its implementation and improve it to suit their own needs. Second, installing the firmware is as simple as uploading any Arduino sketch so the time it takes to test the platform is reduced.
-
-We initially target the Arduino UNO because it is the most popular model amongst beginners but we plan to support other models in the future.
+The UziScript firmware is a regular Arduino sketch written in C++ that can be uploaded using the Arduino IDE.
 
 <p align="center">
   <img width="75%" src="./img/uzi_architecture.png?raw=true">
