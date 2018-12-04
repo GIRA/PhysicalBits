@@ -65,11 +65,11 @@ ACAACA subir el zip y acá meter el link.
 
 ## Usage
 
-After unzipping the package you'll find two folders: "firmware" and "tools". 
+After unzipping the package you'll find two folders: "UziFirmware" and "Tools". 
 
 For every board you want to use with UziScript you'll first need to upload the firmware. This is a very simple procedure, since the UziScript firmware is just an Arduino sketch you can use the Arduino IDE as you would with any other sketch. For more detailed instructions on how to upload sketches, see [here](https://www.arduino.cc/en/Guide/Environment).
 
-Once you have uploaded the firmware to your board you'll need to open the "tools" folder and click on the appropriate file for your platform: `*.bat` for Windows, `*.app` for macOS, and `*.sh` for Linux. This will open a Squeak image like the one below.
+Once you have uploaded the firmware to your board you'll need to open the "Tools" folder and click on the appropriate file for your platform: `*.bat` for Windows, `*.app` for macOS, and `*.sh` for Linux. This will open a Squeak image like the one below.
 
 <p align="center">
   <img width="100%" src="./img/uzi_squeak.png?raw=true">
