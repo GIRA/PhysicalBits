@@ -58,7 +58,7 @@ var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
 var UziHighlightRules = function() {
 
     var keywords = (
-        "import|from|var|task|running|once|proc|func|if|else|repeat|while|until|for|forever|return|start|stop|pause|resume|yield|do|to|by"
+        "import|from|var|task|running|stopped|once|proc|func|if|else|repeat|while|until|for|forever|return|start|stop|pause|resume|yield|do|to|by"
     );
     
     var stringEscapesSeq =  {
