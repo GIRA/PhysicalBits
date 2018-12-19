@@ -1,0 +1,18 @@
+{
+	"category" : "Uzi-Morphic",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"key",
+		"value",
+		"keyText",
+		"valueText",
+		"valueChanged" ],
+	"name" : "UziAssociationMorph",
+	"pools" : [
+		 ],
+	"super" : "AlignmentMorph",
+	"type" : "normal" }

@@ -1,0 +1,3 @@
+server
+isServerStarted
+	^ server notNil
