@@ -1,3 +1,0 @@
-accessing
-stackFrames
-	^ debugger stackFrames 

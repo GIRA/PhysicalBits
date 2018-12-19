@@ -1,3 +1,0 @@
-initialization
-windowIsClosing
-	self delete

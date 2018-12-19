@@ -1,3 +1,0 @@
-accessing
-scripts
-	^ protocol scripts

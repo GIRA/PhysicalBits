@@ -1,3 +1,0 @@
-running programs
-installCurrentProgram
-	protocol installCurrentProgram
