@@ -1,0 +1,3 @@
+accessing
+findProtocol
+	^ UziControlPanelMorph findInWorld

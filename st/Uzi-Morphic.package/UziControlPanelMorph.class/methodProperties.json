@@ -1,8 +1,11 @@
 {
 	"class" : {
 		"descriptionForPartsBin" : "Richo 10/10/2016 15:39",
+		"findInWorld" : "Richo 12/18/2018 22:33",
+		"initialize" : "Richo 12/18/2018 22:29",
 		"lastPortName" : "Richo 10/10/2016 00:04",
-		"lastPortName:" : "Richo 10/10/2016 00:05" },
+		"lastPortName:" : "Richo 10/10/2016 00:05",
+		"startUp" : "Richo 12/18/2018 22:34" },
 	"instance" : {
 		"buildButtons" : "Richo 7/27/2018 08:55",
 		"buildConnectionPanel" : "Richo 10/9/2016 21:50",
