@@ -1,0 +1,13 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"connect" : "Richo 12/18/2018 22:13",
+		"decimalPlacesForGetter:" : "Richo 12/18/2018 22:13",
+		"disconnect" : "Richo 12/18/2018 22:13",
+		"getIsConnected" : "Richo 12/18/2018 22:13",
+		"getPortName" : "Richo 12/18/2018 22:13",
+		"getValue" : "Richo 12/18/2018 22:13",
+		"installCurrentProgram" : "Richo 12/18/2018 22:13",
+		"setPortName:" : "Richo 12/18/2018 22:13",
+		"setValue:" : "Richo 12/18/2018 22:13" } }

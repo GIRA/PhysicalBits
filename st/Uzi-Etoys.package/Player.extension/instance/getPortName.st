@@ -1,3 +1,3 @@
-slots
+*Uzi-Etoys
 getPortName
 	^ self sendMessageToCostume: #portName
