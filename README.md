@@ -1,5 +1,5 @@
-Uzi
-===
+UziScript
+=========
 
 UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform but we plan to support other boards in the future.
 
