@@ -144,6 +144,7 @@ load := [:ass || repo pckgName versionName version |
 	rest -> 'REST'.
 	uzi -> 'Uzi-Core'.
 	uzi -> 'Uzi-EEPROM'.
+	uzi -> 'Uzi-Morphic'.
 	uzi -> 'Uzi-Etoys'
 } do: load.
 (Smalltalk at: #Uzi) perform: #defaultDirectory: with: git.
