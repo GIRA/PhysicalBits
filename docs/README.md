@@ -141,7 +141,6 @@ load := [:ass || repo pckgName versionName version |
 	version load].
 {
 	uzi -> 'PetitParser'.
-	uzi -> 'WebClient'.
 	rest -> 'REST'.
 	uzi -> 'Uzi-Core'.
 	uzi -> 'Uzi-EEPROM'.
