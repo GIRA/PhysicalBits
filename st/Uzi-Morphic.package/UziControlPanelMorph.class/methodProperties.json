@@ -1,6 +1,5 @@
 {
 	"class" : {
-		"additionsToViewerCategories" : "Richo 7/6/2018 21:03",
 		"descriptionForPartsBin" : "Richo 10/10/2016 15:39",
 		"lastPortName" : "Richo 10/10/2016 00:04",
 		"lastPortName:" : "Richo 10/10/2016 00:05" },
@@ -17,7 +16,6 @@
 		"buildScriptsPanel" : "Richo 5/8/2017 12:31",
 		"buildSubmorphs" : "Richo 1/11/2018 14:26",
 		"buildViewerButton" : "Richo 1/8/2018 09:39",
-		"categoriesForViewer" : "Richo 10/9/2016 23:51",
 		"choosePort" : "Richo 12/22/2016 18:39",
 		"connect" : "Richo 10/13/2016 09:49",
 		"connectOn:" : "Richo 11/28/2018 16:51",
@@ -39,7 +37,6 @@
 		"newButton" : "Richo 10/9/2016 18:06",
 		"newColumn" : "Richo 10/9/2016 17:14",
 		"newLabel:" : "Richo 10/9/2016 21:51",
-		"newPlayerInstance" : "Richo 10/9/2016 23:51",
 		"newRow" : "Richo 10/9/2016 16:00",
 		"openBrowser" : "Richo 12/18/2018 21:48",
 		"openDebugger" : "Richo 9/7/2017 09:04",
@@ -67,5 +64,4 @@
 		"togglePinReport:" : "Richo 10/9/2016 18:16",
 		"togglePins" : "Richo 4/18/2018 16:16",
 		"toggleServer" : "Richo 7/27/2018 09:06",
-		"update" : "Richo 8/14/2018 17:51",
-		"validCategories" : "Richo 10/9/2016 23:51" } }
+		"update" : "Richo 8/14/2018 17:51" } }

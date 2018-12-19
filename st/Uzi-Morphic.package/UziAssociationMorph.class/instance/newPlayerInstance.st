@@ -1,3 +1,0 @@
-initialize
-newPlayerInstance
-	^ UziPlayer newUserInstance 
