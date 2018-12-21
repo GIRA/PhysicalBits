@@ -5,7 +5,7 @@ printOn: aStream
 		nextPut: $(.
 	script arguments do: [:arg |
 		aStream
-			nextPutAll: arg name;
+			nextPutAll: arg displayName;
 			nextPutAll: ': ';
 			print: (locals at: arg ifAbsent: ['*error*'])]
 		separatedBy: [aStream nextPutAll: ', '].
