@@ -3,6 +3,7 @@
 		"readFrom:stack:pc:fp:" : "Richo 5/21/2017 14:43",
 		"script:pc:fp:stack:" : "Richo 5/21/2017 10:21" },
 	"instance" : {
+		"fp" : "Richo 12/21/2018 12:25",
 		"initialize" : "Richo 5/21/2017 14:30",
 		"initializeLocals" : "Richo 5/21/2017 14:31",
 		"initializeWithScript:pc:fp:stack:" : "Richo 5/21/2017 10:22",
