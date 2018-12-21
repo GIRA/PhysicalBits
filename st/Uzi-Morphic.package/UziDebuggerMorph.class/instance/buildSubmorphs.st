@@ -11,7 +11,7 @@ buildSubmorphs
 			yourself)].
 		
 	
-	self addMorphBack: (overButton := self newButton
-			label: 'Over';
-			actionSelector: #stepOver;
+	self addMorphBack: (nextButton := self newButton
+			label: 'Next';
+			actionSelector: #stepNext;
 			yourself).
