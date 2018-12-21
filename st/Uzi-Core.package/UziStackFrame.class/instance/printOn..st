@@ -1,8 +1,12 @@
 printing
 printOn: aStream
-	aStream nextPutAll: script name.
+	aStream 
+		nextPutAll: script name;
+		nextPut: $(.
 	script arguments do: [:arg |
-		aStream space;
+		aStream
 			nextPutAll: arg name;
 			nextPutAll: ': ';
 			print: (locals at: arg ifAbsent: ['*error*'])]
+		separatedBy: [aStream nextPutAll: ', '].
+	aStream nextPut: $).
