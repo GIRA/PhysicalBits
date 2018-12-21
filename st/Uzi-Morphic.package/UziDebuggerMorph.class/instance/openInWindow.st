@@ -53,5 +53,13 @@ openInWindow
 			readSelection: nil
 			menu: nil)
 		fullFrame: (LayoutFrame fractions: (0.5@0.8 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
+	"HACK(Richo): To make the selection more visible I change the selection color of
+	all submorphs to an ugly yellow."
+	window submorphsDo: [:m || selectionColor |
+		selectionColor := Color yellow alpha: 0.5.
+		(m isKindOf: PluggableTextMorph)
+			ifTrue: [	m textMorph 
+				unfocusedSelectionColor: selectionColor;
+				selectionColor: selectionColor]].
 	window extent: 600 @ 600.
 	window openInHand
