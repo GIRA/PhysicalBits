@@ -1,3 +1,3 @@
 constants-outgoing
-msgOutSetBreakCount
+msgOutDebugContinue
 	^ 12
