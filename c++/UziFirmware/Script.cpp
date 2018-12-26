@@ -136,7 +136,6 @@ Coroutine* Script::getCoroutine(void)
 		coroutine->framePointer = -1;
 		coroutine->pc = instructionStart;
 		coroutine->nextRun = 0;
-		coroutine->breakCount = -1;
 		coroutine->error = NO_ERROR;
 		coroutine->stackSize = 0;
 		coroutine->stackAllocated = 0;
@@ -148,4 +147,10 @@ Coroutine* Script::getCoroutine(void)
 bool Script::hasCoroutine(void) 
 {
 	return coroutine != 0;
+}
+
+void Script::setBreakpointAt(int16 pc, bool val)
+{
+	Instruction* inst = (instructions + pc - instructionStart);
+	setBreakpoint(inst, val);
 }

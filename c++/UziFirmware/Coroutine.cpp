@@ -80,27 +80,6 @@ void Coroutine::setNextRun(int32 value)
 	nextRun = value;
 }
 
-int8 Coroutine::getBreakCount(void)
-{
-	return breakCount;
-}
-
-void Coroutine::setBreakCount(int8 value)
-{
-	breakCount = value;
-	dumpState = value == 0;
-}
-
-bool Coroutine::getDumpState(void)
-{
-	return dumpState;
-}
-
-void Coroutine::clearDumpState(void)
-{
-	dumpState = false;
-}
-
 uint16 Coroutine::getStackSize(void)
 {
 	return stackSize;

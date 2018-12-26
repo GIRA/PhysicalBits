@@ -1,5 +1,7 @@
 #include "Instruction.h"
 
+#define BREAKPOINT_FLAG 0b10000000
+
 void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 {
 	uint8 bytecode = rs->next(timeout);
@@ -180,5 +182,22 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 			break;
 
 	}
-	instruction->argument = (int8)argument;
+	instruction->data = (int8)argument;
+}
+
+void setBreakpoint(Instruction* instruction, bool value) 
+{
+	//instruction->data |= (BREAKPOINT_FLAG * value);
+	instruction->breakpoint = value;
+}
+
+bool getBreakpoint(Instruction* instruction) 
+{
+	//return instruction->data & BREAKPOINT_FLAG;
+	return instruction->breakpoint;
+}
+
+int8 getArgument(Instruction* instruction) 
+{
+	return instruction->data;
 }

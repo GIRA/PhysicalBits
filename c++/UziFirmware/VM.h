@@ -1,7 +1,8 @@
 
 #pragma once
 
-#include "Monitor.h"
+class Monitor;
+
 #include "GPIO.h"
 #include "StackArray.h"
 #include "Program.h"
@@ -13,6 +14,9 @@ class VM
 public:
 	Error executeProgram(Program*, GPIO*, Monitor*);
 
+	// TODO(Richo): Compress into one uint16
+	int16 breakpointPC = -1;
+	bool halted = false;
 private:
 
 	int16 framePointer = 0;
@@ -29,3 +33,5 @@ private:
 	void unwindStackAndReturn(void);
 };
 
+// TODO(Richo): Redesign Monitor and VM to avoid coupling
+#include "Monitor.h"

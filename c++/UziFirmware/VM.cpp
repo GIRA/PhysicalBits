@@ -8,6 +8,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 	int32 now = millis();
 	for (int16 i = 0; i < count; i++)
 	{
+		if (this->halted) return NO_ERROR; // TODO(Richo): Add a result HALTED or something...
 		Script* script = program->getScript(i);
 		if (script->isStepping()) 
 		{
@@ -28,6 +29,10 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 
 void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 {
+	if (this->breakpointPC != -1 && this->breakpointPC != coroutine->getPC())
+	{
+		return;
+	}
 	currentCoroutine = coroutine;
 	coroutine->restoreStack(&stack);
 	pc = coroutine->getPC();
@@ -50,11 +55,14 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	bool yieldFlag = false;
 	while (true)
 	{
-		int8 breakCount = coroutine->getBreakCount();
-		if (breakCount >= 0)
+		if (pc <= currentScript->getInstructionStop()) 
 		{
-			if (breakCount == 0)
+			Instruction next = nextInstruction();
+			if (getBreakpoint(&next) && this->breakpointPC == -1) 
 			{
+				this->halted = true;
+				this->breakpointPC = --pc; // TODO(Richo): I don't like this decr
+				
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(framePointer);
 				coroutine->setPC(pc);
@@ -62,11 +70,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				coroutine->setNextRun(millis());
 				break;
 			}
-			coroutine->setBreakCount(breakCount - 1);
-		}
-		if (pc <= currentScript->getInstructionStop()) 
-		{
-			Instruction next = nextInstruction();
+			this->breakpointPC = -1;
 			executeInstruction(next, io, monitor, yieldFlag);
 		}
 		if (coroutine->hasError()) break;
@@ -118,7 +122,7 @@ Instruction VM::nextInstruction(void)
 void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor, bool& yieldFlag)
 {
 	Opcode opcode = (Opcode)instruction.opcode;
-	int16 argument = instruction.argument;
+	int16 argument = getArgument(&instruction);
 	switch (opcode)
 	{
 		case TURN_ON:

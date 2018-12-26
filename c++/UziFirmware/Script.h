@@ -38,6 +38,7 @@ struct Script
 
 	Coroutine* getCoroutine(void);
 	bool hasCoroutine(void);
+	void setBreakpointAt(int16, bool);
 };
 
 Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals);

@@ -3,6 +3,7 @@
 #include "types.h"
 #include "Arduino.h"
 #include "SerialReader.h"
+#include "VM.h"
 #include "Program.h"
 #include "Script.h"
 #include "EEPROMWearLevelingWriter.h"
@@ -20,8 +21,8 @@ class Monitor
 public: 
 	void loadInstalledProgram(Program** program);
 	void initSerial();
-	void checkForIncomingMessages(Program** program, GPIO* io);
-	void sendOutgoingMessages(Program* program, GPIO* io);
+	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
+	void sendOutgoingMessages(Program* program, GPIO* io, VM* vm);
 	void sendError(uint8 errorCode);
 
 	void serialWrite(uint8 value);
@@ -40,10 +41,12 @@ private:
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
+	bool sent = false; // TODO(Richo)
+
 	void connectionRequest();
 	void acceptConnection();
 
-	void executeCommand(Program** program, GPIO* io);
+	void executeCommand(Program** program, GPIO* io, VM* vm);
 	void executeSetProgram(Program** program, GPIO* io);
 	void executeSetValue(GPIO* io);
 	void executeSetMode(GPIO* io);
@@ -55,13 +58,14 @@ private:
 	void executeProfile();
 	void executeSetGlobal(Program* program);
 	void executeSetGlobalReport(Program* program);
-	void executeSetBreakCount(Program* program);
+	void executeDebugContinue(VM* vm);
+	void executeDebugSetBreakpoints(Program* program);
 
 	void sendError(uint8 coroutineIndex, uint8 errorCode);
 	void sendReport(GPIO* io, Program* program);
 	void checkKeepAlive();
 	void sendProfile();
-	void sendVMState(Program* program);
+	void sendVMState(Program* program, VM* vm);
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendTickingScripts(Program* program);

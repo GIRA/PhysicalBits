@@ -18,7 +18,8 @@
 // TODO(Richo): Available spot here!
 #define MSG_IN_SET_GLOBAL                                  10
 #define MSG_IN_SET_GLOBAL_REPORT                           11
-#define MSG_IN_SET_BREAK_COUNT                             12
+#define MSG_IN_DEBUG_CONTINUE							   12
+#define MSG_IN_DEBUG_SET_BREAKPOINTS					   13
 
 /* OUTGOING */
 #define MSG_OUT_ERROR                                       0
@@ -58,7 +59,7 @@ void Monitor::initSerial()
 }
 
 
-void Monitor::checkForIncomingMessages(Program** program, GPIO* io)
+void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
 	if (!Serial.available()) return;
 	
@@ -72,7 +73,7 @@ void Monitor::checkForIncomingMessages(Program** program, GPIO* io)
 	}
 	else if (state == CONNECTED)
 	{
-		executeCommand(program, io);
+		executeCommand(program, io, vm);
 	}
 }
 
@@ -107,14 +108,14 @@ void Monitor::acceptConnection()
 	Serial.write(expected);
 }
 
-void Monitor::sendOutgoingMessages(Program* program, GPIO* io) 
+void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 {
 	checkKeepAlive();
 	if (state == CONNECTED) 
 	{
 		sendReport(io, program);
 		sendProfile();
-		sendVMState(program);
+		sendVMState(program, vm);
 	}
 }
 
@@ -167,23 +168,24 @@ void Monitor::sendReport(GPIO* io, Program* program)
 	}
 }
 
-void Monitor::sendVMState(Program* program)
+void Monitor::sendVMState(Program* program, VM* vm)
 {
-	uint8 count = program->getScriptCount();
-	for (uint8 i = 0; i < count; i++)
+	if (vm->halted && !sent) 
 	{
-		Script* script = program->getScript(i);
-		if (script->hasCoroutine())
+		sent = true;
+
+		uint8 count = program->getScriptCount();
+		for (uint8 i = 0; i < count; i++)
 		{
-			Coroutine* coroutine = script->getCoroutine();
-			if (coroutine->getError() != NO_ERROR)
+			Script* script = program->getScript(i);
+			if (script->hasCoroutine())
 			{
-				sendError(i, coroutine->getError());
-				coroutine->reset();
-			}
-			if (coroutine->getDumpState())
-			{
-				coroutine->clearDumpState();
+				Coroutine* coroutine = script->getCoroutine();
+				if (coroutine->getError() != NO_ERROR)
+				{
+					sendError(i, coroutine->getError());
+					coroutine->reset();
+				}
 				Serial.write(MSG_OUT_COROUTINE_STATE);
 				Serial.write(i);
 				int16 pc = coroutine->getPC();
@@ -348,7 +350,7 @@ void Monitor::sendFreeRAM()
 }
 
 
-void Monitor::executeCommand(Program** program, GPIO* io)
+void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 {
 	bool timeout;
 	uint8 cmd = stream.next(timeout);
@@ -389,8 +391,11 @@ void Monitor::executeCommand(Program** program, GPIO* io)
 	case MSG_IN_SET_GLOBAL_REPORT:
 		executeSetGlobalReport(*program);
 		break;
-	case MSG_IN_SET_BREAK_COUNT:
-		executeSetBreakCount(*program);
+	case MSG_IN_DEBUG_CONTINUE:
+		executeDebugContinue(vm);
+		break;
+	case MSG_IN_DEBUG_SET_BREAKPOINTS:
+		executeDebugSetBreakpoints(*program);
 		break;
 	default:
 		// TODO(Richo): Return MSG_OUT_ERROR
@@ -527,20 +532,26 @@ void Monitor::executeSetGlobalReport(Program* program)
 	program->setReport(index, report != 0);
 }
 
-void Monitor::executeSetBreakCount(Program* program)
+void Monitor::executeDebugContinue(VM* vm) 
+{
+	vm->halted = false;
+	sent = false;
+}
+
+void Monitor::executeDebugSetBreakpoints(Program* program) 
 {
 	bool timeout;
-	uint8 index = stream.next(timeout);
-	if (timeout) return;
-	int8 value = stream.next(timeout) - 127;
+	uint8 count = stream.next(timeout);
 	if (timeout) return;
 
-	Script* script = program->getScript(index);
-	if (script != 0)
+	for (uint16 i = 0; i < count; i++) 
 	{
-		// TODO(Richo): Should I check that the script has a coroutine here?
-		Coroutine* coroutine = script->getCoroutine();
-		coroutine->setBreakCount(value);
+		int16 pc = stream.nextLong(2, timeout);
+		if (timeout) return;
+		bool val = stream.next(timeout);
+		if (timeout) return;
+
+		program->getScriptForPC(pc)->setBreakpointAt(pc, val);
 	}
 }
 
