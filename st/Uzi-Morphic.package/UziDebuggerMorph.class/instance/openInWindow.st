@@ -20,7 +20,7 @@ openInWindow
 			accept: nil
 			readSelection: #sourceCodeSelection
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.5@0.8) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0@0.2 corner: 0.55@0.8) offsets: (0@0 corner: 0@0)).
 	window
 		addMorph: (PluggableTextMorph 
 			on: self
@@ -28,7 +28,7 @@ openInWindow
 			accept: nil
 			readSelection: #textualFormSelection 
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0.5@0.2 corner: 1.0@0.8) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0.55@0.2 corner: 1.0@0.8) offsets: (0@0 corner: 0@0)).
 	window 
 		addMorph: (AlignmentMorph newRow
 			color: Color white;
@@ -44,7 +44,7 @@ openInWindow
 				vResizing: #spaceFill;
 				yourself);
 			yourself)
-		fullFrame: (LayoutFrame fractions: (0@0.8 corner: 0.5@1.0) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0@0.8 corner: 0.55@1.0) offsets: (0@0 corner: 0@0)).
 	window
 		addMorph: (PluggableTextMorph 
 			on: self
@@ -52,7 +52,7 @@ openInWindow
 			accept: nil
 			readSelection: nil
 			menu: nil)
-		fullFrame: (LayoutFrame fractions: (0.5@0.8 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
+		fullFrame: (LayoutFrame fractions: (0.55@0.8 corner: 1.0@1.0) offsets: (0@0 corner: 0@0)).
 	"HACK(Richo): To make the selection more visible I change the selection color of
 	all submorphs to an ugly yellow."
 	window submorphsDo: [:m || selectionColor |
