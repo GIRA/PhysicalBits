@@ -1,3 +1,5 @@
 accessing
 stackFrames
-	^ UziStackFrame readFrom: self stack: stack pc: pc fp: fp
+	^ protocol currentProgram
+		ifNil: [#()]
+		ifNotNil: [:p | UziStackFrame readFrom: p stack: stack pc: pc fp: fp]
