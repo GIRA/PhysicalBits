@@ -40,7 +40,7 @@ namespace SimulatorTest
              * INFO(Richo): Perform connection request and handshake.
              * Otherwise, when we send a program later we will be rejected.
              */
-            sketch.WriteSerial(new byte[] 
+            sketch.WriteSerial(new byte[]
             {
                 RQ_CONNECTION_REQUEST, MAJOR_VERSION, MINOR_VERSION
             });
@@ -51,7 +51,7 @@ namespace SimulatorTest
             sketch.Loop();
             byte ack = sketch.ReadSerial().Item2[0];
             Assert.AreEqual(send, ack);
-            
+
             TurnOffAllPins();
         }
 
@@ -850,7 +850,7 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should always be on");
             }
         }
-        
+
         [TestMethod]
         public void Test035StartOnAnotherTaskShouldResetToBeginning()
         {
@@ -1061,7 +1061,7 @@ namespace SimulatorTest
                 10 s -> 0
                 11 s -> 0
              */
-            double[] pattern = new [] { 0, 0.25, 0.5, 0.75, 1, 1, 1, 0.5, 0.5, 0, 0, 0 };
+            double[] pattern = new[] { 0, 0.25, 0.5, 0.75, 1, 1, 1, 0.5, 0.5, 0, 0, 0 };
             for (int i = 0; i < 12; i++)
             {
                 // INFO(Richo): I execute the loop multiple times to make sure all the behavior for this second is complete.
@@ -1193,7 +1193,7 @@ namespace SimulatorTest
                 7 s -> D10: 0.00, D11: 0.25, D12: 0.50, D13: 1.00
                 8 s -> D10: 0.00, D11: 0.25, D12: 0.50, D13: 0.75
              */
-            double[][] pattern = new[] 
+            double[][] pattern = new[]
             {
                 /*       D10   D11   D12   D13 */
                 new[] { 0.00, 0.00, 0.00, 0.00 },
@@ -1262,10 +1262,10 @@ namespace SimulatorTest
         public void Test056Round()
         {
             sketch.WriteSerial(ReadFile(nameof(Test056Round)));
-            
+
             sketch.SetMillis(1000);
             sketch.Loop();
-            
+
             Assert.AreEqual(0, sketch.GetPinValue(10), "D10 should be off");
             Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on");
             Assert.AreEqual(1023, sketch.GetPinValue(12), "D12 should be on");
@@ -1304,7 +1304,7 @@ namespace SimulatorTest
 
             sketch.SetMillis(1000);
             sketch.Loop();
-            
+
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(9) - 512) < 5, "D9 should be close to 512");
         }
 
@@ -1651,14 +1651,14 @@ namespace SimulatorTest
             Assert.IsTrue(Math.Abs(sketch.GetPinValue(8) - 512) < 5, "D8 should be close to 512");
             Assert.AreEqual(1023, sketch.GetPinValue(9), "D9 should be on");
         }
-        
+
         [TestMethod]
         public void Test083DelayS()
         {
             sketch.WriteSerial(ReadFile(nameof(Test083DelayS)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
-            
+
             sketch.SetMillis(500);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on");
@@ -1889,7 +1889,7 @@ namespace SimulatorTest
         public void Test088ScriptCallOverridingPrimitive()
         {
             sketch.WriteSerial(ReadFile(nameof(Test088ScriptCallOverridingPrimitive)));
-            
+
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 500);
@@ -1994,7 +1994,7 @@ namespace SimulatorTest
             sketch.WriteSerial(new byte[] { 12 });
 
             /*
-             * NOTE(Richo): Finally, the VM continues execution without further interruptions.
+             * NOTE(Richo): The VM can continue execution without interruptions.
              */
             time += 1000;
             sketch.SetMillis(time);
@@ -2013,6 +2013,126 @@ namespace SimulatorTest
                 string msg = on ? "on" : "off";
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 4, iteration: {0})", i, msg);
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 4, iteration: {0})", i, msg);
+            }
+
+            // NOTE(Richo): Finally, we leave the VM halted
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
+            time += 1000;
+            sketch.SetMillis(time);
+            sketch.Loop(); sketch.Loop();
+        }
+
+        [TestMethod]
+        public void Test090DebuggerBreakpointHaltsAreDeterministic()
+        {
+            // We need to keep the connection alive, executing this will run the loop once
+            Action keepAlive = () =>
+            {
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); 
+                sketch.Loop();
+            };
+
+            sketch.WriteSerial(ReadFile(nameof(Test090DebuggerBreakpointHaltsAreDeterministic)));
+            
+            int time = 0;
+            sketch.SetMillis(time);
+            sketch.Loop();
+            keepAlive();
+
+            // NOTE(Richo): The program is now in memory. We can check that it works correctly
+            var lastD9 = -1;
+            for (int i = 0; i < 10000; i++)
+            {
+                time += 100;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+
+                Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off (step: 0, iteration: {0})", i);
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 0, iteration: {0})", i);
+
+                var curD9 = sketch.GetPinValue(9);
+                Assert.AreNotEqual(lastD9, curD9, "D9 should have changed from last iteration (step: 0, iteration: {0})", i);
+                lastD9 = curD9;
+
+                bool on = i % 2 != 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 0, iteration: {0})", i, msg);
+            }
+
+            // NOTE(Richo): We are now ready to put the first breakpoint
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 19, 1 });
+            sketch.Loop();
+
+            // NOTE(Richo): Execution should be halted now. Let's check...
+            lastD9 = sketch.GetPinValue(9);
+            for (int i = 0; i < 10000; i++)
+            {
+                time += 10;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+
+                Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off (step: 1, iteration: {0})", i);
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 1, iteration: {0})", i);
+
+                var curD9 = sketch.GetPinValue(9);
+                Assert.AreEqual(lastD9, curD9, "D9 should not have changed from last iteration (step: 1, iteration: {0})", i);
+                
+                Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should remain turned on (step: 1, iteration: {0})", i);
+            }
+
+            // NOTE(Richo): With the VM halted we should turn on D7 and make sure D13 remains off
+            sketch.SetPinValue(7, 1023);
+            lastD9 = sketch.GetPinValue(9);
+            for (int i = 0; i < 10000; i++)
+            {
+                time += 10;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+
+                Assert.AreEqual(1023, sketch.GetPinValue(7), "D7 should be on (step: 2, iteration: {0})", i);
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 2, iteration: {0})", i);
+
+                var curD9 = sketch.GetPinValue(9);
+                Assert.AreEqual(lastD9, curD9, "D9 should not have changed from last iteration (step: 2, iteration: {0})", i);
+
+                Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should remain turned on (step: 2, iteration: {0})", i);
+            }
+
+
+            // NOTE(Richo): Now we remove the breakpoint and continue
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 19, 0 });
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(7), "D7 should be on (step: 3)");
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 3)");
+            sketch.WriteSerial(new byte[] { 12 });
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off (step: 4)");
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 4)");
+
+            // NOTE(Richo): Execution should resume and D13 should continue to be off!
+            lastD9 = -1;
+            for (int i = 0; i < 1000; i++)
+            {
+                time += 10;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+
+                Assert.AreEqual(0, sketch.GetPinValue(7), "D7 should be off (step: 5, iteration: {0})", i);
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 5, iteration: {0})", i);
+
+                var curD9 = sketch.GetPinValue(9);
+                Assert.AreNotEqual(lastD9, curD9, "D9 should have changed from last iteration (step: 5, iteration: {0})", i);
+                lastD9 = curD9;
+
+                bool on = i % 2 != 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 5, iteration: {0})", i, msg);
             }
         }
     }

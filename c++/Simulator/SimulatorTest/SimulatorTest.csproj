@@ -80,6 +80,7 @@
   <ItemGroup>
     <None Include="TestFiles\Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" />
     <None Include="TestFiles\Test089DebuggerBreakpointHaltsAllScripts" />
+    <None Include="TestFiles\Test090DebuggerBreakpointHaltsAreDeterministic" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />
