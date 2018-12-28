@@ -91,4 +91,5 @@
 		"test087Millis" : "Richo 8/6/2018 10:18",
 		"test088ScriptCallOverridingPrimitive" : "Richo 8/27/2018 15:52",
 		"test089DebuggerBreakpointHaltsAllScripts" : "Richo 12/27/2018 21:44",
+		"test090DebuggerBreakpointHaltsAreDeterministic" : "Richo 12/27/2018 22:58",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }
