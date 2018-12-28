@@ -359,6 +359,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	switch (cmd)
 	{
 	case MSG_IN_SET_PROGRAM:
+		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
+		vm->halted = false;
+		vm->breakpointPC = -1;
 		executeSetProgram(program, io);
 		break;
 	case MSG_IN_SET_VALUE:
@@ -377,6 +380,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		executeSetReport(io);
 		break;
 	case MSG_IN_SAVE_PROGRAM:
+		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
+		vm->halted = false;
+		vm->breakpointPC = -1;
 		executeSaveProgram(program, io);
 		break;
 	case MSG_IN_KEEP_ALIVE:
