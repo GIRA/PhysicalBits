@@ -92,4 +92,5 @@
 		"test088ScriptCallOverridingPrimitive" : "Richo 8/27/2018 15:52",
 		"test089DebuggerBreakpointHaltsAllScripts" : "Richo 12/27/2018 21:44",
 		"test090DebuggerBreakpointHaltsAreDeterministic" : "Richo 12/27/2018 22:58",
+		"test091ChangingTheProgramResetsTheVMState" : "Richo 12/27/2018 23:13",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14" } }

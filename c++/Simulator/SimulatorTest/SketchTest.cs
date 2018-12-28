@@ -2014,12 +2014,6 @@ namespace SimulatorTest
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 4, iteration: {0})", i, msg);
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 4, iteration: {0})", i, msg);
             }
-
-            // NOTE(Richo): Finally, we leave the VM halted
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
-            time += 1000;
-            sketch.SetMillis(time);
-            sketch.Loop(); sketch.Loop();
         }
 
         [TestMethod]
@@ -2028,12 +2022,12 @@ namespace SimulatorTest
             // We need to keep the connection alive, executing this will run the loop once
             Action keepAlive = () =>
             {
-                sketch.WriteSerial(new[] { KEEP_ALIVE }); 
+                sketch.WriteSerial(new[] { KEEP_ALIVE });
                 sketch.Loop();
             };
 
             sketch.WriteSerial(ReadFile(nameof(Test090DebuggerBreakpointHaltsAreDeterministic)));
-            
+
             int time = 0;
             sketch.SetMillis(time);
             sketch.Loop();
@@ -2079,7 +2073,7 @@ namespace SimulatorTest
 
                 var curD9 = sketch.GetPinValue(9);
                 Assert.AreEqual(lastD9, curD9, "D9 should not have changed from last iteration (step: 1, iteration: {0})", i);
-                
+
                 Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should remain turned on (step: 1, iteration: {0})", i);
             }
 
@@ -2133,6 +2127,81 @@ namespace SimulatorTest
                 int value = on ? 1023 : 0;
                 string msg = on ? "on" : "off";
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 5, iteration: {0})", i, msg);
+            }
+        }
+        
+        [TestMethod]
+        public void Test091ChangingTheProgramResetsTheVMState()
+        {
+            // We need to keep the connection alive, executing this will run the loop once
+            Action keepAlive = () =>
+            {
+                sketch.WriteSerial(new[] { KEEP_ALIVE });
+                sketch.Loop();
+            };
+
+            sketch.WriteSerial(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
+
+            int time = 0;
+            sketch.SetMillis(time);
+            sketch.Loop();
+            keepAlive();
+
+            // NOTE(Richo): First, we verify that the program does what it's supposed to do.
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+
+                bool on = i % 2 != 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 0, iteration: {0})", i, msg);
+            }
+
+            // NOTE(Richo): Now we set a breakpoint on the first instruction
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
+            sketch.Loop();
+            
+            // NOTE(Richo): The program is halted, D13 should not change
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.Loop();
+                keepAlive();
+                
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off (step: 1, iteration: {0})", i);
+            }
+
+            // NOTE(Richo): Now we send the program again. Execution should restart.
+            sketch.WriteSerial(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
+            sketch.Loop();
+            try
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    time += 1000;
+                    sketch.SetMillis(time);
+                    sketch.Loop();
+                    keepAlive();
+
+                    bool on = i % 2 != 0;
+                    int value = on ? 1023 : 0;
+                    string msg = on ? "on" : "off";
+                    Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 2, iteration: {0})", i, msg);
+                }
+            }
+            catch (AssertFailedException)
+            {
+                // Finally, we remove the breakpoint and continue to avoid messing with the other tests
+                sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 0 });
+                sketch.Loop();
+                sketch.WriteSerial(new byte[] { 12 });
+                sketch.Loop();
+                throw;
             }
         }
     }
