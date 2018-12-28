@@ -19,7 +19,7 @@ namespace SimulatorTest
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
-
+        private const byte KEEP_ALIVE = 7;
 
         public TestContext TestContext { get; set; }
 
@@ -1900,6 +1900,119 @@ namespace SimulatorTest
                 int value = on ? 1023 : 0;
                 string msg = on ? "on" : "off";
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
+            }
+        }
+
+        [TestMethod]
+        public void Test089DebuggerBreakpointHaltsAllScripts()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test089DebuggerBreakpointHaltsAllScripts)));
+
+            // NOTE(Richo): First, we verify that the program does what it's supposed to do.
+            int time = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+                sketch.Loop(); sketch.Loop();
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 0, iteration: {0})", i, msg);
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 0, iteration: {0})", i, msg);
+            }
+
+            // NOTE(Richo): protocol setBreakpoints: #(0)
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
+
+            // NOTE(Richo): The VM must halt and the pins must be left untouched.
+            time += 1000;
+            sketch.SetMillis(time);
+            sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+            sketch.Loop(); sketch.Loop();
+
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+                sketch.Loop(); sketch.Loop();
+
+                Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off (step: 1, iteration: {0})", i);
+                Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off (step: 1, iteration: {0})", i);
+            }
+
+            // NOTE(Richo): protocol sendContinue
+            sketch.WriteSerial(new byte[] { 12 });
+
+            /*
+             * NOTE(Richo): The VM must continue one loop and halt again at the same place as before.
+             * So the pins are turned on and they must remain on until continue is sent again.
+             */
+            time += 1000;
+            sketch.SetMillis(time);
+            sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+            sketch.Loop(); sketch.Loop();
+
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+                sketch.Loop(); sketch.Loop();
+
+                Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 2, iteration: {0})", i);
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 2, iteration: {0})", i);
+            }
+
+            // NOTE(Richo): protocol clearBreakpoints: #(0)
+            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 0 });
+
+            /*
+             * NOTE(Richo): Clearing the breakpoints should have no effect in the VM state. The program
+             * is still halted and the pins must remain on.
+             */
+            time += 1000;
+            sketch.SetMillis(time);
+            sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+            sketch.Loop(); sketch.Loop();
+
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+                sketch.Loop(); sketch.Loop();
+
+                Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 3, iteration: {0})", i);
+                Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 3, iteration: {0})", i);
+            }
+
+            // NOTE(Richo): protocol sendContinue
+            sketch.WriteSerial(new byte[] { 12 });
+
+            /*
+             * NOTE(Richo): Finally, the VM continues execution without further interruptions.
+             */
+            time += 1000;
+            sketch.SetMillis(time);
+            sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+            sketch.Loop(); sketch.Loop();
+
+            for (int i = 0; i < 100; i++)
+            {
+                time += 1000;
+                sketch.SetMillis(time);
+                sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
+                sketch.Loop(); sketch.Loop();
+
+                bool on = i % 2 == 0;
+                int value = on ? 1023 : 0;
+                string msg = on ? "on" : "off";
+                Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (step: 4, iteration: {0})", i, msg);
+                Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 4, iteration: {0})", i, msg);
             }
         }
     }

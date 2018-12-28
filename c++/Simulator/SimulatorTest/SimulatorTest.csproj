@@ -79,6 +79,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" />
+    <None Include="TestFiles\Test089DebuggerBreakpointHaltsAllScripts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />
