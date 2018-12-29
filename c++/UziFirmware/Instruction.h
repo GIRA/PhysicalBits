@@ -44,8 +44,7 @@ enum Opcode
 struct Instruction
 {	
 	uint8 opcode; // INFO(Richo): Originally an Opcode, but changed to uint8 to save 1 byte.
-	int8 data;
-	bool breakpoint; // TODO(RICHO): Use the msb in the data field
+	uint8 data; // INFO(Richo): The msb is used as a breakpoint flag, the argument is stored as a 7-bit signed int
 };
 
 void readInstruction(Reader* rs, Instruction* instruction, bool& timeout);

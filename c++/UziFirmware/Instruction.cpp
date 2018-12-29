@@ -1,6 +1,6 @@
 #include "Instruction.h"
 
-#define BREAKPOINT_FLAG 0b10000000
+#define BREAKPOINT_MASK 0b10000000
 
 void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 {
@@ -180,24 +180,35 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 			instruction->opcode = argument & 0x08 ? SCRIPT_PAUSE : SCRIPT_STOP;
 			argument = argument & 0x07;
 			break;
-
 	}
-	instruction->data = (int8)argument;
+	instruction->data = (int8)argument & ~BREAKPOINT_MASK;
 }
 
 void setBreakpoint(Instruction* instruction, bool value) 
 {
-	//instruction->data |= (BREAKPOINT_FLAG * value);
-	instruction->breakpoint = value;
+	if (value) 
+	{
+		instruction->data |= BREAKPOINT_MASK;
+	}
+	else 
+	{
+		instruction->data &= ~BREAKPOINT_MASK;
+	}
 }
 
 bool getBreakpoint(Instruction* instruction) 
 {
-	//return instruction->data & BREAKPOINT_FLAG;
-	return instruction->breakpoint;
+	return instruction->data & BREAKPOINT_MASK;
 }
 
 int8 getArgument(Instruction* instruction) 
 {
-	return instruction->data;
+	/*
+	NOTE(Richo): The argument is retrieved in two steps.
+	1) First, we remove the breakpoint flag.
+	2) Then we extend the sign (from 7 bit to 8 bit)
+	*/
+	uint8 argument = instruction->data & ~BREAKPOINT_MASK;
+	uint8 mask = (argument << 1) & BREAKPOINT_MASK;
+	return (int8)(argument | mask);
 }
