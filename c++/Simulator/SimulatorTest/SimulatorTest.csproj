@@ -82,6 +82,8 @@
     <None Include="TestFiles\Test089DebuggerBreakpointHaltsAllScripts" />
     <None Include="TestFiles\Test090DebuggerBreakpointHaltsAreDeterministic" />
     <None Include="TestFiles\Test091ChangingTheProgramResetsTheVMState" />
+    <None Include="TestFiles\Test092DebuggerSetAllBreakpoints" />
+    <None Include="TestFiles\Test093DebuggerSetAllBreakpointsWithMultipleScripts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />

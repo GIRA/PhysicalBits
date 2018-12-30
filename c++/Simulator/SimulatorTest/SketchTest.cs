@@ -2204,5 +2204,84 @@ namespace SimulatorTest
                 throw;
             }
         }
+
+        [TestMethod]
+        public void Test092DebuggerSetAllBreakpoints()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test092DebuggerSetAllBreakpoints)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start off");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should start off");
+
+            sketch.Loop(); // Reads program and executes one loop
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should remain off after first loop");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should remain off after first loop");
+
+            sketch.WriteSerial(new byte[] { 14, 1 }); // Set breakpoint on all instructions
+            sketch.Loop(); // Pauses on the first instruction
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off while halted on instruction 0");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 0");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the second instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 1");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 1");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the third instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 2");
+            Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on while halted on instruction 2");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the fourth instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 3");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 3");
+
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the firsth instruction again
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off while halted on instruction 1 (again)");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 1 (again)");
+        }
+
+
+        [TestMethod]
+        public void Test093DebuggerSetAllBreakpointsWithMultipleScripts()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test093DebuggerSetAllBreakpointsWithMultipleScripts)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start off");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should start off");
+
+            sketch.Loop(); // Reads program and executes one loop
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should remain off after first loop");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should remain off after first loop");
+
+            sketch.WriteSerial(new byte[] { 14, 1 }); // Set breakpoint on all instructions
+            sketch.Loop(); // Pauses on the first instruction
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off while halted on instruction 0");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 0");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the second instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 1");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 1");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the third instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 2");
+            Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on while halted on instruction 2");
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the fourth instruction
+            Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on while halted on instruction 3");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 3");
+
+
+            sketch.WriteSerial(new byte[] { 12 }); // Continue without removing any breakpoint.
+            sketch.Loop(); // Pauses on the firsth instruction again
+            Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off while halted on instruction 1 (again)");
+            Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 1 (again)");
+        }
     }
 }
