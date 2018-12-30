@@ -20,6 +20,7 @@
 #define MSG_IN_SET_GLOBAL_REPORT                           11
 #define MSG_IN_DEBUG_CONTINUE							   12
 #define MSG_IN_DEBUG_SET_BREAKPOINTS					   13
+#define MSG_IN_DEBUG_SET_BREAKPOINTS_ALL				   14
 
 /* OUTGOING */
 #define MSG_OUT_ERROR                                       0
@@ -403,6 +404,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_DEBUG_SET_BREAKPOINTS:
 		executeDebugSetBreakpoints(*program);
 		break;
+	case MSG_IN_DEBUG_SET_BREAKPOINTS_ALL:
+		executeDebugSetBreakpointsAll(*program);
+		break;
 	default:
 		// TODO(Richo): Return MSG_OUT_ERROR
 		break;
@@ -558,6 +562,23 @@ void Monitor::executeDebugSetBreakpoints(Program* program)
 		if (timeout) return;
 
 		program->getScriptForPC(pc)->setBreakpointAt(pc, val);
+	}
+}
+
+void Monitor::executeDebugSetBreakpointsAll(Program* program)
+{
+	bool timeout;
+	bool val = stream.next(timeout);
+	if (timeout) return;
+
+	int16 count = program->getScriptCount();
+	for (int16 i = 0; i < count; i++) 
+	{
+		Script* script = program->getScript(i);
+		for (int16 pc = script->getInstructionStart(); pc <= script->getInstructionStop(); pc++) 
+		{
+			script->setBreakpointAt(pc, val);
+		}
 	}
 }
 
