@@ -151,6 +151,7 @@ bool Script::hasCoroutine(void)
 
 void Script::setBreakpointAt(int16 pc, bool val)
 {
-	Instruction* inst = (instructions + pc - instructionStart);
+	if (pc < getInstructionStart() || pc > getInstructionStop()) return;
+	Instruction* inst = &instructions[pc - instructionStart];
 	setBreakpoint(inst, val);
 }

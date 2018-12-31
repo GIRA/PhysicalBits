@@ -568,7 +568,11 @@ void Monitor::executeDebugSetBreakpoints(Program* program)
 		bool val = stream.next(timeout);
 		if (timeout) return;
 
-		program->getScriptForPC(pc)->setBreakpointAt(pc, val);
+		Script* script = program->getScriptForPC(pc);
+		if (script != NULL)
+		{
+			script->setBreakpointAt(pc, val);
+		}
 	}
 }
 
