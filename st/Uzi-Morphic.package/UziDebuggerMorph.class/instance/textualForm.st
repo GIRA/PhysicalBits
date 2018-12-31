@@ -1,5 +1,5 @@
 accessing
 textualForm
-	^ debugger currentProgram
+	^ debugger program
 		ifNil: ['']
 		ifNotNil: [:program | printer print: program]
