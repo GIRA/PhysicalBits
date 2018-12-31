@@ -7,4 +7,5 @@ update: scriptIndex pc: pcInt fp: fpInt stack: aFloatArray
 			pc := pcInt.
 			fp := fpInt.
 			stack := aFloatArray.
+			UziTranscript log: 'Debugger update {1}' format: { Time millisecondClockValue }.
 			self triggerEvent: #debuggerUpdate]
