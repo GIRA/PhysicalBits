@@ -6,4 +6,5 @@ update: scriptIndex pc: pcInt fp: fpInt stack: aFloatArray
 		ifFalse: [index := scriptIndex.
 			pc := pcInt.
 			fp := fpInt.
-			stack := aFloatArray]
+			stack := aFloatArray.
+			self triggerEvent: #debuggerUpdate]
