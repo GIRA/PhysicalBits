@@ -1925,7 +1925,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): protocol setBreakpoints: #(0)
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
+            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 0 });
 
             // NOTE(Richo): The VM must halt and the pins must be left untouched.
             time += 1000;
@@ -1968,7 +1968,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): protocol clearBreakpoints: #(0)
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 0 });
+            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 0 });
 
             /*
              * NOTE(Richo): Clearing the breakpoints should have no effect in the VM state. The program
@@ -2056,7 +2056,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): We are now ready to put the first breakpoint
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 19, 1 });
+            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 19 });
             sketch.Loop();
 
             // NOTE(Richo): Execution should be halted now. Let's check...
@@ -2098,7 +2098,7 @@ namespace SimulatorTest
 
 
             // NOTE(Richo): Now we remove the breakpoint and continue
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 19, 0 });
+            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 19 });
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(7), "D7 should be on (step: 3)");
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 3)");
@@ -2162,7 +2162,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): Now we set a breakpoint on the first instruction
-            sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 1 });
+            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 0 });
             sketch.Loop();
             
             // NOTE(Richo): The program is halted, D13 should not change
@@ -2197,7 +2197,7 @@ namespace SimulatorTest
             catch (AssertFailedException)
             {
                 // Finally, we remove the breakpoint and continue to avoid messing with the other tests
-                sketch.WriteSerial(new byte[] { 13, 1, 0, 0, 0 });
+                sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 0 });
                 sketch.Loop();
                 sketch.WriteSerial(new byte[] { 12 });
                 sketch.Loop();

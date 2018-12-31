@@ -558,14 +558,14 @@ void Monitor::executeDebugContinue(VM* vm)
 void Monitor::executeDebugSetBreakpoints(Program* program) 
 {
 	bool timeout;
+	bool val = stream.next(timeout);
+	if (timeout) return;
 	uint8 count = stream.next(timeout);
 	if (timeout) return;
 
 	for (uint16 i = 0; i < count; i++) 
 	{
 		int16 pc = stream.nextLong(2, timeout);
-		if (timeout) return;
-		bool val = stream.next(timeout);
 		if (timeout) return;
 
 		Script* script = program->getScriptForPC(pc);
