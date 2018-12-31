@@ -1,5 +1,7 @@
 button actions
 openDebugger
 	self isConnected ifFalse: [^ self].
-	protocol openDebugger ifNotNil: [:debugger |
-		(UziDebuggerMorph debugger: debugger) openInWindow]
+	self chooseBreakpoints ifNotEmpty: [:breakpoints | 
+		protocol openDebugger ifNotNil: [:debugger |
+			protocol setBreakpoints: breakpoints.
+			(UziDebuggerMorph debugger: debugger) openInWindow]]

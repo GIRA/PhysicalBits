@@ -11,5 +11,8 @@ initialize
 		vResizing: #shrinkWrap;
 		listDirection: #leftToRight;
 		buildSubmorphs;
-		color: self defaultBackgroundColor;
-		break
+		color: self defaultBackgroundColor.
+	debugger
+		when: #debuggerUpdate
+		send: #update
+		to: self
