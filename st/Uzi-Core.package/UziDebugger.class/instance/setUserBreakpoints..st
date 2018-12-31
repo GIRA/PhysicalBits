@@ -1,4 +1,5 @@
-actions
+accesing-breakpoints
 setUserBreakpoints: breakpoints
-	userBreakpoints addAll: breakpoints.
-	protocol setBreakpoints: breakpoints
+	userBreakpoints 
+		removeAll;
+		addAll: breakpoints

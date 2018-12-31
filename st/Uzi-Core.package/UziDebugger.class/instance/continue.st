@@ -1,3 +1,5 @@
 actions
 continue
-	protocol clearAllBreakpoints; sendContinue
+	self clearDebuggerBreakpoints;
+		sendBreakpoints;
+		sendContinue

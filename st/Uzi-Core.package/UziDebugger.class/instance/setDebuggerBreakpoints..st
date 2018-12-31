@@ -1,4 +1,5 @@
-actions
+accesing-breakpoints
 setDebuggerBreakpoints: breakpoints
-	debuggerBreakpoints addAll: breakpoints.
-	protocol setBreakpoints: breakpoints
+	debuggerBreakpoints 
+		removeAll;
+		addAll: breakpoints

@@ -1,3 +1,4 @@
 accesing-breakpoints
-clearDebuggerBreakpoints
+clearAllBreakpoints
+	userBreakpoints removeAll.
 	debuggerBreakpoints removeAll
