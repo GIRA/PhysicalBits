@@ -1,3 +1,3 @@
 json encoding
 jsonExcludedInstVarNames
-	^ #('token')
+	^ #('token' 'parent')
