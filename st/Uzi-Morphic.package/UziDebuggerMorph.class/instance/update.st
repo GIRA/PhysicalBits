@@ -1,5 +1,5 @@
 updating
 update
-	"Select the top frame"
 	self stackFrameSelection: 1.
-	self unlockButtons
+	self unlockButtons.
+	window setLabel: ('Uzi Debugger @ {1}' format: { debugger scriptName })

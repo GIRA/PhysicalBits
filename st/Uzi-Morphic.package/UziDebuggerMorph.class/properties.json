@@ -6,11 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"nextButton",
 		"continueButton",
-		"breakButton",
+		"nextButton",
 		"debugger",
-		"lastPC",
 		"window",
 		"printer",
 		"stackFrameSelection",
