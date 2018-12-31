@@ -29,7 +29,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 
 void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 {
-	if (this->breakpointPC != -1 && this->breakpointPC != coroutine->getPC())
+	if (this->haltedScript != NULL && this->haltedScript != coroutine->getScript())
 	{
 		return;
 	}
@@ -58,10 +58,11 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		if (pc <= currentScript->getInstructionStop()) 
 		{
 			Instruction next = nextInstruction();
-			if (getBreakpoint(&next) && this->breakpointPC == -1) 
+			if (getBreakpoint(&next) && this->haltedScript == NULL) 
 			{
 				this->halted = true;
-				this->breakpointPC = --pc; // TODO(Richo): I don't like this decr
+				this->haltedScript = coroutine->getScript();
+				pc--; // TODO(Richo): I don't like this decr
 				
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(framePointer);
@@ -70,7 +71,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				coroutine->setNextRun(millis());
 				break;
 			}
-			this->breakpointPC = -1;
+			this->haltedScript = NULL;
 			executeInstruction(next, io, monitor, yieldFlag);
 		}
 		if (coroutine->hasError()) break;

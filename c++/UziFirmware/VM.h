@@ -15,8 +15,8 @@ public:
 	Error executeProgram(Program*, GPIO*, Monitor*);
 
 	// TODO(Richo): Compress into one uint16
-	int16 breakpointPC = -1;
 	bool halted = false;
+	Script* haltedScript = 0;
 private:
 
 	int16 framePointer = 0;

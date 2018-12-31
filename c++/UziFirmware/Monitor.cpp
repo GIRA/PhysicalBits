@@ -174,39 +174,46 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	if (vm->halted && !sent) 
 	{
 		sent = true;
+		sendCoroutineState(vm->haltedScript);
 
-		uint8 count = program->getScriptCount();
+		/*uint8 count = program->getScriptCount();
 		for (uint8 i = 0; i < count; i++)
 		{
 			Script* script = program->getScript(i);
-			if (script->hasCoroutine())
-			{
-				Coroutine* coroutine = script->getCoroutine();
-				if (coroutine->getError() != NO_ERROR)
-				{
-					sendError(i, coroutine->getError());
-					coroutine->reset();
-				}
-				Serial.write(MSG_OUT_COROUTINE_STATE);
-				Serial.write(i);
-				int16 pc = coroutine->getPC();
-				uint8 val1 = pc >> 8 & 0xFF; // MSB
-				uint8 val2 = pc & 0xFF;	// LSB
-				Serial.write(val1);
-				Serial.write(val2);
-				uint8 fp = coroutine->getFramePointer();
-				Serial.write(fp);
-				uint16 stackSize = coroutine->getStackSize();
-				Serial.write(stackSize);
-				for (uint16 j = 0; j < stackSize; j++)
-				{
-					uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
-					Serial.write((value >> 24) & 0xFF);
-					Serial.write((value >> 16) & 0xFF);
-					Serial.write((value >> 8) & 0xFF);
-					Serial.write(value & 0xFF);
-				}
-			}
+			sendCoroutineState(script);
+		}*/
+	}
+}
+
+void Monitor::sendCoroutineState(Script* script)
+{
+	if (script != NULL && script->hasCoroutine())
+	{
+		uint8 scriptIndex = script->getIndex();
+		Coroutine* coroutine = script->getCoroutine();
+		if (coroutine->getError() != NO_ERROR)
+		{
+			sendError(scriptIndex, coroutine->getError());
+			coroutine->reset();
+		}
+		Serial.write(MSG_OUT_COROUTINE_STATE);
+		Serial.write(scriptIndex);
+		int16 pc = coroutine->getPC();
+		uint8 val1 = pc >> 8 & 0xFF; // MSB
+		uint8 val2 = pc & 0xFF;	// LSB
+		Serial.write(val1);
+		Serial.write(val2);
+		uint8 fp = coroutine->getFramePointer();
+		Serial.write(fp);
+		uint16 stackSize = coroutine->getStackSize();
+		Serial.write(stackSize);
+		for (uint16 j = 0; j < stackSize; j++)
+		{
+			uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
+			Serial.write((value >> 24) & 0xFF);
+			Serial.write((value >> 16) & 0xFF);
+			Serial.write((value >> 8) & 0xFF);
+			Serial.write(value & 0xFF);
 		}
 	}
 }
@@ -362,7 +369,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SET_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->halted = false;
-		vm->breakpointPC = -1;
+		vm->haltedScript = NULL;
 		executeSetProgram(program, io);
 		break;
 	case MSG_IN_SET_VALUE:
@@ -383,7 +390,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SAVE_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->halted = false;
-		vm->breakpointPC = -1;
+		vm->haltedScript = NULL;
 		executeSaveProgram(program, io);
 		break;
 	case MSG_IN_KEEP_ALIVE:
