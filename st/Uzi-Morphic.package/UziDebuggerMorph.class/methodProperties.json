@@ -2,9 +2,8 @@
 	"class" : {
 		"debugger:" : "Richo 1/9/2017 06:16" },
 	"instance" : {
-		"break" : "Richo 1/9/2017 06:25",
-		"buildSubmorphs" : "Richo 12/31/2018 11:49",
-		"buttons" : "Richo 12/31/2018 11:54",
+		"buildSubmorphs" : "Richo 12/31/2018 12:10",
+		"buttons" : "Richo 12/31/2018 12:11",
 		"changed" : "Richo 12/31/2018 11:49",
 		"continue" : "Richo 5/7/2017 13:11",
 		"currentInstruction" : "Richo 6/1/2017 14:45",
@@ -25,7 +24,9 @@
 		"stackFrameSelection:" : "Richo 5/21/2017 15:18",
 		"stackFrames" : "Richo 5/21/2017 14:38",
 		"stackString" : "Richo 12/26/2018 09:11",
-		"stepNext" : "Richo 12/31/2018 11:56",
+		"stepInto" : "Richo 12/31/2018 16:03",
+		"stepNext" : "Richo 12/31/2018 16:03",
+		"stepOver" : "Richo 12/31/2018 16:03",
 		"textualForm" : "Richo 12/31/2018 11:10",
 		"textualFormSelection" : "Richo 6/1/2017 14:47",
 		"unlockButtons" : "Richo 12/31/2018 12:00",

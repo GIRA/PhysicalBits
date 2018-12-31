@@ -12,7 +12,9 @@
 		"window",
 		"printer",
 		"stackFrameSelection",
-		"stackFrame" ],
+		"stackFrame",
+		"overButton",
+		"intoButton" ],
 	"name" : "UziDebuggerMorph",
 	"pools" : [
 		 ],

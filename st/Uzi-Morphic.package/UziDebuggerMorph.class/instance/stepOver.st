@@ -1,4 +1,4 @@
 button actions
-stepNext
+stepOver
 	self lockButtons.
-	debugger stepNext
+	debugger stepOver

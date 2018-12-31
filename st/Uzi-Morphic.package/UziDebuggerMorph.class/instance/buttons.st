@@ -1,3 +1,3 @@
 accessing
 buttons
-	^ { continueButton . nextButton }
+	^ { continueButton . overButton . intoButton . nextButton }
