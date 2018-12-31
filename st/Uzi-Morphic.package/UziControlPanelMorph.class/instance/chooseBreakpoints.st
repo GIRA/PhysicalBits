@@ -14,7 +14,8 @@ chooseBreakpoints
 				chooseMultipleFrom: (lines collect: [:each | each value])
 				values: (lines collect: [:each | each key]).
 			(printer intervals withIndexCollect: [:each :index | 
-				(selection anySatisfy: [:sel | sel includes: each middle])
+				(selection notNil
+				and: [selection anySatisfy: [:sel | sel includes: each middle]])
 					ifTrue: [index - 1]
 					ifFalse: [nil]]) 
 				select: [:pc | pc notNil]]

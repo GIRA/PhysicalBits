@@ -1,3 +1,4 @@
 button actions
 continue
-	self delete
+	self lockButtons.
+	debugger continue
