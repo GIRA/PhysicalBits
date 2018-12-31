@@ -1,4 +1,4 @@
-stepping
+updating
 changed
 	super changed.
 	self changed: #stackFrames;
@@ -7,5 +7,4 @@ changed
 		changed: #sourceCodeSelection;
 		changed: #textualFormSelection;
 		changed: #locals;
-		changed: #stackString;
-		rebuild
+		changed: #stackString

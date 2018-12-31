@@ -10,8 +10,8 @@ initialize
 		hResizing: #shrinkWrap;
 		vResizing: #shrinkWrap;
 		listDirection: #leftToRight;
-		buildSubmorphs;
-		color: self defaultBackgroundColor.
+		color: self defaultBackgroundColor;
+		buildSubmorphs.
 	debugger
 		when: #debuggerUpdate
 		send: #update
