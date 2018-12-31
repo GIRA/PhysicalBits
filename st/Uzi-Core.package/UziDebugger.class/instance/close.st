@@ -1,3 +1,4 @@
-event handling
+initializing
 close
-	protocol removeActionsWithReceiver: self forEvent: self coroutineUpdateEvent
+	protocol removeActionsWithReceiver: self forEvent: self coroutineUpdateEvent.
+	index := pc := fp := stack := nil
