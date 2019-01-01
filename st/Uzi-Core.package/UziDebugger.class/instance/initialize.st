@@ -1,7 +1,8 @@
 initializing
-initialize 
+initialize
 	super initialize.
 	program := protocol currentProgram.
+	debuggerProgram := UziDebuggerProgram on: protocol currentProgram.
 	userBreakpoints := Set new.
 	debuggerBreakpoints := Set new.
 	protocol 

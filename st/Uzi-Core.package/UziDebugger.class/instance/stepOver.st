@@ -1,9 +1,9 @@
 actions
 stepOver
 	self clearDebuggerBreakpoints.
-	self nextInstructionsForStepOver ifNotEmpty: [:next || breakpoints |
-		breakpoints := next
-			collect: [:each | self pcForInstruction: each]
-			thenSelect: [:each | each notNil].
-		self setDebuggerBreakpoints: breakpoints].
+	self setDebuggerBreakpoints: (((debuggerProgram
+		instructionAtPC: pc)
+		ifNil: [#()]
+		ifNotNil: [:instr | instr stepOverOn: self])
+			collect: [:each | each pc]).
 	self sendBreakpoints; sendContinue

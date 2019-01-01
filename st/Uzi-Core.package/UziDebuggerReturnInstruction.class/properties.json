@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Debugging-Program",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziDebuggerReturnInstruction",
+	"pools" : [
+		 ],
+	"super" : "UziDebuggerInstruction",
+	"type" : "normal" }

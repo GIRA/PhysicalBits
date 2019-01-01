@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Debugging-Program",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"program",
+		"scripts" ],
+	"name" : "UziDebuggerProgram",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

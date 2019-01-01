@@ -1,0 +1,4 @@
+initialize-release
+initializeWithInstructions: aCollectionOfUziInstructions
+	instructions := aCollectionOfUziInstructions.
+	self initialize

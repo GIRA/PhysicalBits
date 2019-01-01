@@ -13,7 +13,8 @@
 		"fp",
 		"stack",
 		"userBreakpoints",
-		"debuggerBreakpoints" ],
+		"debuggerBreakpoints",
+		"debuggerProgram" ],
 	"name" : "UziDebugger",
 	"pools" : [
 		 ],

@@ -5,6 +5,7 @@ SystemOrganization addCategory: #'Uzi-Core-Errors'!
 SystemOrganization addCategory: #'Uzi-Core-Program-Instructions'!
 SystemOrganization addCategory: #'Uzi-Core-Program'!
 SystemOrganization addCategory: #'Uzi-Core-Utils'!
+SystemOrganization addCategory: #'Uzi-Core-Debugging-Program'!
 SystemOrganization addCategory: #'Uzi-Core-Debugging'!
 SystemOrganization addCategory: #'Uzi-Core-Protocol'!
 SystemOrganization addCategory: #'Uzi-Core'!
