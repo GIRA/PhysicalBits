@@ -1,8 +1,15 @@
 {
 	"class" : {
-		"group:" : "Richo 1/1/2019 12:55",
-		"on:" : "Richo 1/1/2019 13:07",
-		"subclassFor:" : "Richo 1/1/2019 14:11" },
+		"group:startingAt:script:" : "Richo 1/1/2019 15:45",
+		"on:startingAt:script:" : "Richo 1/1/2019 15:46",
+		"subclassFor:" : "Richo 1/1/2019 16:26" },
 	"instance" : {
-		"initializeWithInstructions:" : "Richo 1/1/2019 12:51",
-		"printOn:" : "Richo 1/1/2019 12:58" } }
+		"breakpointPC" : "Richo 1/1/2019 16:31",
+		"initializeWithInstructions:start:script:" : "Richo 1/1/2019 15:45",
+		"interval" : "Richo 1/1/2019 15:40",
+		"nextInstructionInScript" : "Richo 1/1/2019 16:01",
+		"printOn:" : "Richo 1/1/2019 12:58",
+		"script" : "Richo 1/1/2019 15:50",
+		"start" : "Richo 1/1/2019 15:41",
+		"stepOverOn:" : "Richo 1/1/2019 16:00",
+		"stop" : "Richo 1/1/2019 15:41" } }

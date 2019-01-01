@@ -6,7 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"instructions" ],
+		"script",
+		"instructions",
+		"start" ],
 	"name" : "UziDebuggerInstruction",
 	"pools" : [
 		 ],

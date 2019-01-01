@@ -1,8 +1,14 @@
 {
 	"class" : {
-		"on:" : "Richo 1/1/2019 12:45" },
+		"on:start:" : "Richo 1/1/2019 15:28",
+		"on:start:stop:" : "Richo 1/1/2019 15:27" },
 	"instance" : {
-		"initialize" : "Richo 1/1/2019 12:47",
-		"initializeWithScript:" : "Richo 1/1/2019 12:46",
+		"initialize" : "Richo 1/1/2019 15:44",
+		"initializeWithScript:start:" : "Richo 1/1/2019 15:28",
+		"instructionAtPC:" : "Richo 1/1/2019 15:51",
+		"instructions" : "Richo 1/1/2019 15:18",
+		"interval" : "Richo 1/1/2019 15:52",
 		"printOn:" : "Richo 1/1/2019 12:56",
-		"scriptName" : "Richo 1/1/2019 12:56" } }
+		"scriptName" : "Richo 1/1/2019 12:56",
+		"start" : "Richo 1/1/2019 15:52",
+		"stop" : "Richo 1/1/2019 15:54" } }

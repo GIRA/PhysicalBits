@@ -1,16 +1,18 @@
 instance creation
-group: instructions
+group: instructions startingAt: startPC script: script
 	"The grouping of instructions just makes sure that each
 	group ends with a statement"
-	| group groups |
+	| group groups pc |
 	groups := OrderedCollection new.
+	pc := startPC.
 	group := OrderedCollection new.
-	groups add: group.
+	groups add: group -> pc.
 	instructions do: [:instr |
+		pc := pc + 1.
 		group add: instr.
 		instr isStatement ifTrue: [
 			group := OrderedCollection new.
-			groups add: group]].
+			groups add: group -> pc]].
 	^ groups
-		select: [:each | each notEmpty]
-		thenCollect: [:each | self on: each]
+		select: [:kvp | kvp key notEmpty]
+		thenCollect: [:kvp | self on: kvp key startingAt: kvp value script: script]

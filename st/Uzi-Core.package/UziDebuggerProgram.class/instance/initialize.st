@@ -1,4 +1,11 @@
 initialize-release
 initialize
+	| acc |
 	super initialize.
-	scripts := program scripts collect: [:script | UziDebuggerScript on: script]
+	acc := 0.
+	scripts := OrderedCollection new.
+	program scripts do: [:script |
+		scripts add: (UziDebuggerScript 
+			on: script 
+			start: acc).
+		acc := acc + script instructions size]
