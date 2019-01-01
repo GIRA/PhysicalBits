@@ -8,7 +8,6 @@
 	"instvars" : [
 		"name",
 		"code",
-		"isExpression",
 		"stackTransition" ],
 	"name" : "UziPrimitive",
 	"pools" : [
