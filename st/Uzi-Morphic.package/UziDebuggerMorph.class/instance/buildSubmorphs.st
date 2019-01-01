@@ -16,3 +16,5 @@ buildSubmorphs
 			label: 'Next';
 			actionSelector: #stepNext;
 			yourself).
+	self addMorphBack: AlignmentMorph newVariableTransparentSpacer.
+	self addMorphBack: self buildInspectorButton

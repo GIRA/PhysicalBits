@@ -2,7 +2,8 @@
 	"class" : {
 		"debugger:" : "Richo 1/9/2017 06:16" },
 	"instance" : {
-		"buildSubmorphs" : "Richo 12/31/2018 12:10",
+		"buildInspectorButton" : "Richo 1/1/2019 10:39",
+		"buildSubmorphs" : "Richo 1/1/2019 10:38",
 		"buttons" : "Richo 12/31/2018 12:11",
 		"changed" : "Richo 12/31/2018 11:49",
 		"continue" : "Richo 12/31/2018 20:21",
