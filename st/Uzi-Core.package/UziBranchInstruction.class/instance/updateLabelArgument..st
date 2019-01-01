@@ -1,4 +1,4 @@
-as yet unclassified
+label update
 updateLabelArgument: labels	
 	argument isString 
 		ifTrue: [argument := labels 

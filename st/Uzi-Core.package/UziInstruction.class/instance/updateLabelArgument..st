@@ -1,3 +1,3 @@
-as yet unclassified
+label update
 updateLabelArgument: labels
 	"Do nothing"

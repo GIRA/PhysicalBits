@@ -1,3 +1,3 @@
-as yet unclassified
+visitor
 accept: visitor
 	^ visitor visitResumeScriptInstruction: self
