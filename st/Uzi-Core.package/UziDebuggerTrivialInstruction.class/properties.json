@@ -10,5 +10,5 @@
 	"name" : "UziDebuggerTrivialInstruction",
 	"pools" : [
 		 ],
-	"super" : "UziDebuggerBranchInstruction",
+	"super" : "AnObsoleteUziDebuggerBranchInstruction",
 	"type" : "normal" }

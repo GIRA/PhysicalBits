@@ -1,3 +1,0 @@
-accessing
-breakpointPC
-	^ self stop
