@@ -1,9 +1,9 @@
 actions
 stepOver
 	self clearDebuggerBreakpoints.
-	self nextStatements ifNotEmpty: [:nodes || breakpoints |
-		breakpoints := nodes
-			collect: [:each | self pcForNode: each]
+	self nextInstructionsForStepOver ifNotEmpty: [:next || breakpoints |
+		breakpoints := next
+			collect: [:each | self pcForInstruction: each]
 			thenSelect: [:each | each notNil].
 		self setDebuggerBreakpoints: breakpoints].
 	self sendBreakpoints; sendContinue
