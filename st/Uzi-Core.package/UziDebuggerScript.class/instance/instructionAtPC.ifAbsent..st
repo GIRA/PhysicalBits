@@ -1,5 +1,5 @@
 accessing
-instructionAtPC: pc
+instructionAtPC: pc ifAbsent: aBlock
 	^ self instructions
 		detect: [:instr | instr interval includes: pc]
-		ifNone: [nil]
+		ifNone: aBlock

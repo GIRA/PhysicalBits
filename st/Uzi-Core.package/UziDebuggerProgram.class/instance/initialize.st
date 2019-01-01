@@ -7,5 +7,6 @@ initialize
 	program scripts do: [:script |
 		scripts add: (UziDebuggerScript 
 			on: script 
-			start: acc).
+			start: acc
+			program: self).
 		acc := acc + script instructions size]
