@@ -1,6 +1,6 @@
 initialize-release
 initializeWithScript: anUziScript start: startPC program: anUziDebuggerProgram
-	script := anUziScript.
+	innerScript := anUziScript.
 	start := startPC.
 	program := anUziDebuggerProgram.
 	self initialize

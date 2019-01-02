@@ -1,3 +1,3 @@
 accessing
 variables
-	^ script variables
+	^ innerScript variables

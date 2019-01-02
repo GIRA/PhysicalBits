@@ -1,3 +1,3 @@
 accessing
 arguments
-	^ script arguments
+	^ innerScript arguments

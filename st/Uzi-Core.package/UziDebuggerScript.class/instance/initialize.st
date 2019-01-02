@@ -2,6 +2,6 @@ initialize-release
 initialize
 	super initialize.
 	instructions := UziDebuggerInstruction 
-		group: script instructions
+		group: innerScript instructions
 		startingAt: start
 		script: self

@@ -1,4 +1,4 @@
 initialize-release
 initializeWithProgram: anUziProgram
-	program := anUziProgram.
+	innerProgram := anUziProgram.
 	self initialize

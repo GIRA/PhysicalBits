@@ -1,3 +1,3 @@
 accessing
 stop
-	^ self start + instructions size - 1
+	^ self start + innerInstructions size - 1

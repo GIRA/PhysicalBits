@@ -1,3 +1,3 @@
 testing
 isTrivial
-	^ self instructions last isUnconditionalBranch
+	^ self innerInstructions last isUnconditionalBranch

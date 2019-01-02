@@ -1,3 +1,3 @@
 testing
 isReturn
-	^ self instructions anySatisfy: [:instr | instr isReturn]
+	^ self innerInstructions anySatisfy: [:instr | instr isReturn]

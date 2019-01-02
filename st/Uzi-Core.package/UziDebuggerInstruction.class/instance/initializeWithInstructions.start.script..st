@@ -1,6 +1,6 @@
 initialize-release
 initializeWithInstructions: aCollectionOfInstructions start: startPC script: anUziDebuggerScript
-	instructions := aCollectionOfInstructions.
+	innerInstructions := aCollectionOfInstructions.
 	start := startPC.
 	script := anUziDebuggerScript.
 	self initialize

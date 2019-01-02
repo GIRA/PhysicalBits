@@ -4,7 +4,7 @@ initialize
 	super initialize.
 	acc := 0.
 	scripts := OrderedCollection new.
-	program scripts do: [:script |
+	innerProgram scripts do: [:script |
 		scripts add: (UziDebuggerScript 
 			on: script 
 			start: acc

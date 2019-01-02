@@ -1,3 +1,3 @@
 testing
 isCall
-	^ self instructions anySatisfy: [:instr | instr isScriptCall]
+	^ self innerInstructions anySatisfy: [:instr | instr isScriptCall]

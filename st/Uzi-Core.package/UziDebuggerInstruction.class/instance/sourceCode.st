@@ -1,6 +1,6 @@
 accessing
 sourceCode
-	^ instructions anyOne
+	^ innerInstructions anyOne
 		ifNil: ''
 		ifNotNil: [:i | i node 
 			ifNil: ''
