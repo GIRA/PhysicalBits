@@ -15,7 +15,8 @@
 		"tickingScripts",
 		"freeArduinoRAM",
 		"freeUziRAM",
-		"pins" ],
+		"pins",
+		"debugger" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],

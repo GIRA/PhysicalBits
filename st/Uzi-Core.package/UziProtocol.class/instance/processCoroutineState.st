@@ -14,5 +14,4 @@ processCoroutineState
 		val3 := serial next.
 		val4 := serial next.
 		stack basicAt: i put: (val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4)))].
-	self triggerEvent: #coroutineUpdate
-		withArguments: { index . pc . fp. stack }
+	debugger update: index pc: pc fp: fp stack: stack
