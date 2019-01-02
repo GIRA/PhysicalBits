@@ -14,7 +14,8 @@
 		"stackFrameSelection",
 		"stackFrame",
 		"overButton",
-		"intoButton" ],
+		"intoButton",
+		"outButton" ],
 	"name" : "UziDebuggerMorph",
 	"pools" : [
 		 ],

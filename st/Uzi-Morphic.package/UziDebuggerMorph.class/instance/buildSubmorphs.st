@@ -12,6 +12,10 @@ buildSubmorphs
 			label: 'Into';
 			actionSelector: #stepInto;
 			yourself).
+	self addMorphBack: (outButton := self newButton
+			label: 'Out';
+			actionSelector: #stepOut;
+			yourself).
 	self addMorphBack: (nextButton := self newButton
 			label: 'Next';
 			actionSelector: #stepNext;
