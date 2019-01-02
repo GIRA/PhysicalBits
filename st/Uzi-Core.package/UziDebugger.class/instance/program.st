@@ -1,3 +1,3 @@
 accessing
 program
-	^ program
+	^ UziDebuggerProgram on: protocol currentProgram

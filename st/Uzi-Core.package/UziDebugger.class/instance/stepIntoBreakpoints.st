@@ -1,5 +1,5 @@
 actions
 stepIntoBreakpoints
-	^ (program instructionAtPC: pc)
+	^ (self program instructionAtPC: pc)
 		ifNil: [#()]
 		ifNotNil: [:instr | instr stepIntoOn: self]

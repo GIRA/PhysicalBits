@@ -1,3 +1,3 @@
 accessing
 scriptForPC: anInteger
-	^ program scriptForPC: anInteger
+	^ self program scriptForPC: anInteger

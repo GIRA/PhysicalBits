@@ -1,3 +1,3 @@
 accessing
 instructionAtPC: pc
-	^ pc ifNotNil: [program instructionAtPC: pc]
+	^ pc ifNotNil: [self program instructionAtPC: pc]

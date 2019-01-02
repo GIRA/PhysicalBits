@@ -1,3 +1,3 @@
 accessing
 stackFrames
-	^ UziStackFrame readFrom: program stack: stack pc: pc fp: fp
+	^ UziStackFrame readFrom: self program stack: stack pc: pc fp: fp

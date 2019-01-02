@@ -7,7 +7,6 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"protocol",
-		"program",
 		"index",
 		"pc",
 		"fp",
