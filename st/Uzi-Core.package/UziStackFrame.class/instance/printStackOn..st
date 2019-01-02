@@ -6,7 +6,7 @@ printStackOn: stream
 		int := stack basicAt: i.
 		
 		"Index"
-		stream nextPutAll: (i - 1) asTwoCharacterString; nextPutAll: ') '.
+		stream nextPutAll: (i - 1) asTwoCharacterString; nextPutAll: ')'; tab.
 		
 		"HEX"
 		(3 to: 0 by: -1) do: [:n || hex |
