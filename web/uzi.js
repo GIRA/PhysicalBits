@@ -6,6 +6,7 @@ var Uzi = (function () {
 		connectionUpdate: [],
 		programUpdate: [],
 		monitorUpdate: [],
+		debuggerUpdate: []
 	};
 			
 	var Uzi = {
@@ -35,6 +36,9 @@ var Uzi = (function () {
 		},
 		onMonitorUpdate: function (callback) {
 			eventList.monitorUpdate.push(callback);
+		},
+		onDebuggerUpdate: function (callback) {
+			eventList.debuggerUpdate.push(callback);
 		},
 		
 		connect: connect,
@@ -233,7 +237,10 @@ var Uzi = (function () {
 				compiled: true
 			};
 			triggerEvent(eventList.programUpdate);
-		}		
+		}
+		
+		Uzi.debugger = uzi.debugger;
+		triggerEvent(eventList.debuggerUpdate);
 	}
 
 	function updateLoop(first) {
