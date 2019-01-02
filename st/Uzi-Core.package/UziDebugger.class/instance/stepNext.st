@@ -1,5 +1,5 @@
 actions
 stepNext
-	self setDebuggerBreakpoints: self allPCs;
+	self setDebuggerBreakpoints: program allPCs;
 		sendBreakpoints;
 		sendContinue

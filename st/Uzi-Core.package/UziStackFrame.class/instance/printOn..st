@@ -1,7 +1,7 @@
 printing
 printOn: aStream
 	aStream 
-		nextPutAll: script name;
+		nextPutAll: script scriptName;
 		nextPut: $(.
 	script arguments do: [:arg |
 		aStream

@@ -1,0 +1,3 @@
+accessing
+arguments
+	^ script arguments

@@ -1,5 +1,3 @@
 accessing
 stackFrames
-	^ program 
-		ifNil: [#()]
-		ifNotNil: [:p | UziStackFrame readFrom: p stack: stack pc: pc fp: fp]
+	^ UziStackFrame readFrom: program stack: stack pc: pc fp: fp

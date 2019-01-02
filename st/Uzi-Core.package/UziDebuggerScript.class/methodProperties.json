@@ -2,6 +2,7 @@
 	"class" : {
 		"on:start:program:" : "Richo 1/1/2019 20:19" },
 	"instance" : {
+		"arguments" : "Richo 1/2/2019 00:23",
 		"initialize" : "Richo 1/1/2019 15:44",
 		"initializeWithScript:start:program:" : "Richo 1/1/2019 20:19",
 		"instructionAtPC:ifAbsent:" : "Richo 1/1/2019 18:21",
@@ -11,4 +12,5 @@
 		"program" : "Richo 1/1/2019 20:18",
 		"scriptName" : "Richo 1/1/2019 12:56",
 		"start" : "Richo 1/1/2019 15:52",
-		"stop" : "Richo 1/1/2019 15:54" } }
+		"stop" : "Richo 1/1/2019 15:54",
+		"variables" : "Richo 1/2/2019 00:23" } }

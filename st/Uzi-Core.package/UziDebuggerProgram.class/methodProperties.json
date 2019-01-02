@@ -2,9 +2,12 @@
 	"class" : {
 		"on:" : "Richo 1/1/2019 14:15" },
 	"instance" : {
+		"accept:" : "Richo 1/2/2019 00:16",
+		"allPCs" : "Richo 1/2/2019 00:12",
 		"initialize" : "Richo 1/1/2019 20:18",
 		"initializeWithProgram:" : "Richo 1/1/2019 12:42",
 		"instructionAtPC:" : "Richo 1/1/2019 15:42",
 		"instructions" : "Richo 1/1/2019 15:20",
+		"scriptForPC:" : "Richo 1/2/2019 00:22",
 		"scriptNamed:ifAbsent:" : "Richo 1/1/2019 20:20",
 		"scripts" : "Richo 1/1/2019 15:20" } }
