@@ -5,4 +5,4 @@ stepOverBranchOn: debugger
 			ifNil: [#()]
 			ifNotNil: [:instr | instr isTrivial
 				ifTrue: [instr stepOverOn: debugger]
-				ifFalse: [{ instr start }]])
+				ifFalse: [instr interval]])
