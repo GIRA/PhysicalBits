@@ -6,6 +6,7 @@ initialize
 		UziProtocolEvents disconnect.
 		UziProtocolEvents runProgram.
 		UziProtocolEvents reportingChange.
+		UziProtocolEvents debuggerUpdate.
 	}
 	do: [:evt | self protocol when: evt send: #update to: self].
 	

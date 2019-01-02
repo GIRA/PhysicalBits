@@ -3,6 +3,7 @@ initializeResources
 	self at: #pins put: (UziPinResource server: server);
 		at: #globals put: (UziGlobalResource server: server);
 		at: #program put: (UziProgramResource server: server);
+		at: #debugger put: (UziDebuggerResource server: server);
 		at: #actions 
 		put: (RESTActionMap new
 			at: #compile do: [:req | self processCompile: req];

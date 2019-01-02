@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"server" ],
+	"name" : "UziDebuggerResource",
+	"pools" : [
+		 ],
+	"super" : "RESTObject",
+	"type" : "normal" }
