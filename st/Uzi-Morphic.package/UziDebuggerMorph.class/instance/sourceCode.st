@@ -1,3 +1,5 @@
 accessing
 sourceCode
-	^ self currentInstruction ifNotNil: [:instr | instr sourceCode]
+	^ self currentInstruction
+		ifNil: [sourceCode]
+		ifNotNil: [:instr | sourceCode := instr sourceCode]

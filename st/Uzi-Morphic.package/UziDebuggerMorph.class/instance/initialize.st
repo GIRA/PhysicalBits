@@ -6,13 +6,16 @@ initialize
 		at: stackFrameSelection
 		ifAbsent: [nil].
 	printer := UziProgramPrinter new.
+	stackFrames := #().
+	sourceCode := stackString := locals := ''.
+
 	self 
 		hResizing: #shrinkWrap;
 		vResizing: #shrinkWrap;
 		listDirection: #leftToRight;
 		color: self defaultBackgroundColor;
 		buildSubmorphs.
-	debugger
-		when: #debuggerUpdate
+	debugger protocol
+		when: UziProtocolEvents debuggerUpdate
 		send: #update
 		to: self

@@ -1,3 +1,5 @@
 accessing
 stackFrames
-	^ debugger stackFrames 
+	^ debugger stackFrames
+		ifEmpty: [stackFrames]
+		ifNotEmpty: [:sf | stackFrames := sf]

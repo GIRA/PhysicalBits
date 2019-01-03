@@ -1,3 +1,5 @@
 accessing
 stackString
-	^ self stackFrame ifNil: [''] ifNotNil: [:sf | sf annotatedStack]
+	^ self stackFrame 
+		ifNil: [stackString] 
+		ifNotNil: [:sf | stackString := sf annotatedStack]
