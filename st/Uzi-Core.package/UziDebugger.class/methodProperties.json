@@ -4,7 +4,7 @@
 	"instance" : {
 		"clearAllBreakpoints" : "Richo 12/31/2018 19:27",
 		"clearDebuggerBreakpoints" : "Richo 12/31/2018 19:22",
-		"close" : "Richo 1/2/2019 16:03",
+		"close" : "Richo 1/2/2019 21:00",
 		"continue" : "Richo 12/31/2018 20:21",
 		"currentInstruction" : "Richo 5/21/2017 15:14",
 		"currentProgram" : "Richo 5/20/2017 16:50",
@@ -14,10 +14,11 @@
 		"initialize" : "Richo 1/2/2019 16:05",
 		"initializeWithProtocol:" : "Richo 12/31/2018 10:47",
 		"instructionAtPC:" : "Richo 1/2/2019 16:08",
-		"isRunning" : "Richo 1/9/2017 12:37",
+		"isHalted" : "Richo 1/2/2019 21:05",
 		"locals" : "Richo 12/31/2018 10:55",
 		"pc" : "Richo 1/9/2017 12:21",
 		"program" : "Richo 1/2/2019 16:08",
+		"protocol" : "Richo 1/2/2019 21:05",
 		"returnPC" : "Richo 1/1/2019 19:52",
 		"scriptForPC:" : "Richo 1/2/2019 16:08",
 		"scriptName" : "Richo 1/2/2019 16:08",
@@ -25,7 +26,7 @@
 		"sendContinue" : "Richo 12/31/2018 19:33",
 		"setDebuggerBreakpoints:" : "Richo 12/31/2018 19:24",
 		"setUserBreakpoints:" : "Richo 12/31/2018 19:24",
-		"sourceCode" : "Richo 5/28/2017 10:56",
+		"sourceCode" : "Richo 1/2/2019 21:19",
 		"stack" : "Richo 1/9/2017 06:38",
 		"stackFrames" : "Richo 1/2/2019 16:08",
 		"stepInto" : "Richo 1/1/2019 19:56",
@@ -35,4 +36,4 @@
 		"stepOutBreakpoints" : "Richo 1/2/2019 18:18",
 		"stepOver" : "Richo 1/1/2019 16:12",
 		"stepOverBreakpoints" : "Richo 1/2/2019 16:08",
-		"update:pc:fp:stack:" : "Richo 1/2/2019 17:15" } }
+		"update:pc:fp:stack:" : "Richo 1/2/2019 20:57" } }

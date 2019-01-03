@@ -1,3 +1,0 @@
-testing
-isRunning 
-	^ pc isNil

@@ -1,0 +1,3 @@
+testing
+isHalted
+	^ pc notNil
