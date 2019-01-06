@@ -1,21 +1,15 @@
 button actions
 chooseBreakpoints
-	| printer src selection lines |
 	^ protocol currentProgram 
 		ifNil: [#()]
-		ifNotNil: [:program |
-			printer := UziProgramPrinter new.
-			src := String streamContents: [:stream | 
-				printer print: program on: stream].
-			lines := Array streamContents: [:stream |
-				src lineIndicesDo: [:start :ign :stop |
-					stream nextPut: (start to: stop) -> (src copyFrom: start to: stop)]].
-			selection := UIManager default 
-				chooseMultipleFrom: (lines collect: [:each | each value])
-				values: (lines collect: [:each | each key]).
-			(printer intervals withIndexCollect: [:each :index | 
-				(selection notNil
-				and: [selection anySatisfy: [:sel | sel includes: each middle]])
-					ifTrue: [index - 1]
-					ifFalse: [nil]]) 
-				select: [:pc | pc notNil]]
+		ifNotNil: [:program || lines labels values |
+			lines := program linesOfCode.
+			labels := lines collect: [:each | each key copyReplaceAll: '	' with: '    '].
+			values := (Array streamContents: [:stream || last |
+				last := nil.
+				lines reverseDo: [:kvp | 
+					kvp value ifNotNil: [:val | last := val].
+					stream nextPut: last]]) reversed.			
+			^ UIManager default 
+				chooseMultipleFrom: labels
+				values: values]
