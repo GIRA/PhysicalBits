@@ -234,6 +234,7 @@ var Uzi = (function () {
 				src: uzi.program.src,
 				ast: uzi.program.ast,
 				bytecodes: uzi.program.bytecodes,
+				validBreakpoints: uzi.program.validBreakpoints,
 				compiled: true
 			};
 			triggerEvent(eventList.programUpdate);

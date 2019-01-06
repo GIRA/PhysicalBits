@@ -1,7 +1,15 @@
 (function () {	
 
 	var breakpoints = [];
-
+	
+	function getValidLineForBreakpoint(line) {
+		let valid = Uzi.program.validBreakpoints;
+		for (let i = line; i < valid.length; i++) {
+			if (valid[i] != null) return i;
+		}
+		return null;
+	}
+	
 	$("#compile").on("click", function () {
 		Uzi.compile(editor.getValue(), "text", function (bytecodes) {			
 			console.log(bytecodes);
@@ -27,7 +35,8 @@
 	});
 	
 	$(".ace_gutter").on("click", function (e) { 
-		var line = Number.parseInt(e.target.innerText) - 1;
+		var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+		
 		if (breakpoints.includes(line)) {
 			var index = breakpoints.indexOf(line);
 			if (index > -1) { breakpoints.splice(index, 1); }
@@ -36,6 +45,7 @@
 			breakpoints.push(line);
 			editor.session.setBreakpoint(line, "breakpoint");
 		}
+		editor.gotoLine(line + 1);
 	});
 	
 	editor.on("change", function (e) { 
@@ -72,6 +82,8 @@
 	Uzi.onProgramUpdate(function () {
 		if (editor.getValue() !== Uzi.program.src) {
 			editor.setValue(Uzi.program.src);
+			breakpoints = [];
+			editor.session.clearBreakpoints();
 		}
 	});
 })();
