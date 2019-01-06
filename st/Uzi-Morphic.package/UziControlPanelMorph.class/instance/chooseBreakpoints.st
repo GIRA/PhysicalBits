@@ -5,6 +5,10 @@ chooseBreakpoints
 		ifNotNil: [:program || lines labels values |
 			lines := program linesOfCode.
 			labels := lines collect: [:each | each key copyReplaceAll: '	' with: '    '].
+			self flag: #Richo. "The following code is a hack that allows the user to choose
+			invalid lines and the breakpoint is placed on the next valid instruction. Except
+			when the user clicks outside or at the end of a script, in which case the 
+			breakpoint is invalid. It's not nice but at least it provides little surprises."
 			values := (Array streamContents: [:stream || last |
 				last := nil.
 				lines reverseDo: [:kvp | 
