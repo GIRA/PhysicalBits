@@ -93,10 +93,15 @@ var UziDebugger = (function () {
 	}
 	
 	function updateLocals(stackFrame) {
-		var container = $("#locals");
+		var container = $("#locals tbody");
 		container.text("");
 		stackFrame.locals.forEach(function (each) {
-			container.append($("<p>").text(each.name + ": " + each.value));
+			let tr = $("<tr>")
+				.append($("<td>")
+					.text(each.name))
+				.append($("<td>")
+					.text(each.value));
+			container.append(tr);
 		});
 	}
 

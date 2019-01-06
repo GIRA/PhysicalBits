@@ -18,54 +18,89 @@
   </head>
 
   <body>
-	<div id="debugger">
-		<p>		
-			<div id="buttons" class="btn-group " role="toolbar" aria-label="...">
-				<div class="btn-group">
-					<button id="continueButton" type="button" class="btn btn-primary">
-						<span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
-						Continue
-					</button>
+	<div id="debugger" class="container">
+		<h1>Uzi Debugger</h1>
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div id="buttons" class="btn-group panel-body" role="toolbar" aria-label="...">
+						<div class="btn-group">
+							<button id="continueButton" type="button" class="btn btn-primary">
+								<span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+								Continue
+							</button>
+						</div>
+						<div class="btn-group">
+							<button id="overButton" type="button" class="btn btn-primary">
+								<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
+								Over
+							</button>
+						</div>		
+						<div class="btn-group">
+							<button id="intoButton" type="button" class="btn btn-primary">
+								<span class="glyphicon glyphicon-import" aria-hidden="true"></span>
+								Into
+							</button>
+						</div>
+						<div class="btn-group">
+							<button id="outButton" type="button" class="btn btn-primary">
+								<span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+								Out
+							</button>
+						</div>
+						<div class="btn-group">
+							<button id="nextButton" type="button" class="btn btn-primary">
+								<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+								Next
+							</button>
+						</div>	
+					</div>
 				</div>
-				<div class="btn-group">
-					<button id="overButton" type="button" class="btn btn-primary">
-						<span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span>
-						Over
-					</button>
-				</div>		
-				<div class="btn-group">
-					<button id="intoButton" type="button" class="btn btn-primary">
-						<span class="glyphicon glyphicon-import" aria-hidden="true"></span>
-						Into
-					</button>
-				</div>
-				<div class="btn-group">
-					<button id="outButton" type="button" class="btn btn-primary">
-						<span class="glyphicon glyphicon-export" aria-hidden="true"></span>
-						Out
-					</button>
-				</div>
-				<div class="btn-group">
-					<button id="nextButton" type="button" class="btn btn-primary">
-						<span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
-						Next
-					</button>
-				</div>	
 			</div>
-		</p>
-		<div id="stackFrames" class="list-group"></div>
-		<table id="stack" class="table">
-		  <thead>
-			<tr>
-			  <th scope="col">#</th>
-			  <th scope="col">HEX</th>
-			  <th scope="col">Value</th>
-			</tr>
-		  </thead>
-		  <tbody>
-		  </tbody>
-		</table>
-		<div id="locals"></div>
+		</div>
+		
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Call stack</div>
+					<div id="stackFrames" class="list-group"></div>
+				</div>
+			</div>
+		</div>
+		
+
+		
+		<div class="row">
+			<div class="col-sm-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Stack</div>
+					<table id="stack" class="table">
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">HEX</th>
+								<th scope="col">Value</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-sm-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">Locals</div>
+					<table id="locals" class="table">
+						<thead>
+							<tr>
+								<th scope="col">Name</th>
+								<th scope="col">Value</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
 	</div>
 	
 	<!-- Bootstrap core JavaScript
