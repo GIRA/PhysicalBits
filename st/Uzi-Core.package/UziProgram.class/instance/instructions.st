@@ -1,4 +1,3 @@
 accessing
 instructions
-	^ Array streamContents: [:stream |
-		scripts do: [:script | stream nextPutAll: script instructions]]
+	^ scripts gather: [:script | script instructions]
