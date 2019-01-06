@@ -2,6 +2,7 @@ var UziDebugger = (function () {
 	
 	var stackFrameActive = 0;
 	
+	
 	function init() {
 		Uzi.onDebuggerUpdate(function () {
 			stackFrameActive = 0;
@@ -132,7 +133,6 @@ var UziDebugger = (function () {
 		let container = $("#stackFrames");
 		container.text("");
 		for (let i = 0; i < stackFrames.length; i++) {
-			//<a class="list-group-item list-group-item-action active">
 			let sf = stackFrames[i];
 			let li = $("<button>")
 				.addClass("list-group-item")
@@ -144,6 +144,7 @@ var UziDebugger = (function () {
 			li.on("click", function () { 
 				stackFrameActive = i;
 				update();
+				UziEditor.debuggerUpdate();
 			});
 			container.append(li);
 		}
@@ -181,6 +182,7 @@ var UziDebugger = (function () {
 		init: init,
 		setBreakpoints: setBreakpoints,
 		getCurrentInterval: getCurrentInterval,
+		sendContinue: debuggerContinue,
 	};
 })();
 

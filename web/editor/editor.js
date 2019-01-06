@@ -1,6 +1,7 @@
-(function () {	
+var UziEditor = (function () {	
 
 	var breakpoints = [];
+	var markers = [];
 	
 	function getValidLineForBreakpoint(line) {
 		let valid = Uzi.program.validBreakpoints;
@@ -10,96 +11,106 @@
 		return null;
 	}
 	
-	$("#compile").on("click", function () {
-		Uzi.compile(editor.getValue(), "text", function (bytecodes) {			
-			console.log(bytecodes);
-			Alert.success("Compilation successful");
-		});
-	});
-
-	$("#install").on("click", function () {
-		Uzi.install(editor.getValue(), "text", function (bytecodes) {			
-			console.log(bytecodes);
-			Alert.success("Installation successful");
-		});
-	});
-
-	$("#run").on("click", function () {
-		Uzi.run(editor.getValue(), "text", function (bytecodes) {
-			console.log(bytecodes);
-		});
-	});
-	
-	$("#debug").on("click", function() {
-		Alert.danger("Debugger not implemented yet");
-	});
-	
-	$(".ace_gutter").on("click", function (e) { 
-		var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+	function init() {
 		
-		if (breakpoints.includes(line)) {
-			var index = breakpoints.indexOf(line);
-			if (index > -1) { breakpoints.splice(index, 1); }
-			editor.session.clearBreakpoint(line);
-		} else {
-			breakpoints.push(line);
-			editor.session.setBreakpoint(line, "breakpoint");
-		}
-		editor.gotoLine(line + 1);
-		UziDebugger.setBreakpoints(breakpoints.map(function (line) {
-			return Uzi.program.validBreakpoints[line];
-		}).filter(function (bp) { return bp != null; }));
-	});
-	
-	editor.on("change", function (e) { 
-		let start = e.start.row;
-		let delta = e.lines.length - 1;
-		if (e.action == "insert") {
-			delta *= 1;
-		} else if (e.action == "remove") {
-			delta *= -1;
-		} else {
-			debugger;
-		}
-		
-		/*
-		TODO(Richo): Here we should update the validBreakpoints list to insert
-		null in every inserted line. Otherwise everything gets out of sync...
-		*/
-		
-		let bpts = breakpoints.filter(function (bp) { return bp > start; });
-		breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
-		bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
-		editor.session.clearBreakpoints();
-		breakpoints.forEach(function (line) {
-			editor.session.setBreakpoint(line, "breakpoint");
+		$("#compile").on("click", function () {
+			Uzi.compile(editor.getValue(), "text", function (bytecodes) {			
+				console.log(bytecodes);
+				Alert.success("Compilation successful");
+			});
 		});
-	});
 
-	Uzi.onConnectionUpdate(function () {
-		if (Uzi.isConnected) {
-			$("#install").removeAttr("disabled");
-			$("#run").removeAttr("disabled");
-			$("#more").removeAttr("disabled");
-		} else {
-			$("#install").attr("disabled", "disabled");
-			$("#run").attr("disabled", "disabled");
-			$("#more").attr("disabled", "disabled");
-		}
-	});
-	
-	Uzi.onProgramUpdate(function () {
-		if (editor.getValue() !== Uzi.program.src) {
-			editor.setValue(Uzi.program.src);
-			breakpoints = [];
+		$("#install").on("click", function () {
+			Uzi.install(editor.getValue(), "text", function (bytecodes) {			
+				console.log(bytecodes);
+				Alert.success("Installation successful");
+			});
+		});
+
+		$("#run").on("click", function () {
+			Uzi.run(editor.getValue(), "text", function (bytecodes) {
+				console.log(bytecodes);
+			});
+		});
+		
+		$("#debug").on("click", function() {
+			Alert.danger("Debugger not implemented yet");
+		});
+		
+		$(".ace_gutter").on("click", function (e) { 
+			var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+			
+			if (breakpoints.includes(line)) {
+				var index = breakpoints.indexOf(line);
+				if (index > -1) { breakpoints.splice(index, 1); }
+				editor.session.clearBreakpoint(line);
+			} else {
+				breakpoints.push(line);
+				editor.session.setBreakpoint(line, "breakpoint");
+			}
+			editor.gotoLine(line + 1);
+			sendBreakpoints();
+		});
+		
+		editor.on("change", function (e) { 
+			let start = e.start.row;
+			let delta = e.lines.length - 1;
+			if (e.action == "insert") {
+				delta *= 1;
+			} else if (e.action == "remove") {
+				delta *= -1;
+			} else {
+				debugger;
+			}
+			
+			/*
+			TODO(Richo): Here we should update the validBreakpoints list to insert
+			null in every inserted line. Otherwise everything gets out of sync...
+			*/
+			
+			let bpts = breakpoints.filter(function (bp) { return bp > start; });
+			breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
+			bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
 			editor.session.clearBreakpoints();
-			markers.forEach(function (each) { editor.session.removeMarker(each); });
-		}
-	});
+			breakpoints.forEach(function (line) {
+				editor.session.setBreakpoint(line, "breakpoint");
+			});
+		});
+
+		Uzi.onConnectionUpdate(function () {
+			if (Uzi.isConnected) {
+				$("#install").removeAttr("disabled");
+				$("#run").removeAttr("disabled");
+				$("#more").removeAttr("disabled");
+			} else {
+				$("#install").attr("disabled", "disabled");
+				$("#run").attr("disabled", "disabled");
+				$("#more").attr("disabled", "disabled");
+			}
+		});
+		
+		Uzi.onProgramUpdate(function () {
+			if (editor.getValue() !== Uzi.program.src) {
+				editor.setValue(Uzi.program.src);
+				breakpoints = [];
+				editor.session.clearBreakpoints();
+				markers.forEach(function (each) { editor.session.removeMarker(each); });
+			}
+		});
+		
+		$("#debugger_closeButton").on("click", function () {
+			$("#debugger").hide();
+			UziDebugger.sendContinue();
+		});
+		
+		Uzi.onDebuggerUpdate(debuggerUpdate);
+	}
 	
-	var markers = [];
-	
-	Uzi.onDebuggerUpdate(function () {
+	function debuggerUpdate() {
+		if (Uzi.debugger.isHalted) { $("#debugger").show(); }
+		
+		editor.setReadOnly(Uzi.debugger.isHalted);
+		
 		markers.forEach(function (each) { editor.session.removeMarker(each); });
 		let interval = UziDebugger.getCurrentInterval();
 		if (interval == null) {
@@ -113,5 +124,17 @@
 			markers.push(editor.session.addMarker(range, "debugger_ActiveLine", "line", true));
 			markers.push(editor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
 		}
-	});
+	}
+	
+	function sendBreakpoints() {
+		let actualBreakpoints = breakpoints.map(function (line) {
+			return Uzi.program.validBreakpoints[line];
+		}).filter(function (bp) { return bp != null; });
+		UziDebugger.setBreakpoints(actualBreakpoints);
+	}
+	
+	return {
+		init: init,
+		debuggerUpdate: debuggerUpdate
+	};	
 })();
