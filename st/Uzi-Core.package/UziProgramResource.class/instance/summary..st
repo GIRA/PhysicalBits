@@ -6,6 +6,7 @@ summary: req
 		ifNotNil: [:program |
 			res at: #id put: program node id;
 				at: #src put: program sourceCode;
-				at: #ast put: (UziJSON createJSONObject: program node);
-				at: #bytecodes put: (Uzi encode: program) asArray].
+				at: #ast put: (UziJSON createJSONObject: program node);				
+				at: #bytecodes put: (Uzi encode: program) asArray;
+				at: #validBreakpoints put: (program linesOfCode collect: [:each | each value])].
 	^ res
