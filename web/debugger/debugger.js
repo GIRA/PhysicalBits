@@ -39,8 +39,19 @@ var UziDebugger = (function () {
 			success: nop,
 			error: errorHandler
 		}, 0);
-	}	
-
+	}
+	
+	function debuggerBreak() {
+		disableButtons();
+		ajax.request({ 
+			type: 'POST', 
+			url: Uzi.baseUrl + "/uzi/debugger/actions/break",
+			data: {},
+			success: nop,
+			error: errorHandler
+		}, 0);
+	}
+	
 	function debuggerOver() {
 		disableButtons();
 		ajax.request({ 
@@ -183,6 +194,7 @@ var UziDebugger = (function () {
 		setBreakpoints: setBreakpoints,
 		getCurrentInterval: getCurrentInterval,
 		sendContinue: debuggerContinue,
+		sendBreak: debuggerBreak,
 	};
 })();
 

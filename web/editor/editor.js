@@ -34,7 +34,7 @@ var UziEditor = (function () {
 		});
 		
 		$("#debug").on("click", function() {
-			Alert.danger("Debugger not implemented yet");
+			UziDebugger.sendBreak();
 		});
 		
 		$(".ace_gutter").on("click", function (e) { 
