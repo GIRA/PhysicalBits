@@ -46,6 +46,9 @@
 			editor.session.setBreakpoint(line, "breakpoint");
 		}
 		editor.gotoLine(line + 1);
+		UziDebugger.setBreakpoints(breakpoints.map(function (line) {
+			return Uzi.program.validBreakpoints[line];
+		}).filter(function (bp) { return bp != null; }));
 	});
 	
 	editor.on("change", function (e) { 
@@ -58,6 +61,12 @@
 		} else {
 			debugger;
 		}
+		
+		/*
+		TODO(Richo): Here we should update the validBreakpoints list to insert
+		null in every inserted line. Otherwise everything gets out of sync...
+		*/
+		
 		let bpts = breakpoints.filter(function (bp) { return bp > start; });
 		breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
 		bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
@@ -68,7 +77,7 @@
 	});
 
 	Uzi.onConnectionUpdate(function () {
-		if (Uzi.isConnected) {				
+		if (Uzi.isConnected) {
 			$("#install").removeAttr("disabled");
 			$("#run").removeAttr("disabled");
 			$("#more").removeAttr("disabled");
@@ -84,6 +93,25 @@
 			editor.setValue(Uzi.program.src);
 			breakpoints = [];
 			editor.session.clearBreakpoints();
+			markers.forEach(function (each) { editor.session.removeMarker(each); });
+		}
+	});
+	
+	var markers = [];
+	
+	Uzi.onDebuggerUpdate(function () {
+		markers.forEach(function (each) { editor.session.removeMarker(each); });
+		let interval = UziDebugger.getCurrentInterval();
+		if (interval == null) {
+			markers = [];
+		} else {
+			let doc = editor.session.getDocument();
+			let start = doc.indexToPosition(interval[0] - 1);
+			let end = doc.indexToPosition(interval[1]);
+			let range = new ace.Range(start.row, start.column, end.row, end.column);
+			markers = [];
+			markers.push(editor.session.addMarker(range, "debugger_ActiveLine", "line", true));
+			markers.push(editor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
 		}
 	});
 })();
