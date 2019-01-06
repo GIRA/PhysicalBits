@@ -15,20 +15,20 @@ var UziDebugger = (function () {
 		disableButtons();
 	}
 	
+	function nop() {}
+	
 	function errorHandler (err) {
 		console.log(err);
+	}
+	
+	function enableButtons() {
+		$("#buttons button").attr("disabled", null);
 	}
 	
 	function disableButtons() {
 		$("#buttons button").attr("disabled", "disabled");
 	}
 	
-	function nop() {}
-	
-	function enableButtons() {
-		$("#buttons button").attr("disabled", null);
-	}
-
 	function debuggerContinue() {
 		disableButtons();
 		ajax.request({ 
@@ -85,11 +85,17 @@ var UziDebugger = (function () {
 	}
 	
 	function update() {
-		if (Uzi.debugger.stackFrames.length == 0) return;
-		enableButtons();
-		updateStackFrames(Uzi.debugger.stackFrames);
-		updateStack(Uzi.debugger.stackFrames[stackFrameActive]);
-		updateLocals(Uzi.debugger.stackFrames[stackFrameActive]);
+		if (Uzi.debugger.isHalted) {				
+			enableButtons();
+			updateStackFrames(Uzi.debugger.stackFrames);
+			updateStack(Uzi.debugger.stackFrames[stackFrameActive]);
+			updateLocals(Uzi.debugger.stackFrames[stackFrameActive]);
+		} else {
+			disableButtons();
+			updateStackFrames([]);
+			updateStack({annotatedStack: []});
+			updateLocals({locals: []});
+		}
 	}
 	
 	function updateLocals(stackFrame) {
