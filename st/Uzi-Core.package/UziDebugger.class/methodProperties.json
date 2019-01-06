@@ -2,6 +2,7 @@
 	"class" : {
 		"on:" : "Richo 12/31/2018 10:47" },
 	"instance" : {
+		"break" : "Richo 1/6/2019 18:35",
 		"clearAllBreakpoints" : "Richo 12/31/2018 19:27",
 		"clearDebuggerBreakpoints" : "Richo 12/31/2018 19:22",
 		"close" : "Richo 1/6/2019 18:29",
