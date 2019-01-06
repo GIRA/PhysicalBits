@@ -8,5 +8,6 @@ initialize
 			at: #into do: [:req | self processInto: req];
 			at: #out do: [:req | self processOut: req];
 			at: #next do: [:req | self processNext: req];
+			at: #break do: [:req | self processBreak: req];
 			at: #breakpoints do: [:req | self processBreakpoints: req]
 			yourself)
