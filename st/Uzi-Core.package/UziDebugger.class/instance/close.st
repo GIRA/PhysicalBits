@@ -1,5 +1,5 @@
 initializing
 close
-	self clearAllBreakpoints;
+	self reset;
 		sendBreakpoints;
 		sendContinue
