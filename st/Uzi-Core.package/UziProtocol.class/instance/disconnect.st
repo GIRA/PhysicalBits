@@ -1,5 +1,6 @@
 connection
 disconnect
 	self isConnected ifFalse: [^ self].
-	[self stopReporting]
+	[debugger close.
+	self stopReporting]
 		ensure: [self privateDisconnect]
