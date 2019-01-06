@@ -162,8 +162,25 @@ var UziDebugger = (function () {
 		return name;
 	}
 	
+	function setBreakpoints(breakpoints) {		
+		ajax.request({ 
+			type: 'POST', 
+			url: Uzi.baseUrl + "/uzi/debugger/actions/breakpoints",
+			data: { breakpoints: breakpoints.join(",") },
+			success: nop,
+			error: errorHandler
+		}, 0);
+	}
+	
+	function getCurrentInterval() {
+		if (!Uzi.debugger.isHalted) return null;
+		return Uzi.debugger.stackFrames[stackFrameActive].interval;
+	}
+	
 	return {
 		init: init,
+		setBreakpoints: setBreakpoints,
+		getCurrentInterval: getCurrentInterval,
 	};
 })();
 
