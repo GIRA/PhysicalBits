@@ -9,7 +9,13 @@ chooseBreakpoints
 				last := nil.
 				lines reverseDo: [:kvp | 
 					kvp value ifNotNil: [:val | last := val].
-					stream nextPut: last]]) reversed.			
-			^ UIManager default 
+					stream nextPut: last.
+					((kvp key withBlanksTrimmed beginsWith: 'task ')
+						or: [(kvp key withBlanksTrimmed beginsWith: 'proc ')
+						or: [kvp key withBlanksTrimmed beginsWith: 'func ']])
+						ifTrue: [last := nil]]]) reversed.
+			^ ((UIManager default 
 				chooseMultipleFrom: labels
-				values: values]
+				values: values)
+				ifNil: [#()]) 
+				select: [:pc | pc notNil]]
