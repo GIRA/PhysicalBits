@@ -1,6 +1,7 @@
 accessing
 summary: req
 	^ (super summary: req)
+		at: #isHalted put: self debugger isHalted;
 		at: #index put: self debugger index;
 		at: #pc put: self debugger pc;
 		at: #fp put: self debugger fp;
