@@ -5,11 +5,8 @@ UziScript is a concurrent programming language and virtual machine for education
 ## Table of contents
 
 * [Motivation](#motivation)
-  * [Limited support for concurrency](#limited-support-for-concurrency)
-  * [Interactivity vs Autonomy](#interactivity-vs-autonomy)
-  * [Lack of debugging facilities](#lack-of-debugging-facilities)
-  * [Wrong abstractions](#wrong-abstractions)
 * [Proposed Solution](#proposed-solution)
+  * [Key Features](#key-features)
 * [Download and Installation](#download-and-installation)
 * [Usage](#usage)
   * [Text editor](#text-editor)
@@ -26,36 +23,21 @@ UziScript is a concurrent programming language and virtual machine for education
 
 Arduino has become one of the most popular platforms for building electronic projects, especially among hobbyists, artists, designers, and people just starting with electronics. The Arduino IDE and software library provide an abstraction layer over the hardware details that makes it possible to build interesting projects without a complete understanding of more advanced microcontroller concepts such as interrupts, ports, registers, timers, and such. At the same time, this abstraction layer can be bypassed to access advanced features if the user needs them. These characteristics make the Arduino platform suitable for both beginners and experts.
 
-However, the Arduino language (based on C++) is still too complex for some of the most inexperienced users, especially young children. For this reason, a lot of educational programming environments have been developed, mostly offering a visual programming language that allows users to start programming without learning a new syntax. Some of these tools have been very successful but, in our experience, most of them suffer from one (or several) of the following issues.
-
-### Limited support for concurrency
-
-There is one aspect in which the Arduino language lacks proper abstractions: concurrency. For all but the simplest projects, the `setup()` and `loop()` [program structure](http://playground.arduino.cc/ArduinoNotebookTraduccion/Structure) proposed by Arduino is not expressive enough. Even moderately complex problems require some sort of simultaneous task execution.
-
-Furthermore, most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. This poses a limitation on the type of educational projects that can be carried out, especially if the teaching subject is not robotics or programming itself.
-
-### Interactivity vs Autonomy
-
-ACAACA problema del modo directo vs modo compilado. Capaz esta sección debería ir antes que la de concurrency, así mencionamos que los problemas de concurrencia también los tienen algunos de los lenguajes visuales que compilan a arduino (como minibloq)
-
-### Lack of debugging facilities
-
-ACAACA Mencionar que sin hardware especial no se puede debugguear. Que estás limitado a hacer tracing por el serie. También tenés una extensión del visual studio que te instrumenta el código para poder meter breakpoints pero anda como el orto.
-
-### Wrong abstractions
-
-ACAACA no se si "wrong" es la forma de describirlo. Capaz "confusing". La idea es plantear acá que la API de arduino es confusa en varios sentidos (sobre todo en los métodos para leer/escribir los pines). No se si es un punto suficientemente fuerte como para incluirlo.
+However, the Arduino language (based on C++) is still too complex for some of the most inexperienced users, especially young children. For this reason, a lot of educational programming environments have been developed, mostly offering a visual programming language that allows users to start programming without learning a new syntax. Some of these tools have been very successful but, in our experience, most of them suffer from several issues that we want to fix with this new language.
 
 ## Proposed Solution
 
 We propose the implementation of a concurrent programming language supported by a virtual machine running on the Arduino. We call this language UziScript and we expect it to become a suitable compilation target for visual programming environments such as [Physical Etoys](http://tecnodacta.com.ar/gira/projects/physical-etoys), [Scratch for Arduino](http://s4a.cat), and [Ardublock](http://blog.ardublock.com/), among others.
 
-Given that the main purpose of this programming language is educational, it was designed based on the following principles:
-* __Simplicity__: It should be easy to reason about the virtual machine and understand how it performs its job.
-* __Abstraction__: the language should provide high-level functions that hide away some of the details regarding both beginner and advanced microcontroller concepts (such as timers, interruptions, concurrency, pin modes, and such). These concepts can later be introduced at a pace compatible with the needs of the student.
-* __Monitoring__: It should be possible to monitor the state of the board while it is connected to the computer.
-* __Autonomy__: The programs must be able to run without a computer connected to the board.
-* __Debugging__: the toolchain must provide mechanisms for error handling and step by step code execution. Without debugging tools, the process of fixing bugs can be frustrating for an inexperienced user.
+### Key Features
+
+* __Block-based and text-based programming__: UziScript includes a block-based programming language suitable for beginners but it also supports text-based programming for more advanced users. To ease the transition UziScript automatically generates the textual code from the blocks (and viceversa).
+* __Concurrency__: Most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. UziScript allows the definition of concurrent tasks that will be executed independently from each other.
+* __Autonomy__: UziScript programs are stored and executed autonomously in the Arduino without requiring a connection to the computer.
+* __Interactive programming__: If the board is connected to the computer UziScript allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the Arduino, which allows to see the effects of the change almost immediately. We believe the long edit-compile-upload cycle is harmful for beginners.
+* __Debugging__: UziScript's debugger provides mechanisms for error handling and step-by-step code execution. Without debugging tools the process of fixing bugs can be frustrating for an inexperienced user.
+* __Portability__: Although we currently only support Arduino, we plan to port the VM to other hardware platforms.
+* __Open source__: All the code in this project is open source.
 
 ## Download and Installation
 
