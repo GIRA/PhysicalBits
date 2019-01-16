@@ -59,7 +59,7 @@ load := [:ass || repo pckgName versionName version |
 
 Once the script has finished installing everything, you can open the control panel by evaluating:
 ```smalltalk
-UziProtocolMorph new openInHand.
+UziControlPanelMorph new openInHand.
 ```
 
 #### Web tools
