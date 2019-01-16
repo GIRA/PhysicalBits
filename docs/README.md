@@ -73,7 +73,7 @@ Once you have uploaded the firmware to your board you'll need to open the "Tools
   <img width="100%" src="./img/uzi_squeak.png?raw=true">
 </p>
 
-The control panel is an internal tool that allows us to connect to an Arduino board, monitor its state, program it in UziScript, and debug it using our experimental debugger. However, you will mostly need it to start/stop the UziServer. This server will allow you to use the web tools. After starting the server (by clicking the "Start server" button), point your browser to [http://localhost:8080](http://localhost:8080) and you should see a website like the one below.
+The control panel is an internal tool that allows us to connect to an Arduino board, monitor its state, program it in UziScript, and debug it using our experimental debugger. However, you will mostly need it to start/stop the UziServer. This server will allow you to use the web tools. The server should already be started (if not you just need to click the "Start server" button), and if you point your browser to [http://localhost:8080](http://localhost:8080) you should see a website like the one below.
 
 <p align="center">
   <img width="100%" src="./img/uzi_webindex.png?raw=true">
@@ -105,7 +105,7 @@ This tool allows you to monitor the value over time of any pin on your board or 
 
 ## Contributing
 
-If you're interested in contributing for this project see [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
+If you're interested in contributing to this project see [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
 
 ## Description of the language
 
