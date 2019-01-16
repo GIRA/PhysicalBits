@@ -59,7 +59,7 @@ Given that the main purpose of this programming language is educational, it was 
 
 ## Download and Installation
 
-ACAACA subir el zip y acá meter el link.
+You can find the latest release [here](https://github.com/GIRA/UziScript/releases).
 
 ## Usage
 
