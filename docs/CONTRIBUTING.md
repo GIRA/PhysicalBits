@@ -4,10 +4,10 @@ First of all, thank you for your interest in the project. This repository has th
 
     .
     ├── c++/
-    │   ├── Simulator/           # Arduino simulator
-    │   └── UziFirmware/         # UziScript firmware
-    ├── docs/                    # Documentation files
-    ├── st/                      # Smalltalk source
+    │   ├── Simulator/           # Arduino simulator (useful for testing without an Arduino board)
+    │   └── UziFirmware/         # UziScript firmware (an Arduino sketch)
+    ├── docs/                    # Documentation files (you're here)
+    ├── st/                      # Smalltalk source (including all the compilation tools and the web server)
     ├── uzi/
     │   ├── libraries/           # UziScript libraries
     │   ├── tests/               # Tests files
