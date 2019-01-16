@@ -1,6 +1,10 @@
 ## Contributing
 
-First of all, thank you for your interest in the project. This repository has the following structure:
+First of all, thank you for your interest in the project. Depending on what you're trying to do you'll need some basic knowledge of C/C++, Smalltalk, and HTML/Javascript. Below you'll find instructions on how to get started.
+
+### Folder structure:
+
+Just to give you a general idea of how the code is organized.
 
     .
     ├── c++/
@@ -18,11 +22,13 @@ First of all, thank you for your interest in the project. This repository has th
 
 ### Getting started
 
-Before you can start contributing to UziScript, you'll need to clone this repository and make sure you also recursively clone the submodules (this is *very* important).
+The first step is to clone this repository and make sure you also recursively clone the submodules (this is *very* important).
 
 #### Firmware
 
-For the firmware, since it is a simple Arduino sketch, you only need the Arduino IDE. However, to make development easier we also use Visual Studio 2017 with a very simple Arduino simulator we developed for this project. The simulator is extremely limited so it's not exactly the same as compiling for the Arduino but it makes things a lot easier especially when it comes to debugging and unit testing. The source code for the Uzi firmware can be found here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino). If you want to use the Visual Studio IDE you can find the solution here: [/c++/Simulator/Simulator.sln](/c++/Simulator/).
+For the firmware, since it is a simple Arduino sketch, you only need the Arduino IDE. However, to make development easier we also use Visual Studio 2017 with a very simple Arduino simulator we developed for this project. The simulator is extremely limited so it's not exactly the same as compiling for the Arduino but it makes things a lot easier especially when it comes to debugging and unit testing.
+The source code for the UziScript firmware can be found here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino).
+If you also want to use the Visual Studio IDE you can find the solution here: [/c++/Simulator/Simulator.sln](/c++/Simulator/). I've been using Visual Studio 2017 without problems.
 
 <p align="center">
   <img width="100%" src="./img/uzi_simulator.png?raw=true">
