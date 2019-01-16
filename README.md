@@ -7,4 +7,10 @@ For instructions on how to download, install, and use the software (as well as m
 
 ## Videos
 
-If you want to see UziScript in action you can see some videos we made [here](https://www.youtube.com/playlist?list=PL1aXD47455XPWv4rTXQBuHvamCoNUGeke)
+If you want to see UziScript in action you can see some videos we made in the following [playlist](https://www.youtube.com/playlist?list=PL1aXD47455XPWv4rTXQBuHvamCoNUGeke).
+
+<p align="center">  
+  <a href="https://www.youtube.com/playlist?list=PL1aXD47455XPWv4rTXQBuHvamCoNUGeke">
+    <img width="50%" src="http://img.youtube.com/vi/2gO58-qDmf8/0.jpg">  
+  </a>
+</p>
