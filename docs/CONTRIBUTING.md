@@ -1,6 +1,20 @@
 ## Contributing
-  
-ACAACA descripción de la organización del repositorio, qué hay en cada carpeta, etc.
+
+First of all, thank you for your interest in the project. This repository has the following structure:
+
+    .
+    ├── c++/
+    │   ├── Simulator/           # Arduino simulator
+    │   └── UziFirmware/         # UziScript firmware
+    ├── docs/                    # Documentation files
+    ├── st/                      # Smalltalk source
+    ├── uzi/
+    │   ├── libraries/           # UziScript libraries
+    │   ├── tests/               # Tests files
+    │   └── uzi.xml              # Notepad++ syntax highlighter 
+    ├── web/                     # Web tools
+    ├── LICENSE
+    └── README.md
 
 ### Getting started
 
