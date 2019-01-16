@@ -34,10 +34,10 @@ We propose the implementation of a concurrent programming language supported by 
 * __Block-based and text-based programming__: UziScript includes a block-based programming language suitable for beginners but it also supports text-based programming for more advanced users. To ease the transition UziScript automatically generates the textual code from the blocks (and viceversa).
 * __Concurrency__: Most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. UziScript allows the definition of concurrent tasks that will be executed independently from each other.
 * __Autonomy__: UziScript programs are stored and executed autonomously in the Arduino without requiring a connection to the computer.
-* __Interactive programming__: If the board is connected to the computer UziScript allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the Arduino, which allows to see the effects of the change almost immediately. We believe the long edit-compile-upload cycle is harmful for beginners.
-* __Debugging__: UziScript's debugger provides mechanisms for error handling and step-by-step code execution. Without debugging tools the process of fixing bugs can be frustrating for an inexperienced user.
+* __Interactive programming__: If the board is connected to the computer UziScript allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the Arduino, which allows to see the effects of the change almost immediately.
+* __Debugging__: Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. UziScript's debugger provides mechanisms for error handling and step-by-step code execution.
 * __Portability__: Although we currently only support Arduino, we plan to port the VM to other hardware platforms.
-* __Open source__: All the code in this project is open source.
+* __Open source__: All the code in this project is open source (see [LICENSE](/LICENSE)).
 
 ## Download and Installation
 
