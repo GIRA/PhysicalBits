@@ -30,6 +30,14 @@ float StackArray::pop(void)
 	}
 	return elements[--pointer];
 }
+void StackArray::discard(uint16 amount) 
+{
+	pointer -= amount;
+	if (pointer < 0) {
+		pointer = 0;
+		error = STACK_UNDERFLOW;
+	}
+}
 
 float StackArray::top(void)
 {

@@ -985,10 +985,8 @@ void VM::unwindStackAndReturn(void)
 
 	// INFO(Richo): Pop args/locals
 	int varCount = currentScript->getArgCount() + currentScript->getLocalCount();
-	for (int i = 0; i < varCount; i++)
-	{
-		stack.pop();
-	}
+	stack.discard(varCount);
+
 	
 	// INFO(Richo): Only push a return value if we were called from another script
 	if (returnFromScriptCall)

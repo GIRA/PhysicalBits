@@ -21,6 +21,7 @@ public:
 	Error getError(void);
 	void copyFrom(float*, uint16);
 	void copyTo(float*);
+	void discard(uint16);
 private:
 
 	float elements[MAX_SIZE];
