@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include "Errors.h"
-
+#include <Arduino.h>
 const uint16 MAX_SIZE = 100;
 
 class StackArray
@@ -19,7 +19,7 @@ public:
 	void setElementAt(uint16, float);
 	bool hasError(void);
 	Error getError(void);
-
+	void copyFrom(float*, uint16);
 private:
 
 	float elements[MAX_SIZE];

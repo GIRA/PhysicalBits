@@ -63,11 +63,7 @@ void Coroutine::saveStack(StackArray* stack)
 
 void Coroutine::restoreStack(StackArray* stack)
 {
-	stack->reset();
-	for (uint16 i = 0; i < stackSize; i++)
-	{
-		stack->push(stackElements[i]);
-	}
+	stack->copyFrom(stackElements, stackSize); 
 }
 
 int32 Coroutine::getNextRun(void)
