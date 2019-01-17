@@ -20,6 +20,7 @@ public:
 	bool hasError(void);
 	Error getError(void);
 	void copyFrom(float*, uint16);
+	void copyTo(float*);
 private:
 
 	float elements[MAX_SIZE];

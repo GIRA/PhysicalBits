@@ -16,6 +16,10 @@ void StackArray::copyFrom(float* source, uint16 size)
 	if (size == 0) return;
 	memcpy(&elements[0], source, size * sizeof(float));
 } 
+void StackArray::copyTo(float* dest)
+{
+	memcpy(dest, &elements[0], pointer * sizeof(float));
+}
 float StackArray::pop(void)
 {
 	if (pointer <= 0)

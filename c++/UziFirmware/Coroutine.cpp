@@ -55,10 +55,7 @@ void Coroutine::saveStack(StackArray* stack)
 		}
 	}
 
-	for (uint16 i = 0; i < stackSize; i++)
-	{
-		stackElements[i] = stack->getElementAt(i);
-	}
+	stack->copyTo(stackElements); 
 }
 
 void Coroutine::restoreStack(StackArray* stack)
