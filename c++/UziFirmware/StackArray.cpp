@@ -10,12 +10,13 @@ void StackArray::push(float element)
 	}
 	elements[pointer++] = element;
 }
-void StackArray::copyFrom(float* source, uint16 size) 
+void StackArray::copyFrom(float* source, uint16 size)
 {
 	pointer = size;
+	error = NO_ERROR;
 	if (size == 0) return;
 	memcpy(&elements[0], source, size * sizeof(float));
-} 
+}
 void StackArray::copyTo(float* dest)
 {
 	memcpy(dest, &elements[0], pointer * sizeof(float));
