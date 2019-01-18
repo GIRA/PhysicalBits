@@ -2,7 +2,11 @@
 
 Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 {
-	currentProgram = program;
+	if (program != currentProgram) {
+		currentProgram = program;
+		currentCoroutine = 0;
+	}
+
 	int16 count = program->getScriptCount();
 	
 	int32 now = millis();
