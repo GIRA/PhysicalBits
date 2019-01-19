@@ -49,7 +49,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	{
 		if (currentCoroutine != 0) {
 			
-			currentCoroutine->saveStack(&stack);
+			currentCoroutine->saveStack(&stack); 
 		}
 		currentCoroutine = coroutine;
 		coroutine->restoreStack(&stack);
@@ -83,7 +83,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				this->halted = true;
 				this->haltedScript = coroutine->getScript();
 				pc--; // TODO(Richo): I don't like this decr
-
+				//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(framePointer);
 				coroutine->setPC(pc);
@@ -116,6 +116,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				the end of the script after a regular tick. We don't have to return any value.
 				We simply reset the coroutine state and break out of the loop.
 				*/
+				//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
 				coroutine->setActiveScript(currentScript);
 				coroutine->setFramePointer(-1);
 				coroutine->setPC(currentScript->getInstructionStart());
@@ -124,6 +125,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		}
 		if (yieldFlag)
 		{
+			//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
 			coroutine->setActiveScript(currentScript);
 			coroutine->setFramePointer(framePointer);
 			coroutine->setPC(pc);
