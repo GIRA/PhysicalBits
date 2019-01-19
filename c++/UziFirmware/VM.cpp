@@ -49,15 +49,20 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	{
 		if (currentCoroutine != 0) {
 			
-			currentCoroutine->saveStack(&stack); 
+			currentCoroutine->saveStack(&stack); 	
+			currentCoroutine->setActiveScript(currentScript);
+			currentCoroutine->setFramePointer(framePointer);
+			currentCoroutine->setPC(pc);
 		}
+		//TODO(Tera):i believe that this change broke the monitor, i should check it later. The monitor will not have the updated information.
 		currentCoroutine = coroutine;
 		coroutine->restoreStack(&stack);
+		pc = coroutine->getPC();
+		currentScript = coroutine->getActiveScript();
+		framePointer = coroutine->getFramePointer();
+		
 	}
 
-	pc = coroutine->getPC();
-	currentScript = coroutine->getActiveScript();
-	framePointer = coroutine->getFramePointer();
 	if (framePointer == -1)
 	{
 		framePointer = stack.getPointer();
@@ -82,11 +87,8 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 			{
 				this->halted = true;
 				this->haltedScript = coroutine->getScript();
-				pc--; // TODO(Richo): I don't like this decr
-				//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
-				coroutine->setActiveScript(currentScript);
-				coroutine->setFramePointer(framePointer);
-				coroutine->setPC(pc);
+				pc--; // TODO(Richo): I don't like this decr 
+			
 				coroutine->setNextRun(millis());
 				break;
 			}
@@ -116,19 +118,18 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				the end of the script after a regular tick. We don't have to return any value.
 				We simply reset the coroutine state and break out of the loop.
 				*/
-				//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
+				
 				coroutine->setActiveScript(currentScript);
-				coroutine->setFramePointer(-1);
-				coroutine->setPC(currentScript->getInstructionStart());
+				framePointer= -1;
+				pc = currentScript->getInstructionStart();
+				
 				break;
 			}
 		}
 		if (yieldFlag)
 		{
 			//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
-			coroutine->setActiveScript(currentScript);
-			coroutine->setFramePointer(framePointer);
-			coroutine->setPC(pc);
+ 
 			break;
 		}
 	}
