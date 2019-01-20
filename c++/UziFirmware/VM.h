@@ -31,6 +31,7 @@ private:
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
+	void saveCurrentCoroutine();
 	void yieldTime(int32, bool&);
 	void unwindStackAndReturn(void);
 };

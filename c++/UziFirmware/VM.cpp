@@ -47,12 +47,9 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	}
 	if (currentCoroutine != coroutine)
 	{
-		if (currentCoroutine != 0) {
-			
-			currentCoroutine->saveStack(&stack); 	
-			currentCoroutine->setActiveScript(currentScript);
-			currentCoroutine->setFramePointer(framePointer);
-			currentCoroutine->setPC(pc);
+		if (currentCoroutine != 0) 
+		{
+			saveCurrentCoroutine();
 		}
 		//TODO(Tera):i believe that this change broke the monitor, i should check it later. The monitor will not have the updated information.
 		currentCoroutine = coroutine;
@@ -88,7 +85,8 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				this->halted = true;
 				this->haltedScript = coroutine->getScript();
 				pc--; // TODO(Richo): I don't like this decr 
-			
+				//this callis to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
+				saveCurrentCoroutine();
 				coroutine->setNextRun(millis());
 				break;
 			}
@@ -128,11 +126,18 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		}
 		if (yieldFlag)
 		{
-			//TODO(Tera): this setters should not be necessary, but the monitor depends on the state persisted in the coroutine
  
 			break;
 		}
 	}
+}
+
+void VM::saveCurrentCoroutine()
+{
+	currentCoroutine->saveStack(&stack);
+	currentCoroutine->setActiveScript(currentScript);
+	currentCoroutine->setFramePointer(framePointer);
+	currentCoroutine->setPC(pc);
 }
 
 Instruction VM::nextInstruction(void)
