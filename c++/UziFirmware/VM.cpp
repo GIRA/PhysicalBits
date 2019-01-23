@@ -51,7 +51,6 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		{
 			saveCurrentCoroutine();
 		}
-		//TODO(Tera):i believe that this change broke the monitor, i should check it later. The monitor will not have the updated information.
 		currentCoroutine = coroutine;
 		coroutine->restoreStack(&stack);
 		pc = coroutine->getPC();
@@ -85,7 +84,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				this->halted = true;
 				this->haltedScript = coroutine->getScript();
 				pc--; // TODO(Richo): I don't like this decr 
-				//this callis to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
+				//this call is to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
 				saveCurrentCoroutine();
 				coroutine->setNextRun(millis());
 				break;
@@ -117,7 +116,6 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				We simply reset the coroutine state and break out of the loop.
 				*/
 				
-				coroutine->setActiveScript(currentScript);
 				framePointer= -1;
 				pc = currentScript->getInstructionStart();
 				
