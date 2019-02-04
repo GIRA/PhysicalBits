@@ -71,6 +71,8 @@
     <Compile Include="ArduinoTests.cs" />
     <Compile Include="SketchTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestBench.cs" />
+    <Compile Include="UziConnection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Simulator\Simulator.csproj">
