@@ -9,6 +9,7 @@ namespace Simulator
     public class SketchRecorder
     {
         private byte[] program;
+        private byte[] pinMap = { 9, 10, 11, 12 };
         private int targetTime;
 
         private readonly byte[] emptyProgram = { 0, 0, 0 };
@@ -41,9 +42,9 @@ namespace Simulator
             performHandshake();
             // load an empty program, just in case.
             sketch.WriteSerial(emptyProgram);
-            
+
             sketch.Loop();
-            
+
 
         }
 
@@ -76,7 +77,8 @@ namespace Simulator
         }
 
 
-        private IEnumerable<ExecutionSnapshot> getSnapshots() {
+        private IEnumerable<ExecutionSnapshot> getSnapshots()
+        {
             sketch.WriteSerial(program);
             while (currentTime <= targetTime)
             {
@@ -88,7 +90,7 @@ namespace Simulator
                 currentSnapshot.ms = currentTime;
                 for (int i = 0; i < currentSnapshot.pins.Length; i++)
                 {
-                    currentSnapshot.pins[i] = (byte)(sketch.GetPinValue(i) == 0 ? 0 : 1);
+                    currentSnapshot.pins[i] = (byte)(sketch.GetPinValue(pinMap[i]) == 0 ? 0 : 1);
                 }
                 yield return currentSnapshot;
                 currentTime++;
