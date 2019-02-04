@@ -12,7 +12,7 @@ struct spec{
   };
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
   for(int i=0;i<=pinCount;i++){
     pinMode(pinMap[i],INPUT);
   }
