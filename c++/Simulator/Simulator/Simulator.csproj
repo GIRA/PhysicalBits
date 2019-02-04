@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExecutionSnapshot.cs" />
     <Compile Include="Graph.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -79,6 +80,7 @@
       <DependentUpon>SerialConsole.cs</DependentUpon>
     </Compile>
     <Compile Include="Sketch.cs" />
+    <Compile Include="SketchRecorder.cs" />
     <Compile Include="SocketConnection.cs" />
     <EmbeddedResource Include="Graph.resx">
       <DependentUpon>Graph.cs</DependentUpon>
