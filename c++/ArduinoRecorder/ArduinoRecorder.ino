@@ -2,7 +2,7 @@
 //pin to look for change that marks a tick of UZI's VM
 const int triggerPin=2;
 //array containing the pins to monitor.
-const byte pinMap[]{22,23,24,25,26,27,28,29,30,31,32,33};
+const byte pinMap[]{22,23,24,25};
 const byte pinCount=sizeof(pinMap)/sizeof(*pinMap);
 
 struct spec{
@@ -29,8 +29,9 @@ void loop() {
   //read amount 
   int amount=0;
 
-  Serial.println("Ready. Waiting for amount");
   while(amount==0){
+    delay(100);
+    Serial.println("Ready. Waiting for amount");
     amount=readLong();
     }
   Serial.print("Waiting for ");
