@@ -11,8 +11,6 @@ namespace Simulator
         private byte[] program;
         private int targetTime;
 
-        //INFO(Tera): i had to add an extra 0 to this program because of a bug. When reading globals an empty program generates a timeout.
-        //This is probably a bug on the encoder.The thing is that if the time is stopped, like in this execution, the timeout never happens, generating an infinte loop.
         private readonly byte[] emptyProgram = { 0, 0, 0 };
         private Sketch sketch;
         //TODO(Tera): this definitions should be centralized, probably on the sketch
