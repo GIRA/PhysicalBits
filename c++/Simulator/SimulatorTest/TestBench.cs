@@ -58,6 +58,7 @@ namespace SimulatorTest
                 {
                     current.pins[j] = byte.Parse(parts[1 + j]);
                 }
+                current.error = byte.Parse(parts.Last());
                 result.Add(current);
             }
             return result;

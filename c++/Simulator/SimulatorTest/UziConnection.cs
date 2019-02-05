@@ -19,15 +19,15 @@ namespace SimulatorTest
         {
             this.uziArduinoPort = uziArduinoPort;
             this.baudRate = baudRate;
-        
-            
+
+
         }
 
 
         internal void Start()
         {
             port = new SerialPort(uziArduinoPort, baudRate);
-            
+
         }
 
 
@@ -42,22 +42,22 @@ namespace SimulatorTest
         }
         private void write(byte[] bytes)
         {
-            port.Write(bytes,0, bytes.Length);
+            port.Write(bytes, 0, bytes.Length);
         }
         //TODO(Tera): this definitions should be centralized, probably on the sketch
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
         private const byte KEEP_ALIVE = 7;
-        
-        private void performHandshake()
+
+        private void performHandshake(int retries = 3)
         {
             /*
           * INFO(Richo): Perform connection request and handshake.
           * Otherwise, when we send a program later we will be rejected.
           */
-          //discard everything in the port.
-            readAvailable();
+            //discard everything in the port.
+            byte[] discarded = readAvailable();
             write(new byte[]
             {
                 RQ_CONNECTION_REQUEST, MAJOR_VERSION, MINOR_VERSION
@@ -66,11 +66,22 @@ namespace SimulatorTest
             byte handshake = readNext();
             byte send = (byte)((MAJOR_VERSION + MINOR_VERSION + handshake) % 256);
             write(new byte[] { send });
-            
+
             byte ack = readNext();
 
-            if (send != ack) { throw new InvalidOperationException("Could not perform handshake with the Arduino"); }
-            
+            if (send != ack)
+            {
+                if (retries > 0)
+                {
+                    System.Threading.Thread.Sleep(50);
+                    performHandshake(retries - 1);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Could not perform handshake with the Arduino");
+                }
+            }
+
 
         }
         public void runProgram(byte[] program)
