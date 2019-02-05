@@ -31,8 +31,8 @@ namespace SimulatorTest
             bench = new TestBench("COM3", "COM5");
         }
 
-        [TestCleanup]
-        public void TearDown()
+        [ClassCleanup]
+        public static void TearDown()
         {
             bench.Dispose();
         }
@@ -65,7 +65,7 @@ namespace SimulatorTest
 
 
         [TestMethod]
-        public void Test009TickingRate()
+        public void Test500msToggle()
         {
             //task n()
             //{
@@ -82,6 +82,27 @@ namespace SimulatorTest
             //    toggle(D11);
             //}
             byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 1, 2, 136, 162, 192, 9, 2, 134, 162 };
+            TestProgram(program, 4000, 10);
+        }
+
+        [TestMethod]
+        public void Test2000msToggle()
+        {
+            //task n()
+            //{
+            //    write(D8,0);
+            //    write(D9, 0);
+            //    write(D10, 0);
+            //    write(D11, 0);
+            //    write(D12, 0);
+            //}
+            //task blink13() running 1000 / s {
+            //    toggle(D13);
+            //}
+            //task blink11() running 0.5 / s {
+            //    toggle(D11);
+            //}
+            byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 7, 68, 250, 0, 0, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 1, 2, 136, 162, 192, 9, 2, 134, 162 };
             TestProgram(program, 4000, 10);
         }
 
