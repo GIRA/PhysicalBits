@@ -44,7 +44,6 @@ namespace SimulatorTest
 
             while (line != "Finished Capture\r")
             {
-                Console.WriteLine(line);
                 line = mega.ReadLine();
             }
             List<ExecutionSnapshot> result = new List<ExecutionSnapshot>();
