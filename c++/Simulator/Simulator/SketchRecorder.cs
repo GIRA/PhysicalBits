@@ -10,7 +10,7 @@ namespace Simulator
     {
 
 
-        private const int captureWindow = 5;
+        private const int captureWindow = 10;
 
         private byte[] program;
         private byte[] pinMap = {8, 9, 10, 11, 12 };
@@ -114,7 +114,7 @@ namespace Simulator
                 if (yieldCount > 0)
                 {
                     yieldCount--;
-                    yield return lastSnapshot;
+                    yield return currentSnapshot;
                 }
             }
         }
