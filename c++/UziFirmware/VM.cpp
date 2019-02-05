@@ -31,7 +31,6 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 			}
 			if (now >= coroutine->getNextRun())
 			{
-				coroutine->setNextRun(now + script->getInterval());
 				executeCoroutine(coroutine, io, monitor);
 			}
 		}
@@ -72,6 +71,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		}
 		stack.push(0); // Return value slot (default: 0)
 		stack.push(uint32_to_float((uint32)-1 << 16 | pc));
+		coroutine->setLastStart(millis());
 	}
 	bool yieldFlag = false;
 	while (true)
@@ -118,7 +118,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				
 				framePointer= -1;
 				pc = currentScript->getInstructionStart();
-				
+				coroutine->setNextRun(coroutine->getLastStart() + currentScript->getInterval());
 				break;
 			}
 		}

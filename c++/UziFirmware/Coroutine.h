@@ -19,6 +19,7 @@ struct Coroutine
 
 	Script* script = 0;
 	int32 nextRun = 0;
+	int32 lastStart = 0;
 
 	Error error = NO_ERROR;
 
@@ -35,6 +36,8 @@ struct Coroutine
 	void restoreStack(StackArray*);
 	int32 getNextRun(void);
 	void setNextRun(int32);
+	int32 getLastStart(void);
+	void setLastStart(int32);
 	uint16 getStackSize(void);
 	float getStackElementAt(uint16);
 

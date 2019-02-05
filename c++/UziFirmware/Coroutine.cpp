@@ -73,6 +73,16 @@ void Coroutine::setNextRun(int32 value)
 	nextRun = value;
 }
 
+int32 Coroutine::getLastStart() 
+{
+	return lastStart;
+}
+
+void Coroutine::setLastStart(int32 value)
+{
+	lastStart = value;
+}
+
 uint16 Coroutine::getStackSize(void)
 {
 	return stackSize;
@@ -107,4 +117,5 @@ void Coroutine::reset(void)
 	framePointer = -1;
 	pc = script->getInstructionStart();
 	stackSize = 0;
+
 }
