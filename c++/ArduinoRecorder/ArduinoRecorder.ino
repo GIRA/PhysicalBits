@@ -1,8 +1,8 @@
 //config 
 //pin to look for change that marks a tick of UZI's VM
-const int triggerPin=2;
+const int triggerPin=53;
 //array containing the pins to monitor.
-const byte pinMap[]{22,23,24,25};
+const byte pinMap[]{43,45,47,49,51};
 const byte pinCount=sizeof(pinMap)/sizeof(*pinMap);
 
 struct spec{

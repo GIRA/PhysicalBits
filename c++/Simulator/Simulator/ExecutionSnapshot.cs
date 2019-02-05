@@ -6,7 +6,7 @@ namespace Simulator
     public class ExecutionSnapshot
     {
         public int ms;
-        public byte[] pins = new byte[4];
+        public byte[] pins = new byte[5];
         public byte error;
 
         public bool IsDifferentThan(ExecutionSnapshot other)
