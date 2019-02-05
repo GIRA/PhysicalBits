@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimulatorTest
 {
-    public class UziConnection
+    public class UziConnection : IDisposable
     {
         private string uziArduinoPort;
         private int baudRate;
@@ -92,10 +92,16 @@ namespace SimulatorTest
             port.Close();
 
         }
+
+        public void Dispose()
+        {
+            port?.Dispose();
+            port = null;
+        }
+
         ~UziConnection()
         {
-            port?.Close();
-            port = null;
+            Dispose();
         }
     }
 }

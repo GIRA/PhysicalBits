@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimulatorTest
 {
-    public class TestBench
+    public class TestBench:IDisposable
     {
         private readonly int baudRate = 57600;
 
@@ -61,6 +61,13 @@ namespace SimulatorTest
                 result.Add(current);
             }
             return result;
+        }
+
+        public void Dispose()
+        {
+            mega.Dispose();
+            uzi.Dispose();
+
         }
     }
 }
