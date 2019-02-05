@@ -30,6 +30,7 @@ namespace SimulatorTest
 
             //task n()
             //{
+            //    write(D8,0);
             //    write(D9, 0);
             //    write(D10, 0);
             //    write(D11, 0);
@@ -44,7 +45,7 @@ namespace SimulatorTest
             //    toggle(D11);
             //}
 
-            byte[] program = { 0, 3, 6, 20, 9, 10, 11, 12, 13, 5, 1, 244, 128, 13, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 224, 192, 1, 2, 135, 162, 192, 8, 2, 133, 162 };
+            byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 1, 2, 136, 162, 192, 9, 2, 134, 162 };
             var simulation = SketchRecorder.RecordExecution(program, 4000).ToList();
 
             var execution= bench.RecordExecution(simulation.Select(s => s.ms), program);
