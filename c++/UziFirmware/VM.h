@@ -17,6 +17,8 @@ public:
 	// TODO(Richo): Compress into one uint16
 	bool halted = false;
 	Script* haltedScript = 0;
+
+	void reset();
 private:
 
 	int16 framePointer = 0;
@@ -29,6 +31,7 @@ private:
 	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
+	void saveCurrentCoroutine();
 	void yieldTime(int32, bool&);
 	void unwindStackAndReturn(void);
 };
