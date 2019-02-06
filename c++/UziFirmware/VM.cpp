@@ -8,6 +8,7 @@ void VM::reset() {
 	currentCoroutine = 0;
 	currentScript = 0;
 }
+int32 now;
 Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 {
 	if (program != currentProgram) {
@@ -17,7 +18,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 
 	int16 count = program->getScriptCount();
 
-	int32 now = millis();
+	now = millis();
 	for (int16 i = 0; i < count; i++)
 	{
 		if (this->halted) return NO_ERROR; // TODO(Richo): Add a result HALTED or something...
@@ -46,7 +47,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	}
 	if (currentCoroutine != coroutine)
 	{
-		if (currentCoroutine != 0) 
+		if (currentCoroutine != 0)
 		{
 			saveCurrentCoroutine();
 		}
@@ -55,7 +56,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		pc = coroutine->getPC();
 		currentScript = coroutine->getActiveScript();
 		framePointer = coroutine->getFramePointer();
-		
+
 	}
 
 	if (framePointer == -1)
@@ -71,7 +72,8 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		}
 		stack.push(0); // Return value slot (default: 0)
 		stack.push(uint32_to_float((uint32)-1 << 16 | pc));
-		coroutine->setLastStart(millis());
+		
+		coroutine->setLastStart(now );
 	}
 	bool yieldFlag = false;
 	while (true)
@@ -115,8 +117,8 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				the end of the script after a regular tick. We don't have to return any value.
 				We simply reset the coroutine state and break out of the loop.
 				*/
-				
-				framePointer= -1;
+
+				framePointer = -1;
 				pc = currentScript->getInstructionStart();
 				coroutine->setNextRun(coroutine->getLastStart() + currentScript->getInterval());
 				break;
@@ -124,7 +126,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		}
 		if (yieldFlag)
 		{
- 
+
 			break;
 		}
 	}
