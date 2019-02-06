@@ -10,7 +10,7 @@ namespace Simulator
     {
 
 
-        private const int captureWindow = 10;
+        private const int captureWindow = 50;
 
         private byte[] program;
         private byte[] pinMap = {8, 9, 10, 11, 12 };
