@@ -8,7 +8,6 @@ const byte pinCount=sizeof(pinMap)/sizeof(*pinMap);
 struct spec{
     long ms;
     byte pins=0;
-    int error=0;
     spec* next=0;
   };
 
@@ -79,8 +78,6 @@ void loop() {
      Serial.print(capturedData->ms);
      Serial.print(","); 
      Serial.print(capturedData->pins);
-     Serial.print(",");
-     Serial.print(capturedData->error);
      Serial.println();
      spec* n = capturedData->next; 
      delete capturedData;

@@ -58,8 +58,7 @@ namespace SimulatorTest
                 for (int j = 0; j < current.pins.Length; j++)
                 {
                     current.pins[j] = (byte)((pins & 1 << (8 - j)) >> (8 - j));
-                }
-                current.error = byte.Parse(parts.Last());
+                } 
                 result.Add(current);
                 line = mega.ReadLine();
             }
