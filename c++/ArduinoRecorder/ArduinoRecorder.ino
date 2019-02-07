@@ -7,7 +7,7 @@ const byte pinCount=sizeof(pinMap)/sizeof(*pinMap);
 
 struct spec{
     long ms;
-    byte pins[pinCount];
+    byte pins=0;
     int error=0;
   };
 
@@ -55,16 +55,17 @@ void loop() {
      if(capturedData[current].ms>ms){continue;}
      
      for(int i=0;i<=pinCount;i++){
-       capturedData[current].pins[i]=digitalRead(pinMap[i]);
+      
+       capturedData[current].pins|= (digitalRead(pinMap[i]))<<(8-i);
        }
      capturedData[current].error=ms-capturedData[current].ms;
       
-     byte* values = &capturedData[current].pins[0];
+     byte values = capturedData[current].pins;
      
      current++;
      //this loop copies the read values and consumes every spec whose time is already passed
      while(capturedData[current].ms<=ms){
-       memcpy(&capturedData[current].pins,values,pinCount);
+       capturedData[current].pins=values;
        capturedData[current].error=ms-capturedData[current].ms;
        current++;
        }
@@ -73,11 +74,9 @@ void loop() {
    Serial.println("Finished Capture");
    for(int i=0;i<amount;i++){
      Serial.print(capturedData[i].ms);
+     Serial.print(","); 
+     Serial.print(capturedData[i].pins);
      Serial.print(",");
-     for(int j=0;j<pinCount;j++){
-       Serial.print(capturedData[i].pins[j]);
-       Serial.print(",");
-     }
      Serial.print(capturedData[i].error);
      Serial.println();
    }

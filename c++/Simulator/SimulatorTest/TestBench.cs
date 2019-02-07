@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SimulatorTest
 {
-    public class TestBench:IDisposable
+    public class TestBench : IDisposable
     {
         private readonly int baudRate = 57600;
 
@@ -23,7 +23,7 @@ namespace SimulatorTest
             uzi = new UziConnection(UziArduinoPort, baudRate);
             benchArduinoPort = BenchArduinoPort;
             uzi.Start();
-            mega = new System.IO.Ports.SerialPort(BenchArduinoPort,baudRate);
+            mega = new System.IO.Ports.SerialPort(BenchArduinoPort, baudRate);
             mega.Encoding = Encoding.ASCII;
             mega.Open();
         }
@@ -51,11 +51,12 @@ namespace SimulatorTest
             {
                 line = mega.ReadLine();
                 var current = new ExecutionSnapshot();
-                var parts= line.Split(',');
+                var parts = line.Split(',');
                 current.ms = int.Parse(parts[0]);
+                byte pins = byte.Parse(parts[1]);
                 for (int j = 0; j < current.pins.Length; j++)
                 {
-                    current.pins[j] = byte.Parse(parts[1 + j]);
+                    current.pins[j] = (byte)((pins & 1 << (8 - j)) >> (8 - j));
                 }
                 current.error = byte.Parse(parts.Last());
                 result.Add(current);
