@@ -28,18 +28,18 @@ namespace SimulatorTest
             mega.Open();
         }
 
-        public IEnumerable<ExecutionSnapshot> RecordExecution(IEnumerable<int> times, byte[] program)
+        public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime)
         {
             //send an empty program
             uzi.runProgram(emptyProgram);
             //wait for the mega to be ready   
             string line = "";
-            while (line != "Ready. Waiting for amount\r")
+            while (line != "Ready. Waiting for target time\r")
             {
                 line = mega.ReadLine();
             }
-            string toSend = times.Count() + "," + string.Join(",", times);
-            mega.Write(toSend);
+
+            mega.Write(targetTime.ToString());
             uzi.runProgram(program);
 
             while (line != "Finished Capture\r")
@@ -47,9 +47,10 @@ namespace SimulatorTest
                 line = mega.ReadLine();
             }
             List<ExecutionSnapshot> result = new List<ExecutionSnapshot>();
-            for (int i = 0; i < times.Count(); i++)
+
+            line = mega.ReadLine();
+            while (line != "Ready. Waiting for target time\r")
             {
-                line = mega.ReadLine();
                 var current = new ExecutionSnapshot();
                 var parts = line.Split(',');
                 current.ms = int.Parse(parts[0]);
@@ -60,6 +61,7 @@ namespace SimulatorTest
                 }
                 current.error = byte.Parse(parts.Last());
                 result.Add(current);
+                line = mega.ReadLine();
             }
             return result;
         }

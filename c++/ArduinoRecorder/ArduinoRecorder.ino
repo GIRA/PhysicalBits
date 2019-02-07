@@ -9,6 +9,7 @@ struct spec{
     long ms;
     byte pins=0;
     int error=0;
+    spec* next=0;
   };
 
 void setup() {
@@ -20,66 +21,71 @@ void setup() {
 }
 
 spec* capturedData=0;
-
+spec* lastSpec=0;
 long readLong(){
   long result =Serial.parseInt();
   return result;
   }
 void loop() { 
   //read amount 
-  int amount=0;
+  int targetTime=0;
 
-  while(amount==0){
+  while(targetTime==0){
     delay(100);
-    Serial.println("Ready. Waiting for amount");
-    amount=readLong();
+    Serial.println("Ready. Waiting for target time");
+    targetTime=readLong();
     }
-  Serial.print("Waiting for ");
-  Serial.print(amount);
-  Serial.println(" requests");
-  capturedData=new spec[amount];
-  for(int i=0;i<amount;i++){
-    capturedData[i].ms=readLong();
-    }
-  Serial.println("Finished Reading. Starting Capture");
-  int current=0;
+  Serial.print("Capturing ");
+  Serial.print(targetTime);
+  Serial.println(" ms");
+  int currentTime=0;
   long startms=0;
   bool lastState=digitalRead(triggerPin);
-  while(current<amount){
+  while(currentTime<targetTime){
+    
+     currentTime=millis();
+     if(startms==0){startms=currentTime;}
+     currentTime-=startms;
+     if(currentTime>targetTime){
+      break;
+      }
      bool state=digitalRead(triggerPin);
      if(state==lastState){continue;}
      lastState=state;
-     unsigned long ms=millis();
-     if(startms==0){startms=ms;}
-     ms-=startms;
-     if(capturedData[current].ms>ms){continue;}
-     
+     byte pins=0;
      for(int i=0;i<=pinCount;i++){
-      
-       capturedData[current].pins|= (digitalRead(pinMap[i]))<<(8-i);
+       pins|= (digitalRead(pinMap[i]))<<(8-i);
        }
-     capturedData[current].error=ms-capturedData[current].ms;
-      
-     byte values = capturedData[current].pins;
      
-     current++;
-     //this loop copies the read values and consumes every spec whose time is already passed
-     while(capturedData[current].ms<=ms){
-       capturedData[current].pins=values;
-       capturedData[current].error=ms-capturedData[current].ms;
-       current++;
-       }
+     if(capturedData==0){
+      capturedData=new spec(); 
+      lastSpec=capturedData;
+     }else{
+     if(lastSpec->pins==pins){
+        continue;
+      } 
+      spec* newSpec = new spec();
+      lastSpec->next=newSpec;
+      lastSpec=newSpec;
+     }
+     
+     lastSpec->ms=currentTime;
+     lastSpec->pins=pins;
+      
    }
-   
    Serial.println("Finished Capture");
-   for(int i=0;i<amount;i++){
-     Serial.print(capturedData[i].ms);
+   lastSpec=0;
+   while(capturedData!=0){
+     Serial.print(capturedData->ms);
      Serial.print(","); 
-     Serial.print(capturedData[i].pins);
+     Serial.print(capturedData->pins);
      Serial.print(",");
-     Serial.print(capturedData[i].error);
+     Serial.print(capturedData->error);
      Serial.println();
-   }
-   delete capturedData;
+     spec* n = capturedData->next; 
+     delete capturedData;
+     capturedData=n;
+   }  
    capturedData=0;
+   
 }

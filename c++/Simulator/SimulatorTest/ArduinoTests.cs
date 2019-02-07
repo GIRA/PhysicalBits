@@ -40,7 +40,7 @@ namespace SimulatorTest
         {
             var simulation = SketchRecorder.RecordExecution(program, Time).ToList();
 
-            var execution = bench.RecordExecution(simulation.Select(s => s.ms), program).ToList();
+            var execution = bench.RecordExecution(program, Time).ToList();
 
             string sim = string.Join("\n", simulation.Select(e => e.ToString()));
 
@@ -81,7 +81,7 @@ namespace SimulatorTest
             //task blink13() running 1000 / s {
             //    toggle(D13);
             //}
-            byte[] program = {  0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
+            byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
             TestProgram(program, 4000, 10);
         }
 
