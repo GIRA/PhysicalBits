@@ -9,11 +9,9 @@ namespace Simulator
     public class SketchRecorder
     {
 
-
-        private const int captureWindow = 50;
-
+        
         private byte[] program;
-        private byte[] pinMap = {8, 9, 10, 11, 12 };
+        private byte[] pinMap = { 8, 9, 10, 11, 12 };
         private int targetTime;
 
         private readonly byte[] emptyProgram = { 0, 0, 0 };
@@ -103,17 +101,11 @@ namespace Simulator
         private IEnumerable<ExecutionSnapshot> getInterestingSnapshots()
         {
             lastSnapshot = null;
-            int yieldCount = 0;
             foreach (var currentSnapshot in getSnapshots())
             {
                 if (currentSnapshot.IsDifferentThan(lastSnapshot))
                 {
                     lastSnapshot = currentSnapshot;
-                    yieldCount += captureWindow;
-                }
-                if (yieldCount > 0)
-                {
-                    yieldCount--;
                     yield return currentSnapshot;
                 }
             }
