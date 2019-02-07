@@ -41,16 +41,16 @@ void loop() {
   long startms=0;
   bool lastState=digitalRead(triggerPin);
   while(currentTime<targetTime){
-    
+     bool state=digitalRead(triggerPin);
+     if(state==lastState){continue;}
+     lastState=state;
      currentTime=millis();
      if(startms==0){startms=currentTime;}
      currentTime-=startms;
      if(currentTime>targetTime){
       break;
       }
-     bool state=digitalRead(triggerPin);
-     if(state==lastState){continue;}
-     lastState=state;
+     
      byte pins=0;
      for(int i=0;i<=pinCount;i++){
        pins|= (digitalRead(pinMap[i]))<<(8-i);
