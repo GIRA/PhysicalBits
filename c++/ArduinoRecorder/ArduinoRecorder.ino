@@ -16,7 +16,7 @@ void setup() {
   for(int i=0;i<=pinCount;i++){
     pinMode(pinMap[i],INPUT);
   }
-  pinMode(triggerPin,INPUT);
+  pinMode(triggerPin,INPUT_PULLUP);
 }
 
 spec* capturedData=0;
@@ -44,7 +44,7 @@ void loop() {
   Serial.println(" ms");
   int currentTime=0;
   long startms=0;
-  bool lastState=digitalRead(triggerPin);
+  bool lastState=LOW;
   while(currentTime<targetTime){
      bool state=digitalRead(triggerPin);
      if(state==lastState){continue;}
@@ -62,8 +62,12 @@ void loop() {
         pins|= (digitalRead(pinMap[i]))<<i;
         }
      }
-     
      if(capturedData==0){
+      //TODO(Tera): remove this hack, it fixes temporarily some synchronization issues.
+      if(pins==0){
+        continue;
+        }
+      
       capturedData=new spec(); 
       lastSpec=capturedData;
      }else{
