@@ -121,6 +121,95 @@ namespace SimulatorTest
             TestProgram(program, 20100, new byte[] { 11 }, 10);
         }
 
+        [TestMethod]
+        public void TestToggle8()
+        {
 
+            //task blink() running 1 / s {
+            //    toggle(D8);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 3, 8, 8, 13, 5, 3, 232, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
+            TestProgram(program, 6100, new byte[] { 8 }, 10);
+        }
+        [TestMethod]
+        public void TestToggle9()
+        {
+            //task blink() running 1.2 / s {
+            //    toggle(D9);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 3, 8, 9, 13, 7, 68, 80, 85, 85, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
+            TestProgram(program, 6100, new byte[] { 9 }, 10);
+        }
+        [TestMethod]
+        public void TestToggle10()
+        {
+
+            //task blink() running 1.4 / s {
+            //    toggle(D10);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 3, 8, 10, 13, 7, 68, 50, 146, 73, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
+            TestProgram(program, 6100, new byte[] { 10 }, 10);
+        }
+        [TestMethod]
+        public void TestToggle11()
+        {
+
+            //task blink() running 1.47 / s {
+            //    toggle(D11);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 3, 8, 11, 13, 7, 68, 42, 17, 106, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
+            TestProgram(program, 6100, new byte[] { 11 }, 10);
+        }
+        [TestMethod]
+        public void TestToggle12()
+        {
+            //task blink() running 1.9 / s {
+            //    toggle(D11);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 3, 8, 12, 13, 7, 68, 3, 148, 54, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
+            TestProgram(program, 6100, new byte[] { 12 }, 10);
+        }
+
+
+        [TestMethod]
+        public void TestAllPinsWithDifferentTickrates()
+        {
+
+            //task blink8() running 1 / s {
+            //    toggle(D8);
+            //}
+            //task blink9() running 1.2 / s {
+            //    toggle(D9);
+            //}
+            //task blink110() running 1.3 / s {
+            //    toggle(D10);
+            //}
+            //task blink11() running 1.5 / s {
+            //    toggle(D11);
+            //}
+            //task blink12() running 1.7 / s {
+            //    toggle(D12);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 6, 11, 24, 8, 9, 10, 11, 12, 13, 5, 3, 232, 19, 68, 19, 15, 15, 68, 38, 170, 171, 68, 64, 78, 197, 68, 80, 85, 85, 192, 9, 2, 131, 162, 192, 13, 2, 132, 162, 192, 12, 2, 133, 162, 192, 11, 2, 134, 162, 192, 10, 2, 135, 162, 128, 2, 136, 162 };
+            TestProgram(program, 6909, new byte[] { 8,9,10,11,12 }, 10);
+        }
     }
 }
