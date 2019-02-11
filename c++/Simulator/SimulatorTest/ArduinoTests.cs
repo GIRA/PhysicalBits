@@ -85,63 +85,39 @@ namespace SimulatorTest
         [TestMethod]
         public void Test10msToggle()
         {
-            //task n()
-            //{
-            //    write(D8, 0);
-            //    write(D9, 0);
-            //    write(D10, 0);
-            //    write(D11, 0);
-            //    write(D12, 0);
-            //}
             //task blink11() running 100 / s {
             //    toggle(D11);
             //}
-            //task blink13() running 1000 / s {
+            //task blink13() running  {
             //    toggle(D13);
             //}
-            byte[] program = { 0, 3, 6, 24, 8, 9, 10, 11, 12, 13, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 5, 2, 134, 162, 192, 1, 2, 136, 162 };
+            byte[] program = { 0, 2, 3, 12, 10, 11, 13, 192, 3, 2, 132, 162, 128, 2, 133, 162 };
             TestProgram(program, 4109, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
         public void Test500msToggle()
         {
-            //task n()
-            //{
-            //    write(D8, 0);
-            //    write(D9, 0);
-            //    write(D10, 0);
-            //    write(D11, 0);
-            //    write(D12, 0);
-            //}
             //task blink11() running 2 / s {
             //    toggle(D11);
             //}
-            //task blink13() running 1000 / s {
+            //task blink13() running  {
             //    toggle(D13);
             //}
-            byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
+            byte[] program = { 0, 2, 3, 8, 11, 13, 5, 1, 244, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
             TestProgram(program, 4100, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
         public void Test2000msToggle()
         {
-            //task n()
-            //{
-            //    write(D8,0);
-            //    write(D9, 0);
-            //    write(D10, 0);
-            //    write(D11, 0);
-            //    write(D12, 0);
-            //}
             //task blink11() running 0.5 / s {
             //    toggle(D11);
             //}
-            //task blink13() running 1000 / s {
+            //task blink13() running {
             //    toggle(D13);
             //}
-            byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 7, 68, 250, 0, 0, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
+            byte[] program = { 0, 2, 3, 8, 11, 13, 7, 68, 250, 0, 0, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
             TestProgram(program, 20100, new byte[] { 11 }, 10);
         }
 
