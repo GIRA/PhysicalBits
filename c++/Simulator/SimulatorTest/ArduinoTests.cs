@@ -118,7 +118,7 @@ namespace SimulatorTest
             //    toggle(D13);
             //}
             byte[] program = { 0, 2, 3, 8, 11, 13, 7, 68, 250, 0, 0, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 20100, new byte[] { 11 }, 10);
+            TestProgram(program, 10100, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
