@@ -28,7 +28,7 @@ namespace SimulatorTest
             mega.Open();
         }
 
-        public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime)
+        public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime,IEnumerable<byte> pins)
         {
             //send an empty program
             uzi.runProgram(emptyProgram);
@@ -38,8 +38,8 @@ namespace SimulatorTest
             {
                 line = mega.ReadLine();
             }
-
-            mega.Write(targetTime.ToString());
+            byte pinFlag = getPinFlag(pins);
+            mega.Write(targetTime.ToString()+","+pinFlag.ToString());
             uzi.runProgram(program);
 
             while (line != "Finished Capture\r")
@@ -54,13 +54,50 @@ namespace SimulatorTest
                 var current = new ExecutionSnapshot();
                 var parts = line.Split(',');
                 current.ms = int.Parse(parts[0]);
-                byte pins = byte.Parse(parts[1]);
+                byte pinData = byte.Parse(parts[1]);
                 for (int j = 0; j < current.pins.Length; j++)
                 {
-                    current.pins[j] = (byte)((pins & 1 << (8 - j)) >> (8 - j));
+                    current.pins[j] = (byte)(pinData & 1) ;
+                    pinData = (byte)(pinData >> 1);
                 } 
                 result.Add(current);
                 line = mega.ReadLine();
+            }
+            return result;
+        }
+
+        private byte getPinFlag(IEnumerable<byte> pins)
+        {
+            //INFO(Tera): Assuming the wiring is according to the convention, at least until a more permanent solution is built,
+            //the result of this function is a bitflag composed of the following pins:
+            //? ? ? 12 11 10 9 8 
+            byte result = 0;
+            foreach (var item in pins)
+            {
+                switch (item)
+                {
+                    case 12:
+                        result |= 0b00010000;
+                        break;
+                    case 11:
+                        result |= 0b00001000;
+                        break;
+
+                    case 10:
+                        result |= 0b00000100;
+                        break;
+                    case 9:
+                        result |= 0b00000010;
+                        break;
+
+                    case 8:
+                        result |= 0b00000001;
+                        break;
+                    default:
+                        Console.WriteLine("Invalid Operation, pin {0} requested to the arduino recorder", item);
+                        break;
+                }
+
             }
             return result;
         }

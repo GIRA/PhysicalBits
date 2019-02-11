@@ -9,7 +9,7 @@ namespace Simulator
     public class SketchRecorder
     {
 
-        
+
         private byte[] program;
         private byte[] pinMap = { 8, 9, 10, 11, 12 };
         private int targetTime;
@@ -72,14 +72,14 @@ namespace Simulator
 
         }
 
-        public static IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int time)
+        public static IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int time, IEnumerable<byte> pins)
         {
-            return new SketchRecorder(program, time).getInterestingSnapshots();
+            return new SketchRecorder(program, time).getInterestingSnapshots(pins);
 
         }
 
 
-        private IEnumerable<ExecutionSnapshot> getSnapshots()
+        private IEnumerable<ExecutionSnapshot> getSnapshots(IEnumerable<byte> pins)
         {
             sketch.WriteSerial(program);
             while (currentTime <= targetTime)
@@ -92,16 +92,18 @@ namespace Simulator
                 currentSnapshot.ms = currentTime;
                 for (int i = 0; i < currentSnapshot.pins.Length; i++)
                 {
-                    currentSnapshot.pins[i] = (byte)(sketch.GetPinValue(pinMap[i]) == 0 ? 0 : 1);
+
+                    currentSnapshot.pins[i] =
+                        (byte)(pins.Contains(pinMap[i]) ? (sketch.GetPinValue(pinMap[i]) == 0 ? 0 : 1) : 0);
                 }
                 yield return currentSnapshot;
                 currentTime++;
             }
         }
-        private IEnumerable<ExecutionSnapshot> getInterestingSnapshots()
+        private IEnumerable<ExecutionSnapshot> getInterestingSnapshots(IEnumerable<byte> pins)
         {
             lastSnapshot = null;
-            foreach (var currentSnapshot in getSnapshots())
+            foreach (var currentSnapshot in getSnapshots(pins))
             {
                 if (currentSnapshot.IsDifferentThan(lastSnapshot))
                 {

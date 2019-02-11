@@ -49,11 +49,11 @@ namespace SimulatorTest
             return (sumXY - ((sumX * sumY) / n))
                         / (sumX2 - (sumX * sumX / n));
         }
-        private void TestProgram(byte[] program, int Time, int errorTolerance)
+        private void TestProgram(byte[] program, int Time, IEnumerable<byte> interestingPints, int errorTolerance)
         {
-            var simulation = SketchRecorder.RecordExecution(program, Time).ToList();
+            var simulation = SketchRecorder.RecordExecution(program, Time,interestingPints).ToList();
 
-            var execution = bench.RecordExecution(program, Time).ToList();
+            var execution = bench.RecordExecution(program, Time, interestingPints).ToList();
 
             string sim = string.Join("\n", simulation.Select(e => e.ToString()));
 
@@ -99,8 +99,8 @@ namespace SimulatorTest
             //task blink13() running 1000 / s {
             //    toggle(D13);
             //}
-            byte[] program = {0, 3, 6, 24, 8, 9, 10, 11, 12, 13, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 5, 2, 134, 162, 192, 1, 2, 136, 162 };
-            TestProgram(program, 4109, 10);
+            byte[] program = { 0, 3, 6, 24, 8, 9, 10, 11, 12, 13, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 5, 2, 134, 162, 192, 1, 2, 136, 162 };
+            TestProgram(program, 4109, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
@@ -121,7 +121,7 @@ namespace SimulatorTest
             //    toggle(D13);
             //}
             byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 5, 1, 244, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
-            TestProgram(program, 4100, 10);
+            TestProgram(program, 4100, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
@@ -142,7 +142,7 @@ namespace SimulatorTest
             //    toggle(D13);
             //}
             byte[] program = { 0, 3, 7, 24, 8, 9, 10, 11, 12, 13, 7, 68, 250, 0, 0, 128, 16, 131, 128, 161, 132, 128, 161, 133, 128, 161, 134, 128, 161, 135, 128, 161, 224, 192, 9, 2, 134, 162, 192, 1, 2, 136, 162 };
-            TestProgram(program, 20100, 10);
+            TestProgram(program, 20100, new byte[] { 11 }, 10);
         }
 
 

@@ -28,11 +28,16 @@ long readLong(){
 void loop() { 
   //read amount 
   int targetTime=0;
-
+  byte pinFlags=0;
   while(targetTime==0){
     delay(100);
     Serial.println("Ready. Waiting for target time");
     targetTime=readLong();
+    }
+  while(pinFlags==0){
+    
+    Serial.println("Reading pins flags");
+    pinFlags=readLong();
     }
   Serial.print("Capturing ");
   Serial.print(targetTime);
@@ -53,8 +58,10 @@ void loop() {
      
      byte pins=0;
      for(int i=0;i<=pinCount;i++){
-       pins|= (digitalRead(pinMap[i]))<<(8-i);
-       }
+      if((pinFlags>>i &1) !=0){
+        pins|= (digitalRead(pinMap[i]))<<i;
+        }
+     }
      
      if(capturedData==0){
       capturedData=new spec(); 
