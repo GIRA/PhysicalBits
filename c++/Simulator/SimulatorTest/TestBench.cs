@@ -32,6 +32,7 @@ namespace SimulatorTest
         {
             //send an empty program
             uzi.runProgram(emptyProgram);
+            System.Threading.Thread.Sleep(100);
             //wait for the mega to be ready   
             string line = "";
             while (line != "Ready. Waiting for target time\r")
@@ -40,6 +41,8 @@ namespace SimulatorTest
             }
             byte pinFlag = getPinFlag(pins);
             mega.Write(targetTime.ToString()+","+pinFlag.ToString());
+
+            System.Threading.Thread.Sleep(100);
             uzi.runProgram(program);
 
             while (line != "Finished Capture\r")
