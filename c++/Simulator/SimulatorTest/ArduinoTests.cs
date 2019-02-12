@@ -227,5 +227,23 @@ namespace SimulatorTest
             TestProgram(program, 7099, new byte[] { 11 }, 10);
 
         }
+        [TestMethod]
+        public void TestResumeOnAPausedTaskShouldContinueFromItsCurrentPC() {
+            //task main() running {
+            //    turnOn(D11);
+            //    pause main;
+            //    turnOff(D11);
+            //    pause main;
+            //}
+            //task awake() running 1 / s{
+            //    resume main;
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 3, 3, 8, 11, 13, 5, 3, 232, 128, 6, 131, 180, 232, 131, 181, 232, 192, 5, 1, 216, 128, 2, 132, 162 };
+            TestProgram(program, 7099, new byte[] { 11 }, 10);
+
+        }
     }
 }
