@@ -228,7 +228,8 @@ namespace SimulatorTest
 
         }
         [TestMethod]
-        public void TestResumeOnAPausedTaskShouldContinueFromItsCurrentPC() {
+        public void TestResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
+        {
             //task main() running {
             //    turnOn(D11);
             //    pause main;
@@ -244,6 +245,34 @@ namespace SimulatorTest
             byte[] program = { 0, 3, 3, 8, 11, 13, 5, 3, 232, 128, 6, 131, 180, 232, 131, 181, 232, 192, 5, 1, 216, 128, 2, 132, 162 };
             TestProgram(program, 7099, new byte[] { 11 }, 10);
 
+        }
+        [TestMethod]
+        public void TestForLoopShouldOnlyEvaluateStepOncePerIteration()
+        {
+            //var step = -1;
+            //var stop = -10;
+            //func negatedStep()
+            //{
+            //    step = step * -1;
+            //    return step;
+            //}
+
+            //func negatedStop()
+            //{
+            //    stop = stop * -1;
+            //    return stop;
+            //}
+
+            //task for () running {
+            //    for i = 1 to negatedStop() by negatedStep() {
+            //        write(D11, i);
+            //    }
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 4, 4, 8, 11, 13, 11, 193, 32, 0, 0, 191, 128, 0, 0, 0, 6, 134, 130, 165, 150, 134, 187, 0, 6, 133, 130, 165, 149, 133, 187, 144, 2, 0, 0, 21, 129, 255, 128, 255, 0, 193, 192, 255, 129, 255, 1, 128, 245, 2, 175, 240, 1, 173, 241, 8, 131, 255, 0, 161, 255, 0, 255, 1, 166, 255, 128, 240, 237, 128, 2, 132, 162 };
+            TestProgram(program, 100, new byte[] { 11 }, 10);
         }
     }
 }
