@@ -51,7 +51,7 @@ namespace SimulatorTest
         }
         private void TestProgram(byte[] program, int Time, IEnumerable<byte> interestingPints, int errorTolerance)
         {
-            var simulation = SketchRecorder.RecordExecution(program, Time,interestingPints).ToList();
+            var simulation = SketchRecorder.RecordExecution(program, Time, interestingPints).ToList();
 
             var execution = bench.RecordExecution(program, Time, interestingPints).ToList();
 
@@ -208,8 +208,24 @@ namespace SimulatorTest
             //task blink13() running  {
             //    toggle(D13);
             //}
-            byte[] program = { 0, 6, 11, 24, 8, 9, 10, 11, 12, 13, 5, 3, 232, 19, 68, 19, 15, 15, 68, 38, 170, 171, 68, 64, 78, 197, 68, 80, 85, 85, 192, 9, 2, 131, 162, 192, 13, 2, 132, 162, 192, 12, 2, 133, 162, 192, 11, 2, 134, 162, 192, 10, 2, 135, 162, 128, 2, 136, 162 };
-            TestProgram(program, 6909, new byte[] { 8,9,10,11,12 }, 10);
+            byte[] program = { 0, 6, 11, 24, 8, 9, 10, 11, 12, 13, 9, 1, 244, 3, 232, 15, 67, 166, 170, 171, 68, 250, 0, 0, 69, 80, 85, 85, 192, 11, 2, 131, 162, 192, 9, 2, 132, 162, 192, 10, 2, 133, 162, 192, 12, 2, 134, 162, 192, 13, 2, 135, 162, 128, 2, 136, 162 };
+            TestProgram(program, 6909, new byte[] { 8, 9, 10, 11, 12 }, 10);
+        }
+
+        [TestMethod]
+        public void TestPrimitiveYieldTime()
+        {
+            //task blink11() running 10 / s {
+            //    turnOn(D11);
+            //    delayMs(1000);
+            //    turnOff(D11);
+            //}
+            //task blink13() running  {
+            //    toggle(D13);
+            //}
+            byte[] program = { 0, 2, 4, 12, 11, 13, 100, 5, 3, 232, 192, 5, 6, 131, 180, 134, 183, 131, 181, 128, 2, 132, 162 };
+            TestProgram(program, 7099, new byte[] { 11 }, 10);
+
         }
     }
 }
