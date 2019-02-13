@@ -13,7 +13,7 @@ namespace SimulatorTest
     public class ArduinoTests
     {
 
-        private static readonly string TEST_FILES_PATH = Path.Combine("..", "SimulatorTest", "TestFiles");
+        private static readonly string TEST_FILES_PATH = Path.Combine("..", "SimulatorTest", "ArduinoTestFiles");
         private byte[] ReadFile(string fileName)
         {
             var str = File.ReadAllText(Path.Combine(TEST_FILES_PATH, fileName));
@@ -81,198 +81,85 @@ namespace SimulatorTest
             Assert.IsTrue(perc < errorTolerance, "There were more than {0}% of errors", errorTolerance);
         }
 
-
+        
+      
         [TestMethod]
-        public void Test10msToggle()
+        public void Test001Toggle8()
         {
-            //task blink11() running 100 / s {
-            //    toggle(D11);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 12, 10, 11, 13, 192, 3, 2, 132, 162, 128, 2, 133, 162 };
+            byte[] program = ReadFile(nameof(Test001Toggle8));
+            TestProgram(program, 6100, new byte[] { 8 }, 10);
+        }
+        [TestMethod]
+        public void Test002Toggle9()
+        {
+            byte[] program = ReadFile(nameof(Test002Toggle9));
+            TestProgram(program, 6100, new byte[] { 9 }, 10);
+        }
+        [TestMethod]
+        public void Test003Toggle10()
+        {
+            byte[] program = ReadFile(nameof(Test003Toggle10));
+            TestProgram(program, 6100, new byte[] { 10 }, 10);
+        }
+        [TestMethod]
+        public void Test004Toggle11()
+        {
+            byte[] program = ReadFile(nameof(Test004Toggle11));
+            TestProgram(program, 6100, new byte[] { 11 }, 10);
+        }
+        [TestMethod]
+        public void Test005Toggle12()
+        {
+            byte[] program = ReadFile(nameof(Test005Toggle12));
+            TestProgram(program, 6100, new byte[] { 12 }, 10);
+        }
+        [TestMethod]
+        public void Test006Toggle2000ms()
+        {
+            byte[] program = ReadFile(nameof(Test006Toggle2000ms));
+            TestProgram(program, 10100, new byte[] { 11 }, 10);
+        }
+        [TestMethod]
+        public void Test007Toggle500ms()
+        {
+            byte[] program = ReadFile(nameof(Test007Toggle500ms));
+            TestProgram(program, 4100, new byte[] { 11 }, 10);
+        }
+        [TestMethod]
+        public void Test008Toggle10ms()
+        {
+            byte[] program = ReadFile(nameof(Test008Toggle10ms));
             TestProgram(program, 4109, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
-        public void Test500msToggle()
+        public void Test009PrimitiveYieldTime()
         {
-            //task blink11() running 2 / s {
-            //    toggle(D11);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 11, 13, 5, 1, 244, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 4100, new byte[] { 11 }, 10);
+            byte[] program = ReadFile(nameof(Test009PrimitiveYieldTime));
+            TestProgram(program, 7099, new byte[] { 11 }, 10);
+
+        }
+        [TestMethod]
+        public void Test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
+        {
+            byte[] program = ReadFile(nameof(Test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC));
+            TestProgram(program, 7099, new byte[] { 11 }, 10);
+
+        }
+        [TestMethod]
+        public void Test011ForLoopShouldOnlyEvaluateStepOncePerIteration()
+        {
+            byte[] program = ReadFile(nameof(Test011ForLoopShouldOnlyEvaluateStepOncePerIteration));
+            TestProgram(program, 100, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
-        public void Test2000msToggle()
-        {
-            //task blink11() running 0.5 / s {
-            //    toggle(D11);
-            //}
-            //task blink13() running {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 11, 13, 7, 68, 250, 0, 0, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 10100, new byte[] { 11 }, 10);
-        }
-
-        [TestMethod]
-        public void TestToggle8()
+        public void Test012CaptureEveryPinWithDifferentTickrate()
         {
 
-            //task blink() running 1 / s {
-            //    toggle(D8);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 8, 13, 5, 3, 232, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 6100, new byte[] { 8 }, 10);
-        }
-        [TestMethod]
-        public void TestToggle9()
-        {
-            //task blink() running 1.2 / s {
-            //    toggle(D9);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 9, 13, 7, 68, 80, 85, 85, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 6100, new byte[] { 9 }, 10);
-        }
-        [TestMethod]
-        public void TestToggle10()
-        {
-
-            //task blink() running 1.4 / s {
-            //    toggle(D10);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 10, 13, 7, 68, 50, 146, 73, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 6100, new byte[] { 10 }, 10);
-        }
-        [TestMethod]
-        public void TestToggle11()
-        {
-
-            //task blink() running 1.47 / s {
-            //    toggle(D11);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 11, 13, 7, 68, 42, 17, 106, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 6100, new byte[] { 11 }, 10);
-        }
-        [TestMethod]
-        public void TestToggle12()
-        {
-            //task blink() running 1.9 / s {
-            //    toggle(D11);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 3, 8, 12, 13, 7, 68, 3, 148, 54, 192, 5, 2, 131, 162, 128, 2, 132, 162 };
-            TestProgram(program, 6100, new byte[] { 12 }, 10);
-        }
-
-
-        [TestMethod]
-        public void TestAllPinsWithDifferentTickrates()
-        {
-
-            //task blink8() running 1 / s {
-            //    toggle(D8);
-            //}
-            //task blink9() running 1.2 / s {
-            //    toggle(D9);
-            //}
-            //task blink110() running 1.3 / s {
-            //    toggle(D10);
-            //}
-            //task blink11() running 1.5 / s {
-            //    toggle(D11);
-            //}
-            //task blink12() running 1.7 / s {
-            //    toggle(D12);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 6, 11, 24, 8, 9, 10, 11, 12, 13, 9, 1, 244, 3, 232, 15, 67, 166, 170, 171, 68, 250, 0, 0, 69, 80, 85, 85, 192, 11, 2, 131, 162, 192, 9, 2, 132, 162, 192, 10, 2, 133, 162, 192, 12, 2, 134, 162, 192, 13, 2, 135, 162, 128, 2, 136, 162 };
+            byte[] program = ReadFile(nameof(Test012CaptureEveryPinWithDifferentTickrate));
             TestProgram(program, 6909, new byte[] { 8, 9, 10, 11, 12 }, 10);
         }
 
-        [TestMethod]
-        public void TestPrimitiveYieldTime()
-        {
-            //task blink11() running 10 / s {
-            //    turnOn(D11);
-            //    delayMs(1000);
-            //    turnOff(D11);
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 2, 4, 12, 11, 13, 100, 5, 3, 232, 192, 5, 6, 131, 180, 134, 183, 131, 181, 128, 2, 132, 162 };
-            TestProgram(program, 7099, new byte[] { 11 }, 10);
-
-        }
-        [TestMethod]
-        public void TestResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
-        {
-            //task main() running {
-            //    turnOn(D11);
-            //    pause main;
-            //    turnOff(D11);
-            //    pause main;
-            //}
-            //task awake() running 1 / s{
-            //    resume main;
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 3, 3, 8, 11, 13, 5, 3, 232, 128, 6, 131, 180, 232, 131, 181, 232, 192, 5, 1, 216, 128, 2, 132, 162 };
-            TestProgram(program, 7099, new byte[] { 11 }, 10);
-
-        }
-        [TestMethod]
-        public void TestForLoopShouldOnlyEvaluateStepOncePerIteration()
-        {
-            //var step = -1;
-            //var stop = -10;
-            //func negatedStep()
-            //{
-            //    step = step * -1;
-            //    return step;
-            //}
-
-            //func negatedStop()
-            //{
-            //    stop = stop * -1;
-            //    return stop;
-            //}
-
-            //task for () running {
-            //    for i = 1 to negatedStop() by negatedStep() {
-            //        write(D11, i);
-            //    }
-            //}
-            //task blink13() running  {
-            //    toggle(D13);
-            //}
-            byte[] program = { 0, 4, 4, 8, 11, 13, 11, 193, 32, 0, 0, 191, 128, 0, 0, 0, 6, 134, 130, 165, 150, 134, 187, 0, 6, 133, 130, 165, 149, 133, 187, 144, 2, 0, 0, 21, 129, 255, 128, 255, 0, 193, 192, 255, 129, 255, 1, 128, 245, 2, 175, 240, 1, 173, 241, 8, 131, 255, 0, 161, 255, 0, 255, 1, 166, 255, 128, 240, 237, 128, 2, 132, 162 };
-            TestProgram(program, 100, new byte[] { 11 }, 10);
-        }
     }
 }
