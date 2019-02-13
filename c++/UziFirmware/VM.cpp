@@ -444,6 +444,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 	case PRIM_TOGGLE_PIN:
 	{
 		uint8 pin = (uint8)stack.pop();
+		io->setMode(pin, OUTPUT);
 		io->setValue(pin, 1 - io->getValue(pin));
 	}
 	break;
