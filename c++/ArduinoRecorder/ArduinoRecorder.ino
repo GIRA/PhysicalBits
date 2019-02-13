@@ -14,7 +14,7 @@ struct spec{
 void setup() {
   Serial.begin(57600);
   for(int i=0;i<=pinCount;i++){
-    pinMode(pinMap[i],INPUT);
+    pinMode(pinMap[i],INPUT_PULLUP);
   }
   pinMode(triggerPin,INPUT_PULLUP);
 }
