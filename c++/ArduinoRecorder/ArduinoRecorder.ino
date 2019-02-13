@@ -44,7 +44,7 @@ void loop() {
   Serial.println(" ms");
   int currentTime=0;
   long startms=0;
-  bool lastState=LOW;
+  bool lastState=digitalRead(triggerPin);
   while(currentTime<targetTime){
      bool state=digitalRead(triggerPin);
      if(state==lastState){continue;}
