@@ -46,6 +46,7 @@ namespace SimulatorTest
             {
                 Sketch.Current.Loop();
             }
+            System.Threading.Thread.Sleep(1000);
         }
 
 
