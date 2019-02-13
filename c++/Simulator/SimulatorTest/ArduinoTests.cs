@@ -36,6 +36,19 @@ namespace SimulatorTest
         {
             bench.Dispose();
         }
+
+        [TestCleanup]
+        public void testTearDown()
+        {
+            // INFO(Richo): Make sure we get disconnected before the next test.
+            Sketch.Current .SetMillis(int.MaxValue);
+            for (int i = 0; i < 1000; i++)
+            {
+                Sketch.Current.Loop();
+            }
+        }
+
+
         private double calculateSlope(IEnumerable<int> times, IEnumerable<int> deviations)
         {
             var sumX = times.Sum();
