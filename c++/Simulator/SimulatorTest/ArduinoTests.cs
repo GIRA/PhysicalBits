@@ -81,8 +81,8 @@ namespace SimulatorTest
             Assert.IsTrue(perc < errorTolerance, "There were more than {0}% of errors", errorTolerance);
         }
 
-        
-      
+
+
         [TestMethod]
         public void Test001Toggle8()
         {
@@ -154,10 +154,17 @@ namespace SimulatorTest
         }
 
         [TestMethod]
-        public void Test012CaptureEveryPinWithDifferentTickrate()
+        public void Test012TwoBlinksWithDifferentTickrate()
         {
 
-            byte[] program = ReadFile(nameof(Test012CaptureEveryPinWithDifferentTickrate));
+            byte[] program = ReadFile(nameof(Test012TwoBlinksWithDifferentTickrate));
+            TestProgram(program, 6050, new byte[] { 8, 9 }, 10);
+        }
+        [TestMethod]
+        public void Test013CaptureEveryPinWithDifferentTickrate()
+        {
+
+            byte[] program = ReadFile(nameof(Test013CaptureEveryPinWithDifferentTickrate));
             TestProgram(program, 6909, new byte[] { 8, 9, 10, 11, 12 }, 10);
         }
 
