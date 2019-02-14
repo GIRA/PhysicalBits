@@ -23,6 +23,12 @@ namespace SimulatorTest
 
         public TestContext TestContext { get; set; }
 
+
+        private void Loop(int n = 10)
+        {
+            for (int i = 0; i < n; i++) { sketch.Loop(); }
+        }
+
         [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
@@ -487,9 +493,9 @@ namespace SimulatorTest
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 100 + 50);
-                sketch.Loop();
+                Loop();
                 sketch.SetMillis(i * 100 + 51);
-                sketch.Loop();
+                Loop();
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;
@@ -497,9 +503,9 @@ namespace SimulatorTest
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
 
                 sketch.SetMillis(i * 100 + 75);
-                sketch.Loop();
+                Loop();
                 sketch.SetMillis(i * 100 + 76);
-                sketch.Loop();
+                Loop();
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
             }
         }
@@ -813,12 +819,12 @@ namespace SimulatorTest
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 50);
-                sketch.Loop();
+                Loop();
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
 
                 sketch.SetMillis(i * 1000 + 550);
-                sketch.Loop();
+                Loop();
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should always be off");
             }
@@ -872,7 +878,7 @@ namespace SimulatorTest
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 100 + 50);
-                sketch.Loop();
+                Loop();
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
             }
         }
@@ -885,8 +891,8 @@ namespace SimulatorTest
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 50);
-                sketch.Loop();
-                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
+                Loop();
+                Assert.AreEqual(1023 * ((i % 2)), sketch.GetPinValue(13), "D13 should blink on each tick");
             }
         }
 
@@ -1915,7 +1921,7 @@ namespace SimulatorTest
                 time += 1000;
                 sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                sketch.Loop(); sketch.Loop();
+                Loop();
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;
@@ -1938,7 +1944,7 @@ namespace SimulatorTest
                 time += 1000;
                 sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                sketch.Loop(); sketch.Loop();
+                Loop();
 
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off (step: 1, iteration: {0})", i);
                 Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off (step: 1, iteration: {0})", i);
@@ -1961,7 +1967,7 @@ namespace SimulatorTest
                 time += 1000;
                 sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                sketch.Loop(); sketch.Loop();
+                Loop();
 
                 Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 2, iteration: {0})", i);
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 2, iteration: {0})", i);
@@ -1984,7 +1990,7 @@ namespace SimulatorTest
                 time += 1000;
                 sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                sketch.Loop(); sketch.Loop();
+                Loop();
 
                 Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 3, iteration: {0})", i);
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 3, iteration: {0})", i);
@@ -2006,7 +2012,7 @@ namespace SimulatorTest
                 time += 1000;
                 sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                sketch.Loop(); sketch.Loop();
+                Loop();
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;
