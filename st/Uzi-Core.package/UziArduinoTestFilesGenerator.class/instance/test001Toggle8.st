@@ -5,7 +5,7 @@ test001Toggle8
 		program: [:p | p
 			script: #blink8
 			ticking: true
-			delay: 1000
+			delay: 100
 			instructions: [:s | s
 				push: 8;
 				prim: #toggle];

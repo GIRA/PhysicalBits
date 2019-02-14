@@ -5,7 +5,7 @@ test004Toggle11
 		program: [:p | p
 			script: #blink11
 			ticking: true
-			delay: 1000
+			delay: 100
 			instructions: [:s | s
 				push: 11;
 				prim: #toggle];

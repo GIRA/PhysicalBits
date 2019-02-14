@@ -5,10 +5,10 @@ test009PrimitiveYieldTime
 		program: [:p | p
 			script: #blink
 			ticking: true
-			delay: 500
+			delay: 100
 			instructions: [:s | s
 				turnOn: 11;
-				push: 1000;
+				push: 500;
 				prim: #delayMs;
 				turnOff: 11];
 			script: #trigger

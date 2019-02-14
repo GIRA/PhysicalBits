@@ -15,7 +15,7 @@ test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC
 				pause: #main];
 			script: #awake
 			ticking: true
-			delay: 1000
+			delay: 100
 			instructions: [:s | s
 				resume: #main];
 			script: #trigger
