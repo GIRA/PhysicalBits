@@ -17,18 +17,73 @@ namespace SimulatorTest
         private readonly string benchArduinoPort;
 
         private System.IO.Ports.SerialPort mega;
+        private bool _connected;
+        public string Error { get; private set; }
+        public bool isConnected
+        {
+            get
+            {
+                if (_connected)
+                { Error = ""; }
+                return _connected && testConnection();
+            }
+            private set => _connected = value;
+        }
+
+        private bool testConnection()
+        {
+            DateTime start = DateTime.Now;
+
+            bool foundMega = false;
+            while (!foundMega && (DateTime.Now - start).TotalSeconds < 3)
+            {
+                try
+                {
+                    foundMega = mega.ReadLine() == "Ready. Waiting for target time\r";
+                }
+                catch (Exception)
+                {
+
+                }
+            }
+            if (!foundMega)
+            {
+                Error = $"Arduino recorder not found on port {mega.PortName}";
+                _connected = false;
+                return false;
+            }
+            if (!uzi.TestConnection())
+            {
+                Error = $"Uzi not found on port {uzi.PortName}";
+                _connected = false;
+                return false;
+            }
+            return true;
+        }
 
         public TestBench(string UziArduinoPort, string BenchArduinoPort)
         {
+            isConnected = true;
             uzi = new UziConnection(UziArduinoPort, baudRate);
             benchArduinoPort = BenchArduinoPort;
-            uzi.Start();
             mega = new System.IO.Ports.SerialPort(BenchArduinoPort, baudRate);
             mega.Encoding = Encoding.ASCII;
-            mega.Open();
+            mega.ReadTimeout = 5000;
+            try
+            {
+                uzi.Start();
+                mega.Open();
+
+            }
+            catch (System.IO.IOException ex)
+            {
+                isConnected = false;
+                Error = ex.Message;
+            }
+
         }
 
-        public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime,IEnumerable<byte> pins)
+        public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime, IEnumerable<byte> pins)
         {
             //send an empty program
             uzi.runProgram(emptyProgram);
@@ -40,7 +95,7 @@ namespace SimulatorTest
                 line = mega.ReadLine();
             }
             byte pinFlag = getPinFlag(pins);
-            mega.Write(targetTime.ToString()+","+pinFlag.ToString());
+            mega.Write(targetTime.ToString() + "," + pinFlag.ToString());
 
             System.Threading.Thread.Sleep(100);
             uzi.runProgram(program);
@@ -60,9 +115,9 @@ namespace SimulatorTest
                 byte pinData = byte.Parse(parts[1]);
                 for (int j = 0; j < current.pins.Length; j++)
                 {
-                    current.pins[j] = (byte)(pinData & 1) ;
+                    current.pins[j] = (byte)(pinData & 1);
                     pinData = (byte)(pinData >> 1);
-                } 
+                }
                 result.Add(current);
                 line = mega.ReadLine();
             }

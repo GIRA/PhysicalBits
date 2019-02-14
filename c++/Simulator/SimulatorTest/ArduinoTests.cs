@@ -37,11 +37,19 @@ namespace SimulatorTest
             bench.Dispose();
         }
 
+        [TestInitialize]
+        public void TestInit()
+        {
+            if (!bench.isConnected)
+            {
+                Assert.Inconclusive(bench.Error);
+            }
+        }
         [TestCleanup]
-        public void testTearDown()
+        public void TestTearDown()
         {
             // INFO(Richo): Make sure we get disconnected before the next test.
-            Sketch.Current .SetMillis(int.MaxValue);
+            Sketch.Current.SetMillis(int.MaxValue);
             for (int i = 0; i < 1000; i++)
             {
                 Sketch.Current.Loop();

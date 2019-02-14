@@ -27,7 +27,10 @@ namespace SimulatorTest
         internal void Start()
         {
             port = new SerialPort(uziArduinoPort, baudRate);
-
+            port.ReadTimeout = 5000;
+            //INFO(Tera): here we open and close the port just to ensure that the provided configuration is correct and a device is connected.
+            port.Open();
+            port.Close();
         }
 
 
@@ -44,11 +47,35 @@ namespace SimulatorTest
         {
             port.Write(bytes, 0, bytes.Length);
         }
+
+        internal bool TestConnection()
+        {
+            bool valid = true;
+            try
+            {
+                port.Open();
+                performHandshake(0);
+                port.Close();
+            }
+            catch (Exception)
+            {
+
+                valid = false;
+            }
+
+            //wait for the arduino to disconnect, just in case.
+
+            System.Threading.Thread.Sleep(1000);
+            return valid;
+        }
+
         //TODO(Tera): this definitions should be centralized, probably on the sketch
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
         private const byte MINOR_VERSION = 6;
         private const byte KEEP_ALIVE = 7;
+
+        public string PortName { get=>port.PortName;  }
 
         private void performHandshake(int retries = 3)
         {
