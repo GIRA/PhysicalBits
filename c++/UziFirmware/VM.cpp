@@ -100,6 +100,11 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 			coroutine->setError(stack.getError());
 			break;
 		}
+		if (yieldFlag)
+		{
+
+			break;
+		}
 		if (pc > currentScript->getInstructionStop())
 		{
 			bool returnFromScriptCall = framePointer != 0;
@@ -123,11 +128,6 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				coroutine->setNextRun(coroutine->getLastStart() + currentScript->getInterval());
 				break;
 			}
-		}
-		if (yieldFlag)
-		{
-
-			break;
 		}
 	}
 }
