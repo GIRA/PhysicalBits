@@ -17,18 +17,9 @@ namespace SimulatorTest
         private readonly string benchArduinoPort;
 
         private System.IO.Ports.SerialPort mega;
-        private bool _connected;
+
         public string Error { get; private set; }
-        public bool isConnected
-        {
-            get
-            {
-                if (_connected)
-                { Error = ""; }
-                return _connected && testConnection();
-            }
-            private set => _connected = value;
-        }
+        public bool isConnected { get; private set; }
 
         private bool testConnection()
         {
@@ -49,13 +40,13 @@ namespace SimulatorTest
             if (!foundMega)
             {
                 Error = $"Arduino recorder not found on port {mega.PortName}";
-                _connected = false;
+                isConnected = false;
                 return false;
             }
             if (!uzi.TestConnection())
             {
                 Error = $"Uzi not found on port {uzi.PortName}";
-                _connected = false;
+                isConnected = false;
                 return false;
             }
             return true;
@@ -80,6 +71,8 @@ namespace SimulatorTest
                 isConnected = false;
                 Error = ex.Message;
             }
+            isConnected = isConnected && testConnection();
+
 
         }
 
