@@ -63,10 +63,6 @@ void loop() {
         }
      }
      if(capturedData==0){
-      //TODO(Tera): remove this hack, it fixes temporarily some synchronization issues.
-      if(pins==0){
-        continue;
-        }
       
       capturedData=new spec(); 
       lastSpec=capturedData;
