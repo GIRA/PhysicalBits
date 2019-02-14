@@ -350,11 +350,11 @@ namespace SimulatorTest
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
 
-            sketch.SetMillis(1199);
+            sketch.SetMillis(1101);
             sketch.Loop();
-            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
 
-            sketch.SetMillis(1200);
+            sketch.SetMillis(1102);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
