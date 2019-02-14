@@ -101,63 +101,63 @@ namespace SimulatorTest
         public void Test001Toggle8()
         {
             byte[] program = ReadFile(nameof(Test001Toggle8));
-            TestProgram(program, 6100, new byte[] { 8 }, 10);
+            TestProgram(program, 550, new byte[] { 8 }, 10);
         }
         [TestMethod]
         public void Test002Toggle9()
         {
             byte[] program = ReadFile(nameof(Test002Toggle9));
-            TestProgram(program, 6100, new byte[] { 9 }, 10);
+            TestProgram(program, 550, new byte[] { 9 }, 10);
         }
         [TestMethod]
         public void Test003Toggle10()
         {
             byte[] program = ReadFile(nameof(Test003Toggle10));
-            TestProgram(program, 6100, new byte[] { 10 }, 10);
+            TestProgram(program, 550, new byte[] { 10 }, 10);
         }
         [TestMethod]
         public void Test004Toggle11()
         {
             byte[] program = ReadFile(nameof(Test004Toggle11));
-            TestProgram(program, 6100, new byte[] { 11 }, 10);
+            TestProgram(program, 550, new byte[] { 11 }, 10);
         }
         [TestMethod]
         public void Test005Toggle12()
         {
             byte[] program = ReadFile(nameof(Test005Toggle12));
-            TestProgram(program, 6100, new byte[] { 12 }, 10);
+            TestProgram(program, 550, new byte[] { 12 }, 10);
         }
         [TestMethod]
         public void Test006Toggle2000ms()
         {
             byte[] program = ReadFile(nameof(Test006Toggle2000ms));
-            TestProgram(program, 10100, new byte[] { 11 }, 10);
+            TestProgram(program, 4100, new byte[] { 11 }, 10);
         }
         [TestMethod]
         public void Test007Toggle500ms()
         {
             byte[] program = ReadFile(nameof(Test007Toggle500ms));
-            TestProgram(program, 4100, new byte[] { 11 }, 10);
+            TestProgram(program, 2100, new byte[] { 11 }, 10);
         }
         [TestMethod]
         public void Test008Toggle10ms()
         {
             byte[] program = ReadFile(nameof(Test008Toggle10ms));
-            TestProgram(program, 4109, new byte[] { 11 }, 10);
+            TestProgram(program, 1009, new byte[] { 11 }, 10);
         }
 
         [TestMethod]
         public void Test009PrimitiveYieldTime()
         {
             byte[] program = ReadFile(nameof(Test009PrimitiveYieldTime));
-            TestProgram(program, 7099, new byte[] { 11 }, 10);
+            TestProgram(program, 3099, new byte[] { 11 }, 10);
 
         }
         [TestMethod]
         public void Test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
         {
             byte[] program = ReadFile(nameof(Test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC));
-            TestProgram(program, 7099, new byte[] { 11 }, 10);
+            TestProgram(program, 1099, new byte[] { 11 }, 10);
 
         }
         [TestMethod]
@@ -172,14 +172,14 @@ namespace SimulatorTest
         {
 
             byte[] program = ReadFile(nameof(Test012TwoBlinksWithDifferentTickrate));
-            TestProgram(program, 6050, new byte[] { 8, 9 }, 10);
+            TestProgram(program, 2059, new byte[] { 8, 9 }, 10);
         }
         [TestMethod]
         public void Test013CaptureEveryPinWithDifferentTickrate()
         {
 
             byte[] program = ReadFile(nameof(Test013CaptureEveryPinWithDifferentTickrate));
-            TestProgram(program, 6909, new byte[] { 8, 9, 10, 11, 12 }, 10);
+            TestProgram(program, 2059, new byte[] { 8, 9, 10, 11, 12 }, 10);
         }
 
     }
