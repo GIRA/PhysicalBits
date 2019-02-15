@@ -4,7 +4,7 @@ summary: req
 	res := super summary: req.
 	self protocol currentProgram
 		ifNotNil: [:program |
-			res at: #id put: program node id;
+			res at: #id put: program id;
 				at: #src put: program sourceCode;
 				at: #ast put: (UziJSON createJSONObject: program node);				
 				at: #bytecodes put: (Uzi encode: program) asArray;
