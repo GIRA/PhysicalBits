@@ -45,18 +45,24 @@ namespace SimulatorTest
                 Assert.Inconclusive(bench.Error);
             }
         }
+
         [TestCleanup]
         public void TestTearDown()
         {
-            // INFO(Richo): Make sure we get disconnected before the next test.
-            Sketch.Current.SetMillis(int.MaxValue);
-            for (int i = 0; i < 1000; i++)
+            // TODO(Richo): The following code was copied from SketchTest!
+            // INFO(Richo): Make sure we get disconnected before the next test
+            var sketch = Sketch.Current;
+            int steps = 1000;
+            int interval = 10;
+            int start = int.MaxValue - steps * interval;
+            for (int i = 0; i < steps; i++)
             {
-                Sketch.Current.Loop();
+                sketch.SetMillis(start + (i * interval));
+                sketch.Loop();
             }
+
             System.Threading.Thread.Sleep(1000);
         }
-
 
         private double calculateSlope(IEnumerable<int> times, IEnumerable<int> deviations)
         {

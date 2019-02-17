@@ -35,6 +35,8 @@ private:
 
 	uint8 reporting = 0;
 	uint32 lastTimeReport = 0;
+
+	int8 keepAliveCounter = 0;
 	uint32 lastTimeKeepAlive = 0;
 
 	uint8 profiling = 0;

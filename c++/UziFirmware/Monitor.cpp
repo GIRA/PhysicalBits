@@ -36,7 +36,8 @@
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
 #define REPORT_INTERVAL                                   100
-#define KEEP_ALIVE_INTERVAL                              1000
+#define KEEP_ALIVE_INTERVAL                                10
+#define KEEP_ALIVE_COUNTER								  100
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -220,11 +221,20 @@ void Monitor::sendCoroutineState(Script* script)
 
 void Monitor::checkKeepAlive()
 {
-	if (state == CONNECTED && 
-		millis() - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
+	if (state != CONNECTED) return;
+	int32 now = millis();
+	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
 	{
-		state = DISCONNECTED;
-		sendError(DISCONNECT_ERROR);
+		if (keepAliveCounter <= 0) 
+		{
+			state = DISCONNECTED;
+			sendError(DISCONNECT_ERROR);
+		}
+		else 
+		{
+			keepAliveCounter--;
+		}
+		lastTimeKeepAlive = now;
 	}
 }
 
@@ -512,7 +522,7 @@ void Monitor::executeSaveProgram(Program** program, GPIO* io)
 
 void Monitor::executeKeepAlive()
 {
-	lastTimeKeepAlive = millis();
+	keepAliveCounter = KEEP_ALIVE_COUNTER;
 }
 
 void Monitor::executeProfile()

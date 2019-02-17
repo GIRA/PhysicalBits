@@ -66,10 +66,13 @@ namespace SimulatorTest
         {
             stats[TestContext.TestName] = sketch.Stats.ToArray();
 
-            // INFO(Richo): Make sure we get disconnected before the next test.
-            sketch.SetMillis(int.MaxValue);
-            for (int i = 0; i < 1000; i++)
+            // INFO(Richo): Make sure we get disconnected before the next test
+            int steps = 1000;
+            int interval = 10;
+            int start = int.MaxValue - steps * interval;
+            for (int i = 0; i < steps; i++)
             {
+                sketch.SetMillis(start + (i * interval));
                 sketch.Loop();
             }
         }
