@@ -1,7 +1,5 @@
 #include "VM.h"
 
-int32 now;
-
 Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 {
 	if (program != currentProgram) 
@@ -12,7 +10,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 
 	int16 count = program->getScriptCount();
 
-	now = millis();
+	lastTickStart = millis();
 	for (int16 i = 0; i < count; i++)
 	{
 		Script* script = program->getScript(i);
@@ -23,7 +21,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 			{
 				return OUT_OF_MEMORY;
 			}
-			if (now >= coroutine->getNextRun())
+			if (lastTickStart >= coroutine->getNextRun())
 			{
 				executeCoroutine(coroutine, io, monitor);
 			}
@@ -41,7 +39,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		INFO(Richo): Even though we won't execute this coroutine on this tick, I still
 		adjust the last start so that when the VM continues the tasks are all in sync.
 		*/
-		coroutine->setLastStart(now);
+		coroutine->setLastStart(lastTickStart);
 		return;
 	}
 	if (currentCoroutine != coroutine)
@@ -71,7 +69,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		stack.push(0); // Return value slot (default: 0)
 		stack.push(uint32_to_float((uint32)-1 << 16 | pc));
 		
-		coroutine->setLastStart(now);
+		coroutine->setLastStart(lastTickStart);
 	}
 	bool yieldFlag = false;
 	while (true)
@@ -86,7 +84,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 				pc--; // TODO(Richo): I don't like this decr 
 				//this call is to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
 				saveCurrentCoroutine();
-				coroutine->setNextRun(now);
+				coroutine->setNextRun(lastTickStart);
 				break;
 			}
 			this->haltedScript = NULL;

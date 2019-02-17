@@ -21,6 +21,8 @@ public:
 	void reset();
 private:
 
+	int32 lastTickStart;
+
 	int16 framePointer = 0;
 	int16 pc = 0;
 	StackArray stack;
