@@ -50,17 +50,24 @@ namespace SimulatorTest
         public void TestTearDown()
         {
             // TODO(Richo): The following code was copied from SketchTest!
-            // INFO(Richo): Make sure we get disconnected before the next test
-            var sketch = Sketch.Current;
-            int steps = 1000;
-            int interval = 10;
-            int start = int.MaxValue - steps * interval;
-            for (int i = 0; i < steps; i++)
             {
-                sketch.SetMillis(start + (i * interval));
-                sketch.Loop();
+                var sketch = Sketch.Current;
+
+                // INFO(Richo): Make sure we get disconnected before the next test
+                int steps = 1000;
+                int interval = 10;
+                int start = int.MaxValue - steps * interval;
+                for (int i = 0; i < steps; i++)
+                {
+                    sketch.SetMillis(start + (i * interval));
+                    sketch.Loop();
+                }
             }
 
+            /*
+             * HACK(Richo): This sleep is necessary to give the arduino time to 
+             * disconnect before the next test.
+             */
             System.Threading.Thread.Sleep(1000);
         }
 
