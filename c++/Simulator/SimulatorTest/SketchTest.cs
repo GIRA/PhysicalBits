@@ -23,6 +23,15 @@ namespace SimulatorTest
 
         public TestContext TestContext { get; set; }
 
+        private void IncrementMillisAndExec(int increment, int ticksPerMs = 10)
+        {
+            int millis = sketch.GetMillis();
+            for (int i = 0; i < increment; i++)
+            {
+                sketch.SetMillis(millis + i);
+                Loop(ticksPerMs);
+            }
+        }
 
         private void Loop(int n = 10)
         {
@@ -504,7 +513,7 @@ namespace SimulatorTest
                 int value = on ? 1023 : 0;
                 string msg = on ? "on" : "off";
                 Assert.AreEqual(value, sketch.GetPinValue(11), "D11 should be {1} (iteration: {0})", i, msg);
-
+                
                 sketch.SetMillis(i * 100 + 75);
                 Loop();
                 sketch.SetMillis(i * 100 + 76);
@@ -1909,19 +1918,6 @@ namespace SimulatorTest
                 int value = on ? 1023 : 0;
                 string msg = on ? "on" : "off";
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (iteration: {0})", i, msg);
-            }
-        }
-
-        private void IncrementMillisAndExec(int increment, int executionsPerMs = 10)
-        {
-            int millis = sketch.GetMillis();
-            for (int i = 0; i < increment; i++)
-            {
-                sketch.SetMillis(millis + i);
-                for (int j = 0; j < executionsPerMs; j++)
-                {
-                    sketch.Loop();
-                }
             }
         }
 
