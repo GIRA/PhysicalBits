@@ -30,7 +30,6 @@ private:
 	Coroutine* currentCoroutine = 0;
 	Script* currentScript = 0;
 
-	Instruction nextInstruction(void);
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
 	void saveCurrentCoroutine();

@@ -76,18 +76,18 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	{
 		if (pc <= currentScript->getInstructionStop())
 		{
-			Instruction next = nextInstruction();
+			Instruction next = currentScript->getInstructionAt(pc);
 			if (getBreakpoint(&next) && this->haltedScript == NULL)
 			{
 				this->halted = true;
 				this->haltedScript = coroutine->getScript();
-				pc--; // TODO(Richo): I don't like this decr 
 				//this call is to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
 				saveCurrentCoroutine();
 				coroutine->setNextRun(lastTickStart);
 				break;
 			}
 			this->haltedScript = NULL;
+			pc++;
 			executeInstruction(next, io, monitor, yieldFlag);
 		}
 		if (coroutine->hasError()) break;
@@ -133,11 +133,6 @@ void VM::saveCurrentCoroutine()
 	currentCoroutine->setActiveScript(currentScript);
 	currentCoroutine->setFramePointer(framePointer);
 	currentCoroutine->setPC(pc);
-}
-
-Instruction VM::nextInstruction(void)
-{
-	return currentScript->getInstructionAt(pc++);
 }
 
 void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor, bool& yieldFlag)
