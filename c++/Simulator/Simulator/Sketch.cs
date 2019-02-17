@@ -178,6 +178,11 @@ namespace Simulator
             }
         }
 
+        public int GetMillis()
+        {
+            return DLL.Sketch_getMillis();
+        }
+
         public void SetMillis(int millis)
         {
             DLL.Sketch_setMillis(millis);
@@ -209,6 +214,9 @@ namespace Simulator
 
             [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
             public static extern int Serial_readInto(byte[] buffer, int len);
+
+            [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int Sketch_getMillis();
 
             [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
             public static extern void Sketch_setMillis(int millis);

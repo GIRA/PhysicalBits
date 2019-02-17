@@ -1912,19 +1912,29 @@ namespace SimulatorTest
             }
         }
 
+        private void IncrementMillisAndExec(int increment, int executionsPerMs = 10)
+        {
+            int millis = sketch.GetMillis();
+            for (int i = 0; i < increment; i++)
+            {
+                sketch.SetMillis(millis + i);
+                for (int j = 0; j < executionsPerMs; j++)
+                {
+                    sketch.Loop();
+                }
+            }
+        }
+
         [TestMethod]
         public void Test089DebuggerBreakpointHaltsAllScripts()
         {
             sketch.WriteSerial(ReadFile(nameof(Test089DebuggerBreakpointHaltsAllScripts)));
 
             // NOTE(Richo): First, we verify that the program does what it's supposed to do.
-            int time = 0;
             for (int i = 0; i < 100; i++)
             {
-                time += 1000;
-                sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                Loop();
+                IncrementMillisAndExec(1000);
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;
@@ -1937,17 +1947,13 @@ namespace SimulatorTest
             sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 0 });
 
             // NOTE(Richo): The VM must halt and the pins must be left untouched.
-            time += 1000;
-            sketch.SetMillis(time);
             sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-            sketch.Loop(); sketch.Loop();
+            IncrementMillisAndExec(1000);
 
             for (int i = 0; i < 100; i++)
             {
-                time += 1000;
-                sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                Loop();
+                IncrementMillisAndExec(1000);
 
                 Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off (step: 1, iteration: {0})", i);
                 Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off (step: 1, iteration: {0})", i);
@@ -1960,17 +1966,13 @@ namespace SimulatorTest
              * NOTE(Richo): The VM must continue one loop and halt again at the same place as before.
              * So the pins are turned on and they must remain on until continue is sent again.
              */
-            time += 1000;
-            sketch.SetMillis(time);
             sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-            sketch.Loop(); sketch.Loop();
+            IncrementMillisAndExec(1000);
 
             for (int i = 0; i < 100; i++)
             {
-                time += 1000;
-                sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                Loop();
+                IncrementMillisAndExec(1000);
 
                 Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 2, iteration: {0})", i);
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 2, iteration: {0})", i);
@@ -1983,17 +1985,13 @@ namespace SimulatorTest
              * NOTE(Richo): Clearing the breakpoints should have no effect in the VM state. The program
              * is still halted and the pins must remain on.
              */
-            time += 1000;
-            sketch.SetMillis(time);
             sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-            sketch.Loop(); sketch.Loop();
+            IncrementMillisAndExec(1000);
 
             for (int i = 0; i < 100; i++)
             {
-                time += 1000;
-                sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                Loop();
+                IncrementMillisAndExec(1000);
 
                 Assert.AreEqual(1023, sketch.GetPinValue(11), "D11 should be on (step: 3, iteration: {0})", i);
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 3, iteration: {0})", i);
@@ -2005,17 +2003,13 @@ namespace SimulatorTest
             /*
              * NOTE(Richo): The VM can continue execution without interruptions.
              */
-            time += 1000;
-            sketch.SetMillis(time);
             sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-            sketch.Loop(); sketch.Loop();
+            IncrementMillisAndExec(1000);
 
             for (int i = 0; i < 100; i++)
             {
-                time += 1000;
-                sketch.SetMillis(time);
                 sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
-                Loop();
+                IncrementMillisAndExec(1000);
 
                 bool on = i % 2 == 0;
                 int value = on ? 1023 : 0;

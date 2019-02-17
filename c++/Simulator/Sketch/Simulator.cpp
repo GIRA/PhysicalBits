@@ -71,6 +71,11 @@ EXTERN void Serial_write(char* str, size_t len)
 	}
 }
 
+EXTERN long Sketch_getMillis(void)
+{
+	return millis();
+}
+
 EXTERN void Sketch_setMillis(long millis)
 {
 	setMillis(millis);
