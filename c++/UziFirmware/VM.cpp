@@ -15,7 +15,6 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 	now = millis();
 	for (int16 i = 0; i < count; i++)
 	{
-		if (this->halted) return NO_ERROR; // TODO(Richo): Add a result HALTED or something...
 		Script* script = program->getScript(i);
 		if (script->isStepping())
 		{
@@ -35,8 +34,10 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 
 void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 {
-	if (this->haltedScript != NULL && this->haltedScript != coroutine->getScript())
+	if (this->halted
+		|| (this->haltedScript != NULL && this->haltedScript != coroutine->getScript()))
 	{
+		coroutine->setLastStart(now);
 		return;
 	}
 	if (currentCoroutine != coroutine)
