@@ -37,6 +37,10 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	if (this->halted
 		|| (this->haltedScript != NULL && this->haltedScript != coroutine->getScript()))
 	{
+		/*
+		INFO(Richo): Even though we won't execute this coroutine on this tick, I still
+		adjust the last start so that when the VM continues the tasks are all in sync.
+		*/
 		coroutine->setLastStart(now);
 		return;
 	}
