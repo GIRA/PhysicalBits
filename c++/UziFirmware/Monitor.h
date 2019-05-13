@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "Arduino.h"
+#include "UziSerial.h"
 #include "SerialReader.h"
 #include "VM.h"
 #include "Program.h"
@@ -18,7 +19,13 @@ enum MonitorState
 
 class Monitor 
 {
-public: 
+public:
+	Monitor(UziSerial* s) 
+	{ 
+		serial = s; 
+		stream.init(serial);
+	}
+
 	void loadInstalledProgram(Program** program);
 	void initSerial();
 	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
@@ -28,6 +35,7 @@ public:
 	void serialWrite(uint8 value);
 
 private:
+	UziSerial* serial;
 	SerialReader stream;
 
 	uint8 state = DISCONNECTED;

@@ -57,13 +57,13 @@ void Monitor::loadInstalledProgram(Program** program)
 
 void Monitor::initSerial()
 {
-	Serial.begin(57600);
+	serial->begin(57600);
 }
 
 
 void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
-	if (!Serial.available()) return;
+	if (!serial->available()) return;
 	
 	if (state == DISCONNECTED)
 	{
@@ -92,7 +92,7 @@ void Monitor::connectionRequest()
 	if (timeout || in != MINOR_VERSION) return;
 
 	handshake = millis() % 256;
-	Serial.write(handshake);
+	serial->write(handshake);
 	state = CONNECTION_REQUESTED;
 }
 
@@ -107,7 +107,7 @@ void Monitor::acceptConnection()
 
 	state = CONNECTED; 
 	executeKeepAlive();
-	Serial.write(expected);
+	serial->write(expected);
 }
 
 void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
@@ -123,9 +123,9 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 
 void Monitor::sendError(uint8 coroutineIndex, uint8 errorCode)
 {
-	Serial.write(MSG_OUT_ERROR);
-	Serial.write(coroutineIndex);
-	Serial.write(errorCode);
+	serial->write(MSG_OUT_ERROR);
+	serial->write(coroutineIndex);
+	serial->write(errorCode);
 }
 
 void Monitor::sendError(uint8 errorCode)
@@ -143,13 +143,13 @@ void Monitor::sendProfile()
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		Serial.write(MSG_OUT_PROFILE);
+		serial->write(MSG_OUT_PROFILE);
 
 		uint16 val = tickCount;
 		uint8 val1 = val >> 7;  // MSB
 		uint8 val2 = val & 127; // LSB
-		Serial.write(val1);
-		Serial.write(val2);
+		serial->write(val1);
+		serial->write(val2);
 
 		tickCount = 0;
 		lastTimeProfile = now;
@@ -197,24 +197,24 @@ void Monitor::sendCoroutineState(Script* script)
 			sendError(scriptIndex, coroutine->getError());
 			coroutine->reset();
 		}
-		Serial.write(MSG_OUT_COROUTINE_STATE);
-		Serial.write(scriptIndex);
+		serial->write(MSG_OUT_COROUTINE_STATE);
+		serial->write(scriptIndex);
 		int16 pc = coroutine->getPC();
 		uint8 val1 = pc >> 8 & 0xFF; // MSB
 		uint8 val2 = pc & 0xFF;	// LSB
-		Serial.write(val1);
-		Serial.write(val2);
+		serial->write(val1);
+		serial->write(val2);
 		uint8 fp = coroutine->getFramePointer();
-		Serial.write(fp);
+		serial->write(fp);
 		uint16 stackSize = coroutine->getStackSize();
-		Serial.write(stackSize);
+		serial->write(stackSize);
 		for (uint16 j = 0; j < stackSize; j++)
 		{
 			uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
-			Serial.write((value >> 24) & 0xFF);
-			Serial.write((value >> 16) & 0xFF);
-			Serial.write((value >> 8) & 0xFF);
-			Serial.write(value & 0xFF);
+			serial->write((value >> 24) & 0xFF);
+			serial->write((value >> 16) & 0xFF);
+			serial->write((value >> 8) & 0xFF);
+			serial->write(value & 0xFF);
 		}
 	}
 }
@@ -251,15 +251,15 @@ void Monitor::sendPinValues(GPIO* io)
 	}
 	if (count == 0) return;
 
-	Serial.write(MSG_OUT_PIN_VALUE);
+	serial->write(MSG_OUT_PIN_VALUE);
 
 	uint32 time = millis();
-	Serial.write((time >> 24) & 0xFF);
-	Serial.write((time >> 16) & 0xFF);
-	Serial.write((time >> 8) & 0xFF);
-	Serial.write(time & 0xFF);
+	serial->write((time >> 24) & 0xFF);
+	serial->write((time >> 16) & 0xFF);
+	serial->write((time >> 8) & 0xFF);
+	serial->write(time & 0xFF);
 
-	Serial.write(count);
+	serial->write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
 		uint8 pin = PIN_NUMBER(i);
@@ -270,8 +270,8 @@ void Monitor::sendPinValues(GPIO* io)
 			uint16 val = (uint16)(io->getValue(pin) * 1023);
 			uint8 val1 = (pin << 2) | (val >> 8); 	// MSB
 			uint8 val2 = val & 0xFF;	// LSB
-			Serial.write(val1);
-			Serial.write(val2);
+			serial->write(val1);
+			serial->write(val2);
 		}
 	}
 }
@@ -288,34 +288,34 @@ void Monitor::sendGlobalValues(Program* program)
 	}
 	if (count == 0) return;
 
-	Serial.write(MSG_OUT_GLOBAL_VALUE);
+	serial->write(MSG_OUT_GLOBAL_VALUE);
 	
 	uint32 time = millis();
-	Serial.write((time >> 24) & 0xFF);
-	Serial.write((time >> 16) & 0xFF);
-	Serial.write((time >> 8) & 0xFF);
-	Serial.write(time & 0xFF);
+	serial->write((time >> 24) & 0xFF);
+	serial->write((time >> 16) & 0xFF);
+	serial->write((time >> 8) & 0xFF);
+	serial->write(time & 0xFF);
 
-	Serial.write(count);
+	serial->write(count);
 	for (uint8 i = 0; i < program->getGlobalCount(); i++)
 	{
 		if (program->getReport(i))
 		{
-			Serial.write(i);
+			serial->write(i);
 			uint32 value = float_to_uint32(program->getGlobal(i));
-			Serial.write((value >> 24) & 0xFF);
-			Serial.write((value >> 16) & 0xFF);
-			Serial.write((value >> 8) & 0xFF);
-			Serial.write(value & 0xFF);
+			serial->write((value >> 24) & 0xFF);
+			serial->write((value >> 16) & 0xFF);
+			serial->write((value >> 8) & 0xFF);
+			serial->write(value & 0xFF);
 		}
 	}
 }
 
 void Monitor::sendTickingScripts(Program* program)
 {
-	Serial.write(MSG_OUT_TICKING_SCRIPTS);
+	serial->write(MSG_OUT_TICKING_SCRIPTS);
 	uint8 scriptCount = program->getScriptCount();
-	Serial.write(scriptCount);
+	serial->write(scriptCount);
 	uint8 result = 0;
 	int8 bit = -1;
 	for (int16 i = 0; i < scriptCount; i++)
@@ -325,14 +325,14 @@ void Monitor::sendTickingScripts(Program* program)
 		result |= isStepping << ++bit;
 		if (bit == 7)
 		{
-			Serial.write(result);
+			serial->write(result);
 			bit = -1;
 			result = 0;
 		}
 	}
 	if (bit != -1)
 	{
-		Serial.write(result);
+		serial->write(result);
 	}
 }
 
@@ -350,20 +350,20 @@ int freeRam()
 
 void Monitor::sendFreeRAM()
 {
-	Serial.write(MSG_OUT_FREE_RAM);
+	serial->write(MSG_OUT_FREE_RAM);
 	{
 		uint32 value = freeRam();
-		Serial.write((value >> 24) & 0xFF);
-		Serial.write((value >> 16) & 0xFF);
-		Serial.write((value >> 8) & 0xFF);
-		Serial.write(value & 0xFF);
+		serial->write((value >> 24) & 0xFF);
+		serial->write((value >> 16) & 0xFF);
+		serial->write((value >> 8) & 0xFF);
+		serial->write(value & 0xFF);
 	}
 	{
 		uint32 value = uzi_available();
-		Serial.write((value >> 24) & 0xFF);
-		Serial.write((value >> 16) & 0xFF);
-		Serial.write((value >> 8) & 0xFF);
-		Serial.write(value & 0xFF);
+		serial->write((value >> 24) & 0xFF);
+		serial->write((value >> 16) & 0xFF);
+		serial->write((value >> 8) & 0xFF);
+		serial->write(value & 0xFF);
 	}
 }
 
@@ -642,7 +642,7 @@ void Monitor::serialWrite(uint8 value)
 {
 	if (state == CONNECTED) 
 	{
-		Serial.write(MSG_OUT_SERIAL_TUNNEL);
+		serial->write(MSG_OUT_SERIAL_TUNNEL);
 	}
-	Serial.write(value);
+	serial->write(value);
 }

@@ -3,11 +3,13 @@
 #include "VM.h"
 #include "GPIO.h"
 #include "Memory.h"
+#include "UziSerial.h"
 
-Program * program;
-Monitor monitor;
+UziSerial serial;
+Monitor monitor(&serial);
 VM vm;
 GPIO io;
+Program * program;
 
 void setup()
 {

@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{D5E5E4E2-AF59-43F8-A603-51B3B3EDCFE9}</ProjectGuid>
     <RootNamespace>Sketch</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
     <ProjectName>Sketch</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -131,6 +131,7 @@
     <ClCompile Include="..\..\UziFirmware\SerialReader.cpp" />
     <ClCompile Include="..\..\UziFirmware\StackArray.cpp" />
     <ClCompile Include="..\..\UziFirmware\VM.cpp" />
+    <ClCompile Include="..\..\UziFirmware\UziSerial.cpp" />
     <ClCompile Include="EEPROM.cpp" />
     <ClCompile Include="Arduino.cpp" />
     <ClCompile Include="Servo.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="..\..\UziFirmware\StackArray.h" />
     <ClInclude Include="..\..\UziFirmware\types.h" />
     <ClInclude Include="..\..\UziFirmware\VM.h" />
+    <ClInclude Include="..\..\UziFirmware\UziSerial.h" />
     <ClInclude Include="EEPROM.h" />
     <ClInclude Include="Arduino.h" />
     <ClInclude Include="Servo.h" />
