@@ -6,14 +6,14 @@
 #include "UziSerial.h"
 
 UziSerial serial;
-Monitor monitor(&serial);
+Monitor monitor;
 VM vm;
 GPIO io;
 Program * program;
 
 void setup()
 {
-	monitor.initSerial();
+	monitor.initSerial(&serial);
 	monitor.loadInstalledProgram(&program);
 }
 

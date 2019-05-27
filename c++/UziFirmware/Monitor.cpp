@@ -55,9 +55,11 @@ void Monitor::loadInstalledProgram(Program** program)
 	}
 }
 
-void Monitor::initSerial()
+void Monitor::initSerial(UziSerial* s)
 {
-	serial->begin(57600);
+	serial = s;
+	serial->begin();
+	stream.init(serial);
 }
 
 

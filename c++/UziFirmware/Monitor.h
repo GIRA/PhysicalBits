@@ -20,14 +20,8 @@ enum MonitorState
 class Monitor 
 {
 public:
-	Monitor(UziSerial* s) 
-	{ 
-		serial = s; 
-		stream.init(serial);
-	}
-
 	void loadInstalledProgram(Program** program);
-	void initSerial();
+	void initSerial(UziSerial*);
 	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
 	void sendOutgoingMessages(Program* program, GPIO* io, VM* vm);
 	void sendError(uint8 errorCode);

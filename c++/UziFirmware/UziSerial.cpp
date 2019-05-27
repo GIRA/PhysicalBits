@@ -1,8 +1,8 @@
 #include "UziSerial.h"
 
-void UziSerial::begin(long baudrate) 
+void UziSerial::begin() 
 {
-	Serial.begin(baudrate);
+	Serial.begin(baudRate);
 }
 
 int UziSerial::available() 

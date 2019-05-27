@@ -4,9 +4,18 @@
 class UziSerial
 {
 public:
-	void begin(long);
+	UziSerial() {}
+	UziSerial(long baudRate) 
+	{ 
+		this->baudRate = baudRate; 
+	}
+
+	void begin();
 	int available();
 	char read();
 	void write(unsigned char);
+
+private:
+	long baudRate = 57600;
 };
 
