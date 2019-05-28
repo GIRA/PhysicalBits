@@ -12,7 +12,7 @@ $(document).ready(function () {
               componentName: 'testComponent',
               componentState: { label: 'A', id: '#connectionPanel' },
               title: 'Connection',
-              width: 20,
+              width: 15,
           },{
               type: 'column',
               content:[{
