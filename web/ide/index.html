@@ -38,6 +38,7 @@
         background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 30%, rgba(35,35,35,1) 100%);
         color: white;
       }
+
       h2 span {
         padding-right: 10px;
       }
@@ -55,53 +56,28 @@
     </div>
     <div style="display: none;">
       <div id="connectionPanel">
-        <!--
-          <div class="btn-toolbar" role="toolbar" aria-label="Connection buttons">
-            <span style="display:inline-block;">Arduino port:</span>
-            <div style="display:inline-block;" class="dropdown">
-              <button id="connectionPanel_port" class="btn btn-primary btn-sm dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Automatic
-              <span class="caret"></span>
-              </button>
-              <ul id="connectionPanel_portlist" class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a href="#">COM3</a></li>
-                <li><a href="#">COM4</a></li>
-                <li><a href="#">COM5</a></li>
-                <li><a href="#">COM6</a></li>
-                <li><a href="#">COM7</a></li>
-                <li><a href="#">COM8</a></li>
-                <li><a href="#">COM9</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">127.0.0.1:4242</a></li>
-                <li><a href="#">Automatic</a></li>
-                <li><a id="connectionPanel_otherPort" href="#">Other...</a></li>
-              </ul>
-            </div>
-            <div class="btn-group btn-group-justified" role="group" aria-label="...">
-              <div class="btn-group" role="group">
-                <button id="connectionPanel_connect" type="button" class="btn btn-success btn-sm">Connect</button>
-              </div>
-              <div class="btn-group" role="group">
-                <button id="connectionPanel_disconnect" type="button" class="btn btn-danger btn-sm" disabled="disabled">Disconnect</button>
-              </div>
-            </div>
-          </div>
-        -->
         <form class="form-inline">
-          <div class="form-group my-2 mr-2">
-            <label class="ml-2 mr-2" for="port-dropdown">Port:</label>
-            <select class="form-control form-control-sm " id="port-dropdown">
-              <option selected>Automatic</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
+          <div class="form-group my-1 mr-2">
+            <label class="mr-2" for="port-dropdown">Port:</label>
+            <select class="custom-select custom-select-sm " id="port-dropdown">
+              <option value="COM3">COM3</option>
+              <option value="COM4">COM4</option>
+              <option value="COM5">COM5</option>
+              <option value="COM6">COM6</option>
+              <option value="COM7">COM7</option>
+              <option value="COM8">COM8</option>
+              <option value="COM9">COM9</option>
+              <option disabled id="port-dropdown-divider">-------------</option>
+              <option value="127.0.0.1:4242">127.0.0.1:4242</option>
+              <option value="automatic" selected>Automatic</option>
+              <option value="other">Other...</option>
             </select>
           </div>
-          <div class="btn-group my-2">
+          <div class="btn-group my-1">
             <button id="connectionPanel_connect" type="button" class="btn btn-success btn-sm">Connect</button>
             <button id="connectionPanel_disconnect" type="button" class="btn btn-danger btn-sm" disabled="disabled">Disconnect</button>
           </div>
         </form>
-
       </div>
 
       <div id="test2"></div>

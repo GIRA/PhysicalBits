@@ -48,4 +48,24 @@ $(document).ready(function () {
   layout.on('stateChanged', updateSize);
   layout.init();
   updateSize();
+
+  let selectedPort = "automatic";
+  $("#port-dropdown").change(function(){
+    var value = $(this).val();
+    if (value == "other") {
+      let selection = prompt("Port name:", selectedPort);
+      if (selection != null) {
+        selectedPort = selection;
+      }
+      if ($("#port-dropdown option[value='" + selectedPort + "']").length <= 0) {
+        $("<option>")
+          .text(selectedPort)
+          .attr("value", selectedPort)
+          .insertBefore("#port-dropdown-divider");
+      }
+    } else {
+      selectedPort = value;
+    }
+    $(this).val(selectedPort);
+  });
 });
