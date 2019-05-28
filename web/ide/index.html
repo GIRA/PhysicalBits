@@ -16,16 +16,16 @@
   			font-family: 'ChargerRegular';
   			font-weight: normal;
   			font-style: normal;
-        margin: 5px 5px;
+        padding: 5px 5px;
   		}
 
   		#top-bar {
   			padding: 0px 10px;
+        height: 50px;
   		}
 
   		#connectionPanel, #editorButtons {
   			padding: 10px;
-  			font-size: large;
   		}
 
       html, body, .fullscreen {
@@ -55,10 +55,11 @@
     </div>
     <div style="display: none;">
       <div id="connectionPanel">
-          <div>
+        <!--
+          <div class="btn-toolbar" role="toolbar" aria-label="Connection buttons">
             <span style="display:inline-block;">Arduino port:</span>
             <div style="display:inline-block;" class="dropdown">
-              <button id="connectionPanel_port" class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Automatic
+              <button id="connectionPanel_port" class="btn btn-primary btn-sm dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Automatic
               <span class="caret"></span>
               </button>
               <ul id="connectionPanel_portlist" class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -75,25 +76,38 @@
                 <li><a id="connectionPanel_otherPort" href="#">Other...</a></li>
               </ul>
             </div>
-          </div>
-          <p>
             <div class="btn-group btn-group-justified" role="group" aria-label="...">
               <div class="btn-group" role="group">
-                <button id="connectionPanel_connect" type="button" class="btn btn-success">Connect</button>
+                <button id="connectionPanel_connect" type="button" class="btn btn-success btn-sm">Connect</button>
               </div>
               <div class="btn-group" role="group">
-                <button id="connectionPanel_disconnect" type="button" class="btn btn-danger" disabled="disabled">Disconnect</button>
+                <button id="connectionPanel_disconnect" type="button" class="btn btn-danger btn-sm" disabled="disabled">Disconnect</button>
               </div>
             </div>
-          </p>
-        </div>
+          </div>
+        -->
+        <form class="form-inline">
+          <div class="form-group">
+            <label class="mr-2" for="port-dropdown">Arduino port:</label>
+            <select class="form-control form-control-sm " id="port-dropdown">
+              <option selected>Automatic</option>
+              <option value="1">One</option>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <button id="connectionPanel_connect" type="button" class="btn btn-success btn-sm">Connect</button>
+            <button id="connectionPanel_disconnect" type="button" class="btn btn-danger btn-sm" disabled="disabled">Disconnect</button>
+          </div>
+        </form>
+
+      </div>
 
       <div id="test2"></div>
       <div id="test3"></div>
     </div>
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+
     <script src="../jquery/jquery-1.12.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
