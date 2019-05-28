@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Ricardo Moran">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  	<link rel="stylesheet" media="screen" href="../openfontlibrary/charger.css" rel="stylesheet" type="text/css"/>
+  	<style type="text/css" media="screen">
+  		h1, h2 {
+  			font-family: 'ChargerRegular';
+  			font-weight: normal;
+  			font-style: normal;
+        margin: 5px 5px;
+  		}
+
+  		#top-bar {
+  			padding: 0px 10px;
+  		}
+
+  		#connectionPanel, #editorButtons {
+  			padding: 10px;
+  			font-size: large;
+  		}
+
+      html, body, .fullscreen {
+        width: 100%;
+        height: 100%;
+      }
+
+      body {
+        background: rgb(0,0,0);
+        background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 30%, rgba(35,35,35,1) 100%);
+        color: white;
+      }
+      h2 span {
+        padding-right: 10px;
+      }
+  	</style>
+    <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
+    <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" />
+  </head>
+  <body>
+    <div id="container" class="fullscreen">
+      <div id="top-bar">
+        <h2>
+          <span>UziScript</span><span>IDE</span>
+        </h2>
+      </div>
+    </div>
+    <div style="display: none;">
+      <div id="connectionPanel">
+          <div>
+            <span style="display:inline-block;">Arduino port:</span>
+            <div style="display:inline-block;" class="dropdown">
+              <button id="connectionPanel_port" class="btn btn-primary dropdown-toggle " type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Automatic
+              <span class="caret"></span>
+              </button>
+              <ul id="connectionPanel_portlist" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a href="#">COM3</a></li>
+                <li><a href="#">COM4</a></li>
+                <li><a href="#">COM5</a></li>
+                <li><a href="#">COM6</a></li>
+                <li><a href="#">COM7</a></li>
+                <li><a href="#">COM8</a></li>
+                <li><a href="#">COM9</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="#">127.0.0.1:4242</a></li>
+                <li><a href="#">Automatic</a></li>
+                <li><a id="connectionPanel_otherPort" href="#">Other...</a></li>
+              </ul>
+            </div>
+          </div>
+          <p>
+            <div class="btn-group btn-group-justified" role="group" aria-label="...">
+              <div class="btn-group" role="group">
+                <button id="connectionPanel_connect" type="button" class="btn btn-success">Connect</button>
+              </div>
+              <div class="btn-group" role="group">
+                <button id="connectionPanel_disconnect" type="button" class="btn btn-danger" disabled="disabled">Disconnect</button>
+              </div>
+            </div>
+          </p>
+        </div>
+
+      <div id="test2"></div>
+      <div id="test3"></div>
+    </div>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="../jquery/jquery-1.12.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.js"></script>
+
+    <script type="text/javascript" src="test.js"></script>
+  </body>
+</html>
