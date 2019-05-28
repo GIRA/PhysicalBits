@@ -43,6 +43,10 @@
       h2 span {
         padding-right: 10px;
       }
+
+      body .lm_content{
+        overflow: auto;
+      }
   	</style>
     <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
     <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" />
@@ -56,7 +60,7 @@
       </div>
     </div>
     <div style="display: none;">
-      <div id="connection-panel">
+      <div id="connection-panel" class="container">
         <form class="form-inline">
           <!--<label class="mr-2" for="port-dropdown">Port:</label>-->
           <select class="custom-select custom-select-sm mr-1 my-1" id="port-dropdown">
@@ -74,8 +78,86 @@
           </select>
           <button id="connect-button" type="button" class="btn btn-success btn-sm my-1">Connect</button>
           <button id="disconnect-button" type="button" class="btn btn-danger btn-sm my-1" style="display: none;">Disconnect</button>
-
         </form>
+        <hr>
+        <div style="font-size: small;">
+          <div class="card bg-dark text-white mt-2">
+            <div class="card-header">
+              <h5>
+                Pins
+                <div class="btn-group float-right">
+                  <button class="btn btn-secondary btn-sm">
+                    <i class="fas fa-cog"></i>
+                  </button>
+                </div>
+              </h5>
+            </div>
+            <table class="table table-sm table-dark card-body">
+              <tbody>
+                <tr>
+                  <td class="pl-4">D11</td>
+                  <td>1.00</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">D12</td>
+                  <td>0.50</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">D13</td>
+                  <td>1.00</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">D13</td>
+                  <td>1.00</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">A1</td>
+                  <td>0.121231212</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card bg-dark text-white mt-2">
+            <h6 class="card-header">
+              Globals
+              <div class="btn-group float-right">
+                <button class="btn btn-secondary btn-sm">
+                  <i class="fas fa-cog"></i>
+                </button>
+              </div>
+            </h6>
+            <table class="table table-sm table-dark card-body">
+              <tbody>
+                <tr>
+                  <td class="pl-4">foo</td>
+                  <td>13</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">bar</td>
+                  <td>5</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card bg-dark text-white mt-2">
+            <div class="card-header">
+              <h5>Tasks</h5>
+            </div>
+            <table class="table table-sm table-dark card-body">
+              <tbody>
+                <tr>
+                  <td class="pl-4">blink13</td>
+                  <td>running...</td>
+                </tr>
+                <tr>
+                  <td class="pl-4">blink12</td>
+                  <td>stopped</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div id="test2"></div>
