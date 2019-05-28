@@ -10,6 +10,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
   	<link rel="stylesheet" media="screen" href="../openfontlibrary/charger.css" rel="stylesheet" type="text/css"/>
   	<style type="text/css" media="screen">
   		h1, h2 {
@@ -24,7 +25,7 @@
         height: 50px;
   		}
 
-  		#connectionPanel, #editorButtons {
+  		#connection-panel {
   			padding: 10px;
   		}
 
@@ -55,28 +56,25 @@
       </div>
     </div>
     <div style="display: none;">
-      <div id="connectionPanel">
+      <div id="connection-panel">
         <form class="form-inline">
-          <div class="form-group my-1 mr-2">
-            <label class="mr-2" for="port-dropdown">Port:</label>
-            <select class="custom-select custom-select-sm " id="port-dropdown">
-              <option value="COM3">COM3</option>
-              <option value="COM4">COM4</option>
-              <option value="COM5">COM5</option>
-              <option value="COM6">COM6</option>
-              <option value="COM7">COM7</option>
-              <option value="COM8">COM8</option>
-              <option value="COM9">COM9</option>
-              <option disabled id="port-dropdown-divider">-------------</option>
-              <option value="127.0.0.1:4242">127.0.0.1:4242</option>
-              <option value="automatic" selected>Automatic</option>
-              <option value="other">Other...</option>
-            </select>
-          </div>
-          <div class="btn-group my-1">
-            <button id="connectionPanel_connect" type="button" class="btn btn-success btn-sm">Connect</button>
-            <button id="connectionPanel_disconnect" type="button" class="btn btn-danger btn-sm" disabled="disabled">Disconnect</button>
-          </div>
+          <!--<label class="mr-2" for="port-dropdown">Port:</label>-->
+          <select class="custom-select custom-select-sm mr-1 my-1" id="port-dropdown">
+            <option value="COM3">COM3</option>
+            <option value="COM4">COM4</option>
+            <option value="COM5">COM5</option>
+            <option value="COM6">COM6</option>
+            <option value="COM7">COM7</option>
+            <option value="COM8">COM8</option>
+            <option value="COM9">COM9</option>
+            <option disabled id="port-dropdown-divider">-------------</option>
+            <option value="127.0.0.1:4242">127.0.0.1:4242</option>
+            <option value="automatic" selected>Automatic</option>
+            <option value="other">Other...</option>
+          </select>
+          <button id="connect-button" type="button" class="btn btn-success btn-sm my-1">Connect</button>
+          <button id="disconnect-button" type="button" class="btn btn-danger btn-sm my-1" style="display: none;">Disconnect</button>
+
         </form>
       </div>
 

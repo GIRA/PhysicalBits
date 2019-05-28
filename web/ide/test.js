@@ -10,9 +10,9 @@ $(document).ready(function () {
           content:[{
               type: 'component',
               componentName: 'testComponent',
-              componentState: { label: 'A', id: '#connectionPanel' },
+              componentState: { label: 'A', id: '#connection-panel' },
               title: 'Connection',
-              width: 15,
+              width: 20,
           },{
               type: 'column',
               content:[{
@@ -67,5 +67,15 @@ $(document).ready(function () {
       selectedPort = value;
     }
     $(this).val(selectedPort);
+  });
+
+
+  $("#connect-button").on("click", function () {
+    $(this).hide();
+    $("#disconnect-button").show();
+  });
+  $("#disconnect-button").on("click", function () {
+    $(this).hide();
+    $("#connect-button").show();
   });
 });
