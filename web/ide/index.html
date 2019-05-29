@@ -61,6 +61,17 @@
       #connection-panel .card table {
         margin-bottom: 0;
       }
+
+
+  		#code-editor {
+  			position: absolute;
+  			top: 0;
+  			right: 0;
+  			bottom: 0;
+  			left: 0;
+  			font-size: 14px;
+  		}
+
   	</style>
     <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
     <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" />
@@ -76,7 +87,6 @@
     <div style="display: none;">
       <div id="connection-panel" class="container">
         <form class="form-inline">
-          <!--<label class="mr-2" for="port-dropdown">Port:</label>-->
           <select class="custom-select custom-select-sm mr-1 my-1" id="port-dropdown">
             <option value="COM3">COM3</option>
             <option value="COM4">COM4</option>
@@ -167,17 +177,37 @@
           </div>
         </div>
       </div>
+      <div id="code-panel">
+        <div id="code-editor">
+"Example: Blinking two leds"
 
-      <div id="test2"></div>
+task blink13() running 1/s {
+  toggle(D13);
+}
+
+task blink11() running 2/s {
+  toggle(D11);
+}
+        </div>
+      </div>
       <div id="test3"></div>
     </div>
 
+    <!-- JQuery/Popper/Bootstrap -->
     <script src="../jquery/jquery-1.12.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
-
+    <!-- GoldenLayout -->
     <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.js"></script>
+
+  	<!-- ACE -->
+  	<script src="../ace/ace.js" type="text/javascript" charset="utf-8"></script>
+  	<script>
+  		var editor = ace.edit("code-editor");
+  		editor.setTheme("ace/theme/ambiance");
+  		editor.getSession().setMode("ace/mode/uzi");
+  	</script>
 
     <script type="text/javascript" src="test.js"></script>
   </body>

@@ -25,7 +25,7 @@ $(document).ready(function () {
           },{
             type: 'component',
             componentName: 'ide',
-            componentState: { id: '#test2' },
+            componentState: { id: '#code-panel' },
             title: 'Code'
           }]
         },{
