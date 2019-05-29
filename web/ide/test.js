@@ -1,37 +1,60 @@
 $(document).ready(function () {
   var config = {
-      settings: {
-        showPopoutIcon: false,
-        showMaximiseIcon: false,
-        showCloseIcon: false,
-      },
-      content: [{
+    settings: {
+      showPopoutIcon: false,
+      showMaximiseIcon: false,
+      showCloseIcon: false,
+    },
+    content: [{
+      type: 'row',
+      content:[{
+        type: 'component',
+        componentName: 'ide',
+        componentState: { id: '#connection-panel' },
+        title: 'Connection',
+        width: 20,
+      },{
+        type: 'column',
+        content:[{
           type: 'row',
-          content:[{
-              type: 'component',
-              componentName: 'testComponent',
-              componentState: { label: 'A', id: '#connection-panel' },
-              title: 'Connection',
-              width: 20,
+          content: [{
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#test2' },
+            title: 'Blocks'
           },{
-              type: 'column',
-              content:[{
-                  type: 'component',
-                  componentName: 'testComponent',
-                  componentState: { label: 'B', id: '#test2' },
-              },{
-                  type: 'component',
-                  componentName: 'testComponent',
-                  componentState: { label: 'C', id: '#test3' },
-                  title: 'prueba',
-              }]
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#test2' },
+            title: 'Code'
           }]
+        },{
+          type: 'stack',
+          height: 30,
+          content: [{
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#test3' },
+            title: 'Transcript',
+          },{
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#test3' },
+            title: 'Serial',
+          },{
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#test3' },
+            title: 'Debugger',
+          }]
+        }]
       }]
+    }]
   };
 
   var layout = new GoldenLayout(config, "#container");
 
-  layout.registerComponent('testComponent', function(container, state) {
+  layout.registerComponent('ide', function(container, state) {
       let $el = $(state.id);
       container.getElement().append($el);
   });
