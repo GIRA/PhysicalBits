@@ -20,7 +20,7 @@ $(document).ready(function () {
           content: [{
             type: 'component',
             componentName: 'ide',
-            componentState: { id: '#test2' },
+            componentState: { id: '#blocks-panel' },
             title: 'Blocks'
           },{
             type: 'component',

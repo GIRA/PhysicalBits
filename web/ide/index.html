@@ -177,6 +177,10 @@
           </div>
         </div>
       </div>
+      <div id="blocks-panel" class="fullscreen">
+        <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+      </div>
+    </div>
       <div id="code-panel">
         <div id="code-editor">
 "Example: Blinking two leds"
@@ -193,6 +197,16 @@ task blink11() running 2/s {
       <div id="test3"></div>
     </div>
 
+    <xml id="toolbox" style="display: none">
+      <block type="controls_if"></block>
+      <block type="controls_repeat_ext"></block>
+      <block type="logic_compare"></block>
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="text"></block>
+      <block type="text_print"></block>
+    </xml>
+
     <!-- JQuery/Popper/Bootstrap -->
     <script src="../jquery/jquery-1.12.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -200,6 +214,12 @@ task blink11() running 2/s {
 
     <!-- GoldenLayout -->
     <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.js"></script>
+
+    <!-- Blockly -->
+    <script src="../blockly/google-blockly/blockly_compressed.js"></script>
+    <script src="../blockly/google-blockly/javascript_compressed.js"></script>
+    <script src="../blockly/google-blockly/blocks_compressed.js"></script>
+    <script src="../blockly/google-blockly/msg/js/en.js"></script>
 
   	<!-- ACE -->
   	<script src="../ace/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -210,5 +230,11 @@ task blink11() running 2/s {
   	</script>
 
     <script type="text/javascript" src="test.js"></script>
+
+    <script>
+    $(document).ready(function () {
+      var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox')});
+    });
+    </script>
   </body>
 </html>
