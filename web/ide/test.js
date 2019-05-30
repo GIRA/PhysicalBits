@@ -35,12 +35,12 @@ $(document).ready(function () {
             type: 'component',
             componentName: 'ide',
             componentState: { id: '#test3' },
-            title: 'Transcript',
+            title: 'Output',
           },{
             type: 'component',
             componentName: 'ide',
             componentState: { id: '#test3' },
-            title: 'Serial',
+            title: 'Serial Monitor',
           },{
             type: 'component',
             componentName: 'ide',
