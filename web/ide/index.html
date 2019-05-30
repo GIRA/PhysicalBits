@@ -51,11 +51,6 @@
       #connection-panel .card {
         border-radius: 0;
         border: none;
-        flex-direction: row;
-      }
-
-      #connection-panel .card-header {
-        width: 7rem;
       }
 
       #connection-panel .card table {
@@ -164,8 +159,8 @@
         </form>
 
         <div style="font-size: small;">
-          <div class="card bg-dark text-white mt-2">
-            <div class="card-header">
+          <div class="card bg-dark text-white mt-2" style="flex-direction: row;">
+            <div class="card-header" style="width: 7em;">
               <div>Pins</div>
               <button class="btn btn-secondary btn-sm my-2">
                 <i class="fas fa-cog"></i>
@@ -198,8 +193,8 @@
               </table>
             </div>
           </div>
-          <div class="card bg-dark text-white mt-2">
-            <div class="card-header">
+          <div class="card bg-dark text-white mt-2" style="flex-direction: row;">
+            <div class="card-header" style="width: 7em;">
               <div>Globals</div>
               <button class="btn btn-secondary btn-sm my-2">
                 <i class="fas fa-cog"></i>
@@ -230,11 +225,11 @@
                 <tbody>
                   <tr>
                     <td class="pl-4">blink13</td>
-                    <td>running...</td>
+                    <td><i class="fas fa-running mr-2"></i>running</td>
                   </tr>
                   <tr>
                     <td class="pl-4">blink12</td>
-                    <td>stopped</td>
+                    <td><i class="fas fa-hand-paper mr-2"></i>stopped</td>
                   </tr>
                 </tbody>
               </table>
