@@ -61,7 +61,7 @@ $(document).ready(function () {
 
   function updateSize() {
     let w = window.innerWidth;
-    let h = window.innerHeight - $("#top-bar").height();
+    let h = window.innerHeight - $("#top-bar").outerHeight();
     if (layout.width != w || layout.height != h) {
       layout.updateSize(w, h);
     }
