@@ -21,8 +21,7 @@
   		}
 
   		#top-bar {
-  			padding: 0px 10px;
-        height: 50px;
+  			padding: 5px 10px;
   		}
 
   		#connection-panel {
@@ -89,53 +88,74 @@
   <body>
     <div id="container" class="fullscreen">
       <div id="top-bar">
-        <h2 class="d-inline">
-          <span>Physical</span><span>BITS</span><i class="fas fa-robot"></i>
-        </h2>
-        <div class="d-inline ml-2">
-          <div class="btn-group" role="toolbar" aria-label="...">
-						<button id="compile" type="button" class="btn btn-secondary btn-sm">
-							<i class="fas fa-file mr-1"></i>
-							New...
-						</button>
-						<button id="run" type="button" class="btn btn-secondary btn-sm">
-              <i class="fas fa-folder-open mr-1"></i>
-							Open...
-						</button>
-						<button id="install" type="button" class="btn btn-secondary btn-sm">
-							<i class="fas fa-save mr-1"></i>
-							Save...
-						</button>
-  				</div>
-        </div>
-        <div class="d-inline ml-2">
-          <div class="btn-group" role="toolbar" aria-label="...">
-						<button id="compile" type="button" class="btn btn-secondary btn-sm">
-							<i class="fas fa-check mr-1"></i>
-							Verify
-						</button>
-						<button id="run" type="button" class="btn btn-secondary btn-sm" disabled="disabled">
-              <i class="fas fa-play mr-1"></i>
-							Run
-						</button>
-						<button id="install" type="button" class="btn btn-secondary btn-sm" disabled="disabled">
-							<i class="fas fa-download mr-1"></i>
-							Install
-						</button>
-						<button id="more" class="btn btn-secondary btn-sm dropdown-toggle dropdown-toggle-split" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
-							<span class="sr-only">Toggle Dropdown</span>
-						</button>
-						<div class="dropdown-menu">
-							<a id="debug" class="dropdown-item" href="#"><i class="fas fa-bug mr-1"></i>Debug</a>
-						</div>
-  				</div>
-        </div>
-        <div class="d-inline ml-2">
-          <div class="custom-control custom-checkbox custom-control-inline">
-            <input type="checkbox" class="custom-control-input" id="customCheck1">
-            <label class="custom-control-label" for="customCheck1">Run automatically</label>
+        <div class="row align-items-center">
+          <div class="col">
+            <h2 class="d-inline">
+              <span>Physical</span><span>BITS</span><i class="fas fa-robot"></i>
+            </h2>
+          </div>
+          <div class="col-8 text-center">
+
+            <div class="d-inline ml-2">
+              <div class="btn-group" role="toolbar" aria-label="...">
+                <button id="compile" type="button" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-file mr-1"></i>
+                  New...
+                </button>
+                <button id="run" type="button" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-folder-open mr-1"></i>
+                  Open...
+                </button>
+                <button id="install" type="button" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-save mr-1"></i>
+                  Save...
+                </button>
+              </div>
+            </div>
+            <div class="d-inline ml-2">
+              <div class="btn-group" role="toolbar" aria-label="...">
+                <button id="compile" type="button" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-check mr-1"></i>
+                  Verify
+                </button>
+                <button id="run" type="button" class="btn btn-secondary btn-sm" disabled="disabled">
+                  <i class="fas fa-play mr-1"></i>
+                  Run
+                </button>
+                <button id="install" type="button" class="btn btn-secondary btn-sm" disabled="disabled">
+                  <i class="fas fa-download mr-1"></i>
+                  Install
+                </button>
+                <button id="more" class="btn btn-secondary btn-sm dropdown-toggle dropdown-toggle-split" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled>
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu">
+                  <a id="debug" class="dropdown-item" href="#"><i class="fas fa-bug mr-1"></i>Debug</a>
+                </div>
+              </div>
+            </div>
+            <div class="d-inline ml-2">
+              <div class="custom-control custom-checkbox custom-control-inline">
+                <input type="checkbox" class="custom-control-input" id="customCheck1">
+                <label class="custom-control-label" for="customCheck1">Run automatically</label>
+              </div>
+            </div>
+          </div>
+          <div class="col text-right">
+            <div class="dropdown">
+              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Default layout
+              </button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </div>
           </div>
         </div>
+        <!--
+        -->
       </div>
     </div>
     <div style="display: none;">
@@ -240,7 +260,6 @@
       <div id="blocks-panel" class="fullscreen">
         <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
       </div>
-    </div>
       <div id="code-panel">
         <div id="code-editor">
 "Example: Blinking two leds"
