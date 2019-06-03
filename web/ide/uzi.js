@@ -55,9 +55,9 @@ let Uzi = (function () {
   }
 
   function getUziState(wait, callbacks) {
-    var success = callbacks.success || nop;
-    var complete = callbacks.complete || nop;
-    var error = callbacks.error || nop;
+    let success = callbacks.success || nop;
+    let complete = callbacks.complete || nop;
+    let error = callbacks.error || nop;
     ajax.request({
       type: 'GET',
       url: baseUrl + "/uzi",
