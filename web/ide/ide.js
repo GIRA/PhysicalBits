@@ -128,8 +128,9 @@ let IDE = (function () {
     x = y = 0;
     blocklyDiv.style.left = x + 'px';
     blocklyDiv.style.top = y + 'px';
-    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    let scale = 1/0.85;
+    blocklyDiv.style.width = (blocklyArea.offsetWidth * scale) + 'px';
+    blocklyDiv.style.height = (blocklyArea.offsetHeight * scale) + 'px';
     Blockly.svgResize(workspace);
   }
 
