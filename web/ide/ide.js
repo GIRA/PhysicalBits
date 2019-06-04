@@ -24,7 +24,7 @@ let IDE = (function () {
           componentName: 'ide',
           componentState: { id: '#connection-panel' },
           title: 'Connection',
-          width: 20,
+          width: 17,
         },{
           type: 'column',
           content:[{
@@ -33,16 +33,17 @@ let IDE = (function () {
               type: 'component',
               componentName: 'ide',
               componentState: { id: '#blocks-panel' },
-              title: 'Blocks'
+              title: 'Blocks',
             },{
               type: 'component',
               componentName: 'ide',
               componentState: { id: '#code-panel' },
-              title: 'Code'
+              title: 'Code',
+              width: 30,
             }]
           },{
             type: 'stack',
-            height: 30,
+            height: 20,
             content: [{
               type: 'component',
               componentName: 'ide',
