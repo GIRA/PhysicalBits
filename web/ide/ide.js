@@ -6,7 +6,7 @@ let IDE = (function () {
     init: function () {
       initializeLayout();
       initializeConnectionPanel();
-      initializeVisualPanel();
+      initializeBlocksPanel();
     }
   };
 
@@ -93,8 +93,8 @@ let IDE = (function () {
     Uzi.addObserver(updateConnectionPanel);
   }
 
-  function initializeVisualPanel() {
-    blocklyArea = $("#visual-editor").get(0);
+  function initializeBlocksPanel() {
+    blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
     initBlockly();
   }
