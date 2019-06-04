@@ -1,10 +1,12 @@
 let IDE = (function () {
 
   let selectedPort = "automatic";
+  let blocklyArea, blocklyDiv, workspace;
   let IDE = {
     init: function () {
       initializeLayout();
       initializeConnectionPanel();
+      initializeVisualPanel();
     }
   };
 
@@ -78,6 +80,7 @@ let IDE = (function () {
 
     window.onresize = updateSize;
     layout.on('stateChanged', updateSize);
+    layout.on('stateChanged', resize);
     layout.init();
     updateSize();
   }
@@ -88,6 +91,65 @@ let IDE = (function () {
     $("#disconnect-button").on("click", disconnect);
     Uzi.addObserver(updateConnectionPanel);
   }
+
+  function initializeVisualPanel() {
+    blocklyArea = $("#visual-editor").get(0);
+    blocklyDiv = $("#blockly").get(0);
+    initBlockly();
+  }
+
+  function initBlockly() {
+    var counter = 0;
+    ajax.request({
+      type: 'GET',
+      url: 'toolbox.xml',
+      success: function (toolbox) {
+        workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+        makeResizable();
+        if (++counter == 2) { restore(); }
+      }
+    });
+
+    ajax.request({
+      type: 'GET',
+      url: 'blocks.json',
+      success: function (json) {
+        let blocks = JSON.parse(json);
+        Blockly.defineBlocksWithJsonArray(blocks);
+        if (++counter == 2) {	restore(); }
+      }
+    });
+  }
+
+  function resize() {
+    // Only if Blockly was initialized
+    if (blocklyDiv == undefined || blocklyArea == undefined) return;
+    let x, y;
+    x = y = 0;
+    blocklyDiv.style.left = x + 'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    Blockly.svgResize(workspace);
+  }
+
+  function makeResizable() {
+    var onresize = function (e) { resize(); }
+    window.addEventListener('resize', onresize, false);
+    onresize();
+  }
+
+	function restore() {
+		try {
+			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
+		} catch (err) {
+			console.error(err);
+		}
+		workspace.addChangeListener(function workspaceChanged() {
+  		// save();
+  		// scheduleAutorun();
+  	});
+	}
 
   function choosePort() {
     let value = $("#port-dropdown").val();

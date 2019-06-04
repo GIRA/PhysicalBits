@@ -60,7 +60,6 @@
         margin-bottom: 0;
       }
 
-
   		#code-editor {
   			position: absolute;
   			top: 0;
@@ -69,6 +68,18 @@
   			left: 0;
   			font-size: 14px;
   		}
+
+      #visual-editor {
+  			position: absolute;
+  			top: 0;
+  			right: 0;
+  			bottom: 0;
+  			left: 0;
+  		}
+
+      #blockly {
+        color: black;
+      }
 
       .blocklySvg {
         background-color: #444 !important;
@@ -270,7 +281,8 @@
         </div>
       </div>
       <div id="blocks-panel" class="fullscreen">
-        <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+        <div id="visual-editor"></div>
+        <div id="blockly" style="position: absolute;"></div>
       </div>
       <div id="code-panel">
         <div id="code-editor">
@@ -287,16 +299,6 @@ task blink11() running 2/s {
       </div>
       <div id="test3"></div>
     </div>
-
-    <xml id="toolbox" style="display: none">
-      <block type="controls_if"></block>
-      <block type="controls_repeat_ext"></block>
-      <block type="logic_compare"></block>
-      <block type="math_number"></block>
-      <block type="math_arithmetic"></block>
-      <block type="text"></block>
-      <block type="text_print"></block>
-    </xml>
 
     <!-- JQuery/Popper/Bootstrap -->
     <script src="../jquery/jquery-1.12.4.min.js"></script>
@@ -327,12 +329,8 @@ task blink11() running 2/s {
 
     <script>
     $(document).ready(function () {
-      var workspace = Blockly.inject('blocklyDiv', {toolbox: document.getElementById('toolbox')});
-
-      Uzi.addObserver(function () {
-        console.log(Uzi.state);
-      });
       IDE.init();
+      Uzi.addObserver(function () { console.log(Uzi.state); });
       Uzi.start();
     });
     </script>
