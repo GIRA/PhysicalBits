@@ -3,17 +3,13 @@ let IDE = (function () {
   let selectedPort = "automatic";
   let IDE = {
     init: function () {
-      initializePanels();
-
-      $("#port-dropdown").change(choosePort);
-      $("#connect-button").on("click", connect);
-      $("#disconnect-button").on("click", disconnect);
-      Uzi.addObserver(update);
+      initializeLayout();
+      initializeConnectionPanel();
     }
   };
 
-  function initializePanels() {
-    let panelConfig = {
+  function initializeLayout() {
+    let config = {
       settings: {
         showPopoutIcon: false,
         showMaximiseIcon: false,
@@ -66,7 +62,7 @@ let IDE = (function () {
       }]
     };
 
-    let layout = new GoldenLayout(panelConfig, "#container");
+    let layout = new GoldenLayout(config, "#container");
     layout.registerComponent('ide', function(container, state) {
         let $el = $(state.id);
         container.getElement().append($el);
@@ -86,16 +82,21 @@ let IDE = (function () {
     updateSize();
   }
 
+  function initializeConnectionPanel() {
+    $("#port-dropdown").change(choosePort);
+    $("#connect-button").on("click", connect);
+    $("#disconnect-button").on("click", disconnect);
+    Uzi.addObserver(updateConnectionPanel);
+  }
+
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
-      let selection = prompt("Port name:", selectedPort);
-      if (selection != null) {
-        setSelectedPort(selection);
-      }
-    } else {
-      setSelectedPort(value);
+      let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
+      value = prompt("Port name:", defaultOption);
+      if (!value) { value = selectedPort; }
     }
+    setSelectedPort(value);
   }
 
   function setSelectedPort(val) {
@@ -117,10 +118,6 @@ let IDE = (function () {
   function disconnect() {
     $("#disconnect-button").attr("disabled", "disabled");
     Uzi.disconnect();
-  }
-
-  function update() {
-    updateConnectionPanel();
   }
 
   function updateConnectionPanel() {
