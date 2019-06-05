@@ -1,7 +1,7 @@
 {
 	"category" : "Uzi-Core-Utils",
 	"classinstvars" : [
-		 ],
+		"buffer" ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",

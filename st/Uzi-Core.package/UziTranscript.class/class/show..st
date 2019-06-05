@@ -1,3 +1,3 @@
-as yet unclassified
+writing
 show: aString
-	WorldState addDeferredUIMessage: [Transcript show: aString]
+	buffer nextPutAll: aString

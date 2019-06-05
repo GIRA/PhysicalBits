@@ -1,3 +1,3 @@
-as yet unclassified
+writing
 cr
-	WorldState addDeferredUIMessage: [Transcript cr]
+	buffer cr

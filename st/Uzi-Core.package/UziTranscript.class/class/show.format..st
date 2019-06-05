@@ -1,3 +1,5 @@
-as yet unclassified
+writing
 show: aString format: anArray
-	WorldState addDeferredUIMessage: [Transcript show: (aString format: anArray)]
+	| msg |
+	msg := aString format: anArray.
+	buffer nextPutAll: msg

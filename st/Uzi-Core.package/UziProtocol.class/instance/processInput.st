@@ -18,7 +18,8 @@ processInput
 		[self class msgInSerialTunnel] -> [self processSerialTunnel]
 	} otherwise: [UziTranscript 
 			log: 'Uzi - Invalid response code: {1}' 
-			format: { cmd }]]
+			format: { cmd };
+			flush]]
 		on: ConnectionTimedOut
-		do: [UziTranscript log: 'Connection timeout!'.
+		do: [UziTranscript log: 'Connection timeout!'; flush.
 			self fork: [self privateDisconnect] named: 'Disconnecting...']

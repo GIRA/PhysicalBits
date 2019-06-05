@@ -13,13 +13,15 @@ processError
 			[5] -> ['READER_TIMEOUT'].
 			[6] -> ['DISCONNECT_ERROR'].
 		} otherwise: ['UNKNOWN_ERROR'].
-	UziTranscript cr.
+	UziTranscript cr; flush.
 	script 
 		ifNil: [UziTranscript 
 			log: '{1} detected. The program has been stopped.'
-			format: { errorMsg }]
+			format: { errorMsg };
+			flush]
 		ifNotNil: [UziTranscript
 			log: '{1} detected on script "{2}". The script has been stopped.'
-			format: { errorMsg . script name }].
+			format: { errorMsg . script name };
+			flush].
 	errorCode = 6 
 		ifTrue: [self fork: [self privateDisconnect] named: 'Disconnecting...']
