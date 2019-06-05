@@ -5,5 +5,5 @@ next
 		ifTrue: [self fillBuffer].
 	tmp := buffer next.
 	self class debugEnabled 
-		ifTrue: [UziTranscript log: 'IN: {1}' format: { tmp }; flush].
+		ifTrue: [UziOutput log: 'IN: {1}' format: { tmp }; flush].
 	^ tmp

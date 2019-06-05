@@ -16,10 +16,10 @@ processInput
 		[self class msgInTickingScripts] -> [self processTickingScripts].
 		[self class msgInFreeRam] -> [self processFreeRAM].
 		[self class msgInSerialTunnel] -> [self processSerialTunnel]
-	} otherwise: [UziTranscript 
+	} otherwise: [UziOutput 
 			log: 'Uzi - Invalid response code: {1}' 
 			format: { cmd };
 			flush]]
 		on: ConnectionTimedOut
-		do: [UziTranscript log: 'Connection timeout!'; flush.
+		do: [UziOutput log: 'Connection timeout!'; flush.
 			self fork: [self privateDisconnect] named: 'Disconnecting...']
