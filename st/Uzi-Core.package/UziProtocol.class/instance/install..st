@@ -9,5 +9,5 @@ install: anUziProgram
 		msb.
 		lsb		
 	}, encoded.
-	UziOutput log: 'Installed program successfully!'; flush.
+	Uzi out log: 'Installed program successfully!'; flush.
 	^ result
