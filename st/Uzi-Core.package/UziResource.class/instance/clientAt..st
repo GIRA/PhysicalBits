@@ -4,4 +4,5 @@ clientAt: id
 		ifAbsentPut: [Dictionary new
 			at: #changed put: false;
 			at: #semaphore put: Semaphore new;
+			at: #output put: '' writeStream;
 			yourself]

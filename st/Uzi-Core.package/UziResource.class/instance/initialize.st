@@ -9,6 +9,7 @@ initialize
 		UziProtocolEvents debuggerUpdate.
 	}
 	do: [:evt | self protocol when: evt send: #update to: self].
+	self out when: #flushed send: #update: to: self.
 	
 	clients := Dictionary new.
 	self initializeResources

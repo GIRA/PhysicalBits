@@ -1,0 +1,3 @@
+accessing
+out
+	^ Uzi out
