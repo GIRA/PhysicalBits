@@ -6,7 +6,7 @@ processProfile
 		- the tick count (LSB)
 	"
 	| value val1 val2 |
-	Uzi out show: 'PROFILE '; flush.
+	Uzi out log: 'PROFILE '.
 	val1 := serial next.
 	val2 := serial next.
 	value := val2 bitOr: (val1 << 7).

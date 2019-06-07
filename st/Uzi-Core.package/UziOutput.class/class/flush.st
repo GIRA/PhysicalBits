@@ -1,4 +1,4 @@
 writing
 flush
-	self triggerEvent: #flushed with: buffer contents.
-	buffer reset
+	self triggerEvent: #flushed with: buffer asArray.
+	buffer removeAll

@@ -1,3 +1,3 @@
 writing
 log: aString
-	buffer nextPutAll: aString; cr
+	buffer add: #info -> aString

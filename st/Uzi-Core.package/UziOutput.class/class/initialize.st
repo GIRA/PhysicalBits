@@ -3,6 +3,8 @@ initialize
 	"
 	self initialize
 	"
-	buffer := '' writeStream.
-	self when: #flushed
-		evaluate: [:msg | WorldState addDeferredUIMessage: [Transcript show: msg]]
+	buffer := OrderedCollection new.
+	self removeActionsWithReceiver: self;
+		when: #flushed
+		send: #displayOnTranscript:
+		to: self

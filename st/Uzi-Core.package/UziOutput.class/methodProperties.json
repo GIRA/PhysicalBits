@@ -1,11 +1,10 @@
 {
 	"class" : {
-		"cr" : "Richo 6/5/2019 19:44",
-		"flush" : "Richo 6/5/2019 19:45",
-		"initialize" : "Richo 6/5/2019 19:44",
-		"log:" : "Richo 6/5/2019 19:45",
-		"log:format:" : "Richo 6/5/2019 19:44",
-		"show:" : "Richo 6/5/2019 19:44",
-		"show:format:" : "Richo 6/5/2019 19:44" },
+		"cr" : "Richo 6/7/2019 15:01",
+		"displayOnTranscript:" : "Richo 6/7/2019 15:05",
+		"flush" : "Richo 6/7/2019 15:03",
+		"initialize" : "Richo 6/7/2019 14:59",
+		"log:" : "Richo 6/7/2019 15:01",
+		"log:format:" : "Richo 6/7/2019 15:01" },
 	"instance" : {
 		 } }

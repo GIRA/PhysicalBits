@@ -1,6 +1,6 @@
 initialize-release
-update: outputMsg
+updateOutput: logEntries
 	clients do: [:client |
 		client at: #changed put: true.
-		(client at: #output) nextPutAll: outputMsg.
+		client at: #output put: logEntries.
 		(client at: #semaphore) signal]
