@@ -4,15 +4,14 @@
 	"instance" : {
 		"changedAt:" : "Richo 8/6/2018 17:01",
 		"changedAt:put:" : "Richo 8/6/2018 17:01",
-		"clientAt:" : "Richo 6/7/2019 15:07",
+		"clientAt:" : "Richo 6/7/2019 15:43",
 		"compile:type:" : "Richo 8/6/2018 13:01",
 		"destroy" : "Richo 6/7/2019 15:09",
-		"detail:" : "Richo 6/7/2019 15:12",
+		"detail:" : "Richo 6/7/2019 15:45",
 		"initialize" : "Richo 6/7/2019 15:09",
 		"initializeResources" : "Richo 1/2/2019 16:27",
 		"initializeWith:" : "Richo 8/6/2018 13:00",
 		"outputAt:" : "Richo 6/5/2019 20:43",
-		"outputAt:put:" : "Richo 6/7/2019 15:09",
 		"processCompile:" : "Richo 7/31/2018 17:50",
 		"processConnect:" : "Richo 11/28/2018 16:52",
 		"processDisconnect:" : "Richo 8/10/2018 15:55",
@@ -23,4 +22,4 @@
 		"semaphoreAt:" : "Richo 8/6/2018 17:02",
 		"sendJSONResponse:for:" : "Richo 9/7/2017 08:33",
 		"update" : "Richo 8/6/2018 17:11",
-		"updateOutput:" : "Richo 6/7/2019 15:07" } }
+		"updateOutput:" : "Richo 6/7/2019 15:44" } }

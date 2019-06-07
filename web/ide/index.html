@@ -345,7 +345,9 @@ task blink11() running 2/s {
     <script>
     $(document).ready(function () {
       IDE.init();
-      Uzi.addObserver(function () { console.log(Uzi.state); });
+      Uzi.addObserver(function () {
+        console.log(Uzi.state.output); 
+      });
       Uzi.start();
     });
     </script>

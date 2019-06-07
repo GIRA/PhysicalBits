@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Server",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"items",
+		"monitor" ],
+	"name" : "UziBlockingQueue",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
