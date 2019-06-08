@@ -4,9 +4,9 @@ compileString: aString
 	[program := Uzi compileString: aString.
 	encoded :=  Uzi encode: program.
 	Uzi logger cr; 
-		success: 'Compilation successful!';
 		log: 'Program size (bytes): {1}' format: { encoded size };
 		log: encoded printString;
+		success: 'Compilation successful!';
 		flush.
 	^ program]
 			on: UziParseError , UziCompileError 
