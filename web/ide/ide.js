@@ -7,6 +7,7 @@ let IDE = (function () {
       initializeLayout();
       initializeConnectionPanel();
       initializeBlocksPanel();
+      initializeOutputPanel();
     }
   };
 
@@ -47,7 +48,7 @@ let IDE = (function () {
             content: [{
               type: 'component',
               componentName: 'ide',
-              componentState: { id: '#test3' },
+              componentState: { id: '#output-panel' },
               title: 'Output',
             },{
               type: 'component',
@@ -97,6 +98,35 @@ let IDE = (function () {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
     initBlockly();
+  }
+
+  function initializeOutputPanel() {
+    Uzi.addObserver(function () {
+      Uzi.state.output.forEach(function (entry) {
+        appendToOutput(entry.text, entry.type);
+      });
+    });
+  }
+
+  function appendToOutput(text, type) {
+    let css = {
+      info: "text-white",
+      success: "text-success",
+      error: "text-danger",
+      warning: "text-warning"
+    };
+
+    let entry = $("<div>")
+      .addClass("small")
+      .addClass(css[type]);
+    if (text) { entry.text(text); }
+    else { entry.html("&nbsp;"); }
+
+    $("#output-console").append(entry);
+
+    // Scroll to bottom
+    let panel = $("#output-panel").get(0);
+    panel.scrollTop = panel.scrollHeight - panel.clientHeight;
   }
 
   function initBlockly() {

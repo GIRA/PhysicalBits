@@ -90,7 +90,7 @@
       </div>
     </div>
     <div style="display: none;">
-      <div id="connection-panel" class="container">
+      <div id="connection-panel" class="container scrollable">
         <form class="form-inline">
           <select class="custom-select custom-select-sm mr-1 my-1" id="port-dropdown">
             <option value="COM3">COM3</option>
@@ -213,7 +213,9 @@ task blink11() running 2/s {
 }
         </div>
       </div>
-      <div id="test3"></div>
+      <div id="output-panel" class="fullscreen scrollable px-2">
+        <div id="output-console" ></div>
+      </div>
     </div>
 
     <!-- JQuery/Popper/Bootstrap -->
@@ -246,9 +248,7 @@ task blink11() running 2/s {
     <script>
     $(document).ready(function () {
       IDE.init();
-      Uzi.addObserver(function () {
-        console.log(Uzi.state.output);
-      });
+      Uzi.addObserver(function () { console.log(Uzi.state); });
       Uzi.start();
     });
     </script>

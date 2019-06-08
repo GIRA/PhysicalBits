@@ -41,7 +41,11 @@
   }
 
   body .lm_content{
-    overflow: auto;
+    overflow: auto !important;
+  }
+
+  .scrollable {
+    overflow: scroll !important;
   }
 
   #connection-panel .card {
