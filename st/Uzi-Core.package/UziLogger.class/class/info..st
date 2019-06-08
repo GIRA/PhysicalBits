@@ -1,3 +1,3 @@
 writing
-log: aString
+info: aString
 	buffer add: #info -> aString

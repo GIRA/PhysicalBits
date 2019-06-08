@@ -1,0 +1,18 @@
+{
+	"class" : {
+		"cr" : "Richo 6/7/2019 15:01",
+		"displayOnTranscript:" : "Richo 6/7/2019 15:05",
+		"error:" : "Richo 6/7/2019 21:27",
+		"error:format:" : "Richo 6/7/2019 21:27",
+		"flush" : "Richo 6/7/2019 15:03",
+		"info:" : "Richo 6/7/2019 21:27",
+		"info:format:" : "Richo 6/7/2019 21:28",
+		"initialize" : "Richo 6/7/2019 14:59",
+		"log:" : "Richo 6/7/2019 21:27",
+		"log:format:" : "Richo 6/7/2019 15:01",
+		"success:" : "Richo 6/7/2019 21:27",
+		"success:format:" : "Richo 6/7/2019 21:27",
+		"warning:" : "Richo 6/7/2019 21:27",
+		"warning:format:" : "Richo 6/7/2019 21:28" },
+	"instance" : {
+		 } }

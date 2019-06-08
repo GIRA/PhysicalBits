@@ -9,7 +9,7 @@ detail: req
 		at: #portName put: self protocol portName;
 		at: #output 
 		put: (out collect: [:entry | Dictionary new 
-			at: entry key 
-			put: entry value; 
+			at: #type put: entry key; 
+			at: #text put: entry value; 
 			yourself]);
 		yourself 

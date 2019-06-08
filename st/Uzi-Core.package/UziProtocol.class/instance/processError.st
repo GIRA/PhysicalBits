@@ -13,14 +13,14 @@ processError
 			[5] -> ['READER_TIMEOUT'].
 			[6] -> ['DISCONNECT_ERROR'].
 		} otherwise: ['UNKNOWN_ERROR'].
-	Uzi out cr; flush.
+	Uzi logger cr.
 	script 
-		ifNil: [Uzi out 
-			log: '{1} detected. The program has been stopped.'
+		ifNil: [Uzi logger 
+			warning: '{1} detected. The program has been stopped.'
 			format: { errorMsg };
 			flush]
-		ifNotNil: [Uzi out
-			log: '{1} detected on script "{2}". The script has been stopped.'
+		ifNotNil: [Uzi logger
+			warning: '{1} detected on script "{2}". The script has been stopped.'
 			format: { errorMsg . script name };
 			flush].
 	errorCode = 6 
