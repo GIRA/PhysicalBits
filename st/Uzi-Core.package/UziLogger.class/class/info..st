@@ -1,3 +1,3 @@
 writing
 info: aString
-	buffer add: #info -> aString
+	aString lines do: [:line | buffer add: #info -> line]
