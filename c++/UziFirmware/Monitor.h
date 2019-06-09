@@ -74,7 +74,7 @@ private:
 	void sendCoroutineState(Script* script);
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
-	void sendTickingScripts(Program* program);
+	void sendRunningTasks(Program* program);
 	void sendFreeRAM();
 
 	void loadProgramFromReader(Reader* reader, Program** program);

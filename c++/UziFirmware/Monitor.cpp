@@ -166,7 +166,7 @@ void Monitor::sendReport(GPIO* io, Program* program)
 	{
 		sendPinValues(io);
 		sendGlobalValues(program);
-		sendTickingScripts(program);
+		sendRunningTasks(program);
 		sendFreeRAM();
 		lastTimeReport = now;
 	}
@@ -313,7 +313,7 @@ void Monitor::sendGlobalValues(Program* program)
 	}
 }
 
-void Monitor::sendTickingScripts(Program* program)
+void Monitor::sendRunningTasks(Program* program)
 {
 	serial->write(MSG_OUT_TICKING_SCRIPTS);
 	uint8 scriptCount = program->getScriptCount();
