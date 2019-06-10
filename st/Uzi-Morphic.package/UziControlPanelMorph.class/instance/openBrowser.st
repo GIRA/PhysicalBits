@@ -1,6 +1,14 @@
 server
 openBrowser
-	Smalltalk platformName ~= 'Win32' ifTrue: [^ self].
-	(Smalltalk at: #OSProcess
-		ifPresent: [:os | os perform: #command: with: 'explorer "http://localhost:8080/"'])
-		ifNil: [Transcript cr; show: 'OSProcess is needed to open the browser automatically'; cr]
+	| commands os url |
+	url := 'http://localhost:8080/'.
+	commands := Dictionary new
+		at: 'Win32' put: 'explorer "{1}"';
+		at: 'Mac OS' put: 'open {1}';
+		yourself.
+	os := Smalltalk 	at: #OSProcess ifAbsent: [nil].
+	os ifNil: ["Show a message in the transcript to remember to install OSProcess"
+		Transcript cr; show: 'OSProcess is needed to open the browser automatically'; cr.
+		^ self].
+	commands at: Smalltalk platformName
+		ifPresent: [:cmd | os perform: #command: with: (cmd format: {url})]
