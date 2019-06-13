@@ -2,6 +2,7 @@ receiving
 processError
 	| errorCode errorMsg |
 	errorCode := serial next.
+	errorCode = 0 ifTrue: [^ self].
 	errorMsg := self errorMsgForCode: errorCode.
 	Uzi logger
 		cr;
