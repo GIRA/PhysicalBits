@@ -1,6 +1,6 @@
 receiving
 processTickingScripts
-	| count values watchers |
+	| count values watchers update |
 	count := serial next.
 	values := (1 to: count) collect: [:ign | serial next].
 	watchers := Dictionary new.
@@ -8,6 +8,7 @@ processTickingScripts
 	currentProgram ifNil: [^ self].
 	count ~= currentProgram scripts size ifTrue: [^ self].
 	
+	update := false.
 	values withIndexDo: [:next :index || script isRunning errorCode |
 		script := currentProgram scripts at: index.
 		isRunning := (next bitAnd: 2r10000000) > 0.
@@ -18,13 +19,16 @@ processTickingScripts
 				script: script
 				isRunning: isRunning
 				errorCode: errorCode).
-		errorCode > 0 ifTrue: [| errorMsg |
-			errorMsg := self errorMsgForCode: errorCode.			
-			scriptWatchers
-				at: script
-				ifPresent: [:w | w errorCode ~= errorCode
-					ifTrue: [Uzi logger 
-						warning: '{1} detected on script "{2}". The script has been stopped.'
-						format: { errorMsg . script name };
-						flush]]]].
-	scriptWatchers := watchers
+		scriptWatchers at: script
+			ifPresent: [:w |
+				w isRunning ~= isRunning 
+					ifTrue: [update := true].
+				w errorCode ~= errorCode
+					ifTrue: [update := true.
+						Uzi logger 
+							warning: '{1} detected on script "{2}". The script has been stopped.'
+							format: { self errorMsgForCode: errorCode . script name };
+							flush]]
+			ifAbsent: [update := true]].
+	scriptWatchers := watchers.
+	update ifTrue: [self triggerEvent: UziProtocolEvents reportingChange]
