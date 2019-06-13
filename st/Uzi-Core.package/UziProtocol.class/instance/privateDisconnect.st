@@ -6,4 +6,5 @@ privateDisconnect
 	serial := portName := nil.
 	pins := Dictionary new.
 	debugger reset.
-	self triggerEvent: UziProtocolEvents disconnect
+	self triggerEvent: UziProtocolEvents disconnect.
+	Uzi logger error: 'Connection lost!'; flush
