@@ -5,7 +5,7 @@ let IDE = (function () {
   let IDE = {
     init: function () {
       initializeLayout();
-      initializeConnectionPanel();
+      initializeTopBar();
       initializeInspectorPanel();
       initializeBlocksPanel();
       initializeOutputPanel();
@@ -24,8 +24,8 @@ let IDE = (function () {
         content:[{
           type: 'component',
           componentName: 'ide',
-          componentState: { id: '#connection-panel' },
-          title: 'Connection',
+          componentState: { id: '#inspector-panel' },
+          title: 'Inspector',
           width: 17,
         },{
           type: 'column',
@@ -88,11 +88,11 @@ let IDE = (function () {
     updateSize();
   }
 
-  function initializeConnectionPanel() {
+  function initializeTopBar() {
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
-    Uzi.addObserver(updateConnectionPanel);
+    Uzi.addObserver(updateTopBar);
   }
 
   function initializeInspectorPanel() {
@@ -219,7 +219,7 @@ let IDE = (function () {
     Uzi.disconnect();
   }
 
-  function updateConnectionPanel() {
+  function updateTopBar() {
     if (Uzi.state.isConnected) {
       $("#connect-button").hide();
       $("#disconnect-button").show();
