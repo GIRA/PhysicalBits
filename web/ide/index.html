@@ -26,8 +26,7 @@
             </h2>
           </div>
           <div class="col-8 text-center">
-
-            <div class="d-inline ml-2">
+            <div class="d-inline">
               <div class="btn-group" role="toolbar" aria-label="...">
                 <button id="compile" type="button" class="btn btn-primary btn-sm">
                   <i class="fas fa-file mr-1"></i>
@@ -43,7 +42,24 @@
                 </button>
               </div>
             </div>
-            <div class="d-inline ml-2">
+            <div class="d-inline ml-5">
+              <select class="custom-select custom-select-sm" id="port-dropdown" style="width: 150px;">
+                <option value="COM3">COM3</option>
+                <option value="COM4">COM4</option>
+                <option value="COM5">COM5</option>
+                <option value="COM6">COM6</option>
+                <option value="COM7">COM7</option>
+                <option value="COM8">COM8</option>
+                <option value="COM9">COM9</option>
+                <option disabled id="port-dropdown-divider">-------------</option>
+                <option value="127.0.0.1:4242">127.0.0.1:4242</option>
+                <option value="automatic" selected>Automatic</option>
+                <option value="other">Other...</option>
+              </select>
+              <button id="connect-button" type="button" class="btn btn-success btn-sm"><i class="fas fa-plug mr-2 fa-flip-vertical"></i>Connect</button>
+              <button id="disconnect-button" type="button" class="btn btn-danger btn-sm ml-1" style="display: none;"><i class="fas fa-plug mr-2"></i>Disconnect</button>
+            </div>
+            <div class="d-inline ">
               <div class="btn-group" role="toolbar" aria-label="...">
                 <button id="compile" type="button" class="btn btn-primary btn-sm">
                   <i class="fas fa-check mr-1"></i>
@@ -65,7 +81,7 @@
                 </div>
               </div>
             </div>
-            <div class="d-inline ml-2">
+            <div class="d-inline ml-1">
               <div class="custom-control custom-checkbox custom-control-inline">
                 <input type="checkbox" class="custom-control-input" id="customCheck1">
                 <label class="custom-control-label" for="customCheck1">Interactive mode</label>
@@ -91,24 +107,6 @@
     </div>
     <div style="display: none;">
       <div id="connection-panel" class="container scrollable">
-        <form class="form-inline">
-          <select class="custom-select custom-select-sm mr-1 my-1" id="port-dropdown">
-            <option value="COM3">COM3</option>
-            <option value="COM4">COM4</option>
-            <option value="COM5">COM5</option>
-            <option value="COM6">COM6</option>
-            <option value="COM7">COM7</option>
-            <option value="COM8">COM8</option>
-            <option value="COM9">COM9</option>
-            <option disabled id="port-dropdown-divider">-------------</option>
-            <option value="127.0.0.1:4242">127.0.0.1:4242</option>
-            <option value="automatic" selected>Automatic</option>
-            <option value="other">Other...</option>
-          </select>
-          <button id="connect-button" type="button" class="btn btn-success btn-sm my-1"><i class="fas fa-plug mr-2 fa-flip-vertical"></i>Connect</button>
-          <button id="disconnect-button" type="button" class="btn btn-danger btn-sm my-1" style="display: none;"><i class="fas fa-plug mr-2"></i>Disconnect</button>
-        </form>
-
         <div style="font-size: small;">
           <div class="card bg-dark text-white mt-2" style="flex-direction: row;">
             <div class="card-header" style="width: 7em;">
