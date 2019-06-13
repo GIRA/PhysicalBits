@@ -7,9 +7,15 @@ detail: req
 	^ (super detail: req)
 		at: #isConnected put: self protocol isConnected;
 		at: #portName put: self protocol portName;
-		at: #output 
-		put: (out collect: [:entry | Dictionary new 
-			at: #type put: entry key; 
-			at: #text put: entry value; 
-			yourself]);
+		at: #tasks put: (self protocol scriptWatchers 
+			collect: [:w | Dictionary new
+				at: #scriptName put: w scriptName;
+				at: #isRunning put: w isRunning;
+				at: #isError put: w isError;
+				yourself	]);
+		at: #output put: (out 
+			collect: [:entry | Dictionary new 
+				at: #type put: entry key; 
+				at: #text put: entry value; 
+				yourself]);
 		yourself 

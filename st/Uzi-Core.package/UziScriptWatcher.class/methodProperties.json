@@ -4,4 +4,6 @@
 	"instance" : {
 		"errorCode" : "Richo 6/13/2019 14:47",
 		"initializeWithScript:isRunning:errorCode:" : "Richo 6/13/2019 14:22",
-		"isRunning" : "Richo 6/13/2019 14:22" } }
+		"isError" : "Richo 6/13/2019 15:01",
+		"isRunning" : "Richo 6/13/2019 14:22",
+		"scriptName" : "Richo 6/13/2019 15:01" } }
