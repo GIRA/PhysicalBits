@@ -6,6 +6,7 @@ let IDE = (function () {
     init: function () {
       initializeLayout();
       initializeConnectionPanel();
+      initializeInspectorPanel();
       initializeBlocksPanel();
       initializeOutputPanel();
     }
@@ -92,6 +93,10 @@ let IDE = (function () {
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
     Uzi.addObserver(updateConnectionPanel);
+  }
+
+  function initializeInspectorPanel() {
+    Uzi.addObserver(updateInspectorPanel);
   }
 
   function initializeBlocksPanel() {
@@ -226,6 +231,35 @@ let IDE = (function () {
       $("#connect-button").show();
       $("#connect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", null);
+    }
+  }
+
+  function updateInspectorPanel() {
+    $("#tasks-table tbody").html("");
+    if (!Uzi.state.isConnected) return;
+
+    for (let i = 0; i < Uzi.state.tasks.length; i++) {
+      let task = Uzi.state.tasks[i];
+      let css = "text-muted";
+      let html = "";
+      if (task.isError) {
+        css = "text-warning";
+        html = '<i class="fas fa-skull-crossbones mr-2"></i>error';
+      } else if (task.isRunning) {
+        css = "text-success";
+        html = '<i class="fas fa-running mr-2"></i>running';
+      } else {
+        css = "text-danger";
+        html = '<i class="fas fa-hand-paper mr-2"></i>stopped';
+      }
+      $("#tasks-table tbody")
+        .append($("<tr>")
+          .append($("<td>")
+            .addClass("pl-4")
+            .text(task.scriptName))
+          .append($("<td>")
+            .addClass(css)
+            .html(html)));
     }
   }
 
