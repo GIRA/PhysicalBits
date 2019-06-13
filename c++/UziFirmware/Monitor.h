@@ -66,7 +66,6 @@ private:
 	void executeDebugSetBreakpoints(Program* program);
 	void executeDebugSetBreakpointsAll(Program* program);
 
-	void sendError(uint8 coroutineIndex, uint8 errorCode);
 	void sendReport(GPIO* io, Program* program);
 	void checkKeepAlive();
 	void sendProfile();

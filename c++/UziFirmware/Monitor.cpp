@@ -123,19 +123,10 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 	}
 }
 
-void Monitor::sendError(uint8 coroutineIndex, uint8 errorCode)
-{
-	serial->write(MSG_OUT_ERROR);
-	serial->write(coroutineIndex);
-	serial->write(errorCode);
-}
-
 void Monitor::sendError(uint8 errorCode)
 {
-	/*
-	INFO(Richo): Since this is a standalone error we send 255 as coroutine index.
-	*/
-	sendError(255, errorCode);
+	serial->write(MSG_OUT_ERROR);
+	serial->write(errorCode);
 }
 
 void Monitor::sendProfile()
@@ -178,13 +169,12 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	{
 		sent = true;
 		sendCoroutineState(vm->haltedScript);
-
-		/*uint8 count = program->getScriptCount();
-		for (uint8 i = 0; i < count; i++)
-		{
-			Script* script = program->getScript(i);
-			sendCoroutineState(script);
-		}*/
+		/*
+		TODO(Richo): Send the state of all the coroutines?
+		If we do that we need to make sure that all the coroutines are updated!
+		We know that the halted script is updated because we make sure to save its
+		state when we halt. But the others? I don't know...
+		*/
 	}
 }
 
@@ -196,8 +186,9 @@ void Monitor::sendCoroutineState(Script* script)
 		Coroutine* coroutine = script->getCoroutine();
 		if (coroutine->getError() != NO_ERROR)
 		{
-			sendError(scriptIndex, coroutine->getError());
-			coroutine->reset();
+			// TODO(Richo): Is this really necessary?
+			sendError(coroutine->getError());
+			coroutine->reset(); // TODO(Richo): Why?
 		}
 		serial->write(MSG_OUT_COROUTINE_STATE);
 		serial->write(scriptIndex);
@@ -318,23 +309,19 @@ void Monitor::sendRunningTasks(Program* program)
 	serial->write(MSG_OUT_TICKING_SCRIPTS);
 	uint8 scriptCount = program->getScriptCount();
 	serial->write(scriptCount);
-	uint8 result = 0;
-	int8 bit = -1;
 	for (int16 i = 0; i < scriptCount; i++)
 	{
 		Script* script = program->getScript(i);
-		uint8 isStepping = script->isStepping() ? 1 : 0;
-		result |= isStepping << ++bit;
-		if (bit == 7)
+		uint8 val = NO_ERROR;
+		if (script->isStepping()) 
 		{
-			serial->write(result);
-			bit = -1;
-			result = 0;
+			val |= 0b10000000;
 		}
-	}
-	if (bit != -1)
-	{
-		serial->write(result);
+		if (script->hasCoroutine()) 
+		{
+			val |= (script->getCoroutine()->getError() & 0b01111111);
+		}
+		serial->write(val);
 	}
 }
 
