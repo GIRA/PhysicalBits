@@ -25,10 +25,16 @@ processTickingScripts
 					ifTrue: [update := true].
 				w errorCode ~= errorCode
 					ifTrue: [update := true.
-						Uzi logger 
-							warning: '{1} detected on script "{2}". The script has been stopped.'
-							format: { self errorMsgForCode: errorCode . script name };
-							flush]]
-			ifAbsent: [update := true]].
+						errorCode > 0
+							ifTrue: [Uzi logger 
+								warning: '{1} detected on script "{2}". The script has been stopped.'
+								format: { self errorMsgForCode: errorCode . script name };
+								flush]]]
+			ifAbsent: [update := true.
+				errorCode > 0
+					ifTrue: [Uzi logger 
+						warning: '{1} detected on script "{2}". The script has been stopped.'
+						format: { self errorMsgForCode: errorCode . script name };
+						flush]]].
 	scriptWatchers := watchers.
 	update ifTrue: [self triggerEvent: UziProtocolEvents reportingChange]
