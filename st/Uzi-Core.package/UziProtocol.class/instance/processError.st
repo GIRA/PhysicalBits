@@ -1,8 +1,6 @@
 receiving
 processError
-	| scriptIndex errorCode errorMsg script |
-	scriptIndex := serial next.
-	script := currentProgram ifNotNil: [:p | p scripts at: scriptIndex + 1 ifAbsent: [nil]].
+	| errorCode errorMsg |
 	errorCode := serial next.
 	errorMsg := errorCode 
 		caseOf: {
@@ -13,15 +11,10 @@ processError
 			[5] -> ['READER_TIMEOUT'].
 			[6] -> ['DISCONNECT_ERROR'].
 		} otherwise: ['UNKNOWN_ERROR'].
-	Uzi logger cr.
-	script 
-		ifNil: [Uzi logger 
-			warning: '{1} detected. The program has been stopped.'
-			format: { errorMsg };
-			flush]
-		ifNotNil: [Uzi logger
-			warning: '{1} detected on script "{2}". The script has been stopped.'
-			format: { errorMsg . script name };
-			flush].
+	Uzi logger
+		cr;
+		warning: '{1} detected. The program has been stopped.'
+		format: { errorMsg };
+		flush.
 	errorCode = 6 
 		ifTrue: [self fork: [self privateDisconnect] named: 'Disconnecting...']

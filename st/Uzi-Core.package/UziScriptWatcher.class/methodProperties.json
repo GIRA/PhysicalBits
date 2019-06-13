@@ -1,0 +1,6 @@
+{
+	"class" : {
+		"script:isRunning:errorCode:" : "Richo 6/13/2019 14:21" },
+	"instance" : {
+		"initializeWithScript:isRunning:errorCode:" : "Richo 6/13/2019 14:22",
+		"isRunning" : "Richo 6/13/2019 14:22" } }

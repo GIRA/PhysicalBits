@@ -12,11 +12,11 @@
 		"keepAlive",
 		"currentProgram",
 		"globals",
-		"tickingScripts",
 		"freeArduinoRAM",
 		"freeUziRAM",
 		"pins",
-		"debugger" ],
+		"debugger",
+		"scriptWatchers" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],

@@ -1,14 +1,20 @@
 receiving
 processTickingScripts
-	| byteSize ticking count |
+	| count values |
 	count := serial next.
-	byteSize := (count / 8) ceiling.
-	ticking := Array streamContents: [:stream |
-		byteSize timesRepeat: [| byte |
-			byte := serial next.
-			0 to: 7 do: [:i | stream nextPut: ((byte >> i) bitAnd: 1) = 1]
-			]].
-	tickingScripts removeAll.
-	(currentProgram notNil and: [count = currentProgram scripts size])
-		ifTrue: [currentProgram scripts withIndexDo: [:script :index |
-			(ticking at: index) ifTrue: [tickingScripts add: script]]]
+	values := (1 to: count) collect: [:ign | serial next].
+	scriptWatchers := Dictionary new.
+	
+	currentProgram ifNil: [^ self].
+	count ~= currentProgram scripts size ifTrue: [^ self].
+	
+	values withIndexDo: [:next :index || script isRunning errorCode |
+		script := currentProgram scripts at: index.
+		isRunning := (next bitAnd: 2r10000000) > 0.
+		errorCode := next bitAnd: 2r01111111.
+		scriptWatchers
+			at: script 
+			put: (UziScriptWatcher
+				script: script
+				isRunning: isRunning
+				errorCode: errorCode)]

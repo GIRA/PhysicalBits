@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-Protocol",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"script",
+		"isRunning",
+		"errorCode" ],
+	"name" : "UziScriptWatcher",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
