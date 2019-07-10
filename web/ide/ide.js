@@ -2,6 +2,8 @@ let IDE = (function () {
 
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
+  let autorunInterval, autorunNextTime;
+  let lastProgram;
   let IDE = {
     init: function () {
       initializeLayout();
@@ -95,7 +97,9 @@ let IDE = (function () {
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
+		$("#interactive-checkbox").on("change", toggleInteractive);
     Uzi.addObserver(updateTopBar);
+    Uzi.addObserver(updateConnection);
   }
 
   function initializeInspectorPanel() {
@@ -138,6 +142,7 @@ let IDE = (function () {
   }
 
   function initBlockly() {
+    // TODO(Richo): Maybe use promises to avoid this mess
     var counter = 0;
     ajax.request({
       type: 'GET',
@@ -185,9 +190,9 @@ let IDE = (function () {
 		} catch (err) {
 			console.error(err);
 		}
-		workspace.addChangeListener(function workspaceChanged() {
+		workspace.addChangeListener(function () {
   		// save();
-  		// scheduleAutorun();
+  		scheduleAutorun();
   	});
 	}
 
@@ -233,6 +238,45 @@ let IDE = (function () {
   function install() {
     Uzi.install(getGeneratedCodeAsJSON(), "json");
   }
+
+  function toggleInteractive() {
+    let checked = $("#interactive-checkbox").get(0).checked;
+		if (checked && autorunInterval === undefined) {
+			autorunInterval = setInterval(autorun, 100);
+		} else {
+			autorunInterval = clearInterval(autorunInterval);
+		}
+  }
+
+  function updateConnection (newState, previousState) {
+    if (previousState == null
+      || (!previousState.isConnected && newState.isConnected)) {
+      scheduleAutorun();
+    }
+  }
+
+	function scheduleAutorun(deltaTime) {
+		var currentTime = +new Date();
+		autorunNextTime = currentTime + (deltaTime || 200);
+	}
+
+	function autorun() {
+		if (!Uzi.state.isConnected) return;
+		if (autorunNextTime === undefined) return;
+
+		var currentTime = +new Date();
+		if (currentTime < autorunNextTime) return;
+
+		var old = Uzi.state.program;
+		if (old !== undefined && old.compiled === false) return;
+
+		var cur = getGeneratedCodeAsJSON();
+		if (cur === lastProgram) return;
+
+		autorunNextTime = undefined;
+    lastProgram = cur;
+		Uzi.run(cur, "json");
+	}
 
   function getGeneratedCode(){
     var xml = Blockly.Xml.workspaceToDom(workspace);
