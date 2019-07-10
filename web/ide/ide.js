@@ -122,7 +122,7 @@ let IDE = (function () {
     Uzi.addObserver(function () {
       let src = Uzi.state.program.src;
       if (codeEditor.getValue() !== src) {
-        codeEditor.setValue(src);
+        codeEditor.setValue(src, 1);
       }
     });
   }
