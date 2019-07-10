@@ -1,5 +1,6 @@
 let IDE = (function () {
 
+  let codeEditor;
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
   let autorunInterval, autorunNextTime;
@@ -10,6 +11,7 @@ let IDE = (function () {
       initializeTopBar();
       initializeInspectorPanel();
       initializeBlocksPanel();
+      initializeCodePanel();
       initializeOutputPanel();
     }
   };
@@ -110,6 +112,19 @@ let IDE = (function () {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
     initBlockly();
+  }
+
+  function initializeCodePanel() {
+		codeEditor = ace.edit("code-editor");
+		codeEditor.setTheme("ace/theme/ambiance");
+		codeEditor.getSession().setMode("ace/mode/uzi");
+    codeEditor.setReadOnly(true); // TODO(Richo): Only for now...
+    Uzi.addObserver(function () {
+      let src = Uzi.state.program.src;
+      if (codeEditor.getValue() !== src) {
+        codeEditor.setValue(src);
+      }
+    });
   }
 
   function initializeOutputPanel() {

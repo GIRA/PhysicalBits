@@ -182,17 +182,7 @@
         <div id="blockly" style="position: absolute;"></div>
       </div>
       <div id="code-panel">
-        <div id="code-editor">
-"Example: Blinking two leds"
-
-task blink13() running 1/s {
-  toggle(D13);
-}
-
-task blink11() running 2/s {
-  toggle(D11);
-}
-        </div>
+        <div id="code-editor"></div>
       </div>
       <div id="output-panel" class="fullscreen scrollable px-2">
         <pre id="output-console" ></pre>
@@ -215,11 +205,6 @@ task blink11() running 2/s {
 
   	<!-- ACE -->
   	<script src="../ace/ace.js" type="text/javascript" charset="utf-8"></script>
-  	<script>
-  		var editor = ace.edit("code-editor");
-  		editor.setTheme("ace/theme/ambiance");
-  		editor.getSession().setMode("ace/mode/uzi");
-  	</script>
 
     <script type="text/javascript" src="ast2blocks.js"></script>
     <script type="text/javascript" src="blocks2ast.js"></script>
