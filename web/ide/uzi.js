@@ -41,7 +41,7 @@ let Uzi = (function () {
   			error: errorHandler
   		}, 0);
     },
-		compile: function compile(src, type) {
+		compile: function (src, type) {
   		ajax.request({
   			type: 'POST',
   			url: baseUrl + Uzi.state.actions.compile.href,
@@ -56,7 +56,7 @@ let Uzi = (function () {
   			error: errorHandler
   		}, 0);
   	},
-    run: function run(src, type) {
+    run: function (src, type) {
   		ajax.request({
   			type: 'POST',
   			url: baseUrl + Uzi.state.actions.run.href,
