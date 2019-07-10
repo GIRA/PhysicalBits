@@ -97,7 +97,13 @@ let Uzi = (function () {
   function update(data) {
     let previousState = Uzi.state;
     Uzi.state = data;
-    observers.forEach(function (fn) { fn(Uzi.state, previousState); });
+    observers.forEach(function (fn) {
+      try {
+        fn(Uzi.state, previousState);
+      } catch (err) {
+        errorHandler(err);
+      }
+    });
   }
 
   function getUziState(wait, callbacks) {
