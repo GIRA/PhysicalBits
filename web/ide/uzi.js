@@ -95,8 +95,9 @@ let Uzi = (function () {
   }
 
   function update(data) {
+    let previousState = Uzi.state;
     Uzi.state = data;
-    observers.forEach(function (fn) { fn(); });
+    observers.forEach(function (fn) { fn(Uzi.state, previousState); });
   }
 
   function getUziState(wait, callbacks) {
