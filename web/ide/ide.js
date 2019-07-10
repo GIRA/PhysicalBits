@@ -94,6 +94,7 @@ let IDE = (function () {
     $("#disconnect-button").on("click", disconnect);
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
+    $("#install-button").on("click", install);
     Uzi.addObserver(updateTopBar);
   }
 
@@ -229,6 +230,10 @@ let IDE = (function () {
 		Uzi.run(getGeneratedCodeAsJSON(), "json");
   }
 
+  function install() {
+    Uzi.install(getGeneratedCodeAsJSON(), "json");
+  }
+
   function getGeneratedCode(){
     var xml = Blockly.Xml.workspaceToDom(workspace);
     return BlocksToAST.generate(xml);
@@ -246,6 +251,7 @@ let IDE = (function () {
       $("#disconnect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", "disabled");
       $("#run-button").attr("disabled", null);
+      $("#install-button").attr("disabled", null);
       setSelectedPort(Uzi.state.portName);
     } else {
       $("#disconnect-button").hide();
@@ -253,6 +259,7 @@ let IDE = (function () {
       $("#connect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", null);
       $("#run-button").attr("disabled", "disabled");
+      $("#install-button").attr("disabled", "disabled");
     }
   }
 
