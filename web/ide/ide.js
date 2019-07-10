@@ -92,6 +92,7 @@ let IDE = (function () {
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
+    $("#verify-button").on("click", verify);
     Uzi.addObserver(updateTopBar);
   }
 
@@ -217,6 +218,22 @@ let IDE = (function () {
   function disconnect() {
     $("#disconnect-button").attr("disabled", "disabled");
     Uzi.disconnect();
+  }
+
+  function verify() {
+    Uzi.compile(getGeneratedCodeAsJSON(), "json", function (bytecodes) {
+			console.log(bytecodes);
+		});
+  }
+
+  function getGeneratedCode(){
+    var xml = Blockly.Xml.workspaceToDom(workspace);
+    return BlocksToAST.generate(xml);
+  }
+
+  function getGeneratedCodeAsJSON() {
+    var code = getGeneratedCode();
+    return JSON.stringify(code);
   }
 
   function updateTopBar() {

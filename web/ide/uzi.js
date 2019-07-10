@@ -41,6 +41,21 @@ let Uzi = (function () {
   			error: errorHandler
   		}, 0);
     },
+		compile: function compile(src, type) {
+  		ajax.request({
+  			type: 'POST',
+  			url: baseUrl + Uzi.state.actions.compile.href,
+  			data: {
+  				id: id,
+  				src: src,
+  				type: type
+  			},
+  			success: function (bytecodes) {
+          console.log(bytecodes);
+  			},
+  			error: errorHandler
+  		}, 0);
+  	},
   };
 
   function nop () { /* Do nothing */ }
