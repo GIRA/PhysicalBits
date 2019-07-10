@@ -93,6 +93,7 @@ let IDE = (function () {
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
     $("#verify-button").on("click", verify);
+    $("#run-button").on("click", run);
     Uzi.addObserver(updateTopBar);
   }
 
@@ -221,9 +222,11 @@ let IDE = (function () {
   }
 
   function verify() {
-    Uzi.compile(getGeneratedCodeAsJSON(), "json", function (bytecodes) {
-			console.log(bytecodes);
-		});
+    Uzi.compile(getGeneratedCodeAsJSON(), "json");
+  }
+
+  function run() {
+		Uzi.run(getGeneratedCodeAsJSON(), "json");
   }
 
   function getGeneratedCode(){
@@ -242,12 +245,14 @@ let IDE = (function () {
       $("#disconnect-button").show();
       $("#disconnect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", "disabled");
+      $("#run-button").attr("disabled", null);
       setSelectedPort(Uzi.state.portName);
     } else {
       $("#disconnect-button").hide();
       $("#connect-button").show();
       $("#connect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", null);
+      $("#run-button").attr("disabled", "disabled");
     }
   }
 
