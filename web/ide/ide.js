@@ -4,6 +4,7 @@ let IDE = (function () {
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
   let autorunInterval, autorunNextTime;
+  let interactiveEnabled = false;
   let lastProgram;
 
   let IDE = {
@@ -14,6 +15,7 @@ let IDE = (function () {
       initializeBlocksPanel();
       initializeCodePanel();
       initializeOutputPanel();
+      initializeAutorun();
     }
   };
 
@@ -137,6 +139,10 @@ let IDE = (function () {
     });
   }
 
+  function initializeAutorun() {
+    setInterval(autorun, 100);
+  }
+
   function appendToOutput(text, type) {
     let css = {
       info: "text-white",
@@ -210,7 +216,7 @@ let IDE = (function () {
 		}
 		workspace.addChangeListener(function () {
   		// TODO(Richo): saveToLocalStorage();
-  		scheduleAutorun();
+  		scheduleAutorun(false);
   	});
 	}
 
@@ -258,28 +264,24 @@ let IDE = (function () {
   }
 
   function toggleInteractive() {
-    let checked = $("#interactive-checkbox").get(0).checked;
-		if (checked && autorunInterval === undefined) {
-			autorunInterval = setInterval(autorun, 100);
-		} else {
-			autorunInterval = clearInterval(autorunInterval);
-		}
+    interactiveEnabled = $("#interactive-checkbox").get(0).checked;
+    scheduleAutorun(interactiveEnabled);
   }
 
   function updateConnection (newState, previousState) {
     if (previousState == null
-      || (!previousState.isConnected && newState.isConnected)) {
-      scheduleAutorun();
+        || (!previousState.isConnected && newState.isConnected)) {
+      scheduleAutorun(true);
     }
   }
 
-	function scheduleAutorun(deltaTime) {
+	function scheduleAutorun(forced) {
 		var currentTime = +new Date();
-		autorunNextTime = currentTime + (deltaTime || 200);
+		autorunNextTime = currentTime;
+    if (forced) { lastProgram = null; }
 	}
 
 	function autorun() {
-		if (!Uzi.state.isConnected) return;
 		if (autorunNextTime === undefined) return;
 
 		var currentTime = +new Date();
@@ -290,7 +292,12 @@ let IDE = (function () {
 
 		autorunNextTime = undefined;
     lastProgram = cur;
-		Uzi.run(cur, "json");
+
+    if (Uzi.state.isConnected && interactiveEnabled) {
+      Uzi.run(cur, "json");
+    } else {
+      Uzi.compile(cur, "json");
+    }
 	}
 
   function getGeneratedCode(){
