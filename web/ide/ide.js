@@ -121,7 +121,7 @@ let IDE = (function () {
 		codeEditor.getSession().setMode("ace/mode/uzi");
     codeEditor.setReadOnly(true); // TODO(Richo): Only for now...
     Uzi.addObserver(function () {
-      let src = Uzi.state.program.src;
+      let src = Uzi.state.program.current.src;
       if (!src) return;
       if (codeEditor.getValue() !== src) {
         codeEditor.setValue(src, 1);
