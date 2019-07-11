@@ -1,6 +1,6 @@
 button actions
 chooseBreakpoints
-	^ protocol currentProgram 
+	^ protocol runningProgram 
 		ifNil: [#()]
 		ifNotNil: [:program || lines labels values |
 			lines := program linesOfCode.
