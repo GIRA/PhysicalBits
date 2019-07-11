@@ -1,7 +1,7 @@
 accessing
 variables
-	^ currentProgram
+	^ runningProgram
 		ifNil: [#()]
-		ifNotNil: [currentProgram allGlobals 
+		ifNotNil: [runningProgram allGlobals 
 			select: [:var | var name notNil]
 			thenCollect: [:var | var name]]

@@ -5,12 +5,12 @@ processTickingScripts
 	values := (1 to: count) collect: [:ign | serial next].
 	watchers := Dictionary new.
 	
-	currentProgram ifNil: [^ self].
-	count ~= currentProgram scripts size ifTrue: [^ self].
+	runningProgram ifNil: [^ self].
+	count ~= runningProgram scripts size ifTrue: [^ self].
 	
 	update := false.
 	values withIndexDo: [:next :index || script isRunning errorCode |
-		script := currentProgram scripts at: index.
+		script := runningProgram scripts at: index.
 		isRunning := (next bitAnd: 2r10000000) > 0.
 		errorCode := next bitAnd: 2r01111111.
 		watchers

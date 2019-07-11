@@ -1,5 +1,5 @@
 accessing
 scripts
-	^ currentProgram
+	^ runningProgram
 		ifNil: [#()]
-		ifNotNil: [currentProgram scripts]
+		ifNotNil: [:p | p scripts]

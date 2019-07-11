@@ -1,3 +1,3 @@
 accessing
 sourceCode
-	^ currentProgram ifNil: '' ifNotNil: [:p | p sourceCode]
+	^ runningProgram ifNil: '' ifNotNil: [:p | p sourceCode]

@@ -2,7 +2,7 @@ accessing
 summary: req
 	| res |
 	res := super summary: req.
-	self protocol currentProgram
+	self protocol runningProgram
 		ifNotNil: [:program |
 			res at: #id put: program id;
 				at: #src put: program sourceCode;

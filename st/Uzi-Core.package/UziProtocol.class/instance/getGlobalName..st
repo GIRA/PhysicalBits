@@ -1,6 +1,6 @@
 accessing-globals
 getGlobalName: globalNumber
-	^ currentProgram 
+	^ runningProgram 
 		ifNotNil: [:program | (program allGlobals 
 			at: globalNumber + 1
 			ifAbsent: [nil])

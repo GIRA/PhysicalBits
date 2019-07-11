@@ -1,3 +1,0 @@
-accessing
-currentProgram
-	^ protocol currentProgram

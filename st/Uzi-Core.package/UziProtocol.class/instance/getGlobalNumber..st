@@ -1,6 +1,6 @@
 accessing-globals
 getGlobalNumber: globalName
-	^ currentProgram 
+	^ runningProgram  
 		ifNotNil: [:program || sortedGlobals global |
 			sortedGlobals := program allGlobals.
 			global := sortedGlobals detect: [:var | var name = globalName] ifNone: [nil].

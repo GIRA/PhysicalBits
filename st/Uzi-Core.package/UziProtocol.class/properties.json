@@ -16,7 +16,8 @@
 		"freeUziRAM",
 		"pins",
 		"debugger",
-		"scriptWatchers" ],
+		"scriptWatchers",
+		"runningProgram" ],
 	"name" : "UziProtocol",
 	"pools" : [
 		 ],
