@@ -4,7 +4,7 @@ initialize
 	{
 		UziProtocolEvents connect.
 		UziProtocolEvents disconnect.
-		UziProtocolEvents runProgram.
+		UziProtocolEvents programUpdate.
 		UziProtocolEvents reportingChange.
 		UziProtocolEvents debuggerUpdate.
 	}

@@ -6,7 +6,7 @@ initialize
 	{ 
 		UziProtocolEvents connect.
 		UziProtocolEvents disconnect.
-		UziProtocolEvents runProgram.
+		UziProtocolEvents programUpdate.
 	} 
 	do: [:evt | protocol when: evt send: #update to: self].
 	
