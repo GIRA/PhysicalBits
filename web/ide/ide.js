@@ -5,6 +5,7 @@ let IDE = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let autorunInterval, autorunNextTime;
   let lastProgram;
+
   let IDE = {
     init: function () {
       initializeLayout();
@@ -194,6 +195,7 @@ let IDE = (function () {
   }
 
   function makeResizable() {
+    // TODO(Richo): Why is the "onresize" variable necessary?
     var onresize = function (e) { resize(); }
     window.addEventListener('resize', onresize, false);
     onresize();
@@ -206,7 +208,7 @@ let IDE = (function () {
 			console.error(err);
 		}
 		workspace.addChangeListener(function () {
-  		// save();
+  		// TODO(Richo): saveToLocalStorage();
   		scheduleAutorun();
   	});
 	}
@@ -282,9 +284,6 @@ let IDE = (function () {
 		var currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
 
-		var old = Uzi.state.program;
-		if (old !== undefined && old.compiled === false) return;
-
 		var cur = getGeneratedCodeAsJSON();
 		if (cur === lastProgram) return;
 
@@ -323,6 +322,7 @@ let IDE = (function () {
   }
 
   function updateInspectorPanel() {
+    // TODO(Richo): Update in place, don't clear and recreate.
     $("#tasks-table tbody").html("");
     if (!Uzi.state.isConnected) return;
 
