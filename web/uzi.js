@@ -1,5 +1,5 @@
 var Uzi = (function () {
-	
+
 	var id = Math.floor(Math.random() * (2**64));
 	var eventList = {
 		error: [],
@@ -8,7 +8,7 @@ var Uzi = (function () {
 		monitorUpdate: [],
 		debuggerUpdate: []
 	};
-			
+
 	var Uzi = {
 		baseUrl: "",
 		isConnected: false,
@@ -24,7 +24,7 @@ var Uzi = (function () {
 		availableGlobals: [],
 		globalsReporting: new Set(),
 		globals: [],
-		
+
 		onError: function (callback) {
 			eventList.error.push(callback);
 		},
@@ -40,13 +40,13 @@ var Uzi = (function () {
 		onDebuggerUpdate: function (callback) {
 			eventList.debuggerUpdate.push(callback);
 		},
-		
+
 		connect: connect,
 		disconnect: disconnect,
 		compile: compile,
 		install: install,
 		run: run,
-		
+
 		activatePinReport: function (pinNumber) {
 			Uzi.pinsReporting.add(pinNumber);
 		},
@@ -59,33 +59,33 @@ var Uzi = (function () {
 		deactivateGlobalReport: function (globalNumber) {
 			Uzi.globalsReporting.delete(globalNumber);
 		},
-				
+
 		start: function () {
 			updateLoop(true);
 			startPinMonitor();
 			startGlobalMonitor();
 		}
 	};
-	
+
 	function nop () { /* Do nothing */ }
-	
+
 	function errorHandler (err) {
 		console.log(err);
 		triggerEvent(eventList.error, err);
 	}
-	
+
 	function triggerEvent(evt, args) {
-		evt.forEach(function (each) { 
-			each(args); 
+		evt.forEach(function (each) {
+			each(args);
 		});
 	}
-		
+
 	function getUziState(wait, callbacks) {
 		var success = callbacks.success || nop;
 		var complete = callbacks.complete || nop;
 		var error = callbacks.error || nop;
-		ajax.request({ 
-			type: 'GET', 
+		ajax.request({
+			type: 'GET',
 			url: Uzi.baseUrl + "/uzi",
 			data: {
 				id: id,
@@ -98,8 +98,8 @@ var Uzi = (function () {
 	}
 
 	function connect (port, callback) {
-		ajax.request({ 
-			type: 'POST', 
+		ajax.request({
+			type: 'POST',
 			url: Uzi.baseUrl + "/uzi/actions/connect",
 			data: {
 				id: id,
@@ -114,8 +114,8 @@ var Uzi = (function () {
 	}
 
 	function disconnect (callback) {
-		ajax.request({ 
-			type: 'POST', 
+		ajax.request({
+			type: 'POST',
 			url: Uzi.baseUrl + "/uzi/actions/disconnect",
 			data: {
 				id: id
@@ -129,8 +129,8 @@ var Uzi = (function () {
 	}
 
 	function compile(src, type, callback) {
-		ajax.request({ 
-			type: 'POST', 
+		ajax.request({
+			type: 'POST',
 			url: Uzi.baseUrl + "/uzi/actions/compile",
 			data: {
 				id: id,
@@ -138,15 +138,15 @@ var Uzi = (function () {
 				type: type
 			},
 			success: function (bytecodes) {
-				callback(bytecodes);				
+				callback(bytecodes);
 			},
 			error: errorHandler
 		}, 0);
 	}
 
 	function install(src, type, callback) {
-		ajax.request({ 
-			type: 'POST', 
+		ajax.request({
+			type: 'POST',
 			url: Uzi.baseUrl + "/uzi/actions/install",
 			data: {
 				id: id,
@@ -163,7 +163,7 @@ var Uzi = (function () {
 	function run(src, type, callback) {
 		var program = {
 			id: undefined,
-			compiled: false			
+			compiled: false
 		};
 		if (type === "json") {
 			program.ast = src;
@@ -171,8 +171,8 @@ var Uzi = (function () {
 			program.src = src;
 		}
 		Uzi.program = program;
-		ajax.request({ 
-			type: 'POST', 
+		ajax.request({
+			type: 'POST',
 			url: Uzi.baseUrl + "/uzi/actions/run",
 			data: {
 				id: id,
@@ -195,8 +195,8 @@ var Uzi = (function () {
 	}
 
 	function getPins(start, pins, callback) {
-		ajax.request({ 
-			type: 'GET', 
+		ajax.request({
+			type: 'GET',
 			url: Uzi.baseUrl + "/uzi/pins",
 			data: {
 				id: id,
@@ -209,8 +209,8 @@ var Uzi = (function () {
 	}
 
 	function getGlobals(start, globals, callback) {
-		ajax.request({ 
-			type: 'GET', 
+		ajax.request({
+			type: 'GET',
 			url: Uzi.baseUrl + "/uzi/globals",
 			data: {
 				id: id,
@@ -221,25 +221,25 @@ var Uzi = (function () {
 			error: errorHandler
 		}, 2);
 	}
-	
+
 	function update(uzi) {
 		Uzi.portName = uzi.portName;
 		Uzi.isConnected = uzi.isConnected;
-		Uzi.availableGlobals = uzi.globals.available;		
+		Uzi.availableGlobals = uzi.globals.available;
 		triggerEvent(eventList.connectionUpdate);
-		
-		if (Uzi.program.id !== uzi.program.id) {
+
+		if (Uzi.program.id !== uzi.program.running.id) {
 			Uzi.program = {
-				id: uzi.program.id,
-				src: uzi.program.src,
-				ast: uzi.program.ast,
-				bytecodes: uzi.program.bytecodes,
-				validBreakpoints: uzi.program.validBreakpoints,
+				id: uzi.program.running.id,
+				src: uzi.program.running.src,
+				ast: uzi.program.running.ast,
+				bytecodes: uzi.program.running.bytecodes,
+				validBreakpoints: uzi.program.running.validBreakpoints,
 				compiled: true
 			};
 			triggerEvent(eventList.programUpdate);
 		}
-		
+
 		Uzi.debugger = uzi.debugger;
 		triggerEvent(eventList.debuggerUpdate);
 	}
@@ -251,7 +251,7 @@ var Uzi = (function () {
 			error: errorHandler
 		});
 	}
-	
+
 	function startPinMonitor() {
 		var waiting = false;
 		var last = 0;
@@ -272,7 +272,7 @@ var Uzi = (function () {
 			});
 		}, 200);
 	}
-	
+
 	function startGlobalMonitor() {
 		var waiting = false;
 		var last = 0;
@@ -293,17 +293,17 @@ var Uzi = (function () {
 			});
 		}, 200);
 	}
-	
+
 	/*
-	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN 
+	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN
 	in the JSON object resulting from either the pin or global reports. Since JSON
 	doesn't handle these values correctly I'm encoding them in a special way.
 	*/
 	function fixedInvalidJSONFloats(reporting) {
-		return reporting.map(function (r) { 
+		return reporting.map(function (r) {
 			return {
-				name: r.name, 
-				number: r.number, 
+				name: r.name,
+				number: r.number,
 				history: r.history.map(function (h) {
 					let value = h.value;
 					if (value["___INF___"] !== undefined) {
@@ -316,6 +316,6 @@ var Uzi = (function () {
 			};
 		});
 	}
-	
+
 	return Uzi;
 })();

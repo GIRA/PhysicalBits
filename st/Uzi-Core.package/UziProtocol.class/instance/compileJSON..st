@@ -8,7 +8,7 @@ compileJSON: jsonString
 		log: encoded printString;
 		success: 'Compilation successful!';
 		flush.
-	^ program]
+	^ currentProgram := program]
 			on: UziParseError , UziCompileError 
 			do: [:err | Uzi logger cr; error: err asString; flush.
 				err signal]
