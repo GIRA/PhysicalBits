@@ -294,9 +294,9 @@ let IDE = (function () {
     lastProgram = cur;
 
     if (Uzi.state.isConnected && interactiveEnabled) {
-      Uzi.run(cur, "json");
+      Uzi.run(cur, "json", true);
     } else {
-      Uzi.compile(cur, "json");
+      Uzi.compile(cur, "json", true);
     }
 	}
 

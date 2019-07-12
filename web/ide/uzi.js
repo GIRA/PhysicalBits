@@ -41,14 +41,15 @@ let Uzi = (function () {
   			error: errorHandler
   		}, 0);
     },
-		compile: function (src, type) {
+		compile: function (src, type, silent) {
   		ajax.request({
   			type: 'POST',
   			url: baseUrl + Uzi.state.actions.compile.href,
   			data: {
   				id: id,
   				src: src,
-  				type: type
+  				type: type,
+          silent: silent == true
   			},
   			success: function (bytecodes) {
           console.log(bytecodes);
@@ -56,14 +57,15 @@ let Uzi = (function () {
   			error: errorHandler
   		}, 0);
   	},
-    run: function (src, type) {
+    run: function (src, type, silent) {
   		ajax.request({
   			type: 'POST',
   			url: baseUrl + Uzi.state.actions.run.href,
   			data: {
   				id: id,
   				src: src,
-  				type: type
+  				type: type,
+          silent: silent == true
   			},
   			success: function (bytecodes) {
   				console.log(bytecodes);
