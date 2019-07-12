@@ -149,17 +149,14 @@ let IDE = (function () {
   }
 
   function initializeServerNotFoundErrorModal() {
-    let showing = false;
-    Uzi.addServerDisconnectHandler(function (err) {
-      if (showing) return;
-      showing = true;
+    Uzi.addServerDisconnectHandler(function () {
       $("#server-not-found-modal").modal('show');
     });
-    Uzi.addObserver(function () {
-      if (!showing) return;
-      showing = false;
-      $("#server-not-found-modal").modal('hide');
-    });
+    setInterval(function () {
+      if (Uzi.serverAvailable) {
+        $("#server-not-found-modal").modal('hide');
+      }
+    }, 1000);
   }
 
   function appendToOutput(text, type) {

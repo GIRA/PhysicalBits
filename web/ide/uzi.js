@@ -7,6 +7,7 @@ let Uzi = (function () {
 
   let Uzi = {
     state: null,
+    serverAvailable: true,
 
     start: function (url) {
       baseUrl = url || "";
@@ -142,10 +143,12 @@ let Uzi = (function () {
   function updateLoop(first) {
     getUziState(first ? 0 : 45, {
       success: function (data) {
+        Uzi.serverAvailable = true;
         update(data);
         updateLoop(false);
       },
       error: function (err) {
+        Uzi.serverAvailable = false;
         serverDisconnect(err);
         updateLoop(true);
       }
