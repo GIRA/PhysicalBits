@@ -90,7 +90,7 @@ let IDE = (function () {
 
     window.onresize = updateSize;
     layout.on('stateChanged', updateSize);
-    layout.on('stateChanged', resize);
+    layout.on('stateChanged', resizeBlockly);
     layout.init();
     updateSize();
   }
@@ -188,7 +188,7 @@ let IDE = (function () {
     });
   }
 
-  function resize() {
+  function resizeBlockly() {
     // Only if Blockly was initialized
     if (blocklyDiv == undefined || blocklyArea == undefined) return;
     let x, y;
@@ -202,8 +202,8 @@ let IDE = (function () {
   }
 
   function makeResizable() {
-    window.addEventListener('resize', resize, false);
-    resize();
+    window.addEventListener('resize', resizeBlockly, false);
+    resizeBlockly();
   }
 
 	function restoreFromLocalStorage() {
