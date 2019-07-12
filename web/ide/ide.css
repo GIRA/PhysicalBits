@@ -30,7 +30,7 @@
     height: 100%;
   }
 
-  body {
+  #container {
     background: rgb(0,0,0);
     background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 30%, rgba(35,35,35,1) 100%);
     color: white;

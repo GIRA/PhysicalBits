@@ -17,6 +17,7 @@ let IDE = (function () {
       initializeCodePanel();
       initializeOutputPanel();
       initializeAutorun();
+      initializeServerNotFoundErrorModal();
     }
   };
 
@@ -147,6 +148,20 @@ let IDE = (function () {
     setInterval(autorun, 100);
   }
 
+  function initializeServerNotFoundErrorModal() {
+    let showing = false;
+    Uzi.addServerDisconnectHandler(function (err) {
+      if (showing) return;
+      showing = true;
+      $("#server-not-found-modal").modal('show');
+    });
+    Uzi.addObserver(function () {
+      if (!showing) return;
+      showing = false;
+      $("#server-not-found-modal").modal('hide');
+    });
+  }
+
   function appendToOutput(text, type) {
     let css = {
       info: "text-white",
@@ -235,7 +250,6 @@ let IDE = (function () {
   function openProject() {
     let input = $("#open-file-input").get(0);
     input.onchange = function () {
-      debugger;
       let file = input.files[0];
       input.value = null;
       if (file === undefined) return;
