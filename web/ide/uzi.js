@@ -3,6 +3,7 @@ let Uzi = (function () {
   let id = Math.floor(Math.random() * (2**64));
   let baseUrl = "";
   let observers = [];
+  let serverDisconnectHandlers = [];
 
   let Uzi = {
     state: null,
@@ -13,6 +14,9 @@ let Uzi = (function () {
     },
     addObserver: function (fn) {
       observers.push(fn);
+    },
+    addServerDisconnectHandler: function (fn) {
+      serverDisconnectHandlers.push(fn);
     },
     connect: function (port) {
       ajax.request({
@@ -96,6 +100,16 @@ let Uzi = (function () {
     console.log(err);
   }
 
+  function serverDisconnect(error) {
+    serverDisconnectHandlers.forEach(function (fn) {
+      try {
+        fn(error);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }
+
   function update(data) {
     let previousState = Uzi.state;
     Uzi.state = data;
@@ -103,7 +117,7 @@ let Uzi = (function () {
       try {
         fn(Uzi.state, previousState);
       } catch (err) {
-        errorHandler(err);
+        console.log(err);
       }
     });
   }
@@ -127,9 +141,14 @@ let Uzi = (function () {
 
   function updateLoop(first) {
     getUziState(first ? 0 : 45, {
-      success: update,
-      complete: function () { updateLoop(false); },
-      error: errorHandler
+      success: function (data) {
+        update(data);
+        updateLoop(false);
+      },
+      error: function (err) {
+        serverDisconnect(err);
+        updateLoop(true);
+      }
     });
   }
 
