@@ -173,7 +173,7 @@ let IDE = (function () {
       success: function (toolbox) {
         workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
         makeResizable();
-        if (++counter == 2) { restore(); }
+        if (++counter == 2) { restoreFromLocalStorage(); }
       }
     });
 
@@ -183,7 +183,7 @@ let IDE = (function () {
       success: function (json) {
         let blocks = JSON.parse(json);
         Blockly.defineBlocksWithJsonArray(blocks);
-        if (++counter == 2) {	restore(); }
+        if (++counter == 2) {	restoreFromLocalStorage(); }
       }
     });
   }
@@ -208,17 +208,21 @@ let IDE = (function () {
     onresize();
   }
 
-	function restore() {
+	function restoreFromLocalStorage() {
 		try {
-			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi"]), workspace);
+			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi.blocks"]), workspace);
 		} catch (err) {
 			console.error(err);
 		}
 		workspace.addChangeListener(function () {
-  		// TODO(Richo): saveToLocalStorage();
+  		saveToLocalStorage();
   		scheduleAutorun(false);
   	});
 	}
+
+  function saveToLocalStorage() {
+  		localStorage["uzi.blocks"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+  }
 
   function choosePort() {
     let value = $("#port-dropdown").val();
