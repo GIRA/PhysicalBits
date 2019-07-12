@@ -4,7 +4,6 @@ let IDE = (function () {
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
   let autorunInterval, autorunNextTime;
-  let interactiveEnabled = false;
   let lastProgram;
   let lastFileName;
 
@@ -223,11 +222,17 @@ let IDE = (function () {
   }
 
 	function restoreFromLocalStorage() {
+    // Blockly
 		try {
 			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi.blocks"]), workspace);
-		} catch (err) {
-			console.error(err);
-		}
+		} catch (err) {	console.error(err); }
+
+    // Settings
+    try {
+      let settings = JSON.parse(localStorage["uzi.settings"]);
+      $("#interactive-checkbox").get(0).checked = settings.interactive == true;
+    } catch (err) { console.log(err); }
+
 		workspace.addChangeListener(function () {
   		saveToLocalStorage();
   		scheduleAutorun(false);
@@ -235,7 +240,18 @@ let IDE = (function () {
 	}
 
   function saveToLocalStorage() {
-  		localStorage["uzi.blocks"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+    let ui = getUIState();
+    localStorage["uzi.blocks"] = ui.blocks;
+    localStorage["uzi.settings"] = JSON.stringify(ui.settings);
+  }
+
+  function getUIState() {
+    return {
+      blocks: Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)),
+      settings: {
+        interactive: $("#interactive-checkbox").get(0).checked,
+      },
+    };
   }
 
   function newProject() {
@@ -253,10 +269,17 @@ let IDE = (function () {
 
       let reader = new FileReader();
       reader.onload = function(e) {
-        var xml = e.target.result;
-        var dom = Blockly.Xml.textToDom(xml);
+        let json = e.target.result;
+        let ui = JSON.parse(json);
+
+        // Blockly
+        let dom = Blockly.Xml.textToDom(ui.blocks);
         workspace.clear();
         Blockly.Xml.domToWorkspace(dom, workspace);
+
+        // settings
+        let settings = ui.settings;        
+        $("#interactive-checkbox").get(0).checked = settings.interactive == true;
       };
       reader.readAsText(file);
     };
@@ -269,8 +292,9 @@ let IDE = (function () {
     if (!lastFileName.endsWith(".phb")) {
       lastFileName += ".phb";
     }
-    var xml = Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));
-    var blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
+    let ui = getUIState();
+    let json = JSON.stringify(ui);
+    var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
     saveAs(blob, lastFileName);
   }
 
@@ -318,8 +342,8 @@ let IDE = (function () {
   }
 
   function toggleInteractive() {
-    interactiveEnabled = $("#interactive-checkbox").get(0).checked;
-    scheduleAutorun(interactiveEnabled);
+    scheduleAutorun($("#interactive-checkbox").get(0).checked);
+    saveToLocalStorage();
   }
 
   function updateConnection (newState, previousState) {
@@ -338,15 +362,16 @@ let IDE = (function () {
 	function autorun() {
 		if (autorunNextTime === undefined) return;
 
-		var currentTime = +new Date();
+		let currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
 
-		var currentProgram = getGeneratedCodeAsJSON();
+		let currentProgram = getGeneratedCodeAsJSON();
 		if (currentProgram === lastProgram) return;
 
 		autorunNextTime = undefined;
     lastProgram = currentProgram;
 
+    let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
     if (Uzi.state.isConnected && interactiveEnabled) {
       Uzi.run(currentProgram, "json", true);
     } else {
