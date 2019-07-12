@@ -202,10 +202,8 @@ let IDE = (function () {
   }
 
   function makeResizable() {
-    // TODO(Richo): Why is the "onresize" variable necessary?
-    var onresize = function (e) { resize(); }
-    window.addEventListener('resize', onresize, false);
-    onresize();
+    window.addEventListener('resize', resize, false);
+    resize();
   }
 
 	function restoreFromLocalStorage() {
