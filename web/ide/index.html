@@ -28,15 +28,16 @@
           <div class="col-8 text-center">
             <div class="d-inline">
               <div class="btn-group" role="toolbar" aria-label="...">
-                <button id="compile" type="button" class="btn btn-primary btn-sm">
+                <button id="new-button" type="button" class="btn btn-primary btn-sm">
                   <i class="fas fa-file mr-1"></i>
                   New...
                 </button>
-                <button id="run" type="button" class="btn btn-primary btn-sm">
+                <button id="open-button" type="button" class="btn btn-primary btn-sm">
                   <i class="fas fa-folder-open mr-1"></i>
                   Open...
+                  <input id="open-file-input" type="file" accept=".phb" style="display: none;">
                 </button>
-                <button id="install" type="button" class="btn btn-primary btn-sm">
+                <button id="save-button" type="button" class="btn btn-primary btn-sm">
                   <i class="fas fa-save mr-1"></i>
                   Save...
                 </button>
@@ -202,6 +203,9 @@
     <script src="../blockly/google-blockly/javascript_compressed.js"></script>
     <script src="../blockly/google-blockly/blocks_compressed.js"></script>
     <script src="../blockly/google-blockly/msg/js/en.js"></script>
+
+    <!-- FileSaver -->
+    <script src="../filesaver/src/FileSaver.js" type="text/javascript"></script>
 
   	<!-- ACE -->
   	<script src="../ace/ace.js" type="text/javascript" charset="utf-8"></script>

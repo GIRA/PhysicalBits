@@ -6,6 +6,7 @@ let IDE = (function () {
   let autorunInterval, autorunNextTime;
   let interactiveEnabled = false;
   let lastProgram;
+  let lastFileName;
 
   let IDE = {
     init: function () {
@@ -96,6 +97,9 @@ let IDE = (function () {
   }
 
   function initializeTopBar() {
+    $("#new-button").on("click", newProject);
+    $("#open-button").on("click", openProject);
+    $("#save-button").on("click", saveProject);
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
@@ -220,6 +224,43 @@ let IDE = (function () {
 
   function saveToLocalStorage() {
   		localStorage["uzi.blocks"] = Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+  }
+
+  function newProject() {
+		if (confirm("You will lose all your unsaved changes. Are you sure?")) {
+			workspace.clear();
+		}
+  }
+
+  function openProject() {
+    let input = $("#open-file-input").get(0);
+    input.onchange = function () {
+      debugger;
+      let file = input.files[0];
+      input.value = null;
+      if (file === undefined) return;
+
+      let reader = new FileReader();
+      reader.onload = function(e) {
+        var xml = e.target.result;
+        var dom = Blockly.Xml.textToDom(xml);
+        workspace.clear();
+        Blockly.Xml.domToWorkspace(dom, workspace);
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  function saveProject() {
+    lastFileName = prompt("File name:", lastFileName || "program.phb");
+    if (lastFileName === null) return;
+    if (!lastFileName.endsWith(".phb")) {
+      lastFileName += ".phb";
+    }
+    var xml = Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(workspace));
+    var blob = new Blob([xml], {type: "text/plain;charset=utf-8"});
+    saveAs(blob, lastFileName);
   }
 
   function choosePort() {
