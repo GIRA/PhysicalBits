@@ -165,6 +165,11 @@ let IDE = (function () {
   }
 
   function initBlockly() {
+
+    function makeResizable() {
+      window.addEventListener('resize', resizeBlockly, false);
+      resizeBlockly();
+    }
     // TODO(Richo): Maybe use promises to avoid this mess
     var counter = 0;
     ajax.request({
@@ -199,11 +204,6 @@ let IDE = (function () {
     blocklyDiv.style.width = (blocklyArea.offsetWidth * scale) + 'px';
     blocklyDiv.style.height = (blocklyArea.offsetHeight * scale) + 'px';
     Blockly.svgResize(workspace);
-  }
-
-  function makeResizable() {
-    window.addEventListener('resize', resizeBlockly, false);
-    resizeBlockly();
   }
 
 	function restoreFromLocalStorage() {
@@ -289,16 +289,16 @@ let IDE = (function () {
 		var currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
 
-		var cur = getGeneratedCodeAsJSON();
-		if (cur === lastProgram) return;
+		var currentProgram = getGeneratedCodeAsJSON();
+		if (currentProgram === lastProgram) return;
 
 		autorunNextTime = undefined;
-    lastProgram = cur;
+    lastProgram = currentProgram;
 
     if (Uzi.state.isConnected && interactiveEnabled) {
-      Uzi.run(cur, "json", true);
+      Uzi.run(currentProgram, "json", true);
     } else {
-      Uzi.compile(cur, "json", true);
+      Uzi.compile(currentProgram, "json", true);
     }
 	}
 
