@@ -222,16 +222,11 @@ let IDE = (function () {
   }
 
 	function restoreFromLocalStorage() {
-    // Blockly
-		try {
-			Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(localStorage["uzi.blocks"]), workspace);
-		} catch (err) {	console.error(err); }
-
-    // Settings
-    try {
-      let settings = JSON.parse(localStorage["uzi.settings"]);
-      $("#interactive-checkbox").get(0).checked = settings.interactive == true;
-    } catch (err) { console.log(err); }
+    let ui = {
+      blocks: localStorage["uzi.blocks"],
+      settings: JSON.parse(localStorage["uzi.settings"] || {}),
+    };
+    setUIState(ui);
 
 		workspace.addChangeListener(function () {
   		saveToLocalStorage();
@@ -254,6 +249,16 @@ let IDE = (function () {
     };
   }
 
+  function setUIState(ui) {
+    try {
+      workspace.clear();
+      Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
+      $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   function newProject() {
 		if (confirm("You will lose all your unsaved changes. Are you sure?")) {
 			workspace.clear();
@@ -271,15 +276,7 @@ let IDE = (function () {
       reader.onload = function(e) {
         let json = e.target.result;
         let ui = JSON.parse(json);
-
-        // Blockly
-        let dom = Blockly.Xml.textToDom(ui.blocks);
-        workspace.clear();
-        Blockly.Xml.domToWorkspace(dom, workspace);
-
-        // settings
-        let settings = ui.settings;        
-        $("#interactive-checkbox").get(0).checked = settings.interactive == true;
+        setUIState(ui);
       };
       reader.readAsText(file);
     };
