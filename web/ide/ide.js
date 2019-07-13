@@ -192,6 +192,10 @@ let IDE = (function () {
       url: 'toolbox.xml',
       success: function (toolbox) {
         workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+        workspace.addChangeListener(function () {
+      		saveToLocalStorage();
+      		scheduleAutorun(false);
+      	});
         makeResizable();
         if (++counter == 2) { restoreFromLocalStorage(); }
       }
@@ -227,11 +231,6 @@ let IDE = (function () {
       settings: JSON.parse(localStorage["uzi.settings"] || {}),
     };
     setUIState(ui);
-
-		workspace.addChangeListener(function () {
-  		saveToLocalStorage();
-  		scheduleAutorun(false);
-  	});
 	}
 
   function saveToLocalStorage() {
