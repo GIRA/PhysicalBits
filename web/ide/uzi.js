@@ -20,7 +20,7 @@ let Uzi = (function () {
       serverDisconnectHandlers.push(fn);
     },
     connect: function (port) {
-      ajax.requestPromise({
+      ajax.request({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.connect.href,
     			data: {
@@ -33,7 +33,7 @@ let Uzi = (function () {
         .catch(errorHandler);
     },
     disconnect: function () {
-      ajax.requestPromise({
+      ajax.request({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.disconnect.href,
     			data: {
@@ -45,7 +45,7 @@ let Uzi = (function () {
         .catch(errorHandler);
     },
 		compile: function (src, type, silent) {
-  		ajax.requestPromise({
+  		ajax.request({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.compile.href,
     			data: {
@@ -62,7 +62,7 @@ let Uzi = (function () {
   			.catch(errorHandler);
   	},
     run: function (src, type, silent) {
-  		ajax.requestPromise({
+  		ajax.request({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.run.href,
     			data: {
@@ -79,7 +79,7 @@ let Uzi = (function () {
         .catch(errorHandler);
   	},
     install: function (src, type) {
-      ajax.requestPromise({
+      ajax.request({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.install.href,
     			data: {
@@ -125,7 +125,7 @@ let Uzi = (function () {
   }
 
   function getUziState(wait) {
-    return ajax.requestPromise({
+    return ajax.request({
       type: 'GET',
       url: baseUrl + "/uzi",
       data: {

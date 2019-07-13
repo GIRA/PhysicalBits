@@ -9,7 +9,7 @@ var ajax = (function () {
     var activeXHR = []; // Requests that have already been sent to the server
     var maxRequests = 6; // How many requests can be kept active at the same time
 
-    function request (req, priority) {
+    function pushRequest (req, priority) {
         if (priority === undefined) {
             priority = 1;
         }
@@ -19,9 +19,9 @@ var ajax = (function () {
         }
     }
 
-    function requestPromise(req) {
+    function request(req) {
       return new Promise(function (resolve, reject) {
-        request({
+        pushRequest({
           type: req.type || "GET",
           url: req.url,
           data: req.data,
@@ -73,9 +73,6 @@ var ajax = (function () {
             complete: function (xhr, status) {
                 if (isActive(xhr)) {
                     removeFromActiveList(xhr);
-                    if (req.complete) {
-                        req.complete(xhr, status);
-                    }
                 }
                 sendNextRequest();
             },
@@ -121,7 +118,6 @@ var ajax = (function () {
 
     return {
         request: request,
-        requestPromise: requestPromise,
         abortAll: abortAll,
         abortAllWithPriorityLowerThan: abortAllWithPriorityLowerThan
     };

@@ -186,7 +186,7 @@ let IDE = (function () {
       resizeBlockly();
     }
 
-    let loadToolbox = ajax.requestPromise({
+    let loadToolbox = ajax.request({
         type: 'GET',
         url: 'toolbox.xml'
       }).then(function (toolbox) {
@@ -198,7 +198,7 @@ let IDE = (function () {
         makeResizable();
       });
 
-    let loadBlocks = ajax.requestPromise({
+    let loadBlocks = ajax.request({
         type: 'GET',
         url: 'blocks.json'
       })
