@@ -13,90 +13,71 @@ let Uzi = (function () {
       baseUrl = url || "";
       updateLoop(true);
     },
+
     addObserver: function (fn) {
       observers.push(fn);
     },
+
     addServerDisconnectHandler: function (fn) {
       serverDisconnectHandlers.push(fn);
     },
+
     connect: function (port) {
-      ajax.request({
-    			type: 'POST',
-    			url: baseUrl + Uzi.state.actions.connect.href,
-    			data: {
-    				id: id,
-    				port: port
-    			},
-          priority: 0
-        })
+      let url = baseUrl + Uzi.state.actions.connect.href;
+      ajax.POST(url, { id: id, port: port })
         .then(update)
         .catch(errorHandler);
     },
+
     disconnect: function () {
-      ajax.request({
-    			type: 'POST',
-    			url: baseUrl + Uzi.state.actions.disconnect.href,
-    			data: {
-    				id: id,
-    			},
-          priority: 0
-        })
+      let url = baseUrl + Uzi.state.actions.disconnect.href;
+      ajax.POST(url, { id: id })
         .then(update)
         .catch(errorHandler);
     },
+
 		compile: function (src, type, silent) {
-  		ajax.request({
-    			type: 'POST',
-    			url: baseUrl + Uzi.state.actions.compile.href,
-    			data: {
-    				id: id,
-    				src: src,
-    				type: type,
-            silent: silent == true
-    			},
-          priority: 0
-        })
-        .then(function (bytecodes) {
-          console.log(bytecodes);
-  			})
+      let url = baseUrl + Uzi.state.actions.compile.href;
+      let data = {
+        id: id,
+        src: src,
+        type: type,
+        silent: silent == true
+      };
+  		ajax.POST(url, data)
+        .then(log)
   			.catch(errorHandler);
   	},
+
     run: function (src, type, silent) {
-  		ajax.request({
-    			type: 'POST',
-    			url: baseUrl + Uzi.state.actions.run.href,
-    			data: {
-    				id: id,
-    				src: src,
-    				type: type,
-            silent: silent == true
-    			},
-          priority: 0
-        })
-        .then(function (bytecodes) {
-          console.log(bytecodes);
-        })
+      let url = baseUrl + Uzi.state.actions.run.href;
+      let data = {
+        id: id,
+        src: src,
+        type: type,
+        silent: silent == true
+      };
+  		ajax.POST(url, data)
+        .then(log)
         .catch(errorHandler);
   	},
+
     install: function (src, type) {
-      ajax.request({
-    			type: 'POST',
-    			url: baseUrl + Uzi.state.actions.install.href,
-    			data: {
-    				id: id,
-    				src: src,
-    				type: type
-    			},
-          priority: 0
-        })
-        .then(function (bytecodes) {
-          console.log(bytecodes);
-        })
+      let url = baseUrl + Uzi.state.actions.install.href;
+      let data = {
+        id: id,
+        src: src,
+        type: type
+      };
+      ajax.POST(url, data)
+        .then(log)
         .catch(errorHandler);
     }
   };
 
-  function nop () { /* Do nothing */ }
+  function log(data) {
+    console.log(data);
+  }
 
   function errorHandler (err) {
     console.log(err);
@@ -125,19 +106,14 @@ let Uzi = (function () {
   }
 
   function getUziState(wait) {
-    return ajax.request({
-      type: 'GET',
-      url: baseUrl + "/uzi",
-      data: {
-        id: id,
-        wait: wait
-      },
-      priority: 1,
-    });
+    let url = baseUrl + "/uzi";
+    let data = { id: id, wait: wait };
+    let priority = 1;
+    return ajax.GET(url, data, priority);
   }
 
-  function updateLoop(first) {
-    getUziState(first ? 0 : 45)
+  function updateLoop(immediate) {
+    getUziState(immediate ? 0 : 45)
       .then(function (data) {
         Uzi.serverAvailable = true;
         update(data);
@@ -148,10 +124,6 @@ let Uzi = (function () {
         serverDisconnect(err);
         updateLoop(true);
       });
-  }
-
-  function start() {
-    updateLoop(true);
   }
 
   return Uzi;

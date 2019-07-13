@@ -118,7 +118,23 @@ let IDE = (function () {
   function initializeBlocksPanel() {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
-    initBlockly();
+
+    let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
+      workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+      workspace.addChangeListener(function () {
+        saveToLocalStorage();
+        scheduleAutorun(false);
+      });
+      window.addEventListener('resize', resizeBlockly, false);
+      resizeBlockly();
+    });
+
+    let loadBlocks = ajax.GET('blocks.json').then(function (json) {
+      let blocks = JSON.parse(json);
+      Blockly.defineBlocksWithJsonArray(blocks);
+    });
+    
+    Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
   }
 
   function initializeCodePanel() {
@@ -177,38 +193,6 @@ let IDE = (function () {
     // Scroll to bottom
     let panel = $("#output-panel").get(0);
     panel.scrollTop = panel.scrollHeight - panel.clientHeight;
-  }
-
-  function initBlockly() {
-
-    function makeResizable() {
-      window.addEventListener('resize', resizeBlockly, false);
-      resizeBlockly();
-    }
-
-    let loadToolbox = ajax.request({
-        type: 'GET',
-        url: 'toolbox.xml'
-      }).then(function (toolbox) {
-        workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-        workspace.addChangeListener(function () {
-          saveToLocalStorage();
-          scheduleAutorun(false);
-        });
-        makeResizable();
-      });
-
-    let loadBlocks = ajax.request({
-        type: 'GET',
-        url: 'blocks.json'
-      })
-      .then(function (json) {
-        let blocks = JSON.parse(json);
-        Blockly.defineBlocksWithJsonArray(blocks);
-      });
-
-    Promise.all([loadToolbox, loadBlocks])
-      .then(restoreFromLocalStorage);
   }
 
   function resizeBlockly() {
