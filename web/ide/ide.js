@@ -185,31 +185,38 @@ let IDE = (function () {
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     }
-    // TODO(Richo): Maybe use promises to avoid this mess
-    var counter = 0;
-    ajax.request({
-      type: 'GET',
-      url: 'toolbox.xml',
-      success: function (toolbox) {
-        workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-        workspace.addChangeListener(function () {
-      		saveToLocalStorage();
-      		scheduleAutorun(false);
-      	});
-        makeResizable();
-        if (++counter == 2) { restoreFromLocalStorage(); }
-      }
+    
+    let loadToolbox = new Promise(function (resolve, reject) {
+      ajax.request({
+        type: 'GET',
+        url: 'toolbox.xml',
+        success: resolve,
+        error: reject
+      });
+    });
+    loadToolbox.then(function (toolbox) {
+      workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+      workspace.addChangeListener(function () {
+        saveToLocalStorage();
+        scheduleAutorun(false);
+      });
+      makeResizable();
     });
 
-    ajax.request({
-      type: 'GET',
-      url: 'blocks.json',
-      success: function (json) {
-        let blocks = JSON.parse(json);
-        Blockly.defineBlocksWithJsonArray(blocks);
-        if (++counter == 2) {	restoreFromLocalStorage(); }
-      }
+    let loadBlocks = new Promise(function (resolve, reject) {
+      ajax.request({
+        type: 'GET',
+        url: 'blocks.json',
+        success: resolve,
+        error: reject
+      });
     });
+    loadBlocks.then(function (json) {
+      let blocks = JSON.parse(json);
+      Blockly.defineBlocksWithJsonArray(blocks);
+    });
+
+    Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
   }
 
   function resizeBlockly() {
