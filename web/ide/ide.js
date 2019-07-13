@@ -185,38 +185,30 @@ let IDE = (function () {
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     }
-    
-    let loadToolbox = new Promise(function (resolve, reject) {
-      ajax.request({
-        type: 'GET',
-        url: 'toolbox.xml',
-        success: resolve,
-        error: reject
-      });
-    });
-    loadToolbox.then(function (toolbox) {
-      workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
-      workspace.addChangeListener(function () {
-        saveToLocalStorage();
-        scheduleAutorun(false);
-      });
-      makeResizable();
-    });
 
-    let loadBlocks = new Promise(function (resolve, reject) {
-      ajax.request({
+    let loadToolbox = ajax.requestPromise({
         type: 'GET',
-        url: 'blocks.json',
-        success: resolve,
-        error: reject
+        url: 'toolbox.xml'
+      }).then(function (toolbox) {
+        workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox });
+        workspace.addChangeListener(function () {
+          saveToLocalStorage();
+          scheduleAutorun(false);
+        });
+        makeResizable();
       });
-    });
-    loadBlocks.then(function (json) {
-      let blocks = JSON.parse(json);
-      Blockly.defineBlocksWithJsonArray(blocks);
-    });
 
-    Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
+    let loadBlocks = ajax.requestPromise({
+        type: 'GET',
+        url: 'blocks.json'
+      })
+      .then(function (json) {
+        let blocks = JSON.parse(json);
+        Blockly.defineBlocksWithJsonArray(blocks);
+      });
+
+    Promise.all([loadToolbox, loadBlocks])
+      .then(restoreFromLocalStorage);
   }
 
   function resizeBlockly() {
