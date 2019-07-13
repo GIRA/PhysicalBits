@@ -2,8 +2,10 @@ let Uzi = (function () {
 
   let id = Math.floor(Math.random() * (2**64));
   let baseUrl = "";
-  let observers = [];
-  let serverDisconnectHandlers = [];
+  let observers = {
+    "update" : [],
+    "server-disconnect" : []
+  };
 
   let Uzi = {
     state: null,
@@ -14,12 +16,8 @@ let Uzi = (function () {
       updateLoop(true);
     },
 
-    addObserver: function (fn) {
-      observers.push(fn);
-    },
-
-    addServerDisconnectHandler: function (fn) {
-      serverDisconnectHandlers.push(fn);
+    on: function (evt, callback) {
+      observers[evt].push(callback);
     },
 
     connect: function (port) {
@@ -84,7 +82,7 @@ let Uzi = (function () {
   }
 
   function serverDisconnect(error) {
-    serverDisconnectHandlers.forEach(function (fn) {
+    observers["server-disconnect"].forEach(function (fn) {
       try {
         fn(error);
       } catch (err) {
@@ -96,7 +94,7 @@ let Uzi = (function () {
   function update(data) {
     let previousState = Uzi.state;
     Uzi.state = data;
-    observers.forEach(function (fn) {
+    observers["update"].forEach(function (fn) {
       try {
         fn(Uzi.state, previousState);
       } catch (err) {

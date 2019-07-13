@@ -107,12 +107,12 @@ let IDE = (function () {
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
 		$("#interactive-checkbox").on("change", toggleInteractive);
-    Uzi.addObserver(updateTopBar);
-    Uzi.addObserver(updateConnection);
+    Uzi.on("update", updateTopBar);
+    Uzi.on("update", updateConnection);
   }
 
   function initializeInspectorPanel() {
-    Uzi.addObserver(updateInspectorPanel);
+    Uzi.on("update", updateInspectorPanel);
   }
 
   function initializeBlocksPanel() {
@@ -133,7 +133,7 @@ let IDE = (function () {
       let blocks = JSON.parse(json);
       Blockly.defineBlocksWithJsonArray(blocks);
     });
-    
+
     Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
   }
 
@@ -142,7 +142,7 @@ let IDE = (function () {
 		codeEditor.setTheme("ace/theme/ambiance");
 		codeEditor.getSession().setMode("ace/mode/uzi");
     codeEditor.setReadOnly(true); // TODO(Richo): Only for now...
-    Uzi.addObserver(function () {
+    Uzi.on("update", function () {
       let src = Uzi.state.program.current.src;
       if (src == undefined) return;
       if (codeEditor.getValue() !== src) {
@@ -152,7 +152,7 @@ let IDE = (function () {
   }
 
   function initializeOutputPanel() {
-    Uzi.addObserver(function () {
+    Uzi.on("update", function () {
       Uzi.state.output.forEach(function (entry) {
         appendToOutput(entry.text, entry.type);
       });
@@ -164,7 +164,7 @@ let IDE = (function () {
   }
 
   function initializeServerNotFoundErrorModal() {
-    Uzi.addServerDisconnectHandler(function () {
+    Uzi.on("server-disconnect", function () {
       $("#server-not-found-modal").modal('show');
     });
     setInterval(function () {
