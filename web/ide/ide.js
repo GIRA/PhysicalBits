@@ -1,5 +1,6 @@
 let IDE = (function () {
 
+  let layout;
   let codeEditor;
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
@@ -9,7 +10,7 @@ let IDE = (function () {
 
   let IDE = {
     init: function () {
-      initializeLayout();
+      initializeDefaultLayout();
       initializeTopBar();
       initializeInspectorPanel();
       initializeBlocksPanel();
@@ -20,62 +21,80 @@ let IDE = (function () {
     }
   };
 
-  function initializeLayout() {
-    let config = {
-      settings: {
-        showPopoutIcon: false,
-        showMaximiseIcon: false,
-        showCloseIcon: false,
-      },
-      content: [{
-        type: 'row',
-        content:[{
-          type: 'component',
-          componentName: 'ide',
-          componentState: { id: '#inspector-panel' },
-          title: 'Inspector',
-          width: 17,
-        },{
-          type: 'column',
+  function initializeDefaultLayout() {
+      let config = {
+        settings: {
+          showPopoutIcon: false,
+          showMaximiseIcon: false,
+          showCloseIcon: false,
+        },
+        content: [{
+          type: 'row',
           content:[{
-            type: 'row',
-            content: [{
-              type: 'component',
-              componentName: 'ide',
-              componentState: { id: '#blocks-panel' },
-              title: 'Blocks',
-            },{
-              type: 'component',
-              componentName: 'ide',
-              componentState: { id: '#code-panel' },
-              title: 'Code',
-              width: 30,
-            }]
+            type: 'component',
+            componentName: 'ide',
+            componentState: { id: '#inspector-panel' },
+            title: 'Inspector',
+            width: 17,
           },{
-            type: 'stack',
-            height: 20,
-            content: [{
-              type: 'component',
-              componentName: 'ide',
-              componentState: { id: '#output-panel' },
-              title: 'Output',
+            type: 'column',
+            content:[{
+              type: 'row',
+              content: [{
+                type: 'component',
+                componentName: 'ide',
+                componentState: { id: '#blocks-panel' },
+                title: 'Blocks',
+              },{
+                type: 'component',
+                componentName: 'ide',
+                componentState: { id: '#code-panel' },
+                title: 'Code',
+                width: 30,
+              }]
             },{
-              type: 'component',
-              componentName: 'ide',
-              componentState: { id: '#test3' },
-              title: 'Serial Monitor',
-            },{
-              type: 'component',
-              componentName: 'ide',
-              componentState: { id: '#test3' },
-              title: 'Debugger',
+              type: 'stack',
+              height: 20,
+              content: [{
+                type: 'component',
+                componentName: 'ide',
+                componentState: { id: '#output-panel' },
+                title: 'Output',
+              },{
+                type: 'component',
+                componentName: 'ide',
+                componentState: { id: '#test3' },
+                title: 'Serial Monitor',
+              },{
+                type: 'component',
+                componentName: 'ide',
+                componentState: { id: '#test3' },
+                title: 'Debugger',
+              }]
             }]
           }]
         }]
-      }]
-    };
+      };
+      initializeLayout(config);
+  }
 
-    let layout = new GoldenLayout(config, "#container");
+  function initializeLayout(config) {
+    /*
+    NOTE(Richo): If the layout is already initialized then we have to do some crazy
+    DOM manipulation to avoid golden-layout to mess everything. So, first we store
+    the old layout in a temporary variable. This allows us to prepare the DOM for
+    the new layout and also to destroy the previous when we're done. There is
+    probably a better way to do this, but for now this seems to work.
+    */
+    let oldLayout = layout;
+    if (oldLayout) {
+      $("#layout-container").attr("id", "layout-container-old");
+      $("#container").append($("<div>")
+        .attr("id", "layout-container")
+        .addClass("fullscreen"));
+    }
+    layout = new GoldenLayout(config, "#layout-container");
+
     layout.registerComponent('ide', function(container, state) {
         let $el = $(state.id);
         container.getElement().append($el);
@@ -92,8 +111,14 @@ let IDE = (function () {
     window.onresize = updateSize;
     layout.on('stateChanged', updateSize);
     layout.on('stateChanged', resizeBlockly);
+    layout.on('stateChanged', saveToLocalStorage);
     layout.init();
     updateSize();
+
+    if (oldLayout) {
+      oldLayout.destroy();
+      $("#layout-container-old").remove();
+    }
   }
 
   function initializeTopBar() {
@@ -212,6 +237,7 @@ let IDE = (function () {
     let ui = {
       blocks: localStorage["uzi.blocks"],
       settings: JSON.parse(localStorage["uzi.settings"] || {}),
+      layout: JSON.parse(localStorage["uzi.layout"] || "null")
     };
     setUIState(ui);
 	}
@@ -220,6 +246,7 @@ let IDE = (function () {
     let ui = getUIState();
     localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
+    localStorage["uzi.layout"] = JSON.stringify(ui.layout);
   }
 
   function getUIState() {
@@ -228,14 +255,24 @@ let IDE = (function () {
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
       },
+      layout: layout.toConfig(),
     };
   }
 
   function setUIState(ui) {
     try {
-      workspace.clear();
-      Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
-      $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+      if (ui.blocks) {
+        workspace.clear();
+        Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
+      }
+
+      if (ui.settings) {
+        $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+      }
+
+      if (ui.layout) {
+        initializeLayout(ui.layout);
+      }
     } catch (err) {
       console.error(err);
     }
