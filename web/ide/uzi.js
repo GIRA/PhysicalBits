@@ -62,7 +62,7 @@ let Uzi = (function () {
   			.catch(errorHandler);
   	},
     run: function (src, type, silent) {
-  		ajax.request({
+  		ajax.requestPromise({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.run.href,
     			data: {
@@ -79,7 +79,7 @@ let Uzi = (function () {
         .catch(errorHandler);
   	},
     install: function (src, type) {
-      ajax.request({
+      ajax.requestPromise({
     			type: 'POST',
     			url: baseUrl + Uzi.state.actions.install.href,
     			data: {
