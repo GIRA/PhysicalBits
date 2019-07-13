@@ -272,9 +272,14 @@ let IDE = (function () {
 
       let reader = new FileReader();
       reader.onload = function(e) {
-        let json = e.target.result;
-        let ui = JSON.parse(json);
-        setUIState(ui);
+        try {
+          let json = e.target.result;
+          let ui = JSON.parse(json);
+          setUIState(ui);
+        } catch (err) {
+          console.log(err);
+          appendToOutput("Error attempting to read the project file", "error");
+        }
       };
       reader.readAsText(file);
     };
@@ -287,10 +292,15 @@ let IDE = (function () {
     if (!lastFileName.endsWith(".phb")) {
       lastFileName += ".phb";
     }
-    let ui = getUIState();
-    let json = JSON.stringify(ui);
-    var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-    saveAs(blob, lastFileName);
+    try {
+      let ui = getUIState();
+      let json = JSON.stringify(ui);
+      var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
+      saveAs(blob, lastFileName);
+    } catch (err) {
+      console.log(err);
+      appendToOutput("Error attempting to write the project file", "error");
+    }
   }
 
   function choosePort() {
