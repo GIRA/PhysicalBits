@@ -22,71 +22,72 @@ let IDE = (function () {
   };
 
   function initializeDefaultLayout() {
-      let config = {
-        settings: {
-          showPopoutIcon: false,
-          showMaximiseIcon: false,
-          showCloseIcon: false,
-        },
-        content: [{
-          type: 'row',
+    // TODO(Richo): Maybe load the default config from a file?
+    let config = {
+      settings: {
+        showPopoutIcon: false,
+        showMaximiseIcon: false,
+        showCloseIcon: false,
+      },
+      content: [{
+        type: 'row',
+        content:[{
+          type: 'component',
+          componentName: 'DOM',
+          componentState: { id: '#inspector-panel' },
+          title: 'Inspector',
+          width: 17,
+        },{
+          type: 'column',
           content:[{
-            type: 'component',
-            componentName: 'DOM',
-            componentState: { id: '#inspector-panel' },
-            title: 'Inspector',
-            width: 17,
-          },{
-            type: 'column',
-            content:[{
-              type: 'row',
-              content: [{
-                type: 'component',
-                componentName: 'DOM',
-                componentState: { id: '#blocks-panel' },
-                title: 'Blocks',
-              },{
-                type: 'component',
-                componentName: 'DOM',
-                componentState: { id: '#code-panel' },
-                title: 'Code',
-                width: 30,
-              }]
+            type: 'row',
+            content: [{
+              type: 'component',
+              componentName: 'DOM',
+              componentState: { id: '#blocks-panel' },
+              title: 'Blocks',
             },{
-              type: 'stack',
-              height: 20,
-              content: [{
-                type: 'component',
-                componentName: 'DOM',
-                componentState: { id: '#output-panel' },
-                title: 'Output',
-              },{
-                type: 'component',
-                componentName: 'DOM',
-                componentState: { id: '#test3' },
-                title: 'Serial Monitor',
-              },{
-                type: 'component',
-                componentName: 'DOM',
-                componentState: { id: '#test3' },
-                title: 'Debugger',
-              }]
+              type: 'component',
+              componentName: 'DOM',
+              componentState: { id: '#code-panel' },
+              title: 'Code',
+              width: 30,
+            }]
+          },{
+            type: 'stack',
+            height: 20,
+            content: [{
+              type: 'component',
+              componentName: 'DOM',
+              componentState: { id: '#output-panel' },
+              title: 'Output',
+            },{
+              type: 'component',
+              componentName: 'DOM',
+              componentState: { id: '#test3' },
+              title: 'Serial Monitor',
+            },{
+              type: 'component',
+              componentName: 'DOM',
+              componentState: { id: '#test3' },
+              title: 'Debugger',
             }]
           }]
         }]
-      };
-      initializeLayout(config);
+      }]
+    };
+    initializeLayout(config);
   }
 
   function initializeLayout(config) {
     if (layout) { layout.destroy(); }
     layout = new GoldenLayout(config, "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
-        let $el = $(state.id);
-        container.getElement().append($el);
-        container.on('destroy', function () {
-          $("#hidden-panels").append($el);
-        });
+      let $el = $(state.id);
+      container.getElement().append($el);
+      container.on('destroy', function () {
+        $("#hidden-panels").append($el);
+      });
     });
 
     function updateSize() {
@@ -101,14 +102,6 @@ let IDE = (function () {
     layout.on('stateChanged', updateSize);
     layout.on('stateChanged', resizeBlockly);
     layout.on('stateChanged', saveToLocalStorage);
-    /*
-    layout.on('itemDestroyed', function (item) {
-      if (item.config.componentName != 'DOM') return;
-
-      let $el = $(item.config.componentState.id);
-      $("#hidden-panels").append($el);
-    });
-    */
     layout.init();
     updateSize();
   }
