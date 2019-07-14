@@ -79,26 +79,8 @@ let IDE = (function () {
   }
 
   function initializeLayout(config) {
-    /*
-    NOTE(Richo): If the layout is already initialized then we have to do some crazy
-    DOM manipulation to avoid golden-layout to mess everything. So, first we store
-    the old layout in a temporary variable. This allows us to prepare the DOM for
-    the new layout and also to destroy the previous when we're done. There is
-    probably a better way to do this, but for now this seems to work.
-    */
-    let oldLayout = layout;
-    if (oldLayout) {
-      $("#layout-container").attr("id", "layout-container-old");
-      $("#container").append($("<div>")
-        .attr("id", "layout-container")
-        .addClass("fullscreen"));
-    }
+    if (layout) { layout.destroy(); }
     layout = new GoldenLayout(config, "#layout-container");
-    if (oldLayout) {
-      oldLayout.destroy();
-      $("#layout-container-old").remove();
-    }
-
     layout.registerComponent('DOM', function(container, state) {
         let $el = $(state.id);
         container.getElement().append($el);
