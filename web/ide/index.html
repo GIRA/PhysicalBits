@@ -90,16 +90,10 @@
             </div>
           </div>
           <div class="col text-right">
-            <div class="dropdown">
-              <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Default layout
-              </button>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">Action</a>
-                <a class="dropdown-item" href="#">Another action</a>
-                <a class="dropdown-item" href="#">Something else here</a>
-              </div>
-            </div>
+            <button id="options-button" type="button" class="btn btn-secondary btn-sm">
+              <i class="fas fa-cog mr-1"></i>
+              Options...
+            </button>
           </div>
         </div>
       </div>
@@ -189,7 +183,7 @@
       </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Server Disconnect Modal -->
     <div class="modal fade" id="server-not-found-modal" tabindex="-1" role="dialog"  data-backdrop="static" data-keyboard="false" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -204,6 +198,27 @@
               </div>
             </div>
 
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Options Modal -->
+    <div class="modal fade" id="options-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Options</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>

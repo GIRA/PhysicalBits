@@ -98,7 +98,7 @@ let IDE = (function () {
       oldLayout.destroy();
       $("#layout-container-old").remove();
     }
-    
+
     layout.registerComponent('DOM', function(container, state) {
         let $el = $(state.id);
         container.getElement().append($el);
@@ -142,6 +142,7 @@ let IDE = (function () {
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
 		$("#interactive-checkbox").on("change", toggleInteractive);
+    $("#options-button").on("click", openOptionsDialog);
     Uzi.on("update", updateTopBar);
     Uzi.on("update", updateConnection);
   }
@@ -380,6 +381,10 @@ let IDE = (function () {
   function toggleInteractive() {
     scheduleAutorun($("#interactive-checkbox").get(0).checked);
     saveToLocalStorage();
+  }
+
+  function openOptionsDialog() {
+    $("#options-modal").modal("show");
   }
 
   function updateConnection (newState, previousState) {
