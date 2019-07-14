@@ -1,6 +1,6 @@
 let IDE = (function () {
 
-  let layout;
+  let layout, defaultLayoutConfig;
   let codeEditor;
   let selectedPort = "automatic";
   let blocklyArea, blocklyDiv, workspace;
@@ -18,65 +18,20 @@ let IDE = (function () {
       initializeOutputPanel();
       initializeAutorun();
       initializeServerNotFoundErrorModal();
+      initializeOptionsModal();
     }
   };
 
   function initializeDefaultLayout() {
-    // TODO(Richo): Maybe load the default config from a file?
-    let config = {
-      settings: {
-        showPopoutIcon: false,
-        showMaximiseIcon: false,
-        showCloseIcon: false,
-      },
-      content: [{
-        type: 'row',
-        content:[{
-          type: 'component',
-          componentName: 'DOM',
-          componentState: { id: '#inspector-panel' },
-          title: 'Inspector',
-          width: 17,
-        },{
-          type: 'column',
-          content:[{
-            type: 'row',
-            content: [{
-              type: 'component',
-              componentName: 'DOM',
-              componentState: { id: '#blocks-panel' },
-              title: 'Blocks',
-            },{
-              type: 'component',
-              componentName: 'DOM',
-              componentState: { id: '#code-panel' },
-              title: 'Code',
-              width: 30,
-            }]
-          },{
-            type: 'stack',
-            height: 20,
-            content: [{
-              type: 'component',
-              componentName: 'DOM',
-              componentState: { id: '#output-panel' },
-              title: 'Output',
-            },{
-              type: 'component',
-              componentName: 'DOM',
-              componentState: { id: '#test3' },
-              title: 'Serial Monitor',
-            },{
-              type: 'component',
-              componentName: 'DOM',
-              componentState: { id: '#test3' },
-              title: 'Debugger',
-            }]
-          }]
-        }]
-      }]
-    };
-    initializeLayout(config);
+    if (defaultLayoutConfig) {
+      initializeLayout(defaultLayoutConfig);
+    } else {
+      ajax.GET("default-layout.json")
+        .then(function (json) {
+          defaultLayoutConfig = JSON.parse(json);
+          initializeLayout(defaultLayoutConfig);
+        });
+    }
   }
 
   function initializeLayout(config) {
@@ -183,6 +138,10 @@ let IDE = (function () {
         $("#server-not-found-modal").modal('hide');
       }
     }, 1000);
+  }
+
+  function initializeOptionsModal() {
+    $("#restore-layout-button").on("click", initializeDefaultLayout);
   }
 
   function appendToOutput(text, type) {
