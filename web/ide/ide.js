@@ -10,29 +10,27 @@ let IDE = (function () {
 
   let IDE = {
     init: function () {
-      initializeDefaultLayout();
+      loadDefaultLayoutConfig()
+        .then(initializeDefaultLayout)
+        .then(initializeBlocksPanel)
+        .then(initializeAutorun);
       initializeTopBar();
       initializeInspectorPanel();
-      initializeBlocksPanel();
       initializeCodePanel();
       initializeOutputPanel();
-      initializeAutorun();
       initializeBrokenLayoutErrorModal();
       initializeServerNotFoundErrorModal();
       initializeOptionsModal();
     }
   };
 
+  function loadDefaultLayoutConfig() {
+    return ajax.GET("default-layout.json")
+      .then(function (json) { defaultLayoutConfig = JSON.parse(json); });
+  }
+
   function initializeDefaultLayout() {
-    if (defaultLayoutConfig) {
-      initializeLayout(defaultLayoutConfig);
-    } else {
-      ajax.GET("default-layout.json")
-        .then(function (json) {
-          defaultLayoutConfig = JSON.parse(json);
-          initializeLayout(defaultLayoutConfig);
-        });
-    }
+    initializeLayout(defaultLayoutConfig);
   }
 
   function initializeLayout(config) {
@@ -159,7 +157,7 @@ let IDE = (function () {
     setTimeout(function () {
       if (layout.config.content.length > 0) return;
       $("#broken-layout-modal").modal("show");
-    }, 1000);    
+    }, 1000);
   }
 
   function appendToOutput(text, type) {
@@ -185,7 +183,8 @@ let IDE = (function () {
 
   function resizeBlockly() {
     // Only if Blockly was initialized
-    if (blocklyDiv == undefined || blocklyArea == undefined) return;
+    if (workspace == undefined) return;
+
     let x, y;
     x = y = 0;
     blocklyDiv.style.left = x + 'px';
@@ -206,6 +205,8 @@ let IDE = (function () {
 	}
 
   function saveToLocalStorage() {
+    if (workspace == undefined || layout == undefined) return;
+    
     let ui = getUIState();
     localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
