@@ -59,6 +59,8 @@ let IDE = (function () {
     layout.on('stateChanged', checkBrokenLayout);
     layout.init();
     updateSize();
+    resizeBlockly();
+    checkBrokenLayout();
   }
 
   function initializeTopBar() {
@@ -228,7 +230,7 @@ let IDE = (function () {
       if (ui.layout) {
         initializeLayout(ui.layout);
       }
-      
+
       if (ui.blocks) {
         workspace.clear();
         Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
