@@ -205,72 +205,109 @@
 
     <!-- Options Modal -->
     <div class="modal fade" id="options-modal" tabindex="-1" role="dialog" aria-hidden="true">
-      <div class="modal-dialog" role="document">
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Options</h5>
+            <h4 class="modal-title"><i class="fas fa-cogs mr-3"></i>Options</h4>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-body">
             <div class="container">
-              <h6>Panels:</h6>
               <div class="row">
-                <div class="col-6">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="inspector-panel-checkbox">
-                    <label class="custom-control-label" for="inspector-panel-checkbox">Inspector</label>
+                <div class="col-4">
+                  <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link active" id="v-pills-layout-tab" data-toggle="pill" href="#v-pills-layout" role="tab" aria-controls="v-pills-layout" aria-selected="true">
+                      <i class="fas fa-th mr-2"></i>User interface
+                    </a>
+                    <a class="nav-link" id="v-pills-language-tab" data-toggle="pill" href="#v-pills-language" role="tab" aria-controls="v-pills-language" aria-selected="false">
+                      <i class="far fa-flag mr-2"></i>Internationalization
+                    </a>
                   </div>
                 </div>
-                <div class="col-6">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="output-panel-checkbox">
-                    <label class="custom-control-label" for="output-panel-checkbox">Output</label>
+                <div class="col-8">
+                  <div class="tab-content" id="v-pills-tabContent">
+                    <div class="tab-pane fade show active" id="v-pills-layout" role="tabpanel" aria-labelledby="v-pills-layout-tab">
+                      <div class="container">
+                        <h6>Panels:</h6>
+                        <div class="row">
+                          <div class="col-6">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="inspector-panel-checkbox">
+                              <label class="custom-control-label" for="inspector-panel-checkbox">Inspector</label>
+                            </div>
+                          </div>
+                          <div class="col-6">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="output-panel-checkbox">
+                              <label class="custom-control-label" for="output-panel-checkbox">Output</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="blocks-panel-checkbox">
+                              <label class="custom-control-label" for="blocks-panel-checkbox">Blocks</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="serial-monitor-panel-checkbox">
+                              <label class="custom-control-label" for="serial-monitor-panel-checkbox">Serial Monitor</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="code-panel-checkbox">
+                              <label class="custom-control-label" for="code-panel-checkbox">Code</label>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="debugger-panel-checkbox">
+                              <label class="custom-control-label" for="debugger-panel-checkbox">Debugger</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row mt-4">
+                          <div class="col">
+                            <button id="restore-layout-button" type="button" class="btn btn-outline-secondary btn-sm">
+                              <i class="fas fa-th mr-1"></i>
+                              Restore default layout
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="tab-pane fade" id="v-pills-language" role="tabpanel" aria-labelledby="v-pills-language-tab">
+                      <div class="container">
+                        <h6>Current language:</h6>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" id="english-radio" name="language-radios" checked>
+                              <label class="custom-control-label" for="english-radio">English (en)</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" id="spanish-radio" name="language-radios">
+                              <label class="custom-control-label" for="spanish-radio">Español (es)</label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="blocks-panel-checkbox">
-                    <label class="custom-control-label" for="blocks-panel-checkbox">Blocks</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="serial-monitor-panel-checkbox">
-                    <label class="custom-control-label" for="serial-monitor-panel-checkbox">Serial Monitor</label>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="code-panel-checkbox">
-                    <label class="custom-control-label" for="code-panel-checkbox">Code</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="custom-control custom-checkbox custom-control-inline">
-                    <input type="checkbox" class="custom-control-input" id="debugger-panel-checkbox">
-                    <label class="custom-control-label" for="debugger-panel-checkbox">Debugger</label>
-                  </div>
-                </div>
-              </div>
-              <div class="row mt-4">
-                <div class="col">
-                  <button id="restore-layout-button" type="button" class="btn btn-outline-secondary btn-sm">
-                    <i class="fas fa-th mr-1"></i>
-                    Restore default layout
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
-            <button type="button" class="btn btn-primary btn-sm">Apply changes</button>
           </div>
         </div>
       </div>
