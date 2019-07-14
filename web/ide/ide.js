@@ -17,6 +17,7 @@ let IDE = (function () {
       initializeCodePanel();
       initializeOutputPanel();
       initializeAutorun();
+      initializeBrokenLayoutErrorModal();
       initializeServerNotFoundErrorModal();
       initializeOptionsModal();
     }
@@ -57,6 +58,7 @@ let IDE = (function () {
     layout.on('stateChanged', updateSize);
     layout.on('stateChanged', resizeBlockly);
     layout.on('stateChanged', saveToLocalStorage);
+    layout.on('stateChanged', checkBrokenLayout);
     layout.init();
     updateSize();
   }
@@ -129,6 +131,13 @@ let IDE = (function () {
     setInterval(autorun, 100);
   }
 
+  function initializeBrokenLayoutErrorModal() {
+    $("#fix-broken-layout-button").on("click", function () {
+      initializeDefaultLayout();
+      $("#broken-layout-modal").modal("hide");
+    });
+  }
+
   function initializeServerNotFoundErrorModal() {
     Uzi.on("server-disconnect", function () {
       $("#server-not-found-modal").modal('show');
@@ -142,6 +151,15 @@ let IDE = (function () {
 
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", initializeDefaultLayout);
+  }
+
+  function checkBrokenLayout() {
+    if (layout.config.content.length > 0) return;
+
+    setTimeout(function () {
+      if (layout.config.content.length > 0) return;
+      $("#broken-layout-modal").modal("show");
+    }, 1000);    
   }
 
   function appendToOutput(text, type) {
