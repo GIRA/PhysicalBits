@@ -32,7 +32,7 @@ let IDE = (function () {
           type: 'row',
           content:[{
             type: 'component',
-            componentName: 'ide',
+            componentName: 'DOM',
             componentState: { id: '#inspector-panel' },
             title: 'Inspector',
             width: 17,
@@ -42,12 +42,12 @@ let IDE = (function () {
               type: 'row',
               content: [{
                 type: 'component',
-                componentName: 'ide',
+                componentName: 'DOM',
                 componentState: { id: '#blocks-panel' },
                 title: 'Blocks',
               },{
                 type: 'component',
-                componentName: 'ide',
+                componentName: 'DOM',
                 componentState: { id: '#code-panel' },
                 title: 'Code',
                 width: 30,
@@ -57,17 +57,17 @@ let IDE = (function () {
               height: 20,
               content: [{
                 type: 'component',
-                componentName: 'ide',
+                componentName: 'DOM',
                 componentState: { id: '#output-panel' },
                 title: 'Output',
               },{
                 type: 'component',
-                componentName: 'ide',
+                componentName: 'DOM',
                 componentState: { id: '#test3' },
                 title: 'Serial Monitor',
               },{
                 type: 'component',
-                componentName: 'ide',
+                componentName: 'DOM',
                 componentState: { id: '#test3' },
                 title: 'Debugger',
               }]
@@ -94,10 +94,17 @@ let IDE = (function () {
         .addClass("fullscreen"));
     }
     layout = new GoldenLayout(config, "#layout-container");
-
-    layout.registerComponent('ide', function(container, state) {
+    if (oldLayout) {
+      oldLayout.destroy();
+      $("#layout-container-old").remove();
+    }
+    
+    layout.registerComponent('DOM', function(container, state) {
         let $el = $(state.id);
         container.getElement().append($el);
+        container.on('destroy', function () {
+          $("#hidden-panels").append($el);
+        });
     });
 
     function updateSize() {
@@ -112,13 +119,16 @@ let IDE = (function () {
     layout.on('stateChanged', updateSize);
     layout.on('stateChanged', resizeBlockly);
     layout.on('stateChanged', saveToLocalStorage);
+    /*
+    layout.on('itemDestroyed', function (item) {
+      if (item.config.componentName != 'DOM') return;
+
+      let $el = $(item.config.componentState.id);
+      $("#hidden-panels").append($el);
+    });
+    */
     layout.init();
     updateSize();
-
-    if (oldLayout) {
-      oldLayout.destroy();
-      $("#layout-container-old").remove();
-    }
   }
 
   function initializeTopBar() {
