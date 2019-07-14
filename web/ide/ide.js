@@ -206,7 +206,7 @@ let IDE = (function () {
 
   function saveToLocalStorage() {
     if (workspace == undefined || layout == undefined) return;
-    
+
     let ui = getUIState();
     localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
@@ -225,6 +225,10 @@ let IDE = (function () {
 
   function setUIState(ui) {
     try {
+      if (ui.layout) {
+        initializeLayout(ui.layout);
+      }
+      
       if (ui.blocks) {
         workspace.clear();
         Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
@@ -232,10 +236,6 @@ let IDE = (function () {
 
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
-      }
-
-      if (ui.layout) {
-        initializeLayout(ui.layout);
       }
     } catch (err) {
       console.error(err);
