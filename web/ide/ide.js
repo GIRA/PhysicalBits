@@ -82,6 +82,7 @@ let IDE = (function () {
   }
 
   function initializeInspectorPanel() {
+    $("#pin-choose-button").on("click", openInspectorPinDialog);
     Uzi.on("update", updateInspectorPanel);
   }
 
@@ -342,6 +343,10 @@ let IDE = (function () {
 
   function openOptionsDialog() {
     $("#options-modal").modal("show");
+  }
+
+  function openInspectorPinDialog() {
+    $("#inspector-pin-modal").modal("show");
   }
 
   function updateConnection (newState, previousState) {
