@@ -10,10 +10,12 @@ let IDE = (function () {
 
   let IDE = {
     init: function () {
+      // NOTE(Richo): The following tasks need to be done in order:
       loadDefaultLayoutConfig()
         .then(initializeDefaultLayout)
         .then(initializeBlocksPanel)
         .then(initializeAutorun);
+        
       initializeTopBar();
       initializeInspectorPanel();
       initializeCodePanel();
