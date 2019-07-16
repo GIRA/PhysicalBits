@@ -10,7 +10,6 @@ initialize
 	} 
 	do: [:evt | protocol when: evt send: #update to: self].
 	
-	pinsReporting := Set new.
 	globalsReporting := Set new.
 	
 	pinTexts := Dictionary new.
