@@ -53,11 +53,11 @@ var Uzi = (function () {
 		deactivatePinReport: function (pinNumber) {
 			Uzi.pinsReporting.delete(pinNumber);
 		},
-		activateGlobalReport: function (globalNumber) {
-			Uzi.globalsReporting.add(globalNumber);
+		activateGlobalReport: function (globalName) {
+			Uzi.globalsReporting.add(globalName);
 		},
-		deactivateGlobalReport: function (globalNumber) {
-			Uzi.globalsReporting.delete(globalNumber);
+		deactivateGlobalReport: function (globalName) {
+			Uzi.globalsReporting.delete(globalName);
 		},
 
 		start: function () {

@@ -1,8 +1,8 @@
 var UziMonitor = (function () {
-	
+
 	var monitors = [];
-	
-	function init() {		
+
+	function init() {
 		$("#addGraphButton").on("click", function () {
 			addMonitor();
 		});
@@ -11,13 +11,13 @@ var UziMonitor = (function () {
 			monitors.forEach(function (monitor) {
 				var colors = palette('rainbow', Uzi.pins.length + Uzi.globals.length);
 				var min = 0;
-				var max = 0;				
+				var max = 0;
 				var pins = Uzi.pins.filter(function (pin) {
 					return monitor.pins.indexOf(pin.number) !== -1;
 				});
 				var pins_ds = pins.map(function (pin) {
-					var i = Uzi.pins.findIndex(function (each) { 
-						return each.number == pin.number; 
+					var i = Uzi.pins.findIndex(function (each) {
+						return each.number == pin.number;
 					});
 					var color = "#" + colors[i];
 					var dataset = monitor.chart.data.datasets.find(function (each) {
@@ -53,7 +53,7 @@ var UziMonitor = (function () {
 					}
 				});
 				var globals = Uzi.globals.filter(function (global) {
-					return monitor.globals.indexOf(global.number) !== -1;
+					return monitor.globals.indexOf(global.name) !== -1;
 				});
 				var globals_ds = globals.map(function (global) {
 					var i = Uzi.globals.indexOf(global) + Uzi.pins.length;
@@ -90,7 +90,7 @@ var UziMonitor = (function () {
 						})
 					}
 				});
-				var data = { 
+				var data = {
 					datasets: pins_ds.concat(globals_ds)
 				};
 				var options = {
@@ -123,28 +123,28 @@ var UziMonitor = (function () {
 		});
 	}
 
-	function addMonitor() {		
+	function addMonitor() {
 		choosePins(function (selection) {
 			buildLineChartFor(selection);
 			updatePinsReporting();
 			updateGlobalsReporting();
-		});	
+		});
 	}
-	
-	function removeMonitor(monitor) {		
+
+	function removeMonitor(monitor) {
 		var index = monitors.indexOf(monitor);
 		monitors.splice(index, 1);
 		monitor.container.remove();
 		updatePinsReporting();
 		updateGlobalsReporting();
 	}
-	
+
 	function updatePinsReporting() {
 		var pins = new Set();
 		monitors.forEach(function (monitor) {
 			monitor.pins.forEach(function (pin) {
 				pins.add(pin);
-			}); 
+			});
 		});
 		pins.forEach(function (pin) { Uzi.activatePinReport(pin); });
 		var toRemove = [];
@@ -153,13 +153,13 @@ var UziMonitor = (function () {
 		});
 		toRemove.forEach(function (pin) { Uzi.deactivatePinReport(pin); });
 	}
-	
+
 	function updateGlobalsReporting() {
 		var globals = new Set();
 		monitors.forEach(function (monitor) {
 			monitor.globals.forEach(function (global) {
 				globals.add(global);
-			}); 
+			});
 		});
 		globals.forEach(function (global) { Uzi.activateGlobalReport(global); });
 		var toRemove = [];
@@ -168,7 +168,7 @@ var UziMonitor = (function () {
 		});
 		toRemove.forEach(function (global) { Uzi.deactivateGlobalReport(global); });
 	}
-	
+
 	function buildLineChartFor(selection) {
 		var editor = $("#editor");
 		var container = $("<div>").addClass("monitor");
@@ -195,14 +195,14 @@ var UziMonitor = (function () {
 			minWidth: 200,
 			handles: "n, e, s, w, ne, se, sw, nw"
 		});
-		
+
 		// HACK(Richo): JQuery UI seems to add the "position:relative"
 		container.attr("style", null);
-		
+
 		container.append(closeButton);
 		container.append(canvas);
 		editor.append(container);
-		
+
 		var chart = createChartOn(canvas.get(0));
 		var monitor = {
 			container: container,
@@ -212,7 +212,7 @@ var UziMonitor = (function () {
 		};
 		monitors.push(monitor);
 	}
-	
+
 	function choosePins(callback) {
 		var digitalPins1 = [
 			{ text: "D2", value: 2 },
@@ -310,7 +310,7 @@ var UziMonitor = (function () {
 									.append($("<input>")
 										.attr("type", "checkbox")
 										.attr("name", "globals")
-										.attr("value", each.value))
+										.attr("value", each.text))
 									.append($("<span>").text(each.text));
 							}))))
 					.append($("<div>")
@@ -332,32 +332,32 @@ var UziMonitor = (function () {
 									analogPins: [],
 									globals: []
 								};
-								modal.find("input[name=digitalPins]").each(function () { 
+								modal.find("input[name=digitalPins]").each(function () {
 									if (this.checked) {
 										selected.digitalPins.push(parseInt(this.value));
 									}
 								});
-								modal.find("input[name=analogPins]").each(function () { 
+								modal.find("input[name=analogPins]").each(function () {
 									if (this.checked) {
 										selected.analogPins.push(parseInt(this.value));
 									}
 								});
-								modal.find("input[name=globals]").each(function () { 
+								modal.find("input[name=globals]").each(function () {
 									if (this.checked) {
-										selected.globals.push(parseInt(this.value));
+										selected.globals.push(this.value);
 									}
 								});
 								callback(selected);
 								modal.modal('hide');
-							})))));		
+							})))));
 		modal.on("hidden.bs.modal", function () {
 			modal.remove();
 		});
 		$(document.body).append(modal);
 		modal.modal({});
 	}
-	
-	function createChartOn(canvas) {		
+
+	function createChartOn(canvas) {
 		var ctx = canvas.getContext('2d');
 		var data = {};
 		var options = {};
@@ -373,4 +373,3 @@ var UziMonitor = (function () {
 		monitors: monitors
 	};
 })();
-
