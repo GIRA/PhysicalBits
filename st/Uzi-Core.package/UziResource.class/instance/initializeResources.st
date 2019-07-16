@@ -15,4 +15,5 @@ initializeResources
 			ifTrue: [self controller isConnected];
 			at: #run do: [:req | self processRun: req]
 			ifTrue: [self controller isConnected];
+			at: #setPinReport do: [:req | self processSetPinReport: req];
 			yourself)
