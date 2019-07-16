@@ -2,13 +2,13 @@ initialize-release
 initialize
 	super initialize.
 	rebuildFlag := false.
-	protocol := UziController new.
+	controller := UziController new.
 	{ 
 		UziEvents connect.
 		UziEvents disconnect.
 		UziEvents programUpdate.
 	} 
-	do: [:evt | protocol when: evt send: #update to: self].
+	do: [:evt | controller when: evt send: #update to: self].
 		
 	pinTexts := Dictionary new.
 	globalTexts := Dictionary new.

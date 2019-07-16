@@ -1,4 +1,4 @@
 initializing
-initializeWith: anUziProtocolMorph
-	protocol := anUziProtocolMorph.
+initializeWith: anUziControlPanelMorph
+	controlPanel := anUziControlPanelMorph.
 	self initialize

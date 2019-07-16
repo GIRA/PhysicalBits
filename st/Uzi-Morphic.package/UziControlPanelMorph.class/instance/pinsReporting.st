@@ -1,3 +1,3 @@
 accessing
 pinsReporting
-	^ self protocol pinsReporting
+	^ self controller pinsReporting

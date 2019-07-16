@@ -1,3 +1,3 @@
 accessing
 freeRAM
-	^ protocol freeUziRAM asString, ' bytes'
+	^ controller freeUziRAM asString, ' bytes'

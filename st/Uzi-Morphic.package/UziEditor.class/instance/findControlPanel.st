@@ -1,3 +1,3 @@
 accessing
-findProtocol
+findControlPanel
 	^ UziControlPanelMorph findInWorld

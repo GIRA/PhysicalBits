@@ -15,7 +15,7 @@ initialize
 		listDirection: #leftToRight;
 		color: self defaultBackgroundColor;
 		buildSubmorphs.
-	debugger protocol
+	debugger controller
 		when: UziEvents debuggerUpdate
 		send: #update
 		to: self

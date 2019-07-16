@@ -1,3 +1,3 @@
 accessing
 globalsReporting
-	^ self protocol globalsReporting
+	^ self controller globalsReporting

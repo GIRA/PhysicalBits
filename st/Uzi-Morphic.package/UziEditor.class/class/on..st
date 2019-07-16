@@ -1,3 +1,3 @@
 instance creation
-on: anUziProtocolMorph 
-	^ self basicNew initializeWith: anUziProtocolMorph
+on: anUziControlPanelMorph 
+	^ self basicNew initializeWith: anUziControlPanelMorph

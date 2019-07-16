@@ -1,5 +1,5 @@
 accessing
 portName
 	^ self isConnected 
-		ifTrue: [protocol portName asString]
+		ifTrue: [controller portName asString]
 		ifFalse: [portName asString]

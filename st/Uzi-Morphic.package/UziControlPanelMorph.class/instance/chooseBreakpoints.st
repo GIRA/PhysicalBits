@@ -1,6 +1,6 @@
 button actions
 chooseBreakpoints
-	^ protocol runningProgram 
+	^ controller runningProgram 
 		ifNil: [#()]
 		ifNotNil: [:program || lines labels values |
 			lines := program linesOfCode.

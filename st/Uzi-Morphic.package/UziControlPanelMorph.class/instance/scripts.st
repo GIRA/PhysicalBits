@@ -1,3 +1,3 @@
 accessing
 scripts
-	^ protocol scripts
+	^ controller scripts

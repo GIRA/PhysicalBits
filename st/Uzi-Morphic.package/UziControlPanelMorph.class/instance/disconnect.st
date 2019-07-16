@@ -1,3 +1,3 @@
 connection
 disconnect
-	protocol disconnect
+	controller disconnect

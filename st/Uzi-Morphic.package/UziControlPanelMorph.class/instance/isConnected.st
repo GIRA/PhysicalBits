@@ -1,3 +1,3 @@
 accessing
 isConnected
-	^ protocol isConnected
+	^ controller isConnected

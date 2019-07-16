@@ -1,3 +1,3 @@
 accessing
 isTicking: anUziScript 
-	^ self isConnected and: [protocol isTicking: anUziScript]
+	^ self isConnected and: [controller isTicking: anUziScript]

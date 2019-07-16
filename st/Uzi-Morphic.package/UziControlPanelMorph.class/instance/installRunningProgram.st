@@ -1,3 +1,3 @@
 running programs
 installRunningProgram
-	protocol installRunningProgram
+	controller installRunningProgram

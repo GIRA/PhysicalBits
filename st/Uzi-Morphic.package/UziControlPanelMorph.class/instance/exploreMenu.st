@@ -1,6 +1,6 @@
 button actions
 exploreMenu
 	(UIManager default 
-		chooseFrom: #('Protocol' 'Server' 'Running Program' 'Current Program')
-		values: { protocol . server . protocol runningProgram . protocol currentProgram })
+		chooseFrom: #('Controller' 'Server' 'Running Program' 'Current Program')
+		values: { controller . server . controller runningProgram . controller currentProgram })
 		ifNotNil: [:option | option explore]

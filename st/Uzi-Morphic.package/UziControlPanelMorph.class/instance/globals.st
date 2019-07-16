@@ -1,3 +1,3 @@
 accessing
 globals
-	^ protocol variables
+	^ controller variables

@@ -1,10 +1,10 @@
 {
 	"class" : {
-		"on:" : "Richo 10/10/2016 00:39" },
+		"on:" : "Richo 7/15/2019 23:56" },
 	"instance" : {
-		"acceptContents:" : "Richo 5/29/2017 10:52",
+		"acceptContents:" : "Richo 7/15/2019 23:56",
+		"controlPanel" : "Richo 7/15/2019 23:55",
 		"defaultBackgroundColor" : "Richo 5/8/2017 13:05",
-		"findProtocol" : "Richo 12/18/2018 22:33",
-		"initializeWith:" : "Richo 10/10/2016 00:40",
-		"openInWindow" : "Richo 12/31/2016 18:07",
-		"protocol" : "Richo 12/18/2018 22:33" } }
+		"findControlPanel" : "Richo 7/15/2019 23:55",
+		"initializeWith:" : "Richo 7/15/2019 23:54",
+		"openInWindow" : "Richo 12/31/2016 18:07" } }

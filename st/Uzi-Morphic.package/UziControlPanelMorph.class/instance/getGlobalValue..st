@@ -1,3 +1,3 @@
 accessing
 getGlobalValue: globalName
-	^ (protocol getGlobal: globalName) value
+	^ (controller getGlobal: globalName) value

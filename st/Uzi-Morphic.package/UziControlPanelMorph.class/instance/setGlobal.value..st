@@ -1,5 +1,5 @@
 accessing
 setGlobal: globalName value: value
 	| number |
-	number := protocol getGlobalNumber: globalName.
-	^ number ifNotNil: [protocol setGlobal: number value: value]
+	number := controller getGlobalNumber: globalName.
+	^ number ifNotNil: [controller setGlobal: number value: value]
