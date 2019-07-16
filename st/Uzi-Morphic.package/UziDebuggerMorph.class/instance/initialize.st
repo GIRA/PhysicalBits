@@ -16,6 +16,6 @@ initialize
 		color: self defaultBackgroundColor;
 		buildSubmorphs.
 	debugger protocol
-		when: UziProtocolEvents debuggerUpdate
+		when: UziEvents debuggerUpdate
 		send: #update
 		to: self

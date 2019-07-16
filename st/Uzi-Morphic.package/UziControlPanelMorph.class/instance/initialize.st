@@ -4,9 +4,9 @@ initialize
 	rebuildFlag := false.
 	protocol := UziController new.
 	{ 
-		UziProtocolEvents connect.
-		UziProtocolEvents disconnect.
-		UziProtocolEvents programUpdate.
+		UziEvents connect.
+		UziEvents disconnect.
+		UziEvents programUpdate.
 	} 
 	do: [:evt | protocol when: evt send: #update to: self].
 		
