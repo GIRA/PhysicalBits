@@ -1,5 +1,7 @@
 accessing-globals
-setGlobal: globalNumber value: value
+setGlobal: globalName value: value
+	| globalNumber |
+	globalNumber := self getGlobalNumber: globalName.
 	^ self send: (ByteArray streamContents: [:stream | | actualValue |
 		stream nextPut: self class msgOutSetGlobal.
 		stream nextPut: globalNumber.

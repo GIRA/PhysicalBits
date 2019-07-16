@@ -4,5 +4,5 @@ cleanUpGlobals
 	now := Time millisecondClockValue.
 	(self globals select: [:global | global shouldStopMonitoring: now])
 		do: [:global |
-			self setGlobal: global number report: false.
-			self globals removeKey: global number ifAbsent: ["Do nothing"]]
+			self setGlobal: global name report: false.
+			self globals removeKey: global name ifAbsent: ["Do nothing"]]

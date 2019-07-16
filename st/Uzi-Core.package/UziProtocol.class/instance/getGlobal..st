@@ -1,9 +1,9 @@
 accessing-globals
-getGlobal: globalNumber
+getGlobal: globalName
 	^ self globals
-		at: globalNumber
+		at: globalName
 		ifAbsentPut: [
-			self setGlobal: globalNumber report: true.
+			self setGlobal: globalName report: true.
 			UziGlobal 
-				name: (self getGlobalName: globalNumber) 
-				number: globalNumber]
+				name: globalName
+				number: (self getGlobalNumber: globalName)]

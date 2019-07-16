@@ -1,7 +1,9 @@
 reporting
-setGlobal: globalIndex report: reportEnabled
+setGlobal: globalName report: reportEnabled
+	| globalNumber |
+	globalNumber := self getGlobalNumber: globalName.
 	^ self send: {
 		self class msgOutSetGlobalReport. 
-		globalIndex. 
+		globalNumber. 
 		reportEnabled ifTrue: [1] ifFalse: [0]
 	}
