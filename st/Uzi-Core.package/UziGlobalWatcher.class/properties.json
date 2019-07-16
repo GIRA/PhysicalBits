@@ -1,17 +1,14 @@
 {
 	"category" : "Uzi-Core-Protocol",
 	"classinstvars" : [
-		"names" ],
+		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"name",
-		"number",
-		"history",
-		"lastAccess" ],
-	"name" : "UziGlobal",
+		 ],
+	"name" : "UziGlobalWatcher",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziValueWatcher",
 	"type" : "normal" }

@@ -4,6 +4,6 @@ getGlobal: globalName
 		at: globalName
 		ifAbsentPut: [
 			self setGlobal: globalName report: true.
-			UziGlobal 
+			UziGlobalWatcher
 				name: globalName
 				number: (self getGlobalNumber: globalName)]
