@@ -8,4 +8,13 @@ summary: req
 				at: #number put: (self controller getGlobalNumber: var);
 				yourself]
 			as: Array);
+		at: #elements 
+		put: (self controller globals 
+			collect: [:global |
+				Dictionary new 
+					at: #name put: global name;
+					at: #number put: global number;
+					at: #value put: (UziJSON createJSONObject: global value);
+					yourself]
+			as: Array);
 		yourself
