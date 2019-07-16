@@ -9,5 +9,5 @@ setPin: pinNumber report: report
 		pinNumber. 
 		report ifTrue: [1] ifFalse: [0]
 	}.
-	self triggerEvent: UziEvents reportingChange.
+	self triggerEvent: UziEvents reportingUpdate.
 	^ msg

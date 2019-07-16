@@ -24,4 +24,4 @@ processGlobalValue
 					at: 1.
 				(self getGlobal: name) addValue: timestamp -> value.
 				update := true]]].
-	update ifTrue: [self triggerEvent: UziEvents reportingChange]
+	update ifTrue: [self triggerEvent: UziEvents reportingUpdate]
