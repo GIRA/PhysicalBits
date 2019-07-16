@@ -1,5 +1,3 @@
 accessing
 getGlobalValue: globalName
-	| number |
-	number := protocol getGlobalNumber: globalName.
-	^ number ifNotNil: [(protocol getGlobal: number) value]
+	^ (protocol getGlobal: globalName) value
