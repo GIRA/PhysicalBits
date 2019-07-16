@@ -9,9 +9,7 @@ initialize
 		UziProtocolEvents programUpdate.
 	} 
 	do: [:evt | protocol when: evt send: #update to: self].
-	
-	globalsReporting := Set new.
-	
+		
 	pinTexts := Dictionary new.
 	globalTexts := Dictionary new.
 	scriptTexts := Dictionary new.

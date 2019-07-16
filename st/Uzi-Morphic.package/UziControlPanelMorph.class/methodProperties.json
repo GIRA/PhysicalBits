@@ -32,8 +32,8 @@
 		"getPinReport:" : "Richo 8/14/2018 10:59",
 		"getPinValue:" : "Richo 8/14/2018 16:00",
 		"globals" : "Richo 10/9/2016 17:33",
-		"globalsReporting" : "Richo 8/14/2018 17:09",
-		"initialize" : "Richo 7/15/2019 21:58",
+		"globalsReporting" : "Richo 7/15/2019 22:44",
+		"initialize" : "Richo 7/15/2019 22:46",
 		"installRunningProgram" : "Richo 7/11/2019 09:55",
 		"isConnected" : "Richo 10/9/2016 17:41",
 		"isServerStarted" : "Richo 7/27/2018 09:06",
@@ -52,7 +52,7 @@
 		"rebuild" : "Richo 10/9/2016 17:27",
 		"run:" : "Richo 8/2/2018 19:15",
 		"scripts" : "Richo 12/31/2016 19:47",
-		"setGlobal:report:" : "Richo 8/14/2018 17:12",
+		"setGlobal:report:" : "Richo 7/15/2019 22:39",
 		"setGlobal:value:" : "Richo 8/14/2018 17:28",
 		"setPin:report:" : "Richo 7/15/2019 21:52",
 		"setPin:value:" : "Richo 10/9/2016 17:26",
@@ -67,4 +67,4 @@
 		"togglePinReport:" : "Richo 10/9/2016 18:16",
 		"togglePins" : "Richo 4/18/2018 16:16",
 		"toggleServer" : "Richo 7/27/2018 09:06",
-		"update" : "Richo 8/14/2018 17:51" } }
+		"update" : "Richo 7/15/2019 22:46" } }
