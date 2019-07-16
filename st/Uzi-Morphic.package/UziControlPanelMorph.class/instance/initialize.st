@@ -2,7 +2,7 @@ initialize-release
 initialize
 	super initialize.
 	rebuildFlag := false.
-	protocol := UziProtocol new.
+	protocol := UziController new.
 	{ 
 		UziProtocolEvents connect.
 		UziProtocolEvents disconnect.
