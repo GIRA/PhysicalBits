@@ -5,7 +5,7 @@ processRun: req
 	type := req fields at: 'type' ifAbsent: ['text'].
 	silent := (req fields at: 'silent' ifAbsent: [false]) = 'true'.
 	[program := self compile: src type: type silent: silent.
-	self protocol run: program]
+	self controller run: program]
 		on: Error
 		do: [:err | ^ req send400Response: err description].	
 	self sendJSONResponse: (Uzi encode: program) asArray 

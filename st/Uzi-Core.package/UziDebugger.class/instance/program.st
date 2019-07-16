@@ -1,3 +1,3 @@
 accessing
 program
-	^ UziDebuggerProgram on: protocol runningProgram
+	^ UziDebuggerProgram on: controller runningProgram

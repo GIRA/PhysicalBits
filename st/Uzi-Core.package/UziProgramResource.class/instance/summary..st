@@ -3,14 +3,14 @@ summary: req
 	| res |
 	res := super summary: req.
 	res at: #current 
-		put: (self protocol currentProgram
+		put: (self controller currentProgram
 			ifNotNil: [:program | Dictionary new
 				at: #id put: program id;
 				at: #src put: program sourceCode;
 				at: #ast put: (UziJSON createJSONObject: program node);
 				yourself]).
 	res at: #running 
-		put: (self protocol runningProgram
+		put: (self controller runningProgram
 			ifNotNil: [:program | Dictionary new
 				at: #id put: program id;
 				at: #src put: program sourceCode;

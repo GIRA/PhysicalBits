@@ -8,7 +8,7 @@ initialize
 		UziEvents reportingUpdate.
 		UziEvents debuggerUpdate.
 	}
-	do: [:evt | self protocol when: evt send: #update to: self].
+	do: [:evt | self controller when: evt send: #update to: self].
 	Uzi logger when: #flushed send: #updateOutput: to: self.
 	
 	clients := Dictionary new.

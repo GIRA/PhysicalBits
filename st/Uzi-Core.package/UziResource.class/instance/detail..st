@@ -5,9 +5,9 @@ detail: req
 	out := #().
 	id ifNotNil: [out := (self outputAt: id) dequeueAll].
 	^ (super detail: req)
-		at: #isConnected put: self protocol isConnected;
-		at: #portName put: self protocol portName;
-		at: #tasks put: (self protocol scriptWatchers 
+		at: #isConnected put: self controller isConnected;
+		at: #portName put: self controller portName;
+		at: #tasks put: (self controller scriptWatchers 
 			collect: [:w | Dictionary new
 				at: #scriptName put: w scriptName;
 				at: #isRunning put: w isRunning;

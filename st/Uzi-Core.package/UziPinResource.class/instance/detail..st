@@ -8,7 +8,7 @@ detail: req
 		at: #elements 
 		put: (pins 
 			collect: [:pinNumber || pin |
-				pin := self protocol getPin: pinNumber.
+				pin := self controller getPin: pinNumber.
 				Dictionary new 
 					at: #name put: pin name;
 					at: #number put: pinNumber;

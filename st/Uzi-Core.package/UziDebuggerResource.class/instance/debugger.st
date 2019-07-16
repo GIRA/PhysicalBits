@@ -1,3 +1,3 @@
 accessing
 debugger
-	^ server protocol debugger
+	^ server controller debugger

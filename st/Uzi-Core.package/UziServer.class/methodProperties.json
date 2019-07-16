@@ -1,17 +1,17 @@
 {
 	"class" : {
-		"directory:" : "Richo 7/15/2019 23:19",
-		"protocol:" : "Richo 7/27/2018 09:03",
-		"protocol:directory:" : "Richo 7/27/2018 09:01",
+		"controller:" : "Richo 7/16/2019 00:07",
+		"controller:directory:" : "Richo 7/15/2019 23:59",
+		"directory:" : "Richo 7/15/2019 23:59",
 		"start" : "Richo 7/25/2018 10:53",
 		"stop" : "Richo 7/25/2018 10:52" },
 	"instance" : {
 		"certName" : "Richo 9/6/2017 17:27",
+		"controller" : "Richo 7/15/2019 23:58",
 		"destroy" : "Richo 7/30/2018 09:37",
 		"hostname" : "Richo 9/6/2017 17:27",
 		"httpPort" : "Richo 9/6/2017 17:27",
 		"httpsPort" : "Richo 9/6/2017 17:27",
 		"initialize" : "Richo 8/10/2015 12:25",
 		"initializeResources" : "Richo 8/6/2018 12:59",
-		"initializeWithProtocol:directory:" : "Richo 7/27/2018 09:02",
-		"protocol" : "Richo 7/27/2018 09:02" } }
+		"initializeWithController:directory:" : "Richo 7/15/2019 23:59" } }

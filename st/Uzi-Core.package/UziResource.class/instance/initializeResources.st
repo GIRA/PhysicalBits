@@ -8,11 +8,11 @@ initializeResources
 		put: (RESTActionMap new
 			at: #compile do: [:req | self processCompile: req];
 			at: #connect do: [:req | self processConnect: req]
-			ifTrue: [self protocol isConnected not];
+			ifTrue: [self controller isConnected not];
 			at: #disconnect do: [:req | self processDisconnect: req]
-			ifTrue: [self protocol isConnected];
+			ifTrue: [self controller isConnected];
 			at: #install do: [:req | self processInstall: req]
-			ifTrue: [self protocol isConnected];
+			ifTrue: [self controller isConnected];
 			at: #run do: [:req | self processRun: req]
-			ifTrue: [self protocol isConnected];
+			ifTrue: [self controller isConnected];
 			yourself)

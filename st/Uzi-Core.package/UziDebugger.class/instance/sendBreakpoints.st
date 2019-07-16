@@ -1,9 +1,9 @@
 sending
 sendBreakpoints
 	(debuggerBreakpoints , userBreakpoints)
-		ifEmpty: [protocol clearAllBreakpoints]
+		ifEmpty: [controller clearAllBreakpoints]
 		ifNotEmpty: [:bpts |
 			bpts size < self program allPCs size
-				ifTrue: [protocol clearAllBreakpoints; setBreakpoints: bpts]
-				ifFalse: [protocol setAllBreakpoints; 
+				ifTrue: [controller clearAllBreakpoints; setBreakpoints: bpts]
+				ifFalse: [controller setAllBreakpoints; 
 					clearBreakpoints: (self program allPCs copyWithoutAll: bpts)]]

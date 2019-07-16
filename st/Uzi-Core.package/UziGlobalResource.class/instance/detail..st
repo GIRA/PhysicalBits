@@ -8,7 +8,7 @@ detail: req
 		at: #reporting
 		put: (globals
 			collect: [:globalNumber || global |
-				global := self protocol getGlobal: globalNumber.
+				global := self controller getGlobal: globalNumber.
 				Dictionary new 
 					at: #name put: global name;
 					at: #number put: globalNumber;

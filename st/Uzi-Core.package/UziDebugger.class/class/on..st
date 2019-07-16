@@ -1,3 +1,3 @@
 instance creation
-on: anUziProtocol
-	^ self basicNew initializeWithProtocol: anUziProtocol
+on: anUziController
+	^ self basicNew initializeWithController: anUziController

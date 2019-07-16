@@ -2,7 +2,7 @@ accessing
 summary: req
 	^ (super summary: req)
 		at: #elements 
-		put: (self protocol pins 
+		put: (self controller pins 
 			collect: [:pin |
 				Dictionary new 
 					at: #name put: pin name;
