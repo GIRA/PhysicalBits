@@ -2,8 +2,7 @@ accessing
 detail: req
 	| start globals |
 	start := (req fields at: 'start' ifAbsent: 0) asInteger.
-	globals := ((req fields at: 'globals' ifAbsent: '') subStrings: ',')
-		collect: [:each | each asInteger].
+	globals := (req fields at: 'globals' ifAbsent: '') subStrings: ','.	
 	^ (super detail: req)
 		at: #reporting
 		put: (globals
