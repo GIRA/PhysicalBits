@@ -15,6 +15,7 @@
 		"freeArduinoRAM",
 		"freeUziRAM",
 		"pins",
+		"pinsReporting",
 		"debugger",
 		"scriptWatchers",
 		"runningProgram" ],
