@@ -15,4 +15,4 @@ processCoroutineState
 		val4 := serial next.
 		stack basicAt: i put: (val1 << 24 bitOr: (val2 << 16 bitOr: (val3 << 8 bitOr: val4)))].
 	debugger update: index pc: pc fp: fp stack: stack.	
-	self triggerEvent: UziProtocolEvents debuggerUpdate
+	self triggerEvent: UziEvents debuggerUpdate

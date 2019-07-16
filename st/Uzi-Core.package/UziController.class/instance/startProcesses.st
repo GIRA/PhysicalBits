@@ -1,7 +1,7 @@
 connection
 startProcesses
 	self fork: [
-			self triggerEvent: UziProtocolEvents connect;
+			self triggerEvent: UziEvents connect;
 				startSteppingProcess; 
 				startKeepAliveProcess.
 			3000 milliSeconds asDelay wait.

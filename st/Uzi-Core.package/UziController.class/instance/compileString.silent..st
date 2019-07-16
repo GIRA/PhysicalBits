@@ -10,7 +10,7 @@ compileString: aString silent: silentFlag
 			success: 'Compilation successful!';
 			flush].
 	currentProgram := program.
-	self triggerEvent: UziProtocolEvents programUpdate.
+	self triggerEvent: UziEvents programUpdate.
 	^ program]
 			on: UziParseError , UziCompileError 
 			do: [:err |

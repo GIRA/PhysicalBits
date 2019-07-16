@@ -19,4 +19,4 @@ processPinValue
 		(self pinsReporting includes: pin)
 			ifTrue: [(self getPin: pin) addValue: timestamp -> value.
 				update := true]].
-	update ifTrue: [self triggerEvent: UziProtocolEvents reportingChange]
+	update ifTrue: [self triggerEvent: UziEvents reportingChange]

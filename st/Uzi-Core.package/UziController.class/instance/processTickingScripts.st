@@ -37,4 +37,4 @@ processTickingScripts
 						format: { self errorMsgForCode: errorCode . script name };
 						flush]]].
 	scriptWatchers := watchers.
-	update ifTrue: [self triggerEvent: UziProtocolEvents reportingChange]
+	update ifTrue: [self triggerEvent: UziEvents reportingChange]
