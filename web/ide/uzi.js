@@ -70,6 +70,18 @@ let Uzi = (function () {
       ajax.POST(url, data)
         .then(log)
         .catch(errorHandler);
+    },
+
+    setPinReport: function (pinNumber, reportEnabled) {
+      let url = baseUrl + Uzi.state.actions.setPinReport.href;
+      let data = {
+        id: id,
+        pinNumber: pinNumber,
+        reportEnabled: reportEnabled
+      };
+      ajax.POST(url, data)
+        .then(log)
+        .catch(errorHandler);
     }
   };
 

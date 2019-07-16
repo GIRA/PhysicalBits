@@ -15,7 +15,7 @@ let IDE = (function () {
         .then(initializeDefaultLayout)
         .then(initializeBlocksPanel)
         .then(initializeAutorun);
-        
+
       initializeTopBar();
       initializeInspectorPanel();
       initializeCodePanel();
@@ -83,6 +83,11 @@ let IDE = (function () {
 
   function initializeInspectorPanel() {
     $("#pin-choose-button").on("click", openInspectorPinDialog);
+    $("input[name=pins-checkbox]").on("change", function () {
+      let pinNumber = this.value;
+      let reportEnabled = this.checked;
+      Uzi.setPinReport(pinNumber, reportEnabled);
+    });
     Uzi.on("update", updateInspectorPanel);
   }
 
