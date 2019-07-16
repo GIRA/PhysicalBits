@@ -6,3 +6,4 @@ initialize
 	pins := Dictionary new.
 	debugger := UziDebugger on: self.
 	pinsReporting := Set new.
+	globalsReporting := Set new

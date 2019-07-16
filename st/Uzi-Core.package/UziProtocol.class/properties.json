@@ -12,6 +12,7 @@
 		"keepAlive",
 		"currentProgram",
 		"globals",
+		"globalsReporting",
 		"freeArduinoRAM",
 		"freeUziRAM",
 		"pins",
