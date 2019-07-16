@@ -21,4 +21,4 @@ test047ForLoopShouldOnlyEvaluateStepOncePerIteration
 		}
 	}'.
 	self writeFile: 'Test047ForLoopShouldOnlyEvaluateStepOncePerIteration'
-		contents: (UziProtocol new run: program)
+		program: program

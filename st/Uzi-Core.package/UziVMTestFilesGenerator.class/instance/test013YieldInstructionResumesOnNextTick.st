@@ -10,4 +10,4 @@ test013YieldInstructionResumesOnNextTick
 			prim: #yield;
 			turnOff: 12]].
 	self writeFile: 'Test013YieldInstructionResumesOnNextTick'
-		contents: (UziProtocol new run: program)
+		program: program

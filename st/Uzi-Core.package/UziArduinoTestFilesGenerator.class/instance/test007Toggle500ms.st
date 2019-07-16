@@ -16,4 +16,4 @@ test007Toggle500ms
 				push: 13;
 				prim: #toggle]].
 	self writeFile: 'Test007Toggle500ms'
-		contents: (UziProtocol new run: program)
+		program: program

@@ -8,4 +8,4 @@ test082IsDivisibleBy
 		write(D9, isDivisibleBy(64, 8));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

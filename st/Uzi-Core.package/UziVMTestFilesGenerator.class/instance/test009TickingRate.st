@@ -9,4 +9,4 @@ test009TickingRate
 			push: 13;
 			prim: #toggle]].
 	self writeFile: 'Test009TickingRate'
-		contents: (UziProtocol new run: program)
+		program: program

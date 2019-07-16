@@ -21,4 +21,4 @@ test013CaptureEveryPinWithDifferentTickrate
                 toggle(D13);
             }'.
 	self writeFile: 'Test013CaptureEveryPinWithDifferentTickrate'
-		contents: (UziProtocol new run: program)
+		program: program

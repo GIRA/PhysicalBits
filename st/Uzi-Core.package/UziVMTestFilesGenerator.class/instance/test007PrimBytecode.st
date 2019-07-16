@@ -9,4 +9,4 @@ test007PrimBytecode
 			push: 13;
 			prim: #toggle]].
 	self writeFile: 'Test007PrimBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

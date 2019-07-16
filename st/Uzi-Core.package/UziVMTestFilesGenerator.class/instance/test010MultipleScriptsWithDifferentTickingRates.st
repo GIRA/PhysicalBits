@@ -15,4 +15,4 @@ test010MultipleScriptsWithDifferentTickingRates
 			read: 15;
 			write: 9]].
 	self writeFile: 'Test010MultipleScriptsWithDifferentTickingRates'
-		contents: (UziProtocol new run: program)
+		program: program

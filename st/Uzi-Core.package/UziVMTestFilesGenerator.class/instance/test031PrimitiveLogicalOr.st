@@ -15,5 +15,4 @@ test031PrimitiveLogicalOr
 			jmp: 2;
 			push: 11;
 			prim: #toggle]].
-	self writeFile: 'Test031PrimitiveLogicalOr'
-		contents: (UziProtocol new run: program)
+	self writeFile: 'Test031PrimitiveLogicalOr' program: program

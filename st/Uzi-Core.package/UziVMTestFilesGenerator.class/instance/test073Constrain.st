@@ -8,4 +8,4 @@ test073Constrain
 		write(D9, constrain(10, -3, 5) == 5);
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

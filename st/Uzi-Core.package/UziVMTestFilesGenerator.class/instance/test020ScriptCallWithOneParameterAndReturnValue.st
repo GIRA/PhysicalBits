@@ -27,4 +27,4 @@ test020ScriptCallWithOneParameterAndReturnValue
 			call: #toggle;
 			write: 13]].
 	self writeFile: 'Test020ScriptCallWithOneParameterAndReturnValue'
-		contents: (UziProtocol new run: program)
+		program: program

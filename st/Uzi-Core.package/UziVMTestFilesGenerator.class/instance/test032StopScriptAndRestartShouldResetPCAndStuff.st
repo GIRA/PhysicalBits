@@ -23,4 +23,4 @@ test032StopScriptAndRestartShouldResetPCAndStuff
 			push: 500;
 			prim: #delayMs]].
 	self writeFile: 'Test032StopScriptAndRestartShouldResetPCAndStuff'
-		contents: (UziProtocol new run: program)
+		program: program

@@ -8,4 +8,4 @@ test081IsNegative
 		write(D9, isNegative(-1));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

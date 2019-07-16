@@ -18,5 +18,4 @@ test029PrimitiveBitwiseOr
 			push: 1;
 			prim: #add;
 			pop: #n]].
-	self writeFile: 'Test029PrimitiveBitwiseOr'
-		contents: (UziProtocol new run: program)
+	self writeFile: 'Test029PrimitiveBitwiseOr' program: program

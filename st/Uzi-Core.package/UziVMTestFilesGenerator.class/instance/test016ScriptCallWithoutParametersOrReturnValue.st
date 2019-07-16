@@ -19,4 +19,4 @@ test016ScriptCallWithoutParametersOrReturnValue
 			push: 11;
 			prim: #toggle]].
 	self writeFile: 'Test016ScriptCallWithoutParametersOrReturnValue'
-		contents: (UziProtocol new run: program)
+		program: program

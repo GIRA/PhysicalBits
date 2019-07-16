@@ -32,4 +32,4 @@ test025ScriptCallWithRecursiveCall4LevelsDeep
 			push: #c;
 			write: 13]].
 	self writeFile: 'Test025ScriptCallWithRecursiveCall4LevelsDeep'
-		contents: (UziProtocol new run: program)
+		program: program

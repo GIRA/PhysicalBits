@@ -10,4 +10,4 @@ test045ForLoopWithoutConstantStep
 		}
 	}'.
 	self writeFile: 'Test045ForLoopWithoutConstantStep'
-		contents: (UziProtocol new run: program)
+		program: program

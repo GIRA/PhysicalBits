@@ -18,4 +18,4 @@ test038ResumeOnStoppedTaskShouldJumpToBeginning
 		instructions: [:s | s
 			resume: #main]].
 	self writeFile: 'Test038ResumeOnStoppedTaskShouldJumpToBeginning'
-		contents: (UziProtocol new run: program)
+		program: program

@@ -12,4 +12,4 @@ test034StartOnTheCurrentTaskShouldJumpToTheBeginning
 			push: 13;
 			prim: #turnOff]].
 	self writeFile: 'Test034StartOnTheCurrentTaskShouldJumpToTheBeginning'
-		contents: (UziProtocol new run: program)
+		program: program

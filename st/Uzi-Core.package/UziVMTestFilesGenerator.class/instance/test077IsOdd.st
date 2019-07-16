@@ -8,4 +8,4 @@ test077IsOdd
 		write(D9, isOdd(3));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

@@ -22,4 +22,4 @@ test036ResumeOnARunningTaskShouldHaveNoEffect
 		instructions: [:s | s
 			resume: #main]].
 	self writeFile: 'Test036ResumeOnARunningTaskShouldHaveNoEffect'
-		contents: (UziProtocol new run: program)
+		program: program

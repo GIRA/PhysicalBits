@@ -13,4 +13,4 @@ task blink13() running {
 	delayMs(1000);
 }'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

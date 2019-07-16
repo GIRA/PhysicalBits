@@ -20,7 +20,7 @@
 		"debugger",
 		"scriptWatchers",
 		"runningProgram" ],
-	"name" : "UziProtocol",
+	"name" : "UziController",
 	"pools" : [
 		 ],
 	"super" : "Object",

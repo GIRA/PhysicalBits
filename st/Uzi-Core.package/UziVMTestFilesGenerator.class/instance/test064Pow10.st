@@ -8,4 +8,4 @@ test064Pow10
 		write(D9, pow10(0)); "1"
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

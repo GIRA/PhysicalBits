@@ -20,4 +20,4 @@ test035StartOnAnotherTaskShouldResetToBeginning
 		instructions: [:s | s
 			start: #main]].
 	self writeFile: 'Test035StartOnAnotherTaskShouldResetToBeginning'
-		contents: (UziProtocol new run: program)
+		program: program

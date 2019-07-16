@@ -7,4 +7,4 @@ test042EmptyScriptShouldNotCrashTheVM
 		delay: 0
 		instructions: [:s |]].
 	self writeFile: 'Test042EmptyScriptShouldNotCrashTheVM'
-		contents: (UziProtocol new run: program)
+		program: program

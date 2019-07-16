@@ -29,4 +29,4 @@ test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn
 			call: #toggle;
 			write: 11]].
 	self writeFile: 'Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn'
-		contents: (UziProtocol new run: program)
+		program: program

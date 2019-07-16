@@ -8,4 +8,4 @@ test076IsEven
 		write(D9, isEven(0));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

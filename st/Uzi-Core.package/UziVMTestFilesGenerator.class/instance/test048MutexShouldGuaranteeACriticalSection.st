@@ -24,4 +24,4 @@ test048MutexShouldGuaranteeACriticalSection
 		m.release();
 	}'.
 	self writeFile: 'Test048MutexShouldGuaranteeACriticalSection'
-		contents: (UziProtocol new run: program)
+		program: program

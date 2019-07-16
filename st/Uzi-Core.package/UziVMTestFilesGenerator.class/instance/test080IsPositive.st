@@ -8,4 +8,4 @@ test080IsPositive
 		write(D9, isPositive(0));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

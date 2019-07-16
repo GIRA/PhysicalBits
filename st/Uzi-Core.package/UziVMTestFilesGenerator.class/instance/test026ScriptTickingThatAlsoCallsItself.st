@@ -51,4 +51,4 @@ test026ScriptTickingThatAlsoCallsItself
 			push: #result;
 			prim: #write]].
 	self writeFile: 'Test026ScriptTickingThatAlsoCallsItself'
-		contents: (UziProtocol new run: program)
+		program: program

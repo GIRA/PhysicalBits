@@ -1,3 +1,3 @@
 instance creation
 directory: aFileDirectory
-	^ self protocol: UziProtocol new directory: aFileDirectory
+	^ self protocol: UziController new directory: aFileDirectory

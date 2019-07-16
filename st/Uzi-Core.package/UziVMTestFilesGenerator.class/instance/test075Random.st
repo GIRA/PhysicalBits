@@ -13,4 +13,4 @@ test075Random
 		old = a;
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

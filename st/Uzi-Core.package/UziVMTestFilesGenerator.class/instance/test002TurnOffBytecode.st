@@ -9,4 +9,4 @@ test002TurnOffBytecode
 			instructions: [:s | s
 				turnOff: 13]].
 	self writeFile: 'Test002TurnOffBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

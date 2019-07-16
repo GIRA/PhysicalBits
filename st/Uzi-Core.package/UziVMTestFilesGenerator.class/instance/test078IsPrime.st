@@ -8,4 +8,4 @@ test078IsPrime
 		write(D9, isPrime(5));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

@@ -12,4 +12,4 @@ test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer
 		toggle(D11);
 	}'.
 	self writeFile: 'Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer'
-		contents: (UziProtocol new run: program)
+		program: program

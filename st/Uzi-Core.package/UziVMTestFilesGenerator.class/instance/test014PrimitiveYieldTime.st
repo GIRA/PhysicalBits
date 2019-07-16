@@ -11,4 +11,4 @@ test014PrimitiveYieldTime
 			prim: #delayMs;
 			turnOff: 13]].
 	self writeFile: 'Test014PrimitiveYieldTime'
-		contents: (UziProtocol new run: program)
+		program: program

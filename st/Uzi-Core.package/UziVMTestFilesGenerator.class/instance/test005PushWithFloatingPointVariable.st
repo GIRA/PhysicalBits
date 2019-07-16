@@ -9,4 +9,4 @@ test005PushWithFloatingPointVariable
 			push: 0.2;		
 			write: 13]].
 	self writeFile: 'Test005PushWithFloatingPointVariable'
-		contents: (UziProtocol new run: program)
+		program: program

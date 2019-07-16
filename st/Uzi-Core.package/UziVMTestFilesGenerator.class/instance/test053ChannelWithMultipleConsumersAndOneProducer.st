@@ -17,4 +17,4 @@ test053ChannelWithMultipleConsumersAndOneProducer
 		}
 	}'.
 	self writeFile: 'Test053ChannelWithMultipleConsumersAndOneProducer'
-		contents: (UziProtocol new run: program)
+		program: program

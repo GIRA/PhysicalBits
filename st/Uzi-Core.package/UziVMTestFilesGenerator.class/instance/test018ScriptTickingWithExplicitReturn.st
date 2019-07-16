@@ -17,4 +17,4 @@ test018ScriptTickingWithExplicitReturn
 			push: 11;
 			prim: #toggle]].
 	self writeFile: 'Test018ScriptTickingWithExplicitReturn'
-		contents: (UziProtocol new run: program)
+		program: program

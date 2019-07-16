@@ -18,4 +18,4 @@ test039StartOnStoppedTaskShouldJumpToBeginning
 		instructions: [:s | s
 			start: #main]].
 	self writeFile: 'Test039StartOnStoppedTaskShouldJumpToBeginning'
-		contents: (UziProtocol new run: program)
+		program: program

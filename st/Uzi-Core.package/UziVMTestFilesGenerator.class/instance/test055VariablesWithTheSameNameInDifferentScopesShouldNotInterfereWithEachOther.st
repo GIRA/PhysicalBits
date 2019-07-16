@@ -13,4 +13,4 @@ test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther
 		toggle(pin);
 	}'.
 	self writeFile: 'Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther'
-		contents: (UziProtocol new run: program)
+		program: program

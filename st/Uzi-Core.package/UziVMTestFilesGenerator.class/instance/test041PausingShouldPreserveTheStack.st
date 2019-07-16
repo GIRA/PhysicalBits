@@ -31,4 +31,4 @@ test041PausingShouldPreserveTheStack
 		instructions: [:s | s
 			resume: #main]].
 	self writeFile: 'Test041PausingShouldPreserveTheStack'
-		contents: (UziProtocol new run: program)
+		program: program

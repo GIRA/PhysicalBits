@@ -10,4 +10,4 @@ test003ReadWriteBytecode
 				read: 15;
 				write: 13]].
 	self writeFile: 'Test003ReadWriteBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

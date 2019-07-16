@@ -8,4 +8,4 @@ test061NaturalLogarithm
 		write(D9, ln(3)); "1.09"
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

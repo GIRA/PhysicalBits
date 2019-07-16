@@ -14,4 +14,4 @@ test052ChannelWithMultipleProducersAndOneConsumer
 
 	task consumer() running 1/s { write(D11, c.receive()); }'.
 	self writeFile: 'Test052ChannelWithMultipleProducersAndOneConsumer'
-		contents: (UziProtocol new run: program)
+		program: program

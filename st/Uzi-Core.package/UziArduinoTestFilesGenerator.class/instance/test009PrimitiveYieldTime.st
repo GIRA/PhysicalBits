@@ -18,4 +18,4 @@ test009PrimitiveYieldTime
 				push: 13;
 				prim: #toggle]].
 	self writeFile: 'Test009PrimitiveYieldTime'
-		contents: (UziProtocol new run: program)
+		program: program

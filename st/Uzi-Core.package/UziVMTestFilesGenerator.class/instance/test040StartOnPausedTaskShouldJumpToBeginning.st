@@ -18,4 +18,4 @@ test040StartOnPausedTaskShouldJumpToBeginning
 		instructions: [:s | s
 			start: #main]].
 	self writeFile: 'Test040StartOnPausedTaskShouldJumpToBeginning'
-		contents: (UziProtocol new run: program)
+		program: program

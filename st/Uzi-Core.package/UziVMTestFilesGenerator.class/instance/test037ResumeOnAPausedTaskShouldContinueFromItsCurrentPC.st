@@ -18,4 +18,4 @@ test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC
 		instructions: [:s | s
 			resume: #main]].
 	self writeFile: 'Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC'
-		contents: (UziProtocol new run: program)
+		program: program

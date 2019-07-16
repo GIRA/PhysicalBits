@@ -8,4 +8,4 @@ test056Round
 		write(D12, round(0.75));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

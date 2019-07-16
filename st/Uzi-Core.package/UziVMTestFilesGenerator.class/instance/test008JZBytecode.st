@@ -14,4 +14,4 @@ test008JZBytecode
 			turnOn: 13;
 			label: #end]].
 	self writeFile: 'Test008JZBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

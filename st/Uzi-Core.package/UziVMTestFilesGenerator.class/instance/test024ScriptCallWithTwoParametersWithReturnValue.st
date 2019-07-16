@@ -31,4 +31,4 @@ test024ScriptCallWithTwoParametersWithReturnValue
 			call: #toggle;
 			write: 13]].
 	self writeFile: 'Test024ScriptCallWithTwoParametersWithReturnValue'
-		contents: (UziProtocol new run: program)
+		program: program

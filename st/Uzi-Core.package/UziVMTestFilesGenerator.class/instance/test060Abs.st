@@ -8,4 +8,4 @@ test060Abs
 		write(D10, abs(0.5));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

@@ -17,4 +17,4 @@ test019ScriptWithYieldBeforeEndOfScript
 			push: 100;
 			prim: #delayMs]].
 	self writeFile: 'Test019ScriptWithYieldBeforeEndOfScript'
-		contents: (UziProtocol new run: program)
+		program: program

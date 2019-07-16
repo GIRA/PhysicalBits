@@ -8,4 +8,4 @@ test068Atan
 		write(D9, atan(1.58)); "1.006528137936965"
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

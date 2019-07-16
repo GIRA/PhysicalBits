@@ -25,4 +25,4 @@ test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC
 				push: 13;
 				prim: #toggle]].
 	self writeFile: 'Test010ResumeOnAPausedTaskShouldContinueFromItsCurrentPC'
-		contents: (UziProtocol new run: program)
+		program: program

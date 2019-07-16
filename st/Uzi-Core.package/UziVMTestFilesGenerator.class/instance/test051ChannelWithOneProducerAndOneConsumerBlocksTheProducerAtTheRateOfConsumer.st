@@ -17,4 +17,4 @@ test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer
 		write(D13, c.receive());
 	}'.
 	self writeFile: 'Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer'
-		contents: (UziProtocol new run: program)
+		program: program

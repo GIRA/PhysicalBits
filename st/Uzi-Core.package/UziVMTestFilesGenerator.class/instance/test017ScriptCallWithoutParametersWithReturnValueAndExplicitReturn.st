@@ -24,4 +24,4 @@ test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn
 			prim: #divide;
 			write: 11]].
 	self writeFile: 'Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn'
-		contents: (UziProtocol new run: program)
+		program: program

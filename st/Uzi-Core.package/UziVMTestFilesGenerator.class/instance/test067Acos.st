@@ -8,4 +8,4 @@ test067Acos
 		write(D9, isCloseTo(acos(0), 1.570796326794897)); "1"
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

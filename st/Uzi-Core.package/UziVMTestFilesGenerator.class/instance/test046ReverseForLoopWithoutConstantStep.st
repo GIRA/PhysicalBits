@@ -10,4 +10,4 @@ test046ReverseForLoopWithoutConstantStep
 		}
 	}'.
 	self writeFile: 'Test046ReverseForLoopWithoutConstantStep'
-		contents: (UziProtocol new run: program)
+		program: program

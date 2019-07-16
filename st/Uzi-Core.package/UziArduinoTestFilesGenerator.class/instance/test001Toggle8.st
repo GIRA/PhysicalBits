@@ -16,4 +16,4 @@ test001Toggle8
 				push: 13;
 				prim: #toggle]].
 	self writeFile: 'Test001Toggle8'
-		contents: (UziProtocol new run: program)
+		program: program

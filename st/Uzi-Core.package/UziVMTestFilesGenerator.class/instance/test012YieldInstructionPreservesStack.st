@@ -17,4 +17,4 @@ test012YieldInstructionPreservesStack
 			prim: #add;
 			prim: #toggle]].
 	self writeFile: 'Test012YieldInstructionPreservesStack'
-		contents: (UziProtocol new run: program)
+		program: program

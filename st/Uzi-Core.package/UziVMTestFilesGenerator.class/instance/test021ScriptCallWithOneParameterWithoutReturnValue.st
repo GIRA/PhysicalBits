@@ -25,4 +25,4 @@ test021ScriptCallWithOneParameterWithoutReturnValue
 			call: #toggle;
 			prim: #pop]].
 	self writeFile: 'Test021ScriptCallWithOneParameterWithoutReturnValue'
-		contents: (UziProtocol new run: program)
+		program: program

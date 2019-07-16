@@ -11,4 +11,4 @@ test006PopBytecode
 			push: 1;
 			pop: #a]].
 	self writeFile: 'Test006PopBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

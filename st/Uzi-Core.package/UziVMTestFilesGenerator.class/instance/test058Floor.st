@@ -8,4 +8,4 @@ test058Floor
 		write(D12, floor(0.75));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

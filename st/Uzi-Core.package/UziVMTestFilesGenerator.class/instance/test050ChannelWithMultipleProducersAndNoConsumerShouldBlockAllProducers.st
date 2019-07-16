@@ -24,4 +24,4 @@ test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers
 
 	task test() running { write(D11, counter); }'.
 	self writeFile: 'Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers'
-		contents: (UziProtocol new run: program)
+		program: program

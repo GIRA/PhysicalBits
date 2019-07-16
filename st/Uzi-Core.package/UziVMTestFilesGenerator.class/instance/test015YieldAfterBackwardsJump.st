@@ -14,4 +14,4 @@ test015YieldAfterBackwardsJump
 			label: #label1; read: 15; jz: #label1;
 			label: #label2; read: 15; jnz: #label2]].
 	self writeFile: 'Test015YieldAfterBackwardsJump'
-		contents: (UziProtocol new run: program)
+		program: program

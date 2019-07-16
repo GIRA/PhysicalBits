@@ -30,4 +30,4 @@ test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript
 			prim: #coroutine;
 			prim: #write]].
 	self writeFile: 'Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript'
-		contents: (UziProtocol new run: program)
+		program: program

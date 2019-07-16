@@ -6,4 +6,4 @@ test059Sqrt
 		write(D9, sqrt(0.25));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program

@@ -24,4 +24,4 @@ test011ForLoopShouldOnlyEvaluateStepOncePerIteration
 		toggle(13);
 	}'.
 	self writeFile: 'Test011ForLoopShouldOnlyEvaluateStepOncePerIteration'
-		contents: (UziProtocol new run: program)
+		program: program

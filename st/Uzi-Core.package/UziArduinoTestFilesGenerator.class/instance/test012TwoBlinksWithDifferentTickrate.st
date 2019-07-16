@@ -12,4 +12,4 @@ test012TwoBlinksWithDifferentTickrate
                 toggle(D13);
             }'.
 	self writeFile: 'Test012TwoBlinksWithDifferentTickrate'
-		contents: (UziProtocol new run: program)
+		program: program

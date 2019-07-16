@@ -10,4 +10,4 @@ test011YieldInstruction
 			prim: #yield;
 			turnOff: 13]].
 	self writeFile: 'Test011YieldInstruction'
-		contents: (UziProtocol new run: program)
+		program: program

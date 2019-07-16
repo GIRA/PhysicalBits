@@ -9,4 +9,4 @@ test004PushBytecode
 			push: 1;		
 			write: 13]].
 	self writeFile: 'Test004PushBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

@@ -9,4 +9,4 @@ test001TurnOnBytecode
 			instructions: [:s | s
 				turnOn: 13]].
 	self writeFile: 'Test001TurnOnBytecode'
-		contents: (UziProtocol new run: program)
+		program: program

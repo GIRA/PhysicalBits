@@ -8,4 +8,4 @@ test057Ceil
 		write(D12, ceil(0.75));
 	}'.
 	self writeFile: thisContext method selector capitalized
-		contents: (UziProtocol new run: program)
+		program: program
