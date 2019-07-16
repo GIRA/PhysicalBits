@@ -7,7 +7,7 @@ SystemOrganization addCategory: #'Uzi-Core-Program'!
 SystemOrganization addCategory: #'Uzi-Core-Utils'!
 SystemOrganization addCategory: #'Uzi-Core-Debugging-Program'!
 SystemOrganization addCategory: #'Uzi-Core-Debugging'!
-SystemOrganization addCategory: #'Uzi-Core-Protocol'!
+SystemOrganization addCategory: #'Uzi-Core-Controller'!
 SystemOrganization addCategory: #'Uzi-Core'!
 SystemOrganization addCategory: #'Uzi-Core-Builders'!
 SystemOrganization addCategory: #'Uzi-Core-Server'!
