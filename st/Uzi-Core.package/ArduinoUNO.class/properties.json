@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Boards",
+	"classinstvars" : [
+		"pinsByNumber",
+		"pinsByName" ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "ArduinoUNO",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }

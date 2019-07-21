@@ -1,5 +1,7 @@
 accessing-pins
-setPin: pinNumber value: pinValue 
+setPin: pinName value: pinValue
+	| pinNumber |
+	pinNumber := self getPinNumber: pinName.
 	^ self send: {
 		self class msgOutSetValue. 
 		pinNumber. 
