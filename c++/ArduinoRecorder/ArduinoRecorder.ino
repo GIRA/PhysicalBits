@@ -1,3 +1,4 @@
+// IMPORTANTE: El Arduino Recorder tiene que estar prendido y andando ANTES de conectar Uzi
 //config 
 //pin to look for change that marks a tick of UZI's VM
 const int triggerPin=53;
