@@ -72,12 +72,12 @@ let Uzi = (function () {
         .catch(errorHandler);
     },
 
-    setPinReport: function (pinNumber, reportEnabled) {
-      let url = baseUrl + Uzi.state.actions.setPinReport.href;
+    setPinReport: function (pins, report) {
+      let url = baseUrl + Uzi.state.actions.pinReport.href;
       let data = {
         id: id,
-        pinNumber: pinNumber,
-        reportEnabled: reportEnabled
+        pins: Array.from(pins).join(","),
+        report: Array.from(report).join(",")
       };
       ajax.POST(url, data)
         .then(log)

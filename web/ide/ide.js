@@ -83,11 +83,6 @@ let IDE = (function () {
 
   function initializeInspectorPanel() {
     $("#pin-choose-button").on("click", openInspectorPinDialog);
-    $("input[name=pins-checkbox]").on("change", function () {
-      let pinNumber = this.value;
-      let reportEnabled = this.checked;
-      Uzi.setPinReport(pinNumber, reportEnabled);
-    });
     Uzi.on("update", updateInspectorPanel);
   }
 
@@ -351,6 +346,7 @@ let IDE = (function () {
   }
 
   function openInspectorPinDialog() {
+    buildPinInspectorModal();
     $("#inspector-pin-modal").modal("show");
   }
 
@@ -444,6 +440,55 @@ let IDE = (function () {
             .addClass(css)
             .html(html)));
     }
+  }
+
+  function buildPinInspectorModal() {
+    let container = $("#inspector-pin-modal-container");
+    container.html("");
+
+    let ncols = 6;
+    let row;
+
+    function buildPinInput (pin, index) {
+      if (index % ncols == 0) {
+        row = $("<div>").addClass("row");
+        container.append(row);
+      }
+      let id = pin.name + "-checkbox";
+      let input = $("<input>")
+        .attr("type", "checkbox")
+        .attr("id", id)
+        .attr("name", "pins-checkbox")
+        .attr("value", pin.name)
+        .addClass("custom-control-input");
+      input.get(0).checked = pin.reporting;
+      input.on("change", function () {
+        let reportEnabled = this.checked;
+        Uzi.setPinReport([pin.name], [reportEnabled]);
+      });
+
+      row.append($("<div>")
+        .addClass("col-" + (12 / ncols))
+        .append($("<div>")
+          .addClass("custom-control")
+          .addClass("custom-checkbox")
+          .addClass("custom-control-inline")
+          .append(input)
+          .append($("<label>")
+            .addClass("custom-control-label")
+            .attr("for", id)
+            .text(pin.name))));
+    }
+
+    // Digital pins
+    container.append($("<h6>").text("Digital:"));
+    let digitalPins = Uzi.state.pins.available.filter(function (pin) { return pin.name.startsWith("D"); });
+    digitalPins.forEach(buildPinInput);
+
+    // Analog pins
+    container.append($("<h6>").addClass("mt-4").text("Analog:"));
+    let analogPins = Uzi.state.pins.available.filter(function (pin) { return pin.name.startsWith("A"); });
+    analogPins.forEach(buildPinInput);
   }
 
   return IDE;
