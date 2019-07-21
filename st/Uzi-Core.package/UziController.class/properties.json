@@ -19,7 +19,8 @@
 		"pinsReporting",
 		"debugger",
 		"scriptWatchers",
-		"runningProgram" ],
+		"runningProgram",
+		"board" ],
 	"name" : "UziController",
 	"pools" : [
 		 ],

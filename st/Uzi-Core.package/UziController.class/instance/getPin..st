@@ -1,5 +1,7 @@
 accessing-pins
-getPin: pinNumber
+getPin: pinName
 	^ self pins 
-		at: pinNumber 
-		ifAbsentPut: [UziPinWatcher number: pinNumber]
+		at: pinName
+		ifAbsentPut: [UziPinWatcher
+			name: pinName
+			number: (self getPinNumber: pinName)]

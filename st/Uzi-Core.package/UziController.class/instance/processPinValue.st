@@ -10,13 +10,14 @@ processPinValue
 	count := serial next.
 
 	update := false.
-	count timesRepeat: [| val1 val2 pin value |
+	count timesRepeat: [| val1 val2 pinNumber value |
 		val1 := serial next.
 		val2 := serial next.
-		pin := val1 >> 2.
+		pinNumber := val1 >> 2.
 		value := val2 bitOr: ((val1 bitAnd: 2r11) << 8).
 		value := value / 1023.0.
-		(self pinsReporting includes: pin)
-			ifTrue: [(self getPin: pin) addValue: timestamp -> value.
-				update := true]].
+		(self getPinName: pinNumber) ifNotNil: [:name |
+			(self pinsReporting includes: name)
+				ifTrue: [(self getPin: name) addValue: timestamp -> value.
+					update := true]]].
 	update ifTrue: [self triggerEvent: UziEvents reportingUpdate]
