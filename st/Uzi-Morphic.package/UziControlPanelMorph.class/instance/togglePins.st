@@ -1,7 +1,7 @@
 button actions
 togglePins
 	| activateAll deactivateAll general options toggleAll |
-	options := 2 to: 19.
+	options := self controller availablePins.
 	toggleAll := #'Toggle all'.
 	activateAll := #'Activate all'.
 	deactivateAll := #'Deactivate all'.
