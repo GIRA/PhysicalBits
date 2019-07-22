@@ -8,5 +8,4 @@ processPinReport: req
 		self controller setPin: pinName report: reportEnabled]]
 			on: Error
 			do: [:err | ^ req send400Response: err description].	
-	self sendJSONResponse: (self detail: req)
-		for: req
+	self sendJSONResponse: (self detail: req) for: req

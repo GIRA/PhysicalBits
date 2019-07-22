@@ -16,4 +16,5 @@ initializeResources
 			at: #run do: [:req | self processRun: req]
 			ifTrue: [self controller isConnected];
 			at: #pinReport do: [:req | self processPinReport: req];
+			at: #globalReport do: [:req | self processGlobalReport: req];
 			yourself)
