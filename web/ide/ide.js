@@ -538,7 +538,12 @@ let IDE = (function () {
     }
 
     container.append($("<h6>").text("Global:"));
-    Uzi.state.globals.available.forEach(buildInput);
+    let globals = Uzi.state.globals.available;
+    if (globals.length == 0) {
+      container.append($("<i>").text("* No globals found *"));
+    } else {
+      Uzi.state.globals.available.forEach(buildInput);
+    }
   }
 
   return IDE;
