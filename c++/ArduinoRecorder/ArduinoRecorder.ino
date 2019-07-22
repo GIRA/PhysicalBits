@@ -1,8 +1,10 @@
 //config 
+//pin that enables or disables the connection to the other arduino
+const int enablePin=53;
 //pin to look for change that marks a tick of UZI's VM
-const int triggerPin=53;
+const int triggerPin=51;
 //array containing the pins to monitor.
-const byte pinMap[]{43,45,47,49,51};
+const byte pinMap[]{41,43,45,47,49};
 const byte pinCount=sizeof(pinMap)/sizeof(*pinMap);
 
 struct spec{
