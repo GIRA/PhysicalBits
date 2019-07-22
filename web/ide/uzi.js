@@ -82,6 +82,18 @@ let Uzi = (function () {
       ajax.POST(url, data)
         .then(log)
         .catch(errorHandler);
+    },
+
+    setGlobalReport: function (globals, report) {
+      let url = baseUrl + Uzi.state.actions.globalReport.href;
+      let data = {
+        id: id,
+        globals: Array.from(globals).join(","),
+        report: Array.from(report).join(",")
+      };
+      ajax.POST(url, data)
+        .then(log)
+        .catch(errorHandler);
     }
   };
 

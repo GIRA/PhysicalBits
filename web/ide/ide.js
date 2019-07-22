@@ -83,6 +83,7 @@ let IDE = (function () {
 
   function initializeInspectorPanel() {
     $("#pin-choose-button").on("click", openInspectorPinDialog);
+    $("#global-choose-button").on("click", openInspectorGlobalDialog);
     Uzi.on("update", updateInspectorPanel);
   }
 
@@ -346,8 +347,13 @@ let IDE = (function () {
   }
 
   function openInspectorPinDialog() {
-    buildPinInspectorModal();
+    buildPinInspectorDialog();
     $("#inspector-pin-modal").modal("show");
+  }
+
+  function openInspectorGlobalDialog() {
+    buildGlobalInspectorDialog();
+    $("#inspector-global-modal").modal("show");
   }
 
   function updateConnection (newState, previousState) {
@@ -442,14 +448,14 @@ let IDE = (function () {
     }
   }
 
-  function buildPinInspectorModal() {
+  function buildPinInspectorDialog() {
     let container = $("#inspector-pin-modal-container");
     container.html("");
 
     let ncols = 6;
     let row;
 
-    function buildPinInput (pin, index) {
+    function buildInput (pin, index) {
       if (index % ncols == 0) {
         row = $("<div>").addClass("row");
         container.append(row);
@@ -482,13 +488,57 @@ let IDE = (function () {
 
     // Digital pins
     container.append($("<h6>").text("Digital:"));
-    let digitalPins = Uzi.state.pins.available.filter(function (pin) { return pin.name.startsWith("D"); });
-    digitalPins.forEach(buildPinInput);
+    Uzi.state.pins.available
+      .filter(function (pin) { return pin.name.startsWith("D"); })
+      .forEach(buildInput);
 
     // Analog pins
     container.append($("<h6>").addClass("mt-4").text("Analog:"));
-    let analogPins = Uzi.state.pins.available.filter(function (pin) { return pin.name.startsWith("A"); });
-    analogPins.forEach(buildPinInput);
+    Uzi.state.pins.available
+      .filter(function (pin) { return pin.name.startsWith("A"); })
+      .forEach(buildInput);
+  }
+
+  function buildGlobalInspectorDialog() {
+    let container = $("#inspector-global-modal-container");
+    container.html("");
+
+    let ncols = 6;
+    let row;
+
+    function buildInput (global, index) {
+      if (index % ncols == 0) {
+        row = $("<div>").addClass("row");
+        container.append(row);
+      }
+      let id = "global-" + global.name + "-checkbox";
+      let input = $("<input>")
+        .attr("type", "checkbox")
+        .attr("id", id)
+        .attr("name", "globals-checkbox")
+        .attr("value", global.name)
+        .addClass("custom-control-input");
+      input.get(0).checked = global.reporting;
+      input.on("change", function () {
+        let reportEnabled = this.checked;
+        Uzi.setGlobalReport([global.name], [reportEnabled]);
+      });
+
+      row.append($("<div>")
+        .addClass("col-" + (12 / ncols))
+        .append($("<div>")
+          .addClass("custom-control")
+          .addClass("custom-checkbox")
+          .addClass("custom-control-inline")
+          .append(input)
+          .append($("<label>")
+            .addClass("custom-control-label")
+            .attr("for", id)
+            .text(global.name))));
+    }
+
+    container.append($("<h6>").text("Global:"));
+    Uzi.state.globals.available.forEach(buildInput);
   }
 
   return IDE;
