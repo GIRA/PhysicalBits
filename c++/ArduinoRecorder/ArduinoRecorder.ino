@@ -19,6 +19,7 @@ void setup() {
     pinMode(pinMap[i],INPUT_PULLUP);
   }
   pinMode(triggerPin,INPUT_PULLUP);
+  pinMode(enablePin,OUTPUT);
 }
 
 spec* capturedData=0;
@@ -41,6 +42,8 @@ void loop() {
     Serial.println("Reading pins flags");
     pinFlags=readLong();
     }
+  digitalWrite(enablePin,HIGH);
+  delay(5);
   Serial.print("Capturing ");
   Serial.print(targetTime);
   Serial.println(" ms");
@@ -81,6 +84,8 @@ void loop() {
      lastSpec->pins=pins;
       
    }
+   digitalWrite(enablePin,LOW);
+   delay(5);
    Serial.println("Finished Capture");
    lastSpec=0;
    while(capturedData!=0){
