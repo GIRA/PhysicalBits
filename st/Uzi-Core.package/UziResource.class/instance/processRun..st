@@ -8,5 +8,4 @@ processRun: req
 	self controller run: program]
 		on: Error
 		do: [:err | ^ req send400Response: err description].	
-	self sendJSONResponse: (Uzi encode: program) asArray 
-		for: req
+	self send200ResponseFor: req

@@ -6,6 +6,5 @@ processCompile: req
 	silent := (req fields at: 'silent' ifAbsent: [false]) = 'true'.
 	[program := self compile: src type: type silent: silent]
 		on: Error
-		do: [:err | ^ req send400Response: err description].	
-	self sendJSONResponse: (Uzi encode: program) asArray 
-		for: req
+		do: [:err | ^ req send400Response: err description].
+	self send200ResponseFor: req

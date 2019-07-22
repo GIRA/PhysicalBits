@@ -5,5 +5,4 @@ processConnect: req
 	[self controller connectOn: port]
 		on: Error
 		do: [:err | ^ req send400Response: err description].
-	self sendJSONResponse: (self detail: req)
-		for: req
+	self send200ResponseFor: req

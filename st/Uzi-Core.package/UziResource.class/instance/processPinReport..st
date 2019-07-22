@@ -1,4 +1,4 @@
-accessing-actions
+requests
 processPinReport: req
 	| pins report |
 	pins := (req fields at: 'pins' ifAbsent: '') subStrings: ','.
@@ -7,5 +7,5 @@ processPinReport: req
 	[pins with: report do: [:pinName :reportEnabled |
 		self controller setPin: pinName report: reportEnabled]]
 			on: Error
-			do: [:err | ^ req send400Response: err description].	
-	self sendJSONResponse: (self detail: req) for: req
+			do: [:err | ^ req send400Response: err description].
+	self send200ResponseFor: req

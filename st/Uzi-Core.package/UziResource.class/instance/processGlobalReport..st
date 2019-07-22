@@ -1,4 +1,4 @@
-accessing-actions
+requests
 processGlobalReport: req
 	| globals report |
 	globals := (req fields at: 'globals' ifAbsent: '') subStrings: ','.
@@ -7,5 +7,5 @@ processGlobalReport: req
 	[globals with: report do: [:globalName :reportEnabled |
 		self controller setGlobal: globalName report: reportEnabled]]
 			on: Error
-			do: [:err | ^ req send400Response: err description].	
-	self sendJSONResponse: (self detail: req) for: req
+			do: [:err | ^ req send400Response: err description].
+	self send200ResponseFor: req
