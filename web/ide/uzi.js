@@ -22,16 +22,14 @@ let Uzi = (function () {
 
     connect: function (port) {
       let url = baseUrl + Uzi.state.actions.connect.href;
-      ajax.POST(url, { id: id, port: port })
-        .then(update)
-        .catch(errorHandler);
+      let data = { id: id, port: port };
+      POST(url, data);
     },
 
     disconnect: function () {
       let url = baseUrl + Uzi.state.actions.disconnect.href;
-      ajax.POST(url, { id: id })
-        .then(update)
-        .catch(errorHandler);
+      let data = { id: id };
+      POST(url, data);
     },
 
 		compile: function (src, type, silent) {
@@ -42,9 +40,7 @@ let Uzi = (function () {
         type: type,
         silent: silent == true
       };
-  		ajax.POST(url, data)
-        .then(log)
-  			.catch(errorHandler);
+      POST(url, data);
   	},
 
     run: function (src, type, silent) {
@@ -55,9 +51,7 @@ let Uzi = (function () {
         type: type,
         silent: silent == true
       };
-  		ajax.POST(url, data)
-        .then(log)
-        .catch(errorHandler);
+      POST(url, data);
   	},
 
     install: function (src, type) {
@@ -67,9 +61,7 @@ let Uzi = (function () {
         src: src,
         type: type
       };
-      ajax.POST(url, data)
-        .then(log)
-        .catch(errorHandler);
+      POST(url, data);
     },
 
     setPinReport: function (pins, report) {
@@ -79,9 +71,7 @@ let Uzi = (function () {
         pins: Array.from(pins).join(","),
         report: Array.from(report).join(",")
       };
-      ajax.POST(url, data)
-        .then(log)
-        .catch(errorHandler);
+      POST(url, data);
     },
 
     setGlobalReport: function (globals, report) {
@@ -91,11 +81,15 @@ let Uzi = (function () {
         globals: Array.from(globals).join(","),
         report: Array.from(report).join(",")
       };
-      ajax.POST(url, data)
-        .then(log)
-        .catch(errorHandler);
+      POST(url, data);
     }
   };
+
+  function POST(url, data) {
+    return ajax.POST(url, data)
+      .then(log)
+      .catch(errorHandler);
+  }
 
   function log(data) {
     console.log(data);
