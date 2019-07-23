@@ -37,7 +37,8 @@ void loop() {
     Serial.println("Ready. Waiting for target time");
     targetTime=readLong();
     }
-  while(pinFlags==0){
+   int to = millis()+5000;
+  while(pinFlags==0 && millis()<to){
     
     Serial.println("Reading pins flags");
     pinFlags=readLong();
