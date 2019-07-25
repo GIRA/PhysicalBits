@@ -65,7 +65,7 @@ namespace SimulatorTest
 
             //wait for the arduino to disconnect, just in case.
 
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(2000);
             return valid;
         }
 

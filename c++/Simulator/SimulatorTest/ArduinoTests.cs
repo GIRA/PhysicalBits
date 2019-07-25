@@ -28,7 +28,7 @@ namespace SimulatorTest
         [ClassInitialize]
         public static void ClassInit(TestContext context)
         {
-            bench = new TestBench("COM3", "COM5");
+            bench = new TestBench(uziPort: "COM5", megaPort: "COM6");
         }
 
         [ClassCleanup]
@@ -68,7 +68,7 @@ namespace SimulatorTest
              * HACK(Richo): This sleep is necessary to give the arduino time to 
              * disconnect before the next test.
              */
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(2000);
         }
 
         private double calculateSlope(IEnumerable<int> times, IEnumerable<int> deviations)
@@ -122,7 +122,7 @@ namespace SimulatorTest
         public void Test001Toggle8()
         {
             byte[] program = ReadFile(nameof(Test001Toggle8));
-            TestProgram(program, 550, new byte[] { 8 }, 10);
+            TestProgram(program, 1550, new byte[] { 8 }, 10);
         }
         [TestMethod]
         public void Test002Toggle9()

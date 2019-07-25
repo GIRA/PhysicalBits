@@ -1,6 +1,7 @@
 ﻿using Simulator;
 using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace SimulatorTest
             {
                 try
                 {
-                    foundMega = mega.ReadLine() == "Ready. Waiting for target time\r";
+                    foundMega = ReadLine(mega) == "Ready. Waiting for target time\r";
                 }
                 catch (Exception)
                 {
@@ -52,12 +53,12 @@ namespace SimulatorTest
             return true;
         }
 
-        public TestBench(string UziArduinoPort, string BenchArduinoPort)
+        public TestBench(string uziPort, string megaPort)
         {
             isConnected = true;
-            uzi = new UziConnection(UziArduinoPort, baudRate);
-            benchArduinoPort = BenchArduinoPort;
-            mega = new System.IO.Ports.SerialPort(BenchArduinoPort, baudRate);
+            uzi = new UziConnection(uziPort, baudRate);
+            benchArduinoPort = megaPort;
+            mega = new System.IO.Ports.SerialPort(megaPort, baudRate);
             mega.Encoding = Encoding.ASCII;
             mega.ReadTimeout = 5000;
             try
@@ -76,16 +77,23 @@ namespace SimulatorTest
 
         }
 
+        private string ReadLine(SerialPort mega)
+        {
+            var line = mega.ReadLine();
+            Console.WriteLine("MEGA: " + line);
+            return line;
+        }
+
         public IEnumerable<ExecutionSnapshot> RecordExecution(byte[] program, int targetTime, IEnumerable<byte> pins)
         {
             //send an empty program
             uzi.runProgram(emptyProgram);
-            System.Threading.Thread.Sleep(100);
+            System.Threading.Thread.Sleep(2000);
             //wait for the mega to be ready   
             string line = "";
             while (line != "Ready. Waiting for target time\r")
             {
-                line = mega.ReadLine();
+                line = ReadLine(mega);
             }
             byte pinFlag = getPinFlag(pins);
             mega.Write(targetTime.ToString() + "," + pinFlag.ToString());
@@ -95,11 +103,11 @@ namespace SimulatorTest
 
             while (line != "Finished Capture\r")
             {
-                line = mega.ReadLine();
+                line = ReadLine(mega);
             }
             List<ExecutionSnapshot> result = new List<ExecutionSnapshot>();
 
-            line = mega.ReadLine();
+            line = ReadLine(mega);
             while (line != "Ready. Waiting for target time\r")
             {
                 var current = new ExecutionSnapshot();
@@ -112,7 +120,7 @@ namespace SimulatorTest
                     pinData = (byte)(pinData >> 1);
                 }
                 result.Add(current);
-                line = mega.ReadLine();
+                line = ReadLine(mega);
             }
             return result;
         }
