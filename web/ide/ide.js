@@ -420,6 +420,7 @@ let IDE = (function () {
 
   function updateInspectorPanel() {
     updatePinsPanel();
+    updateGlobalsPanel();
     updateTasksPanel();
   }
 
@@ -458,6 +459,45 @@ let IDE = (function () {
       if (!reporting.has(pin.name)) {
         let $pin = $("#pin-" + pin.name);
         if ($pin != undefined) { $pin.parent().remove(); }
+      }
+    });
+  }
+
+  function updateGlobalsPanel() {
+    if (!Uzi.state.isConnected) return;
+    let globals = Uzi.state.globals;
+    let reporting = new Set();
+    globals.available.forEach(function (global) {
+      if (global.reporting) { reporting.add(global.name); }
+    });
+
+    function initializePanel() {
+      $("#globals-table tbody").html("");
+      globals.available.forEach(function (global) {
+        if (global.reporting) {
+          let $row = $("<tr>")
+            .append($("<td>")
+              .addClass("pl-4")
+              .text(global.name))
+            .append($("<td>")
+              .attr("id", "global-" + global.name)
+              .text("?"));
+          $("#globals-table tbody").append($row);
+        }
+      });
+    };
+
+    globals.elements.forEach(function (global) {
+      if (reporting.has(global.name)) {
+        let $global = $("#global-" + global.name);
+        if ($global.get(0) == undefined) { initializePanel(); }
+        $global.text(global.value.toFixed(2));
+      }
+    });
+    globals.available.forEach(function (global) {
+      if (!reporting.has(global.name)) {
+        let $global = $("#global-" + global.name);
+        if ($global != undefined) { $global.parent().remove(); }
       }
     });
   }
