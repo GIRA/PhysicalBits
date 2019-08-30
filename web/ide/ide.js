@@ -419,6 +419,50 @@ let IDE = (function () {
   }
 
   function updateInspectorPanel() {
+    updatePinsPanel();
+    updateTasksPanel();
+  }
+
+  function updatePinsPanel() {
+    if (!Uzi.state.isConnected) return;
+    let pins = Uzi.state.pins;
+    let reporting = new Set();
+    pins.available.forEach(function (pin) {
+      if (pin.reporting) { reporting.add(pin.name); }
+    });
+
+    function initializePinsPanel() {
+      $("#pins-table tbody").html("");
+      pins.available.forEach(function (pin) {
+        if (pin.reporting) {
+          let $row = $("<tr>")
+            .append($("<td>")
+              .addClass("pl-4")
+              .text(pin.name))
+            .append($("<td>")
+              .attr("id", "pin-" + pin.name)
+              .text("?"));
+          $("#pins-table tbody").append($row);
+        }
+      });
+    };
+
+    pins.elements.forEach(function (pin) {
+      if (reporting.has(pin.name)) {
+        let $pin = $("#pin-" + pin.name);
+        if ($pin.get(0) == undefined) { initializePinsPanel(); }
+        $pin.text(pin.value.toFixed(2));
+      }
+    });
+    pins.available.forEach(function (pin) {
+      if (!reporting.has(pin.name)) {
+        let $pin = $("#pin-" + pin.name);
+        if ($pin != undefined) { $pin.parent().remove(); }
+      }
+    });
+  }
+
+  function updateTasksPanel() {
     // TODO(Richo): Update in place, don't clear and recreate.
     $("#tasks-table tbody").html("");
     if (!Uzi.state.isConnected) return;
