@@ -442,12 +442,14 @@ let IDE = (function () {
 
     if (reporting.size == 0) {
       $emptyLabel.show();
+      $container.html("");
+      return;
     } else {
       $emptyLabel.hide();
     }
 
     function initializePanel() {
-      $container.html('');
+      $container.html("");
       values.available.forEach(function (val) {
         if (val.reporting) {
           let $row = $("<tr>")
