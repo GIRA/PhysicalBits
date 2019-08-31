@@ -481,7 +481,7 @@ let IDE = (function () {
 
         let old = $item.data("old-value");
         let cur = val.value;
-        if (cur != null && cur != old) {
+        if (cur != null && cur != old && Uzi.state.isConnected) {
           $item.data("old-value", cur);
           $item.data("last-update", +new Date());
           $item.removeClass("text-muted");
