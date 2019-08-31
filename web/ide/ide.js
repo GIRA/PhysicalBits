@@ -457,6 +457,7 @@ let IDE = (function () {
             .append($("<td>")
               .addClass("text-right")
               .addClass("pr-4")
+              .addClass("text-muted")
               .attr("id", itemPrefix + "-" + val.name)
               .text("?"));
           $container.append($row);
@@ -477,14 +478,29 @@ let IDE = (function () {
       if (reporting.has(val.name)) {
         let $item = $("#" + itemPrefix + "-" + val.name);
         if ($item.get(0) == undefined) { initializePanel(); }
-        let value = val.value;
-        if (value != null) {
-          $item.text(val.value.toFixed(2));
+
+        let old = $item.data("old-value");
+        let cur = val.value;
+        if (cur != null && cur != old) {
+          $item.data("old-value", cur);
+          $item.data("last-update", +new Date());
+          $item.removeClass("text-muted");
+        } else {
+          let lastUpdate = $item.data("last-update") || 0;
+          let now = +new Date();
+          if (now - lastUpdate > 2500) {
+            $item.addClass("text-muted");
+          }
+        }
+
+        if (cur != null) {
+          $item.text(cur.toFixed(2));
         } else {
           $item.text("?");
         }
       }
     });
+
     values.available.forEach(function (val) {
       if (!reporting.has(val.name)) {
         let $item = $("#" + itemPrefix + "-" + val.name);
