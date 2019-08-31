@@ -425,12 +425,10 @@ let IDE = (function () {
   }
 
   function updatePinsPanel() {
-    if (!Uzi.state.isConnected) return;
     updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), $("#no-pins-label"), "pin");
   }
 
   function updateGlobalsPanel() {
-    if (!Uzi.state.isConnected) return;
     updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global");
   }
 
@@ -466,12 +464,21 @@ let IDE = (function () {
       });
     };
 
+    if (values.available
+        .filter(function (val) { return val.reporting; })
+        .some(function (val) {
+          let $item = $("#" + itemPrefix + "-" + val.name);
+          return $item.get(0) == undefined;
+        })) {
+      initializePanel();
+    }
+
     values.elements.forEach(function (val) {
       if (reporting.has(val.name)) {
         let $item = $("#" + itemPrefix + "-" + val.name);
         if ($item.get(0) == undefined) { initializePanel(); }
         let value = val.value;
-        if (value != null) { 
+        if (value != null) {
           $item.text(val.value.toFixed(2));
         } else {
           $item.text("?");
