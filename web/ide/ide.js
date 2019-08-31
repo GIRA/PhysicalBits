@@ -426,22 +426,28 @@ let IDE = (function () {
 
   function updatePinsPanel() {
     if (!Uzi.state.isConnected) return;
-    updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), "pin");
+    updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), $("#no-pins-label"), "pin");
   }
 
   function updateGlobalsPanel() {
     if (!Uzi.state.isConnected) return;
-    updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), "global");
+    updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global");
   }
 
-  function updateValuesPanel(values, $container, itemPrefix) {
+  function updateValuesPanel(values, $container, $emptyLabel, itemPrefix) {
     let reporting = new Set();
     values.available.forEach(function (val) {
       if (val.reporting) { reporting.add(val.name); }
     });
 
+    if (reporting.size == 0) {
+      $emptyLabel.show();
+    } else {
+      $emptyLabel.hide();
+    }
+
     function initializePanel() {
-      $container.html("");
+      $container.html('');
       values.available.forEach(function (val) {
         if (val.reporting) {
           let $row = $("<tr>")
@@ -449,6 +455,8 @@ let IDE = (function () {
               .addClass("pl-4")
               .text(val.name))
             .append($("<td>")
+              .addClass("text-right")
+              .addClass("pr-4")
               .attr("id", itemPrefix + "-" + val.name)
               .text("?"));
           $container.append($row);
