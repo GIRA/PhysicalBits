@@ -470,7 +470,12 @@ let IDE = (function () {
       if (reporting.has(val.name)) {
         let $item = $("#" + itemPrefix + "-" + val.name);
         if ($item.get(0) == undefined) { initializePanel(); }
-        $item.text(val.value.toFixed(2));
+        let value = val.value;
+        if (value != null) { 
+          $item.text(val.value.toFixed(2));
+        } else {
+          $item.text("?");
+        }
       }
     });
     values.available.forEach(function (val) {
