@@ -426,78 +426,47 @@ let IDE = (function () {
 
   function updatePinsPanel() {
     if (!Uzi.state.isConnected) return;
-    let pins = Uzi.state.pins;
-    let reporting = new Set();
-    pins.available.forEach(function (pin) {
-      if (pin.reporting) { reporting.add(pin.name); }
-    });
-
-    function initializePinsPanel() {
-      $("#pins-table tbody").html("");
-      pins.available.forEach(function (pin) {
-        if (pin.reporting) {
-          let $row = $("<tr>")
-            .append($("<td>")
-              .addClass("pl-4")
-              .text(pin.name))
-            .append($("<td>")
-              .attr("id", "pin-" + pin.name)
-              .text("?"));
-          $("#pins-table tbody").append($row);
-        }
-      });
-    };
-
-    pins.elements.forEach(function (pin) {
-      if (reporting.has(pin.name)) {
-        let $pin = $("#pin-" + pin.name);
-        if ($pin.get(0) == undefined) { initializePinsPanel(); }
-        $pin.text(pin.value.toFixed(2));
-      }
-    });
-    pins.available.forEach(function (pin) {
-      if (!reporting.has(pin.name)) {
-        let $pin = $("#pin-" + pin.name);
-        if ($pin != undefined) { $pin.parent().remove(); }
-      }
-    });
+    updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), "pin");
   }
 
   function updateGlobalsPanel() {
     if (!Uzi.state.isConnected) return;
-    let globals = Uzi.state.globals;
+    updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), "global");
+  }
+
+  function updateValuesPanel(values, $container, itemPrefix) {
     let reporting = new Set();
-    globals.available.forEach(function (global) {
-      if (global.reporting) { reporting.add(global.name); }
+    values.available.forEach(function (val) {
+      if (val.reporting) { reporting.add(val.name); }
     });
 
     function initializePanel() {
-      $("#globals-table tbody").html("");
-      globals.available.forEach(function (global) {
-        if (global.reporting) {
+      $container.html("");
+      values.available.forEach(function (val) {
+        if (val.reporting) {
           let $row = $("<tr>")
             .append($("<td>")
               .addClass("pl-4")
-              .text(global.name))
+              .text(val.name))
             .append($("<td>")
-              .attr("id", "global-" + global.name)
+              .attr("id", itemPrefix + "-" + val.name)
               .text("?"));
-          $("#globals-table tbody").append($row);
+          $container.append($row);
         }
       });
     };
 
-    globals.elements.forEach(function (global) {
-      if (reporting.has(global.name)) {
-        let $global = $("#global-" + global.name);
-        if ($global.get(0) == undefined) { initializePanel(); }
-        $global.text(global.value.toFixed(2));
+    values.elements.forEach(function (val) {
+      if (reporting.has(val.name)) {
+        let $item = $("#" + itemPrefix + "-" + val.name);
+        if ($item.get(0) == undefined) { initializePanel(); }
+        $item.text(val.value.toFixed(2));
       }
     });
-    globals.available.forEach(function (global) {
-      if (!reporting.has(global.name)) {
-        let $global = $("#global-" + global.name);
-        if ($global != undefined) { $global.parent().remove(); }
+    values.available.forEach(function (val) {
+      if (!reporting.has(val.name)) {
+        let $item = $("#" + itemPrefix + "-" + val.name);
+        if ($item != undefined) { $item.parent().remove(); }
       }
     });
   }
