@@ -1,3 +1,3 @@
 accessing-globals
 availableGlobals
-	^ self variables
+	^ self variables sorted
