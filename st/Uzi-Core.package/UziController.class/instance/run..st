@@ -5,6 +5,6 @@ run: anUziProgram
 	debugger reset.
 	[| bytes |
 	bytes := self send: { self class msgOutSetProgram }, (Uzi encode: anUziProgram).
-	self sendGlobalsReporting.
+	self updateReportingFor: anUziProgram.
 	^ bytes]
 		ensure: [self triggerEvent: UziEvents programUpdate]
