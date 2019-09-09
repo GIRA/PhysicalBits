@@ -4,7 +4,9 @@ let XML = {
   },
   getChildNode: function (block, name) {
     return XML.getLastChild(block, function (child) {
-			return child.getAttribute("name") === name;
+      try {
+  			return child.getAttribute("name") === name;
+      } catch (e) { return false; }
 		});
   },
   getLastChild: function (block, predicate) {
