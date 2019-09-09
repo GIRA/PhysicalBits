@@ -1,5 +1,5 @@
 var BlocksToAST = (function () {
-	
+
 	var builder = {
 		program: function (id, imports, globals, scripts) {
 			return {
@@ -35,7 +35,7 @@ var BlocksToAST = (function () {
 				body: builder.block(id, statements)
 			};
 		},
-		function: function (id, name, argumentNames, statements) {			
+		function: function (id, name, argumentNames, statements) {
 			return {
 				__class__: "UziFunctionNode",
 				id: id,
@@ -79,7 +79,7 @@ var BlocksToAST = (function () {
 			return {
 				__class__: "UziBlockNode",
 				id: id,
-				statements: statements					
+				statements: statements
 			};
 		},
 		tickingRate: function (id, runningTimes, tickingScale) {
@@ -225,23 +225,23 @@ var BlocksToAST = (function () {
 			};
 		}
 	};
-	
-	var topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];	
+
+	var topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];
 	var dispatchTable =  {
 		task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.task(id, taskName, [], "once", null, statements);
 		},
 		forever: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.forever(id, statements);
 		},
-		for: function (block, ctx) {			
-			var id = getId(block);
-			var variableName = asIdentifier(getChildNode(block, "variable").innerText);
+		for: function (block, ctx) {
+			var id = XML.getId(block);
+			var variableName = asIdentifier(XML.getChildNode(block, "variable").innerText);
 			var start = generateCodeForValue(block, ctx, "start");
 			var stop = generateCodeForValue(block, ctx, "stop");
 			var step = generateCodeForValue(block, ctx, "step");
@@ -249,26 +249,26 @@ var BlocksToAST = (function () {
 			return builder.for(id, variableName, start, stop, step, statements);
 		},
 		math_number: function (block, ctx) {
-			var id = getId(block);
-			var value = parseFloat(getChildNode(block, "NUM").innerText);
+			var id = XML.getId(block);
+			var value = parseFloat(XML.getChildNode(block, "NUM").innerText);
 			return builder.number(id, value);
 		},
 		turn_pin_variable: function (block, ctx) {
-			var id = getId(block);
-			var pinState = getChildNode(block, "pinState").innerText;
+			var id = XML.getId(block);
+			var pinState = XML.getChildNode(block, "pinState").innerText;
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var selector = pinState === "on" ? "turnOn" : "turnOff";
 			return builder.primitiveCall(id, selector, [pinNumber]);
 		},
 		variables_get: function (block, ctx) {
-			var id = getId(block);
-			var variableName = asIdentifier(getChildNode(block, "VAR").innerText);
+			var id = XML.getId(block);
+			var variableName = asIdentifier(XML.getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(variableName);
 			return builder.variable(id, variableName);
 		},
 		delay: function (block, ctx) {
-			var id = getId(block);
-			var unit = getChildNode(block, "unit").innerText;
+			var id = XML.getId(block);
+			var unit = XML.getChildNode(block, "unit").innerText;
 			var time = generateCodeForValue(block, ctx, "time");
 			var selector;
 			if (unit === "ms") { selector = "delayMs"; }
@@ -280,46 +280,46 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [time]);
 		},
 		start_task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			return builder.start(id, [taskName]);
 		},
 		stop_task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			return builder.stop(id, [taskName]);
 		},
 		resume_task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			return builder.resume(id, [taskName]);
 		},
 		pause_task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			return builder.pause(id, [taskName]);
 		},
 		run_task: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
 			return builder.scriptCall(id, taskName, []);
 		},
 		conditional_simple: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var trueBranch = generateCodeForStatements(block, ctx, "trueBranch");
 			return builder.conditional(id, condition, trueBranch, []);
 		},
 		conditional_full: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var trueBranch = generateCodeForStatements(block, ctx, "trueBranch");
 			var falseBranch = generateCodeForStatements(block, ctx, "falseBranch");
 			return builder.conditional(id, condition, trueBranch, falseBranch);
 		},
 		logic_compare: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var left = generateCodeForValue(block, ctx, "A");
 			var right = generateCodeForValue(block, ctx, "B");
 			var selector, primName;
@@ -347,8 +347,8 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		elapsed_time: function (block, ctx) {
-			var id = getId(block);
-			var unit = getChildNode(block, "unit").innerText;
+			var id = XML.getId(block);
+			var unit = XML.getChildNode(block, "unit").innerText;
 			var selector, primName;
 			if (unit === "ms") {
 				selector = "millis";
@@ -363,13 +363,13 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [], primName);
 		},
 		toggle_variable: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			return builder.primitiveCall(id, "toggle", [pinNumber]);
 		},
 		logic_operation: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var left = generateCodeForValue(block, ctx, "A");
 			var right = generateCodeForValue(block, ctx, "B");
 			if (type === "AND") {
@@ -379,18 +379,18 @@ var BlocksToAST = (function () {
 			}
 		},
 		logic_boolean: function (block, ctx) {
-			var id = getId(block);
-			var bool = getChildNode(block, "BOOL").innerText;
+			var id = XML.getId(block);
+			var bool = XML.getChildNode(block, "BOOL").innerText;
 			return builder.number(id, bool === "TRUE" ? 1 : 0);
 		},
 		logic_negate: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var bool = generateCodeForValue(block, ctx, "BOOL");
 			return builder.primitiveCall(id, "!", [bool], "negate");
 		},
 		math_number_property: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "PROPERTY").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "PROPERTY").innerText;
 			var num = generateCodeForValue(block, ctx, "NUMBER_TO_CHECK");
 			var args = [num];
 			var selector, primName;
@@ -423,14 +423,14 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, args, primName);
 		},
 		repeat_times: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var times = generateCodeForValue(block, ctx, "times");
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.repeat(id, times, statements);
 		},
 		math_round: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var num = generateCodeForValue(block, ctx, "NUM");
 			var selector, primName;
 			if (type === "ROUND") {
@@ -448,8 +448,8 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [num], primName);
 		},
 		math_single: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var num = generateCodeForValue(block, ctx, "NUM");
 			var selector, primName;
 			var args = [num];
@@ -481,8 +481,8 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, args, primName);
 		},
 		math_trig: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var num = generateCodeForValue(block, ctx, "NUM");
 			var selector, primName;
 			if (type === "SIN") {
@@ -509,8 +509,8 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [num], primName);
 		},
 		math_constant: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "CONSTANT").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "CONSTANT").innerText;
 			var value;
 			if (type === "PI") {
 				value = Math.PI;
@@ -531,8 +531,8 @@ var BlocksToAST = (function () {
 			return builder.number(id, value);
 		},
 		math_arithmetic: function (block, ctx) {
-			var id = getId(block);
-			var type = getChildNode(block, "OP").innerText;
+			var id = XML.getId(block);
+			var type = XML.getChildNode(block, "OP").innerText;
 			var left = generateCodeForValue(block, ctx, "A");
 			var right = generateCodeForValue(block, ctx, "B");
 			var selector, primName;
@@ -557,98 +557,98 @@ var BlocksToAST = (function () {
 			return builder.primitiveCall(id, selector, [left, right], primName);
 		},
 		timer: function (block, ctx) {
-			var id = getId(block);
-			var taskName = asIdentifier(getChildNode(block, "taskName").innerText);
-			var runningTimes = parseFloat(getChildNode(block, "runningTimes").innerText);
-			var tickingScale = getChildNode(block, "tickingScale").innerText;
-			var initialState = getChildNode(block, "initialState").innerText;
+			var id = XML.getId(block);
+			var taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);
+			var runningTimes = parseFloat(XML.getChildNode(block, "runningTimes").innerText);
+			var tickingScale = XML.getChildNode(block, "tickingScale").innerText;
+			var initialState = XML.getChildNode(block, "initialState").innerText;
 			var statements = generateCodeForStatements(block, ctx);
-			return builder.task(id, taskName, [], 
+			return builder.task(id, taskName, [],
 				initialState === "started" ? "running" : "stopped",
 				builder.tickingRate(id, runningTimes, tickingScale),
 				statements);
 		},
 		write_pin_variable: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var pinValue = generateCodeForValue(block, ctx, "pinValue");
 			return builder.primitiveCall(id, "write", [pinNumber, pinValue]);
 		},
 		read_pin_variable: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			return builder.primitiveCall(id, "read", [pinNumber]);
 		},
 		degrees_servo_variable: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var servoValue = generateCodeForValue(block, ctx, "servoValue");
 			return builder.primitiveCall(id, "servoDegrees", [pinNumber, servoValue]);
 		},
 		repeat: function (block, ctx) {
-			var id = getId(block);
-			var negated = getChildNode(block, "negate").innerText === "true";
+			var id = XML.getId(block);
+			var negated = XML.getChildNode(block, "negate").innerText === "true";
 			var condition = generateCodeForValue(block, ctx, "condition");
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.while(id, condition, statements, negated);
 		},
 		is_pin_variable: function (block, ctx) {
-			var id = getId(block);
-			var pinState = getChildNode(block, "pinState").innerText;
+			var id = XML.getId(block);
+			var pinState = XML.getChildNode(block, "pinState").innerText;
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			var selector, primName;
-			primName = selector = pinState === "on" ? "isOn" : "isOff";	
-			return builder.primitiveCall(id, selector, [pinNumber], primName);		
+			primName = selector = pinState === "on" ? "isOn" : "isOff";
+			return builder.primitiveCall(id, selector, [pinNumber], primName);
 		},
 		wait: function (block, ctx) {
-			var id = getId(block);
-			var negated = getChildNode(block, "negate").innerText === "true";
+			var id = XML.getId(block);
+			var negated = XML.getChildNode(block, "negate").innerText === "true";
 			var condition = generateCodeForValue(block, ctx, "condition");
 			return builder.while(id, condition, [], negated);
 		},
 		math_modulo: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var left = generateCodeForValue(block, ctx, "DIVIDEND");
 			var right = generateCodeForValue(block, ctx, "DIVISOR");
 			return builder.primitiveCall(id, "%", [left, right], "mod");
 		},
 		variables_set: function (block, ctx) {
-			var id = getId(block);
-			var name = asIdentifier(getChildNode(block, "VAR").innerText);
+			var id = XML.getId(block);
+			var name = asIdentifier(XML.getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var value = generateCodeForValue(block, ctx, "VALUE");
 			return builder.assignment(id, name, value);
 		},
 		math_change: function (block, ctx) {
-			var id = getId(block);
-			var name = asIdentifier(getChildNode(block, "VAR").innerText);
+			var id = XML.getId(block);
+			var name = asIdentifier(XML.getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var delta = generateCodeForValue(block, ctx, "DELTA");
 			var variable = builder.variable(id, name);
-			return builder.assignment(id, name, 
+			return builder.assignment(id, name,
 				builder.primitiveCall(id, "+", [variable, delta], "add"));
 		},
 		math_constrain: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var value = generateCodeForValue(block, ctx, "VALUE");
 			var low = generateCodeForValue(block, ctx, "LOW");
 			var high = generateCodeForValue(block, ctx, "HIGH");
 			return builder.primitiveCall(id, "constrain", [value, low, high]);
 		},
 		math_random_int: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var from = generateCodeForValue(block, ctx, "FROM");
 			var to = generateCodeForValue(block, ctx, "TO");
 			return builder.primitiveCall(id, "randomInt", [from, to]);
 		},
 		math_random_float: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			return builder.primitiveCall(id, "random", []);
 		},
 		procedures_defnoreturn: function (block, ctx) {
-			var id = getId(block);
-			var name = "_" + asIdentifier(getChildNode(block, "NAME").innerText);
-			var mutation = getLastChild(block, function (child) {
+			var id = XML.getId(block);
+			var name = "_" + asIdentifier(XML.getChildNode(block, "NAME").innerText);
+			var mutation = XML.getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
@@ -664,8 +664,8 @@ var BlocksToAST = (function () {
 			return undefined;
 		},
 		procedures_callnoreturn: function (block, ctx) {
-			var id = getId(block);
-			var mutation = getLastChild(block, function (child) {
+			var id = XML.getId(block);
+			var mutation = XML.getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var scriptName = "_" + asIdentifier(mutation.getAttribute("name"));
@@ -682,8 +682,8 @@ var BlocksToAST = (function () {
 			return builder.scriptCall(id, scriptName, args);
 		},
 		procedures_callreturn: function (block, ctx) {
-			var id = getId(block);
-			var mutation = getLastChild(block, function (child) {
+			var id = XML.getId(block);
+			var mutation = XML.getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var scriptName = "_" + asIdentifier(mutation.getAttribute("name"));
@@ -700,18 +700,18 @@ var BlocksToAST = (function () {
 			return builder.scriptCall(id, scriptName, args);
 		},
 		procedures_ifreturn: function (block, ctx) {
-			var id = getId(block);
+			var id = XML.getId(block);
 			var condition = generateCodeForValue(block, ctx, "CONDITION");
 			var value = generateCodeForValue(block, ctx, "VALUE");
-			return builder.conditional(id, 
-				condition, 
-				[builder.return(id, value || null)], 
+			return builder.conditional(id,
+				condition,
+				[builder.return(id, value || null)],
 				[]);
 		},
 		procedures_defreturn: function (block, ctx) {
-			var id = getId(block);
-			var name = "_" + asIdentifier(getChildNode(block, "NAME").innerText);
-			var mutation = getLastChild(block, function (child) {
+			var id = XML.getId(block);
+			var name = "_" + asIdentifier(XML.getChildNode(block, "NAME").innerText);
+			var mutation = XML.getLastChild(block, function (child) {
 				return child.tagName === "MUTATION";
 			});
 			var args = [];
@@ -730,21 +730,21 @@ var BlocksToAST = (function () {
 			return generateCodeForValue(block, ctx, "NAME");
 		},
 		pin: function (block, ctx) {
-			var id = getId(block);
-			var pin = getChildNode(block, "pinNumber").innerText;
+			var id = XML.getId(block);
+			var pin = XML.getChildNode(block, "pinNumber").innerText;
 			var type = pin[0];
 			var number = parseInt(pin.slice(1));
 			return builder.pin(id, type, number);
 		}
 	};
-	
+
 	function asIdentifier(str) {
 		return str.replace(/ /g, '_');
 	}
-	
+
 	function generateCodeFor(block, ctx) {
 		if (isDisabled(block)) return undefined;
-		
+
 		var type = block.getAttribute("type");
 		var func = dispatchTable[type];
 		if (func == undefined) {
@@ -758,16 +758,16 @@ var BlocksToAST = (function () {
 			ctx.path.pop();
 		}
 	}
-	
+
 	function generateCodeForValue(block, ctx, name) {
-		var child = getChildNode(block, name);
+		var child = XML.getChildNode(block, name);
 		if (child === undefined) return undefined;
-		return generateCodeFor(getLastChild(child), ctx);
+		return generateCodeFor(XML.getLastChild(child), ctx);
 	}
-	
+
 	function generateCodeForStatements(block, ctx, name) {
 		var statements = [];
-		var child = getChildNode(block, name || "statements");
+		var child = XML.getChildNode(block, name || "statements");
 		if (child !== undefined) {
 			child.childNodes.forEach(function (each) {
 				var next = each;
@@ -782,50 +782,30 @@ var BlocksToAST = (function () {
 		}
 		return statements;
 	}
-	
-	function getId(block) {
-		return block.getAttribute("id");
-	}
-	
+
 	function getNextStatement(block) {
-		var next = getLastChild(block, function (child) {
+		var next = XML.getLastChild(block, function (child) {
 			return child.tagName === "NEXT";
 		});
 		if (next === undefined) { return next; }
 		return next.childNodes[0];
 	}
-	
-	function getChildNode(block, name) {
-		return getLastChild(block, function (child) {
-			return child.getAttribute("name") === name;
-		});
-	}
-	
-	function getLastChild(block, predicate) {
-		for (var i = block.childNodes.length - 1; i >= 0; i--) {
-			var child = block.childNodes[i];
-			if (predicate === undefined || predicate(child)) {
-				return child;
-			}
-		}
-		return undefined;
-	}
-	
+
 	function isTopLevel(block) {
 		return topLevelBlocks.indexOf(block.getAttribute("type")) != -1;
 	}
-	
+
 	function isDisabled(block) {
 		return block.getAttribute("disabled") === "true";
 	}
-	
+
 	return {
 		generate: function (xml) {
 			var scripts = [];
 			var ctx = {
 				path: [xml],
 				globals: [],
-				
+
 				addGlobal: function (varName) {
 					if (!ctx.globals.includes(varName)) {
 						ctx.globals.push(varName);
