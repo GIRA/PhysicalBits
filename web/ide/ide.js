@@ -93,14 +93,13 @@ let IDE = (function () {
     blocklyDiv = $("#blockly").get(0);
 
     let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
-      // TODO(Richo): Verify toolbox.documentElement browser compatibility
       workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox.documentElement, media: "libs/google-blockly/media/" });
       workspace.addChangeListener(function () {
         saveToLocalStorage();
         scheduleAutorun(false);
       });
       workspace.registerToolboxCategoryCallback("MOTORS", function () {
-        let node = XML.getChildNode(toolbox.documentElement, "DC motors");
+        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors"), "DC");
         let nodes = Array.from(node.children);
         if (motors.length == 0) {
           nodes.splice(1);
