@@ -92,7 +92,8 @@ let IDE = (function () {
     blocklyDiv = $("#blockly").get(0);
 
     let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
-      workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox, media: "libs/google-blockly/media/" });
+      // TODO(Richo): Verify toolbox.documentElement browser compatibility
+      workspace = Blockly.inject(blocklyDiv, { toolbox: toolbox.documentElement, media: "libs/google-blockly/media/" });
       workspace.addChangeListener(function () {
         saveToLocalStorage();
         scheduleAutorun(false);
