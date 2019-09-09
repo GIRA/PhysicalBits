@@ -7,6 +7,7 @@ let IDE = (function () {
   let autorunInterval, autorunNextTime;
   let lastProgram;
   let lastFileName;
+  let motors = [];
 
   let IDE = {
     init: function () {
@@ -98,6 +99,30 @@ let IDE = (function () {
         saveToLocalStorage();
         scheduleAutorun(false);
       });
+      workspace.registerToolboxCategoryCallback("MOTORS", function () {
+        let node = XML.getChildNode(toolbox.documentElement, "DC motors");
+        let nodes = Array.from(node.children);
+        if (motors.length == 0) {
+          nodes.splice(1);
+        } else {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "motorName") {
+              field.innerText = motors[0].name;
+            }
+          }
+        }
+        return nodes;
+      });
+      workspace.registerButtonCallback("configureMotors", function () {
+        console.log(arguments);
+        motors.push({
+          name: "motor" + motors.length,
+
+        });
+        workspace.toolbox_.refreshSelection();
+      });
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
@@ -105,9 +130,63 @@ let IDE = (function () {
     let loadBlocks = ajax.GET('blocks.json').then(function (json) {
       let blocks = JSON.parse(json);
       Blockly.defineBlocksWithJsonArray(blocks);
+      initSpecialBlocks();
     });
 
     Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
+  }
+
+  function initSpecialBlocks() {
+    function currentMotors() {
+      return motors.map(function(each) { return [ each.name, each.name ]; });
+    }
+
+    Blockly.Blocks['move_dcmotor'] = {
+      init: function() {
+        this.appendValueInput("speed")
+            .setCheck("Number")
+            .appendField("move")
+            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName")
+            .appendField(new Blockly.FieldDropdown([["forward","fwd"], ["backward","bwd"]]), "direction")
+            .appendField("at speed");
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['stop_dcmotor'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("stop")
+            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName");
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['change_speed_dcmotor'] = {
+      init: function() {
+        this.appendValueInput("speed")
+            .setCheck("Number")
+            .appendField("set")
+            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName")
+            .appendField("speed to");
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
   function initializeCodePanel() {

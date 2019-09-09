@@ -72,7 +72,7 @@
       <field name="pinNumber">D13</field>
     </block>
   </category>
-  <category name="Motors" colour="#a55b5b">
+  <category name="Servomotors" colour="#a55b5b">
     <block type="degrees_servo_variable">
       <value name="pinNumber">
         <shadow type="pin">
@@ -84,6 +84,29 @@
           <field name="NUM">90</field>
         </shadow>
       </value>
+    </block>
+  </category>
+  <category name="DC motors" colour="#a55b5b" custom="MOTORS">
+    <button text="Configure motors..." callbackKey="configureMotors"></button>
+    <block type="move_dcmotor">
+      <field name="motorName"></field>
+      <field name="direction">fwd</field>
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="change_speed_dcmotor">
+      <field name="motorName"></field>
+      <value name="speed">
+        <shadow type="math_number">
+          <field name="NUM">50</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_dcmotor">
+      <field name="motorName"></field>
     </block>
   </category>
   <category name="Control" colour="#5b80a5">
