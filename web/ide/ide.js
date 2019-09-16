@@ -132,7 +132,7 @@ let IDE = (function () {
       initSpecialBlocks();
     });
 
-    Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
+    return Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
   }
 
   function initSpecialBlocks() {
