@@ -343,6 +343,140 @@
       </div>
     </div>
 
+    <!-- Blockly Motors Modal -->
+    <div class="modal fade" id="blockly-motors-modal" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Configure motors</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="inspector-global-modal-container" class="container">
+              <!--
+              <div class="row">
+                <div class="input-group">
+                  <div class="input-group-prepend"><span class="input-group-text">Name:</span></div>
+                  <input type="text" aria-label="Name" class="form-control">
+
+                  <div class="input-group-prepend"><span class="input-group-text">Enable:</span></div>
+                  <input type="text" aria-label="Enable pin" class="form-control">
+
+                  <div class="input-group-prepend"><span class="input-group-text">Fwd:</span></div>
+                  <input type="text" aria-label="Forward pin" class="form-control">
+
+                  <div class="input-group-prepend"><span class="input-group-text">Bwd:</span></div>
+                  <input type="text" aria-label="Backward pin" class="form-control">
+                </div>
+              </div>
+              <div class="row">
+                <div class="form-group">
+                  <button class="btn btn-success" type="button">
+                    <i class="fas fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            -->
+            <div class="row">
+              <table class="table table-borderless text-center">
+                <thead>
+                  <tr>
+                    <th class="text-center">Motor name</th>
+                    <th class="text-center">Enable pin</th>
+                    <th class="text-center">Forward pin</th>
+                    <th class="text-center">Backward pin</th>
+                    <th class="text-center">
+                      <button class="btn btn-sm btn-outline-success" type="button">
+                        <i class="fas fa-plus"></i>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <input type="email" class="form-control text-center" id="exampleFormControlInput1" placeholder="motor1">
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-danger" type="button">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <input type="email" class="form-control text-center" id="exampleFormControlInput1" placeholder="motor1">
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control" id="exampleFormControlSelect1">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-danger" type="button">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
     <script src="libs/bootstrap-4.3.1/js/bootstrap.bundle.min.js" type="text/javascript"></script>
@@ -374,6 +508,7 @@
     $(document).ready(function () {
       IDE.init();
       Uzi.start();
+      $("#blockly-motors-modal").modal("show");
     });
     </script>
   </body>

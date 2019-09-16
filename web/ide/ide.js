@@ -15,6 +15,7 @@ let IDE = (function () {
       loadDefaultLayoutConfig()
         .then(initializeDefaultLayout)
         .then(initializeBlocksPanel)
+        .then(initializeBlocklyMotorsModal)
         .then(initializeAutorun);
 
       initializeTopBar();
@@ -114,14 +115,6 @@ let IDE = (function () {
         }
         return nodes;
       });
-      workspace.registerButtonCallback("configureMotors", function () {
-        console.log(arguments);
-        motors.push({
-          name: "motor" + motors.length,
-
-        });
-        workspace.toolbox_.refreshSelection();
-      });
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
@@ -186,6 +179,22 @@ let IDE = (function () {
         this.setHelpUrl("");
       }
     };
+  }
+
+  function initializeBlocklyMotorsModal() {
+
+    workspace.registerButtonCallback("configureMotors", function () {
+      console.log(arguments);
+
+      $("#blockly-motors-modal").modal("show");
+      /*
+      motors.push({
+        name: "motor" + motors.length,
+
+      });
+      */
+      workspace.toolbox_.refreshSelection();
+    });
   }
 
   function initializeCodePanel() {
