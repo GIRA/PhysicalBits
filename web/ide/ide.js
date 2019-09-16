@@ -136,7 +136,7 @@ let IDE = (function () {
   }
 
   function initSpecialBlocks() {
-    function currentMotors() {
+    function currentMotorsForDropdown() {
       return motors.map(function(each) { return [ each.name, each.name ]; });
     }
 
@@ -145,7 +145,7 @@ let IDE = (function () {
         this.appendValueInput("speed")
             .setCheck("Number")
             .appendField("move")
-            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName")
+            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
             .appendField(new Blockly.FieldDropdown([["forward","fwd"], ["backward","bwd"]]), "direction")
             .appendField("at speed");
         //this.setInputsInline(true);
@@ -161,7 +161,7 @@ let IDE = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField("stop")
-            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName");
+            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName");
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -176,7 +176,7 @@ let IDE = (function () {
         this.appendValueInput("speed")
             .setCheck("Number")
             .appendField("set")
-            .appendField(new Blockly.FieldDropdown(currentMotors), "motorName")
+            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
             .appendField("speed to");
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
