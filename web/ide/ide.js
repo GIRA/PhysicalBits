@@ -183,7 +183,7 @@ let IDE = (function () {
 
   function initializeBlocklyMotorsModal() {
     let defaultMotor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
-    
+
     function appendMotorRow(motor, i) {
       function createTextInput(motorName, controlName) {
         let input = $("<input>")
@@ -208,12 +208,26 @@ let IDE = (function () {
         var btn = $("<button>")
           .addClass("btn")
           .addClass("btn-sm")
-          .addClass("btn-outline-danger")
           .attr("type", "button")
           .append($("<i>")
             .addClass("fas")
-            .addClass("fa-minus"))
-          .on("click", function () { tr.remove(); });
+            .addClass("fa-minus"));
+
+        if (i % 2 == 0) {
+          btn
+            .addClass("btn-outline-danger")
+            .on("click", function () { tr.remove(); });
+        } else {
+          btn
+            //.attr("disabled", "true")
+            .addClass("btn-outline-secondary")
+            .attr("data-toggle", "tooltip")
+            .attr("data-placement", "left")
+            .attr("title", "This motor is being used by the program!")
+            .on("click", function () {
+              btn.tooltip("toggle");
+            });
+        }
         return btn;
       }
       let tr = $("<tr>")
