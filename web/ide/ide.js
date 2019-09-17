@@ -182,17 +182,74 @@ let IDE = (function () {
   }
 
   function initializeBlocklyMotorsModal() {
+    let defaultMotor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
+    
+    function appendMotorRow(motor, i) {
+      function createTextInput(motorName, controlName) {
+        let input = $("<input>")
+          .attr("type", "text")
+          .addClass("form-control")
+          .addClass("text-center")
+          .attr("name", controlName);
+        input.get(0).value = motorName;
+        return input;
+      }
+      function createPinDropdown(motorPin, motorName) {
+        let select = $("<select>")
+          .addClass("form-control")
+          .attr("name", motorName);
+        Uzi.state.pins.available.forEach(function (pin) {
+          select.append($("<option>").text(pin.name));
+        });
+        select.get(0).value = motorPin;
+        return select;
+      }
+      function createRemoveButton(row) {
+        var btn = $("<button>")
+          .addClass("btn")
+          .addClass("btn-sm")
+          .addClass("btn-outline-danger")
+          .attr("type", "button")
+          .append($("<i>")
+            .addClass("fas")
+            .addClass("fa-minus"))
+          .on("click", function () { tr.remove(); });
+        return btn;
+      }
+      let tr = $("<tr>")
+        .append($("<td>").append(createTextInput(motor.name, "motors[" + i + "][name]")))
+        .append($("<td>").append(createPinDropdown(motor.enable, "motors[" + i + "][enable]")))
+        .append($("<td>").append(createPinDropdown(motor.fwd, "motors[" + i + "][fwd]")))
+        .append($("<td>").append(createPinDropdown(motor.bwd, "motors[" + i + "][bwd]")))
+      tr.append($("<td>").append(createRemoveButton(tr)));
+      $("#blockly-motors-modal-container-tbody").append(tr);
+    }
+
+    $("#add-motor-row-button").on("click", function () {
+      appendMotorRow(defaultMotor, motors.length);
+    });
 
     workspace.registerButtonCallback("configureMotors", function () {
-      console.log(arguments);
 
+      // Add one by default if no motors
+      if (motors.length == 0) {
+        motors.push(defaultMotor);
+      }
+
+      // Build modal UI
+      $("#blockly-motors-modal-container-tbody").html("");
+      motors.forEach(appendMotorRow);
       $("#blockly-motors-modal").modal("show");
-      /*
-      motors.push({
-        name: "motor" + motors.length,
+    });
 
-      });
-      */
+    $("#blockly-motors-modal").on("hide.bs.modal", function () {
+      let data = $("#blockly-motors-modal-container").serializeJSON();
+      let temp = [];
+      for (let i in data.motors) {
+        temp.push(data.motors[i]);
+      }
+      // TODO(Richo): Check program and rename/disable motor blocks accordingly
+      motors = temp;
       workspace.toolbox_.refreshSelection();
     });
   }
