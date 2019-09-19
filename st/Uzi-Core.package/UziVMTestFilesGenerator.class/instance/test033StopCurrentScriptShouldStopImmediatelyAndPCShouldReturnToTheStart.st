@@ -17,4 +17,4 @@ test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart
 		instructions: [:s | s
 			start: #blink13]].
 	self writeFile: 'Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart'
-		contents: (UziProtocol new run: program)
+		program: program

@@ -34,7 +34,7 @@
 		"test030PrimitiveLogicalAnd" : "Richo 7/15/2019 23:24",
 		"test031PrimitiveLogicalOr" : "Richo 7/15/2019 23:24",
 		"test032StopScriptAndRestartShouldResetPCAndStuff" : "Richo 7/15/2019 23:24",
-		"test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" : "Richo 12/9/2017 16:00",
+		"test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart" : "Richo 9/19/2019 15:37",
 		"test034StartOnTheCurrentTaskShouldJumpToTheBeginning" : "Richo 7/15/2019 23:24",
 		"test035StartOnAnotherTaskShouldResetToBeginning" : "Richo 7/15/2019 23:25",
 		"test036ResumeOnARunningTaskShouldHaveNoEffect" : "Richo 7/15/2019 23:25",
