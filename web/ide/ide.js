@@ -183,9 +183,33 @@ let IDE = (function () {
   }
 
   function initializeBlocklyMotorsModal() {
-    let defaultMotor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
+    let count = 0;
 
-    function appendMotorRow(motor, i) {
+    function getUsedMotors() {
+      let program = Uzi.state.program.current;
+      if (program == null) return new Set();
+      // HACK(Richo): We are actually returning all the aliases, not just motors
+      return new Set(program.ast.imports.map(imp => imp.alias));
+    }
+
+    function getDefaultMotor() {
+      let data = $("#blockly-motors-modal-container").serializeJSON();
+      let motorNames = new Set();
+      for (let i in data.motors) {
+        motorNames.add(data.motors[i].name);
+      }
+      let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
+      let i = 1;
+      while (motorNames.has(motor.name)) {
+        motor.name = "motor" + i;
+        i++;
+      }
+      return motor;
+    }
+
+    function appendMotorRow(motor, usedMotors) {
+      let i = count++;
+
       function createTextInput(motorName, controlName) {
         let input = $("<input>")
           .attr("type", "text")
@@ -214,11 +238,7 @@ let IDE = (function () {
             .addClass("fas")
             .addClass("fa-minus"));
 
-        if (i % 2 == 0) {
-          btn
-            .addClass("btn-outline-danger")
-            .on("click", function () { tr.remove(); });
-        } else {
+        if (usedMotors.has(motor.name)) {
           btn
             //.attr("disabled", "true")
             .addClass("btn-outline-secondary")
@@ -228,6 +248,10 @@ let IDE = (function () {
             .on("click", function () {
               btn.tooltip("toggle");
             });
+        } else {
+          btn
+            .addClass("btn-outline-danger")
+            .on("click", function () { row.remove(); });
         }
         return btn;
       }
@@ -241,19 +265,19 @@ let IDE = (function () {
     }
 
     $("#add-motor-row-button").on("click", function () {
-      appendMotorRow(defaultMotor, motors.length);
+      appendMotorRow(getDefaultMotor(), getUsedMotors());
     });
 
     workspace.registerButtonCallback("configureMotors", function () {
-
-      // Add one by default if no motors
-      if (motors.length == 0) {
-        motors.push(defaultMotor);
-      }
-
       // Build modal UI
       $("#blockly-motors-modal-container-tbody").html("");
-      motors.forEach(appendMotorRow);
+      let usedMotors = getUsedMotors();
+      if (motors.length == 0) {
+        appendMotorRow(getDefaultMotor(), usedMotors);
+      }
+      motors.forEach(function (motor) {
+        appendMotorRow(motor, usedMotors);
+      });
       $("#blockly-motors-modal").modal("show");
     });
 
