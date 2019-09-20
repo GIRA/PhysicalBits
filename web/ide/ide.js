@@ -551,7 +551,7 @@ let IDE = (function () {
 
   function getGeneratedCode(){
     var xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml);
+    return BlocksToAST.generate(xml, motors);
   }
 
   function getGeneratedCodeAsJSON() {

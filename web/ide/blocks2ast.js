@@ -753,7 +753,7 @@ var BlocksToAST = (function () {
 			var direction = XML.getChildNode(block, "direction").innerText;
 			var speed = generateCodeForValue(block, ctx, "speed");
 
-			ctx.addImport(motorName, "DCMotor.uzi");
+			ctx.addDCMotorImport(motorName);
 
 			let selector = motorName + "." + (direction == "fwd" ? "forward" : "backward");
 			let arg = {name: "speed", value: speed};
@@ -764,7 +764,7 @@ var BlocksToAST = (function () {
 			var motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
 			var speed = generateCodeForValue(block, ctx, "speed");
 
-			ctx.addImport(motorName, "DCMotor.uzi");
+			ctx.addDCMotorImport(motorName);
 
 			let selector = motorName + "." + "setSpeed";
 			let arg = {name: "speed", value: speed};
@@ -774,7 +774,7 @@ var BlocksToAST = (function () {
 			var id = XML.getId(block);
 			var motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
 
-			ctx.addImport(motorName, "DCMotor.uzi");
+			ctx.addDCMotorImport(motorName);
 
 			let selector = motorName + "." + "brake";
 			return builder.scriptCall(id, selector, []);
@@ -843,18 +843,41 @@ var BlocksToAST = (function () {
 	}
 
 	return {
-		generate: function (xml) {
+		generate: function (xml, motors) {
+			var setup = [];
 			var scripts = [];
 			var ctx = {
 				path: [xml],
 				imports: new Map(),
 				globals: [],
 
-				addImport: function (alias, path) {
-					if (!ctx.imports.has(alias)) {
-						ctx.imports.set(alias, path);
-						// TODO(Richo): initialization code!?
+				addDCMotorImport: function (alias) {
+					if (ctx.addImport(alias, "DCMotor.uzi")) {
+
+						// Initialize motor
+						let motor = motors.find(function (m) { return m.name === alias; });
+						if (motor != undefined) {
+							let selector = motor.name + "." + "init";
+
+							function pin(pin) {
+								var type = pin[0];
+								var number = parseInt(pin.slice(1));
+								return builder.pin(null, type, number);
+							}
+							let args = [
+								{ name: "en", value: pin(motor.enable) },
+								{ name: "f", value: pin(motor.fwd) },
+								{ name: "r", value: pin(motor.bwd) },
+							];
+
+							setup.push(builder.scriptCall(null, selector, args));
+						}
 					}
+				},
+				addImport: function (alias, path) {
+					if (ctx.imports.has(alias)) return false;
+					ctx.imports.set(alias, path);
+					return true;
 				},
 				addGlobal: function (varName) {
 					if (!ctx.globals.includes(varName)) {
@@ -870,6 +893,10 @@ var BlocksToAST = (function () {
 					}
 				}
 			});
+			if (setup.length > 0) {
+				// TODO(Richo): Make sure to avoid collisions!
+				scripts.unshift(builder.task(null, "setup", [], "once", null, setup));
+			}
 			return builder.program(null, ctx.imports, ctx.globals, scripts);
 		}
 	}
