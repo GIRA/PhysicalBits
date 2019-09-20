@@ -268,6 +268,11 @@ let IDE = (function () {
       workspace.toolbox_.refreshSelection();
       saveToLocalStorage();
     });
+
+    $("#blockly-motors-modal-container").on("submit", function (e) {
+      e.preventDefault();
+      $("#blockly-motors-modal").modal("hide");
+    });
   }
 
   function initializeCodePanel() {
