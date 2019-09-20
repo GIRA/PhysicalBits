@@ -7,7 +7,7 @@ detail: req
 	^ (super detail: req)
 		at: #isConnected put: self controller isConnected;
 		at: #portName put: self controller portName;
-		at: #tasks put: (self controller scriptWatchers 
+		at: #tasks put: (self controller taskWatchers 
 			collect: [:w | Dictionary new
 				at: #scriptName put: w scriptName;
 				at: #isRunning put: w isRunning;
