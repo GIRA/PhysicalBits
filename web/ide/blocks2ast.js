@@ -894,8 +894,11 @@ var BlocksToAST = (function () {
 				}
 			});
 			if (setup.length > 0) {
-				// TODO(Richo): Make sure to avoid collisions!
-				scripts.unshift(builder.task(null, "setup", [], "once", null, setup));
+				let name = "setup";
+				while (scripts.find(function (s) { return s.name === name; }) != undefined) {
+					name = "_" + name;
+				}
+				scripts.unshift(builder.task(null, name, [], "once", null, setup));
 			}
 			return builder.program(null, ctx.imports, ctx.globals, scripts);
 		}
