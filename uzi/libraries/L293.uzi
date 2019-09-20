@@ -26,6 +26,6 @@ proc brake() {
 	turnOff(enablePin);
 }
 
-proc speed(speed) {
+proc setSpeed(speed) {
 	write(enablePin, speed);
 }
