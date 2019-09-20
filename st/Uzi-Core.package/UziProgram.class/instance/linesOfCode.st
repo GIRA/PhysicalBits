@@ -8,8 +8,9 @@ linesOfCode
 			line := src copyFrom: start to: end.
 			interval := start to: end.
 			instructions := allInstructions
-				select: [:instr | instr node interval first >= interval first
-					and: [instr node interval last <= interval last]].		
+				select: [:instr | instr node token collection = src
+					and: [instr node interval first >= interval first
+					and: [instr node interval last <= interval last]]].		
 			pc := instructions ifEmpty: [nil]
 				ifNotEmpty: [(allInstructions identityIndexOf: instructions first) - 1].
 			stream nextPut: (line -> pc)]]
