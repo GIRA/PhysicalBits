@@ -761,11 +761,23 @@ var BlocksToAST = (function () {
 		},
 		change_speed_dcmotor: function (block, ctx) {
 			var id = XML.getId(block);
-			debugger;
+			var motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
+			var speed = generateCodeForValue(block, ctx, "speed");
+
+			ctx.addImport(motorName, "DCMotor.uzi");
+
+			let selector = motorName + "." + "setSpeed";
+			let arg = {name: "speed", value: speed};
+			return builder.scriptCall(id, selector, [arg]);
 		},
 		stop_dcmotor: function (block, ctx) {
 			var id = XML.getId(block);
-			debugger;
+			var motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
+
+			ctx.addImport(motorName, "DCMotor.uzi");
+
+			let selector = motorName + "." + "brake";
+			return builder.scriptCall(id, selector, []);
 		}
 	};
 
