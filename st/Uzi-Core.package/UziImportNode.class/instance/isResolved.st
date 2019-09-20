@@ -1,3 +1,3 @@
 accessing
 isResolved
-	^ true
+	^ isResolved
