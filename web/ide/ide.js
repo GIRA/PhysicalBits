@@ -130,6 +130,7 @@ let IDE = (function () {
 
   function initSpecialBlocks() {
     function currentMotorsForDropdown() {
+      if (motors.length == 0) return [["", ""]];
       return motors.map(function(each) { return [ each.name, each.name ]; });
     }
 
