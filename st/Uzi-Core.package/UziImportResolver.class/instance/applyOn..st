@@ -10,6 +10,7 @@ applyOn: program
 	scripts := Array streamContents: [:stream |
 		programs do: [:each | stream nextPutAll: each scripts].
 		stream nextPutAll: program scripts].
-	^ UziProgramNode 
+	^ (UziProgramNode 
 		globals: globals
-		scripts: scripts
+		scripts: scripts)
+		token: program token
