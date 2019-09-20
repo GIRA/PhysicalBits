@@ -29,3 +29,7 @@ proc brake() {
 proc setSpeed(speed) {
 	write(enablePin, speed);
 }
+
+func getSpeed() {
+	return read(enablePin);
+}
