@@ -647,6 +647,11 @@ let IDE = (function () {
       $emptyLabel.hide();
     }
 
+    function getElementId(val) { return itemPrefix + "-" + val.name; }
+
+    // NOTE(Richo): The value could have ".", which bothers JQuery but works with document.getElementById
+    function getElement(val) { return $(document.getElementById(getElementId(val))); }
+
     function initializePanel() {
       $container.html("");
       values.available.forEach(function (val) {
@@ -659,7 +664,7 @@ let IDE = (function () {
               .addClass("text-right")
               .addClass("pr-4")
               .addClass("text-muted")
-              .attr("id", itemPrefix + "-" + val.name)
+              .attr("id", getElementId(val))
               .text("?"));
           $container.append($row);
         }
@@ -669,7 +674,7 @@ let IDE = (function () {
     if (values.available
         .filter(function (val) { return val.reporting; })
         .some(function (val) {
-          let $item = $("#" + itemPrefix + "-" + val.name);
+          let $item = getElement(val);
           return $item.get(0) == undefined;
         })) {
       initializePanel();
@@ -677,7 +682,7 @@ let IDE = (function () {
 
     values.elements.forEach(function (val) {
       if (reporting.has(val.name)) {
-        let $item = $("#" + itemPrefix + "-" + val.name);
+        let $item = getElement(val);
         if ($item.get(0) == undefined) { initializePanel(); }
 
         let old = $item.data("old-value");
@@ -704,7 +709,7 @@ let IDE = (function () {
 
     values.available.forEach(function (val) {
       if (!reporting.has(val.name)) {
-        let $item = $("#" + itemPrefix + "-" + val.name);
+        let $item = getElement(val);
         if ($item != undefined) { $item.parent().remove(); }
       }
     });
