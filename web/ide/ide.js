@@ -266,6 +266,7 @@ let IDE = (function () {
       // TODO(Richo): Check program and rename/disable motor blocks accordingly
       motors = temp;
       workspace.toolbox_.refreshSelection();
+      saveToLocalStorage();
     });
   }
 
@@ -362,12 +363,17 @@ let IDE = (function () {
   }
 
 	function restoreFromLocalStorage() {
-    let ui = {
-      blocks: localStorage["uzi.blocks"],
-      settings: JSON.parse(localStorage["uzi.settings"] || {}),
-      layout: JSON.parse(localStorage["uzi.layout"] || "null")
-    };
-    setUIState(ui);
+    try {
+      let ui = {
+        blocks: localStorage["uzi.blocks"],
+        settings: JSON.parse(localStorage["uzi.settings"] || {}),
+        layout: JSON.parse(localStorage["uzi.layout"] || "null"),
+        motors: JSON.parse(localStorage["uzi.motors"]),
+      };
+      setUIState(ui);
+    } catch (err) {
+      console.log(err);
+    }
 	}
 
   function saveToLocalStorage() {
@@ -377,6 +383,7 @@ let IDE = (function () {
     localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
+    localStorage["uzi.motors"] = JSON.stringify(ui.motors);
   }
 
   function getUIState() {
@@ -386,6 +393,7 @@ let IDE = (function () {
         interactive: $("#interactive-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
+      motors: motors,
     };
   }
 
@@ -402,6 +410,10 @@ let IDE = (function () {
 
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+      }
+
+      if (ui.motors) {
+        motors = ui.motors;
       }
     } catch (err) {
       console.error(err);
