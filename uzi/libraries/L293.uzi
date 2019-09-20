@@ -20,7 +20,7 @@ proc backward(speed) {
 	write(enablePin, speed);
 }
 
-proc brake(speed) {
+proc brake() {
 	turnOn(forwardPin);
 	turnOn(reversePin);
 	turnOff(enablePin);
