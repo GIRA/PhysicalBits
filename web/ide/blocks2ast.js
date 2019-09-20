@@ -4,11 +4,22 @@ var BlocksToAST = (function () {
 		program: function (id, imports, globals, scripts) {
 			return {
 				__class__: "UziProgramNode",
-				imports: imports,
+				imports: Array.from(imports, function (entry) {
+					let alias = entry[0];
+					let path = entry[1];
+					return builder.import(id, alias, path);
+				}),
 				globals: globals.map(function (varName) {
 					return builder.variableDeclaration(id, varName);
 				}),
 				scripts: scripts
+			};
+		},
+		import: function (id, alias, path) {
+			return {
+				__class__: "UziImportNode",
+				alias: alias,
+				path: path
 			};
 		},
 		task: function (id, name, argumentNames, state, tickingRate, statements) {
@@ -735,6 +746,26 @@ var BlocksToAST = (function () {
 			var type = pin[0];
 			var number = parseInt(pin.slice(1));
 			return builder.pin(id, type, number);
+		},
+		move_dcmotor: function (block, ctx) {
+			var id = XML.getId(block);
+			var motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
+			var direction = XML.getChildNode(block, "direction").innerText;
+			var speed = generateCodeForValue(block, ctx, "speed");
+
+			ctx.addImport(motorName, "DCMotor.uzi");
+
+			let selector = motorName + "." + (direction == "fwd" ? "forward" : "backward");
+			let arg = {name: "speed", value: speed};
+			return builder.scriptCall(id, selector, [arg]);
+		},
+		change_speed_dcmotor: function (block, ctx) {
+			var id = XML.getId(block);
+			debugger;
+		},
+		stop_dcmotor: function (block, ctx) {
+			var id = XML.getId(block);
+			debugger;
 		}
 	};
 
@@ -804,8 +835,15 @@ var BlocksToAST = (function () {
 			var scripts = [];
 			var ctx = {
 				path: [xml],
+				imports: new Map(),
 				globals: [],
 
+				addImport: function (alias, path) {
+					if (!ctx.imports.has(alias)) {
+						ctx.imports.set(alias, path);
+						// TODO(Richo): initialization code!?
+					}
+				},
 				addGlobal: function (varName) {
 					if (!ctx.globals.includes(varName)) {
 						ctx.globals.push(varName);
@@ -820,7 +858,7 @@ var BlocksToAST = (function () {
 					}
 				}
 			});
-			return builder.program(null, [], ctx.globals, scripts);
+			return builder.program(null, ctx.imports, ctx.globals, scripts);
 		}
 	}
 })();
