@@ -1,4 +1,4 @@
 instance creation
 alias: aliasString path: pathString
-	^ self basicNew initializeWithAlias: aliasString path: pathString
+	^ self alias: aliasString path: pathString isResolved: false
 	
