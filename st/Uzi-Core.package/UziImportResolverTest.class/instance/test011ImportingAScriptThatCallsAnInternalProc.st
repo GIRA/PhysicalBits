@@ -20,6 +20,9 @@ test011ImportingAScriptThatCallsAnInternalProc
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t9 path: 'test9.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t9.toggleAndWait'

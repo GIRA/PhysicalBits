@@ -20,6 +20,9 @@ test010ImportingScriptThatResumesATask
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t8 path: 'test8.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t8.resumeTask'

@@ -20,6 +20,9 @@ test006ImportingScriptThatStopsATask
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t4 path: 'test4.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t4.stopTask'

@@ -25,6 +25,10 @@ test002ImportingSameLibraryTwice
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #test1 path: 'test.uzi' isResolved: true.
+			import alias: #test2 path: 'test.uzi' isResolved: true
+		}
 		globals: { 
 			varDec name: #'test1.v' value: (number value: 42).
 			varDec name: #'test2.v' value: (number value: 42).

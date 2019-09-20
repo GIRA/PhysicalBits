@@ -20,6 +20,9 @@ test012ImportingAScriptThatExecutesAYieldInstruction
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t10 path: 'test10.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t10.foo'

@@ -20,6 +20,9 @@ test004StoppingImportedTask
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t3 path: 'test3.uzi' isResolved: true.
+		}
 		globals: #()
 		scripts: {
 			task name: #'t3.blink13'

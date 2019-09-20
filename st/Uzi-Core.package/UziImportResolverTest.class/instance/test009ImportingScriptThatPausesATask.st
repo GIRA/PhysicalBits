@@ -20,6 +20,9 @@ test009ImportingScriptThatPausesATask
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t7 path: 'test7.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t7.pauseTask'

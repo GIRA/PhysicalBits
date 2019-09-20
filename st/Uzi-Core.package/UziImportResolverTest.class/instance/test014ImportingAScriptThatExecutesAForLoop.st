@@ -20,6 +20,9 @@ test014ImportingAScriptThatExecutesAForLoop
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t12 path: 'test12.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t12.foo'

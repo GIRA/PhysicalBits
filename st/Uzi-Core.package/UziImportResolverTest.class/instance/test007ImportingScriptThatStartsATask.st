@@ -20,6 +20,9 @@ test007ImportingScriptThatStartsATask
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t5 path: 'test5.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t5.startTask'

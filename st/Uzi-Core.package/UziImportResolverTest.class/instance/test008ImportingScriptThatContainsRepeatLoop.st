@@ -20,6 +20,9 @@ test008ImportingScriptThatContainsRepeatLoop
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t6 path: 'test6.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t6.foo'

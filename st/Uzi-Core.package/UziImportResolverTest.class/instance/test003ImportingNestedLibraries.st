@@ -24,6 +24,9 @@ test003ImportingNestedLibraries
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t2 path: 'test2.uzi' isResolved: true.
+		}
 		globals: { 
 			varDec name: #'t2.t1.v' value: (number value: 42) 
 		}

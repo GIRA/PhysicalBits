@@ -20,6 +20,9 @@ test013ImportingAScriptThatExecutesAForeverLoop
 				})
 		}.
 	expected := program 
+		imports: {
+			import alias: #t11 path: 'test11.uzi' isResolved: true
+		}
 		globals: #()
 		scripts: {
 			proc name: #'t11.foo'

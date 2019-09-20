@@ -23,6 +23,7 @@ test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased
 				})
 		}.
 	expected := program 
+		imports: { import alias: #test path: 'test.uzi' isResolved: true }
 		globals: { varDec name: #'test.v' value: (number value: 42) }
 		scripts: {
 			func name: #'test.foo'
