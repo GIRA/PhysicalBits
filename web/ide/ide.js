@@ -8,6 +8,7 @@ let IDE = (function () {
   let lastProgram;
   let lastFileName;
   let motors = [];
+  let sonars = [];
 
   let IDE = {
     init: function () {
@@ -16,6 +17,7 @@ let IDE = (function () {
         .then(initializeDefaultLayout)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
+        .then(initializeBlocklySonarsModal)
         .then(initializeAutorun);
 
       initializeTopBar();
@@ -130,7 +132,7 @@ let IDE = (function () {
         }
         return nodes;
       });
-      workspace.registerToolboxCategoryCallback("MOTORS", function () {
+      workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
         let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors"), "DC");
         let nodes = Array.from(node.children);
         if (motors.length == 0) {
@@ -141,6 +143,22 @@ let IDE = (function () {
             let field = fields[i];
             if (field.getAttribute("name") === "motorName") {
               field.innerText = motors[motors.length-1].name;
+            }
+          }
+        }
+        return nodes;
+      });
+      workspace.registerToolboxCategoryCallback("SONAR", function () {
+        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Sensors"), "Sonar");
+        let nodes = Array.from(node.children);
+        if (sonars.length == 0) {
+          nodes.splice(1); // Leave the button only
+        } else {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "sonarName") {
+              field.innerText = sonars[sonars.length-1].name;
             }
           }
         }
@@ -162,6 +180,7 @@ let IDE = (function () {
   function initSpecialBlocks() {
     initTaskBlocks();
     initDCMotorBlocks();
+    initSonarBlocks();
   }
 
   function getCurrentTaskNames() {
@@ -259,6 +278,28 @@ let IDE = (function () {
     };
   }
 
+  function initSonarBlocks() {
+      function currentSonarsForDropdown() {
+        if (sonars.length == 0) return [["", ""]];
+        return sonars.map(function(each) { return [ each.name, each.name ]; });
+      }
+
+      Blockly.Blocks['get_sonar_distance_cm'] = {
+        init: function() {
+          this.appendDummyInput()
+              .appendField("read distance from")
+              .appendField(new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName")
+              .appendField("in")
+              .appendField(new Blockly.FieldDropdown([["mm","mm"], ["cm","cm"], ["m","m"]]), "unit");
+          this.setInputsInline(true);
+          this.setOutput(true, "Number");
+          this.setColour(0);
+          this.setTooltip("");
+          this.setHelpUrl("");
+        }
+      };
+  }
+
   function initializeBlocklyMotorsModal() {
     let count = 0;
 
@@ -345,7 +386,7 @@ let IDE = (function () {
       appendMotorRow(getDefaultMotor(), getUsedMotors());
     });
 
-    workspace.registerButtonCallback("configureMotors", function () {
+    workspace.registerButtonCallback("configureDCMotors", function () {
       // Build modal UI
       $("#blockly-motors-modal-container-tbody").html("");
       let usedMotors = getUsedMotors();
@@ -373,6 +414,123 @@ let IDE = (function () {
     $("#blockly-motors-modal-container").on("submit", function (e) {
       e.preventDefault();
       $("#blockly-motors-modal").modal("hide");
+    });
+  }
+
+  function initializeBlocklySonarsModal() {
+    let count = 0;
+
+    function getUsedSonars() {
+      let program = Uzi.state.program.current;
+      if (program == null) return new Set();
+      // HACK(Richo): We are actually returning all the aliases, not just sonars
+      return new Set(program.ast.imports.map(imp => imp.alias));
+    }
+
+    function getDefaultSonar() {
+      let data = $("#blockly-sonars-modal-container").serializeJSON();
+      let sonarNames = new Set();
+      for (let i in data.sonars) {
+        sonarNames.add(data.sonars[i].name);
+      }
+      let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
+      let i = 1;
+      while (sonarNames.has(sonar.name)) {
+        sonar.name = "sonar" + i;
+        i++;
+      }
+      return sonar;
+    }
+
+    function appendSonarRow(sonar, usedSonars) {
+      let i = count++;
+
+      function createTextInput(controlValue, controlName) {
+        let input = $("<input>")
+          .attr("type", "text")
+          .addClass("form-control")
+          .addClass("text-center")
+          .attr("name", controlName);
+        input.get(0).value = controlValue;
+        return input;
+      }
+      function createPinDropdown(sonarPin, sonarName) {
+        let select = $("<select>")
+          .addClass("form-control")
+          .attr("name", sonarName);
+        Uzi.state.pins.available.forEach(function (pin) {
+          select.append($("<option>").text(pin.name));
+        });
+        select.get(0).value = sonarPin;
+        return select;
+      }
+      function createRemoveButton(row) {
+        var btn = $("<button>")
+          .addClass("btn")
+          .addClass("btn-sm")
+          .attr("type", "button")
+          .append($("<i>")
+            .addClass("fas")
+            .addClass("fa-minus"));
+
+        if (usedSonars.has(sonar.name)) {
+          btn
+            //.attr("disabled", "true")
+            .addClass("btn-outline-secondary")
+            .attr("data-toggle", "tooltip")
+            .attr("data-placement", "left")
+            .attr("title", "This sonar is being used by the program!")
+            .on("click", function () {
+              btn.tooltip("toggle");
+            });
+        } else {
+          btn
+            .addClass("btn-outline-danger")
+            .on("click", function () { row.remove(); });
+        }
+        return btn;
+      }
+      let tr = $("<tr>")
+        .append($("<td>").append(createTextInput(sonar.name, "sonars[" + i + "][name]")))
+        .append($("<td>").append(createPinDropdown(sonar.trig, "sonars[" + i + "][trig]")))
+        .append($("<td>").append(createPinDropdown(sonar.echo, "sonars[" + i + "][echo]")))
+        .append($("<td>").append(createTextInput(sonar.maxDist, "sonars[" + i + "][maxDist]")))
+      tr.append($("<td>").append(createRemoveButton(tr)));
+      $("#blockly-sonars-modal-container-tbody").append(tr);
+    }
+
+    $("#add-sonar-row-button").on("click", function () {
+      appendSonarRow(getDefaultSonar(), getUsedSonars());
+    });
+
+    workspace.registerButtonCallback("configureSonars", function () {
+      // Build modal UI
+      $("#blockly-sonars-modal-container-tbody").html("");
+      let usedSonars = getUsedSonars();
+      if (sonars.length == 0) {
+        appendSonarRow(getDefaultSonar(), usedSonars);
+      }
+      sonars.forEach(function (sonar) {
+        appendMotorRow(sonar, usedSonars);
+      });
+      $("#blockly-sonars-modal").modal("show");
+    });
+
+    $("#blockly-sonars-modal").on("hide.bs.modal", function () {
+      let data = $("#blockly-sonars-modal-container").serializeJSON();
+      let temp = [];
+      for (let i in data.sonars) {
+        temp.push(data.sonars[i]);
+      }
+      // TODO(Richo): Check program and rename/disable sonar blocks accordingly
+      sonars = temp;
+      workspace.toolbox_.refreshSelection();
+      saveToLocalStorage();
+    });
+
+    $("#blockly-sonars-modal-container").on("submit", function (e) {
+      e.preventDefault();
+      $("#blockly-sonars-modal").modal("hide");
     });
   }
 
@@ -475,6 +633,7 @@ let IDE = (function () {
         settings: JSON.parse(localStorage["uzi.settings"] || {}),
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
         motors: JSON.parse(localStorage["uzi.motors"]),
+        sonars: JSON.parse(localStorage["uzi.sonars"]),
       };
       setUIState(ui);
     } catch (err) {
@@ -490,6 +649,7 @@ let IDE = (function () {
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
     localStorage["uzi.motors"] = JSON.stringify(ui.motors);
+    localStorage["uzi.sonars"] = JSON.stringify(ui.sonars);
   }
 
   function getUIState() {
@@ -500,6 +660,7 @@ let IDE = (function () {
       },
       layout: layout.toConfig(),
       motors: motors,
+      sonars: sonars,
     };
   }
 
@@ -520,6 +681,10 @@ let IDE = (function () {
 
       if (ui.motors) {
         motors = ui.motors;
+      }
+
+      if (ui.sonars) {
+        sonars = ui.sonars;
       }
     } catch (err) {
       console.error(err);
