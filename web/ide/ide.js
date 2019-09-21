@@ -284,7 +284,7 @@ let IDE = (function () {
         return sonars.map(function(each) { return [ each.name, each.name ]; });
       }
 
-      Blockly.Blocks['get_sonar_distance_cm'] = {
+      Blockly.Blocks['get_sonar_distance'] = {
         init: function() {
           this.appendDummyInput()
               .appendField("read distance from")

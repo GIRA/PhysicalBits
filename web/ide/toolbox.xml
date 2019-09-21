@@ -114,7 +114,7 @@
   <category name="Sensors" colour="#a55b5b">
     <category name="Sonar" custom="SONAR">
       <button text="Configure sonars..." callbackKey="configureSonars"></button>
-      <block type="get_sonar_distance_cm">
+      <block type="get_sonar_distance">
         <field name="sonarName">sonar</field>
         <field name="unit">cm</field>
       </block>
