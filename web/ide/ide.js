@@ -104,13 +104,29 @@ let IDE = (function () {
         let nodes = Array.from(node.children);
         let tasks = getCurrentTaskNames();
         if (tasks.length > 0) {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "taskName" && field.innerText == "") {
-              field.innerText = tasks[0];
-            }
-          }
+
+          let blocks = Array.from(node.getElementsByTagName("block"))
+            .filter(function (block) {
+              switch (block.getAttribute("type")) {
+                case "start_task":
+                case "stop_task":
+                case "resume_task":
+                case "pause_task":
+                case "run_task":
+                  return true;
+                default:
+                  return false;
+              }
+            });
+
+          let fields = blocks.map(function (block) {
+            return Array.from(block.getElementsByTagName("field"))
+              .filter(function (field) { return field.getAttribute("name") == "taskName"; });
+          }).flat();
+
+          fields.forEach(function (field) {
+            field.innerText = tasks[tasks.length-1];
+          });
         }
         return nodes;
       });
@@ -124,7 +140,7 @@ let IDE = (function () {
           for (let i = 0; i < fields.length; i++) {
             let field = fields[i];
             if (field.getAttribute("name") === "motorName") {
-              field.innerText = motors[0].name;
+              field.innerText = motors[motors.length-1].name;
             }
           }
         }
