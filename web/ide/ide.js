@@ -99,11 +99,26 @@ let IDE = (function () {
         saveToLocalStorage();
         scheduleAutorun(false);
       });
+      workspace.registerToolboxCategoryCallback("TASKS", function () {
+        let node = XML.getChildNode(toolbox.documentElement, "Tasks");
+        let nodes = Array.from(node.children);
+        let tasks = getCurrentTaskNames();
+        if (tasks.length > 0) {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "taskName" && field.innerText == "") {
+              field.innerText = tasks[0];
+            }
+          }
+        }
+        return nodes;
+      });
       workspace.registerToolboxCategoryCallback("MOTORS", function () {
         let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors"), "DC");
         let nodes = Array.from(node.children);
         if (motors.length == 0) {
-          nodes.splice(1);
+          nodes.splice(1); // Leave the button only
         } else {
           let fields = node.getElementsByTagName("field");
           for (let i = 0; i < fields.length; i++) {

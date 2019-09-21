@@ -1,5 +1,5 @@
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
-  <category name="Tasks" colour="#5ba5a5">
+  <category name="Tasks" colour="#5ba5a5" custom="TASKS">
     <block type="task">
       <field name="taskName">default</field>
     </block>
@@ -10,19 +10,19 @@
       <field name="initialState">started</field>
     </block>
     <block type="start_task">
-      <field name="taskName">task name</field>
+      <field name="taskName"></field>
     </block>
     <block type="stop_task">
-      <field name="taskName">task name</field>
+      <field name="taskName"></field>
     </block>
     <block type="resume_task">
-      <field name="taskName">task name</field>
+      <field name="taskName"></field>
     </block>
     <block type="pause_task">
-      <field name="taskName">task name</field>
+      <field name="taskName"></field>
     </block>
     <block type="run_task">
-      <field name="taskName">task name</field>
+      <field name="taskName"></field>
     </block>
   </category>
   <category name="GPIO" colour="#a55b5b">
