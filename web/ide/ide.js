@@ -129,6 +129,52 @@ let IDE = (function () {
   }
 
   function initSpecialBlocks() {
+    initTaskBlocks();
+    initDCMotorBlocks();
+  }
+
+  function getCurrentTaskNames() {
+    let program = Uzi.state.program.current;
+    if (program == null) return [];
+
+    // HACK(Richo): Filtering by the class name...
+    return program.ast.scripts
+      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
+      .map(function (each) { return each.name; });
+  }
+
+  function initTaskBlocks() {
+    function currentTasksForDropdown() {
+      let tasks = getCurrentTaskNames();
+      if (tasks.length == 0) return [["", ""]];
+      return tasks.map(function (name) { return [ name, name ]; });
+    }
+
+    let blocks = [
+      ["start_task", "start"],
+      ["stop_task", "stop"],
+      ["run_task", "run"],
+      ["resume_task", "resume"],
+      ["pause_task", "pause"],
+    ];
+
+    blocks.forEach(function (block) {
+      Blockly.Blocks[block[0]] = {
+        init: function() {
+          this.appendDummyInput()
+              .appendField(block[1])
+              .appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName");
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(175);
+         this.setTooltip("");
+         this.setHelpUrl("");
+        }
+      };
+    });
+  }
+
+  function initDCMotorBlocks() {
     function currentMotorsForDropdown() {
       if (motors.length == 0) return [["", ""]];
       return motors.map(function(each) { return [ each.name, each.name ]; });
