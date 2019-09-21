@@ -379,6 +379,43 @@
       </div>
     </div>
 
+
+    <!-- Blockly Sonars Modal -->
+    <div class="modal fade" id="blockly-sonars-modal" tabindex="-1" role="dialog" aria-hidden="false">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Configure sonars</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="blockly-sonars-modal-container" class="container">
+              <div class="row">
+                <table class="table table-borderless text-center">
+                  <thead>
+                    <tr>
+                      <th class="text-center">Sonar name</th>
+                      <th class="text-center">Trig pin</th>
+                      <th class="text-center">Echo pin</th>
+                      <th class="text-center">Max distance (cm)</th>
+                      <th class="text-center">
+                        <button id="add-sonar-row-button" class="btn btn-sm btn-outline-success" type="button">
+                          <i class="fas fa-plus"></i>
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="blockly-sonars-modal-container-tbody"></tbody>
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
     <script src="libs/jquery.serializeJSON/jquery.serializejson.min.js" type="text/javascript"></script>
