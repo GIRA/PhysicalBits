@@ -63,4 +63,5 @@ primitiveForSelector: selector
 		[#delayS] -> [#delayS].
 		[#delayM] -> [#delayM].
 		[#minutes] -> [#minutes].
+		[#sonarDistCm] -> [#sonarDistCm]
 	} otherwise: nil
