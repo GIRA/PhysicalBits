@@ -9,6 +9,5 @@ proc init(trig, echo, maxDist) {
 }
 
 func distanceCm() {
-  "TODO(Richo): Add VM support for the NewPing library"
-  return 15;
+  return sonarDistCm(trigPin, echoPin, maxDistance);
 }
