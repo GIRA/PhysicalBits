@@ -153,5 +153,8 @@
     <ClInclude Include="..\..\UziFirmware\UziSerial.h">
       <Filter>Sketch</Filter>
     </ClInclude>
+    <ClInclude Include="NewPing_mock.h">
+      <Filter>Support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

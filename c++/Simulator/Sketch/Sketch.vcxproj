@@ -160,6 +160,7 @@
     <ClInclude Include="..\..\UziFirmware\UziSerial.h" />
     <ClInclude Include="EEPROM.h" />
     <ClInclude Include="Arduino.h" />
+    <ClInclude Include="NewPing_mock.h" />
     <ClInclude Include="Servo.h" />
     <ClInclude Include="Simulator.h" />
   </ItemGroup>
