@@ -980,6 +980,17 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			}
 		}
 		break;
+
+		case PRIM_SONAR_DIST_CM:
+		{
+			unsigned int maxDist = stack.pop();
+			uint8 echoPin = stack.pop();
+			uint8 trigPin = stack.pop();
+
+			NewPing sonar(trigPin, echoPin, maxDist);
+			stack.push(sonar.ping_cm());
+		}
+		break;
 	}
 }
 

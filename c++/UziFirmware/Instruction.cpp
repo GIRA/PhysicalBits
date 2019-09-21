@@ -153,6 +153,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x3D: instruction->opcode = PRIM_DELAY_SECONDS; break;
 				case 0x3E: instruction->opcode = PRIM_DELAY_MINUTES; break;
 				case 0x3F: instruction->opcode = PRIM_MINUTES; break;
+				case 0x40: instruction->opcode = PRIM_SONAR_DIST_CM; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

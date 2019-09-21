@@ -8,6 +8,13 @@ class Monitor;
 #include "Program.h"
 #include "Errors.h"
 
+#ifdef __SIMULATOR__
+#include "NewPing_mock.h"
+#else
+#include "NewPing.h"
+#endif // __SIMULATOR__
+
+
 class VM
 {
 
