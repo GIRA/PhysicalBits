@@ -1,0 +1,14 @@
+var trigPin;
+var echoPin;
+var maxDistance = 100;
+
+proc init(trig, echo, maxDist) {
+  trigPin = trig;
+  echoPin = echo;
+  maxDistance = maxDist;
+}
+
+func distanceCm() {
+  "TODO(Richo): Add VM support for the NewPing library"
+  return 15;
+}
