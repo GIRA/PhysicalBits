@@ -87,8 +87,8 @@
         </value>
       </block>
     </category>
-    <category name="DC" custom="MOTORS">
-      <button text="Configure motors..." callbackKey="configureMotors"></button>
+    <category name="DC" custom="DC_MOTORS">
+      <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
       <block type="move_dcmotor">
         <field name="motorName"></field>
         <field name="direction">fwd</field>
@@ -108,6 +108,15 @@
       </block>
       <block type="stop_dcmotor">
         <field name="motorName"></field>
+      </block>
+    </category>
+  </category>
+  <category name="Sensors" colour="#a55b5b">
+    <category name="Sonar" custom="SONAR">
+      <button text="Configure sonars..." callbackKey="configureSonars"></button>
+      <block type="get_sonar_distance_cm">
+        <field name="sonarName">sonar</field>
+        <field name="unit">cm</field>
       </block>
     </category>
   </category>
