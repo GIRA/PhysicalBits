@@ -13,7 +13,6 @@
 
 class GPIO
 {
-
 public:
 	GPIO(void)
 	{
@@ -21,7 +20,10 @@ public:
 		{
 			pinValues[i] = 0;
 			pinModes[i] = INPUT;
-			pinReport[i] = false;
+			if (i < 1 + TOTAL_PINS/8) 
+			{
+				pinReport[i] = 0;
+			}
 		}
 	}
 	~GPIO(void) {}
@@ -39,8 +41,7 @@ private:
 
 	float pinValues[TOTAL_PINS];
 	uint8 pinModes[TOTAL_PINS];
-	bool pinReport[TOTAL_PINS];
-
+	uint8 pinReport[1 + TOTAL_PINS/8];
 };
 
 

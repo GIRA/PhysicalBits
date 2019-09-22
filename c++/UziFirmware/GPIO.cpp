@@ -140,21 +140,26 @@ void GPIO::servoWrite(uint8 pin, float value)
 void GPIO::setReport(uint8 pin, bool report)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index >= TOTAL_PINS)
-	{
-		return;
+	if (index >= TOTAL_PINS) return;
+
+	uint8 actualIndex = (int)floor((double)index / 8);
+	uint8 mask = 1 << (index % 8);
+	if (report) {
+		pinReport[actualIndex] |= mask;
 	}
-	pinReport[index] = report;
+	else {
+		pinReport[actualIndex] &= ~(mask);
+	}
 }
 
 bool GPIO::getReport(uint8 pin)
 {
 	uint8 index = ARRAY_INDEX(pin);
-	if (index >= TOTAL_PINS)
-	{
-		return false;
-	}
-	return pinReport[index];
+	if (index >= TOTAL_PINS) return false;
+	
+	uint8 actualIndex = (int)floor((double)index / 8);
+	uint8 byteValue = pinReport[actualIndex];
+	return byteValue & (1 << (index % 8));
 }
 
 void GPIO::reset()
