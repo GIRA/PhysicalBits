@@ -8,6 +8,14 @@ proc init(trig, echo, maxDist) {
   maxDistance = maxDist;
 }
 
-func distanceCm() {
+func distance_cm() {
   return sonarDistCm(trigPin, echoPin, maxDistance);
+}
+
+func distance_mm() {
+  return sonarDistCm(trigPin, echoPin, maxDistance) * 10;
+}
+
+func distance_m() {
+  return sonarDistCm(trigPin, echoPin, maxDistance) / 100;
 }
