@@ -8,8 +8,8 @@
 // TODO(Richo): Optimize memory!
 struct Script
 {
-	uint8 index = 0;
-	bool stepping = 0;
+	bool stepping : 1;
+	uint8 index : 7;
 	float interval = 0;
 
 	uint8 argCount = 0;
