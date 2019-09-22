@@ -69,12 +69,12 @@ Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, fl
 	return NO_ERROR;
 }
 
-int8 Script::getInstructionStart(void)
+int16 Script::getInstructionStart(void)
 {
 	return instructionStart;
 }
 
-int8 Script::getInstructionStop(void)
+int16 Script::getInstructionStop(void)
 {
 	return instructionStart + instructionCount - 1;
 }
@@ -86,7 +86,7 @@ uint8 Script::getInstructionCount(void)
 
 Instruction Script::getInstructionAt(int16 index)
 {
-	return instructions[index - instructionStart];
+	return instructions[index - (int16)instructionStart];
 }
 
 bool Script::isStepping(void)

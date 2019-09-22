@@ -5,6 +5,7 @@
 #include "Coroutine.h"
 #include "Memory.h"
 
+// TODO(Richo): Optimize memory!
 struct Script
 {
 	uint8 index = 0;
@@ -16,15 +17,15 @@ struct Script
 	uint8 localCount = 0;
 	float* locals = 0;
 
-	uint8 instructionStart = 0;
+	int16 instructionStart = 0;
 	uint8 instructionCount = 0;
 	Instruction* instructions = 0;
 
 	Coroutine* coroutine = 0;
 
 	uint8 getIndex(void);
-	int8 getInstructionStart(void);
-	int8 getInstructionStop(void);
+	int16 getInstructionStart(void);
+	int16 getInstructionStop(void);
 	uint8 getInstructionCount(void);
 	Instruction getInstructionAt(int16);
 	bool isStepping(void);
