@@ -44,7 +44,7 @@ Error readGlobals(Reader* rs, Program* program)
 	
 	// Initialize globalsReport
 	{
-		int globalsReportCount = 1 + (int)floor((double)program->globalCount / 8);
+		int globalsReportCount = (int)ceil((double)program->globalCount / 8);
 
 		program->globalsReport = uzi_createArray(uint8, globalsReportCount);
 		if (program->globalsReport == 0) return OUT_OF_MEMORY;
