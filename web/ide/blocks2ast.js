@@ -778,7 +778,17 @@ var BlocksToAST = (function () {
 
 			let selector = motorName + "." + "brake";
 			return builder.scriptCall(id, selector, []);
-		}
+		},
+		get_sonar_distance: function (block, ctx) {
+			var id = XML.getId(block);
+			var sonarName = asIdentifier(XML.getChildNode(block, "sonarName").innerText);
+			var unit = XML.getChildNode(block, "unit").innerText;
+
+			ctx.addSonarImport(sonarName);
+
+			let selector = sonarName + "." + "distance_" + unit;
+			return builder.scriptCall(id, selector, []);
+		},
 	};
 
 	function asIdentifier(str) {
@@ -843,7 +853,7 @@ var BlocksToAST = (function () {
 	}
 
 	return {
-		generate: function (xml, motors) {
+		generate: function (xml, motors, sonars) {
 			var setup = [];
 			var scripts = [];
 			var ctx = {
@@ -868,6 +878,29 @@ var BlocksToAST = (function () {
 								{ name: "en", value: pin(motor.enable) },
 								{ name: "f", value: pin(motor.fwd) },
 								{ name: "r", value: pin(motor.bwd) },
+							];
+
+							setup.push(builder.scriptCall(null, selector, args));
+						}
+					}
+				},
+				addSonarImport: function (alias) {
+					if (ctx.addImport(alias, "Sonar.uzi")) {
+
+						// Initialize sonar
+						let sonar = sonars.find(function (m) { return m.name === alias; });
+						if (sonar != undefined) {
+							let selector = sonar.name + "." + "init";
+
+							function pin(pin) {
+								var type = pin[0];
+								var number = parseInt(pin.slice(1));
+								return builder.pin(null, type, number);
+							}
+							let args = [
+								{ name: "trig", value: pin(sonar.trig) },
+								{ name: "echo", value: pin(sonar.echo) },
+								{ name: "maxDist", value: builder.number(null, parseInt(sonar.maxDist)) },
 							];
 
 							setup.push(builder.scriptCall(null, selector, args));

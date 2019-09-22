@@ -511,7 +511,7 @@ let IDE = (function () {
         appendSonarRow(getDefaultSonar(), usedSonars);
       }
       sonars.forEach(function (sonar) {
-        appendMotorRow(sonar, usedSonars);
+        appendSonarRow(sonar, usedSonars);
       });
       $("#blockly-sonars-modal").modal("show");
     });
@@ -834,7 +834,7 @@ let IDE = (function () {
 
   function getGeneratedCode(){
     var xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors);
+    return BlocksToAST.generate(xml, motors, sonars);
   }
 
   function getGeneratedCodeAsJSON() {
