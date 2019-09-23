@@ -132,7 +132,7 @@ let Uzi = (function () {
     getUziState(immediate ? 0 : 45)
       .then(function (data) {
         Uzi.serverAvailable = true;
-        update(data);
+        update(fixInvalidJSONFloats(data));
         updateLoop(false);
       })
       .catch(function (err) {
@@ -141,6 +141,32 @@ let Uzi = (function () {
         updateLoop(true);
       });
   }
+
+	/*
+	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN
+	in the JSON object resulting from a server response. Since JSON	doesn't handle
+  these values correctly I'm encoding them in a special way.
+	*/
+  function fixInvalidJSONFloats(obj) {
+    if (obj instanceof Array) return obj.map(fixInvalidJSONFloats);
+    if (typeof obj != "object") return obj;
+    if (obj === null) return null;
+    if (obj === undefined) return undefined;
+
+    if (obj["___INF___"] !== undefined) {
+      return Infinity * obj["___INF___"];
+    } else if (obj["___NAN___"] !== undefined) {
+      return NaN;
+    }
+
+    let value = {};
+    for (let m in obj) {
+      value[m] = fixInvalidJSONFloats(obj[m]);
+    }
+    return value;
+  }
+
+  Uzi.fixJSON = fixInvalidJSONFloats;
 
   return Uzi;
 })();
