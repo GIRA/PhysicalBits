@@ -904,6 +904,9 @@ var BlocksToAST = (function () {
 							];
 
 							setup.push(builder.scriptCall(null, selector, args));
+
+							let taskName = sonar.name + ".reading";
+							setup.push(builder.start(null, [taskName]));
 						}
 					}
 				},
