@@ -901,6 +901,8 @@ let IDE = (function () {
           let $row = $("<tr>")
             .append($("<td>")
               .addClass("pl-4")
+              .html('<i class="fas fa-eye"></i>'))
+            .append($("<td>")
               .text(val.name))
             .append($("<td>")
               .addClass("text-right")
