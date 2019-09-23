@@ -988,7 +988,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			uint8 trigPin = stack.pop();
 
 			NewPing sonar(trigPin, echoPin, maxDist);
-			stack.push(sonar.ping_cm());
+			unsigned long dist = sonar.ping_cm();
+			if (dist > 0) 
+			{
+				stack.push(dist);
+			} 
+			else 
+			{
+				stack.push(INFINITY);
+			}
 		}
 		break;
 	}
