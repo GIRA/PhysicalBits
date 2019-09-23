@@ -2,20 +2,26 @@ var trigPin;
 var echoPin;
 var maxDistance = 100;
 
+var distance;
+
 proc init(trig, echo, maxDist) {
   trigPin = trig;
   echoPin = echo;
   maxDistance = maxDist;
 }
 
+task reading() stopped 10/s {
+	distance = sonarDistCm(trigPin, echoPin, maxDistance);
+}
+
 func distance_cm() {
-  return sonarDistCm(trigPin, echoPin, maxDistance);
+  return distance;
 }
 
 func distance_mm() {
-  return sonarDistCm(trigPin, echoPin, maxDistance) * 10;
+  return distance * 10;
 }
 
 func distance_m() {
-  return sonarDistCm(trigPin, echoPin, maxDistance) / 100;
+  return distance / 100;
 }
