@@ -942,7 +942,15 @@ let IDE = (function () {
         }
 
         if (cur != null) {
-          $item.text(cur.toFixed(2));
+          if (cur == Infinity) {
+            $item.text("∞");
+          } else if (cur == -Infinity) {
+            $item.text("-∞");
+          } else if (isNaN(cur)) {
+            $item.text("NaN");
+          } else {
+            $item.text(cur.toFixed(2));
+          }
         } else {
           $item.text("?");
         }
