@@ -2,7 +2,8 @@ accessing
 summary: req
 	^ (super summary: req)
 		at: #available
-		put: (self controller availableGlobals
+		put: ((self controller availableGlobals
+			reject: [:globalName | globalName includes: $.])
 			collect: [:globalName | 
 				Dictionary new
 					at: #name put: globalName;
@@ -10,7 +11,8 @@ summary: req
 					yourself]
 			as: Array);
 		at: #elements 
-		put: (self controller globals 
+		put: ((self controller globals 
+			reject: [:global | global name includes: $.])
 			collect: [:global |
 				Dictionary new 
 					at: #name put: global name;
