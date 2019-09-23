@@ -128,6 +128,7 @@ void GPIO::servoWrite(uint8 pin, float value)
 		actualValue = value;
 	}
 	pinValues[index] = actualValue;
+	pinModes[index] = OUTPUT;
 
 	int16 degrees = (int16)round(actualValue * 180.0);
 	if (!servos[index].attached())
