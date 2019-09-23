@@ -405,7 +405,7 @@
       "name": "runningTimes",
       "value": 1000,
       "min": 0,
-      "max": 1999
+      "max": 99999
     },
     {
       "type": "field_dropdown",
