@@ -9,7 +9,7 @@ test090DebuggerBreakpointHaltsAreDeterministic
 	ticking: true
 	delay: 0
 	instructions: [:s | s
- "0"		push: 17;
+ "0"		push: 7;
  "1"		prim: #read;
  "2"		push: 0;
  "3"		prim: #greaterThan;

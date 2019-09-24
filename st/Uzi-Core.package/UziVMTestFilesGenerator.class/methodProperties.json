@@ -91,7 +91,7 @@
 		"test087Millis" : "Richo 7/15/2019 23:27",
 		"test088ScriptCallOverridingPrimitive" : "Richo 7/15/2019 23:27",
 		"test089DebuggerBreakpointHaltsAllScripts" : "Richo 7/15/2019 23:27",
-		"test090DebuggerBreakpointHaltsAreDeterministic" : "Richo 7/15/2019 23:27",
+		"test090DebuggerBreakpointHaltsAreDeterministic" : "Richo 9/24/2019 10:41",
 		"test091ChangingTheProgramResetsTheVMState" : "Richo 7/15/2019 23:27",
 		"test092DebuggerSetAllBreakpoints" : "Richo 7/15/2019 23:27",
 		"test093DebuggerSetAllBreakpointsWithMultipleScripts" : "Richo 7/15/2019 23:27",
