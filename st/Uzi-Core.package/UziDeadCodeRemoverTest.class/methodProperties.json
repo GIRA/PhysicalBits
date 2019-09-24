@@ -1,0 +1,14 @@
+{
+	"class" : {
+		 },
+	"instance" : {
+		"assert:equals:" : "Richo 9/24/2019 15:54",
+		"test001StoppedTasksThatHaveNoReferencesShouldBeRemoved" : "Richo 9/24/2019 16:01",
+		"test002StoppedTasksThatGetStartedFromARunningTasksShouldNotBeRemoved" : "Richo 9/24/2019 17:24",
+		"test003TheVisitOrderDoesNotMatter" : "Richo 9/24/2019 17:36",
+		"test004CircularReferencesShouldNotBeAProblem" : "Richo 9/24/2019 17:37",
+		"test005CircularReferencesShouldNotBeAProblem2" : "Richo 9/24/2019 17:43",
+		"test006StoppedScriptThatStartsItselfShouldNotCount" : "Richo 9/24/2019 17:44",
+		"test007StoppedScriptShouldBeRemoved" : "Richo 9/24/2019 17:45",
+		"test008OnceScriptsShouldBeConsideredRoots" : "Richo 9/24/2019 17:47",
+		"test009StopScriptShouldMarkTheScriptAsAlive" : "Richo 9/24/2019 17:59" } }

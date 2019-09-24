@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Parser",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"visited",
+		"program" ],
+	"name" : "UziDeadCodeRemover",
+	"pools" : [
+		 ],
+	"super" : "Object",
+	"type" : "normal" }
