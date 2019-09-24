@@ -87,6 +87,7 @@
     <None Include="TestFiles\Test091ChangingTheProgramResetsTheVMState" />
     <None Include="TestFiles\Test092DebuggerSetAllBreakpoints" />
     <None Include="TestFiles\Test093DebuggerSetAllBreakpointsWithMultipleScripts" />
+    <None Include="TestFiles\Test094ProgramWithMultipleImports" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />

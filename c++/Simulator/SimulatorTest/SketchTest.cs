@@ -2282,5 +2282,20 @@ namespace SimulatorTest
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off while halted on instruction 1 (again)");
             Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should be off while halted on instruction 1 (again)");
         }
+
+
+        [TestMethod]
+        public void Test094ProgramWithMultipleImports()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test094ProgramWithMultipleImports)));
+
+            for (int i = 0; i < 100; i++)
+            {
+                sketch.SetMillis(i * 1000 + 50);
+                sketch.Loop();
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
+            }
+        }
     }
 }
