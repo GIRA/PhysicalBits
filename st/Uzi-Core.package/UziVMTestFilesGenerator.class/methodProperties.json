@@ -95,5 +95,6 @@
 		"test091ChangingTheProgramResetsTheVMState" : "Richo 7/15/2019 23:27",
 		"test092DebuggerSetAllBreakpoints" : "Richo 7/15/2019 23:27",
 		"test093DebuggerSetAllBreakpointsWithMultipleScripts" : "Richo 7/15/2019 23:27",
+		"test094ProgramWithMultipleImports" : "Richo 9/24/2019 12:21",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14",
 		"writeFile:program:" : "Richo 7/15/2019 23:24" } }
