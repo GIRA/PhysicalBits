@@ -4,4 +4,7 @@
 	"instance" : {
 		"register:" : "Richo 9/25/2019 18:19",
 		"setUp" : "Richo 9/25/2019 18:20",
-		"tearDown" : "Richo 9/25/2019 18:21" } }
+		"tearDown" : "Richo 9/25/2019 18:34",
+		"writeActualDataOn:" : "Richo 9/25/2019 18:34",
+		"writeAggregateDataOn:" : "Richo 9/25/2019 18:52",
+		"writeColumnsOn:" : "Richo 9/25/2019 18:33" } }
