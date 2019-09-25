@@ -5,6 +5,8 @@ resolveImport: import
 		readOnlyFileNamed: import path
 		do: [:file || ast |
 			ast := parser parse: file contents.
+			import initializationBlock ifNotNil: [:initBlock | 
+				ast := self applyInitializationBlock: initBlock on: ast].
 			ast := self applyOn: ast.
 			ast isPetitFailure 
 				ifTrue: [ast]

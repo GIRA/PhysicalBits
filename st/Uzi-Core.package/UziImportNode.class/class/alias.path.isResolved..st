@@ -1,7 +1,7 @@
 instance creation
 alias: aliasString path: pathString isResolved: isResolvedBoolean
-	^ self basicNew 
-		initializeWithAlias: aliasString 
+	^ self alias: aliasString 
 		path: pathString
+		initializationBlock: nil 
 		isResolved: isResolvedBoolean
 	

@@ -1,0 +1,11 @@
+var a = 100;
+var b = 200;
+var c = 300;
+
+task foo() stopped 1/s {
+	toggle(D12);
+}
+
+task setup() {
+	a = 1; b = 2; c = 3;
+}

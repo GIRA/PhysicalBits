@@ -30,7 +30,8 @@
 		"yield",
 		"forever",
 		"for",
-		"pin" ],
+		"pin",
+		"tickingRate" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

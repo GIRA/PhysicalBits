@@ -45,4 +45,5 @@
 		"test038LocalsAndArgsWithTheSameNameAreNotValid" : "Richo 5/19/2018 15:26",
 		"test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified" : "Richo 8/22/2018 12:04",
 		"test040TickingRateValueShouldAlwaysBePositive" : "Richo 8/22/2018 12:32",
-		"test041GlobalDeclarationsOnlyAllowLiterals" : "Richo 8/22/2018 19:40" } }
+		"test041GlobalDeclarationsOnlyAllowLiterals" : "Richo 8/22/2018 19:40",
+		"test042ExpressionsAreNotAllowedInsideImportInitBlocks" : "Richo 9/25/2019 09:49" } }

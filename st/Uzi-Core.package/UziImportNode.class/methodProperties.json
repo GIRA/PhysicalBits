@@ -1,12 +1,15 @@
 {
 	"class" : {
 		"alias:path:" : "Richo 9/20/2019 19:53",
-		"alias:path:isResolved:" : "Richo 9/20/2019 19:53" },
+		"alias:path:initializationBlock:" : "Richo 9/25/2019 09:33",
+		"alias:path:initializationBlock:isResolved:" : "Richo 9/25/2019 09:33",
+		"alias:path:isResolved:" : "Richo 9/25/2019 09:34" },
 	"instance" : {
 		"accept:" : "Richo 8/16/2018 10:21",
 		"alias" : "Richo 8/11/2017 21:14",
-		"children" : "Richo 8/22/2018 17:45",
-		"initializeWithAlias:path:isResolved:" : "Richo 9/20/2019 19:53",
+		"children" : "Richo 9/25/2019 09:46",
+		"initializationBlock" : "Richo 9/25/2019 09:35",
+		"initializeWithAlias:path:initializationBlock:isResolved:" : "Richo 9/25/2019 09:34",
 		"isResolved" : "Richo 9/20/2019 20:18",
 		"path" : "Richo 8/11/2017 21:14",
-		"resolved" : "Richo 9/20/2019 19:55" } }
+		"resolved" : "Richo 9/25/2019 10:50" } }

@@ -27,4 +27,5 @@ setUp
 	yield := UziYieldNode.
 	forever := UziForeverNode.
 	for := UziForNode.
-	pin := UziPinLiteralNode 
+	pin := UziPinLiteralNode.
+	tickingRate := UziTickingRateNode

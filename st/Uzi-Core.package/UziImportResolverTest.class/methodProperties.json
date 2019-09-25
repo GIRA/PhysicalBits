@@ -3,7 +3,7 @@
 		 },
 	"instance" : {
 		"assert:equals:" : "Richo 5/21/2018 14:56",
-		"setUp" : "Richo 11/22/2018 12:01",
+		"setUp" : "Richo 9/25/2019 10:29",
 		"test001ImportingALibrarySubstitutesTheImportWithTheActualParseTreeAliased" : "Richo 9/20/2019 20:07",
 		"test002ImportingSameLibraryTwice" : "Richo 9/20/2019 20:12",
 		"test003ImportingNestedLibraries" : "Richo 9/20/2019 20:19",
@@ -17,4 +17,11 @@
 		"test011ImportingAScriptThatCallsAnInternalProc" : "Richo 9/20/2019 20:20",
 		"test012ImportingAScriptThatExecutesAYieldInstruction" : "Richo 9/20/2019 20:20",
 		"test013ImportingAScriptThatExecutesAForeverLoop" : "Richo 9/20/2019 20:20",
-		"test014ImportingAScriptThatExecutesAForLoop" : "Richo 9/20/2019 20:20" } }
+		"test014ImportingAScriptThatExecutesAForLoop" : "Richo 9/20/2019 20:20",
+		"test015SpecifyingAnInitBlockToInitializeVariables" : "Richo 9/25/2019 10:54",
+		"test016SpecifyingAnInitBlockToStartAnImportedTask" : "Richo 9/25/2019 10:55",
+		"test017SpecifyingAnInitBlockToStartAnImportedTaskWhoseStateIsOnceShouldNotWork" : "Richo 9/25/2019 11:05",
+		"test018SpecifyingAnInitBlockToStartAnImportedTask" : "Richo 9/25/2019 11:08",
+		"test019SpecifyingAnInitBlockToStopAnImportedTask" : "Richo 9/25/2019 11:08",
+		"test020SpecifyingAnInitBlockToStopAnImportedTask" : "Richo 9/25/2019 11:08",
+		"test021SpecifyingAnInitBlockWithInvalidStatementsShouldNotWork" : "Richo 9/25/2019 11:09" } }

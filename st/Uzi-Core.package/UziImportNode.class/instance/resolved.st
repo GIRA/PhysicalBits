@@ -1,3 +1,8 @@
 converting
 resolved
-	^ (self class alias: alias path: path isResolved: true) token: token
+	^ (self class 
+		alias: alias 
+		path: path 
+		initializationBlock: initializationBlock 
+		isResolved: true) 
+			token: token

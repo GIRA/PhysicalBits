@@ -18,6 +18,7 @@ visitProgramNode: node
 			node: each.
 		scriptNames add: each name].
 		
-	self visitCollection: node globals;
+	self visitCollection: node imports;
+		visitCollection: node globals;
 		visitCollection: node scripts 
 	

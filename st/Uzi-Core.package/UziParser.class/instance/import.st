@@ -1,7 +1,21 @@
 grammar-imports
 import
-	^ ws , ('import' asParser , ws , identifier , ws , 'from' asParser , ws , importPath , ws , $; asParser) token , ws
-		map: [:ign1 :token :ign2 || alias path ast |
+	^ ws , 
+	('import' asParser , 
+	ws , 
+	identifier , 
+	ws , 
+	'from' asParser , 
+	ws , 
+	importPath , 
+	ws , 
+	($; asParser / block)) 
+		token , 
+	ws
+		map: [:ign1 :token :ign2 || alias path initBlock |
 			alias := token parsedValue at: 3.
 			path := token parsedValue at: 7.
-			(UziImportNode alias: alias path: path) token: token]
+			initBlock := token parsedValue at: 9.
+			initBlock = $; ifTrue: [initBlock := nil].
+			(UziImportNode alias: alias path: path initializationBlock: initBlock) 
+				token: token]
