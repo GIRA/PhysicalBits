@@ -3,7 +3,7 @@ visitProgramNode: node
 	self saveIntervalFor: node
 		during: [
 			node imports ifNotEmpty: [:imports |
-				imports do: [:each | self visit: each; writeLine: ';'].
+				imports do: [:each | self visit: each; writeLine: ''].
 				self writeLine: ''].
 			node globals ifNotEmpty: [:globals |
 				globals do: [:each | self visit: each; writeLine: ';'].
