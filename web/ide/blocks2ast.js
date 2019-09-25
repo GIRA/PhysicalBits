@@ -4,22 +4,19 @@ var BlocksToAST = (function () {
 		program: function (id, imports, globals, scripts) {
 			return {
 				__class__: "UziProgramNode",
-				imports: Array.from(imports, function (entry) {
-					let alias = entry[0];
-					let path = entry[1];
-					return builder.import(id, alias, path);
-				}),
+				imports: imports,
 				globals: globals.map(function (varName) {
 					return builder.variableDeclaration(id, varName);
 				}),
 				scripts: scripts
 			};
 		},
-		import: function (id, alias, path) {
+		import: function (id, alias, path, initBlock) {
 			return {
 				__class__: "UziImportNode",
 				alias: alias,
-				path: path
+				path: path,
+				initializationBlock: initBlock
 			};
 		},
 		task: function (id, name, argumentNames, state, tickingRate, statements) {
@@ -862,57 +859,46 @@ var BlocksToAST = (function () {
 				globals: [],
 
 				addDCMotorImport: function (alias) {
-					if (ctx.addImport(alias, "DCMotor.uzi")) {
-
-						// Initialize motor
+					ctx.addImport(alias, "DCMotor.uzi", function () {
 						let motor = motors.find(function (m) { return m.name === alias; });
-						if (motor != undefined) {
-							let selector = motor.name + "." + "init";
-
-							function pin(pin) {
-								var type = pin[0];
-								var number = parseInt(pin.slice(1));
-								return builder.pin(null, type, number);
-							}
-							let args = [
-								{ name: "en", value: pin(motor.enable) },
-								{ name: "f", value: pin(motor.fwd) },
-								{ name: "r", value: pin(motor.bwd) },
-							];
-
-							setup.push(builder.scriptCall(null, selector, args));
+						if (motor == undefined) return null;
+						
+						function pin(pin) {
+							var type = pin[0];
+							var number = parseInt(pin.slice(1));
+							return builder.pin(null, type, number);
 						}
-					}
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "enablePin", pin(motor.enable)));
+						stmts.push(builder.assignment(null, "forwardPin", pin(motor.fwd)));
+						stmts.push(builder.assignment(null, "reversePin", pin(motor.bwd)));
+						return builder.block(null, stmts);
+					});
 				},
 				addSonarImport: function (alias) {
-					if (ctx.addImport(alias, "Sonar.uzi")) {
-
-						// Initialize sonar
+					ctx.addImport(alias, "Sonar.uzi", function () {
 						let sonar = sonars.find(function (m) { return m.name === alias; });
-						if (sonar != undefined) {
-							let selector = sonar.name + "." + "init";
+						if (sonar == undefined) return null;
 
-							function pin(pin) {
-								var type = pin[0];
-								var number = parseInt(pin.slice(1));
-								return builder.pin(null, type, number);
-							}
-							let args = [
-								{ name: "trig", value: pin(sonar.trig) },
-								{ name: "echo", value: pin(sonar.echo) },
-								{ name: "maxDist", value: builder.number(null, parseInt(sonar.maxDist)) },
-							];
-
-							setup.push(builder.scriptCall(null, selector, args));
-
-							let taskName = sonar.name + ".reading";
-							setup.push(builder.start(null, [taskName]));
+						function pin(pin) {
+							var type = pin[0];
+							var number = parseInt(pin.slice(1));
+							return builder.pin(null, type, number);
 						}
-					}
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "trigPin", pin(sonar.trig)));
+						stmts.push(builder.assignment(null, "echoPin", pin(sonar.echo)));
+						stmts.push(builder.assignment(null, "maxDistance", builder.number(null, parseInt(sonar.maxDist))));
+						stmts.push(builder.start(null, ["reading"]));
+						return builder.block(null, stmts);
+					});
 				},
-				addImport: function (alias, path) {
+				addImport: function (alias, path, initFn) {
 					if (ctx.imports.has(alias)) return false;
-					ctx.imports.set(alias, path);
+
+					ctx.imports.set(alias, builder.import(null, alias, path, initFn()));
 					return true;
 				},
 				addGlobal: function (varName) {
@@ -936,7 +922,10 @@ var BlocksToAST = (function () {
 				}
 				scripts.unshift(builder.task(null, name, [], "once", null, setup));
 			}
-			return builder.program(null, ctx.imports, ctx.globals, scripts);
+			return builder.program(null,
+				Array.from(ctx.imports, function (entry) { return entry[1]; }),
+				ctx.globals,
+				scripts);
 		}
 	}
 })();
