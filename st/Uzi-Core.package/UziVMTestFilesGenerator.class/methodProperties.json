@@ -1,6 +1,7 @@
 {
 	"class" : {
-		"outputDirectory" : "Richo 11/22/2018 12:02" },
+		"outputDirectory" : "Richo 11/22/2018 12:02",
+		"resources" : "Richo 9/24/2019 12:44" },
 	"instance" : {
 		"test001TurnOnBytecode" : "Richo 7/15/2019 23:31",
 		"test002TurnOffBytecode" : "Richo 7/15/2019 23:31",
@@ -97,4 +98,4 @@
 		"test093DebuggerSetAllBreakpointsWithMultipleScripts" : "Richo 7/15/2019 23:27",
 		"test094ProgramWithMultipleImports" : "Richo 9/24/2019 12:21",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14",
-		"writeFile:program:" : "Richo 7/15/2019 23:24" } }
+		"writeFile:program:" : "Richo 9/25/2019 18:20" } }
