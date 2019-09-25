@@ -5,7 +5,7 @@
 		"assertInvalid:" : "Richo 8/10/2017 10:30",
 		"assertValid:" : "Richo 5/19/2018 15:22",
 		"check:" : "Richo 8/11/2017 19:18",
-		"setUp" : "Richo 8/28/2018 12:57",
+		"setUp" : "Richo 9/25/2019 11:21",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
 		"test002AssignmentsAreNotExpressions" : "Richo 9/13/2017 10:35",
 		"test003ConditionalsAreNotExpressions" : "Richo 8/28/2018 13:02",
@@ -46,4 +46,7 @@
 		"test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified" : "Richo 8/22/2018 12:04",
 		"test040TickingRateValueShouldAlwaysBePositive" : "Richo 8/22/2018 12:32",
 		"test041GlobalDeclarationsOnlyAllowLiterals" : "Richo 8/22/2018 19:40",
-		"test042ExpressionsAreNotAllowedInsideImportInitBlocks" : "Richo 9/25/2019 09:49" } }
+		"test042ExpressionsAreNotAllowedInsideImportInitBlocks" : "Richo 9/25/2019 09:49",
+		"test043AttemptingToStartANonExistingTaskShouldFail" : "Richo 9/25/2019 11:20",
+		"test044AttemptingToInitializeANonExistingGlobalShouldFail" : "Richo 9/25/2019 11:26",
+		"test045AttemptingToStartAnExistingTaskShouldWork" : "Richo 9/25/2019 11:28" } }

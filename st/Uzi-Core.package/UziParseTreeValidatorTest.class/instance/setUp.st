@@ -5,7 +5,6 @@ setUp
 	proc := UziProcedureNode.
 	assignment := UziAssignmentNode.
 	var := UziVariableNode.
-	call := UziCallNode.
 	number := UziNumberLiteralNode.
 	block := UziBlockNode.
 	conditional := UziConditionalNode.
@@ -14,9 +13,15 @@ setUp
 	doUntil := UziDoUntilNode.
 	start := UziScriptStartNode.
 	stop := UziScriptStopNode.
+	import := UziImportNode.
+	call := UziCallNode.
+	func := UziFunctionNode.
+	return := UziReturnNode.
 	repeat := UziRepeatNode.
 	pause := UziScriptPauseNode.
 	resume := UziScriptResumeNode.
+	yield := UziYieldNode.
 	forever := UziForeverNode.
 	for := UziForNode.
+	pin := UziPinLiteralNode.
 	tickingRate := UziTickingRateNode

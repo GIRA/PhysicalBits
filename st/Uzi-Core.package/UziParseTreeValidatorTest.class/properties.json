@@ -25,7 +25,12 @@
 		"forever",
 		"for",
 		"tickingRate",
-		"call" ],
+		"call",
+		"import",
+		"pin",
+		"func",
+		"return",
+		"yield" ],
 	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],
