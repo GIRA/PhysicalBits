@@ -625,6 +625,9 @@ var BlocksToAST = (function () {
 			var name = asIdentifier(XML.getChildNode(block, "VAR").innerText);
 			ctx.addGlobal(name);
 			var value = generateCodeForValue(block, ctx, "VALUE");
+			if (value == undefined) {
+				value = builder.number(id, 0);
+			}
 			return builder.assignment(id, name, value);
 		},
 		math_change: function (block, ctx) {
@@ -862,7 +865,7 @@ var BlocksToAST = (function () {
 					ctx.addImport(alias, "DCMotor.uzi", function () {
 						let motor = motors.find(function (m) { return m.name === alias; });
 						if (motor == undefined) return null;
-						
+
 						function pin(pin) {
 							var type = pin[0];
 							var number = parseInt(pin.slice(1));
