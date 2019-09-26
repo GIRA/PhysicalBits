@@ -1,7 +1,7 @@
 tests
 test094ProgramWithMultipleImports
 	| program |	
-	program := Uzi compileString: '
+	program := '
 import sonar from ''Sonar.uzi'';
 import leftMotor from ''DCMotor.uzi'';
 import rightMotor from ''DCMotor.uzi'';
@@ -47,5 +47,5 @@ task move() running 100/s {
 task blink13() running 1/s {
 	toggle(D13);
 }'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

@@ -1,7 +1,7 @@
 tests
 test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer
 	| program |
-	program := Uzi compileString: '
+	program := '
 	import c from ''Channel.uzi'';
 
 	task producer() running {

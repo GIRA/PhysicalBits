@@ -7,7 +7,7 @@
 	"commentStamp" : "",
 	"instvars" : [
 		"stats" ],
-	"name" : "UziVMTestFilesGeneratorResource",
+	"name" : "UziCompileStatsReportGenerator",
 	"pools" : [
 		 ],
 	"super" : "TestResource",

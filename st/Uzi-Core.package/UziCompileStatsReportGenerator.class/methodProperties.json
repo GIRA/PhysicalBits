@@ -2,7 +2,7 @@
 	"class" : {
 		"outputDirectory" : "Richo 9/25/2019 17:49" },
 	"instance" : {
-		"register:" : "Richo 9/25/2019 18:19",
+		"register:test:class:" : "Richo 9/26/2019 15:21",
 		"setUp" : "Richo 9/25/2019 18:20",
 		"tearDown" : "Richo 9/25/2019 18:34",
 		"writeActualDataOn:" : "Richo 9/25/2019 18:34",

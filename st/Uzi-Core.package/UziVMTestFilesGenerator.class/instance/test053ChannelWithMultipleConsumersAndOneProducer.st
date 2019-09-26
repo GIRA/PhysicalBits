@@ -1,7 +1,7 @@
 tests
 test053ChannelWithMultipleConsumersAndOneProducer
 	| program |
-	program := Uzi compileString: '
+	program := '
 	import c from ''Channel.uzi'';
 
 	task consumer1() running { write(D13, c.receive()); }

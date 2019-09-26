@@ -1,7 +1,7 @@
 tests
 test065IsCloseTo
 	| program |	
-	program := Uzi compileString: '
+	program := '
 	"D13 -> ON
 	D12 -> ON
 	D11 -> OFF
@@ -17,5 +17,5 @@ test065IsCloseTo
 		write(D11, isCloseTo(2, 2.001));
 		write(D10, isCloseTo(Infinity, Infinity));
 	}'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

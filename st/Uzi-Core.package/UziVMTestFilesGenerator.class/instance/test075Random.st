@@ -1,7 +1,7 @@
 tests
 test075Random
 	| program |	
-	program := Uzi compileString: '
+	program := '
 	var old = 0;
 	task main() running 1/s {
 		var a = random();
@@ -12,5 +12,5 @@ test075Random
 		}
 		old = a;
 	}'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

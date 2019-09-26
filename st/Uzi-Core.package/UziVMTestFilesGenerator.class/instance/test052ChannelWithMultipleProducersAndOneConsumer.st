@@ -1,7 +1,7 @@
 tests
 test052ChannelWithMultipleProducersAndOneConsumer
 	| program |
-	program := Uzi compileString: '
+	program := '
 	import c from ''Channel.uzi'';
 
 	task blink() running 1/s { toggle(D13); }

@@ -10,5 +10,5 @@ test083DelayS
 			push: 1;
 			prim: #delayS;
 			turnOff: 13]].
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

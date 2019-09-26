@@ -1,7 +1,7 @@
 tests
 test046ReverseForLoopWithoutConstantStep
 	| program |
-	program := Uzi compileString: '
+	program := '
 	var step = -1;
 
 	task for() running {

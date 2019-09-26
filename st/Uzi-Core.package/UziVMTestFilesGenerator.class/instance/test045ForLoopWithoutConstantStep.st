@@ -1,7 +1,7 @@
 tests
 test045ForLoopWithoutConstantStep
 	| program |
-	program := Uzi compileString: '
+	program := '
 	var step = 1;
 
 	task for() running {

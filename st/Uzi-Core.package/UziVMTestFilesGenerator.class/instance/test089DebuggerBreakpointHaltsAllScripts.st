@@ -1,7 +1,7 @@
 tests
 test089DebuggerBreakpointHaltsAllScripts
 	| program |	
-	program := Uzi compileString: '
+	program := '
 task blink11() running 1/s {
 	toggle(D11);
 }
@@ -12,5 +12,5 @@ task blink13() running {
 	turnOff(D13);
 	delayMs(1000);
 }'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

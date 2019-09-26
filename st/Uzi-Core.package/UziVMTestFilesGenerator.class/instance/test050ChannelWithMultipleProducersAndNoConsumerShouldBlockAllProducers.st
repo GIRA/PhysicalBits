@@ -1,7 +1,7 @@
 tests
 test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers
 	| program |
-	program := Uzi compileString: '
+	program := '
 	import c from ''Channel.uzi'';
 	var counter = 0.5;
 

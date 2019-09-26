@@ -1,7 +1,7 @@
 tests
 test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther
 	| program |
-	program := Uzi compileString: '
+	program := '
 	"Pin 7 should blink once per second.
 	Pin 6 should blink once per second."
 	task main() running 1/s {

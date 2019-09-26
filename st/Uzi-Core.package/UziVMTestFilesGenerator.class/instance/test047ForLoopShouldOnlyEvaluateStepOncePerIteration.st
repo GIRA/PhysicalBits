@@ -1,7 +1,7 @@
 tests
 test047ForLoopShouldOnlyEvaluateStepOncePerIteration
 	| program |
-	program := Uzi compileString: '
+	program := '
 	var step = -1;
 	var stop = -10;
 

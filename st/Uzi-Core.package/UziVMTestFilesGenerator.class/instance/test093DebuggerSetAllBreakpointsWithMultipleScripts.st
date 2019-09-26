@@ -14,5 +14,5 @@ test093DebuggerSetAllBreakpointsWithMultipleScripts
 		instructions: [:s | s
 			turnOff: 11;
 			turnOff: 13]].
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

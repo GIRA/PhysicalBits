@@ -47,5 +47,5 @@ test090DebuggerBreakpointHaltsAreDeterministic
  "23"		push: 0;
  "24"		prim: #write]].
 
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

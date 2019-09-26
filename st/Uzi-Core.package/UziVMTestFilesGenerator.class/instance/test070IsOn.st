@@ -1,7 +1,7 @@
 tests
 test070IsOn
 	| program |	
-	program := Uzi compileString: '
+	program := '
 	task main() running 1/s {
 		if isOn(D13) {
 			turnOff(D13);
@@ -9,5 +9,5 @@ test070IsOn
 			turnOn(D13);
 		}
 	}'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

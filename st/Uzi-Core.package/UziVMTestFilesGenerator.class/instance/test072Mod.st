@@ -1,7 +1,7 @@
 tests
 test072Mod
 	| program |	
-	program := Uzi compileString: '
+	program := '
 	var a = 0;
 	task main() running 1/s {
 		a = a % 3;
@@ -11,5 +11,5 @@ test072Mod
 		if a == 3 { toggle(D10); }
 		a = a + 1;
 	}'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

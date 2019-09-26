@@ -1,7 +1,7 @@
 tests
 test088ScriptCallOverridingPrimitive
 	| program |	
-	program := Uzi compileString: '
+	program := '
 task blink() running 1/s { toggle(D13, 0); }
 
 proc toggle(pin, delay)  {
@@ -9,5 +9,5 @@ proc toggle(pin, delay)  {
 	else { turnOn(pin); }
 	delayMs(delay);
 }'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program

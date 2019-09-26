@@ -1,7 +1,7 @@
 tests
 test048MutexShouldGuaranteeACriticalSection
 	| program |
-	program := Uzi compileString: '
+	program := '
 	import m from ''Mutex.uzi'';
 
 	task blink() running 1/s { toggle(D13); }

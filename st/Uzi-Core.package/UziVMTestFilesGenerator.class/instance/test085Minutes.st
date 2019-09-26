@@ -1,7 +1,7 @@
 tests
 test085Minutes
 	| program |	
-	program := Uzi compileString: '
+	program := '
 	task main() running {
 		until minutes() >= 1;
 		turnOn(D13);
@@ -12,5 +12,5 @@ test085Minutes
 		until minutes() >= 4;
 		turnOff(D13);
 	}'.
-	self writeFile: thisContext method selector capitalized
+	self writeFile: thisContext method selector
 		program: program
