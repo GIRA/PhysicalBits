@@ -48,7 +48,7 @@ Test046ReverseForLoopWithoutConstantStep,7,1859,1986,1895.28571428571,0
 Test047ForLoopShouldOnlyEvaluateStepOncePerIteration,102,1789,1986,1792.86274509804,0
 Test048MutexShouldGuaranteeACriticalSection,1202,1558,1986,1570.35940099834,3
 Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer,10002,1658,1986,1658.22555488902,1
-Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers,10002,1414,1986,1414.11437712458,3
+Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers,10002,1486,1986,1486.099980004,3
 Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer,90002,1616,1986,1616.00844425679,2
 Test052ChannelWithMultipleProducersAndOneConsumer,2002,1250,1986,1250.74525474525,6
 Test053ChannelWithMultipleConsumersAndOneProducer,902,1354,1986,1355.42793791574,5
@@ -92,5 +92,5 @@ Test090DebuggerBreakpointHaltsAreDeterministic,62007,1670,1986,1672.59080426403,
 Test091ChangingTheProgramResetsTheVMState,606,1887,1986,1892.699669967,1
 Test092DebuggerSetAllBreakpoints,8,1903,1986,1924.75,1
 Test093DebuggerSetAllBreakpointsWithMultipleScripts,8,1841,1986,1881.25,2
-Test094ProgramWithMultipleImports,102,966,1986,986,0
-TOTAL,5230637,171873,186684,174846.682324435,36
+Test094ProgramWithMultipleImports,102,1206,1986,1221.29411764706,0
+TOTAL,5230637,172185,186684,175153.962044961,36
