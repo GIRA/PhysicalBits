@@ -6,8 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"visited",
-		"program" ],
+		"path",
+		"visitedScripts",
+		"visitedGlobals" ],
 	"name" : "UziDeadCodeRemover",
 	"pools" : [
 		 ],

@@ -1,3 +1,3 @@
 visiting
-visitBlockNode: node
+visitPinLiteralNode: node
 	self visitChildren: node

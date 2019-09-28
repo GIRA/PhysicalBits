@@ -1,3 +1,3 @@
 visiting
-visitScriptStopNode: node
+visitScriptResumeNode: node
 	self handleScriptControl: node

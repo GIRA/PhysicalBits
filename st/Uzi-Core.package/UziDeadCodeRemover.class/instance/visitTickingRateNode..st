@@ -1,3 +1,3 @@
 visiting
 visitTickingRateNode: node
-	"Do nothing"
+	self visitChildren: node

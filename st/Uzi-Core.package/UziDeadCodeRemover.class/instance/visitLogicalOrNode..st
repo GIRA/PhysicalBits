@@ -1,3 +1,3 @@
 visiting
-visitBlockNode: node
+visitLogicalOrNode: node
 	self visitChildren: node

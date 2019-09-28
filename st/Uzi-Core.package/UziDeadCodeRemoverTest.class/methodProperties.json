@@ -11,4 +11,13 @@
 		"test006StoppedScriptThatStartsItselfShouldNotCount" : "Richo 9/24/2019 17:44",
 		"test007StoppedScriptShouldBeRemoved" : "Richo 9/24/2019 17:45",
 		"test008OnceScriptsShouldBeConsideredRoots" : "Richo 9/24/2019 17:47",
-		"test009StopScriptShouldMarkTheScriptAsAlive" : "Richo 9/24/2019 17:59" } }
+		"test009StopScriptShouldMarkTheScriptAsAlive" : "Richo 9/24/2019 17:59",
+		"test010PauseScriptShouldMarkTheScriptAsAlive" : "Richo 9/28/2019 12:24",
+		"test011ResumeScriptShouldMarkTheScriptAsAlive" : "Richo 9/28/2019 12:25",
+		"test012UnusedGlobalsShouldBeRemovedAsWell" : "Richo 9/28/2019 12:34",
+		"test013UnusedGlobalsShouldBeRemovedEvenIfTheyHaveReferencesFromADeadScript" : "Richo 9/28/2019 12:38",
+		"test014UsedGlobalsShouldNotBeRemoved" : "Richo 9/28/2019 12:39",
+		"test015UnusedGlobalsShouldBeRemovedEvenIfTheyAreHiddenByALocalVariable" : "Richo 9/28/2019 12:43",
+		"test016AMoreCompleteExample" : "Richo 9/28/2019 13:00",
+		"test017AMoreCompleteExample2" : "Richo 9/28/2019 13:06",
+		"test018AMoreCompleteExample3" : "Richo 9/28/2019 13:19" } }

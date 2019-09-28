@@ -1,3 +1,3 @@
 visiting
-visitBlockNode: node
+visitYieldNode: node
 	self visitChildren: node

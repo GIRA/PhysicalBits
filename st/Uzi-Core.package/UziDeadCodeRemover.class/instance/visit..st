@@ -1,3 +1,5 @@
-as yet unclassified
-visit: node
-	^ node accept: self
+visiting
+visit: anUziParseNode
+	path addFirst: anUziParseNode.
+	[^ anUziParseNode accept: self] 
+		ensure: [path removeFirst]

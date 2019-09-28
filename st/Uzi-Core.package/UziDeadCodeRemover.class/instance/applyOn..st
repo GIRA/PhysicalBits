@@ -1,4 +1,6 @@
-as yet unclassified
-applyOn: anUziProgramNode 
-	visited := Set new.
+public
+applyOn: anUziProgramNode
+	path := OrderedCollection new.
+	visitedScripts := Set new.
+	visitedGlobals := Set new.
 	^ self visit: anUziProgramNode
