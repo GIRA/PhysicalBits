@@ -1,3 +1,3 @@
 accessing
 children
-	^ { self value }
+	^ { self value } select: [:each | each notNil]
