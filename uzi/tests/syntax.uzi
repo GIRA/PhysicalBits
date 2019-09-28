@@ -2,7 +2,15 @@
 in the language."
 "I wrote it to help me create a syntax highlighter for the ""Ace"" editor"
 
-import foo from 'Foo.uzi';
+import foo from 'DCMotor.uzi';
+import bar from 'Sonar.uzi' {
+  trigPin = 100;
+  echoPin = 200;
+  start reading;
+  stop reading;
+  pause reading;
+  resume reading;
+}
 
 var a = 10;
 var b = 0.5;
@@ -24,7 +32,7 @@ func fact(n) {
 proc foo_bar_baz(a, b, c) {
     var d = a * b + c;
     repeat d { toggle(A2); }
-    forever { 
+    forever {
         start blink13, blink12;
         stop blink13;
         yield;
@@ -42,6 +50,7 @@ proc foo_bar_baz(a, b, c) {
         toggle(A0);
         delayMs(i * 100);
     }
-	var e = foo.func(fact(1 * -2 + -3.5), a + b/d);
-	foo.proc();
+	var e = foo.getSpeed();
+	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
+	bar.init(trig: a, echo: b, maxDist: c);
 }
