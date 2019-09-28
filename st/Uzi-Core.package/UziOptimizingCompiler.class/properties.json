@@ -1,0 +1,14 @@
+{
+	"category" : "Uzi-Core",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		 ],
+	"name" : "UziOptimizingCompiler",
+	"pools" : [
+		 ],
+	"super" : "UziCompiler",
+	"type" : "normal" }
