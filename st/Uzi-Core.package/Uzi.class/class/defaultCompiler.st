@@ -1,3 +1,3 @@
 config-default tools
 defaultCompiler
-	^ UziCompiler
+	^ UziOptimizingCompiler
