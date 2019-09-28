@@ -16,6 +16,4 @@ register: programOrString test: testName class: aClass
 		#instructionCount -> program instructions size.
 		#globalCount -> program globals size.
 		#encodedSize -> (Uzi encode: program) size.
-		#compileTime -> (program node
-			ifNotNil: [:ast | src ifNotNil: [[Uzi compileString: src] timeToRun]])
-		}.
+	}.
