@@ -803,11 +803,11 @@
   }
 
   function verify() {
-    Uzi.compile(getGeneratedCodeAsJSON(), "json");
+    Uzi.compile(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
   }
 
   function run() {
-		Uzi.run(getGeneratedCodeAsJSON(), "json");
+		Uzi.run(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
   }
 
   function install() {
@@ -846,6 +846,14 @@
     if (forced) { lastProgram = null; }
 	}
 
+  function success() {
+    $(document.body).css("border", "4px solid black");
+  }
+
+  function error() {
+    $(document.body).css("border", "4px solid red");
+  }
+
 	function autorun() {
 		if (autorunNextTime === undefined) return;
 
@@ -860,9 +868,9 @@
 
     let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
     if (Uzi.state.isConnected && interactiveEnabled) {
-      Uzi.run(currentProgram, "json", true);
+      Uzi.run(currentProgram, "json", true).then(success).catch(error);
     } else {
-      Uzi.compile(currentProgram, "json", true);
+      Uzi.compile(currentProgram, "json", true).then(success).catch(error);
     }
 	}
 
