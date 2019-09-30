@@ -19,15 +19,14 @@
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
         .then(initializeAutorun)
+        .then(initializeTopBar)
+        .then(initializeInspectorPanel)
+        .then(initializeCodePanel)
+        .then(initializeOutputPanel)
+        .then(initializeBrokenLayoutErrorModal)
+        .then(initializeServerNotFoundErrorModal)
+        .then(initializeOptionsModal)
         .then(initializeInternationalization);
-
-      initializeTopBar();
-      initializeInspectorPanel();
-      initializeCodePanel();
-      initializeOutputPanel();
-      initializeBrokenLayoutErrorModal();
-      initializeServerNotFoundErrorModal();
-      initializeOptionsModal();
     }
   };
 
@@ -602,6 +601,20 @@
 
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", initializeDefaultLayout);
+
+    $('input[name="language-radios"]:radio').change(function () {
+      i18n.currentLocale(this.value);
+    })
+    i18n.on("change", function () {
+      let locale = i18n.currentLocale();
+      if (locale.startsWith("en")) {
+        $("#english-radio").prop("checked", true);
+      }
+      if (locale.startsWith("es")) {
+        $("#spanish-radio").prop("checked", true);
+      }
+      console.log(locale);
+    });
   }
 
   function checkBrokenLayout() {

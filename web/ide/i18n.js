@@ -5,6 +5,11 @@ var i18n = (function () {
         current = "en",
         untranslatable = [];
 
+    let observers = {
+      "change" : [],
+      "update" : []
+    };
+
     function init(translations) {
         // Spec
         spec = translations[0];
@@ -26,6 +31,20 @@ var i18n = (function () {
         }
     }
 
+    function on (evt, callback) {
+      observers[evt].push(callback);
+    }
+
+    function trigger(evt) {
+      observers[evt].forEach(function (fn) {
+        try {
+          fn();
+        } catch (err) {
+          console.log(err);
+        }
+      });
+    }
+
     function translate (string) {
         var locale = locales[current] || {};
 
@@ -39,8 +58,11 @@ var i18n = (function () {
 
     function currentLocale (newLocale) {
         if (newLocale === undefined) return current;
-        current = newLocale;
-        updateUI();
+        if (newLocale !== current) {
+          current = newLocale;
+          trigger("change");
+          updateUI();
+        }
     }
 
     /**
@@ -48,43 +70,46 @@ var i18n = (function () {
      * Otherwise it will search across the whole page.
      */
     function updateUI (node) {
-        (node === undefined ?
-            $("[lang]") :
-            $(node).find("[lang]").addBack("[lang]"))
-                .each(function () {
-                    var $node = $(this);
-                    if (this.nodeName === "INPUT") {
-                        if (this.type === "button"
-                            || this.type === "submit") {
-                            update($node, $node.val, $node.val);
-                        } else if (this.type === "option") {
-                            update($node, $node.text, $node.text);
-                        } else if (this.type === "text") {
-                            if (this.placeholder === "") {
-                                update($node, $node.val, $node.val);
-                            } else {
-                                // Take care of the placeholder, if any
-                                update($node,
-                                    function () {
-                                        return $node.attr("placeholder");
-                                    },
-                                    function (val) {
-                                        $node.attr("placeholder", val);
-                                    }
-                                );
-                            }
-                        }
-                    } else {
-                        update($node, $node.text, $node.text);
-                    }
-                });
-        (node === undefined ?
-            $("[lang-fn]") :
-            $(node).find("[lang-fn]").addBack("[lang-fn]"))
-                .each(function () {
-                    var $node = $(this);
-                    this[$node.attr("lang-fn")](this);
-                });
+
+      (node === undefined ?
+          $("[lang]") :
+          $(node).find("[lang]").addBack("[lang]"))
+              .each(function () {
+                  var $node = $(this);
+                  if (this.nodeName === "INPUT") {
+                      if (this.type === "button"
+                          || this.type === "submit") {
+                          update($node, $node.val, $node.val);
+                      } else if (this.type === "option") {
+                          update($node, $node.text, $node.text);
+                      } else if (this.type === "text") {
+                          if (this.placeholder === "") {
+                              update($node, $node.val, $node.val);
+                          } else {
+                              // Take care of the placeholder, if any
+                              update($node,
+                                  function () {
+                                      return $node.attr("placeholder");
+                                  },
+                                  function (val) {
+                                      $node.attr("placeholder", val);
+                                  }
+                              );
+                          }
+                      }
+                  } else {
+                      update($node, $node.text, $node.text);
+                  }
+              });
+      (node === undefined ?
+          $("[lang-fn]") :
+          $(node).find("[lang-fn]").addBack("[lang-fn]"))
+              .each(function () {
+                  var $node = $(this);
+                  this[$node.attr("lang-fn")](this);
+              });
+
+      trigger("update");
     }
 
     function update($node, getter, setter) {
@@ -107,6 +132,7 @@ var i18n = (function () {
         init: init,
         translate: translate,
         updateUI: updateUI,
+        on: on,
 
         untranslatable: untranslatable
     };
