@@ -23,13 +23,13 @@ let Uzi = (function () {
     connect: function (port) {
       let url = baseUrl + Uzi.state.actions.connect.href;
       let data = { id: id, port: port };
-      POST(url, data);
+      return POST(url, data);
     },
 
     disconnect: function () {
       let url = baseUrl + Uzi.state.actions.disconnect.href;
       let data = { id: id };
-      POST(url, data);
+      return POST(url, data);
     },
 
 		compile: function (src, type, silent) {
@@ -40,7 +40,7 @@ let Uzi = (function () {
         type: type,
         silent: silent == true
       };
-      POST(url, data);
+      return POST(url, data);
   	},
 
     run: function (src, type, silent) {
@@ -51,7 +51,7 @@ let Uzi = (function () {
         type: type,
         silent: silent == true
       };
-      POST(url, data);
+      return POST(url, data);
   	},
 
     install: function (src, type) {
@@ -61,7 +61,7 @@ let Uzi = (function () {
         src: src,
         type: type
       };
-      POST(url, data);
+      return POST(url, data);
     },
 
     setPinReport: function (pins, report) {
@@ -71,7 +71,7 @@ let Uzi = (function () {
         pins: Array.from(pins).join(","),
         report: Array.from(report).join(",")
       };
-      POST(url, data);
+      return POST(url, data);
     },
 
     setGlobalReport: function (globals, report) {
@@ -81,14 +81,12 @@ let Uzi = (function () {
         globals: Array.from(globals).join(","),
         report: Array.from(report).join(",")
       };
-      POST(url, data);
+      return POST(url, data);
     }
   };
 
   function POST(url, data) {
-    return ajax.POST(url, data)
-      .then(log)
-      .catch(errorHandler);
+    return ajax.POST(url, data);
   }
 
   function log(data) {
