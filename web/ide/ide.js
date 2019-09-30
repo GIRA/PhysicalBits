@@ -18,7 +18,8 @@
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
-        .then(initializeAutorun);
+        .then(initializeAutorun)
+        .then(initializeInternationalization);
 
       initializeTopBar();
       initializeInspectorPanel();
@@ -96,8 +97,8 @@
     blocklyDiv = $("#blockly").get(0);
 
     let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
-      workspace = Blockly.inject(blocklyDiv, { 
-	toolbox: toolbox.documentElement, 
+      workspace = Blockly.inject(blocklyDiv, {
+	toolbox: toolbox.documentElement,
  	zoom:
          {controls: true,
           wheel: true,
@@ -105,7 +106,7 @@
           maxScale: 3,
           minScale: 0.3,
           scaleSpeed: 1.2},
-	media: "libs/google-blockly/media/" 
+	media: "libs/google-blockly/media/"
       });
       workspace.addChangeListener(function () {
         saveToLocalStorage();
@@ -568,6 +569,17 @@
 
   function initializeAutorun() {
     setInterval(autorun, 100);
+  }
+
+  function initializeInternationalization() {
+    i18n.init(TRANSLATIONS);
+
+    // HACK(Richo): The following allows me to translate panel titles
+    $(".lm_title").each(function () { $(this).attr("lang", "en"); });
+
+    i18n.currentLocale("es");
+
+    $("#spinner-container").hide();
   }
 
   function initializeBrokenLayoutErrorModal() {
