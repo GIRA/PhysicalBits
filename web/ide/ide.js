@@ -102,13 +102,14 @@
     let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
       workspace = Blockly.inject(blocklyDiv, {
       	toolbox: toolbox.documentElement,
-       	zoom:
-               {controls: true,
-                wheel: true,
-                startScale: 0.9,
-                maxScale: 3,
-                minScale: 0.3,
-                scaleSpeed: 1.2},
+       	zoom: {
+          controls: true,
+          wheel: true,
+          startScale: 0.95,
+          maxScale: 3,
+          minScale: 0.3,
+          scaleSpeed: 1.03
+        },
       	media: "libs/google-blockly/media/"
       });
       workspace.addChangeListener(function () {
