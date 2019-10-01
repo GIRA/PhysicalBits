@@ -472,8 +472,8 @@
         interactive: $("#interactive-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
-      motors: motors,
-      sonars: sonars,
+      motors: UziBlock.getMotors(),
+      sonars: UziBlock.getSonars(),
     };
   }
 
@@ -492,11 +492,11 @@
       }
 
       if (ui.motors) {
-        motors = ui.motors;
+        UziBlock.setMotors(ui.motors);
       }
 
       if (ui.sonars) {
-        sonars = ui.sonars;
+        UziBlock.setSonars(ui.sonars);
       }
     } catch (err) {
       console.error(err);
