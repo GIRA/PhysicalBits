@@ -47,18 +47,18 @@
 },
 {
   "type": "turn_pin_variable",
-  "message0": "turn %1 pin %2",
+  "message0": "%1 pin %2",
   "args0": [
     {
       "type": "field_dropdown",
       "name": "pinState",
       "options": [
         [
-          "on",
+          "turn on",
           "on"
         ],
         [
-          "off",
+          "turn off",
           "off"
         ]
       ]

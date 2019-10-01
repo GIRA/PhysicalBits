@@ -185,8 +185,22 @@
 
     let loadBlocks = ajax.GET('blocks.json').then(function (json) {
       let blocks = JSON.parse(json);
+      let translations = new Map();
+      for (let i = 0; i < blocks.length; i++) {
+        let block = blocks[i];
+        let msg_id = block["type"].toUpperCase();
+        translations.set(msg_id, block["message0"]);
+        Blockly.Msg[msg_id] = block["message0"];
+        block["message0"] = "%{BKY_" + msg_id + "}";
+      }
       Blockly.defineBlocksWithJsonArray(blocks);
-      initSpecialBlocks();
+      initSpecialBlocks(translations);
+      i18n.on("change", function () {
+        translations.forEach(function (value, key) {
+          Blockly.Msg[key] = i18n.translate(value);
+        });
+        setUIState(getUIState());
+      });
     });
 
     return Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
@@ -224,10 +238,12 @@
     ];
 
     blocks.forEach(function (block) {
-      Blockly.Blocks[block[0]] = {
+      let block_id = block[0];
+      let block_msg = block[1];
+      Blockly.Blocks[block_id] = {
         init: function() {
           this.appendDummyInput()
-              .appendField(block[1])
+              .appendField(i18n.translate(block_msg))
               .appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName");
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
@@ -245,14 +261,23 @@
       return motors.map(function(each) { return [ each.name, each.name ]; });
     }
 
+
     Blockly.Blocks['move_dcmotor'] = {
       init: function() {
-        this.appendValueInput("speed")
-            .setCheck("Number")
-            .appendField("move")
-            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
-            .appendField(new Blockly.FieldDropdown([["forward","fwd"], ["backward","bwd"]]), "direction")
-            .appendField("at speed");
+        let block_msg = i18n.translate("move ,, at speed");
+        let fields = [
+          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
+          [new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
+                                      [i18n.translate("backward"),"bwd"]]), "direction"],
+        ];
+        let input = this.appendValueInput("speed").setCheck("Number");
+        let msg_parts = block_msg.split(",");
+        for (let i = 0; i < msg_parts.length; i++) {
+          if (i > 0) {
+            input.appendField(fields[i - 1][0], fields[i - 1][1]);
+          }
+          input.appendField(msg_parts[i]);
+        }
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -265,7 +290,7 @@
     Blockly.Blocks['stop_dcmotor'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("stop")
+            .appendField(i18n.translate("stop"))
             .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName");
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
@@ -278,11 +303,18 @@
 
     Blockly.Blocks['change_speed_dcmotor'] = {
       init: function() {
-        this.appendValueInput("speed")
-            .setCheck("Number")
-            .appendField("set")
-            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
-            .appendField("speed to");
+        let block_msg = i18n.translate("set , speed to");
+        let fields = [
+          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
+        ];
+        let input = this.appendValueInput("speed").setCheck("Number");
+        let msg_parts = block_msg.split(",");
+        for (let i = 0; i < msg_parts.length; i++) {
+          if (i > 0) {
+            input.appendField(fields[i - 1][0], fields[i - 1][1]);
+          }
+          input.appendField(msg_parts[i]);
+        }
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -301,11 +333,19 @@
 
       Blockly.Blocks['get_sonar_distance'] = {
         init: function() {
-          this.appendDummyInput()
-              .appendField("read distance from")
-              .appendField(new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName")
-              .appendField("in")
-              .appendField(new Blockly.FieldDropdown([["mm","mm"], ["cm","cm"], ["m","m"]]), "unit");
+          let block_msg = i18n.translate("read distance from , in ,");
+          let fields = [
+            [new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"],
+            [new Blockly.FieldDropdown([["mm","mm"], ["cm","cm"], ["m","m"]]), "unit"],
+          ];
+          let input = this.appendDummyInput();
+          let msg_parts = block_msg.split(",");
+          for (let i = 0; i < msg_parts.length; i++) {
+            if (i > 0) {
+              input.appendField(fields[i - 1][0], fields[i - 1][1]);
+            }
+            input.appendField(msg_parts[i]);
+          }
           this.setInputsInline(true);
           this.setOutput(true, "Number");
           this.setColour(0);

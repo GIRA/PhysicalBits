@@ -14,18 +14,17 @@ var i18n = (function () {
         // Spec
         spec = translations[0];
         locales = {};
-
-        var i;
+        untranslatable = [];
 
         // Create locales according to spec;
-        for (i = 0; i < spec.length; i++) {
+        for (let i = 0; i < spec.length; i++) {
             locales[spec[i]] = {};
         }
 
-        for (i = 1; i < translations.length; i++) {
-            var row = translations[i];
-            for (var j = 0; j < row.length; j++) {
-                var locale = locales[spec[j]];
+        for (let i = 1; i < translations.length; i++) {
+            let row = translations[i];
+            for (let j = 0; j < row.length; j++) {
+                let locale = locales[spec[j]];
                 locale[row[0]] = row[j];
             }
         }
@@ -134,6 +133,6 @@ var i18n = (function () {
         updateUI: updateUI,
         on: on,
 
-        untranslatable: untranslatable
+        untranslatable: function () { return untranslatable; }
     };
 })();
