@@ -65,7 +65,7 @@ let UziBlock = (function () {
 
           let fields = blocks.map(function (block) {
             return Array.from(block.getElementsByTagName("field"))
-            .filter(function (field) { return field.getAttribute("name") == "taskName"; });
+              .filter(function (field) { return field.getAttribute("name") == "taskName"; });
           }).flat();
 
           fields.forEach(function (field) {
@@ -297,7 +297,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['elapsed_time'] = {
       init: function() {
-        let msg = "elapsed %";
+        let msg = i18n.translate("elapsed %");
         let fields = [
           [new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                       [i18n.translate("seconds"),"s"],
@@ -505,7 +505,7 @@ let UziBlock = (function () {
     Blockly.Blocks['pin'] = {
       init: function() {
         this.appendDummyInput()
-        .appendField(new Blockly.FieldDropdown([["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"], ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"], ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"], ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"], ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]), "pinNumber");
+          .appendField(new Blockly.FieldDropdown(Uzi.state.pins.available.map(function (p) { return [p.name, p.name]; })), "pinNumber");
         this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
@@ -527,8 +527,9 @@ let UziBlock = (function () {
 
     // HACK(Richo): Filtering by the class name...
     return program.ast.scripts
-    .filter(function (s) { return s.__class__ == "UziTaskNode"; })
-    .map(function (each) { return each.name; });
+      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
+      .map(function (each) { return each.name; });
+  }
   }
 
   function initTaskBlocks() {
