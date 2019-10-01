@@ -123,20 +123,20 @@
   <category name="Control" colour="#5b80a5">
     <block type="conditional_simple">
       <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
     </block>
     <block type="conditional_full">
       <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
     </block>
-    <block type="logic_boolean">
-      <field name="BOOL">TRUE</field>
+    <block type="boolean">
+      <field name="value">true</field>
     </block>
     <block type="logic_compare">
       <field name="OP">EQ</field>
@@ -151,23 +151,23 @@
         </shadow>
       </value>
     </block>
-    <block type="logic_operation">
-      <field name="OP">AND</field>
-      <value name="A">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+    <block type="logical_operation">
+      <field name="operator">and</field>
+      <value name="left">
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
-      <value name="B">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+      <value name="right">
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
     </block>
-    <block type="logic_negate">
-      <value name="BOOL">
-        <shadow type="logic_boolean">
-          <field name="BOOL">FALSE</field>
+    <block type="logical_not">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
         </shadow>
       </value>
     </block>
@@ -182,16 +182,16 @@
     <block type="repeat">
       <field name="negate">false</field>
       <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
     </block>
     <block type="wait">
       <field name="negate">false</field>
       <value name="condition">
-        <shadow type="logic_boolean">
-          <field name="BOOL">TRUE</field>
+        <shadow type="boolean">
+          <field name="value">true</field>
         </shadow>
       </value>
     </block>
@@ -229,12 +229,23 @@
     <block type="math_number">
       <field name="NUM">0</field>
     </block>
-    <block type="math_number_property">
-      <mutation divisor_input="false"></mutation>
-      <field name="PROPERTY">EVEN</field>
-      <value name="NUMBER_TO_CHECK">
+    <block type="number_property">
+      <field name="property">even</field>
+      <value name="value">
         <shadow type="math_number">
           <field name="NUM">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_divisibility">
+      <value name="left">
+        <shadow type="math_number">
+          <field name="NUM">10</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="math_number">
+          <field name="NUM">2</field>
         </shadow>
       </value>
     </block>

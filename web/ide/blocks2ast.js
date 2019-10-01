@@ -375,59 +375,63 @@ var BlocksToAST = (function () {
 			var pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			return builder.primitiveCall(id, "toggle", [pinNumber]);
 		},
-		logic_operation: function (block, ctx) {
+		logical_operation: function (block, ctx) {
 			var id = XML.getId(block);
-			var type = XML.getChildNode(block, "OP").innerText;
-			var left = generateCodeForValue(block, ctx, "A");
-			var right = generateCodeForValue(block, ctx, "B");
-			if (type === "AND") {
+			var type = XML.getChildNode(block, "operator").innerText;
+			var left = generateCodeForValue(block, ctx, "left");
+			var right = generateCodeForValue(block, ctx, "right");
+			if (type === "and") {
 				return builder.logicalAnd(id, left, right);
-			} else if (type === "OR") {
+			} else if (type === "or") {
 				return builder.logicalOr(id, left, right);
 			}
 		},
-		logic_boolean: function (block, ctx) {
+		boolean: function (block, ctx) {
 			var id = XML.getId(block);
-			var bool = XML.getChildNode(block, "BOOL").innerText;
-			return builder.number(id, bool === "TRUE" ? 1 : 0);
+			var bool = XML.getChildNode(block, "value").innerText;
+			return builder.number(id, bool === "true" ? 1 : 0);
 		},
-		logic_negate: function (block, ctx) {
+		logical_not: function (block, ctx) {
 			var id = XML.getId(block);
-			var bool = generateCodeForValue(block, ctx, "BOOL");
+			var bool = generateCodeForValue(block, ctx, "value");
 			return builder.primitiveCall(id, "!", [bool], "negate");
 		},
-		math_number_property: function (block, ctx) {
+		number_property: function (block, ctx) {
 			var id = XML.getId(block);
-			var type = XML.getChildNode(block, "PROPERTY").innerText;
-			var num = generateCodeForValue(block, ctx, "NUMBER_TO_CHECK");
+			var type = XML.getChildNode(block, "property").innerText;
+			var num = generateCodeForValue(block, ctx, "value");
 			var args = [num];
 			var selector, primName;
-			if (type === "EVEN") {
+			if (type === "even") {
 				selector = "isEven";
 				primName = "isEven";
-			} else if (type === "ODD") {
+			} else if (type === "odd") {
 				selector = "isOdd";
 				primName = "isOdd";
-			} else if (type === "PRIME") {
+			} else if (type === "prime") {
 				selector = "isPrime";
 				primName = "isPrime";
-			} else if (type === "WHOLE") {
+			} else if (type === "whole") {
 				selector = "isWhole";
 				primName = "isWhole";
-			} else if (type === "POSITIVE") {
+			} else if (type === "positive") {
 				selector = "isPositive";
 				primName = "isPositive";
-			} else if (type === "NEGATIVE") {
+			} else if (type === "negative") {
 				selector = "isNegative";
 				primName = "isNegative";
-			} else if (type === "DIVISIBLE_BY") {
-				selector = "isDivisibleBy";
-				primName = "isDivisibleBy";
-				var divisor = generateCodeForValue(block, ctx, "DIVISOR");
-				args.push(divisor);
 			} else {
 				throw "Math number property not found: '" + type + "'";
 			}
+			return builder.primitiveCall(id, selector, args, primName);
+		},
+		number_divisibility: function (block, ctx) {
+			var id = XML.getId(block);
+			var left = generateCodeForValue(block, ctx, "left");
+			var right = generateCodeForValue(block, ctx, "right");
+			selector = "isDivisibleBy";
+			primName = "isDivisibleBy";
+			var args = [left, right];
 			return builder.primitiveCall(id, selector, args, primName);
 		},
 		repeat_times: function (block, ctx) {

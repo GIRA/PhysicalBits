@@ -512,6 +512,79 @@ let UziBlock = (function () {
         this.setHelpUrl("");
       }
     };
+
+    Blockly.Blocks['boolean'] = {
+      init: function() {
+        this.appendDummyInput()
+          .appendField(new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
+                                                  [i18n.translate("false"), "false"]]), "value");
+        this.setOutput(true, "Boolean");
+        this.setColour(210);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['logical_operation'] = {
+      init: function() {
+        this.appendValueInput("left")
+            .setCheck("Boolean");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("and"),"and"], [i18n.translate("or"),"or"]]), "operator");
+        this.appendValueInput("right")
+            .setCheck("Boolean");
+        this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setColour(210);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['logical_not'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck("Boolean")
+            .appendField(i18n.translate("not"));
+        this.setOutput(true, "Boolean");
+        this.setColour(210);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_property'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck("Number");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
+                                                    [i18n.translate("is odd"),"odd"],
+                                                    [i18n.translate("is prime"),"prime"],
+                                                    [i18n.translate("is whole"),"whole"],
+                                                    [i18n.translate("is positive"),"positive"],
+                                                    [i18n.translate("is negative"),"negative"]]), "property");
+        this.setOutput(true, "Boolean");
+        this.setColour(225);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_divisibility'] = {
+      init: function() {
+        this.appendValueInput("left")
+            .setCheck("Number");
+        this.appendDummyInput()
+            .appendField(i18n.translate("is divisible by"));
+        this.appendValueInput("right")
+            .setCheck("Number");
+        this.setOutput(true, "Boolean");
+        this.setColour(225);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
   function initSpecialBlocks() {
@@ -530,6 +603,16 @@ let UziBlock = (function () {
       .filter(function (s) { return s.__class__ == "UziTaskNode"; })
       .map(function (each) { return each.name; });
   }
+
+  function getDefaultTaskName() {
+    let names = getCurrentTaskNames();
+    let def = "default";
+    let i = 1;
+    while (names.includes(def)) {
+      def = "default" + i;
+      i++;
+    }
+    return def;
   }
 
   function initTaskBlocks() {
