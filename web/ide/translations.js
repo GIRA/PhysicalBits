@@ -72,6 +72,11 @@ var TRANSLATIONS = [
     ["resume", "continuar"],
     ["pause", "pausar"],
     ["run", "ejecutar"],
+    ["turn on", "encender"],
+    ["turn off", "apagar"],
+    ["on", "encendido"],
+    ["off", "apagado"],
+
     ["move ,, at speed", "mover , hacia , a velocidad"],
     ["set , speed to", "establecer velocidad de , a"],
     ["read distance from , in ,", "leer distancia de , en ,"],

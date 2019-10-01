@@ -3,12 +3,9 @@
   let layout, defaultLayoutConfig;
   let codeEditor;
   let selectedPort = "automatic";
-  let blocklyArea, blocklyDiv, workspace;
   let autorunInterval, autorunNextTime;
   let lastProgram;
   let lastFileName;
-  let motors = [];
-  let sonars = [];
 
   let IDE = {
     init: function () {
@@ -27,7 +24,7 @@
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
         .then(initializeInternationalization);
-    }
+    },
   };
 
   function loadDefaultLayoutConfig() {
@@ -73,6 +70,17 @@
     i18n.updateUI(); // Force update so that restoring the layout keeps the translated titles
   }
 
+  function initializeBlocksPanel() {
+    return UziBlock.init()
+      .then(function () {
+          UziBlock.on("change", function () {
+            saveToLocalStorage();
+            scheduleAutorun(false);
+          });
+      })
+      .then(restoreFromLocalStorage);
+  }
+
   function initializeTopBar() {
     $("#new-button").on("click", newProject);
     $("#open-button").on("click", openProject);
@@ -93,266 +101,6 @@
     $("#pin-choose-button").on("click", openInspectorPinDialog);
     $("#global-choose-button").on("click", openInspectorGlobalDialog);
     Uzi.on("update", updateInspectorPanel);
-  }
-
-  function initializeBlocksPanel() {
-    blocklyArea = $("#blocks-editor").get(0);
-    blocklyDiv = $("#blockly").get(0);
-
-    let loadToolbox = ajax.GET('toolbox.xml').then(function (toolbox) {
-      workspace = Blockly.inject(blocklyDiv, {
-      	toolbox: toolbox.documentElement,
-       	zoom: {
-          controls: true,
-          wheel: true,
-          startScale: 0.95,
-          maxScale: 3,
-          minScale: 0.3,
-          scaleSpeed: 1.03
-        },
-      	media: "libs/google-blockly/media/"
-      });
-      workspace.addChangeListener(function () {
-        saveToLocalStorage();
-        scheduleAutorun(false);
-      });
-      workspace.registerToolboxCategoryCallback("TASKS", function () {
-        let node = XML.getChildNode(toolbox.documentElement, "Tasks");
-        let nodes = Array.from(node.children);
-        let tasks = getCurrentTaskNames();
-        if (tasks.length > 0) {
-
-          let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(function (block) {
-              switch (block.getAttribute("type")) {
-                case "start_task":
-                case "stop_task":
-                case "resume_task":
-                case "pause_task":
-                case "run_task":
-                  return true;
-                default:
-                  return false;
-              }
-            });
-
-          let fields = blocks.map(function (block) {
-            return Array.from(block.getElementsByTagName("field"))
-              .filter(function (field) { return field.getAttribute("name") == "taskName"; });
-          }).flat();
-
-          fields.forEach(function (field) {
-            field.innerText = tasks[tasks.length-1];
-          });
-        }
-        return nodes;
-      });
-      workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors"), "DC");
-        let nodes = Array.from(node.children);
-        if (motors.length == 0) {
-          nodes.splice(1); // Leave the button only
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "motorName") {
-              field.innerText = motors[motors.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-      workspace.registerToolboxCategoryCallback("SONAR", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Sensors"), "Sonar");
-        let nodes = Array.from(node.children);
-        if (sonars.length == 0) {
-          nodes.splice(1); // Leave the button only
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "sonarName") {
-              field.innerText = sonars[sonars.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-      window.addEventListener('resize', resizeBlockly, false);
-      resizeBlockly();
-    });
-
-    let loadBlocks = ajax.GET('blocks.json').then(function (json) {
-      let blocks = JSON.parse(json);
-      let translations = new Map();
-      for (let i = 0; i < blocks.length; i++) {
-        let block = blocks[i];
-        let msg_id = block["type"].toUpperCase();
-        translations.set(msg_id, block["message0"]);
-        Blockly.Msg[msg_id] = block["message0"];
-        block["message0"] = "%{BKY_" + msg_id + "}";
-      }
-      Blockly.defineBlocksWithJsonArray(blocks);
-      initSpecialBlocks(translations);
-      i18n.on("change", function () {
-        translations.forEach(function (value, key) {
-          Blockly.Msg[key] = i18n.translate(value);
-        });
-        setUIState(getUIState());
-      });
-    });
-
-    return Promise.all([loadToolbox, loadBlocks]).then(restoreFromLocalStorage);
-  }
-
-  function initSpecialBlocks() {
-    initTaskBlocks();
-    initDCMotorBlocks();
-    initSonarBlocks();
-  }
-
-  function getCurrentTaskNames() {
-    let program = Uzi.state.program.current;
-    if (program == null) return [];
-
-    // HACK(Richo): Filtering by the class name...
-    return program.ast.scripts
-      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
-      .map(function (each) { return each.name; });
-  }
-
-  function initTaskBlocks() {
-    function currentTasksForDropdown() {
-      let tasks = getCurrentTaskNames();
-      if (tasks.length == 0) return [["", ""]];
-      return tasks.map(function (name) { return [ name, name ]; });
-    }
-
-    let blocks = [
-      ["start_task", "start"],
-      ["stop_task", "stop"],
-      ["run_task", "run"],
-      ["resume_task", "resume"],
-      ["pause_task", "pause"],
-    ];
-
-    blocks.forEach(function (block) {
-      let block_id = block[0];
-      let block_msg = block[1];
-      Blockly.Blocks[block_id] = {
-        init: function() {
-          this.appendDummyInput()
-              .appendField(i18n.translate(block_msg))
-              .appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName");
-          this.setPreviousStatement(true, null);
-          this.setNextStatement(true, null);
-          this.setColour(175);
-         this.setTooltip("");
-         this.setHelpUrl("");
-        }
-      };
-    });
-  }
-
-  function initDCMotorBlocks() {
-    function currentMotorsForDropdown() {
-      if (motors.length == 0) return [["", ""]];
-      return motors.map(function(each) { return [ each.name, each.name ]; });
-    }
-
-
-    Blockly.Blocks['move_dcmotor'] = {
-      init: function() {
-        let block_msg = i18n.translate("move ,, at speed");
-        let fields = [
-          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
-          [new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
-                                      [i18n.translate("backward"),"bwd"]]), "direction"],
-        ];
-        let input = this.appendValueInput("speed").setCheck("Number");
-        let msg_parts = block_msg.split(",");
-        for (let i = 0; i < msg_parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(msg_parts[i]);
-        }
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['stop_dcmotor'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("stop"))
-            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName");
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['change_speed_dcmotor'] = {
-      init: function() {
-        let block_msg = i18n.translate("set , speed to");
-        let fields = [
-          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
-        ];
-        let input = this.appendValueInput("speed").setCheck("Number");
-        let msg_parts = block_msg.split(",");
-        for (let i = 0; i < msg_parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(msg_parts[i]);
-        }
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initSonarBlocks() {
-      function currentSonarsForDropdown() {
-        if (sonars.length == 0) return [["", ""]];
-        return sonars.map(function(each) { return [ each.name, each.name ]; });
-      }
-
-      Blockly.Blocks['get_sonar_distance'] = {
-        init: function() {
-          let block_msg = i18n.translate("read distance from , in ,");
-          let fields = [
-            [new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"],
-            [new Blockly.FieldDropdown([["mm","mm"], ["cm","cm"], ["m","m"]]), "unit"],
-          ];
-          let input = this.appendDummyInput();
-          let msg_parts = block_msg.split(",");
-          for (let i = 0; i < msg_parts.length; i++) {
-            if (i > 0) {
-              input.appendField(fields[i - 1][0], fields[i - 1][1]);
-            }
-            input.appendField(msg_parts[i]);
-          }
-          this.setInputsInline(true);
-          this.setOutput(true, "Number");
-          this.setColour(0);
-          this.setTooltip("");
-          this.setHelpUrl("");
-        }
-      };
   }
 
   function initializeBlocklyMotorsModal() {
@@ -441,14 +189,14 @@
       appendMotorRow(getDefaultMotor(), getUsedMotors());
     });
 
-    workspace.registerButtonCallback("configureDCMotors", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", function () {
       // Build modal UI
       $("#blockly-motors-modal-container-tbody").html("");
       let usedMotors = getUsedMotors();
-      if (motors.length == 0) {
+      if (UziBlock.getMotors().length == 0) {
         appendMotorRow(getDefaultMotor(), usedMotors);
       }
-      motors.forEach(function (motor) {
+      UziBlock.getMotors().forEach(function (motor) {
         appendMotorRow(motor, usedMotors);
       });
       $("#blockly-motors-modal").modal("show");
@@ -461,8 +209,8 @@
         temp.push(data.motors[i]);
       }
       // TODO(Richo): Check program and rename/disable motor blocks accordingly
-      motors = temp;
-      workspace.toolbox_.refreshSelection();
+      UziBlock.setMotors(temp);
+      UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
 
@@ -558,14 +306,14 @@
       appendSonarRow(getDefaultSonar(), getUsedSonars());
     });
 
-    workspace.registerButtonCallback("configureSonars", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureSonars", function () {
       // Build modal UI
       $("#blockly-sonars-modal-container-tbody").html("");
       let usedSonars = getUsedSonars();
-      if (sonars.length == 0) {
+      if (UziBlock.getSonars().length == 0) {
         appendSonarRow(getDefaultSonar(), usedSonars);
       }
-      sonars.forEach(function (sonar) {
+      UziBlock.getSonars().forEach(function (sonar) {
         appendSonarRow(sonar, usedSonars);
       });
       $("#blockly-sonars-modal").modal("show");
@@ -578,8 +326,8 @@
         temp.push(data.sonars[i]);
       }
       // TODO(Richo): Check program and rename/disable sonar blocks accordingly
-      sonars = temp;
-      workspace.toolbox_.refreshSelection();
+      UziBlock.setSonars(temp);
+      UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
 
@@ -688,17 +436,7 @@
   }
 
   function resizeBlockly() {
-    // Only if Blockly was initialized
-    if (workspace == undefined) return;
-
-    let x, y;
-    x = y = 0;
-    blocklyDiv.style.left = x + 'px';
-    blocklyDiv.style.top = y + 'px';
-    let scale = 1/0.85;
-    blocklyDiv.style.width = (blocklyArea.offsetWidth * scale) + 'px';
-    blocklyDiv.style.height = (blocklyArea.offsetHeight * scale) + 'px';
-    Blockly.svgResize(workspace);
+    UziBlock.resizeWorkspace();
   }
 
 	function restoreFromLocalStorage() {
@@ -717,7 +455,7 @@
 	}
 
   function saveToLocalStorage() {
-    if (workspace == undefined || layout == undefined) return;
+    if (UziBlock.getWorkspace() == undefined || layout == undefined) return;
 
     let ui = getUIState();
     localStorage["uzi.blocks"] = ui.blocks;
@@ -729,7 +467,7 @@
 
   function getUIState() {
     return {
-      blocks: Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace)),
+      blocks: UziBlock.toXML(),
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
       },
@@ -746,8 +484,7 @@
       }
 
       if (ui.blocks) {
-        workspace.clear();
-        Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(ui.blocks), workspace);
+        UziBlock.fromXML(ui.blocks);
       }
 
       if (ui.settings) {
@@ -768,7 +505,7 @@
 
   function newProject() {
 		if (confirm("You will lose all your unsaved changes. Are you sure?")) {
-			workspace.clear();
+			UziBlock.getWorkspace().clear();
 		}
   }
 
@@ -915,13 +652,8 @@
     }
 	}
 
-  function getGeneratedCode(){
-    var xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars);
-  }
-
   function getGeneratedCodeAsJSON() {
-    var code = getGeneratedCode();
+    var code = UziBlock.getGeneratedCode();
     return JSON.stringify(code);
   }
 
