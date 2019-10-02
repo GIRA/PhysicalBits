@@ -53,6 +53,7 @@ let UziBlock = (function () {
           category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
         }
         workspace.updateToolbox(toolbox.documentElement);
+        refreshToolbox();
       });
       workspace.addChangeListener(function () {
         trigger("change");
