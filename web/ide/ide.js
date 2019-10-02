@@ -60,14 +60,15 @@
     layout.on('stateChanged', resizeBlockly);
     layout.on('stateChanged', saveToLocalStorage);
     layout.on('stateChanged', checkBrokenLayout);
+    layout.on('stateChanged', function () {
+      // HACK(Richo): The following allows me to translate panel titles
+      $(".lm_title").each(function () { $(this).attr("lang", "en"); });
+      i18n.updateUI();
+    });
     layout.init();
     updateSize();
     resizeBlockly();
     checkBrokenLayout();
-
-    // HACK(Richo): The following allows me to translate panel titles
-    $(".lm_title").each(function () { $(this).attr("lang", "en"); });
-    i18n.updateUI(); // Force update so that restoring the layout keeps the translated titles
   }
 
   function initializeBlocksPanel() {
