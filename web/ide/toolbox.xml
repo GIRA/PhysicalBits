@@ -334,6 +334,7 @@
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
   <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
+  <!--
   <category name="Comments" colour="#a56d5b">
     <block type="comment_statement">
       <field name="comment">This is a comment</field>
@@ -348,4 +349,5 @@
     </block>
   </category>
   <sep></sep>
+  -->
 </xml>
