@@ -123,11 +123,13 @@ Script * Program::getScript(int16 index)
 
 float Program::getGlobal(int16 index)
 {
+	if (index < 0 || index >= globalCount) return 0;
 	return globals[index];
 }
 
 void Program::setGlobal(int16 index, float value)
 {
+	if (index < 0 || index >= globalCount) return;
 	globals[index] = value;
 }
 
