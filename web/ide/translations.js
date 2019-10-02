@@ -119,4 +119,6 @@ var TRANSLATIONS = [
     ["Variables", "Variables"],
     ["Functions", "Funciones"],
     ["Comments", "Comentarios"],
+    ["Configure DC motors...", "Configurar motores CC..."],
+    ["Configure sonars...", "Configurar sonares..."],
 ];

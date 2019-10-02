@@ -34,6 +34,12 @@ let UziBlock = (function () {
         category.setAttribute("originalName", category.getAttribute("name"));
         category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
       }
+      let buttons = toolbox.documentElement.getElementsByTagName("button");
+      for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        button.setAttribute("originalText", button.getAttribute("text"));
+        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
+      }
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox.documentElement,
         zoom: {
@@ -51,6 +57,10 @@ let UziBlock = (function () {
         for (let i = 0; i < categories.length; i++) {
           let category = categories[i];
           category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
+        }
+        for (let i = 0; i < buttons.length; i++) {
+          let button = buttons[i];
+          button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
         }
         workspace.updateToolbox(toolbox.documentElement);
         refreshToolbox();
