@@ -13,41 +13,25 @@
       "title": "Inspector",
       "width": 17
     },{
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#blocks-panel" },
+      "title": "Blocks"
+    },{
       "type": "column",
+      "width": 25,
       "content":[{
-        "type": "row",
-        "content": [{
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#blocks-panel" },
-          "title": "Blocks"
-        },{
           "type": "component",
           "componentName": "DOM",
           "componentState": { "id": "#code-panel" },
-          "title": "Code",
-          "width": 30
-        }]
-      },{
-        "type": "stack",
-        "height": 20,
-        "content": [{
+          "title": "Code"
+        },{
           "type": "component",
+          "height": 30,
           "componentName": "DOM",
           "componentState": { "id": "#output-panel" },
           "title": "Output"
-        },{
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#test3" },
-          "title": "Serial Monitor"
-        },{
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#test3" },
-          "title": "Debugger"
         }]
       }]
     }]
-  }]
-}
+  }
