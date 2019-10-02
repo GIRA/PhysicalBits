@@ -2,10 +2,10 @@ let XML = {
   getId: function (block) {
     return block.getAttribute("id");
   },
-  getChildNode: function (block, name) {
+  getChildNode: function (block, name, attributeName) {
     return XML.getLastChild(block, function (child) {
       try {
-  			return child.getAttribute("name") === name;
+  			return child.getAttribute(attributeName || "name") === name;
       } catch (e) { return false; }
 		});
   },

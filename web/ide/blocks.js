@@ -28,6 +28,12 @@ let UziBlock = (function () {
     i18n.on("change", refreshWorkspace);
 
     return ajax.GET('toolbox.xml').then(function (toolbox) {
+      let categories = toolbox.documentElement.getElementsByTagName("category");
+      for (let i = 0; i < categories.length; i++) {
+        let category = categories[i];
+        category.setAttribute("originalName", category.getAttribute("name"));
+        category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
+      }
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox.documentElement,
         zoom: {
@@ -40,11 +46,19 @@ let UziBlock = (function () {
         },
         media: "libs/google-blockly/media/"
       });
+
+      i18n.on("change", function () {
+        for (let i = 0; i < categories.length; i++) {
+          let category = categories[i];
+          category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
+        }
+        workspace.updateToolbox(toolbox.documentElement);
+      });
       workspace.addChangeListener(function () {
         trigger("change");
       });
       workspace.registerToolboxCategoryCallback("TASKS", function () {
-        let node = XML.getChildNode(toolbox.documentElement, "Tasks");
+        let node = XML.getChildNode(toolbox.documentElement, "Tasks", "originalName");
         let nodes = Array.from(node.children);
         let tasks = getCurrentTaskNames();
         if (tasks.length > 0) {
@@ -75,7 +89,7 @@ let UziBlock = (function () {
         return nodes;
       });
       workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors"), "DC");
+        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors", "originalName"), "DC", "originalName");
         let nodes = Array.from(node.children);
         if (motors.length == 0) {
           nodes.splice(1); // Leave the button only
@@ -91,7 +105,7 @@ let UziBlock = (function () {
         return nodes;
       });
       workspace.registerToolboxCategoryCallback("SONAR", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Sensors"), "Sonar");
+        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Sensors", "originalName"), "Sonar", "originalName");
         let nodes = Array.from(node.children);
         if (sonars.length == 0) {
           nodes.splice(1); // Leave the button only
@@ -815,5 +829,6 @@ let UziBlock = (function () {
     toXML: toXML,
     fromXML: fromXML,
     getGeneratedCode: getGeneratedCode,
+    getToolbox: function () { return originalToolbox; }
   }
 })();
