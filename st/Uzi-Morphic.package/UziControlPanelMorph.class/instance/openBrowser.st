@@ -5,6 +5,7 @@ openBrowser
 	commands := Dictionary new
 		at: 'Win32' put: 'explorer "{1}"';
 		at: 'Mac OS' put: 'open {1}';
+		at: 'unix' put: 'xdg-open {1}';
 		yourself.
 	os := Smalltalk 	at: #OSProcess ifAbsent: [nil].
 	os ifNil: ["Show a message in the transcript to remember to install OSProcess"
