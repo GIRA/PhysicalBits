@@ -9,7 +9,8 @@
 		"name",
 		"number",
 		"history",
-		"lastAccess" ],
+		"lastAccess",
+		"idleTimeout" ],
 	"name" : "UziValueWatcher",
 	"pools" : [
 		 ],

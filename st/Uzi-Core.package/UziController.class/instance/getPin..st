@@ -4,4 +4,5 @@ getPin: pinName
 		at: pinName
 		ifAbsentPut: [UziPinWatcher
 			name: pinName
-			number: (self getPinNumber: pinName)]
+			number: (self getPinNumber: pinName)
+			idleTimeout: reportingIdleTimeout]

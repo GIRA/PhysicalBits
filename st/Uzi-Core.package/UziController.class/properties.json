@@ -20,7 +20,8 @@
 		"debugger",
 		"scriptWatchers",
 		"runningProgram",
-		"board" ],
+		"board",
+		"reportingIdleTimeout" ],
 	"name" : "UziController",
 	"pools" : [
 		 ],

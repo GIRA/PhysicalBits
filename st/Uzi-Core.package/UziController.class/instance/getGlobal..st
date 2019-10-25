@@ -5,4 +5,5 @@ getGlobal: globalName
 		ifAbsentPut: [
 			UziGlobalWatcher
 				name: globalName
-				number: (self getGlobalNumber: globalName)]
+				number: (self getGlobalNumber: globalName)
+				idleTimeout: reportingIdleTimeout]

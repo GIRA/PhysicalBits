@@ -1,14 +1,16 @@
 {
 	"class" : {
-		"name:number:" : "Richo 8/14/2018 15:25" },
+		"name:number:" : "Richo 10/24/2019 21:19",
+		"name:number:idleTimeout:" : "Richo 10/24/2019 21:19" },
 	"instance" : {
 		"addValue:" : "Richo 8/14/2018 15:58",
 		"history" : "Richo 8/14/2018 15:57",
 		"initialize" : "Richo 8/14/2018 15:36",
 		"initializeWithName:number:" : "Richo 8/14/2018 15:25",
+		"initializeWithName:number:idleTimeout:" : "Richo 10/24/2019 21:43",
 		"name" : "Richo 8/14/2018 15:35",
 		"number" : "Richo 8/14/2018 15:35",
 		"printOn:" : "Richo 8/14/2018 17:47",
 		"privateHistory" : "Richo 8/14/2018 15:57",
-		"shouldStopMonitoring:" : "Richo 8/14/2018 15:42",
+		"shouldStopMonitoring:" : "Richo 10/24/2019 21:20",
 		"value" : "Richo 8/14/2018 15:49" } }

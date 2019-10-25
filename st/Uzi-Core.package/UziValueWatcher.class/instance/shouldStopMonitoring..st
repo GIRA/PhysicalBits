@@ -1,3 +1,4 @@
 testing
 shouldStopMonitoring: now
-	^ now - lastAccess > 1000
+	idleTimeout ifNil: [^ false].
+	^ now - lastAccess > idleTimeout
