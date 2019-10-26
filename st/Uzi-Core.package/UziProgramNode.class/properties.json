@@ -8,7 +8,9 @@
 	"instvars" : [
 		"imports",
 		"globals",
-		"scripts" ],
+		"scripts",
+		"primitives",
+		"primitivesDict" ],
 	"name" : "UziProgramNode",
 	"pools" : [
 		 ],

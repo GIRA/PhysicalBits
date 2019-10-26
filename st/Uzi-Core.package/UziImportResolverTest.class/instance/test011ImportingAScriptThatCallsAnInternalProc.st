@@ -18,7 +18,8 @@ test011ImportingAScriptThatCallsAnInternalProc
 				body: (block statements: {
 					call selector: 't9.blink'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t9 path: 'test9.uzi' isResolved: true
@@ -54,6 +55,7 @@ test011ImportingAScriptThatCallsAnInternalProc
 				body: (block statements: {
 					call selector: 't9.blink'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

@@ -18,7 +18,8 @@ test013ImportingAScriptThatExecutesAForeverLoop
 				body: (block statements: {
 					call selector: 't11.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t11 path: 'test11.uzi' isResolved: true
@@ -39,6 +40,7 @@ test013ImportingAScriptThatExecutesAForeverLoop
 				body: (block statements: {
 					call selector: 't11.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

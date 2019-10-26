@@ -28,4 +28,6 @@ setUp
 	forever := UziForeverNode.
 	for := UziForNode.
 	pin := UziPinLiteralNode.
-	tickingRate := UziTickingRateNode
+	tickingRate := UziTickingRateNode.
+	prim := UziPrimitiveDeclarationNode.
+	primitives := self corePrimitives

@@ -31,5 +31,6 @@ applyInitializationBlock: initBlock on: ast
 				ifPresent: [:state | s state = #once 
 					ifTrue: [s]
 					ifFalse: [s withState: state]]
-				ifAbsent: [s]]))
+				ifAbsent: [s]])
+		primitives: ast primitives)
 		token: ast token

@@ -18,7 +18,8 @@ test014ImportingAScriptThatExecutesAForLoop
 				body: (block statements: {
 					call selector: 't12.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t12 path: 'test12.uzi' isResolved: true
@@ -43,6 +44,7 @@ test014ImportingAScriptThatExecutesAForLoop
 				body: (block statements: {
 					call selector: 't12.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

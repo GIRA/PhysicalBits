@@ -9,4 +9,5 @@ test009ScriptStartReceiverIsAScriptRef
 				arguments: #() 
 				body: (block 
 					statements: { start scripts: { number value: 5 }})
-		}).
+		}
+		primitives: primitives).

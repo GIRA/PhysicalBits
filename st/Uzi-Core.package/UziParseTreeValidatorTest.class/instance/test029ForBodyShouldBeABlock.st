@@ -22,4 +22,5 @@ test029ForBodyShouldBeABlock
 								arguments: { nil -> (number value: 13) }
 								primitiveName: #turnOn)
 					})
-		}).
+		}
+		primitives: primitives).

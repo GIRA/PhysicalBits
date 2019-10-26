@@ -20,4 +20,5 @@ test015LoopConditionShouldBeAnExpression
 									primitiveName: #turnOff
 							})
 					})
-		}).
+		}
+		primitives: primitives).

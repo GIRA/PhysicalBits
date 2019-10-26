@@ -18,7 +18,8 @@ test006ImportingScriptThatStopsATask
 				body: (block statements: {
 					call selector: 't4.stopTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t4 path: 'test4.uzi' isResolved: true
@@ -46,6 +47,7 @@ test006ImportingScriptThatStopsATask
 				body: (block statements: {
 					call selector: 't4.stopTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

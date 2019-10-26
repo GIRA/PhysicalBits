@@ -19,4 +19,5 @@ test028ForeverBodyShouldBeABlock
 								arguments: { nil -> (number value: 13) }
 								primitiveName: #turnOn)
 					})
-		}).
+		}
+		primitives: primitives).

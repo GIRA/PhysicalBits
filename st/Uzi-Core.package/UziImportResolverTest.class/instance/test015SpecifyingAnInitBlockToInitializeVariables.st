@@ -17,7 +17,8 @@ test015SpecifyingAnInitBlockToInitializeVariables
 			})
 		}
 		globals: #()
-		scripts: {}.
+		scripts: {}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t13 path: 'test13.uzi' initializationBlock: (block statements: {
@@ -52,6 +53,7 @@ test015SpecifyingAnInitBlockToInitializeVariables
 					assignment left: (var named: #'t13.b') right: (number value: 2).
 					assignment left: (var named: #'t13.c') right: (number value: 3).
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

@@ -5,5 +5,6 @@ visitProgramNode: node
 	roots do: [:script | self visit: script].
 	^ (UziProgramNode 
 		globals: (node globals select: [:g | visitedGlobals includes: g name])
-		scripts: (node scripts select: [:s | visitedScripts includes: s]))
+		scripts: (node scripts select: [:s | visitedScripts includes: s])
+		primitives: node primitives)
 		token: node token

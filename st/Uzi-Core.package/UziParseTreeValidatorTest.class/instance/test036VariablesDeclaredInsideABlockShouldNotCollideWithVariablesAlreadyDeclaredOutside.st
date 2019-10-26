@@ -42,4 +42,5 @@ test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclared
 								}
 								primitiveName: #add).
 					})
-		}).
+		}
+		primitives: primitives).

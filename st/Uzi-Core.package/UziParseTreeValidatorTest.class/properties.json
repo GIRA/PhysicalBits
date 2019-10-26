@@ -30,7 +30,9 @@
 		"pin",
 		"func",
 		"return",
-		"yield" ],
+		"yield",
+		"prim",
+		"primitives" ],
 	"name" : "UziParseTreeValidatorTest",
 	"pools" : [
 		 ],

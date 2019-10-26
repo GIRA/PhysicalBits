@@ -23,4 +23,5 @@ test030ForCounterShouldBeAVariable
 									primitiveName: #turnOn)
 							})
 					})
-		}).
+		}
+		primitives: primitives).

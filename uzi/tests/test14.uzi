@@ -1,0 +1,8 @@
+
+prim add;
+prim ~= : notEquals;
+
+task test() {
+	var a = add(3, 4);
+	var b = 3 ~= 4;
+}

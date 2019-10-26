@@ -18,7 +18,8 @@ test009ImportingScriptThatPausesATask
 				body: (block statements: {
 					call selector: 't7.pauseTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t7 path: 'test7.uzi' isResolved: true
@@ -46,6 +47,7 @@ test009ImportingScriptThatPausesATask
 				body: (block statements: {
 					call selector: 't7.pauseTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

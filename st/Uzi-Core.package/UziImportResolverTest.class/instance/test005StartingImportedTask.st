@@ -18,7 +18,8 @@ test005StartingImportedTask
 				body: (block statements: {
 					start scripts: { 't3.blink13' }
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t3 path: 'test3.uzi' isResolved: true
@@ -41,6 +42,7 @@ test005StartingImportedTask
 				body: (block statements: {
 					start scripts: { 't3.blink13' }
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

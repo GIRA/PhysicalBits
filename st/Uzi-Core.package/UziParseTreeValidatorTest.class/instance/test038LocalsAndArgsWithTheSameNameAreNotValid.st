@@ -11,4 +11,5 @@ test038LocalsAndArgsWithTheSameNameAreNotValid.
 					statements: {
 						varDec name: #a 
 					})
-		}).
+		}
+		primitives: primitives).

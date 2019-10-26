@@ -10,4 +10,5 @@ test027DuplicateArgsAreNotValid.
 				}
 				body: (block 
 					statements: {})
-		}).
+		}
+		primitives: primitives).

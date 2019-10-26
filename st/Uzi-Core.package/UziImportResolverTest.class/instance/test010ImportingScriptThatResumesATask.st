@@ -18,7 +18,8 @@ test010ImportingScriptThatResumesATask
 				body: (block statements: {
 					call selector: 't8.resumeTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t8 path: 'test8.uzi' isResolved: true
@@ -46,6 +47,7 @@ test010ImportingScriptThatResumesATask
 				body: (block statements: {
 					call selector: 't8.resumeTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

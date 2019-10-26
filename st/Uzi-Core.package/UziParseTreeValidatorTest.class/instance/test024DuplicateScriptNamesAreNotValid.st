@@ -15,4 +15,5 @@ test024DuplicateScriptNamesAreNotValid
 				arguments: #() 
 				body: (block 
 					statements: {})
-		}).
+		}
+		primitives: primitives).

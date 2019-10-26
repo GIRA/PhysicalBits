@@ -75,4 +75,7 @@
 		"test066OperatorPrecedence" : "Richo 8/28/2018 13:09",
 		"test067UnaryOperatorsHaveHigherPrecedence" : "Richo 8/28/2018 13:09",
 		"test068ImportWithInitializationBlock" : "Richo 9/25/2019 09:37",
-		"test069ImportInitializationBlockIsOptional" : "Richo 9/25/2019 09:42" } }
+		"test069ImportInitializationBlockIsOptional" : "Richo 9/25/2019 09:42",
+		"test070PrimitiveDeclarationSyntaxWithoutAlias" : "Richo 10/25/2019 11:16",
+		"test071PrimitiveDeclarationSyntaxWithAlias" : "Richo 10/25/2019 12:25",
+		"test072UsingPrimitiveDeclarations" : "Richo 10/25/2019 12:40" } }

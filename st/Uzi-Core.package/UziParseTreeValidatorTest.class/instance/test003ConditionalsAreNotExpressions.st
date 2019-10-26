@@ -30,5 +30,6 @@ test003ConditionalsAreNotExpressions
 							}
 							primitiveName: #write
 					})
-		}).
+		}
+		primitives: primitives)
 	

@@ -38,4 +38,5 @@ test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside
 								}
 								primitiveName: #add).
 					})
-		}).
+		}
+		primitives: primitives).

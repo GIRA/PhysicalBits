@@ -22,7 +22,8 @@ test003ImportingNestedLibraries
 						}
 						primitiveName: #write
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t2 path: 'test2.uzi' isResolved: true.
@@ -60,6 +61,7 @@ test003ImportingNestedLibraries
 						}
 						primitiveName: #write
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

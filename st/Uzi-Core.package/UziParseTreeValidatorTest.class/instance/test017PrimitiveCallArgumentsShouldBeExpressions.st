@@ -23,4 +23,5 @@ test017PrimitiveCallArgumentsShouldBeExpressions
 							}
 							primitiveName: #turnOn
 					})
-		}).
+		}
+		primitives: primitives).

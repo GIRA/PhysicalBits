@@ -33,4 +33,5 @@ test045AttemptingToStartAnExistingTaskShouldWork
 					assignment left: (var named: #'t13.b') right: (number value: 2).
 					assignment left: (var named: #'t13.c') right: (number value: 3).
 				})
-		}).
+		}
+		primitives: primitives).

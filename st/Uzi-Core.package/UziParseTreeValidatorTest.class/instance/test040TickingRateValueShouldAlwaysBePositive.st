@@ -9,4 +9,5 @@ test040TickingRateValueShouldAlwaysBePositive
 				state: #running
 				tickingRate: (tickingRate value: -1 scale: #s)
 				body: (block statements: {})
-		}).
+		}
+		primitives: primitives).

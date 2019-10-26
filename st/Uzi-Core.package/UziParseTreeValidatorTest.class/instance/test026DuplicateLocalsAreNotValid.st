@@ -10,4 +10,5 @@ test026DuplicateLocalsAreNotValid.
 						varDec name: #a. 
 						varDec name: #a 
 					})
-		}).
+		}
+		primitives: primitives).

@@ -18,7 +18,8 @@ test008ImportingScriptThatContainsRepeatLoop
 				body: (block statements: {
 					call selector: 't6.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t6 path: 'test6.uzi' isResolved: true
@@ -44,6 +45,7 @@ test008ImportingScriptThatContainsRepeatLoop
 				body: (block statements: {
 					call selector: 't6.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

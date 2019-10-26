@@ -57,7 +57,8 @@
 		"forever",
 		"for",
 		"argument",
-		"unary" ],
+		"unary",
+		"primitive" ],
 	"name" : "UziParser",
 	"pools" : [
 		 ],

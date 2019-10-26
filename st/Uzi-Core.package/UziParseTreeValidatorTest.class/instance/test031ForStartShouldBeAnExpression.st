@@ -27,4 +27,5 @@ test031ForStartShouldBeAnExpression
 									primitiveName: #turnOn)
 							})
 					})
-		}).
+		}
+		primitives: primitives).

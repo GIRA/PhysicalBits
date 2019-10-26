@@ -9,4 +9,5 @@ test021ScriptResumeReceiverIsAScriptRef
 				arguments: #() 
 				body: (block 
 					statements: { resume scripts: { number value: 5 }})
-		}).
+		}
+		primitives: primitives).

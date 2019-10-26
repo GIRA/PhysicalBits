@@ -27,4 +27,5 @@ test034AVariableShouldBeDeclaredBeforeItsFirstUse
 							name: #a 
 							value: (number value: 5)
 					})
-		}).
+		}
+		primitives: primitives).

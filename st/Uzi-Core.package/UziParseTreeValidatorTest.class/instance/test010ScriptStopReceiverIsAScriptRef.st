@@ -9,4 +9,5 @@ test010ScriptStopReceiverIsAScriptRef
 				arguments: #() 
 				body: (block 
 					statements: { stop scripts: { number value: 5 }})
-		}).
+		}
+		primitives: primitives).

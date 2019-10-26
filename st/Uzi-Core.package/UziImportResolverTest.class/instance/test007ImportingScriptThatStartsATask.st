@@ -18,7 +18,8 @@ test007ImportingScriptThatStartsATask
 				body: (block statements: {
 					call selector: 't5.startTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t5 path: 'test5.uzi' isResolved: true
@@ -46,6 +47,7 @@ test007ImportingScriptThatStartsATask
 				body: (block statements: {
 					call selector: 't5.startTask'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

@@ -16,9 +16,10 @@ test004AssignmentValueShouldBeAnExpression
 								arguments: { nil -> (number value: 13) }
 								primitiveName: #turnOff)
 					})
-		}).
+		}
+		primitives: primitives).
 
-	"self assertInvalid: 'var b; proc foo() { b = if 3 > 4 {3} else {4}}'."
+	"self assertInvalid: 'var b; proc foo() { b = if 3 < 4 {3} else {4}}'."
 	self assertInvalid: (program
 		globals: { varDec name: #b }
 		scripts: { 
@@ -31,7 +32,7 @@ test004AssignmentValueShouldBeAnExpression
 							left: (var named: #b)
 							right: (conditional
 								condition: (call
-									selector: #lessThan
+									selector: #<
 									arguments: { 
 										nil -> (number value: 3).
 										nil -> (number value: 4)
@@ -42,5 +43,6 @@ test004AssignmentValueShouldBeAnExpression
 								false: (block
 									statements: { number value: 4 }))
 					})
-		}).
+		}
+		primitives: primitives).
 	

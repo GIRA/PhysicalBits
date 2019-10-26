@@ -1,0 +1,10 @@
+{
+	"class" : {
+		"alias:name:" : "Richo 10/25/2019 11:25",
+		"name:" : "Richo 10/25/2019 12:06" },
+	"instance" : {
+		"alias" : "Richo 10/25/2019 11:29",
+		"children" : "Richo 10/25/2019 11:26",
+		"initializeWithAlias:name:" : "Richo 10/25/2019 11:26",
+		"isPrimitiveDeclaration" : "Richo 10/25/2019 11:27",
+		"name" : "Richo 10/25/2019 11:29" } }

@@ -10,4 +10,5 @@ test025DuplicateGlobalsAreNotValid.
 				arguments: #() 
 				body: (block 
 					statements: {})
-		}).
+		}
+		primitives: primitives).

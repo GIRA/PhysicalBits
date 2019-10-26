@@ -19,7 +19,8 @@ test005ConditionalBranchesShouldBeBlocks
 								arguments: { nil -> (number value: 13) }
 								primitiveName: #turnOff)
 					})
-		}).
+		}
+		primitives: primitives).
 	
 	"self assertInvalid: 'task foo() { if read(D13) {} else turnOn(D13); }'."
 	self assertInvalid: (program
@@ -38,4 +39,5 @@ test005ConditionalBranchesShouldBeBlocks
 								selector: #turnOn
 								arguments: { nil -> (number value: 13) })
 					})
-		}).
+		}
+		primitives: primitives).

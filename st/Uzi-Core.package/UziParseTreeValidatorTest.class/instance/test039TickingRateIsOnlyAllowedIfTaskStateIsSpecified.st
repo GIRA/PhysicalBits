@@ -9,4 +9,5 @@ test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
 				state: #once
 				tickingRate: (tickingRate value: 1 scale: #s)
 				body: (block statements: {})
-		}).
+		}
+		primitives: primitives).

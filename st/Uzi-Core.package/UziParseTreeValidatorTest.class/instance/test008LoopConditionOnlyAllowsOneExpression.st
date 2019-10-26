@@ -18,4 +18,5 @@ test008LoopConditionOnlyAllowsOneExpression
 										primitiveName: #read
 								})
 					})
-		}).
+		}
+		primitives: primitives).

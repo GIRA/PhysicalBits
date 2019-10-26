@@ -31,7 +31,9 @@
 		"forever",
 		"for",
 		"pin",
-		"tickingRate" ],
+		"tickingRate",
+		"prim",
+		"primitives" ],
 	"name" : "UziImportResolverTest",
 	"pools" : [
 		 ],

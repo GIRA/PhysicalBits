@@ -23,7 +23,8 @@ test002ImportingSameLibraryTwice
 						}
 						primitiveName: #write
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #test1 path: 'test.uzi' isResolved: true.
@@ -54,6 +55,7 @@ test002ImportingSameLibraryTwice
 						}
 						primitiveName: #write
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual

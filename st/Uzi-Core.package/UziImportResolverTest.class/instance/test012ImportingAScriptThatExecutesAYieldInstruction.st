@@ -18,7 +18,8 @@ test012ImportingAScriptThatExecutesAYieldInstruction
 				body: (block statements: {
 					call selector: 't10.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	expected := program 
 		imports: {
 			import alias: #t10 path: 'test10.uzi' isResolved: true
@@ -37,6 +38,7 @@ test012ImportingAScriptThatExecutesAYieldInstruction
 				body: (block statements: {
 					call selector: 't10.foo'
 				})
-		}.
+		}
+		primitives: primitives.
 	actual := ir applyOn: original.
 	self assert: expected equals: actual
