@@ -1,7 +1,6 @@
 {
 	"class" : {
 		"globals:scripts:primitives:" : "Richo 10/25/2019 11:32",
-		"imports:globals:scripts:" : "Richo 10/25/2019 11:28",
 		"imports:globals:scripts:primitives:" : "Richo 10/25/2019 11:28" },
 	"instance" : {
 		"accept:" : "Richo 12/30/2016 14:38",

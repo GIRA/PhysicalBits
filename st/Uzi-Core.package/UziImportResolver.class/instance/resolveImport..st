@@ -1,6 +1,8 @@
 private
 resolveImport: import
-	(librariesDirectory fileExists: import path) ifFalse: [^ nil].
+	(librariesDirectory fileExists: import path) ifFalse: [
+		self flag: #Richo. "TODO: throw an exception or something!"
+		^ nil].
 	^ librariesDirectory 
 		readOnlyFileNamed: import path
 		do: [:file || ast |
@@ -10,4 +12,6 @@ resolveImport: import
 			ast := self applyOn: ast.
 			ast isPetitFailure 
 				ifTrue: [ast]
-				ifFalse: [UziAliasApplier apply: import alias , '.' on: ast]]
+				ifFalse: [import alias
+					ifNil: [ast]
+					ifNotNil: [:alias | UziAliasApplier apply: alias , '.' on: ast]]]
