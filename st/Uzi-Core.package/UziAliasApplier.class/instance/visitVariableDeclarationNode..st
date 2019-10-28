@@ -4,5 +4,5 @@ visitVariableDeclarationNode: node
 		name: ((self isLocal: node name) 
 			ifTrue: [node name]
 			ifFalse: [alias , node name])
-		value: node value)
+		value: (self visit: node value))
 		token: node token
