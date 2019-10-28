@@ -1,11 +1,14 @@
 {
 	"class" : {
+		"implicitImports" : "Richo 10/28/2019 15:51",
 		"parser:librariesDirectory:" : "Richo 9/2/2017 19:30",
 		"parser:librariesPath:" : "Richo 9/2/2017 19:30" },
 	"instance" : {
 		"applyAlias:on:" : "Richo 10/28/2019 14:39",
 		"applyInitializationBlock:on:" : "Richo 10/25/2019 12:00",
-		"applyOn:" : "Richo 10/28/2019 15:09",
+		"applyOn:" : "Richo 10/28/2019 15:50",
+		"applyOn:implicitImports:" : "Richo 10/28/2019 15:50",
+		"implicitImports" : "Richo 10/28/2019 15:50",
 		"initializeWithParser:librariesDirectory:" : "Richo 8/12/2017 19:37",
-		"resolveImport:" : "Richo 10/28/2019 15:00",
+		"resolveImport:" : "Richo 10/28/2019 15:53",
 		"resolvePrimitivesOn:" : "Richo 10/28/2019 14:41" } }

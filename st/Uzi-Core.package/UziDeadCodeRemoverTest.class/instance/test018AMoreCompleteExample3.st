@@ -86,6 +86,9 @@ var bar.distance;
 
 var a = 10;
 
+prim foo.read : read;
+prim bar.sonarDistCm : sonarDistCm;
+
 proc foo.init(en, f, r) {
 	foo.enablePin = en;
 	foo.forwardPin = f;
