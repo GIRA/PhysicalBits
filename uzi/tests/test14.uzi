@@ -2,7 +2,7 @@
 prim add;
 prim ~= : notEquals;
 
-task test() {
+proc test() {
 	var a = add(3, 4);
 	var b = 3 ~= 4;
 }

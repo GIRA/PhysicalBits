@@ -1,6 +1,14 @@
 visiting
 visitProgramNode: node
-	| scriptNames globals |	
+	| imports scriptNames globals |	
+	imports := Set new.
+	node imports do: [:each |
+		self assertImport: each;
+			assert: (imports includes: each alias -> each path) not
+			description: 'Library already imported'
+			node: each.
+		imports add: each alias -> each path].
+	
 	globals := Set new.
 	node globals do: [:each | 
 		self assertVariableDeclaration: each.

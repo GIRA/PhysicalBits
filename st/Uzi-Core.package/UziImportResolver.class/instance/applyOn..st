@@ -1,7 +1,6 @@
 public
 applyOn: program
-	| globals programs scripts imports primitives |
-	program imports isEmpty ifTrue: [^ program].
+	| globals programs scripts imports primitives ast |
 	programs := program imports 
 		collect: [:import | self resolveImport: import].
 	imports := program imports
@@ -15,9 +14,11 @@ applyOn: program
 	primitives := Array streamContents: [:stream |
 		programs do: [:each | stream nextPutAll: each primitives].
 		stream nextPutAll: program primitives].
-	^ (UziProgramNode 
+	ast := (UziProgramNode 
 		imports: imports
 		globals: globals
 		scripts: scripts
 		primitives: primitives)
-		token: program token
+		token: program token.
+	ast := self resolvePrimitivesOn: ast.
+	^ ast

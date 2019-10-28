@@ -27,4 +27,5 @@
 		"test020SpecifyingAnInitBlockToStopAnImportedTask" : "Richo 10/25/2019 12:05",
 		"test021SpecifyingAnInitBlockWithInvalidStatementsShouldNotWork" : "Richo 10/25/2019 12:05",
 		"test022ImportingWithoutAlias" : "Richo 10/26/2019 13:30",
-		"test023ImportingWithoutAliasButWithInitializationBlock" : "Richo 10/26/2019 13:36" } }
+		"test023ImportingWithoutAliasButWithInitializationBlock" : "Richo 10/26/2019 13:36",
+		"test024ImportingALibraryWithPrimitiveDeclarations" : "Richo 10/28/2019 11:59" } }

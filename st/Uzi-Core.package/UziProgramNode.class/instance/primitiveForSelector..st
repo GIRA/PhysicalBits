@@ -8,7 +8,8 @@ primitiveForSelector: selector
 	"HACK: As soon as I implement the implicit import of core.uzi, I should remove the following code"
 	self flag: #Richo. 
 	result ifNotNil: [^ result].
-	^ selector caseOf: {
+	
+	^ 	(selector subStrings: '.') last caseOf: {
 		[#turnOn] -> [#turnOn].
 		[#turnOff] -> [#turnOff].
 		[#read] -> [#read].
