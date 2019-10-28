@@ -40,7 +40,7 @@ test021SpecifyingAnInitBlockWithInvalidStatementsShouldNotWork
 				state: #stopped
 				tickingRate: (tickingRate value: 1 scale: #s)
 				body: (block statements: {
-					call selector: #toggle
+					call selector: #'t13.toggle'
 						arguments: {
 							nil -> (pin type: #D number: 12) .
 						}

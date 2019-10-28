@@ -95,7 +95,7 @@ proc foo.init(en, f, r) {
 }
 
 func foo.getSpeed() {
-	return read(foo.enablePin);
+	return foo.read(foo.enablePin);
 }
 
 proc bar.init(trig, echo, maxDist) {
@@ -105,7 +105,7 @@ proc bar.init(trig, echo, maxDist) {
 }
 
 task bar.reading() running 10/s {
-	bar.distance = sonarDistCm(bar.trigPin, bar.echoPin, bar.maxDistance);
+	bar.distance = bar.sonarDistCm(bar.trigPin, bar.echoPin, bar.maxDistance);
 }
 
 
@@ -148,6 +148,7 @@ proc foo_bar_baz(a, b, c) {
 	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
 	bar.init(trig: a, echo: b, maxDist: c);
 }'.
+	expected := Uzi resolveImports: expected.
 	remover := UziDeadCodeRemover new.
 	actual := remover applyOn: original.
 	self assert: expected equals: actual

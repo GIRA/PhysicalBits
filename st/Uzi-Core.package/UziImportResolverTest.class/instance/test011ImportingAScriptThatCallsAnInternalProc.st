@@ -32,10 +32,10 @@ test011ImportingAScriptThatCallsAnInternalProc
 					varDec name: 'ms'.
 				}
 				body: (block statements: {
-					call selector: #toggle
+					call selector: #'t9.toggle'
 						arguments: { nil -> (var named: 'pin') }
 						primitiveName: #toggle.	
-					call selector: #delayMs
+					call selector: #'t9.delayMs'
 						arguments: { nil -> (var named: 'ms') }
 						primitiveName: #delayMs
 				}).

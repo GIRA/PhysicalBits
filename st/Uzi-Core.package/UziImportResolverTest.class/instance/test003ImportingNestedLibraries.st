@@ -43,7 +43,7 @@ test003ImportingNestedLibraries
 				}
 				body: (block statements: {
 					return value: (call
-						selector: #+
+						selector: #'t2.+'
 						arguments: {
 							nil -> (var named: #'t2.t1.v').
 							nil -> (var named: #a)

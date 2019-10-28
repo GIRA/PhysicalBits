@@ -33,7 +33,7 @@ test008ImportingScriptThatContainsRepeatLoop
 						times: (number value: 5)
 						body: (block
 							statements: {
-								call selector: #toggle
+								call selector: #'t6.toggle'
 									arguments: { nil -> (pin type: #D number: 13) }
 									primitiveName: #toggle
 							})

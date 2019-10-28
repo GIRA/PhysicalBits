@@ -31,7 +31,7 @@ test004StoppingImportedTask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call selector: #toggle
+					call selector: #'t3.toggle'
 						arguments: { nil -> (pin type: #D number: 13) }
 						primitiveName: #toggle
 				}).

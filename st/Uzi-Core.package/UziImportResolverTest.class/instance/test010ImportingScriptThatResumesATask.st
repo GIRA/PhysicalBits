@@ -36,7 +36,7 @@ test010ImportingScriptThatResumesATask
 				state: #running
 				tickingRate: nil
 				body: (block statements: {
-					call selector: #toggle
+					call selector: #'t8.toggle'
 						arguments: { nil -> (pin type: #D number: 13) }
 						primitiveName: #toggle
 				}).
