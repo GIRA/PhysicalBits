@@ -1,15 +1,15 @@
 var xPin;
 var yPin;
 
+var x;
+var y;
+
 proc init(x, y) {
 	xPin = x;
 	yPin = y;
 }
 
-func getX() {
-	return 2 * read(xPin) - 1;
-}
-
-func getY() {
-	return 2 * read(yPin) - 1;
+task reading() stopped {
+	x = 2 * read(xPin) - 1;
+	y = 2 * read(yPin) - 1;
 }
