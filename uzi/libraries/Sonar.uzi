@@ -4,6 +4,8 @@ var maxDistance = 100;
 
 var distance;
 
+prim ping : sonarDistCm;
+
 proc init(trig, echo, maxDist) {
   trigPin = trig;
   echoPin = echo;
@@ -11,7 +13,7 @@ proc init(trig, echo, maxDist) {
 }
 
 task reading() stopped 10/s {
-	distance = sonarDistCm(trigPin, echoPin, maxDistance);
+  distance = ping(trigPin, echoPin, maxDistance);
 }
 
 func distance_cm() {
