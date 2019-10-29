@@ -8,7 +8,8 @@ var BlocksToAST = (function () {
 				globals: globals.map(function (varName) {
 					return builder.variableDeclaration(id, varName);
 				}),
-				scripts: scripts
+				scripts: scripts,
+				primitives: []
 			};
 		},
 		import: function (id, alias, path, initBlock) {
