@@ -1,0 +1,15 @@
+var xPin;
+var yPin;
+
+proc init(x, y) {
+	xPin = x;
+	yPin = y;
+}
+
+func getX() {
+	return 2 * read(xPin) - 1;
+}
+
+func getY() {
+	return 2 * read(yPin) - 1;
+}
