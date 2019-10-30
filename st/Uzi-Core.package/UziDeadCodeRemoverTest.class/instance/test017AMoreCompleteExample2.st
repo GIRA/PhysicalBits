@@ -89,7 +89,7 @@ var b = 0.5;
 var c;
 
 prim foo.read : read;
-prim bar.sonarDistCm : sonarDistCm;
+prim bar.ping : sonarDistCm;
 
 proc foo.init(en, f, r) {
 	foo.enablePin = en;
@@ -108,7 +108,7 @@ proc bar.init(trig, echo, maxDist) {
 }
 
 task bar.reading() running 10/s {
-	bar.distance = bar.sonarDistCm(bar.trigPin, bar.echoPin, bar.maxDistance);
+	bar.distance = bar.ping(bar.trigPin, bar.echoPin, bar.maxDistance);
 }
 
 
