@@ -2,7 +2,6 @@
 	"class" : {
 		"scripts:" : "Richo 9/22/2017 10:49" },
 	"instance" : {
-		"accept:" : "Richo 9/22/2017 10:49",
 		"children" : "Richo 8/28/2018 12:20",
 		"initializeWithScripts:" : "Richo 9/22/2017 10:49",
 		"isScriptControl" : "Richo 9/25/2019 09:55",
