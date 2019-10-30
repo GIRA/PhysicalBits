@@ -11,7 +11,7 @@
 		"defaultDirectory:" : "Richo 11/22/2018 13:40",
 		"defaultDirectoryString:" : "Richo 9/19/2019 15:21",
 		"defaultEncoder" : "Richo 9/2/2017 20:11",
-		"defaultImportResolver" : "Richo 9/2/2017 19:28",
+		"defaultLinker" : "Richo 10/30/2019 17:54",
 		"defaultParseTreeValidator" : "Richo 9/2/2017 19:35",
 		"defaultParser" : "Richo 9/2/2017 19:28",
 		"defaultPath" : "Richo 11/22/2018 13:21",
@@ -28,7 +28,7 @@
 		"parse:" : "Richo 9/2/2017 20:54",
 		"parseJSON:" : "Richo 8/22/2018 17:50",
 		"program:" : "Richo 8/10/2016 16:57",
-		"resolveImports:" : "Richo 9/2/2017 19:37",
+		"resolveImports:" : "Richo 10/30/2019 17:54",
 		"serverDirectory" : "Richo 11/22/2018 12:27",
 		"serverDirectory:" : "Richo 7/25/2018 10:49" },
 	"instance" : {
