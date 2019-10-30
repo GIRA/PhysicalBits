@@ -1,5 +1,4 @@
 SystemOrganization addCategory: #'Uzi-Core-Tests'!
-SystemOrganization addCategory: #'Uzi-Core-Parser'!
 SystemOrganization addCategory: #'Uzi-Core-Parser-Nodes'!
 SystemOrganization addCategory: #'Uzi-Core-Errors'!
 SystemOrganization addCategory: #'Uzi-Core-Program-Instructions'!
@@ -10,5 +9,6 @@ SystemOrganization addCategory: #'Uzi-Core-Debugging'!
 SystemOrganization addCategory: #'Uzi-Core-Boards'!
 SystemOrganization addCategory: #'Uzi-Core-Controller'!
 SystemOrganization addCategory: #'Uzi-Core'!
+SystemOrganization addCategory: #'Uzi-Core-Compiling'!
 SystemOrganization addCategory: #'Uzi-Core-Builders'!
 SystemOrganization addCategory: #'Uzi-Core-Server'!

@@ -1,4 +1,4 @@
-public
+private
 applyOn: program implicitImports: implicitImports
 	| globals programs scripts imports primitives ast |
 	programs := implicitImports, program imports 
