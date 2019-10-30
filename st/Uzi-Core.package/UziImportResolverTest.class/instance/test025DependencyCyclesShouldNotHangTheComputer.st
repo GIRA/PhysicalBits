@@ -13,7 +13,4 @@ test025DependencyCyclesShouldNotHangTheComputer
 		globals: #()
 		scripts: {}
 		primitives: primitives.
-	self should: [ir applyOn: original] raise: Error
-	"[ir applyOn: original]
-		on: Exception
-		do: [:err | err inspect. Uzi logger log: 'ERR'; flush]"
+	self should: [ir applyOn: original] raise: UziImportError

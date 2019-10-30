@@ -29,4 +29,5 @@
 		"test022ImportingWithoutAlias" : "Richo 10/26/2019 13:30",
 		"test023ImportingWithoutAliasButWithInitializationBlock" : "Richo 10/26/2019 13:36",
 		"test024ImportingALibraryWithPrimitiveDeclarations" : "Richo 10/28/2019 11:59",
-		"test025DependencyCyclesShouldNotHangTheComputer" : "Richo 10/30/2019 10:03" } }
+		"test025DependencyCyclesShouldNotHangTheComputer" : "Richo 10/30/2019 10:22",
+		"test026ImportingNonExistingLibraryShouldRaiseError" : "Richo 10/30/2019 10:23" } }
