@@ -10,5 +10,5 @@
 	"name" : "UziDuplicatedLabelError",
 	"pools" : [
 		 ],
-	"super" : "Error",
+	"super" : "UziError",
 	"type" : "normal" }

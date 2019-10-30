@@ -10,5 +10,5 @@
 	"name" : "UziLabelNotFoundError",
 	"pools" : [
 		 ],
-	"super" : "Error",
+	"super" : "UziError",
 	"type" : "normal" }

@@ -10,5 +10,5 @@
 	"name" : "UziImportError",
 	"pools" : [
 		 ],
-	"super" : "Error",
+	"super" : "UziError",
 	"type" : "normal" }

@@ -6,10 +6,9 @@
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"node",
-		"description" ],
-	"name" : "UziTypeError",
+		 ],
+	"name" : "UziError",
 	"pools" : [
 		 ],
-	"super" : "UziError",
+	"super" : "Error",
 	"type" : "normal" }

@@ -12,7 +12,7 @@ compileJSON: jsonString silent: silentFlag
 	currentProgram := program.
 	self triggerEvent: UziEvents programUpdate.
 	^ program]
-			on: UziParseError , UziCompileError 
+			on: UziError
 			do: [:err | 
 				silentFlag ifFalse: [Uzi logger cr; error: err asString; flush].
 				err signal]

@@ -12,5 +12,5 @@
 	"name" : "UziParseError",
 	"pools" : [
 		 ],
-	"super" : "Error",
+	"super" : "UziError",
 	"type" : "normal" }
