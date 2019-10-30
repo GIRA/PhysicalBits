@@ -1,7 +1,8 @@
 {
 	"class" : {
-		"failure:source:" : "Richo 9/2/2017 20:29" },
+		"failure:source:" : "Richo 10/30/2019 11:56",
+		"failure:source:file:" : "Richo 10/30/2019 11:55" },
 	"instance" : {
-		"initialize" : "Richo 9/2/2017 20:31",
-		"initializeWithFailure:source:" : "Richo 9/2/2017 20:30",
-		"positionOf:in:" : "Richo 9/2/2017 20:32" } }
+		"initialize" : "Richo 10/30/2019 12:06",
+		"initializeWithFailure:source:file:" : "Richo 10/30/2019 11:56",
+		"positionOf:in:" : "Richo 10/30/2019 11:52" } }

@@ -8,6 +8,7 @@ positionOf: parseFailure in: src
 	position := parseFailure position.
 	position isString ifTrue: [^ nil].
 	index := 1.
+	position := position + 1.
 	src lineIndicesDo: [:start :ign :end |
 		(position between: start and: end)
 			ifTrue: [^ index -> (position - start + 1)]

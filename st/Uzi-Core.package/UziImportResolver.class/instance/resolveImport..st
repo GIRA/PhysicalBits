@@ -2,23 +2,25 @@ private
 resolveImport: import
 	| ast |
 	(imports anySatisfy: [:each | each alias = import alias and: [each path = import path]])
-		ifTrue: [self error: 'Dependency cycle detected'].
+		ifTrue: [self error: 'Dependency cycle detected' on: import].
 		
 	(librariesDirectory fileExists: import path)
-		ifFalse: [self error: 'File not found'].
+		ifFalse: [self error: 'File not found' on: import].
 	
-	ast := librariesDirectory 
-		readOnlyFileNamed: import path
-		do: [:file | parser parse: file contents].
-	
+	ast := self parseFile: import path.
+		
 	import initializationBlock ifNotNil: [:initBlock | 
 		ast := self applyInitializationBlock: initBlock on: ast].
 	
 	imports addLast: import.
-	[ast := self applyOn: ast implicitImports: (self implicitImportsFor: import)]
+	[ast := self applyOn: ast implicitImports: (self implicitImportsFor: import).
+	self flag: #Richo.
+	"TODO(Richo): Here we should check for errors in the ast, right after we
+	resolved the imports.
+	Uzi check: ast."]
 		ensure: [imports removeLast].
 		
-	(ast isPetitFailure not and: [import alias notNil])
-		ifTrue: [ast := self applyAlias: import alias , '.' on: ast].
+	import alias
+		ifNotNil: [:alias | ast := self applyAlias: alias , '.' on: ast].
 	
 	^ ast
