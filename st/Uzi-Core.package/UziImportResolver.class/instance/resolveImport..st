@@ -1,9 +1,15 @@
 private
 resolveImport: import
+	(imports anySatisfy: [:each | each alias = import alias and: [each path = import path]])
+		ifTrue: [self error: 'Dependency cycle detected'].
+	
+	
 	(librariesDirectory fileExists: import path) ifFalse: [
 		self flag: #Richo. "TODO: throw an exception or something!"
 		^ nil].
-	^ librariesDirectory 
+	
+	imports addLast: import.
+	[^ librariesDirectory 
 		readOnlyFileNamed: import path
 		do: [:file || ast |
 			ast := parser parse: file contents.
@@ -14,4 +20,5 @@ resolveImport: import
 					reject: [:implicit | implicit alias = import alias and: [implicit path = import path]]).
 			(ast isPetitFailure not and: [import alias notNil])
 				ifTrue: [ast := self applyAlias: import alias , '.' on: ast].
-			^ ast]
+			^ ast]]
+		ensure: [imports removeLast]
