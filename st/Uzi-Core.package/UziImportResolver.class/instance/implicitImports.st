@@ -1,3 +1,3 @@
-private
+accessing
 implicitImports
 	^ self class implicitImports
