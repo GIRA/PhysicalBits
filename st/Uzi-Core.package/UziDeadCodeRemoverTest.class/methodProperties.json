@@ -18,6 +18,6 @@
 		"test013UnusedGlobalsShouldBeRemovedEvenIfTheyHaveReferencesFromADeadScript" : "Richo 9/28/2019 12:38",
 		"test014UsedGlobalsShouldNotBeRemoved" : "Richo 9/28/2019 12:39",
 		"test015UnusedGlobalsShouldBeRemovedEvenIfTheyAreHiddenByALocalVariable" : "Richo 9/28/2019 12:43",
-		"test016AMoreCompleteExample" : "Richo 10/28/2019 15:34",
-		"test017AMoreCompleteExample2" : "Richo 10/30/2019 09:08",
-		"test018AMoreCompleteExample3" : "Richo 10/30/2019 09:09" } }
+		"test016AMoreCompleteExample" : "Richo 11/5/2019 20:10",
+		"test017AMoreCompleteExample2" : "Richo 11/5/2019 20:10",
+		"test018AMoreCompleteExample3" : "Richo 11/5/2019 20:10" } }

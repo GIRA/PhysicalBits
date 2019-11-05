@@ -69,7 +69,7 @@ proc foo_bar_baz(a, b, c) {
 		    if a { turnOn(D11); }
 		    else { turnOff(D11); }
 		}'.
-	expected := Uzi resolveImports: expected.
+	expected := (Uzi resolveImports: expected) withImports: original imports.
 	remover := UziDeadCodeRemover new.
 	actual := remover applyOn: original.
 	self assert: expected equals: actual

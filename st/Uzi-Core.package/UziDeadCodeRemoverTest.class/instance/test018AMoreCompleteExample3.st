@@ -149,7 +149,7 @@ proc foo_bar_baz(a, b, c) {
 	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
 	bar.init(trig: a, echo: b, maxDist: c);
 }'.
-	expected := Uzi resolveImports: expected.
+	expected := (Uzi resolveImports: expected) withImports: original imports.
 	remover := UziDeadCodeRemover new.
 	actual := remover applyOn: original.
 	self assert: expected equals: actual
