@@ -1,0 +1,15 @@
+{
+	"category" : "Uzi-Core-Tests",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"nodes",
+		"root" ],
+	"name" : "UziParseNodeVisitorTest",
+	"pools" : [
+		 ],
+	"super" : "TestCase",
+	"type" : "normal" }
