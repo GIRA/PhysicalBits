@@ -1,0 +1,3 @@
+visiting
+visitScriptStartNode: node
+	self subclassResponsibility

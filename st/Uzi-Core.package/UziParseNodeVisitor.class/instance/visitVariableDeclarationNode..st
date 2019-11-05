@@ -1,0 +1,3 @@
+visiting
+visitVariableDeclarationNode: node
+	self subclassResponsibility

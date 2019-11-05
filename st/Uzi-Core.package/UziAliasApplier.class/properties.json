@@ -12,5 +12,5 @@
 	"name" : "UziAliasApplier",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNodeVisitor",
 	"type" : "normal" }

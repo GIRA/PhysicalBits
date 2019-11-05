@@ -1,15 +1,14 @@
 {
-	"category" : "Uzi-Core-Compiling",
+	"category" : "Uzi-Core-Parser-Nodes",
 	"classinstvars" : [
 		 ],
 	"classvars" : [
 		 ],
 	"commentStamp" : "",
 	"instvars" : [
-		"errors",
-		"path" ],
-	"name" : "UziParseTreeValidator",
+		 ],
+	"name" : "UziParseNodeVisitor",
 	"pools" : [
 		 ],
-	"super" : "UziParseNodeVisitor",
+	"super" : "Object",
 	"type" : "normal" }

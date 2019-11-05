@@ -1,0 +1,3 @@
+visiting
+visitNumberNode: node
+	self subclassResponsibility

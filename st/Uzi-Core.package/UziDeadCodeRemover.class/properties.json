@@ -12,5 +12,5 @@
 	"name" : "UziDeadCodeRemover",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNodeVisitor",
 	"type" : "normal" }

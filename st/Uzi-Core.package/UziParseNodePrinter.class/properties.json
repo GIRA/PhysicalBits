@@ -12,5 +12,5 @@
 	"name" : "UziParseNodePrinter",
 	"pools" : [
 		 ],
-	"super" : "Object",
+	"super" : "UziParseNodeVisitor",
 	"type" : "normal" }
