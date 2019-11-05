@@ -1,3 +1,3 @@
 visiting
-visitNumberNode: node
+visitNumberLiteralNode: node
 	(script push: node value) node: node

@@ -1,5 +1,5 @@
 visiting
-visitNumberNode: node
+visitNumberLiteralNode: node
 	(nodesDict at: node) do: [:each | 
 		self assert: node value
 			equals: each value

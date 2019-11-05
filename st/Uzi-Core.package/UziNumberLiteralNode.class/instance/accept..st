@@ -1,3 +1,3 @@
 visiting
 accept: visitor
-	^ visitor visitNumberNode: self
+	^ visitor visitNumberLiteralNode: self
