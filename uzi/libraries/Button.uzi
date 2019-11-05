@@ -1,0 +1,15 @@
+var pin;
+var debounceMs = 100;
+proc init(p,ms)
+{
+	pin = p;
+	debounceMs = ms;
+}
+
+proc waitForRelease() {
+	until isOn(pin);
+	delayMs(debounceMs);
+	until isOff(pin);
+	delayMs(debounceMs);
+}
+
