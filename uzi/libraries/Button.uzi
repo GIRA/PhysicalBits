@@ -1,5 +1,6 @@
 var pin;
 var debounceMs = 100;
+
 proc init(p,ms)
 {
 	pin = p;
