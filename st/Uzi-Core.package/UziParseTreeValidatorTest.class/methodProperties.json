@@ -50,4 +50,5 @@
 		"test042ExpressionsAreNotAllowedInsideImportInitBlocks" : "Richo 9/25/2019 09:49",
 		"test043AttemptingToStartANonExistingTaskShouldFail" : "Richo 10/25/2019 12:01",
 		"test044AttemptingToInitializeANonExistingGlobalShouldFail" : "Richo 10/25/2019 12:01",
-		"test045AttemptingToStartAnExistingTaskShouldWork" : "Richo 10/25/2019 12:01" } }
+		"test045AttemptingToStartAnExistingTaskShouldWork" : "Richo 10/25/2019 12:01",
+		"test046ProgramWithPrimitiveDeclaration" : "Richo 11/5/2019 20:28" } }

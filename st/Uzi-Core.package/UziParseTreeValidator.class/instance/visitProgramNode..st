@@ -25,8 +25,12 @@ visitProgramNode: node
 			description: 'Script name already in use'
 			node: each.
 		scriptNames add: each name].
+	
+	node primitives do: [:each |
+		self assertPrimitive: each].
 		
 	self visitCollection: node imports;
 		visitCollection: node globals;
-		visitCollection: node scripts 
+		visitCollection: node scripts;
+		visitCollection: node primitives
 	
