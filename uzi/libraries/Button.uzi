@@ -16,3 +16,12 @@ proc waitForPress(pin) {
 	until isPressed(pin);
 	delayMs(debounceMs);
 }
+
+func waitLongPress(pin) {
+	until isPressed(pin);
+	var begin = millis();
+	delayMs(debounceMs);
+	until isReleased(pin);
+	delayMs(debounceMs);
+	return millis() - begin;
+}
