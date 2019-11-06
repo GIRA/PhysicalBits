@@ -402,6 +402,9 @@
       if (locale.startsWith("es")) {
         $("#spanish-radio").prop("checked", true);
       }
+      if (locale.startsWith("et")) {
+        $("#estonian-radio").prop("checked", true);
+      }
       console.log(locale);
     });
   }
