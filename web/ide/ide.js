@@ -393,18 +393,15 @@
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
-    })
+    });
     i18n.on("change", function () {
       let locale = i18n.currentLocale();
-      if (locale.startsWith("en")) {
-        $("#english-radio").prop("checked", true);
-      }
-      if (locale.startsWith("es")) {
-        $("#spanish-radio").prop("checked", true);
-      }
-      if (locale.startsWith("et")) {
-        $("#estonian-radio").prop("checked", true);
-      }
+      $('input[name="language-radios"]:radio').each(function () {
+        let val = $(this).val();
+        if (locale.startsWith(val)) {
+          $(this).prop("checked", true);
+        }
+      });
       console.log(locale);
     });
   }
