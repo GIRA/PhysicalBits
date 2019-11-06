@@ -1,16 +1,18 @@
 var debounceMs = 50;
 
+prim isPressed : isOn;
+prim isReleased : isOff;
+
 proc waitForRelease(pin) {
-	until isOn(pin);
+	until isPressed(pin);
 	delayMs(debounceMs);
-	until isOff(pin);
+	until isReleased(pin);
 	delayMs(debounceMs);
 }
 
-
 proc waitForPress(pin) {
-	until isOff(pin);
+	until isReleased(pin);
 	delayMs(debounceMs);
-	until isOn(pin);
+	until isPressed(pin);
 	delayMs(debounceMs);
 }
