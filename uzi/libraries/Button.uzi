@@ -14,3 +14,10 @@ proc waitForRelease() {
 	delayMs(debounceMs);
 }
 
+
+proc waitForPress() {
+	until isOff(pin);
+	delayMs(debounceMs);
+	until isOn(pin);
+	delayMs(debounceMs);
+}
