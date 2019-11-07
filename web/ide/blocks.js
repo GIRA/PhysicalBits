@@ -28,7 +28,7 @@ let UziBlock = (function () {
     i18n.on("change", refreshWorkspace);
 
     return ajax.GET('toolbox.xml').then(function (toolbox) {
-      if (typeof(toolbox) == "string") { 
+      if (typeof(toolbox) == "string") {
         toolbox = Blockly.Xml.textToDom(toolbox);
       } else {
         toolbox = toolbox.documentElement;
@@ -616,7 +616,156 @@ let UziBlock = (function () {
       }
     };
 
-    // TODO(Richo): math_single, math_trig, math_round, math_modulo, math_constrain, math_random_int, math_random_float
+    Blockly.Blocks['number'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldNumber(0), "value");
+        this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_operation'] = {
+      init: function() {
+        this.appendValueInput("number")
+            .setCheck("Number")
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
+                                                    [i18n.translate("absolute"),"abs"],
+                                                    [i18n.translate("-"),"negate"],
+                                                    [i18n.translate("ln"),"ln"],
+                                                    [i18n.translate("log10"),"log10"],
+                                                    [i18n.translate("e^"),"exp"],
+                                                    [i18n.translate("10^"),"pow10"]]), "operator");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_trig'] = {
+      init: function() {
+        this.appendValueInput("number")
+            .setCheck("Number")
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
+                                                    [i18n.translate("cos"),"cos"],
+                                                    [i18n.translate("tan"),"tan"],
+                                                    [i18n.translate("asin"),"asin"],
+                                                    [i18n.translate("acos"),"acos"],
+                                                    [i18n.translate("atan"),"atan"]]), "operator");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_round'] = {
+      init: function() {
+        this.appendValueInput("number")
+            .setCheck("Number")
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
+                                                    [i18n.translate("round up"),"ceil"],
+                                                    [i18n.translate("round down"),"floor"]]), "operator");
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_modulo'] = {
+      init: function() {
+        let msg = i18n.translate("remainder of % ÷ %");
+        let parts = msg.split("%").map(trim);
+        let inputs = [
+          this.appendValueInput("dividend")
+            .setCheck("Number")
+            .setAlign(Blockly.ALIGN_RIGHT),
+          this.appendValueInput("divisor")
+             .setCheck("Number")
+             .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+        for (let i = 0; i < parts.length; i++) {
+          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
+          let part = parts[i];
+          input.appendField(part);
+        }
+        this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_constrain'] = {
+      init: function() {
+        let msg = i18n.translate("constrain % low % high %");
+        let parts = msg.split("%").map(trim);
+        let inputs = [
+          this.appendValueInput("value")
+            .setCheck("Number")
+            .setAlign(Blockly.ALIGN_RIGHT),
+          this.appendValueInput("low")
+             .setCheck("Number")
+             .setAlign(Blockly.ALIGN_RIGHT),
+           this.appendValueInput("high")
+              .setCheck("Number")
+              .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+        for (let i = 0; i < parts.length; i++) {
+          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
+          let part = parts[i];
+          input.appendField(part);
+        }
+        this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_random_int'] = {
+      init: function() {
+        let msg = i18n.translate("random integer from % to %");
+        let parts = msg.split("%").map(trim);
+        let inputs = [
+          this.appendValueInput("from")
+            .setCheck("Number")
+            .setAlign(Blockly.ALIGN_RIGHT),
+          this.appendValueInput("to")
+             .setCheck("Number")
+             .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+        for (let i = 0; i < parts.length; i++) {
+          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
+          let part = parts[i];
+          input.appendField(part);
+        }
+        this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_random_float'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(i18n.translate("random fraction"));
+        this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
   function initSpecialBlocks() {

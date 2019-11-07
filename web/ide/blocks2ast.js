@@ -256,9 +256,9 @@ var BlocksToAST = (function () {
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.for(id, variableName, start, stop, step, statements);
 		},
-		math_number: function (block, ctx) {
+		number: function (block, ctx) {
 			var id = XML.getId(block);
-			var value = parseFloat(XML.getChildNode(block, "NUM").innerText);
+			var value = parseFloat(XML.getChildNode(block, "value").innerText);
 			return builder.number(id, value);
 		},
 		turn_pin_variable: function (block, ctx) {
@@ -424,68 +424,52 @@ var BlocksToAST = (function () {
 			var statements = generateCodeForStatements(block, ctx);
 			return builder.repeat(id, times, statements);
 		},
-		math_round: function (block, ctx) {
+		number_round: function (block, ctx) {
 			var id = XML.getId(block);
-			var type = XML.getChildNode(block, "OP").innerText;
-			var num = generateCodeForValue(block, ctx, "NUM");
-			var selector;
-			if (type === "ROUND") {
-				selector = "round";
-			} else if (type === "ROUNDUP") {
-				selector = "ceil";
-			} else if (type === "ROUNDDOWN") {
-				selector = "floor";
-			} else {
+			var type = XML.getChildNode(block, "operator").innerText;
+			var num = generateCodeForValue(block, ctx, "number");
+			var valid = ["round", "ceil", "floor"];
+			if (!valid.includes(type)) {
 				throw "Math round type not found: '" + type + "'";
 			}
+			var selector = type;
 			return builder.primitiveCall(id, selector, [num]);
 		},
-		math_single: function (block, ctx) {
+		number_operation: function (block, ctx) {
 			var id = XML.getId(block);
-			var type = XML.getChildNode(block, "OP").innerText;
-			var num = generateCodeForValue(block, ctx, "NUM");
+			var type = XML.getChildNode(block, "operator").innerText;
+			var num = generateCodeForValue(block, ctx, "number");
 			var selector;
 			var args = [num];
-			if (type === "ROOT") {
+			if (type === "sqrt") {
 				selector = "sqrt";
-			} else if (type === "ABS") {
+			} else if (type === "abs") {
 				selector = "abs";
-			} else if (type === "NEG") {
+			} else if (type === "negate") {
 				selector = "*";
 				args.push(builder.number(id, -1));
-			} else if (type === "LN") {
+			} else if (type === "ln") {
 				selector = "ln";
-			} else if (type === "LOG10") {
+			} else if (type === "log10") {
 				selector = "log10";
-			} else if (type === "EXP") {
+			} else if (type === "exp") {
 				selector = "exp";
-			} else if (type === "POW10") {
+			} else if (type === "pow10") {
 				selector = "pow10";
 			} else {
 				throw "Math function not found: '" + type + "'";
 			}
 			return builder.primitiveCall(id, selector, args);
 		},
-		math_trig: function (block, ctx) {
+		number_trig: function (block, ctx) {
 			var id = XML.getId(block);
-			var type = XML.getChildNode(block, "OP").innerText;
-			var num = generateCodeForValue(block, ctx, "NUM");
-			var selector;
-			if (type === "SIN") {
-				selector = "sin";
-			} else if (type === "COS") {
-				selector = "cos";
-			} else if (type === "TAN") {
-				selector = "tan";
-			} else if (type === "ASIN") {
-				selector = "asin";
-			} else if (type === "ACOS") {
-				selector = "acos";
-			} else if (type === "ATAN") {
-				selector = "atan";
-			} else {
+			var type = XML.getChildNode(block, "operator").innerText;
+			var num = generateCodeForValue(block, ctx, "number");
+			var valid = ["sin", "cos", "tan", "asin", "acos", "atan"];
+			if (!valid.includes(type)) {
 				throw "Math trig function not found: '" + type + "'";
 			}
+			var selector = type;
 			return builder.primitiveCall(id, selector, [num]);
 		},
 		math_constant: function (block, ctx) {
@@ -580,10 +564,10 @@ var BlocksToAST = (function () {
 			var condition = generateCodeForValue(block, ctx, "condition");
 			return builder.while(id, condition, [], negated);
 		},
-		math_modulo: function (block, ctx) {
+		number_modulo: function (block, ctx) {
 			var id = XML.getId(block);
-			var left = generateCodeForValue(block, ctx, "DIVIDEND");
-			var right = generateCodeForValue(block, ctx, "DIVISOR");
+			var left = generateCodeForValue(block, ctx, "dividend");
+			var right = generateCodeForValue(block, ctx, "divisor");
 			return builder.primitiveCall(id, "%", [left, right]);
 		},
 		variables_set: function (block, ctx) {
@@ -605,20 +589,20 @@ var BlocksToAST = (function () {
 			return builder.assignment(id, name,
 				builder.primitiveCall(id, "+", [variable, delta]));
 		},
-		math_constrain: function (block, ctx) {
+		number_constrain: function (block, ctx) {
 			var id = XML.getId(block);
-			var value = generateCodeForValue(block, ctx, "VALUE");
-			var low = generateCodeForValue(block, ctx, "LOW");
-			var high = generateCodeForValue(block, ctx, "HIGH");
+			var value = generateCodeForValue(block, ctx, "value");
+			var low = generateCodeForValue(block, ctx, "low");
+			var high = generateCodeForValue(block, ctx, "high");
 			return builder.primitiveCall(id, "constrain", [value, low, high]);
 		},
-		math_random_int: function (block, ctx) {
+		number_random_int: function (block, ctx) {
 			var id = XML.getId(block);
-			var from = generateCodeForValue(block, ctx, "FROM");
-			var to = generateCodeForValue(block, ctx, "TO");
+			var from = generateCodeForValue(block, ctx, "from");
+			var to = generateCodeForValue(block, ctx, "to");
 			return builder.primitiveCall(id, "randomInt", [from, to]);
 		},
-		math_random_float: function (block, ctx) {
+		number_random_float: function (block, ctx) {
 			var id = XML.getId(block);
 			return builder.primitiveCall(id, "random", []);
 		},

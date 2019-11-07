@@ -56,8 +56,8 @@
         </shadow>
       </value>
       <value name="pinValue">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
     </block>
@@ -81,8 +81,8 @@
           </shadow>
         </value>
         <value name="servoValue">
-          <shadow type="math_number">
-            <field name="NUM">90</field>
+          <shadow type="number">
+            <field name="value">90</field>
           </shadow>
         </value>
       </block>
@@ -93,16 +93,16 @@
         <field name="motorName"></field>
         <field name="direction">fwd</field>
         <value name="speed">
-          <shadow type="math_number">
-            <field name="NUM">1</field>
+          <shadow type="number">
+            <field name="value">1</field>
           </shadow>
         </value>
       </block>
       <block type="change_speed_dcmotor">
         <field name="motorName"></field>
         <value name="speed">
-          <shadow type="math_number">
-            <field name="NUM">0</field>
+          <shadow type="number">
+            <field name="value">0</field>
           </shadow>
         </value>
       </block>
@@ -141,13 +141,13 @@
     <block type="logic_compare">
       <field name="OP">EQ</field>
       <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
       <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
     </block>
@@ -174,8 +174,8 @@
     <block type="forever"></block>
     <block type="repeat_times">
       <value name="times">
-        <shadow type="math_number">
-          <field name="NUM">5</field>
+        <shadow type="number">
+          <field name="value">5</field>
         </shadow>
       </value>
     </block>
@@ -198,8 +198,8 @@
     <block type="delay">
       <field name="unit">ms</field>
       <value name="time">
-        <shadow type="math_number">
-          <field name="NUM">1000</field>
+        <shadow type="number">
+          <field name="value">1000</field>
         </shadow>
       </value>
     </block>
@@ -209,128 +209,128 @@
     <block type="for">
       <field name="variable" id="z/7dtDDbukU^@B[Ir0]r" variabletype="">i</field>
       <value name="start">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
       <value name="stop">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
+        <shadow type="number">
+          <field name="value">10</field>
         </shadow>
       </value>
       <value name="step">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
     </block>
   </category>
   <category name="Math" colour="#5C68A6">
-    <block type="math_number">
-      <field name="NUM">0</field>
+    <block type="number">
+      <field name="value">0</field>
     </block>
     <block type="number_property">
       <field name="property">even</field>
       <value name="value">
-        <shadow type="math_number">
-          <field name="NUM">0</field>
+        <shadow type="number">
+          <field name="value">0</field>
         </shadow>
       </value>
     </block>
     <block type="number_divisibility">
       <value name="left">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
+        <shadow type="number">
+          <field name="value">10</field>
         </shadow>
       </value>
       <value name="right">
-        <shadow type="math_number">
-          <field name="NUM">2</field>
+        <shadow type="number">
+          <field name="value">2</field>
         </shadow>
       </value>
     </block>
-    <block type="math_single">
-      <field name="OP">ROOT</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">9</field>
+    <block type="number_operation">
+      <field name="operator">sqrt</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">9</field>
         </shadow>
       </value>
     </block>
-    <block type="math_trig">
-      <field name="OP">SIN</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">45</field>
+    <block type="number_trig">
+      <field name="operator">sin</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">45</field>
         </shadow>
       </value>
     </block>
     <block type="math_constant">
       <field name="CONSTANT">PI</field>
     </block>
-    <block type="math_round">
-      <field name="OP">ROUND</field>
-      <value name="NUM">
-        <shadow type="math_number">
-          <field name="NUM">3.1</field>
+    <block type="number_round">
+      <field name="operator">round</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">3.1</field>
         </shadow>
       </value>
     </block>
     <block type="math_arithmetic">
       <field name="OP">ADD</field>
       <value name="A">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
       <value name="B">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
     </block>
-    <block type="math_modulo">
-      <value name="DIVIDEND">
-        <shadow type="math_number">
-          <field name="NUM">64</field>
+    <block type="number_modulo">
+      <value name="dividend">
+        <shadow type="number">
+          <field name="value">64</field>
         </shadow>
       </value>
-      <value name="DIVISOR">
-        <shadow type="math_number">
-          <field name="NUM">10</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_constrain">
-      <value name="VALUE">
-        <shadow type="math_number">
-          <field name="NUM">50</field>
-        </shadow>
-      </value>
-      <value name="LOW">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
-        </shadow>
-      </value>
-      <value name="HIGH">
-        <shadow type="math_number">
-          <field name="NUM">100</field>
+      <value name="divisor">
+        <shadow type="number">
+          <field name="value">10</field>
         </shadow>
       </value>
     </block>
-    <block type="math_random_int">
-      <value name="FROM">
-        <shadow type="math_number">
-          <field name="NUM">1</field>
+    <block type="number_constrain">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">50</field>
         </shadow>
       </value>
-      <value name="TO">
-        <shadow type="math_number">
-          <field name="NUM">100</field>
+      <value name="low">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="high">
+        <shadow type="number">
+          <field name="value">100</field>
         </shadow>
       </value>
     </block>
-    <block type="math_random_float"></block>
+    <block type="number_random_int">
+      <value name="from">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="to">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_random_float"></block>
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLE"></category>
   <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
@@ -342,8 +342,8 @@
     <block type="comment_expression">
       <field name="comment">This is a comment</field>
       <value name="NAME">
-        <shadow type="math_number">
-          <field name="NUM">0</field>
+        <shadow type="number">
+          <field name="value">0</field>
         </shadow>
       </value>
     </block>
