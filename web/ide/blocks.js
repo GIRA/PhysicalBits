@@ -28,20 +28,25 @@ let UziBlock = (function () {
     i18n.on("change", refreshWorkspace);
 
     return ajax.GET('toolbox.xml').then(function (toolbox) {
-      let categories = toolbox.documentElement.getElementsByTagName("category");
+      if (typeof(toolbox) == "string") { 
+        toolbox = Blockly.Xml.textToDom(toolbox);
+      } else {
+        toolbox = toolbox.documentElement;
+      }
+      let categories = toolbox.getElementsByTagName("category");
       for (let i = 0; i < categories.length; i++) {
         let category = categories[i];
         category.setAttribute("originalName", category.getAttribute("name"));
         category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
       }
-      let buttons = toolbox.documentElement.getElementsByTagName("button");
+      let buttons = toolbox.getElementsByTagName("button");
       for (let i = 0; i < buttons.length; i++) {
         let button = buttons[i];
         button.setAttribute("originalText", button.getAttribute("text"));
         button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
       }
       workspace = Blockly.inject(blocklyDiv, {
-        toolbox: toolbox.documentElement,
+        toolbox: toolbox,
         zoom: {
           controls: true,
           wheel: true,
@@ -62,14 +67,14 @@ let UziBlock = (function () {
           let button = buttons[i];
           button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
         }
-        workspace.updateToolbox(toolbox.documentElement);
+        workspace.updateToolbox(toolbox);
         refreshToolbox();
       });
       workspace.addChangeListener(function () {
         trigger("change");
       });
       workspace.registerToolboxCategoryCallback("TASKS", function () {
-        let node = XML.getChildNode(toolbox.documentElement, "Tasks", "originalName");
+        let node = XML.getChildNode(toolbox, "Tasks", "originalName");
         let nodes = Array.from(node.children);
         let tasks = getCurrentTaskNames();
         if (tasks.length > 0) {
@@ -100,7 +105,7 @@ let UziBlock = (function () {
         return nodes;
       });
       workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Motors", "originalName"), "DC", "originalName");
+        let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
         let nodes = Array.from(node.children);
         if (motors.length == 0) {
           nodes.splice(1); // Leave the button only
@@ -116,7 +121,7 @@ let UziBlock = (function () {
         return nodes;
       });
       workspace.registerToolboxCategoryCallback("SONAR", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox.documentElement, "Sensors", "originalName"), "Sonar", "originalName");
+        let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
         let nodes = Array.from(node.children);
         if (sonars.length == 0) {
           nodes.splice(1); // Leave the button only
