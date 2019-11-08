@@ -15,6 +15,7 @@
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
+        .then(initializeBlocklyGlobalsModal)
         .then(initializeAutorun)
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
@@ -335,6 +336,89 @@
     $("#blockly-sonars-modal-container").on("submit", function (e) {
       e.preventDefault();
       $("#blockly-sonars-modal").modal("hide");
+    });
+  }
+
+  function initializeBlocklyGlobalsModal() {
+    let count = 0;
+
+    function getDefaultGlobal() {
+      let data = $("#blockly-globals-modal-container").serializeJSON();
+      let globalNames = new Set();
+      for (let i in data.globals) {
+        globalNames.add(data.globals[i].name);
+      }
+      let global = {name: "variable"};
+      let i = 1;
+      while (globalNames.has(global.name)) {
+        global.name = "variable" + i;
+        i++;
+      }
+      return global;
+    }
+
+    function appendGlobalRow(global) {
+      let i = count++;
+
+      function createTextInput(controlValue, controlName) {
+        let input = $("<input>")
+          .attr("type", "text")
+          .addClass("form-control")
+          .addClass("text-center")
+          .attr("name", controlName);
+        input.get(0).value = controlValue;
+        return input;
+      }
+      function createRemoveButton(row) {
+        var btn = $("<button>")
+          .addClass("btn")
+          .addClass("btn-sm")
+          .attr("type", "button")
+          .append($("<i>")
+            .addClass("fas")
+            .addClass("fa-minus"));
+        btn
+          .addClass("btn-outline-danger")
+          .on("click", function () { row.remove(); });
+        return btn;
+      }
+      let tr = $("<tr>")
+        .append($("<td>").append(createTextInput(global.name, "globals[" + i + "][name]")))
+      tr.append($("<td>").append(createRemoveButton(tr)));
+      $("#blockly-globals-modal-container-tbody").append(tr);
+    }
+
+    $("#add-global-row-button").on("click", function () {
+      appendGlobalRow(getDefaultGlobal());
+    });
+
+    UziBlock.getWorkspace().registerButtonCallback("configureGlobals", function () {
+      // Build modal UI
+      $("#blockly-globals-modal-container-tbody").html("");
+      if (UziBlock.getGlobals().length == 0) {
+        appendGlobalRow(getDefaultGlobal());
+      }
+      UziBlock.getGlobals().forEach(function (global) {
+        appendGlobalRow(global);
+      });
+      $("#blockly-globals-modal").modal("show");
+    });
+
+    $("#blockly-globals-modal").on("hide.bs.modal", function () {
+      let data = $("#blockly-globals-modal-container").serializeJSON();
+      let temp = [];
+      for (let i in data.globals) {
+        temp.push(data.globals[i]);
+      }
+      // TODO(Richo): Check program and rename/disable global blocks accordingly
+      UziBlock.setGlobals(temp);
+      UziBlock.refreshToolbox();
+      saveToLocalStorage();
+    });
+
+    $("#blockly-globals-modal-container").on("submit", function (e) {
+      e.preventDefault();
+      $("#blockly-globals-modal").modal("hide");
     });
   }
 

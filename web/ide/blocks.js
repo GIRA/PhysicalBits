@@ -14,6 +14,7 @@ let UziBlock = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
+  let globals = [];
   let observers = {
     "change" : [],
   };
@@ -131,6 +132,22 @@ let UziBlock = (function () {
             let field = fields[i];
             if (field.getAttribute("name") === "sonarName") {
               field.innerText = sonars[sonars.length-1].name;
+            }
+          }
+        }
+        return nodes;
+      });
+      workspace.registerToolboxCategoryCallback("VARIABLES", function () {
+        let node = XML.getChildNode(toolbox, "Variables", "originalName");
+        let nodes = Array.from(node.children);
+        if (globals.length == 0) {
+          nodes.splice(1); // Leave the button only
+        } else {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "variableName") {
+              field.innerText = globals[globals.length-1].name;
             }
           }
         }
@@ -772,6 +789,7 @@ let UziBlock = (function () {
     initTaskBlocks();
     initDCMotorBlocks();
     initSonarBlocks();
+    initVariableBlocks();
   }
 
 
@@ -933,6 +951,55 @@ let UziBlock = (function () {
     };
   }
 
+  function initVariableBlocks() {
+    function currentGlobalsForDropdown() {
+      if (globals.length == 0) return [["", ""]];
+      return globals.map(function(each) { return [ each.name, each.name ]; });
+    }
+
+    Blockly.Blocks['set_variable'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("set")
+            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName")
+            .appendField("to");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(330);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['increment_variable'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("increment")
+            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName")
+            .appendField("by");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(330);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+
+    Blockly.Blocks['variable'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName");
+        this.setOutput(true, null);
+        this.setColour(330);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+  }
   function resizeBlockly () {
     // Only if Blockly was initialized
     if (workspace == undefined) return;
@@ -989,6 +1056,8 @@ let UziBlock = (function () {
     setMotors: function (m) { motors = m; },
     getSonars: function () { return sonars; },
     setSonars: function (s) { sonars = s; },
+    getGlobals: function () { return globals; },
+    setGlobals: function (g) { globals = g; },
     getWorkspace: function () { return workspace; },
     on: on,
     refreshToolbox: refreshToolbox,
