@@ -50,7 +50,7 @@ let UziBlock = (function () {
         zoom: {
           controls: true,
           wheel: true,
-          startScale: 0.95,
+          startScale: 0.85,
           maxScale: 3,
           minScale: 0.3,
           scaleSpeed: 1.03
@@ -941,7 +941,7 @@ let UziBlock = (function () {
     x = y = 0;
     blocklyDiv.style.left = x + 'px';
     blocklyDiv.style.top = y + 'px';
-    let scale = 1/0.85;
+    let scale = 1;
     blocklyDiv.style.width = (blocklyArea.offsetWidth * scale) + 'px';
     blocklyDiv.style.height = (blocklyArea.offsetHeight * scale) + 'px';
     Blockly.svgResize(workspace);

@@ -84,8 +84,6 @@
 
   #blockly {
     color: black;
-    transform: scale(0.85);
-    transform-origin: 0 0;
   }
 
   .blocklySvg {
@@ -93,8 +91,7 @@
   }
 
   .blocklyWidgetDiv {
-    transform: scale(0.8);
-    transform-origin: 0 0;
+    
   }
 
 
