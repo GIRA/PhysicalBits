@@ -268,9 +268,9 @@ var BlocksToAST = (function () {
 			var selector = pinState === "on" ? "turnOn" : "turnOff";
 			return builder.primitiveCall(id, selector, [pinNumber]);
 		},
-		variables_get: function (block, ctx) {
+		variable: function (block, ctx) {
 			var id = XML.getId(block);
-			var variableName = asIdentifier(XML.getChildNode(block, "VAR").innerText);
+			var variableName = asIdentifier(XML.getChildNode(block, "variableName").innerText);
 			ctx.addGlobal(variableName);
 			return builder.variable(id, variableName);
 		},
@@ -570,21 +570,21 @@ var BlocksToAST = (function () {
 			var right = generateCodeForValue(block, ctx, "divisor");
 			return builder.primitiveCall(id, "%", [left, right]);
 		},
-		variables_set: function (block, ctx) {
+		set_variable: function (block, ctx) {
 			var id = XML.getId(block);
-			var name = asIdentifier(XML.getChildNode(block, "VAR").innerText);
+			var name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
 			ctx.addGlobal(name);
-			var value = generateCodeForValue(block, ctx, "VALUE");
+			var value = generateCodeForValue(block, ctx, "value");
 			if (value == undefined) {
 				value = builder.number(id, 0);
 			}
 			return builder.assignment(id, name, value);
 		},
-		math_change: function (block, ctx) {
+		increment_variable: function (block, ctx) {
 			var id = XML.getId(block);
-			var name = asIdentifier(XML.getChildNode(block, "VAR").innerText);
+			var name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
 			ctx.addGlobal(name);
-			var delta = generateCodeForValue(block, ctx, "DELTA");
+			var delta = generateCodeForValue(block, ctx, "value");
 			var variable = builder.variable(id, name);
 			return builder.assignment(id, name,
 				builder.primitiveCall(id, "+", [variable, delta]));
