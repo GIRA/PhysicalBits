@@ -1065,6 +1065,20 @@ let UziBlock = (function () {
     toXML: toXML,
     fromXML: fromXML,
     getGeneratedCode: getGeneratedCode,
-    getToolbox: function () { return originalToolbox; }
+    getToolbox: function () { return originalToolbox; },
+    getDataForStorage: function () {
+      return {
+        blocks: toXML(),
+        motors: motors,
+        sonars: sonars,
+        globals: globals,
+      };
+    },
+    setDataFromStorage: function (d) {
+      fromXML(d.blocks);
+      motors = d.motors;
+      sonars = d.sonars;
+      globals = d.globals;
+    }
   }
 })();

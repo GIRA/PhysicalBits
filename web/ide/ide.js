@@ -527,11 +527,9 @@
 	function restoreFromLocalStorage() {
     try {
       let ui = {
-        blocks: localStorage["uzi.blocks"],
-        settings: JSON.parse(localStorage["uzi.settings"] || {}),
+        settings: JSON.parse(localStorage["uzi.settings"] || "null"),
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
-        motors: JSON.parse(localStorage["uzi.motors"]),
-        sonars: JSON.parse(localStorage["uzi.sonars"]),
+        blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
       };
       setUIState(ui);
     } catch (err) {
@@ -543,45 +541,33 @@
     if (UziBlock.getWorkspace() == undefined || layout == undefined) return;
 
     let ui = getUIState();
-    localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
-    localStorage["uzi.motors"] = JSON.stringify(ui.motors);
-    localStorage["uzi.sonars"] = JSON.stringify(ui.sonars);
+    localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
   }
 
   function getUIState() {
     return {
-      blocks: UziBlock.toXML(),
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
-      motors: UziBlock.getMotors(),
-      sonars: UziBlock.getSonars(),
+      blockly: UziBlock.getDataForStorage(),
     };
   }
 
   function setUIState(ui) {
     try {
-      if (ui.layout) {
-        initializeLayout(ui.layout);
-      }
-
-      if (ui.blocks) {
-        UziBlock.fromXML(ui.blocks);
-      }
-
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
       }
 
-      if (ui.motors) {
-        UziBlock.setMotors(ui.motors);
+      if (ui.layout) {
+        initializeLayout(ui.layout);
       }
 
-      if (ui.sonars) {
-        UziBlock.setSonars(ui.sonars);
+      if (ui.blockly) {
+        UziBlock.setDataFromStorage(ui.blockly);
       }
     } catch (err) {
       console.error(err);
