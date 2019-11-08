@@ -1053,20 +1053,20 @@ let UziBlock = (function () {
 
   return {
     init: init,
-    getMotors: function () { return motors; },
-    setMotors: function (m) { motors = m; },
-    getSonars: function () { return sonars; },
-    setSonars: function (s) { sonars = s; },
-    getGlobals: function () { return globals; },
-    setGlobals: function (g) { globals = g; },
-    getWorkspace: function () { return workspace; },
     on: on,
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
     toXML: toXML,
     fromXML: fromXML,
     getGeneratedCode: getGeneratedCode,
-    getToolbox: function () { return originalToolbox; },
+
+    getWorkspace: function () { return workspace; },
+    getMotors: function () { return motors; },
+    setMotors: function (m) { motors = m; },
+    getSonars: function () { return sonars; },
+    setSonars: function (s) { sonars = s; },
+    getGlobals: function () { return globals; },
+    setGlobals: function (g) { globals = g; },
     getDataForStorage: function () {
       return {
         version: version,
