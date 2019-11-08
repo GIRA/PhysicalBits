@@ -11,6 +11,7 @@ let UziBlock = (function () {
     })();
   }
 
+  let version = 0;
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
@@ -1068,6 +1069,7 @@ let UziBlock = (function () {
     getToolbox: function () { return originalToolbox; },
     getDataForStorage: function () {
       return {
+        version: version,
         blocks: toXML(),
         motors: motors,
         sonars: sonars,
@@ -1075,6 +1077,9 @@ let UziBlock = (function () {
       };
     },
     setDataFromStorage: function (d) {
+      // Check compatibility
+      if (d.version != version) { return; }
+
       fromXML(d.blocks);
       motors = d.motors;
       sonars = d.sonars;
