@@ -79,7 +79,7 @@ let UziBlock = (function () {
           let field = XML.getChildNode(evt.xml, "variable");
           if (field != undefined) {
             let variableName = field.innerText;
-            if (globals.find(function (g) { return g.name == variableName}) == undefined) {
+            if (!globals.some(function (g) { return g.name == variableName})) {
               globals.push({ name: variableName });
             }
           }
