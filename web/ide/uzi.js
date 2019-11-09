@@ -127,17 +127,19 @@ let Uzi = (function () {
   }
 
   function updateLoop(immediate) {
-    getUziState(immediate ? 0 : 45)
-      .then(function (data) {
-        Uzi.serverAvailable = true;
-        update(fixInvalidJSONFloats(data));
-        updateLoop(false);
-      })
-      .catch(function (err) {
-        Uzi.serverAvailable = false;
-        serverDisconnect(err);
-        updateLoop(true);
-      });
+    setTimeout(function () {
+      getUziState(immediate ? 0 : 45)
+        .then(function (data) {
+          Uzi.serverAvailable = true;
+          update(fixInvalidJSONFloats(data));
+          updateLoop(false);
+        })
+        .catch(function (err) {
+          Uzi.serverAvailable = false;
+          serverDisconnect(err);
+          updateLoop(false);
+        });
+    }, 100);
   }
 
 	/*
