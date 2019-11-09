@@ -354,7 +354,6 @@
       <field name="variableName"></field>
     </block>
   </category>
-  <category name="Variables (OLD)" colour="#A65C81" custom="VARIABLE"></category>
   <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
   <!--
   <category name="Comments" colour="#a56d5b">
