@@ -15,7 +15,7 @@ let UziBlock = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
-  let globals = [];
+  let variables = [];
   let observers = {
     "change" : [],
   };
@@ -79,8 +79,8 @@ let UziBlock = (function () {
           let field = XML.getChildNode(evt.xml, "variable");
           if (field != undefined) {
             let variableName = field.innerText;
-            if (!globals.some(function (g) { return g.name == variableName})) {
-              globals.push({ name: variableName });
+            if (!variables.some(function (g) { return g.name == variableName})) {
+              variables.push({ name: variableName });
             }
           }
         }
@@ -118,6 +118,7 @@ let UziBlock = (function () {
         }
         return nodes;
       });
+
       workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
         let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
         let nodes = Array.from(node.children);
@@ -134,6 +135,7 @@ let UziBlock = (function () {
         }
         return nodes;
       });
+
       workspace.registerToolboxCategoryCallback("SONAR", function () {
         let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
         let nodes = Array.from(node.children);
@@ -150,22 +152,24 @@ let UziBlock = (function () {
         }
         return nodes;
       });
+
       workspace.registerToolboxCategoryCallback("VARIABLES", function () {
         let node = XML.getChildNode(toolbox, "Variables", "originalName");
         let nodes = Array.from(node.children);
-        if (globals.length == 0) {
+        if (variables.length == 0) {
           nodes.splice(1); // Leave the button only
         } else {
           let fields = node.getElementsByTagName("field");
           for (let i = 0; i < fields.length; i++) {
             let field = fields[i];
             if (field.getAttribute("name") === "variableName") {
-              field.innerText = globals[globals.length-1].name;
+              field.innerText = variables[variables.length-1].name;
             }
           }
         }
         return nodes;
       });
+      
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
@@ -453,7 +457,7 @@ let UziBlock = (function () {
         let i = 0;
         this.appendDummyInput()
           .appendField(parts[i++])
-          .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variable");
+          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variable");
         this.appendValueInput("start")
           .setCheck("Number")
           .appendField(parts[i++]);
@@ -935,7 +939,7 @@ let UziBlock = (function () {
         this.appendValueInput("value")
             .setCheck(null)
             .appendField("set")
-            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName")
+            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
             .appendField("to");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -950,7 +954,7 @@ let UziBlock = (function () {
         this.appendValueInput("value")
             .setCheck(null)
             .appendField("increment")
-            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName")
+            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
             .appendField("by");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -964,7 +968,7 @@ let UziBlock = (function () {
     Blockly.Blocks['variable'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variableName");
+            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName");
         this.setOutput(true, null);
         this.setColour(330);
         this.setTooltip("");
@@ -1012,9 +1016,9 @@ let UziBlock = (function () {
     return sonars.map(function(each) { return [ each.name, each.name ]; });
   }
 
-  function currentGlobalsForDropdown() {
-    if (globals.length == 0) return [["", ""]];
-    return globals.map(function(each) { return [ each.name, each.name ]; });
+  function currentVariablesForDropdown() {
+    if (variables.length == 0) return [["", ""]];
+    return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
   function resizeBlockly () {
@@ -1081,15 +1085,15 @@ let UziBlock = (function () {
     setMotors: function (m) { motors = m; },
     getSonars: function () { return sonars; },
     setSonars: function (s) { sonars = s; },
-    getGlobals: function () { return globals; },
-    setGlobals: function (g) { globals = g; },
+    getVariables: function () { return variables; },
+    setVariables: function (g) { variables = g; },
     getDataForStorage: function () {
       return {
         version: version,
         blocks: toXML(),
         motors: motors,
         sonars: sonars,
-        globals: globals,
+        variables: variables,
       };
     },
     setDataFromStorage: function (d) {
@@ -1097,9 +1101,9 @@ let UziBlock = (function () {
       if (d.version != version) { return; }
 
       fromXML(d.blocks);
-      motors = d.motors;
-      sonars = d.sonars;
-      globals = d.globals;
+      motors = d.motors || [];
+      sonars = d.sonars || [];
+      variables = d.variables || [];
     }
   }
 })();

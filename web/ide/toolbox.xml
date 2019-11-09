@@ -333,7 +333,7 @@
     <block type="number_random_float"></block>
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLES">
-    <button text="Configure globals..." callbackKey="configureGlobals"></button>
+    <button text="Configure variables..." callbackKey="configureVariables"></button>
     <block type="set_variable">
       <field name="variableName"></field>
       <value name="value">

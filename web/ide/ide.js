@@ -15,7 +15,7 @@
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
-        .then(initializeBlocklyGlobalsModal)
+        .then(initializeBlocklyVariablesModal)
         .then(initializeAutorun)
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
@@ -339,25 +339,25 @@
     });
   }
 
-  function initializeBlocklyGlobalsModal() {
+  function initializeBlocklyVariablesModal() {
     let count = 0;
 
-    function getDefaultGlobal() {
-      let data = $("#blockly-globals-modal-container").serializeJSON();
-      let globalNames = new Set();
-      for (let i in data.globals) {
-        globalNames.add(data.globals[i].name);
+    function getDefaultVariable() {
+      let data = $("#blockly-variables-modal-container").serializeJSON();
+      let variableNames = new Set();
+      for (let i in data.variables) {
+        variableNames.add(data.variables[i].name);
       }
-      let global = {name: "variable"};
+      let variable = {name: "variable"};
       let i = 1;
-      while (globalNames.has(global.name)) {
-        global.name = "variable" + i;
+      while (variableNames.has(variable.name)) {
+        variable.name = "variable" + i;
         i++;
       }
-      return global;
+      return variable;
     }
 
-    function appendGlobalRow(global) {
+    function appendVariableRow(variable) {
       let i = count++;
 
       function createTextInput(controlValue, controlName) {
@@ -383,42 +383,42 @@
         return btn;
       }
       let tr = $("<tr>")
-        .append($("<td>").append(createTextInput(global.name, "globals[" + i + "][name]")))
+        .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]")))
       tr.append($("<td>").append(createRemoveButton(tr)));
-      $("#blockly-globals-modal-container-tbody").append(tr);
+      $("#blockly-variables-modal-container-tbody").append(tr);
     }
 
-    $("#add-global-row-button").on("click", function () {
-      appendGlobalRow(getDefaultGlobal());
+    $("#add-variable-row-button").on("click", function () {
+      appendVariableRow(getDefaultVariable());
     });
 
-    UziBlock.getWorkspace().registerButtonCallback("configureGlobals", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
       // Build modal UI
-      $("#blockly-globals-modal-container-tbody").html("");
-      if (UziBlock.getGlobals().length == 0) {
-        appendGlobalRow(getDefaultGlobal());
+      $("#blockly-variables-modal-container-tbody").html("");
+      if (UziBlock.getVariables().length == 0) {
+        appendVariableRow(getDefaultVariable());
       }
-      UziBlock.getGlobals().forEach(function (global) {
-        appendGlobalRow(global);
+      UziBlock.getVariables().forEach(function (variable) {
+        appendVariableRow(variable);
       });
-      $("#blockly-globals-modal").modal("show");
+      $("#blockly-variables-modal").modal("show");
     });
 
-    $("#blockly-globals-modal").on("hide.bs.modal", function () {
-      let data = $("#blockly-globals-modal-container").serializeJSON();
+    $("#blockly-variables-modal").on("hide.bs.modal", function () {
+      let data = $("#blockly-variables-modal-container").serializeJSON();
       let temp = [];
-      for (let i in data.globals) {
-        temp.push(data.globals[i]);
+      for (let i in data.variables) {
+        temp.push(data.variables[i]);
       }
-      // TODO(Richo): Check program and rename/disable global blocks accordingly
-      UziBlock.setGlobals(temp);
+      // TODO(Richo): Check program and rename/disable variable blocks accordingly
+      UziBlock.setVariables(temp);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
 
-    $("#blockly-globals-modal-container").on("submit", function (e) {
+    $("#blockly-variables-modal-container").on("submit", function (e) {
       e.preventDefault();
-      $("#blockly-globals-modal").modal("hide");
+      $("#blockly-variables-modal").modal("hide");
     });
   }
 
