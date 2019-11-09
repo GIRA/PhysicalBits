@@ -74,16 +74,7 @@ let UziBlock = (function () {
       });
 
       workspace.addChangeListener(function (evt) {
-        if (evt.type == Blockly.Events.CREATE
-            && evt.xml.getAttribute("type") == "for") {
-          let field = XML.getChildNode(evt.xml, "variable");
-          if (field != undefined) {
-            let variableName = field.innerText;
-            if (!variables.some(function (g) { return g.name == variableName})) {
-              variables.push({ name: variableName });
-            }
-          }
-        }
+        handleVariableDeclarationBlocks(evt);
         trigger("change");
       });
 
@@ -1035,6 +1026,24 @@ let UziBlock = (function () {
   function currentVariablesForDropdown() {
     if (variables.length == 0) return [["", ""]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function handleVariableDeclarationBlocks(evt) {
+    /*
+     * NOTE(Richo): Some blocks automatically add variables when created. Here we
+     * handle the creation event of such blocks.
+     */
+    let blocks = ["for", "declare_local_variable"];
+
+    if (evt.type == Blockly.Events.CREATE && blocks.includes(evt.xml.getAttribute("type"))) {
+      let field = XML.getChildNode(evt.xml, "variableName");
+      if (field != undefined) {
+        let variableName = field.innerText;
+        if (!variables.some(function (g) { return g.name == variableName})) {
+          variables.push({ name: variableName });
+        }
+      }
+    }
   }
 
   function resizeBlockly () {
