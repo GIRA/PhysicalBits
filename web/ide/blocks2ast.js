@@ -271,7 +271,9 @@ var BlocksToAST = (function () {
 		variable: function (block, ctx) {
 			var id = XML.getId(block);
 			var variableName = asIdentifier(XML.getChildNode(block, "variableName").innerText);
-			ctx.addGlobal(variableName);
+			if (!ctx.isLocalDefined(variableName)) {
+				ctx.addGlobal(variableName);
+			}
 			return builder.variable(id, variableName);
 		},
 		delay: function (block, ctx) {
@@ -573,7 +575,9 @@ var BlocksToAST = (function () {
 		set_variable: function (block, ctx) {
 			var id = XML.getId(block);
 			var name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
-			ctx.addGlobal(name);
+			if (!ctx.isLocalDefined(name)) {
+				ctx.addGlobal(name);
+			}
 			var value = generateCodeForValue(block, ctx, "value");
 			if (value == undefined) {
 				value = builder.number(id, 0);
@@ -583,7 +587,9 @@ var BlocksToAST = (function () {
 		increment_variable: function (block, ctx) {
 			var id = XML.getId(block);
 			var name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
-			ctx.addGlobal(name);
+			if (!ctx.isLocalDefined(name)) {
+				ctx.addGlobal(name);
+			}
 			var delta = generateCodeForValue(block, ctx, "value");
 			var variable = builder.variable(id, name);
 			return builder.assignment(id, name,
@@ -810,6 +816,19 @@ var BlocksToAST = (function () {
 				path: [xml],
 				imports: new Map(),
 				globals: [],
+
+				isLocalDefined: function (name) {
+					/*
+					 * NOTE(Richo): For now, the only block capable of declaring local variables
+					 * is the "for". So, we simply filter our path looking for "for" blocks and
+					 * then we check if any of them define a variable with the specified name.
+					 */
+					let blocks = ctx.path.filter(function (b) { return b.getAttribute("type") == "for"; });
+					return blocks.some(function (b) {
+						let field = XML.getChildNode(b, "variable");
+						return field != undefined && field.innerText == name;
+					});
+				},
 
 				addDCMotorImport: function (alias) {
 					ctx.addImport(alias, "DCMotor.uzi", function () {
