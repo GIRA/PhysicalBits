@@ -72,9 +72,21 @@ let UziBlock = (function () {
         workspace.updateToolbox(toolbox);
         refreshToolbox();
       });
-      workspace.addChangeListener(function () {
+
+      workspace.addChangeListener(function (evt) {
+        if (evt.type == Blockly.Events.CREATE
+            && evt.xml.getAttribute("type") == "for") {
+          let field = XML.getChildNode(evt.xml, "variable");
+          if (field != undefined) {
+            let variableName = field.innerText;
+            if (globals.find(function (g) { return g.name == variableName}) == undefined) {
+              globals.push({ name: variableName });
+            }
+          }
+        }
         trigger("change");
       });
+
       workspace.registerToolboxCategoryCallback("TASKS", function () {
         let node = XML.getChildNode(toolbox, "Tasks", "originalName");
         let nodes = Array.from(node.children);
@@ -441,7 +453,7 @@ let UziBlock = (function () {
         let i = 0;
         this.appendDummyInput()
           .appendField(parts[i++])
-          .appendField(new Blockly.FieldVariable("i"), "variable");
+          .appendField(new Blockly.FieldDropdown(currentGlobalsForDropdown), "variable");
         this.appendValueInput("start")
           .setCheck("Number")
           .appendField(parts[i++]);
