@@ -157,10 +157,10 @@ let UziBlock = (function () {
         let node = XML.getChildNode(toolbox, "Variables", "originalName");
         let nodes = Array.from(node.children);
         if (variables.length == 0) {
-          nodes.splice(1); // Leave the button only
+          nodes.splice(2); // Leave the button and declare_local_variable
         } else {
           let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
+          for (let i = 1; i < fields.length; i++) {
             let field = fields[i];
             if (field.getAttribute("name") === "variableName") {
               field.innerText = variables[variables.length-1].name;
@@ -169,7 +169,7 @@ let UziBlock = (function () {
         }
         return nodes;
       });
-      
+
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
@@ -976,6 +976,22 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['declare_local_variable'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck(null)
+            .appendField("use local variable")
+            .appendField(new Blockly.FieldTextInput("temp"), "variableName")
+            .appendField("with value");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(330);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
 

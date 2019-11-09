@@ -334,6 +334,14 @@
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLES">
     <button text="Configure variables..." callbackKey="configureVariables"></button>
+    <block type="declare_local_variable">
+      <field name="variableName">temp</field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
     <block type="set_variable">
       <field name="variableName"></field>
       <value name="value">
