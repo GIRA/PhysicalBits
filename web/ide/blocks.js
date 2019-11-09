@@ -971,11 +971,9 @@ let UziBlock = (function () {
       init: function() {
         this.appendValueInput("value")
             .setCheck(null)
-            .appendField("use local variable")
+            .appendField("declare local variable")
             .appendField(new Blockly.FieldTextInput("temp"), "variableName")
             .appendField("with value");
-        this.appendStatementInput("statements")
-            .setCheck(null);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(330);
