@@ -793,34 +793,7 @@ let UziBlock = (function () {
     initVariableBlocks();
   }
 
-
-  function getCurrentTaskNames() {
-    let program = Uzi.state.program.current;
-    if (program == null) return [];
-
-    // HACK(Richo): Filtering by the class name...
-    return program.ast.scripts
-      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
-      .map(function (each) { return each.name; });
-  }
-
-  function getDefaultTaskName() {
-    let names = getCurrentTaskNames();
-    let def = "default";
-    let i = 1;
-    while (names.includes(def)) {
-      def = "default" + i;
-      i++;
-    }
-    return def;
-  }
-
   function initTaskBlocks() {
-    function currentTasksForDropdown() {
-      let tasks = getCurrentTaskNames();
-      if (tasks.length == 0) return [["", ""]];
-      return tasks.map(function (name) { return [ name, name ]; });
-    }
 
     let blocks = [
       ["start_task", "start"],
@@ -849,11 +822,6 @@ let UziBlock = (function () {
   }
 
   function initDCMotorBlocks() {
-    function currentMotorsForDropdown() {
-      if (motors.length == 0) return [["", ""]];
-      return motors.map(function(each) { return [ each.name, each.name ]; });
-    }
-
 
     Blockly.Blocks['move_dcmotor'] = {
       init: function() {
@@ -920,10 +888,6 @@ let UziBlock = (function () {
   }
 
   function initSonarBlocks() {
-    function currentSonarsForDropdown() {
-      if (sonars.length == 0) return [["", ""]];
-      return sonars.map(function(each) { return [ each.name, each.name ]; });
-    }
 
     Blockly.Blocks['get_sonar_distance'] = {
       init: function() {
@@ -953,10 +917,6 @@ let UziBlock = (function () {
   }
 
   function initVariableBlocks() {
-    function currentGlobalsForDropdown() {
-      if (globals.length == 0) return [["", ""]];
-      return globals.map(function(each) { return [ each.name, each.name ]; });
-    }
 
     Blockly.Blocks['set_variable'] = {
       init: function() {
@@ -1001,6 +961,50 @@ let UziBlock = (function () {
     };
 
   }
+
+
+  function getCurrentTaskNames() {
+    let program = Uzi.state.program.current;
+    if (program == null) return [];
+
+    // HACK(Richo): Filtering by the class name...
+    return program.ast.scripts
+      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
+      .map(function (each) { return each.name; });
+  }
+
+  function getDefaultTaskName() {
+    let names = getCurrentTaskNames();
+    let def = "default";
+    let i = 1;
+    while (names.includes(def)) {
+      def = "default" + i;
+      i++;
+    }
+    return def;
+  }
+
+  function currentTasksForDropdown() {
+    let tasks = getCurrentTaskNames();
+    if (tasks.length == 0) return [["", ""]];
+    return tasks.map(function (name) { return [ name, name ]; });
+  }
+
+  function currentMotorsForDropdown() {
+    if (motors.length == 0) return [["", ""]];
+    return motors.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function currentSonarsForDropdown() {
+    if (sonars.length == 0) return [["", ""]];
+    return sonars.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function currentGlobalsForDropdown() {
+    if (globals.length == 0) return [["", ""]];
+    return globals.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function resizeBlockly () {
     // Only if Blockly was initialized
     if (workspace == undefined) return;
