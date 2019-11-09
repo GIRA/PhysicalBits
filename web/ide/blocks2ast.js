@@ -251,7 +251,7 @@ var BlocksToAST = (function () {
 		},
 		for: function (block, ctx, stream) {
 			var id = XML.getId(block);
-			var variableName = asIdentifier(XML.getChildNode(block, "variable").innerText);
+			var variableName = asIdentifier(XML.getChildNode(block, "variableName").innerText);
 			var start = generateCodeForValue(block, ctx, "start");
 			var stop = generateCodeForValue(block, ctx, "stop");
 			var step = generateCodeForValue(block, ctx, "step");

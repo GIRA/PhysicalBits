@@ -457,7 +457,7 @@ let UziBlock = (function () {
         let i = 0;
         this.appendDummyInput()
           .appendField(parts[i++])
-          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variable");
+          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName");
         this.appendValueInput("start")
           .setCheck("Number")
           .appendField(parts[i++]);
