@@ -105,12 +105,12 @@ var BlocksToAST = (function () {
 				body: builder.block(id, statements)
 			};
 		},
-		variableDeclaration: function (id, variableName) {
+		variableDeclaration: function (id, name, value) {
 			return {
 				__class__: "UziVariableDeclarationNode",
 				id: id,
-				name: variableName,
-				value: null
+				name: name,
+				value: value
 			};
 		},
 		for: function (id, counterName, start, stop, step, statements) {
@@ -756,6 +756,13 @@ var BlocksToAST = (function () {
 			let selector = sonarName + "." + "distance_" + unit;
 			stream.push(builder.scriptCall(id, selector, []));
 		},
+		declare_local_variable: function (block, ctx, stream) {
+			var id = XML.getId(block);
+			var name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
+			var value = generateCodeForValue(block, ctx, "value");
+
+			stream.push(builder.variableDeclaration(id, name, value));
+		},
 	};
 
 	function asIdentifier(str) {
@@ -828,17 +835,49 @@ var BlocksToAST = (function () {
 				imports: new Map(),
 				globals: [],
 
+				/*
+				 * NOTE(Richo): For now, the only blocks capable of declaring local variables
+				 * are "for" and "declare_local_variable". Unfortunately, they work a little
+				 * different from each other so we need special code to traverse the xml tree.
+				 */
 				isLocalDefined: function (name) {
 					/*
-					 * NOTE(Richo): For now, the only block capable of declaring local variables
-					 * is the "for". So, we simply filter our path looking for "for" blocks and
-					 * then we check if any of them define a variable with the specified name.
+					 * For the "declare_local_variable" block we walk from the current block
+					 * element up through its parent chain looking for this type of block
+					 * and we check if it declares a variable with the specified name. If we
+					 * find it then we don't have to keep looking, we just return true.
 					 */
-					let blocks = ctx.path.filter(function (b) { return b.getAttribute("type") == "for"; });
-					return blocks.some(function (b) {
-						let field = XML.getChildNode(b, "variable");
-						return field != undefined && field.innerText == name;
-					});
+					{
+						let currentElement = ctx.path[ctx.path.length - 1];
+						while (currentElement != null) {
+							if (currentElement.getAttribute("type") == "declare_local_variable") {
+								let field = XML.getChildNode(currentElement, "variableName");
+								if (field != undefined && field.innerText == name) {
+									return true; // We found our variable declaration!
+								}
+							}
+							currentElement = currentElement.parentElement;
+						}
+					}
+
+					/*
+					 * In the case of the "for", we need to look at the ctx.path to find
+					 * the desired block. So, we start by filtering the path and then we
+					 * check if any of the blocks found define a variable with the specified
+					 * name.
+					 */
+					{
+						let blocks = ctx.path.filter(function (b) { return b.getAttribute("type") == "for"; });
+						if (blocks.some(function (b) {
+							let field = XML.getChildNode(b, "variableName");
+							return field != undefined && field.innerText == name;
+						})) {
+							return true; // We found our variable declaration!
+						}
+					}
+
+					// If we got here, the variable is not declared yet...
+					return false;
 				},
 
 				addDCMotorImport: function (alias) {
