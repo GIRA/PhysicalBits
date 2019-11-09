@@ -15,6 +15,7 @@
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
+        .then(initializeBlocklyVariablesModal)
         .then(initializeAutorun)
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
@@ -338,6 +339,89 @@
     });
   }
 
+  function initializeBlocklyVariablesModal() {
+    let count = 0;
+
+    function getDefaultVariable() {
+      let data = $("#blockly-variables-modal-container").serializeJSON();
+      let variableNames = new Set();
+      for (let i in data.variables) {
+        variableNames.add(data.variables[i].name);
+      }
+      let variable = {name: "variable"};
+      let i = 1;
+      while (variableNames.has(variable.name)) {
+        variable.name = "variable" + i;
+        i++;
+      }
+      return variable;
+    }
+
+    function appendVariableRow(variable) {
+      let i = count++;
+
+      function createTextInput(controlValue, controlName) {
+        let input = $("<input>")
+          .attr("type", "text")
+          .addClass("form-control")
+          .addClass("text-center")
+          .attr("name", controlName);
+        input.get(0).value = controlValue;
+        return input;
+      }
+      function createRemoveButton(row) {
+        var btn = $("<button>")
+          .addClass("btn")
+          .addClass("btn-sm")
+          .attr("type", "button")
+          .append($("<i>")
+            .addClass("fas")
+            .addClass("fa-minus"));
+        btn
+          .addClass("btn-outline-danger")
+          .on("click", function () { row.remove(); });
+        return btn;
+      }
+      let tr = $("<tr>")
+        .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]")))
+      tr.append($("<td>").append(createRemoveButton(tr)));
+      $("#blockly-variables-modal-container-tbody").append(tr);
+    }
+
+    $("#add-variable-row-button").on("click", function () {
+      appendVariableRow(getDefaultVariable());
+    });
+
+    UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
+      // Build modal UI
+      $("#blockly-variables-modal-container-tbody").html("");
+      if (UziBlock.getVariables().length == 0) {
+        appendVariableRow(getDefaultVariable());
+      }
+      UziBlock.getVariables().forEach(function (variable) {
+        appendVariableRow(variable);
+      });
+      $("#blockly-variables-modal").modal("show");
+    });
+
+    $("#blockly-variables-modal").on("hide.bs.modal", function () {
+      let data = $("#blockly-variables-modal-container").serializeJSON();
+      let temp = [];
+      for (let i in data.variables) {
+        temp.push(data.variables[i]);
+      }
+      // TODO(Richo): Check program and rename/disable variable blocks accordingly
+      UziBlock.setVariables(temp);
+      UziBlock.refreshToolbox();
+      saveToLocalStorage();
+    });
+
+    $("#blockly-variables-modal-container").on("submit", function (e) {
+      e.preventDefault();
+      $("#blockly-variables-modal").modal("hide");
+    });
+  }
+
   function initializeCodePanel() {
 		codeEditor = ace.edit("code-editor");
 		codeEditor.setTheme("ace/theme/ambiance");
@@ -443,11 +527,9 @@
 	function restoreFromLocalStorage() {
     try {
       let ui = {
-        blocks: localStorage["uzi.blocks"],
-        settings: JSON.parse(localStorage["uzi.settings"] || {}),
+        settings: JSON.parse(localStorage["uzi.settings"] || "null"),
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
-        motors: JSON.parse(localStorage["uzi.motors"]),
-        sonars: JSON.parse(localStorage["uzi.sonars"]),
+        blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
       };
       setUIState(ui);
     } catch (err) {
@@ -459,45 +541,33 @@
     if (UziBlock.getWorkspace() == undefined || layout == undefined) return;
 
     let ui = getUIState();
-    localStorage["uzi.blocks"] = ui.blocks;
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
-    localStorage["uzi.motors"] = JSON.stringify(ui.motors);
-    localStorage["uzi.sonars"] = JSON.stringify(ui.sonars);
+    localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
   }
 
   function getUIState() {
     return {
-      blocks: UziBlock.toXML(),
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
-      motors: UziBlock.getMotors(),
-      sonars: UziBlock.getSonars(),
+      blockly: UziBlock.getDataForStorage(),
     };
   }
 
   function setUIState(ui) {
     try {
-      if (ui.layout) {
-        initializeLayout(ui.layout);
-      }
-
-      if (ui.blocks) {
-        UziBlock.fromXML(ui.blocks);
-      }
-
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
       }
 
-      if (ui.motors) {
-        UziBlock.setMotors(ui.motors);
+      if (ui.layout) {
+        initializeLayout(ui.layout);
       }
 
-      if (ui.sonars) {
-        UziBlock.setSonars(ui.sonars);
+      if (ui.blockly) {
+        UziBlock.setDataFromStorage(ui.blockly);
       }
     } catch (err) {
       console.error(err);
