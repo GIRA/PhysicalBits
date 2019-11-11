@@ -1113,12 +1113,20 @@ let UziBlock = (function () {
       });
 
       workspace.getAllBlocks()
-        .map(b => b.getField("motorName"))
-        .filter(f => f != undefined)
-        .forEach(function (f) {
-          let value = renames.get(f.getValue());
-          if (value == undefined) return; // TODO(Richo): Maybe this means error?
-          f.setValue(value);
+        .map(function (b) {
+          return {
+            block: b,
+            field: b.getField("motorName")
+          };
+        })
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
         });
 
       motors = data;
