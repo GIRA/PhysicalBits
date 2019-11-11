@@ -74,6 +74,8 @@ let UziBlock = (function () {
       });
 
       workspace.addChangeListener(function (evt) {
+        if (evt.type == Blockly.Events.UI) return; // Ignore these events
+
         handleVariableDeclarationBlocks(evt);
         trigger("change");
       });
