@@ -1132,7 +1132,32 @@ let UziBlock = (function () {
       motors = data;
     },
     getSonars: function () { return sonars; },
-    setSonars: function (s) { sonars = s; },
+    setSonars: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (sonars[m.index] == undefined) return;
+        renames.set(sonars[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(function (b) {
+          return {
+            block: b,
+            field: b.getField("sonarName")
+          };
+        })
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      sonars = data;
+    },
     getVariables: function () { return variables; },
     setVariables: function (g) { variables = g; },
     getDataForStorage: function () {

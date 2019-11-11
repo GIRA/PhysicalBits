@@ -223,7 +223,11 @@
   }
 
   function initializeBlocklySonarsModal() {
-    let count = 0;
+    function getFormData() {
+      let data = $("#blockly-sonars-modal-container").serializeJSON();
+      if (data.sonars == undefined) return [];
+      return Object.keys(data.sonars).map(function (k) { return data.sonars[k]; });
+    }
 
     function getUsedSonars() {
       let program = Uzi.state.program.current;
@@ -233,11 +237,8 @@
     }
 
     function getDefaultSonar() {
-      let data = $("#blockly-sonars-modal-container").serializeJSON();
-      let sonarNames = new Set();
-      for (let i in data.sonars) {
-        sonarNames.add(data.sonars[i].name);
-      }
+      let data = getFormData();
+      let sonarNames = new Set(data.map(function (m) { return m.name; }));
       let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
       let i = 1;
       while (sonarNames.has(sonar.name)) {
@@ -247,8 +248,7 @@
       return sonar;
     }
 
-    function appendSonarRow(sonar, usedSonars) {
-      let i = count++;
+    function appendSonarRow(i, sonar, usedSonars) {
 
       function createTextInput(controlValue, controlName) {
         let input = $("<input>")
@@ -296,6 +296,7 @@
         return btn;
       }
       let tr = $("<tr>")
+        .append($("<input>").attr("type", "hidden").attr("name", "sonars[" + i + "][index]").attr("value", i))
         .append($("<td>").append(createTextInput(sonar.name, "sonars[" + i + "][name]")))
         .append($("<td>").append(createPinDropdown(sonar.trig, "sonars[" + i + "][trig]")))
         .append($("<td>").append(createPinDropdown(sonar.echo, "sonars[" + i + "][echo]")))
@@ -305,30 +306,29 @@
     }
 
     $("#add-sonar-row-button").on("click", function () {
-      appendSonarRow(getDefaultSonar(), getUsedSonars());
+      let data = getFormData();
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      appendSonarRow(nextIndex, getDefaultSonar(), getUsedSonars());
     });
 
     UziBlock.getWorkspace().registerButtonCallback("configureSonars", function () {
       // Build modal UI
       $("#blockly-sonars-modal-container-tbody").html("");
+      let allSonars = UziBlock.getSonars();
       let usedSonars = getUsedSonars();
-      if (UziBlock.getSonars().length == 0) {
-        appendSonarRow(getDefaultSonar(), usedSonars);
+      if (allSonars.length == 0) {
+        appendSonarRow(0, getDefaultSonar(), usedSonars);
+      } else {
+        allSonars.forEach(function (sonar, i) {
+          appendSonarRow(i, sonar, usedSonars);
+        });
       }
-      UziBlock.getSonars().forEach(function (sonar) {
-        appendSonarRow(sonar, usedSonars);
-      });
       $("#blockly-sonars-modal").modal("show");
     });
 
     $("#blockly-sonars-modal").on("hide.bs.modal", function () {
-      let data = $("#blockly-sonars-modal-container").serializeJSON();
-      let temp = [];
-      for (let i in data.sonars) {
-        temp.push(data.sonars[i]);
-      }
-      // TODO(Richo): Check program and rename/disable sonar blocks accordingly
-      UziBlock.setSonars(temp);
+      let data = getFormData();
+      UziBlock.setSonars(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
