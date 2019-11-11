@@ -1105,7 +1105,24 @@ let UziBlock = (function () {
 
     getWorkspace: function () { return workspace; },
     getMotors: function () { return motors; },
-    setMotors: function (m) { motors = m; },
+    setMotors: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (motors[m.index] == undefined) return;
+        renames.set(motors[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => b.getField("motorName"))
+        .filter(f => f != undefined)
+        .forEach(function (f) {
+          let value = renames.get(f.getValue());
+          if (value == undefined) return; // TODO(Richo): Maybe this means error?
+          f.setValue(value);
+        });
+
+      motors = data;
+    },
     getSonars: function () { return sonars; },
     setSonars: function (s) { sonars = s; },
     getVariables: function () { return variables; },

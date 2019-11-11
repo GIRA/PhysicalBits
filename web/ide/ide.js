@@ -106,7 +106,11 @@
   }
 
   function initializeBlocklyMotorsModal() {
-    let count = 0;
+    function getFormData() {
+      let data = $("#blockly-motors-modal-container").serializeJSON();
+      if (data.motors == undefined) return [];
+      return Object.keys(data.motors).map(function (k) { return data.motors[k]; });
+    }
 
     function getUsedMotors() {
       let program = Uzi.state.program.current;
@@ -116,11 +120,8 @@
     }
 
     function getDefaultMotor() {
-      let data = $("#blockly-motors-modal-container").serializeJSON();
-      let motorNames = new Set();
-      for (let i in data.motors) {
-        motorNames.add(data.motors[i].name);
-      }
+      let data = getFormData();
+      let motorNames = new Set(data.map(function (m) { return m.name; }));
       let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
       let i = 1;
       while (motorNames.has(motor.name)) {
@@ -130,8 +131,7 @@
       return motor;
     }
 
-    function appendMotorRow(motor, usedMotors) {
-      let i = count++;
+    function appendMotorRow(i, motor, usedMotors) {
 
       function createTextInput(motorName, controlName) {
         let input = $("<input>")
@@ -179,6 +179,7 @@
         return btn;
       }
       let tr = $("<tr>")
+        .append($("<input>").attr("type", "hidden").attr("name", "motors[" + i + "][index]").attr("value", i))
         .append($("<td>").append(createTextInput(motor.name, "motors[" + i + "][name]")))
         .append($("<td>").append(createPinDropdown(motor.enable, "motors[" + i + "][enable]")))
         .append($("<td>").append(createPinDropdown(motor.fwd, "motors[" + i + "][fwd]")))
@@ -188,30 +189,29 @@
     }
 
     $("#add-motor-row-button").on("click", function () {
-      appendMotorRow(getDefaultMotor(), getUsedMotors());
+      let data = getFormData();
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      appendMotorRow(nextIndex, getDefaultMotor(), getUsedMotors());
     });
 
     UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", function () {
       // Build modal UI
       $("#blockly-motors-modal-container-tbody").html("");
+      let allMotors = UziBlock.getMotors();
       let usedMotors = getUsedMotors();
-      if (UziBlock.getMotors().length == 0) {
-        appendMotorRow(getDefaultMotor(), usedMotors);
+      if (allMotors.length == 0) {
+        appendMotorRow(0, getDefaultMotor(), usedMotors);
+      } else {
+        allMotors.forEach(function (motor, i) {
+          appendMotorRow(i, motor, usedMotors);
+        });
       }
-      UziBlock.getMotors().forEach(function (motor) {
-        appendMotorRow(motor, usedMotors);
-      });
       $("#blockly-motors-modal").modal("show");
     });
 
     $("#blockly-motors-modal").on("hide.bs.modal", function () {
-      let data = $("#blockly-motors-modal-container").serializeJSON();
-      let temp = [];
-      for (let i in data.motors) {
-        temp.push(data.motors[i]);
-      }
-      // TODO(Richo): Check program and rename/disable motor blocks accordingly
-      UziBlock.setMotors(temp);
+      let data = getFormData();
+      UziBlock.setMotors(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
