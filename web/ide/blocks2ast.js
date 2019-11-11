@@ -803,7 +803,13 @@ var BlocksToAST = (function () {
 			child.childNodes.forEach(function (each) {
 				var next = each;
 				do {
-					generateCodeFor(next, ctx, stream);
+					try {
+						let temp = [];
+						generateCodeFor(next, ctx, temp);
+						stream.push.apply(stream, temp);
+					} catch (err) {
+						console.log(err);
+					}
 					next = getNextStatement(next);
 				} while (next !== undefined);
 			});
