@@ -704,6 +704,7 @@
   }
 
 	function autorun() {
+    if (Uzi.state == undefined) return;
 		if (autorunNextTime === undefined) return;
 
 		let currentTime = +new Date();
