@@ -708,11 +708,10 @@
 
 		let currentTime = +new Date();
 		if (currentTime < autorunNextTime) return;
+    autorunNextTime = undefined;
 
 		let currentProgram = getGeneratedCodeAsJSON();
 		if (currentProgram === lastProgram) return;
-
-		autorunNextTime = undefined;
     lastProgram = currentProgram;
 
     let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
