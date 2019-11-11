@@ -340,14 +340,16 @@
   }
 
   function initializeBlocklyVariablesModal() {
-    let count = 0;
+    function getFormData() {
+      let data = $("#blockly-variables-modal-container").serializeJSON();
+      if (data.variables == undefined) return [];
+      return Object.keys(data.variables).map(function (k) { return data.variables[k]; });
+    }
+
 
     function getDefaultVariable() {
-      let data = $("#blockly-variables-modal-container").serializeJSON();
-      let variableNames = new Set();
-      for (let i in data.variables) {
-        variableNames.add(data.variables[i].name);
-      }
+      let data = getFormData();
+      let variableNames = new Set(data.map(function (m) { return m.name; }));
       let variable = {name: "variable"};
       let i = 1;
       while (variableNames.has(variable.name)) {
@@ -357,8 +359,7 @@
       return variable;
     }
 
-    function appendVariableRow(variable) {
-      let i = count++;
+    function appendVariableRow(i, variable) {
 
       function createTextInput(controlValue, controlName) {
         let input = $("<input>")
@@ -383,24 +384,29 @@
         return btn;
       }
       let tr = $("<tr>")
+        .append($("<input>").attr("type", "hidden").attr("name", "variables[" + i + "][index]").attr("value", i))
         .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]")))
       tr.append($("<td>").append(createRemoveButton(tr)));
       $("#blockly-variables-modal-container-tbody").append(tr);
     }
 
     $("#add-variable-row-button").on("click", function () {
-      appendVariableRow(getDefaultVariable());
+      let data = getFormData();
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      appendVariableRow(nextIndex, getDefaultVariable());
     });
 
     UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
       // Build modal UI
       $("#blockly-variables-modal-container-tbody").html("");
-      if (UziBlock.getVariables().length == 0) {
-        appendVariableRow(getDefaultVariable());
+      let allVariables = UziBlock.getVariables();
+      if (allVariables.length == 0) {
+        appendVariableRow(0, getDefaultVariable());
+      } else {
+        allVariables.forEach(function (variable, i) {
+          appendVariableRow(i, variable);
+        });
       }
-      UziBlock.getVariables().forEach(function (variable) {
-        appendVariableRow(variable);
-      });
       $("#blockly-variables-modal").modal("show");
     });
 

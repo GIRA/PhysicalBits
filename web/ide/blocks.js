@@ -1161,7 +1161,32 @@ let UziBlock = (function () {
       sonars = data;
     },
     getVariables: function () { return variables; },
-    setVariables: function (g) { variables = g; },
+    setVariables: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (variables[m.index] == undefined) return;
+        renames.set(variables[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(function (b) {
+          return {
+            block: b,
+            field: b.getField("variableName")
+          };
+        })
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            // TODO(Richo): What do we do?
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      variables = data;
+    },
     getDataForStorage: function () {
       return {
         version: version,
