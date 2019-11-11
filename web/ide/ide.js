@@ -445,7 +445,7 @@
   }
 
   function initializeAutorun() {
-    setInterval(autorun, 100);
+    setInterval(autorun, 150);
   }
 
   function initializeInternationalization() {
@@ -691,7 +691,7 @@
 
 	function scheduleAutorun(forced) {
 		var currentTime = +new Date();
-		autorunNextTime = currentTime;
+		autorunNextTime = currentTime + 150;
     if (forced) { lastProgram = null; }
 	}
 
