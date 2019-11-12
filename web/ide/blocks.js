@@ -1204,6 +1204,12 @@ let UziBlock = (function () {
       motors = d.motors || [];
       sonars = d.sonars || [];
       variables = d.variables || [];
+    },
+    getUsedVariables: function () {
+      return new Set(workspace.getAllBlocks()
+          .map(function (b) { return b.getField("variableName"); })
+          .filter(function (f) { return f != undefined; })
+          .map(function (f) { return f.getValue(); }));
     }
   }
 })();

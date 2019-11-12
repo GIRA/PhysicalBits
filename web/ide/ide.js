@@ -346,7 +346,6 @@
       return Object.keys(data.variables).map(function (k) { return data.variables[k]; });
     }
 
-
     function getDefaultVariable() {
       let data = getFormData();
       let variableNames = new Set(data.map(function (m) { return m.name; }));
@@ -359,7 +358,7 @@
       return variable;
     }
 
-    function appendVariableRow(i, variable) {
+    function appendVariableRow(i, variable, usedVariables) {
 
       function createTextInput(controlValue, controlName) {
         let input = $("<input>")
@@ -378,9 +377,22 @@
           .append($("<i>")
             .addClass("fas")
             .addClass("fa-minus"));
-        btn
-          .addClass("btn-outline-danger")
-          .on("click", function () { row.remove(); });
+
+        if (usedVariables.has(variable.name)) {
+          btn
+            //.attr("disabled", "true")
+            .addClass("btn-outline-secondary")
+            .attr("data-toggle", "tooltip")
+            .attr("data-placement", "left")
+            .attr("title", "This variable is being used by the program!")
+            .on("click", function () {
+              btn.tooltip("toggle");
+            });
+        } else {
+          btn
+            .addClass("btn-outline-danger")
+            .on("click", function () { row.remove(); });
+        }
         return btn;
       }
       let tr = $("<tr>")
@@ -393,18 +405,19 @@
     $("#add-variable-row-button").on("click", function () {
       let data = getFormData();
       let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
-      appendVariableRow(nextIndex, getDefaultVariable());
+      appendVariableRow(nextIndex, getDefaultVariable(), UziBlock.getUsedVariables());
     });
 
     UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
       // Build modal UI
       $("#blockly-variables-modal-container-tbody").html("");
       let allVariables = UziBlock.getVariables();
+      let usedVariables =  UziBlock.getUsedVariables();
       if (allVariables.length == 0) {
-        appendVariableRow(0, getDefaultVariable());
+        appendVariableRow(0, getDefaultVariable(), usedVariables);
       } else {
         allVariables.forEach(function (variable, i) {
-          appendVariableRow(i, variable);
+          appendVariableRow(i, variable, usedVariables);
         });
       }
       $("#blockly-variables-modal").modal("show");
