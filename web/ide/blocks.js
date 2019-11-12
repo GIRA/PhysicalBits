@@ -1059,8 +1059,6 @@ let UziBlock = (function () {
         if (!variables.some(v => v.name == evt.newValue)) {
           let nextIndex = variables.length == 0 ? 0 : Math.max.apply(null, variables.map(function (v) { return v.index; })) + 1;
           let newVar = {index: nextIndex, name: evt.newValue};
-          console.log("CREATE: ");
-          console.log(newVar);
           variables.push(newVar);
         }
 
@@ -1091,8 +1089,6 @@ let UziBlock = (function () {
           if (!getUsedVariables().has(evt.oldValue)) {
             let index = variables.indexOf(old);
             if (index > -1) {
-              console.log("REMOVE: ");
-              console.log(variables[i]);
               variables.splice(index, 1);
             }
           }
