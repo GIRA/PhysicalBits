@@ -1033,14 +1033,69 @@ let UziBlock = (function () {
      * NOTE(Richo): Some blocks automatically add variables when created. Here we
      * handle the creation event of such blocks.
      */
-    let blocks = ["for", "declare_local_variable"];
+    {
+      let blocks = ["for", "declare_local_variable"];
+      if (evt.type == Blockly.Events.CREATE && blocks.includes(evt.xml.getAttribute("type"))) {
+        let field = XML.getChildNode(evt.xml, "variableName");
+        if (field != undefined) {
+          let variableName = field.innerText;
+          if (!variables.some(function (g) { return g.name == variableName})) {
+            variables.push({ name: variableName });
+          }
+        }
+      }
+    }
 
-    if (evt.type == Blockly.Events.CREATE && blocks.includes(evt.xml.getAttribute("type"))) {
-      let field = XML.getChildNode(evt.xml, "variableName");
-      if (field != undefined) {
-        let variableName = field.innerText;
-        if (!variables.some(function (g) { return g.name == variableName})) {
-          variables.push({ name: variableName });
+    /*
+     * NOTE(Richo): Renaming a local declaration should also update the variables.
+     */
+    if (evt.type == Blockly.Events.CHANGE
+        && evt.element == "field"
+        && evt.name == "variableName") {
+      let block = workspace.getBlockById(evt.blockId);
+      if (block != undefined && block.type == "declare_local_variable") {
+
+        // Create new variable, if it doesn't exist yet
+        if (!variables.some(v => v.name == evt.newValue)) {
+          let nextIndex = variables.length == 0 ? 0 : Math.max.apply(null, variables.map(function (v) { return v.index; })) + 1;
+          let newVar = {index: nextIndex, name: evt.newValue};
+          console.log("CREATE: ");
+          console.log(newVar);
+          variables.push(newVar);
+        }
+
+        // Rename existing references to old variable (inside scope)
+        workspace.getAllBlocks()
+          .map(function (b) {
+            return {
+              block: b,
+              field: b.getField("variableName"),
+            };
+          })
+          .filter(function (o) {
+            return o.field != undefined && o.field.getValue() == evt.oldValue;
+          })
+          .filter(function (o) {
+            let current = o.block;
+            do {
+              if (current == block) return true;
+              current = current.getParent();
+            } while (current != undefined);
+            return false;
+          })
+          .forEach(function (o) { o.field.setValue(evt.newValue); });
+
+        // Remove old variable if not used
+        let old = variables.find(v => v.name == evt.oldValue);
+        if (old != undefined) {
+          if (!getUsedVariables().has(evt.oldValue)) {
+            let index = variables.indexOf(old);
+            if (index > -1) {
+              console.log("REMOVE: ");
+              console.log(variables[i]);
+              variables.splice(index, 1);
+            }
+          }
         }
       }
     }
@@ -1094,6 +1149,13 @@ let UziBlock = (function () {
   function fromXML(xml) {
     workspace.clear();
     Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), workspace);
+  }
+
+  function getUsedVariables() {
+    return new Set(workspace.getAllBlocks()
+        .map(function (b) { return b.getField("variableName"); })
+        .filter(function (f) { return f != undefined; })
+        .map(function (f) { return f.getValue(); }));
   }
 
   return {
@@ -1205,11 +1267,6 @@ let UziBlock = (function () {
       sonars = d.sonars || [];
       variables = d.variables || [];
     },
-    getUsedVariables: function () {
-      return new Set(workspace.getAllBlocks()
-          .map(function (b) { return b.getField("variableName"); })
-          .filter(function (f) { return f != undefined; })
-          .map(function (f) { return f.getValue(); }));
-    }
+    getUsedVariables: getUsedVariables
   }
 })();
