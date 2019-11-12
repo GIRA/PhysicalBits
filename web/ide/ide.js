@@ -412,7 +412,7 @@
       // Build modal UI
       $("#blockly-variables-modal-container-tbody").html("");
       let allVariables = UziBlock.getVariables();
-      let usedVariables =  UziBlock.getUsedVariables();
+      let usedVariables = UziBlock.getUsedVariables();
       if (allVariables.length == 0) {
         appendVariableRow(0, getDefaultVariable(), usedVariables);
       } else {
