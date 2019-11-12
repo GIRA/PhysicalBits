@@ -4,7 +4,7 @@ let UziBlock = (function () {
   if (!String.prototype.trim) {
     (function() {
       // Make sure we trim BOM and NBSP
-      var rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+      let rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
       String.prototype.trim = function() {
         return this.replace(rtrim, '');
       };
@@ -1121,7 +1121,7 @@ let UziBlock = (function () {
   }
 
   function getGeneratedCode(){
-    var xml = Blockly.Xml.workspaceToDom(workspace);
+    let xml = Blockly.Xml.workspaceToDom(workspace);
     return BlocksToAST.generate(xml, motors, sonars);
   }
 

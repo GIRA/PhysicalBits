@@ -1,6 +1,6 @@
 
-var i18n = (function () {
-    var spec = [],
+let i18n = (function () {
+    let spec = [],
         locales = {},
         current = "en",
         untranslatable = [];
@@ -45,7 +45,7 @@ var i18n = (function () {
     }
 
     function translate (string) {
-        var locale = locales[current] || {};
+        let locale = locales[current] || {};
 
         if (locale.hasOwnProperty(string)) {
             return locale[string].toString();
@@ -74,7 +74,7 @@ var i18n = (function () {
           $("[lang]") :
           $(node).find("[lang]").addBack("[lang]"))
               .each(function () {
-                  var $node = $(this);
+                  let $node = $(this);
                   if (this.nodeName === "INPUT") {
                       if (this.type === "button"
                           || this.type === "submit") {
@@ -104,7 +104,7 @@ var i18n = (function () {
           $("[lang-fn]") :
           $(node).find("[lang-fn]").addBack("[lang-fn]"))
               .each(function () {
-                  var $node = $(this);
+                  let $node = $(this);
                   this[$node.attr("lang-fn")](this);
               });
 
@@ -112,13 +112,13 @@ var i18n = (function () {
     }
 
     function update($node, getter, setter) {
-        var node = $node.get(0);
+        let node = $node.get(0);
         if (node.nodeName === "HTML") return;
         if (node.original === undefined) {
             node.original = getter.call($node);
         }
-        var original = node.original;
-        var translated = i18n.translate(original);
+        let original = node.original;
+        let translated = i18n.translate(original);
         setter.call($node, translated);
     }
 

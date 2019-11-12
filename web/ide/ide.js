@@ -153,7 +153,7 @@
         return select;
       }
       function createRemoveButton(row) {
-        var btn = $("<button>")
+        let btn = $("<button>")
           .addClass("btn")
           .addClass("btn-sm")
           .attr("type", "button")
@@ -270,7 +270,7 @@
         return select;
       }
       function createRemoveButton(row) {
-        var btn = $("<button>")
+        let btn = $("<button>")
           .addClass("btn")
           .addClass("btn-sm")
           .attr("type", "button")
@@ -370,7 +370,7 @@
         return input;
       }
       function createRemoveButton(row) {
-        var btn = $("<button>")
+        let btn = $("<button>")
           .addClass("btn")
           .addClass("btn-sm")
           .attr("type", "button")
@@ -631,7 +631,7 @@
     try {
       let ui = getUIState();
       let json = JSON.stringify(ui);
-      var blob = new Blob([json], {type: "text/plain;charset=utf-8"});
+      let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
       saveAs(blob, lastFileName);
     } catch (err) {
       console.log(err);
@@ -709,7 +709,7 @@
   }
 
 	function scheduleAutorun(forced) {
-		var currentTime = +new Date();
+		let currentTime = +new Date();
 		autorunNextTime = currentTime + 150;
     if (forced) { lastProgram = null; }
 	}
@@ -743,7 +743,7 @@
 	}
 
   function getGeneratedCodeAsJSON() {
-    var code = UziBlock.getGeneratedCode();
+    let code = UziBlock.getGeneratedCode();
     return JSON.stringify(code);
   }
 

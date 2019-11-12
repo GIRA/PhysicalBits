@@ -1,13 +1,13 @@
 
-var ajax = (function () {
+let ajax = (function () {
 
-  var pendingRequests = [
+  let pendingRequests = [
     [], // Priority 0 : HIGH
     [], // Priority 1 : NORMAL
     []  // Priority 2 : LOW
   ];
-  var activeXHR = []; // Requests that have already been sent to the server
-  var maxRequests = 6; // How many requests can be kept active at the same time
+  let activeXHR = []; // Requests that have already been sent to the server
+  let maxRequests = 6; // How many requests can be kept active at the same time
 
   function GET(url, data, priority) {
     return request({
@@ -52,16 +52,16 @@ var ajax = (function () {
   function abortAll () {
     pendingRequests = [[], [], []];
     while (activeXHR.length > 0) {
-      var req = activeXHR.shift();
+      let req = activeXHR.shift();
       if (req.readyState != 4) req.abort();
     }
   }
 
   function abortAllWithPriority (priority) {
     pendingRequests[priority] = [];
-    var temp = [];
-    for (var i = 0; i < activeXHR.length; i++) {
-      var req = activeXHR[i];
+    let temp = [];
+    for (let i = 0; i < activeXHR.length; i++) {
+      let req = activeXHR[i];
       if (req.readyState != 4 && req.priority == priority) {
         req.abort();
       } else {
@@ -72,14 +72,14 @@ var ajax = (function () {
   }
 
   function abortAllWithPriorityLowerThan (priority) {
-    var length = pendingRequests.length;
-    for (var i = priority + 1; i < length; i++) {
+    let length = pendingRequests.length;
+    for (let i = priority + 1; i < length; i++) {
       abortAllWithPriority(i);
     }
   }
 
   function sendRequestNow (req, priority) {
-    var xhr = $.ajax({
+    let xhr = $.ajax({
       type: req.type,
       url: req.url,
       data: req.data,
@@ -106,16 +106,16 @@ var ajax = (function () {
 
   function sendNextRequest() {
     if (activeXHR.length >= maxRequests) return;
-    var priority = choosePriorityToServeNow();
-    var requests = pendingRequests[priority];
+    let priority = choosePriorityToServeNow();
+    let requests = pendingRequests[priority];
     if (requests.length === 0) return;
-    var req = requests.shift();
+    let req = requests.shift();
     sendRequestNow(req, priority);
   }
 
   function choosePriorityToServeNow() {
-    var length = pendingRequests.length;
-    for (var i = 0; i < length - 1; i++) {
+    let length = pendingRequests.length;
+    for (let i = 0; i < length - 1; i++) {
       if (pendingRequests[i].length > 0) {
         return i;
       }
@@ -128,7 +128,7 @@ var ajax = (function () {
   }
 
   function removeFromActiveList(element) {
-    var index = activeXHR.indexOf(element, 0);
+    let index = activeXHR.indexOf(element, 0);
     if (index >= 0) {
       activeXHR.splice(index, 1);
     }

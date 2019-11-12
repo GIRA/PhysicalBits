@@ -10,8 +10,8 @@ let XML = {
 		});
   },
   getLastChild: function (block, predicate) {
-		for (var i = block.childNodes.length - 1; i >= 0; i--) {
-			var child = block.childNodes[i];
+		for (let i = block.childNodes.length - 1; i >= 0; i--) {
+			let child = block.childNodes[i];
 			if (predicate === undefined || predicate(child)) {
 				return child;
 			}
