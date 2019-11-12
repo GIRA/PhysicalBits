@@ -109,7 +109,7 @@
     function getFormData() {
       let data = $("#blockly-motors-modal-container").serializeJSON();
       if (data.motors == undefined) return [];
-      return Object.keys(data.motors).map(function (k) { return data.motors[k]; });
+      return Object.keys(data.motors).map(k => data.motors[k]);
     }
 
     function getUsedMotors() {
@@ -121,7 +121,7 @@
 
     function getDefaultMotor() {
       let data = getFormData();
-      let motorNames = new Set(data.map(function (m) { return m.name; }));
+      let motorNames = new Set(data.map(m => m.name));
       let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
       let i = 1;
       while (motorNames.has(motor.name)) {
@@ -190,7 +190,7 @@
 
     $("#add-motor-row-button").on("click", function () {
       let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
       appendMotorRow(nextIndex, getDefaultMotor(), getUsedMotors());
     });
 
@@ -226,7 +226,7 @@
     function getFormData() {
       let data = $("#blockly-sonars-modal-container").serializeJSON();
       if (data.sonars == undefined) return [];
-      return Object.keys(data.sonars).map(function (k) { return data.sonars[k]; });
+      return Object.keys(data.sonars).map(k => data.sonars[k]);
     }
 
     function getUsedSonars() {
@@ -238,7 +238,7 @@
 
     function getDefaultSonar() {
       let data = getFormData();
-      let sonarNames = new Set(data.map(function (m) { return m.name; }));
+      let sonarNames = new Set(data.map(m => m.name));
       let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
       let i = 1;
       while (sonarNames.has(sonar.name)) {
@@ -307,7 +307,7 @@
 
     $("#add-sonar-row-button").on("click", function () {
       let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
       appendSonarRow(nextIndex, getDefaultSonar(), getUsedSonars());
     });
 
@@ -343,12 +343,12 @@
     function getFormData() {
       let data = $("#blockly-variables-modal-container").serializeJSON();
       if (data.variables == undefined) return [];
-      return Object.keys(data.variables).map(function (k) { return data.variables[k]; });
+      return Object.keys(data.variables).map(k => data.variables[k]);
     }
 
     function getDefaultVariable() {
       let data = getFormData();
-      let variableNames = new Set(data.map(function (m) { return m.name; }));
+      let variableNames = new Set(data.map(m  => m.name));
       let variable = {name: "variable"};
       let i = 1;
       while (variableNames.has(variable.name)) {
@@ -404,7 +404,7 @@
 
     $("#add-variable-row-button").on("click", function () {
       let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(function (m) { return m.index; }));
+      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
       appendVariableRow(nextIndex, getDefaultVariable(), UziBlock.getUsedVariables());
     });
 
@@ -821,11 +821,8 @@
     };
 
     if (values.available
-        .filter(function (val) { return val.reporting; })
-        .some(function (val) {
-          let $item = getElement(val);
-          return $item.get(0) == undefined;
-        })) {
+        .filter(val => val.reporting)
+        .some(val => getElement(val).get(0) == undefined)) {
       initializePanel();
     }
 
@@ -943,13 +940,13 @@
     // Digital pins
     container.append($("<h6>").text("Digital:"));
     Uzi.state.pins.available
-      .filter(function (pin) { return pin.name.startsWith("D"); })
+      .filter(pin => pin.name.startsWith("D"))
       .forEach(buildInput);
 
     // Analog pins
     container.append($("<h6>").addClass("mt-4").text("Analog:"));
     Uzi.state.pins.available
-      .filter(function (pin) { return pin.name.startsWith("A"); })
+      .filter(pin => pin.name.startsWith("A"))
       .forEach(buildInput);
   }
 

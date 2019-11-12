@@ -817,9 +817,7 @@ var BlocksToAST = (function () {
 	}
 
 	function getNextStatement(block) {
-		var next = XML.getLastChild(block, function (child) {
-			return child.tagName === "NEXT";
-		});
+		var next = XML.getLastChild(block, child => child.tagName === "NEXT");
 		if (next === undefined) { return next; }
 		return next.childNodes[0];
 	}
@@ -948,7 +946,7 @@ var BlocksToAST = (function () {
 				scripts.unshift(builder.task(null, name, [], "once", null, setup));
 			}
 			return builder.program(null,
-				Array.from(ctx.imports, function (entry) { return entry[1]; }),
+				Array.from(ctx.imports, entry => entry[1]),
 				ctx.globals,
 				scripts);
 		}

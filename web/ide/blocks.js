@@ -1064,12 +1064,7 @@ let UziBlock = (function () {
 
         // Rename existing references to old variable (inside scope)
         workspace.getAllBlocks()
-          .map(function (b) {
-            return {
-              block: b,
-              field: b.getField("variableName"),
-            };
-          })
+          .map(function (b) { return { block: b, field: b.getField("variableName") }; })
           .filter(function (o) {
             return o.field != undefined && o.field.getValue() == evt.oldValue;
           })
@@ -1149,9 +1144,9 @@ let UziBlock = (function () {
 
   function getUsedVariables() {
     return new Set(workspace.getAllBlocks()
-        .map(function (b) { return b.getField("variableName"); })
-        .filter(function (f) { return f != undefined; })
-        .map(function (f) { return f.getValue(); }));
+        .map(b => b.getField("variableName"))
+        .filter(f => f != undefined)
+        .map(f => f.getValue()));
   }
 
   return {
@@ -1173,12 +1168,7 @@ let UziBlock = (function () {
       });
 
       workspace.getAllBlocks()
-        .map(function (b) {
-          return {
-            block: b,
-            field: b.getField("motorName")
-          };
-        })
+        .map(b => ({ block: b, field: b.getField("motorName") }))
         .filter(o => o.field != undefined)
         .forEach(function (o) {
           let value = renames.get(o.field.getValue());
@@ -1200,12 +1190,7 @@ let UziBlock = (function () {
       });
 
       workspace.getAllBlocks()
-        .map(function (b) {
-          return {
-            block: b,
-            field: b.getField("sonarName")
-          };
-        })
+        .map(b => ({ block: b, field: b.getField("sonarName") }))
         .filter(o => o.field != undefined)
         .forEach(function (o) {
           let value = renames.get(o.field.getValue());
@@ -1227,17 +1212,12 @@ let UziBlock = (function () {
       });
 
       workspace.getAllBlocks()
-        .map(function (b) {
-          return {
-            block: b,
-            field: b.getField("variableName")
-          };
-        })
+        .map(b => ({ block: b, field: b.getField("variableName") }))
         .filter(o => o.field != undefined)
         .forEach(function (o) {
           let value = renames.get(o.field.getValue());
           if (value == undefined) {
-            // TODO(Richo): What do we do?
+            // TODO(Richo): What do we do? Nothing...
           } else {
             o.field.setValue(value);
           }
