@@ -76,6 +76,7 @@ let UziBlock = (function () {
       workspace.addChangeListener(function (evt) {
         if (evt.type == Blockly.Events.UI) return; // Ignore these events
 
+        handleTaskBlocks(evt);
         handleVariableDeclarationBlocks(evt);
         trigger("change");
       });
@@ -1048,6 +1049,23 @@ let UziBlock = (function () {
   function currentVariablesForDropdown() {
     if (variables.length == 0) return [["", ""]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function handleTaskBlocks(evt) {
+    // NOTE(Richo): If a task is renamed we want to update all referencing blocks.
+    let interestingBlocks = ["task", "timer"];
+    if (evt.type == Blockly.Events.CHANGE
+       && evt.element == "field"
+       && evt.name == "taskName") {
+      let block = workspace.getBlockById(evt.blockId);
+      if (block != undefined && interestingBlocks.includes(block.type)) {
+        workspace.getAllBlocks()
+          .filter(b => b != block)
+          .map(b => b.getField("taskName"))
+          .filter(f => f != undefined && f.getValue() == evt.oldValue)
+          .forEach(f => f.setValue(evt.newValue));
+      }
+    }
   }
 
   function handleVariableDeclarationBlocks(evt) {
