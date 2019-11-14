@@ -82,10 +82,31 @@ let UziBlock = (function () {
 
       workspace.registerToolboxCategoryCallback("TASKS", function () {
         let node = XML.getChildNode(toolbox, "Tasks", "originalName");
-        let nodes = Array.from(node.children);
         let tasks = getCurrentTaskNames();
-        if (tasks.length > 0) {
 
+        // Handle task declaring blocks. Make sure a new name is set by default to avoid collisions
+        {
+          let interestingBlocks = ["task", "timer"];
+          let blocks = Array.from(node.getElementsByTagName("block"))
+            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
+
+          let fields = blocks.map(function (block) {
+            return Array.from(block.getElementsByTagName("field"))
+              .filter(field => field.getAttribute("name") == "taskName");
+          }).flat();
+
+          let defaultName = "default";
+          let i = 1;
+          while (tasks.includes(defaultName)) {
+            defaultName = "default" + i;
+            i++;
+          }
+
+          fields.forEach(field => field.innerText = defaultName);
+        }
+
+        // Handle task control blocks. Make sure they refer to the last existing task by default.
+        {
           let blocks = Array.from(node.getElementsByTagName("block"))
             .filter(function (block) {
               switch (block.getAttribute("type")) {
@@ -105,11 +126,12 @@ let UziBlock = (function () {
               .filter(function (field) { return field.getAttribute("name") == "taskName"; });
           }).flat();
 
-          fields.forEach(function (field) {
-            field.innerText = tasks[tasks.length-1];
-          });
+
+          let defaultName = tasks.length > 0 ? tasks[tasks.length-1] : "default";
+          fields.forEach(field => field.innerText = defaultName);
         }
-        return nodes;
+
+        return Array.from(node.children);
       });
 
       workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
