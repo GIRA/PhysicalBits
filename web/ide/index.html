@@ -506,8 +506,7 @@
     <script src="uzi.js" type="text/javascript" ></script>
     <script>
     $(document).ready(function () {
-      IDE.init();
-      Uzi.start();
+      Uzi.start().then(IDE.init);
     });
     </script>
   </body>

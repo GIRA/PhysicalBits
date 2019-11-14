@@ -13,7 +13,7 @@ let Uzi = (function () {
 
     start: function (url) {
       baseUrl = url || "";
-      updateLoop(true);
+      return updateLoop(true);
     },
 
     on: function (evt, callback) {
@@ -127,19 +127,21 @@ let Uzi = (function () {
   }
 
   function updateLoop(immediate) {
-    setTimeout(function () {
+    return new Promise(function (resolve, reject) {
       getUziState(immediate ? 0 : 45)
         .then(function (data) {
           Uzi.serverAvailable = true;
           update(fixInvalidJSONFloats(data));
-          updateLoop(false);
+          resolve();
+          setTimeout(updateLoop, 100);
         })
         .catch(function (err) {
           Uzi.serverAvailable = false;
           serverDisconnect(err);
-          updateLoop(false);
+          reject();
+          setTimeout(updateLoop, 100);
         });
-    }, 100);
+    });
   }
 
 	/*
