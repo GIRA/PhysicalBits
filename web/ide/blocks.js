@@ -1060,7 +1060,7 @@ let UziBlock = (function () {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && interestingBlocks.includes(block.type)) {
         workspace.getAllBlocks()
-          .filter(b => b != block)
+          .filter(b => !interestingBlocks.includes(b.type))
           .map(b => b.getField("taskName"))
           .filter(f => f != undefined && f.getValue() == evt.oldValue)
           .forEach(f => f.setValue(evt.newValue));
