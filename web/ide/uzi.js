@@ -168,7 +168,5 @@ let Uzi = (function () {
     return value;
   }
 
-  Uzi.fixJSON = fixInvalidJSONFloats;
-
   return Uzi;
 })();
