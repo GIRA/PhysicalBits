@@ -541,13 +541,8 @@
         return;
       }
 
-      let data = $("#blockly-variables-modal-container").serializeJSON();
-      let temp = [];
-      for (let i in data.variables) {
-        temp.push(data.variables[i]);
-      }
-      // TODO(Richo): Check program and rename/disable variable blocks accordingly
-      UziBlock.setVariables(temp);
+      let data = getFormData();
+      UziBlock.setVariables(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
     });
