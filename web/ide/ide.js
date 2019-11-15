@@ -200,7 +200,7 @@
             .addClass("btn-outline-secondary")
             .attr("data-toggle", "tooltip")
             .attr("data-placement", "left")
-            .attr("title", "This motor is being used by the program!")
+            .attr("title", i18n.translate("This motor is being used by the program!"))
             .on("click", function () {
               btn.tooltip("toggle");
             });
@@ -357,7 +357,7 @@
             .addClass("btn-outline-secondary")
             .attr("data-toggle", "tooltip")
             .attr("data-placement", "left")
-            .attr("title", "This sonar is being used by the program!")
+            .attr("title", i18n.translate("This sonar is being used by the program!"))
             .on("click", function () {
               btn.tooltip("toggle");
             });
@@ -497,7 +497,7 @@
             .addClass("btn-outline-secondary")
             .attr("data-toggle", "tooltip")
             .attr("data-placement", "left")
-            .attr("title", "This variable is being used by the program!")
+            .attr("title", i18n.translate("This variable is being used by the program!"))
             .on("click", function () {
               btn.tooltip("toggle");
             });

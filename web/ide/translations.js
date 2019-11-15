@@ -146,5 +146,8 @@ var TRANSLATIONS = [
     ["Variable name", "Nombre de variable", "Variable name"],
     ["declare local variable % with value", "declarar variable local % con valor", "declare local variable % with value"],
     ["set % to", "establecer % a", "set % to"],
-    ["increment % by", "incrementar % por", "increment % by"]
+    ["increment % by", "incrementar % por", "increment % by"],
+    ["This variable is being used by the program!", "¡Esta variable está siendo usada en el programa!", "This variable is being used by the program!"],
+    ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "This motor is being used by the program!"],
+    ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "This sonar is being used by the program!"],
 ];
