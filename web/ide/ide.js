@@ -240,6 +240,7 @@
         });
       }
       $("#blockly-motors-modal").modal("show");
+      validateForm();
     });
 
     $("#blockly-motors-modal").on("hide.bs.modal", function (evt) {
@@ -396,6 +397,7 @@
         });
       }
       $("#blockly-sonars-modal").modal("show");
+      validateForm();
     });
 
     $("#blockly-sonars-modal").on("hide.bs.modal", function (evt) {
@@ -532,6 +534,7 @@
         });
       }
       $("#blockly-variables-modal").modal("show");
+      validateForm();
     });
 
     $("#blockly-variables-modal").on("hide.bs.modal", function (evt) {
