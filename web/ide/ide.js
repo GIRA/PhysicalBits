@@ -158,6 +158,7 @@
           .attr("type", "text")
           .addClass("form-control")
           .addClass("text-center")
+          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
           .attr("name", controlName);
         if (validationFn != undefined) {
           input.on("keyup", validationFn);
