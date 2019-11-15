@@ -117,9 +117,16 @@
       inputs.each(function () { this.classList.remove("is-invalid"); });
 
       let valid = true;
-      for (let i = 0; i < inputs.length - 1; i++) {
+      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+      for (let i = 0; i < inputs.length; i++) {
+        let input_i = inputs.get(i);
+
+        if (!regex.test(input_i.value)) {
+          input_i.classList.add("is-invalid");
+          valid = false;
+        }
+
         for (let j = i + 1; j < inputs.length; j++) {
-          let input_i = inputs.get(i);
           let input_j = inputs.get(j);
 
           if (input_i.value == input_j.value) {
