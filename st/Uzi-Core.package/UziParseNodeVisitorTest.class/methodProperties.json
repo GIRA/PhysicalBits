@@ -1,17 +1,18 @@
 {
 	"class" : {
 		"addToSuiteFromSelectors:" : "Richo 11/5/2019 19:26",
-		"compileTestMethods" : "Richo 11/7/2019 18:20",
+		"allClasses" : "Richo 11/15/2019 19:31",
+		"compileTestMethods" : "Richo 11/15/2019 19:21",
 		"root" : "Richo 11/5/2019 19:15" },
 	"instance" : {
 		"allSelectorsFor:" : "Richo 11/5/2019 20:40",
 		"missingNodes:" : "Richo 11/5/2019 19:20",
 		"setUp" : "Richo 11/5/2019 19:15",
 		"test001UziParseNodeVisitorShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test002UziCompilerShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test003UziAliasApplierShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test004UziDeadCodeRemoverShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test005UziParseTreeValidatorShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test006UziParseNodePrinterShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test007UziParseTreeComparerShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
-		"test008UziOptimizingCompilerShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42" } }
+		"test002UziAliasApplierShouldImplementAllVisitMethods" : "Richo 11/15/2019 18:51",
+		"test003UziCompilerShouldImplementAllVisitMethods" : "Richo 11/15/2019 18:51",
+		"test004UziOptimizingCompilerShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
+		"test005UziDeadCodeRemoverShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
+		"test006UziParseNodePrinterShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
+		"test007UziParseTreeComparerShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
+		"test008UziParseTreeValidatorShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31" } }
