@@ -121,11 +121,13 @@
       for (let i = 0; i < inputs.length; i++) {
         let input_i = inputs.get(i);
 
+        // Check valid identifier
         if (!regex.test(input_i.value)) {
           input_i.classList.add("is-invalid");
           valid = false;
         }
 
+        // Check for duplicates
         for (let j = i + 1; j < inputs.length; j++) {
           let input_j = inputs.get(j);
 
@@ -266,6 +268,35 @@
       return Object.keys(data.sonars).map(k => data.sonars[k]);
     }
 
+    function validateForm() {
+      let inputs = $("#blockly-sonars-modal").find("[name*='[name]']");
+      inputs.each(function () { this.classList.remove("is-invalid"); });
+
+      let valid = true;
+      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+      for (let i = 0; i < inputs.length; i++) {
+        let input_i = inputs.get(i);
+
+        // Check valid identifier
+        if (!regex.test(input_i.value)) {
+          input_i.classList.add("is-invalid");
+          valid = false;
+        }
+
+        // Check for duplicates
+        for (let j = i + 1; j < inputs.length; j++) {
+          let input_j = inputs.get(j);
+
+          if (input_i.value == input_j.value) {
+            input_i.classList.add("is-invalid");
+            input_j.classList.add("is-invalid");
+            valid = false;
+          }
+        }
+      }
+      return valid;
+    }
+
     function getUsedSonars() {
       let program = Uzi.state.program.current;
       if (program == null) return new Set();
@@ -287,12 +318,16 @@
 
     function appendSonarRow(i, sonar, usedSonars) {
 
-      function createTextInput(controlValue, controlName) {
+      function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
           .addClass("form-control")
           .addClass("text-center")
+          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
           .attr("name", controlName);
+        if (validationFn != undefined) {
+          input.on("keyup", validationFn);
+        }
         input.get(0).value = controlValue;
         return input;
       }
@@ -328,13 +363,13 @@
         } else {
           btn
             .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); });
+            .on("click", function () { row.remove(); validateForm(); });
         }
         return btn;
       }
       let tr = $("<tr>")
         .append($("<input>").attr("type", "hidden").attr("name", "sonars[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(sonar.name, "sonars[" + i + "][name]")))
+        .append($("<td>").append(createTextInput(sonar.name, "sonars[" + i + "][name]", validateForm)))
         .append($("<td>").append(createPinDropdown(sonar.trig, "sonars[" + i + "][trig]")))
         .append($("<td>").append(createPinDropdown(sonar.echo, "sonars[" + i + "][echo]")))
         .append($("<td>").append(createTextInput(sonar.maxDist, "sonars[" + i + "][maxDist]")))
@@ -363,7 +398,13 @@
       $("#blockly-sonars-modal").modal("show");
     });
 
-    $("#blockly-sonars-modal").on("hide.bs.modal", function () {
+    $("#blockly-sonars-modal").on("hide.bs.modal", function (evt) {
+      if (!validateForm()) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+        return;
+      }
+
       let data = getFormData();
       UziBlock.setSonars(data);
       UziBlock.refreshToolbox();
@@ -383,6 +424,35 @@
       return Object.keys(data.variables).map(k => data.variables[k]);
     }
 
+    function validateForm() {
+      let inputs = $("#blockly-variables-modal").find("[name*='[name]']");
+      inputs.each(function () { this.classList.remove("is-invalid"); });
+
+      let valid = true;
+      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+      for (let i = 0; i < inputs.length; i++) {
+        let input_i = inputs.get(i);
+
+        // Check valid identifier
+        if (!regex.test(input_i.value)) {
+          input_i.classList.add("is-invalid");
+          valid = false;
+        }
+
+        // Check for duplicates
+        for (let j = i + 1; j < inputs.length; j++) {
+          let input_j = inputs.get(j);
+
+          if (input_i.value == input_j.value) {
+            input_i.classList.add("is-invalid");
+            input_j.classList.add("is-invalid");
+            valid = false;
+          }
+        }
+      }
+      return valid;
+    }
+
     function getDefaultVariable() {
       let data = getFormData();
       let variableNames = new Set(data.map(m  => m.name));
@@ -397,12 +467,16 @@
 
     function appendVariableRow(i, variable, usedVariables) {
 
-      function createTextInput(controlValue, controlName) {
+      function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
           .addClass("form-control")
           .addClass("text-center")
+          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
           .attr("name", controlName);
+        if (validationFn != undefined) {
+          input.on("keyup", validationFn);
+        }
         input.get(0).value = controlValue;
         return input;
       }
@@ -428,13 +502,13 @@
         } else {
           btn
             .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); });
+            .on("click", function () { row.remove(); validateForm(); });
         }
         return btn;
       }
       let tr = $("<tr>")
         .append($("<input>").attr("type", "hidden").attr("name", "variables[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]")))
+        .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]", validateForm)))
       tr.append($("<td>").append(createRemoveButton(tr)));
       $("#blockly-variables-modal-container-tbody").append(tr);
     }
@@ -460,7 +534,13 @@
       $("#blockly-variables-modal").modal("show");
     });
 
-    $("#blockly-variables-modal").on("hide.bs.modal", function () {
+    $("#blockly-variables-modal").on("hide.bs.modal", function (evt) {
+      if (!validateForm()) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+        return;
+      }
+
       let data = $("#blockly-variables-modal-container").serializeJSON();
       let temp = [];
       for (let i in data.variables) {
