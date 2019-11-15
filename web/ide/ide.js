@@ -112,6 +112,26 @@
       return Object.keys(data.motors).map(k => data.motors[k]);
     }
 
+    function validateForm() {
+      let inputs = $("#blockly-motors-modal").find("[name*='[name]']");
+      inputs.each(function () { this.classList.remove("is-invalid"); });
+
+      let valid = true;
+      for (let i = 0; i < inputs.length - 1; i++) {
+        for (let j = i + 1; j < inputs.length; j++) {
+          let input_i = inputs.get(i);
+          let input_j = inputs.get(j);
+
+          if (input_i.value == input_j.value) {
+            input_i.classList.add("is-invalid");
+            input_j.classList.add("is-invalid");
+            valid = false;
+          }
+        }
+      }
+      return valid;
+    }
+
     function getUsedMotors() {
       let program = Uzi.state.program.current;
       if (program == null) return new Set();
@@ -133,12 +153,15 @@
 
     function appendMotorRow(i, motor, usedMotors) {
 
-      function createTextInput(motorName, controlName) {
+      function createTextInput(motorName, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
           .addClass("form-control")
           .addClass("text-center")
           .attr("name", controlName);
+        if (validationFn != undefined) {
+          input.on("keyup", validationFn);
+        }
         input.get(0).value = motorName;
         return input;
       }
@@ -174,13 +197,13 @@
         } else {
           btn
             .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); });
+            .on("click", function () { row.remove(); validateForm(); });
         }
         return btn;
       }
       let tr = $("<tr>")
         .append($("<input>").attr("type", "hidden").attr("name", "motors[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(motor.name, "motors[" + i + "][name]")))
+        .append($("<td>").append(createTextInput(motor.name, "motors[" + i + "][name]", validateForm)))
         .append($("<td>").append(createPinDropdown(motor.enable, "motors[" + i + "][enable]")))
         .append($("<td>").append(createPinDropdown(motor.fwd, "motors[" + i + "][fwd]")))
         .append($("<td>").append(createPinDropdown(motor.bwd, "motors[" + i + "][bwd]")))
@@ -209,7 +232,13 @@
       $("#blockly-motors-modal").modal("show");
     });
 
-    $("#blockly-motors-modal").on("hide.bs.modal", function () {
+    $("#blockly-motors-modal").on("hide.bs.modal", function (evt) {
+      if (!validateForm()) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+        return;
+      }
+
       let data = getFormData();
       UziBlock.setMotors(data);
       UziBlock.refreshToolbox();
