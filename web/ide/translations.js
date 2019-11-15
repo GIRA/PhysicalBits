@@ -141,4 +141,10 @@ var TRANSLATIONS = [
     ["round up", "redondear hacia arriba", "round up"],
     ["round down", "redondear hacia abajo", "round down"],
     ["remainder of % ÷ %", "resto de % ÷ %", "remainder of % ÷ %"],
+    ["Configure variables...", "Configurar variables..."," Configure variables..."],
+    ["Configure variables", "Configurar variables", "Configure variables"],
+    ["Variable name", "Nombre de variable", "Variable name"],
+    ["declare local variable % with value", "declarar variable local % con valor", "declare local variable % with value"],
+    ["set % to", "establecer % a", "set % to"],
+    ["increment % by", "incrementar % por", "increment % by"]
 ];

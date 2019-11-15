@@ -952,11 +952,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['set_variable'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck(null)
-            .appendField("set")
-            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
-            .appendField("to");
+        let msg = i18n.translate("set % to");
+        let fields = [
+          [new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"],
+        ];
+        let input = this.appendValueInput("value").setCheck(null);
+        let parts = msg.split("%").map(trim);
+        for (let i = 0; i < parts.length; i++) {
+          if (i > 0) {
+            input.appendField(fields[i - 1][0], fields[i - 1][1]);
+          }
+          input.appendField(parts[i]);
+        }
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(330);
@@ -967,11 +974,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['increment_variable'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck(null)
-            .appendField("increment")
-            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
-            .appendField("by");
+        let msg = i18n.translate("increment % by");
+        let fields = [
+          [new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"],
+        ];
+        let input = this.appendValueInput("value").setCheck(null);
+        let parts = msg.split("%").map(trim);
+        for (let i = 0; i < parts.length; i++) {
+          if (i > 0) {
+            input.appendField(fields[i - 1][0], fields[i - 1][1]);
+          }
+          input.appendField(parts[i]);
+        }
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(330);
@@ -994,11 +1008,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['declare_local_variable'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck(null)
-            .appendField("declare local variable")
-            .appendField(new Blockly.FieldTextInput("temp"), "variableName")
-            .appendField("with value");
+        let msg = i18n.translate("declare local variable % with value");
+        let fields = [
+          [new Blockly.FieldTextInput("temp"), "variableName"],
+        ];
+        let input = this.appendValueInput("value").setCheck(null);
+        let parts = msg.split("%").map(trim);
+        for (let i = 0; i < parts.length; i++) {
+          if (i > 0) {
+            input.appendField(fields[i - 1][0], fields[i - 1][1]);
+          }
+          input.appendField(parts[i]);
+        }
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(330);
