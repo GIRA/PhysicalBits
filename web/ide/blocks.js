@@ -823,6 +823,7 @@ let UziBlock = (function () {
     initDCMotorBlocks();
     initSonarBlocks();
     initVariableBlocks();
+    initProcedureBlocks();
   }
 
   function initTaskBlocks() {
@@ -1008,6 +1009,163 @@ let UziBlock = (function () {
     };
   }
 
+  function initProcedureBlocks() {
+
+    Blockly.Blocks['proc_definition_0args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("procedure named")
+            .appendField(new Blockly.FieldTextInput("default"), "procName");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_definition_1args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("procedure named")
+            .appendField(new Blockly.FieldTextInput("default"), "procName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("with argument")
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_definition_2args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("procedure named")
+            .appendField(new Blockly.FieldTextInput("default"), "procName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("with arguments")
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+            .appendField(new Blockly.FieldTextInput("arg1"), "arg1");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_definition_3args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("procedure named")
+            .appendField(new Blockly.FieldTextInput("default"), "procName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("with arguments")
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+            .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+            .appendField(new Blockly.FieldTextInput("arg2"), "arg2");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['return'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("return");
+        this.setPreviousStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_call_0args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("call")
+            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_call_1args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("call")
+            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_call_2args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("call")
+            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.appendValueInput("arg1")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg1");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+     this.setTooltip("");
+     this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['proc_call_3args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField("call")
+            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.appendValueInput("arg1")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg1");
+        this.appendValueInput("arg2")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg2");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+  }
 
   function getCurrentTaskNames() {
     let program = Uzi.state.program.current;
