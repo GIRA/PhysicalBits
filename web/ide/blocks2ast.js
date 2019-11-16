@@ -799,6 +799,10 @@ let BlocksToAST = (function () {
 									asIdentifier(XML.getChildNode(block, "arg1").innerText),
 									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
 			stream.push(builder.procedure(id, name, args, statements));
+		},
+		return: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, null));
 		}
 	};
 
