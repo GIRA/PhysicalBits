@@ -234,7 +234,9 @@ let BlocksToAST = (function () {
 		}
 	};
 
-	let topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];
+	let topLevelBlocks = ["task", "timer",
+												"proc_definition_0args", "proc_definition_1args",
+												"proc_definition_2args", "proc_definition_3args"];
 	let dispatchTable =  {
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -763,6 +765,41 @@ let BlocksToAST = (function () {
 
 			stream.push(builder.variableDeclaration(id, name, value));
 		},
+		proc_definition_0args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_1args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_2args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_3args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		}
 	};
 
 	function asIdentifier(str) {
@@ -933,9 +970,11 @@ let BlocksToAST = (function () {
 					}
 				}
 			};
-			xml.childNodes.forEach(function (block) {
-				if (isTopLevel(block)) {
+			Array.from(xml.childNodes).filter(isTopLevel).forEach(function (block) {
+				try {
 					generateCodeFor(block, ctx, scripts)
+				} catch (err) {
+					console.log(err);
 				}
 			});
 			if (setup.length > 0) {
