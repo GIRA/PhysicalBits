@@ -800,6 +800,32 @@ let BlocksToAST = (function () {
 									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
 			stream.push(builder.procedure(id, name, args, statements));
 		},
+		proc_call_0args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			stream.push(builder.scriptCall(id, procName, []));
+		},
+		proc_call_1args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
+		proc_call_2args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
+		proc_call_3args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
 		return: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, null));
