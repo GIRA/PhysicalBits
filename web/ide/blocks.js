@@ -1308,6 +1308,30 @@ let UziBlock = (function () {
     }
 
     /*
+     * NOTE(Richo): Procedure definitions also create variables for their arguments
+     */
+    {
+      let blocks = [
+        {types: ["proc_definition_1args"], fields: ["arg0"]},
+        {types: ["proc_definition_2args"], fields: ["arg0", "arg1"]},
+        {types: ["proc_definition_3args"], fields: ["arg0", "arg1", "arg2"]}
+      ];
+      blocks.forEach(function (block) {
+        if (evt.type == Blockly.Events.CREATE && block.types.includes(evt.xml.getAttribute("type"))) {
+          block.fields.forEach(function (fieldName) {
+            let field = XML.getChildNode(evt.xml, fieldName);
+            if (field != undefined) {
+              let variableName = field.innerText;
+              if (!variables.some(function (g) { return g.name == variableName})) {
+                variables.push({ name: variableName });
+              }
+            }
+          });
+        }
+      });
+    }
+
+    /*
      * NOTE(Richo): Renaming a local declaration should also update the variables.
      */
     if (evt.type == Blockly.Events.CHANGE
