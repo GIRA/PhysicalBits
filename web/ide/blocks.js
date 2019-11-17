@@ -186,6 +186,57 @@ let UziBlock = (function () {
         return nodes;
       });
 
+
+      workspace.registerToolboxCategoryCallback("PROCEDURES", function () {
+        let node = XML.getChildNode(toolbox, "Procedures", "originalName");
+        let nodes = Array.from(node.children);
+
+        // Handle proc declaring blocks. Make sure a new name is set by default to avoid collisions
+        {
+          let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
+                                   "proc_definition_2args", "proc_definition_3args"];
+          let blocks = Array.from(node.getElementsByTagName("block"))
+            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
+
+          let fields = blocks.map(function (block) {
+            return Array.from(block.getElementsByTagName("field"))
+              .filter(field => field.getAttribute("name") == "procName");
+          }).flat();
+
+          let defaultName = "default";
+          let i = 1;
+          let procs = getCurrentProcedureNames();
+          while (procs.includes(defaultName)) {
+            defaultName = "default" + i;
+            i++;
+          }
+
+          fields.forEach(field => field.innerText = defaultName);
+        }
+
+        // Handle procedure call blocks. Make sure they refer to the last existing proc by default.
+        {
+          let interestingBlocks = ["proc_call_0args", "proc_call_1args", "proc_call_2args", "proc_call_3args"];
+          interestingBlocks.forEach(function (type, nargs) {
+            let procs = getCurrentProcedureNames(nargs);
+            if (procs.length == 0) {
+              let index = nodes.findIndex(n => n.getAttribute("type") == type);
+              if (index > -1) { nodes.splice(index, 1); }
+            } else {
+              let defaultName = procs.length > 0 ? procs[procs.length-1] : "default";
+              Array.from(node.getElementsByTagName("block"))
+                .filter(block => block.getAttribute("type") == type)
+                .map(block => Array.from(block.getElementsByTagName("field"))
+                    .filter(field => field.getAttribute("name") == "procName"))
+                .flat()
+                .forEach(field => field.innerText = defaultName);
+              }
+          });
+        }
+
+        return nodes;
+      });
+
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
@@ -1093,7 +1144,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField("call")
-            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(285);
@@ -1106,7 +1157,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField("call")
-            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
@@ -1123,7 +1174,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField("call")
-            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
@@ -1144,7 +1195,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField("call")
-            .appendField(new Blockly.FieldDropdown([["option","OPTIONNAME"], ["option","OPTIONNAME"], ["option","OPTIONNAME"]]), "procName");
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
@@ -1168,13 +1219,19 @@ let UziBlock = (function () {
   }
 
   function getCurrentTaskNames() {
-    let program = Uzi.state.program.current;
-    if (program == null) return [];
+    let interestingBlocks = ["task", "timer"];
+    return workspace.getAllBlocks()
+      .filter(b => interestingBlocks.includes(b.type))
+      .map(b => b.getFieldValue("taskName"));
+  }
 
-    // HACK(Richo): Filtering by the class name...
-    return program.ast.scripts
-      .filter(function (s) { return s.__class__ == "UziTaskNode"; })
-      .map(function (each) { return each.name; });
+  function getCurrentProcedureNames(nargs) {
+    let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
+                             "proc_definition_2args", "proc_definition_3args"];
+    if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
+    return workspace.getAllBlocks()
+      .filter(b => interestingBlocks.includes(b.type))
+      .map(b => b.getFieldValue("procName"));
   }
 
   function getDefaultTaskName() {
@@ -1192,6 +1249,12 @@ let UziBlock = (function () {
     let tasks = getCurrentTaskNames();
     if (tasks.length == 0) return [["", ""]];
     return tasks.map(function (name) { return [ name, name ]; });
+  }
+
+  function currentProceduresForDropdown(nargs) {
+    let procs = getCurrentProcedureNames(nargs);
+    if (procs.length == 0) return [["", ""]];
+    return procs.map(function (name) { return [ name, name ]; });
   }
 
   function currentMotorsForDropdown() {

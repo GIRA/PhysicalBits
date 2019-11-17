@@ -363,7 +363,7 @@
     </block>
   </category>
   <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
-  <category name="Procedures" colour="#995ba5">
+  <category name="Procedures" colour="#995ba5" custom="PROCEDURES">
     <block type="proc_definition_0args">
       <field name="procName">default</field>
     </block>
