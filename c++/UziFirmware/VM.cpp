@@ -171,13 +171,13 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 	{
     case MATRIX_8x8_DISPLAY:
     {
-      for (uint8 i = 7; i >= 0; i--) {
+      for (int8 i = 7; i >= 0; i--) {
         rowArray[i] = (uint8)stack.pop();
       }
-      for (uint8 i = 7; i >= 0; i--) {
+      for (int8 i = 7; i >= 0; i--) {
         PinesY[i] = (uint8)stack.pop();
       }
-      for (uint8 i = 7; i >= 0; i--) {
+      for (int8 i = 7; i >= 0; i--) {
         PinesX[i] = (uint8)stack.pop();
       }
       matrix8x8_display(PinesX, PinesY, rowArray);
