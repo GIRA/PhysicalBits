@@ -142,44 +142,6 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
           
 	switch (opcode)
 	{
-		case MATRIX_8x8_DISPLAY:
-		{
-			uint8 pins_x[8];
-			uint8 pins_y[8];
-			uint8 rows[8];
-
-			for (int8 i = 7; i >= 0; i--) 
-			{
-				rows[i] = (uint8)stack.pop();
-			}
-			for (int8 i = 7; i >= 0; i--) 
-			{
-				pins_y[i] = (uint8)stack.pop();
-			}
-			for (int8 i = 7; i >= 0; i--) 
-			{
-				pins_x[i] = (uint8)stack.pop();
-			}
-
-			for (int8 i = 0; i < 8; i++) 
-			{
-				io->setValue(pins_y[i], LOW);
-				for (int j = 0; j < 8; j++)
-				{
-					io->setValue(pins_x[7 - j], (rows[i] >> j) & 1);
-				}
-
-				delayMicroseconds(100);
-
-				for (int j = 0; j < 8; j++)
-				{
-					io->setValue(pins_x[j], LOW);
-				}
-				io->setValue(pins_y[i], HIGH);
-			}
-		}
-		break;
-    
 		case TURN_ON:
 		{
 			io->setValue((uint8)argument, HIGH);
@@ -1035,6 +997,44 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			else 
 			{
 				stack.push(INFINITY);
+			}
+		}
+		break;
+
+		case PRIM_MATRIX_8x8_DISPLAY:
+		{
+			uint8 pins_x[8];
+			uint8 pins_y[8];
+			uint8 rows[8];
+
+			for (int8 i = 7; i >= 0; i--)
+			{
+				rows[i] = (uint8)stack.pop();
+			}
+			for (int8 i = 7; i >= 0; i--)
+			{
+				pins_y[i] = (uint8)stack.pop();
+			}
+			for (int8 i = 7; i >= 0; i--)
+			{
+				pins_x[i] = (uint8)stack.pop();
+			}
+
+			for (int8 i = 0; i < 8; i++)
+			{
+				io->setValue(pins_y[i], LOW);
+				for (int j = 0; j < 8; j++)
+				{
+					io->setValue(pins_x[7 - j], (rows[i] >> j) & 1);
+				}
+
+				delayMicroseconds(100);
+
+				for (int j = 0; j < 8; j++)
+				{
+					io->setValue(pins_x[j], LOW);
+				}
+				io->setValue(pins_y[i], HIGH);
 			}
 		}
 		break;
