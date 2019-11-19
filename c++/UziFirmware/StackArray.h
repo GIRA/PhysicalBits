@@ -3,7 +3,7 @@
 #include "types.h"
 #include "Errors.h"
 #include <Arduino.h>
-const uint16 MAX_SIZE = 80;
+const uint16 MAX_SIZE = 100;
 
 class StackArray
 {
