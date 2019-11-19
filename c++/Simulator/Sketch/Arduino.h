@@ -96,6 +96,7 @@ private:
 extern CSerial Serial;
 extern unsigned long millis();
 extern void delay(unsigned long);
+extern void delayMicroseconds(unsigned long);
 extern void pinMode(int, int);
 extern void digitalWrite(int, int);
 extern bool digitalRead(int);
