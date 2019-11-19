@@ -234,7 +234,9 @@ let BlocksToAST = (function () {
 		}
 	};
 
-	let topLevelBlocks = ["task", "timer", "procedures_defnoreturn", "procedures_defreturn"];
+	let topLevelBlocks = ["task", "timer",
+												"proc_definition_0args", "proc_definition_1args",
+												"proc_definition_2args", "proc_definition_3args"];
 	let dispatchTable =  {
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -763,6 +765,71 @@ let BlocksToAST = (function () {
 
 			stream.push(builder.variableDeclaration(id, name, value));
 		},
+		proc_definition_0args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_1args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_2args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_3args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_call_0args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			stream.push(builder.scriptCall(id, procName, []));
+		},
+		proc_call_1args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
+		proc_call_2args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
+		proc_call_3args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let procName = asIdentifier(XML.getChildNode(block, "procName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")}];
+			stream.push(builder.scriptCall(id, procName, args));
+		},
+		return: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, null));
+		}
 	};
 
 	function asIdentifier(str) {
@@ -841,8 +908,9 @@ let BlocksToAST = (function () {
 
 				/*
 				 * NOTE(Richo): For now, the only blocks capable of declaring local variables
-				 * are "for" and "declare_local_variable". Unfortunately, they work a little
-				 * different from each other so we need special code to traverse the xml tree.
+				 * are "declare_local_variable", "for", and the procedure definition blocks.
+				 * Unfortunately, "declare_local_variable" works a little different than the
+				 * rest so we need special code to traverse the xml tree.
 				 */
 				isLocalDefined: function (name) {
 					/*
@@ -865,16 +933,26 @@ let BlocksToAST = (function () {
 					}
 
 					/*
-					 * In the case of the "for", we need to look at the ctx.path to find
+					 * In the other cases, we just need to look at the ctx.path to find
 					 * the desired block. So, we start by filtering the path and then we
 					 * check if any of the blocks found define a variable with the specified
 					 * name.
 					 */
 					{
-						let blocks = ctx.path.filter(function (b) { return b.getAttribute("type") == "for"; });
+						let interestingBlocks = {
+							for: ["variableName"],
+							proc_definition_1args: ["arg0"],
+							proc_definition_2args: ["arg0", "arg1"],
+							proc_definition_3args: ["arg0", "arg1", "arg2"]
+						};
+						let interestingTypes = new Set(Object.keys(interestingBlocks));
+						let blocks = ctx.path.filter(b => interestingTypes.has(b.getAttribute("type")));
 						if (blocks.some(function (b) {
-							let field = XML.getChildNode(b, "variableName");
-							return field != undefined && field.innerText == name;
+							let fields = interestingBlocks[b.getAttribute("type")];
+							return fields.some(function (f) {
+								let field = XML.getChildNode(b, f);
+								return field != undefined && field.innerText == name;
+							});
 						})) {
 							return true; // We found our variable declaration!
 						}
@@ -933,9 +1011,11 @@ let BlocksToAST = (function () {
 					}
 				}
 			};
-			xml.childNodes.forEach(function (block) {
-				if (isTopLevel(block)) {
+			Array.from(xml.childNodes).filter(isTopLevel).forEach(function (block) {
+				try {
 					generateCodeFor(block, ctx, scripts)
+				} catch (err) {
+					console.log(err);
 				}
 			});
 			if (setup.length > 0) {
