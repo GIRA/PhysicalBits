@@ -57,3 +57,5 @@ prim isCloseTo;
 prim delayS;
 prim delayM;
 prim minutes;
+
+prim matrix : matrix8x8;

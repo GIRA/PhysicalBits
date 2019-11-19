@@ -135,12 +135,55 @@ void VM::saveCurrentCoroutine()
 	currentCoroutine->setPC(pc);
 }
 
+void matrix8x8_display(uint8 PinesX[], uint8 PinesY[], uint8 rowArray[]) {
+  trace("M8x8");
+  for (int i = 0; i < 8; i++) {
+
+    pinMode(PinesY[i], OUTPUT);
+    digitalWrite(PinesY[i], LOW);
+    for(int j = 0; j < 8; j++)
+    {
+       pinMode(PinesX[7 - j],OUTPUT);
+       digitalWrite(PinesX[7 - j], (rowArray[i] >> j) & 1);
+    }
+    
+    delayMicroseconds(100);
+    
+    for(int j = 0; j < 8; j++)
+    {
+       pinMode(PinesX[j],OUTPUT);
+       digitalWrite(PinesX[j],LOW);
+    }
+    digitalWrite(PinesY[i],HIGH);
+  }
+}
+
 void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor, bool& yieldFlag)
 {
 	Opcode opcode = (Opcode)instruction.opcode;
 	int16 argument = getArgument(&instruction);
+    
+    uint8 PinesX[8];
+     uint8 PinesY[8];
+      uint8 rowArray[8];
+      
 	switch (opcode)
 	{
+    case MATRIX_8x8_DISPLAY:
+    {
+      for (uint8 i = 7; i >= 0; i--) {
+        rowArray[i] = (uint8)stack.pop();
+      }
+      for (uint8 i = 7; i >= 0; i--) {
+        PinesY[i] = (uint8)stack.pop();
+      }
+      for (uint8 i = 7; i >= 0; i--) {
+        PinesX[i] = (uint8)stack.pop();
+      }
+      matrix8x8_display(PinesX, PinesY, rowArray);
+    }
+    break;
+    
 		case TURN_ON:
 		{
 			io->setValue((uint8)argument, HIGH);
