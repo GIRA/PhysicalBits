@@ -1358,6 +1358,29 @@ let UziBlock = (function () {
     }
 
     /*
+     * NOTE(Richo): Renaming a procedure argument should update the variables.
+     */
+    {
+      let interestingBlocks = [
+        {type: "proc_definition_1args", fields: ["arg0"]},
+        {type: "proc_definition_2args", fields: ["arg0", "arg1"]},
+        {type: "proc_definition_3args", fields: ["arg0", "arg1", "arg2"]},
+      ];
+      interestingBlocks.forEach(function (each) {
+        if (evt.type == Blockly.Events.CHANGE
+            && evt.element == "field"
+            && each.fields.includes(evt.name)) {
+          let block = workspace.getBlockById(evt.blockId);
+          if (block != undefined && block.type == each.type) {
+            let newName = evt.newValue;
+            let oldName = evt.oldValue;
+            renameVariable(oldName, newName, block);
+          }
+        }
+      });
+    }
+
+    /*
      * NOTE(Richo): Renaming a local declaration should also update the variables.
      */
     if (evt.type == Blockly.Events.CHANGE
@@ -1365,39 +1388,45 @@ let UziBlock = (function () {
         && evt.name == "variableName") {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && block.type == "declare_local_variable") {
+        let newName = evt.newValue;
+        let oldName = evt.oldValue;
+        renameVariable(oldName, newName, block);
+      }
+    }
+  }
 
-        // Create new variable, if it doesn't exist yet
-        if (!variables.some(v => v.name == evt.newValue)) {
-          let nextIndex = variables.length == 0 ? 0 : Math.max.apply(null, variables.map(function (v) { return v.index; })) + 1;
-          let newVar = {index: nextIndex, name: evt.newValue};
-          variables.push(newVar);
-        }
+  function renameVariable(oldName, newName, parentBlock) {
 
-        // Rename existing references to old variable (inside scope)
-        workspace.getAllBlocks()
-          .map(function (b) { return { block: b, field: b.getField("variableName") }; })
-          .filter(function (o) {
-            return o.field != undefined && o.field.getValue() == evt.oldValue;
-          })
-          .filter(function (o) {
-            let current = o.block;
-            do {
-              if (current == block) return true;
-              current = current.getParent();
-            } while (current != undefined);
-            return false;
-          })
-          .forEach(function (o) { o.field.setValue(evt.newValue); });
+    // Create new variable, if it doesn't exist yet
+    if (!variables.some(v => v.name == newName)) {
+      let nextIndex = variables.length == 0 ? 0 : Math.max.apply(null, variables.map(function (v) { return v.index; })) + 1;
+      let newVar = {index: nextIndex, name: newName};
+      variables.push(newVar);
+    }
 
-        // Remove old variable if not used
-        let old = variables.find(v => v.name == evt.oldValue);
-        if (old != undefined) {
-          if (!getUsedVariables().has(evt.oldValue)) {
-            let index = variables.indexOf(old);
-            if (index > -1) {
-              variables.splice(index, 1);
-            }
-          }
+    // Rename existing references to old variable (inside scope)
+    workspace.getAllBlocks()
+      .map(function (b) { return { block: b, field: b.getField("variableName") }; })
+      .filter(function (o) {
+        return o.field != undefined && o.field.getValue() == oldName;
+      })
+      .filter(function (o) {
+        let current = o.block;
+        do {
+          if (current == parentBlock) return true;
+          current = current.getParent();
+        } while (current != undefined);
+        return false;
+      })
+      .forEach(function (o) { o.field.setValue(newName); });
+
+    // Remove old variable if not used
+    let old = variables.find(v => v.name == oldName);
+    if (old != undefined) {
+      if (!getUsedVariables().has(oldName)) {
+        let index = variables.indexOf(old);
+        if (index > -1) {
+          variables.splice(index, 1);
         }
       }
     }
