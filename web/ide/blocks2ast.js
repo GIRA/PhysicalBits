@@ -908,8 +908,9 @@ let BlocksToAST = (function () {
 
 				/*
 				 * NOTE(Richo): For now, the only blocks capable of declaring local variables
-				 * are "for" and "declare_local_variable". Unfortunately, they work a little
-				 * different from each other so we need special code to traverse the xml tree.
+				 * are "declare_local_variable", "for", and the procedure definition blocks.
+				 * Unfortunately, "declare_local_variable" works a little different than the
+				 * rest so we need special code to traverse the xml tree.
 				 */
 				isLocalDefined: function (name) {
 					/*
@@ -932,16 +933,26 @@ let BlocksToAST = (function () {
 					}
 
 					/*
-					 * In the case of the "for", we need to look at the ctx.path to find
+					 * In the other cases, we just need to look at the ctx.path to find
 					 * the desired block. So, we start by filtering the path and then we
 					 * check if any of the blocks found define a variable with the specified
 					 * name.
 					 */
 					{
-						let blocks = ctx.path.filter(function (b) { return b.getAttribute("type") == "for"; });
+						let interestingBlocks = {
+							for: ["variableName"],
+							proc_definition_1args: ["arg0"],
+							proc_definition_2args: ["arg0", "arg1"],
+							proc_definition_3args: ["arg0", "arg1", "arg2"]
+						};
+						let interestingTypes = new Set(Object.keys(interestingBlocks));
+						let blocks = ctx.path.filter(b => interestingTypes.has(b.getAttribute("type")));
 						if (blocks.some(function (b) {
-							let field = XML.getChildNode(b, "variableName");
-							return field != undefined && field.innerText == name;
+							let fields = interestingBlocks[b.getAttribute("type")];
+							return fields.some(function (f) {
+								let field = XML.getChildNode(b, f);
+								return field != undefined && field.innerText == name;
+							});
 						})) {
 							return true; // We found our variable declaration!
 						}
