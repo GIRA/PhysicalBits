@@ -135,54 +135,50 @@ void VM::saveCurrentCoroutine()
 	currentCoroutine->setPC(pc);
 }
 
-void matrix8x8_display(uint8 PinesX[], uint8 PinesY[], uint8 rowArray[]) {
-  trace("M8x8");
-  for (int i = 0; i < 8; i++) {
-
-    pinMode(PinesY[i], OUTPUT);
-    digitalWrite(PinesY[i], LOW);
-    for(int j = 0; j < 8; j++)
-    {
-       pinMode(PinesX[7 - j],OUTPUT);
-       digitalWrite(PinesX[7 - j], (rowArray[i] >> j) & 1);
-    }
-    
-    delayMicroseconds(100);
-    
-    for(int j = 0; j < 8; j++)
-    {
-       pinMode(PinesX[j],OUTPUT);
-       digitalWrite(PinesX[j],LOW);
-    }
-    digitalWrite(PinesY[i],HIGH);
-  }
-}
-
 void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor, bool& yieldFlag)
 {
 	Opcode opcode = (Opcode)instruction.opcode;
 	int16 argument = getArgument(&instruction);
-    
-    uint8 PinesX[8];
-     uint8 PinesY[8];
-      uint8 rowArray[8];
-      
+          
 	switch (opcode)
 	{
-    case MATRIX_8x8_DISPLAY:
-    {
-      for (int8 i = 7; i >= 0; i--) {
-        rowArray[i] = (uint8)stack.pop();
-      }
-      for (int8 i = 7; i >= 0; i--) {
-        PinesY[i] = (uint8)stack.pop();
-      }
-      for (int8 i = 7; i >= 0; i--) {
-        PinesX[i] = (uint8)stack.pop();
-      }
-      matrix8x8_display(PinesX, PinesY, rowArray);
-    }
-    break;
+		case MATRIX_8x8_DISPLAY:
+		{
+			uint8 pins_x[8];
+			uint8 pins_y[8];
+			uint8 rows[8];
+
+			for (int8 i = 7; i >= 0; i--) 
+			{
+				rows[i] = (uint8)stack.pop();
+			}
+			for (int8 i = 7; i >= 0; i--) 
+			{
+				pins_y[i] = (uint8)stack.pop();
+			}
+			for (int8 i = 7; i >= 0; i--) 
+			{
+				pins_x[i] = (uint8)stack.pop();
+			}
+
+			for (int8 i = 0; i < 8; i++) 
+			{
+				io->setValue(pins_y[i], LOW);
+				for (int j = 0; j < 8; j++)
+				{
+					io->setValue(pins_x[7 - j], (rows[i] >> j) & 1);
+				}
+
+				delayMicroseconds(100);
+
+				for (int j = 0; j < 8; j++)
+				{
+					io->setValue(pins_x[j], LOW);
+				}
+				io->setValue(pins_y[i], HIGH);
+			}
+		}
+		break;
     
 		case TURN_ON:
 		{
