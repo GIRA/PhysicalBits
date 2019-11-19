@@ -77,6 +77,7 @@ let UziBlock = (function () {
         if (evt.type == Blockly.Events.UI) return; // Ignore these events
 
         handleTaskBlocks(evt);
+        handleProcedureBlocks(evt);
         handleVariableDeclarationBlocks(evt);
         trigger("change");
       });
@@ -1274,6 +1275,27 @@ let UziBlock = (function () {
   function currentVariablesForDropdown() {
     if (variables.length == 0) return [["", ""]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function handleProcedureBlocks(evt) {
+    // NOTE(Richo): If a procedure is renamed we want to update all referencing blocks.
+    let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
+                            "proc_definition_2args", "proc_definition_3args"];
+    let callBlocks = ["proc_call_0args", "proc_call_1args",
+                      "proc_call_2args", "proc_call_3args"];
+    if (evt.type == Blockly.Events.CHANGE
+       && evt.element == "field"
+       && evt.name == "procName") {
+      let block = workspace.getBlockById(evt.blockId);
+      if (block != undefined && definitionBlocks.includes(block.type)) {
+        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
+        workspace.getAllBlocks()
+          .filter(b => callBlock == b.type)
+          .map(b => b.getField("procName"))
+          .filter(f => f != undefined && f.getValue() == evt.oldValue)
+          .forEach(f => f.setValue(evt.newValue));
+      }
+    }
   }
 
   function handleTaskBlocks(evt) {
