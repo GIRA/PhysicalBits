@@ -1551,16 +1551,32 @@ let UziBlock = (function () {
         renames.set(variables[m.index].name, m.name);
       });
 
+      function getVariables(block) {
+        let interestingBlocks = {
+          for: ["variableName"],
+          declare_local_variable: ["variableName"],
+          variable: ["variableName"],
+          increment_variable: ["variableName"],
+          set_variable: ["variableName"],
+          proc_definition_1args: ["arg0"],
+          proc_definition_2args: ["arg0", "arg1"],
+          proc_definition_3args: ["arg0", "arg1", "arg2"],
+        };
+        return (interestingBlocks[block.type] || []).map(f => block.getField(f));
+      }
+
       workspace.getAllBlocks()
-        .map(b => ({ block: b, field: b.getField("variableName") }))
-        .filter(o => o.field != undefined)
+        .map(b => ({ block: b, fields: getVariables(b) }))
+        .filter(o => o.fields.length > 0)
         .forEach(function (o) {
-          let value = renames.get(o.field.getValue());
-          if (value == undefined) {
-            // TODO(Richo): What do we do? Nothing...
-          } else {
-            o.field.setValue(value);
-          }
+          o.fields.forEach(function (field) {
+            let value = renames.get(field.getValue());
+            if (value == undefined) {
+              // TODO(Richo): What do we do? Nothing...
+            } else {
+              field.setValue(value);
+            }
+          });
         });
 
       variables = data;
