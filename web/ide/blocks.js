@@ -83,7 +83,6 @@ let UziBlock = (function () {
 
       workspace.registerToolboxCategoryCallback("TASKS", function () {
         let node = XML.getChildNode(toolbox, "Tasks", "originalName");
-        let tasks = getCurrentTaskNames();
 
         // Handle task declaring blocks. Make sure a new name is set by default to avoid collisions
         {
@@ -96,6 +95,7 @@ let UziBlock = (function () {
               .filter(field => field.getAttribute("name") == "taskName");
           }).flat();
 
+          let tasks = getCurrentScriptNames();
           let defaultName = "default";
           let i = 1;
           while (tasks.includes(defaultName)) {
@@ -127,7 +127,7 @@ let UziBlock = (function () {
               .filter(function (field) { return field.getAttribute("name") == "taskName"; });
           }).flat();
 
-
+          let tasks = getCurrentTaskNames();
           let defaultName = tasks.length > 0 ? tasks[tasks.length-1] : "default";
           fields.forEach(field => field.innerText = defaultName);
         }
@@ -205,7 +205,7 @@ let UziBlock = (function () {
 
           let defaultName = "default";
           let i = 1;
-          let procs = getCurrentProcedureNames();
+          let procs = getCurrentScriptNames();
           while (procs.includes(defaultName)) {
             defaultName = "default" + i;
             i++;
@@ -1216,6 +1216,10 @@ let UziBlock = (function () {
       }
     };
 
+  }
+
+  function getCurrentScriptNames() {
+    return new getCurrentTaskNames().concat(getCurrentProcedureNames());
   }
 
   function getCurrentTaskNames() {
