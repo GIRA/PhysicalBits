@@ -1,4 +1,0 @@
-"import a from 'test15.uzi';"
-
-task a() { a = 1; }
-task a() { a = 1; }
