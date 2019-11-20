@@ -12,18 +12,18 @@ task drawing() running {
           row0, row1, row2, row3, row4, row5, row6, row7);
 }
 
-proc clear() {
-  row0 = 0;
-  row1 = 0;
-  row2 = 0;
-  row3 = 0;
-  row4 = 0;
-  row5 = 0;
-  row6 = 0;
-  row7 = 0;
+proc display_EMPTY() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 0;
+	row3 = 0;
+	row4 = 0;
+	row5 = 0;
+	row6 = 0;
+	row7 = 0;
 }
 
-proc display_ALL() {
+proc display_FULL() {
 	row0 = 255;
 	row1 = 255;
 	row2 = 255;
@@ -34,299 +34,840 @@ proc display_ALL() {
 	row7 = 255;
 }
 
-proc display_EX() {
+proc display_0() {
 	row0 = 0;
-	row1 = 16;
-	row2 = 16;
-	row3 = 16;
-	row4 = 16;
-	row5 = 0;
-	row6 = 16;
-	row7 = 0;
+	row1 = 62;
+	row2 = 103;
+	row3 = 111;
+	row4 = 123;
+	row5 = 115;
+	row6 = 99;
+	row7 = 62;
+}
+
+proc display_1() {
+	row0 = 0;
+	row1 = 63;
+	row2 = 12;
+	row3 = 12;
+	row4 = 12;
+	row5 = 12;
+	row6 = 14;
+	row7 = 12;
+}
+
+proc display_2() {
+	row0 = 0;
+	row1 = 63;
+	row2 = 51;
+	row3 = 6;
+	row4 = 28;
+	row5 = 48;
+	row6 = 51;
+	row7 = 30;
+}
+
+proc display_3() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 48;
+	row4 = 28;
+	row5 = 48;
+	row6 = 51;
+	row7 = 30;
+}
+
+proc display_4() {
+	row0 = 0;
+	row1 = 120;
+	row2 = 48;
+	row3 = 127;
+	row4 = 51;
+	row5 = 54;
+	row6 = 60;
+	row7 = 56;
+}
+
+proc display_5() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 48;
+	row4 = 48;
+	row5 = 31;
+	row6 = 3;
+	row7 = 63;
+}
+
+proc display_6() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 51;
+	row4 = 31;
+	row5 = 3;
+	row6 = 6;
+	row7 = 28;
+}
+
+proc display_7() {
+	row0 = 0;
+	row1 = 12;
+	row2 = 12;
+	row3 = 12;
+	row4 = 24;
+	row5 = 48;
+	row6 = 51;
+	row7 = 63;
+}
+
+proc display_8() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 51;
+	row4 = 30;
+	row5 = 51;
+	row6 = 51;
+	row7 = 30;
+}
+
+proc display_9() {
+	row0 = 0;
+	row1 = 14;
+	row2 = 24;
+	row3 = 48;
+	row4 = 62;
+	row5 = 51;
+	row6 = 51;
+	row7 = 30;
 }
 
 proc display_A() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 102;
-	row3 = 102;
-	row4 = 126;
-	row5 = 102;
-	row6 = 102;
-	row7 = 102;
+	row1 = 51;
+	row2 = 51;
+	row3 = 63;
+	row4 = 51;
+	row5 = 51;
+	row6 = 30;
+	row7 = 12;
 }
 
 proc display_B() {
-	row0 = 120;
-	row1 = 72;
-	row2 = 72;
-	row3 = 112;
-	row4 = 72;
-	row5 = 68;
-	row6 = 68;
-	row7 = 124;
+	row0 = 0;
+	row1 = 63;
+	row2 = 102;
+	row3 = 102;
+	row4 = 62;
+	row5 = 102;
+	row6 = 102;
+	row7 = 63;
 }
 
 proc display_C() {
 	row0 = 0;
-	row1 = 30;
-	row2 = 32;
-	row3 = 64;
-	row4 = 64;
-	row5 = 64;
-	row6 = 32;
-	row7 = 30;
+	row1 = 60;
+	row2 = 102;
+	row3 = 3;
+	row4 = 3;
+	row5 = 3;
+	row6 = 102;
+	row7 = 60;
 }
 
 proc display_D() {
 	row0 = 0;
-	row1 = 56;
-	row2 = 36;
-	row3 = 34;
-	row4 = 34;
-	row5 = 36;
-	row6 = 56;
-	row7 = 0;
+	row1 = 31;
+	row2 = 54;
+	row3 = 102;
+	row4 = 102;
+	row5 = 102;
+	row6 = 54;
+	row7 = 31;
 }
 
 proc display_E() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 32;
-	row3 = 56;
-	row4 = 32;
-	row5 = 32;
-	row6 = 60;
-	row7 = 0;
+	row1 = 127;
+	row2 = 70;
+	row3 = 22;
+	row4 = 30;
+	row5 = 22;
+	row6 = 70;
+	row7 = 127;
 }
 
 proc display_F() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 32;
-	row3 = 56;
-	row4 = 32;
-	row5 = 32;
-	row6 = 32;
-	row7 = 0;
+	row1 = 15;
+	row2 = 6;
+	row3 = 22;
+	row4 = 30;
+	row5 = 22;
+	row6 = 70;
+	row7 = 127;
 }
 
 proc display_G() {
 	row0 = 0;
-	row1 = 62;
-	row2 = 32;
-	row3 = 32;
-	row4 = 46;
-	row5 = 34;
-	row6 = 62;
-	row7 = 0;
+	row1 = 124;
+	row2 = 102;
+	row3 = 115;
+	row4 = 3;
+	row5 = 3;
+	row6 = 102;
+	row7 = 60;
 }
 
 proc display_H() {
 	row0 = 0;
-	row1 = 36;
-	row2 = 36;
-	row3 = 60;
-	row4 = 36;
-	row5 = 36;
-	row6 = 36;
-	row7 = 0;
+	row1 = 51;
+	row2 = 51;
+	row3 = 51;
+	row4 = 63;
+	row5 = 51;
+	row6 = 51;
+	row7 = 51;
 }
 
 proc display_I() {
 	row0 = 0;
-	row1 = 56;
-	row2 = 16;
-	row3 = 16;
-	row4 = 16;
-	row5 = 16;
-	row6 = 56;
-	row7 = 0;
+	row1 = 30;
+	row2 = 12;
+	row3 = 12;
+	row4 = 12;
+	row5 = 12;
+	row6 = 12;
+	row7 = 30;
 }
 
 proc display_J() {
 	row0 = 0;
-	row1 = 28;
-	row2 = 8;
-	row3 = 8;
-	row4 = 8;
-	row5 = 40;
-	row6 = 56;
-	row7 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 51;
+	row4 = 48;
+	row5 = 48;
+	row6 = 48;
+	row7 = 120;
 }
 
 proc display_K() {
 	row0 = 0;
-	row1 = 36;
-	row2 = 40;
-	row3 = 48;
-	row4 = 40;
-	row5 = 36;
-	row6 = 36;
-	row7 = 0;
+	row1 = 103;
+	row2 = 102;
+	row3 = 54;
+	row4 = 30;
+	row5 = 54;
+	row6 = 102;
+	row7 = 103;
 }
 
 proc display_L() {
 	row0 = 0;
-	row1 = 32;
-	row2 = 32;
-	row3 = 32;
-	row4 = 32;
-	row5 = 32;
-	row6 = 60;
-	row7 = 0;
+	row1 = 127;
+	row2 = 102;
+	row3 = 70;
+	row4 = 6;
+	row5 = 6;
+	row6 = 6;
+	row7 = 15;
 }
 
 proc display_M() {
 	row0 = 0;
-	row1 = 0;
-	row2 = 68;
-	row3 = 170;
-	row4 = 146;
-	row5 = 130;
-	row6 = 130;
-	row7 = 0;
+	row1 = 99;
+	row2 = 99;
+	row3 = 107;
+	row4 = 127;
+	row5 = 127;
+	row6 = 119;
+	row7 = 99;
 }
 
 proc display_N() {
 	row0 = 0;
-	row1 = 34;
-	row2 = 50;
-	row3 = 42;
-	row4 = 38;
-	row5 = 34;
-	row6 = 0;
-	row7 = 0;
+	row1 = 99;
+	row2 = 99;
+	row3 = 115;
+	row4 = 123;
+	row5 = 111;
+	row6 = 103;
+	row7 = 99;
 }
 
 proc display_O() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 66;
-	row3 = 66;
-	row4 = 66;
-	row5 = 66;
-	row6 = 60;
-	row7 = 0;
+	row1 = 28;
+	row2 = 54;
+	row3 = 99;
+	row4 = 99;
+	row5 = 99;
+	row6 = 54;
+	row7 = 28;
 }
 
 proc display_P() {
 	row0 = 0;
-	row1 = 56;
-	row2 = 36;
-	row3 = 36;
-	row4 = 56;
-	row5 = 32;
-	row6 = 32;
-	row7 = 0;
+	row1 = 15;
+	row2 = 6;
+	row3 = 6;
+	row4 = 62;
+	row5 = 102;
+	row6 = 102;
+	row7 = 63;
 }
 
 proc display_Q() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 66;
-	row3 = 66;
-	row4 = 66;
-	row5 = 70;
-	row6 = 62;
-	row7 = 1;
+	row1 = 56;
+	row2 = 30;
+	row3 = 59;
+	row4 = 51;
+	row5 = 51;
+	row6 = 51;
+	row7 = 30;
 }
 
 proc display_R() {
 	row0 = 0;
-	row1 = 56;
-	row2 = 36;
-	row3 = 36;
-	row4 = 56;
-	row5 = 36;
-	row6 = 36;
-	row7 = 0;
+	row1 = 103;
+	row2 = 102;
+	row3 = 54;
+	row4 = 62;
+	row5 = 102;
+	row6 = 102;
+	row7 = 63;
 }
 
 proc display_S() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 32;
-	row3 = 60;
-	row4 = 4;
-	row5 = 4;
-	row6 = 60;
-	row7 = 0;
+	row1 = 30;
+	row2 = 51;
+	row3 = 56;
+	row4 = 14;
+	row5 = 7;
+	row6 = 51;
+	row7 = 30;
 }
 
 proc display_T() {
 	row0 = 0;
-	row1 = 124;
-	row2 = 16;
-	row3 = 16;
-	row4 = 16;
-	row5 = 16;
-	row6 = 16;
-	row7 = 0;
+	row1 = 30;
+	row2 = 12;
+	row3 = 12;
+	row4 = 12;
+	row5 = 12;
+	row6 = 45;
+	row7 = 63;
 }
 
 proc display_U() {
 	row0 = 0;
-	row1 = 66;
-	row2 = 66;
-	row3 = 66;
-	row4 = 66;
-	row5 = 36;
-	row6 = 24;
-	row7 = 0;
+	row1 = 63;
+	row2 = 51;
+	row3 = 51;
+	row4 = 51;
+	row5 = 51;
+	row6 = 51;
+	row7 = 51;
 }
 
 proc display_V() {
 	row0 = 0;
-	row1 = 34;
-	row2 = 34;
-	row3 = 34;
-	row4 = 20;
-	row5 = 20;
-	row6 = 8;
-	row7 = 0;
+	row1 = 12;
+	row2 = 30;
+	row3 = 51;
+	row4 = 51;
+	row5 = 51;
+	row6 = 51;
+	row7 = 51;
 }
 
 proc display_W() {
 	row0 = 0;
-	row1 = 130;
-	row2 = 146;
-	row3 = 84;
-	row4 = 84;
-	row5 = 40;
-	row6 = 0;
-	row7 = 0;
+	row1 = 99;
+	row2 = 119;
+	row3 = 127;
+	row4 = 107;
+	row5 = 99;
+	row6 = 99;
+	row7 = 99;
 }
 
 proc display_X() {
 	row0 = 0;
-	row1 = 66;
-	row2 = 36;
-	row3 = 24;
-	row4 = 24;
-	row5 = 36;
-	row6 = 66;
-	row7 = 0;
+	row1 = 99;
+	row2 = 54;
+	row3 = 28;
+	row4 = 28;
+	row5 = 54;
+	row6 = 99;
+	row7 = 99;
 }
 
 proc display_Y() {
 	row0 = 0;
-	row1 = 68;
-	row2 = 40;
-	row3 = 16;
-	row4 = 16;
-	row5 = 16;
-	row6 = 16;
-	row7 = 0;
+	row1 = 30;
+	row2 = 12;
+	row3 = 12;
+	row4 = 30;
+	row5 = 51;
+	row6 = 51;
+	row7 = 51;
 }
 
 proc display_Z() {
 	row0 = 0;
-	row1 = 60;
-	row2 = 4;
-	row3 = 8;
-	row4 = 16;
-	row5 = 32;
-	row6 = 60;
+	row1 = 127;
+	row2 = 102;
+	row3 = 76;
+	row4 = 24;
+	row5 = 49;
+	row6 = 99;
+	row7 = 127;
+}
+
+proc display_PLUS() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 12;
+	row3 = 12;
+	row4 = 63;
+	row5 = 12;
+	row6 = 12;
 	row7 = 0;
 }
+
+proc display_MINUS() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 0;
+	row3 = 0;
+	row4 = 63;
+	row5 = 0;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_ASTERISK() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 102;
+	row3 = 60;
+	row4 = 255;
+	row5 = 60;
+	row6 = 102;
+	row7 = 0;
+}
+
+proc display_SLASH() {
+	row0 = 0;
+	row1 = 1;
+	row2 = 3;
+	row3 = 6;
+	row4 = 12;
+	row5 = 24;
+	row6 = 48;
+	row7 = 96;
+}
+
+proc display_BASIS_POINT() {
+	row0 = 0;
+	row1 = 99;
+	row2 = 102;
+	row3 = 12;
+	row4 = 24;
+	row5 = 51;
+	row6 = 99;
+	row7 = 0;
+}
+
+proc display_EQUALS() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 63;
+	row3 = 0;
+	row4 = 0;
+	row5 = 63;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_CARET() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 0;
+	row3 = 0;
+	row4 = 99;
+	row5 = 54;
+	row6 = 28;
+	row7 = 8;
+}
+
+proc display_ANGLE_BRACKET_OPEN() {
+	row0 = 0;
+	row1 = 24;
+	row2 = 12;
+	row3 = 6;
+	row4 = 3;
+	row5 = 6;
+	row6 = 12;
+	row7 = 24;
+}
+
+proc display_ANGLE_BRACKET_CLOSE() {
+	row0 = 0;
+	row1 = 6;
+	row2 = 12;
+	row3 = 24;
+	row4 = 48;
+	row5 = 24;
+	row6 = 12;
+	row7 = 6;
+}
+
+proc display_ROUND_BRACKET_OPEN() {
+	row0 = 0;
+	row1 = 24;
+	row2 = 12;
+	row3 = 6;
+	row4 = 6;
+	row5 = 6;
+	row6 = 12;
+	row7 = 24;
+}
+
+proc display_ROUND_BRACKET_CLOSE() {
+	row0 = 0;
+	row1 = 6;
+	row2 = 12;
+	row3 = 24;
+	row4 = 24;
+	row5 = 24;
+	row6 = 12;
+	row7 = 6;
+}
+
+proc display_SQUARE_BRACKET_OPEN() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 6;
+	row3 = 6;
+	row4 = 6;
+	row5 = 6;
+	row6 = 6;
+	row7 = 30;
+}
+
+proc display_SQUARE_BRACKET_CLOSE() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 24;
+	row3 = 24;
+	row4 = 24;
+	row5 = 24;
+	row6 = 24;
+	row7 = 30;
+}
+
+proc display_CURLY_BRACKET_OPEN() {
+	row0 = 0;
+	row1 = 56;
+	row2 = 12;
+	row3 = 12;
+	row4 = 7;
+	row5 = 12;
+	row6 = 12;
+	row7 = 56;
+}
+
+proc display_CURLY_BRACKET_CLOSE() {
+	row0 = 0;
+	row1 = 7;
+	row2 = 12;
+	row3 = 12;
+	row4 = 56;
+	row5 = 12;
+	row6 = 12;
+	row7 = 7;
+}
+
+proc display_PERIOD() {
+	row0 = 0;
+	row1 = 12;
+	row2 = 12;
+	row3 = 0;
+	row4 = 0;
+	row5 = 0;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_COLON() {
+	row0 = 0;
+	row1 = 12;
+	row2 = 12;
+	row3 = 0;
+	row4 = 0;
+	row5 = 12;
+	row6 = 12;
+	row7 = 0;
+}
+
+proc display_SEMICOLON() {
+	row0 = 6;
+	row1 = 12;
+	row2 = 12;
+	row3 = 0;
+	row4 = 0;
+	row5 = 12;
+	row6 = 12;
+	row7 = 0;
+}
+
+proc display_COMMA() {
+	row0 = 6;
+	row1 = 12;
+	row2 = 12;
+	row3 = 0;
+	row4 = 0;
+	row5 = 0;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_EXCLAMATION_OPEN() {
+	row0 = 24;
+	row1 = 60;
+	row2 = 60;
+	row3 = 24;
+	row4 = 24;
+	row5 = 0;
+	row6 = 24;
+	row7 = 0;
+}
+
+proc display_QUESTION_OPEN() {
+	row0 = 120;
+	row1 = 204;
+	row2 = 12;
+	row3 = 24;
+	row4 = 48;
+	row5 = 0;
+	row6 = 48;
+	row7 = 0;
+}
+
+proc display_EXCLAMATION_CLOSE() {
+	row0 = 0;
+	row1 = 24;
+	row2 = 0;
+	row3 = 24;
+	row4 = 24;
+	row5 = 60;
+	row6 = 60;
+	row7 = 24;
+}
+
+proc display_QUESTION_CLOSE() {
+	row0 = 0;
+	row1 = 12;
+	row2 = 0;
+	row3 = 12;
+	row4 = 24;
+	row5 = 48;
+	row6 = 51;
+	row7 = 30;
+}
+
+proc display_AT() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 3;
+	row3 = 123;
+	row4 = 123;
+	row5 = 123;
+	row6 = 99;
+	row7 = 62;
+}
+
+proc display_AMPERSAND() {
+	row0 = 0;
+	row1 = 110;
+	row2 = 51;
+	row3 = 59;
+	row4 = 110;
+	row5 = 28;
+	row6 = 54;
+	row7 = 28;
+}
+
+proc display_DOLLAR() {
+	row0 = 0;
+	row1 = 12;
+	row2 = 31;
+	row3 = 48;
+	row4 = 30;
+	row5 = 3;
+	row6 = 62;
+	row7 = 12;
+}
+
+proc display_HASH() {
+	row0 = 0;
+	row1 = 54;
+	row2 = 54;
+	row3 = 127;
+	row4 = 54;
+	row5 = 127;
+	row6 = 54;
+	row7 = 54;
+}
+
+proc display_BACKSLASH() {
+	row0 = 0;
+	row1 = 64;
+	row2 = 96;
+	row3 = 48;
+	row4 = 24;
+	row5 = 12;
+	row6 = 6;
+	row7 = 3;
+}
+
+proc display_APOSTROPHE() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 0;
+	row3 = 0;
+	row4 = 0;
+	row5 = 3;
+	row6 = 6;
+	row7 = 6;
+}
+
+proc display_QUOTATION() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 0;
+	row3 = 0;
+	row4 = 0;
+	row5 = 54;
+	row6 = 54;
+	row7 = 54;
+}
+
+"NOTE(Richo): All this code was mostly autogenerated with the help of a few squeak scripts"
+"
+[
+gen := [:ign |
+	Transcript clear; show: (String streamContents: [:stream |
+		grid submorphs do: [:row |
+			stream nextPutAll: '2r'.
+			row submorphs do: [:b |
+				stream nextPut: (b isOn ifTrue: $1 ifFalse: $0)]]
+		separatedBy: [stream space]])].
+grid := (AlignmentMorph inAColumn: ((0 to: 7) collect: [:r |
+		(AlignmentMorph inARow: ((0 to: 7) collect: [:c || button |
+			button := SimpleSwitchMorph newWithLabel: ''.
+			button target: gen; actionSelector: #value:.
+			button extent: 30@30.
+			button]))
+			borderWidth: 0;
+			layoutInset: 0;
+			yourself]))
+		borderWidth: 0;
+		layoutInset: 0;
+		yourself.
+grid openInHand.
+].
+
+
+Transcript clear.
+#(
+#(clear (0 0 0 0 0 0 0 0))
+#(display_FULL (255 255 255 255 255 255 255 255))
+#(display_0 (16r00 16r3e 16r67 16r6f 16r7b 16r73 16r63 16r3e))
+#(display_1 (16r00 16r3f 16r0c 16r0c 16r0c 16r0c 16r0e 16r0c))
+#(display_2 (16r00 16r3f 16r33 16r06 16r1c 16r30 16r33 16r1e))
+#(display_3 (16r00 16r1e 16r33 16r30 16r1c 16r30 16r33 16r1e))
+#(display_4 (16r00 16r78 16r30 16r7f 16r33 16r36 16r3c 16r38))
+#(display_5 (16r00 16r1e 16r33 16r30 16r30 16r1f 16r03 16r3f))
+#(display_6 (16r00 16r1e 16r33 16r33 16r1f 16r03 16r06 16r1c))
+#(display_7 (16r00 16r0c 16r0c 16r0c 16r18 16r30 16r33 16r3f))
+#(display_8 (16r00 16r1e 16r33 16r33 16r1e 16r33 16r33 16r1e))
+#(display_9 (16r00 16r0e 16r18 16r30 16r3e 16r33 16r33 16r1e))
+#(display_A (16r00 16r33 16r33 16r3f 16r33 16r33 16r1e 16r0c))
+#(display_B (16r00 16r3f 16r66 16r66 16r3e 16r66 16r66 16r3f))
+#(display_C (16r00 16r3c 16r66 16r03 16r03 16r03 16r66 16r3c))
+#(display_D (16r00 16r1f 16r36 16r66 16r66 16r66 16r36 16r1f))
+#(display_E (16r00 16r7f 16r46 16r16 16r1e 16r16 16r46 16r7f))
+#(display_F (16r00 16r0f 16r06 16r16 16r1e 16r16 16r46 16r7f))
+#(display_G (16r00 16r7c 16r66 16r73 16r03 16r03 16r66 16r3c))
+#(display_H (16r00 16r33 16r33 16r33 16r3f 16r33 16r33 16r33))
+#(display_I (16r00 16r1e 16r0c 16r0c 16r0c 16r0c 16r0c 16r1e))
+#(display_J (16r00 16r1e 16r33 16r33 16r30 16r30 16r30 16r78))
+#(display_K (16r00 16r67 16r66 16r36 16r1e 16r36 16r66 16r67))
+#(display_L (16r00 16r7f 16r66 16r46 16r06 16r06 16r06 16r0f))
+#(display_M (16r00 16r63 16r63 16r6b 16r7f 16r7f 16r77 16r63))
+#(display_N (16r00 16r63 16r63 16r73 16r7b 16r6f 16r67 16r63))
+#(display_O (16r00 16r1c 16r36 16r63 16r63 16r63 16r36 16r1c))
+#(display_P (16r00 16r0f 16r06 16r06 16r3e 16r66 16r66 16r3f))
+#(display_Q (16r00 16r38 16r1e 16r3b 16r33 16r33 16r33 16r1e))
+#(display_R (16r00 16r67 16r66 16r36 16r3e 16r66 16r66 16r3f))
+#(display_S (16r00 16r1e 16r33 16r38 16r0e 16r07 16r33 16r1e))
+#(display_T (16r00 16r1e 16r0c 16r0c 16r0c 16r0c 16r2d 16r3f))
+#(display_U (16r00 16r3f 16r33 16r33 16r33 16r33 16r33 16r33))
+#(display_V (16r00 16r0c 16r1e 16r33 16r33 16r33 16r33 16r33))
+#(display_W (16r00 16r63 16r77 16r7f 16r6b 16r63 16r63 16r63))
+#(display_X (16r00 16r63 16r36 16r1c 16r1c 16r36 16r63 16r63))
+#(display_Y (16r00 16r1e 16r0c 16r0c 16r1e 16r33 16r33 16r33))
+#(display_Z (16r00 16r7f 16r66 16r4c 16r18 16r31 16r63 16r7f))
+
+#(display_PLUS (16r00 16r00 16r0c 16r0c 16r3f 16r0c 16r0c 16r00))
+#(display_MINUS (16r00 16r00 16r00 16r00 16r3f 16r00 16r00 16r00))
+#(display_ASTERISK (16r00 16r00 16r66 16r3c 16rff 16r3c 16r66 16r00))
+#(display_SLASH (16r00 16r01 16r03 16r06 16r0c 16r18 16r30 16r60))
+#(display_BASIS_POINT (16r00 16r63 16r66 16r0c 16r18 16r33 16r63 16r00))
+#(display_EQUALS (16r00 16r00 16r3f 16r00 16r00 16r3f 16r00 16r00))
+
+#(display_CARET (16r00 16r00 16r00 16r00 16r63 16r36 16r1c 16r08))
+#(display_ANGLE_BRACKET_OPEN (16r00 16r18 16r0c 16r06 16r03 16r06 16r0c 16r18))
+#(display_ANGLE_BRACKET_CLOSE (16r00 16r06 16r0c 16r18 16r30 16r18 16r0c 16r06))
+#(display_ROUND_BRACKET_OPEN (16r00 16r18 16r0c 16r06 16r06 16r06 16r0c 16r18))
+#(display_ROUND_BRACKET_CLOSE (16r00 16r06 16r0c 16r18 16r18 16r18 16r0c 16r06))
+#(display_SQUARE_BRACKET_OPEN (16r00 16r1e 16r06 16r06 16r06 16r06 16r06 16r1e))
+#(display_SQUARE_BRACKET_CLOSE (16r00 16r1e 16r18 16r18 16r18 16r18 16r18 16r1e))
+#(display_CURLY_BRACKET_OPEN (16r00 16r38 16r0c 16r0c 16r07 16r0c 16r0c 16r38))
+#(display_CURLY_BRACKET_CLOSE (16r00 16r07 16r0c 16r0c 16r38 16r0c 16r0c 16r07))
+
+#(display_PERIOD (16r00 16r0c 16r0c 16r00 16r00 16r00 16r00 16r00))
+#(display_COLON (16r00 16r0c 16r0c 16r00 16r00 16r0c 16r0c 16r00))
+#(display_SEMICOLON (16r06 16r0c 16r0c 16r00 16r00 16r0c 16r0c 16r00))
+#(display_COMMA (16r06 16r0c 16r0c 16r00 16r00 16r00 16r00 16r00))
+
+
+#(display_EXCLAMATION_OPEN (16r18 16r3c 16r3c 16r18 16r18 16r00 16r18 16r00))
+#(display_QUESTION_OPEN (16r78 16rcc 16r0c 16r18 16r30 16r00 16r30 16r00))
+#(display_EXCLAMATION_CLOSE (16r00 16r18 16r00 16r18 16r18 16r3c 16r3c 16r18))
+#(display_QUESTION_CLOSE (16r00 16r0c 16r00 16r0c 16r18 16r30 16r33 16r1e))
+
+
+#(display_AT (16r00 16r1e 16r03 16r7b 16r7b 16r7b 16r63 16r3e))
+#(display_AMPERSAND (16r00 16r6e 16r33 16r3b 16r6e 16r1c 16r36 16r1c))
+#(display_DOLLAR (16r00 16r0c 16r1f 16r30 16r1e 16r03 16r3e 16r0c))
+#(display_HASH (16r00 16r36 16r36 16r7f 16r36 16r7f 16r36 16r36))
+#(display_BACKSLASH (16r00 16r40 16r60 16r30 16r18 16r0c 16r06 16r03))
+
+#(display_APOSTROPHE (16r00 16r00 16r00 16r00 16r00 16r03 16r06 16r06))
+#(display_QUOTATION (16r00 16r00 16r00 16r00 16r00 16r36 16r36 16r36))
+)
+do: [:letter |
+	Transcript show: ('proc {1}() \{' format: {letter first}); cr.
+	0 to: 7 do: [:i |
+		Transcript tab; show: ('row{1} = {2};' format: {i . letter second at: i + 1}); cr].
+	Transcript show: '}'; cr; cr]
+"
