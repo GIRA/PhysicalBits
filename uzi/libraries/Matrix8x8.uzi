@@ -1,0 +1,332 @@
+var x0; var x1; var x2; var x3; var x4; var x5; var x6; var x7;
+var y0; var y1; var y2; var y3; var y4; var y5; var y6; var y7;
+
+var row0; var row1; var row2; var row3; var row4; var row5; var row6; var row7;
+
+
+prim display : matrix8x8;
+
+task drawing() running {
+  display(x0, x1, x2, x3, x4, x5, x6, x7,
+          y0, y1, y2, y3, y4, y5, y6, y7,
+          row0, row1, row2, row3, row4, row5, row6, row7);
+}
+
+proc clear() {
+  row0 = 0;
+  row1 = 0;
+  row2 = 0;
+  row3 = 0;
+  row4 = 0;
+  row5 = 0;
+  row6 = 0;
+  row7 = 0;
+}
+
+proc display_ALL() {
+	row0 = 255;
+	row1 = 255;
+	row2 = 255;
+	row3 = 255;
+	row4 = 255;
+	row5 = 255;
+	row6 = 255;
+	row7 = 255;
+}
+
+proc display_EX() {
+	row0 = 0;
+	row1 = 16;
+	row2 = 16;
+	row3 = 16;
+	row4 = 16;
+	row5 = 0;
+	row6 = 16;
+	row7 = 0;
+}
+
+proc display_A() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 102;
+	row3 = 102;
+	row4 = 126;
+	row5 = 102;
+	row6 = 102;
+	row7 = 102;
+}
+
+proc display_B() {
+	row0 = 120;
+	row1 = 72;
+	row2 = 72;
+	row3 = 112;
+	row4 = 72;
+	row5 = 68;
+	row6 = 68;
+	row7 = 124;
+}
+
+proc display_C() {
+	row0 = 0;
+	row1 = 30;
+	row2 = 32;
+	row3 = 64;
+	row4 = 64;
+	row5 = 64;
+	row6 = 32;
+	row7 = 30;
+}
+
+proc display_D() {
+	row0 = 0;
+	row1 = 56;
+	row2 = 36;
+	row3 = 34;
+	row4 = 34;
+	row5 = 36;
+	row6 = 56;
+	row7 = 0;
+}
+
+proc display_E() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 32;
+	row3 = 56;
+	row4 = 32;
+	row5 = 32;
+	row6 = 60;
+	row7 = 0;
+}
+
+proc display_F() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 32;
+	row3 = 56;
+	row4 = 32;
+	row5 = 32;
+	row6 = 32;
+	row7 = 0;
+}
+
+proc display_G() {
+	row0 = 0;
+	row1 = 62;
+	row2 = 32;
+	row3 = 32;
+	row4 = 46;
+	row5 = 34;
+	row6 = 62;
+	row7 = 0;
+}
+
+proc display_H() {
+	row0 = 0;
+	row1 = 36;
+	row2 = 36;
+	row3 = 60;
+	row4 = 36;
+	row5 = 36;
+	row6 = 36;
+	row7 = 0;
+}
+
+proc display_I() {
+	row0 = 0;
+	row1 = 56;
+	row2 = 16;
+	row3 = 16;
+	row4 = 16;
+	row5 = 16;
+	row6 = 56;
+	row7 = 0;
+}
+
+proc display_J() {
+	row0 = 0;
+	row1 = 28;
+	row2 = 8;
+	row3 = 8;
+	row4 = 8;
+	row5 = 40;
+	row6 = 56;
+	row7 = 0;
+}
+
+proc display_K() {
+	row0 = 0;
+	row1 = 36;
+	row2 = 40;
+	row3 = 48;
+	row4 = 40;
+	row5 = 36;
+	row6 = 36;
+	row7 = 0;
+}
+
+proc display_L() {
+	row0 = 0;
+	row1 = 32;
+	row2 = 32;
+	row3 = 32;
+	row4 = 32;
+	row5 = 32;
+	row6 = 60;
+	row7 = 0;
+}
+
+proc display_M() {
+	row0 = 0;
+	row1 = 0;
+	row2 = 68;
+	row3 = 170;
+	row4 = 146;
+	row5 = 130;
+	row6 = 130;
+	row7 = 0;
+}
+
+proc display_N() {
+	row0 = 0;
+	row1 = 34;
+	row2 = 50;
+	row3 = 42;
+	row4 = 38;
+	row5 = 34;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_O() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 66;
+	row3 = 66;
+	row4 = 66;
+	row5 = 66;
+	row6 = 60;
+	row7 = 0;
+}
+
+proc display_P() {
+	row0 = 0;
+	row1 = 56;
+	row2 = 36;
+	row3 = 36;
+	row4 = 56;
+	row5 = 32;
+	row6 = 32;
+	row7 = 0;
+}
+
+proc display_Q() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 66;
+	row3 = 66;
+	row4 = 66;
+	row5 = 70;
+	row6 = 62;
+	row7 = 1;
+}
+
+proc display_R() {
+	row0 = 0;
+	row1 = 56;
+	row2 = 36;
+	row3 = 36;
+	row4 = 56;
+	row5 = 36;
+	row6 = 36;
+	row7 = 0;
+}
+
+proc display_S() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 32;
+	row3 = 60;
+	row4 = 4;
+	row5 = 4;
+	row6 = 60;
+	row7 = 0;
+}
+
+proc display_T() {
+	row0 = 0;
+	row1 = 124;
+	row2 = 16;
+	row3 = 16;
+	row4 = 16;
+	row5 = 16;
+	row6 = 16;
+	row7 = 0;
+}
+
+proc display_U() {
+	row0 = 0;
+	row1 = 66;
+	row2 = 66;
+	row3 = 66;
+	row4 = 66;
+	row5 = 36;
+	row6 = 24;
+	row7 = 0;
+}
+
+proc display_V() {
+	row0 = 0;
+	row1 = 34;
+	row2 = 34;
+	row3 = 34;
+	row4 = 20;
+	row5 = 20;
+	row6 = 8;
+	row7 = 0;
+}
+
+proc display_W() {
+	row0 = 0;
+	row1 = 130;
+	row2 = 146;
+	row3 = 84;
+	row4 = 84;
+	row5 = 40;
+	row6 = 0;
+	row7 = 0;
+}
+
+proc display_X() {
+	row0 = 0;
+	row1 = 66;
+	row2 = 36;
+	row3 = 24;
+	row4 = 24;
+	row5 = 36;
+	row6 = 66;
+	row7 = 0;
+}
+
+proc display_Y() {
+	row0 = 0;
+	row1 = 68;
+	row2 = 40;
+	row3 = 16;
+	row4 = 16;
+	row5 = 16;
+	row6 = 16;
+	row7 = 0;
+}
+
+proc display_Z() {
+	row0 = 0;
+	row1 = 60;
+	row2 = 4;
+	row3 = 8;
+	row4 = 16;
+	row5 = 32;
+	row6 = 60;
+	row7 = 0;
+}
