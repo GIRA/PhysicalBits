@@ -39,14 +39,14 @@ Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, fl
 		
 		if (script->localCount > 0)
 		{
-			script->locals = uzi_createArray(float, script->localCount);
+			script->locals = uzi_createArray(uint8, script->localCount);
 			if (script->locals == 0) return OUT_OF_MEMORY;
 
 			for (int i = 0; i < script->localCount; i++)
 			{
 				uint8 index = rs->next(timeout);
 				if (timeout) return READER_TIMEOUT;
-				script->locals[i] = globals[index];
+				script->locals[i] = index;
 			}
 		}
 	}
@@ -109,7 +109,7 @@ uint8 Script::getLocalCount(void)
 	return localCount;
 }
 
-float Script::getLocal(uint8 index)
+uint8 Script::getLocal(uint8 index)
 {
 	return locals[index];
 }

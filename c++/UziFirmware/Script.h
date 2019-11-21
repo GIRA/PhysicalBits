@@ -15,7 +15,7 @@ struct Script
 	uint8 argCount = 0;
 
 	uint8 localCount = 0;
-	float* locals = 0;
+	uint8* locals = 0;
 
 	int16 instructionStart = 0;
 	uint8 instructionCount = 0;
@@ -34,7 +34,7 @@ struct Script
 	uint8 getArgCount(void);
 
 	uint8 getLocalCount(void);
-	float getLocal(uint8);
+	uint8 getLocal(uint8);
 
 	Coroutine* getCoroutine(void);
 	bool hasCoroutine(void);
