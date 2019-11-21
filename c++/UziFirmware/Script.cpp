@@ -1,6 +1,6 @@
 #include "Script.h"
 
-Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, float* globals)
+Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, float* globals)
 {
 	script->instructionStart = start;
 	script->index = scriptIndex;
@@ -79,7 +79,7 @@ int16 Script::getInstructionStop(void)
 	return instructionStart + instructionCount - 1;
 }
 
-uint8 Script::getInstructionCount(void)
+uint16 Script::getInstructionCount(void)
 {
 	return instructionCount;
 }
