@@ -10,7 +10,7 @@ struct Script
 {
 	bool stepping : 1;
 	uint8 index : 7;
-	float interval = 0;
+	uint8 interval = 0;
 
 	uint8 argCount = 0;
 
@@ -30,7 +30,6 @@ struct Script
 	Instruction getInstructionAt(int16);
 	bool isStepping(void);
 	void setStepping(bool);
-	float getInterval(void);
 	
 	uint8 getArgCount(void);
 

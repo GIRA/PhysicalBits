@@ -23,7 +23,7 @@ Error readScript(Reader * rs, Script* script, uint8 start, uint8 scriptIndex, fl
 	{
 		uint8 index = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
-		script->interval = globals[index];
+		script->interval = index;
 	}
 
 	if ((h >> 5) & 1) // Has arguments
@@ -97,11 +97,6 @@ bool Script::isStepping(void)
 void Script::setStepping(bool val)
 {
 	stepping = val;
-}
-
-float Script::getInterval(void)
-{
-	return interval;
 }
 
 uint8 Script::getArgCount(void)

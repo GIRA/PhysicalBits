@@ -120,7 +120,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 
 				framePointer = -1;
 				pc = currentScript->getInstructionStart();
-				coroutine->setNextRun(coroutine->getLastStart() + currentScript->getInterval());
+				coroutine->setNextRun(coroutine->getLastStart() + currentProgram->getGlobal(currentScript->interval));
 				break;
 			}
 		}
