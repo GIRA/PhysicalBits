@@ -88,6 +88,10 @@
     <None Include="TestFiles\Test092DebuggerSetAllBreakpoints" />
     <None Include="TestFiles\Test093DebuggerSetAllBreakpointsWithMultipleScripts" />
     <None Include="TestFiles\Test094ProgramWithMultipleImports" />
+    <None Include="TestFiles\Test095ScriptWith127Instructions" />
+    <None Include="TestFiles\Test096ScriptWith128Instructions" />
+    <None Include="TestFiles\Test097ScriptWith512Instructions" />
+    <None Include="TestFiles\Test098criptWith255Instructions" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />

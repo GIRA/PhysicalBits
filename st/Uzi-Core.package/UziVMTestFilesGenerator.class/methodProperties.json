@@ -97,5 +97,9 @@
 		"test092DebuggerSetAllBreakpoints" : "Richo 9/26/2019 15:33",
 		"test093DebuggerSetAllBreakpointsWithMultipleScripts" : "Richo 9/26/2019 15:34",
 		"test094ProgramWithMultipleImports" : "Richo 9/26/2019 15:34",
+		"test095ScriptWith127Instructions" : "Richo 11/21/2019 13:13",
+		"test096ScriptWith128Instructions" : "Richo 11/21/2019 17:02",
+		"test097ScriptWith512Instructions" : "Richo 11/22/2019 11:52",
+		"test098criptWith255Instructions" : "Richo 11/22/2019 11:58",
 		"writeFile:contents:" : "Richo 4/30/2018 15:14",
 		"writeFile:program:" : "Richo 9/26/2019 15:30" } }

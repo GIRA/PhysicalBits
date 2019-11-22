@@ -2297,5 +2297,88 @@ namespace SimulatorTest
                 Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink every second");
             }
         }
+
+        [TestMethod]
+        public void Test095ScriptWith127Instructions()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test095ScriptWith127Instructions)));
+
+            int millis = 0;
+            for (int i = 0; i < 31; i++)
+            {
+                sketch.SetMillis(millis += 100);
+                Loop(10);
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink (step: 0, iteration: {0})", i);
+            }
+
+            IncrementMillisAndExec(1000, 10);
+
+            millis = sketch.GetMillis();
+            for (int i = 0; i < 31; i++)
+            {
+                sketch.SetMillis(millis += 100);
+                Loop(10);
+
+                Assert.AreEqual(1023 * (1 - (i % 2)), sketch.GetPinValue(13), "D13 should blink (step: 1, iteration: {0})", i);
+            }
+        }
+
+        [TestMethod]
+        public void Test096ScriptWith128Instructions()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test096ScriptWith128Instructions)));
+
+            int last = sketch.GetPinValue(13);
+            int count = 0;
+            for (int i = 0; i < 5000; i++)
+            {
+                IncrementMillisAndExec(100, 1);
+
+                if (sketch.GetPinValue(13) == last) { count++; }
+                else { last = sketch.GetPinValue(13); count = 0; }
+
+                Console.WriteLine($"{i} -> {sketch.GetPinValue(13)}");
+                Assert.IsTrue(count < 3, "D13 should blink (iteration: {0})", i);
+            }
+        }
+
+        [TestMethod]
+        public void Test097ScriptWith512Instructions()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test097ScriptWith512Instructions)));
+
+            int last = sketch.GetPinValue(13);
+            int count = 0;
+            for (int i = 0; i < 1000; i++)
+            {
+                IncrementMillisAndExec(100, 1);
+
+                if (sketch.GetPinValue(13) == last) { count++; }
+                else { last = sketch.GetPinValue(13); count = 0; }
+
+                Console.WriteLine($"{i} -> {sketch.GetPinValue(13)}");
+                Assert.IsTrue(count < 3, "D13 should blink (iteration: {0})", i);
+            }
+        }
+
+        [TestMethod]
+        public void Test098criptWith255Instructions()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test098criptWith255Instructions)));
+
+            int last = sketch.GetPinValue(13);
+            int count = 0;
+            for (int i = 0; i < 1000; i++)
+            {
+                IncrementMillisAndExec(100, 1);
+
+                if (sketch.GetPinValue(13) == last) { count++; }
+                else { last = sketch.GetPinValue(13); count = 0; }
+
+                Console.WriteLine($"{i} -> {sketch.GetPinValue(13)}");
+                Assert.IsTrue(count < 3, "D13 should blink (iteration: {0})", i);
+            }
+        }
     }
 }
