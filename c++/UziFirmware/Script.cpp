@@ -51,8 +51,19 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 		}
 	}
 
-	script->instructionCount = rs->next(timeout);
+	uint8 ic_h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
+	if (ic_h > 0x7F)
+	{
+		uint8 ic_l = rs->next(timeout);
+		if (timeout) return READER_TIMEOUT;
+
+		script->instructionCount = ((ic_h & 0x7F) << 8) | ic_l;
+	}
+	else
+	{
+		script->instructionCount = ic_h;
+	}
 
 	if (script->instructionCount > 0)
 	{
