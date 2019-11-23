@@ -9,3 +9,4 @@
 void* uzi_malloc(size_t size);
 void uzi_memreset();
 uint16 uzi_available();
+uint16 uzi_used();

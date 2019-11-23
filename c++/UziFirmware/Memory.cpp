@@ -32,3 +32,8 @@ uint16 uzi_available()
 {
 	return BUFFER_SIZE - (cur - buf);
 }
+
+uint16 uzi_used() 
+{
+	return cur - buf;
+}
