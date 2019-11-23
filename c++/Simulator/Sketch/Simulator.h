@@ -15,7 +15,7 @@ void __setPinValue(unsigned int, unsigned short);
 
 struct RuntimeStats
 {
-	uint16_t availableMemory;
+	uint16_t usedMemory;
 	uint32_t coroutineResizeCounter;
 };
 extern RuntimeStats Stats;

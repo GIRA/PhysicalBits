@@ -20,7 +20,7 @@ void setup()
 void loop()
 {
 #ifdef __SIMULATOR__
-	Stats.availableMemory = Stats.coroutineResizeCounter = 0;
+	Stats.usedMemory = Stats.coroutineResizeCounter = 0;
 #endif // __SIMULATOR__
 
 	monitor.checkForIncomingMessages(&program, &io, &vm);
@@ -34,6 +34,6 @@ void loop()
 	monitor.sendOutgoingMessages(program, &io, &vm);
 
 #ifdef __SIMULATOR__
-	Stats.availableMemory = uzi_available();
+	Stats.usedMemory = uzi_used();
 #endif // __SIMULATOR__
 }

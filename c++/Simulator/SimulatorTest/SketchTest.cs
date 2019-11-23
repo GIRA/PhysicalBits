@@ -95,39 +95,60 @@ namespace SimulatorTest
                 // Write header
                 var columns = new[]
                 {
-                    "TestName", "Loops",
-                    "Min memory available", "Max memory available", "Avg memory available",
+                    "", "Loops",
+                    "Memory used (bytes)",
                     "Total coroutine resizings"
                 };
                 file.WriteLine(string.Join(",", columns));
 
-                // Write data
-                var lines = stats
-                    .OrderBy(kvp => kvp.Key)
-                    .Select(kvp => string.Join(",", new object[]
-                    {
-                        kvp.Key,
-                        kvp.Value.Count(),
-                        kvp.Value.Min(each => each.AvailableMemory),
-                        kvp.Value.Max(each => each.AvailableMemory),
-                        kvp.Value.Average(each => each.AvailableMemory),
-                        kvp.Value.Sum(each => each.CoroutineResizeCounter)
-                    }));
-                foreach (var line in lines)
+                // Write aggregate data
                 {
-                    file.WriteLine(line);
+                    file.WriteLine(string.Join(",", new object[]
+                    {
+                        "MIN",
+                        stats.Min(kvp => kvp.Value.Count()),
+                        stats.Min(kvp => kvp.Value.Max(each => each.UsedMemory)),
+                        stats.Min(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                    }));
+                    file.WriteLine(string.Join(",", new object[]
+                    {
+                        "MAX",
+                        stats.Max(kvp => kvp.Value.Count()),
+                        stats.Max(kvp => kvp.Value.Max(each => each.UsedMemory)),
+                        stats.Max(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                    }));
+                    file.WriteLine(string.Join(",", new object[]
+                    {
+                        "AVERAGE",
+                        stats.Average(kvp => kvp.Value.Count()),
+                        stats.Average(kvp => kvp.Value.Max(each => each.UsedMemory)),
+                        stats.Average(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                    }));
+                    file.WriteLine(string.Join(",", new object[]
+                    {
+                        "MEDIAN",
+                        stats.Median(kvp => kvp.Value.Count()),
+                        stats.Median(kvp => kvp.Value.Max(each => each.UsedMemory)),
+                        stats.Median(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                    }));
                 }
 
-                // Write totals
-                file.WriteLine(string.Join(",", new object[]
+                // Write individual test data
                 {
-                    "TOTAL",
-                    stats.Sum(kvp => kvp.Value.Count()),
-                    stats.Sum(kvp => kvp.Value.Min(each => each.AvailableMemory)),
-                    stats.Sum(kvp => kvp.Value.Max(each => each.AvailableMemory)),
-                    stats.Sum(kvp => kvp.Value.Average(each => each.AvailableMemory)),
-                    stats.Sum(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
-                }));
+                    var lines = stats
+                        .OrderBy(kvp => kvp.Key)
+                        .Select(kvp => string.Join(",", new object[]
+                        {
+                            kvp.Key,
+                            kvp.Value.Count(),
+                            kvp.Value.Max(each => each.UsedMemory),
+                            kvp.Value.Sum(each => each.CoroutineResizeCounter)
+                        }));
+                    foreach (var line in lines)
+                    {
+                        file.WriteLine(line);
+                    }
+                }
             }
         }
 

@@ -96,9 +96,9 @@ EXTERN int EEPROM_size(void)
 	return E2END + 1;
 }
 
-EXTERN uint16_t Stats_availableMemory() 
+EXTERN uint16_t Stats_usedMemory() 
 {
-	return Stats.availableMemory;
+	return Stats.usedMemory;
 }
 
 EXTERN uint32_t Stats_coroutineResizeCounter()

@@ -11,7 +11,7 @@ namespace Simulator
 {
     public class RuntimeStats
     {
-        public uint AvailableMemory { get; set; }
+        public uint UsedMemory { get; set; }
         public uint CoroutineResizeCounter { get; set;  }
     }
 
@@ -172,7 +172,7 @@ namespace Simulator
             {
                 stats.Add(new RuntimeStats()
                 {
-                    AvailableMemory = DLL.Stats_availableMemory(),
+                    UsedMemory = DLL.Stats_usedMemory(),
                     CoroutineResizeCounter = DLL.Stats_coroutineResizeCounter()
                 });
             }
@@ -231,7 +231,7 @@ namespace Simulator
             public static extern int EEPROM_size();
 
             [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
-            public static extern uint Stats_availableMemory();
+            public static extern uint Stats_usedMemory();
 
             [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
             public static extern uint Stats_coroutineResizeCounter();
