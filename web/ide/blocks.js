@@ -11,7 +11,7 @@ let UziBlock = (function () {
     })();
   }
 
-  let version = 0;
+  let version = 1;
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
