@@ -362,7 +362,6 @@
       <field name="variableName"></field>
     </block>
   </category>
-  <category name="Functions" colour="#9A5CA6" custom="PROCEDURE"></category>
   <category name="Procedures" colour="#995ba5" custom="PROCEDURES">
     <block type="proc_definition_0args">
       <field name="procName">default</field>
@@ -409,6 +408,69 @@
     </block>
     <block type="proc_call_3args">
       <field name="procName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg2">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Functions" colour="#995ba5" custom="FUNCTIONS">
+    <block type="func_definition_0args">
+      <field name="funcName">default</field>
+    </block>
+    <block type="func_definition_1args">
+      <field name="funcName">default</field>
+      <field name="arg0">arg0</field>
+    </block>
+    <block type="func_definition_2args">
+      <field name="funcName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+    </block>
+    <block type="func_definition_3args">
+      <field name="funcName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+      <field name="arg2">arg2</field>
+    </block>
+    <block type="return_value"></block>
+    <block type="func_call_0args">
+      <field name="funcName"></field>
+    </block>
+    <block type="func_call_1args">
+      <field name="funcName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="func_call_2args">
+      <field name="funcName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="func_call_3args">
+      <field name="funcName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
