@@ -425,7 +425,7 @@
       </value>
     </block>
   </category>
-  <category name="Functions" colour="#995ba5" custom="FUNCTIONS">
+  <category name="Functions" colour="#745ba5" custom="FUNCTIONS">
     <block type="func_definition_0args">
       <field name="funcName">default</field>
     </block>

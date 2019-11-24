@@ -1317,7 +1317,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldTextInput("default"), "funcName");
         this.appendStatementInput("statements")
             .setCheck(null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1337,7 +1337,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldTextInput("arg0"), "arg0");
         this.appendStatementInput("statements")
             .setCheck(null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1358,7 +1358,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldTextInput("arg1"), "arg1");
         this.appendStatementInput("statements")
             .setCheck(null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1380,7 +1380,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldTextInput("arg2"), "arg2");
         this.appendStatementInput("statements")
             .setCheck(null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1393,7 +1393,7 @@ let UziBlock = (function () {
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField(i18n.translate("return"));
         this.setPreviousStatement(true, null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1406,7 +1406,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1423,7 +1423,7 @@ let UziBlock = (function () {
             .appendField("arg0");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
@@ -1444,7 +1444,7 @@ let UziBlock = (function () {
             .appendField("arg1");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(285);
+        this.setColour(265);
      this.setTooltip("");
      this.setHelpUrl("");
       }
@@ -1469,7 +1469,7 @@ let UziBlock = (function () {
             .appendField("arg2");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
-        this.setColour(285);
+        this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
       }
