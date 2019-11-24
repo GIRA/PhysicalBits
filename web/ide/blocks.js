@@ -1219,7 +1219,7 @@ let UziBlock = (function () {
     Blockly.Blocks['return'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("return"));
+            .appendField(i18n.translate("exit"));
         this.setPreviousStatement(true, null);
         this.setColour(285);
         this.setTooltip("");
@@ -1230,7 +1230,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_0args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("execute"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -1243,7 +1243,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_1args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("execute"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1260,7 +1260,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_2args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("execute"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1281,7 +1281,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_3args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("execute"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1402,7 +1402,7 @@ let UziBlock = (function () {
     Blockly.Blocks['func_call_0args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("evaluate"))
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -1415,7 +1415,7 @@ let UziBlock = (function () {
     Blockly.Blocks['func_call_1args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("evaluate"))
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1432,7 +1432,7 @@ let UziBlock = (function () {
     Blockly.Blocks['func_call_2args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("evaluate"))
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1453,7 +1453,7 @@ let UziBlock = (function () {
     Blockly.Blocks['func_call_3args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("call"))
+            .appendField(i18n.translate("evaluate"))
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName");
         this.appendValueInput("arg0")
             .setCheck(null)
