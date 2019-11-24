@@ -50,6 +50,9 @@ var TRANSLATIONS = [
     ["Trig pin", "Pin Trig", "Kõlari viik"],
     ["Echo pin", "Pin Echo", "Kaja (mikrofoni) viik"],
     ["Max distance (cm)", "Distancia máxima (cm)", "Pikim kaugus (cm)"],
+    ["This variable is being used by the program!", "¡Esta variable está siendo usada en el programa!", "Seda muutujat kasutatakse programmis!"],
+    ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Seda mootorit kasutatakse programmis!"],
+    ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Seda kajaloodi kasutatakse programmis!"],
 
     // Blockly
     ["toggle pin", "alternar pin", "lülita viik ümber"],
@@ -119,6 +122,7 @@ var TRANSLATIONS = [
     ["Variables", "Variables", "Muutujad"],
     ["Functions", "Funciones", "Funktsioonid"],
     ["Comments", "Comentarios", "Kommentaarid"],
+    ["Procedures", "Procedimientos", "Procedures"],
     ["Configure DC motors...", "Configurar motores CC...", "Seadista mootorid..."],
     ["Configure sonars...", "Configurar sonares...", "Seadista kajalood..."],
     ["random integer from % to %", "número entero al azar entre % y %", "suvaline täisarv % ja % vahel"],
@@ -147,7 +151,9 @@ var TRANSLATIONS = [
     ["declare local variable % with value", "declarar variable local % con valor", "määra muutuja % väärtusega"],
     ["set % to", "establecer % a", "määra % väärtusega"],
     ["increment % by", "incrementar % por", "kasvata % suurusega"],
-    ["This variable is being used by the program!", "¡Esta variable está siendo usada en el programa!", "Seda muutujat kasutatakse programmis!"],
-    ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Seda mootorit kasutatakse programmis!"],
-    ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Seda kajaloodi kasutatakse programmis!"],
+    ["procedure named % with arguments %", "procedimiento llamado % con argumentos %", "procedure named % with arguments %"],
+    ["procedure named %", "procedimiento llamado %", "procedure named %"],
+    ["procedure named % with argument %", "procedimiento llamado % con argumento %", "procedure named % with argument %"],
+    ["return", "volver", "return"],
+    ["call", "ejecutar", "call"],
 ];

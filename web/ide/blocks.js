@@ -1086,8 +1086,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_definition_0args'] = {
       init: function() {
+        let msg = i18n.translate("procedure named %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
         this.appendDummyInput()
-            .appendField("procedure named")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("default"), "procName");
         this.appendStatementInput("statements")
             .setCheck(null);
@@ -1099,12 +1102,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_definition_1args'] = {
       init: function() {
+        let msg = i18n.translate("procedure named % with argument %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
         this.appendDummyInput()
-            .appendField("procedure named")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("default"), "procName");
         this.appendDummyInput()
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("with argument")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("arg0"), "arg0");
         this.appendStatementInput("statements")
             .setCheck(null);
@@ -1116,12 +1122,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_definition_2args'] = {
       init: function() {
+        let msg = i18n.translate("procedure named % with arguments %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
         this.appendDummyInput()
-            .appendField("procedure named")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("default"), "procName");
         this.appendDummyInput()
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("with arguments")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
             .appendField(new Blockly.FieldTextInput("arg1"), "arg1");
         this.appendStatementInput("statements")
@@ -1134,12 +1143,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_definition_3args'] = {
       init: function() {
+        let msg = i18n.translate("procedure named % with arguments %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
         this.appendDummyInput()
-            .appendField("procedure named")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("default"), "procName");
         this.appendDummyInput()
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("with arguments")
+            .appendField(parts[i++])
             .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
             .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
             .appendField(new Blockly.FieldTextInput("arg2"), "arg2");
@@ -1154,7 +1166,7 @@ let UziBlock = (function () {
     Blockly.Blocks['return'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("return");
+            .appendField(i18n.translate("return"));
         this.setPreviousStatement(true, null);
         this.setColour(285);
         this.setTooltip("");
@@ -1165,7 +1177,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_0args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("call")
+            .appendField(i18n.translate("call"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName");
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -1178,7 +1190,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_1args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("call")
+            .appendField(i18n.translate("call"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1195,7 +1207,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_2args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("call")
+            .appendField(i18n.translate("call"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
@@ -1216,7 +1228,7 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_call_3args'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField("call")
+            .appendField(i18n.translate("call"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName");
         this.appendValueInput("arg0")
             .setCheck(null)
