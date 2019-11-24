@@ -709,6 +709,27 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['logical_compare'] = {
+      init: function() {
+        this.appendValueInput("left")
+            .setCheck("Number");
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("="), "=="],
+                                                    [i18n.translate("≠"), "!="],
+                                                    [i18n.translate("<"), "<"],
+                                                    [i18n.translate("≤"), "<="],
+                                                    [i18n.translate(">"), ">"],
+                                                    [i18n.translate("≥"), ">="]]), "operator");
+        this.appendValueInput("right")
+            .setCheck("Number");
+        //this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setColour(210);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
     Blockly.Blocks['logical_operation'] = {
       init: function() {
         this.appendValueInput("left")

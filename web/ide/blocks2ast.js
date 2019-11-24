@@ -337,27 +337,16 @@ let BlocksToAST = (function () {
 			generateCodeForStatements(block, ctx, "falseBranch", falseBranch);
 			stream.push(builder.conditional(id, condition, trueBranch, falseBranch));
 		},
-		logic_compare: function (block, ctx, stream) {
+		logical_compare: function (block, ctx, stream) {
 			let id = XML.getId(block);
-			let type = XML.getChildNode(block, "OP").innerText;
-			let left = generateCodeForValue(block, ctx, "A");
-			let right = generateCodeForValue(block, ctx, "B");
-			let selector;
-			if (type === "EQ") {
-				selector = "==";
-			} else if (type === "NEQ") {
-				selector = "!=";
-			} else if (type === "LT") {
-				selector = "<";
-			} else if (type === "LTE") {
-				selector = "<=";
-			} else if (type === "GTE") {
-				selector = ">=";
-			} else if (type === "GT") {
-				selector = ">";
-			} else {
+			let type = XML.getChildNode(block, "operator").innerText;
+			let left = generateCodeForValue(block, ctx, "left");
+			let right = generateCodeForValue(block, ctx, "right");
+			let valid = ["==", "!=", "<", "<=", ">", ">="];
+			if (!valid.includes(type)) {
 				throw "Logical operator not found: '" + type + "'";
 			}
+			let selector = type;
 			stream.push(builder.primitiveCall(id, selector, [left, right]));
 		},
 		elapsed_time: function (block, ctx, stream) {

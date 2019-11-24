@@ -138,14 +138,14 @@
     <block type="boolean">
       <field name="value">true</field>
     </block>
-    <block type="logic_compare">
-      <field name="OP">EQ</field>
-      <value name="A">
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
         <shadow type="number">
           <field name="value">1</field>
         </shadow>
       </value>
-      <value name="B">
+      <value name="right">
         <shadow type="number">
           <field name="value">1</field>
         </shadow>
