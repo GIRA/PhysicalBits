@@ -78,6 +78,7 @@ let UziBlock = (function () {
 
         handleTaskBlocks(evt);
         handleProcedureBlocks(evt);
+        handleFunctionBlocks(evt);
         handleVariableDeclarationBlocks(evt);
         trigger("change");
       });
@@ -229,6 +230,57 @@ let UziBlock = (function () {
                 .filter(block => block.getAttribute("type") == type)
                 .map(block => Array.from(block.getElementsByTagName("field"))
                     .filter(field => field.getAttribute("name") == "procName"))
+                .flat()
+                .forEach(field => field.innerText = defaultName);
+              }
+          });
+        }
+
+        return nodes;
+      });
+
+
+      workspace.registerToolboxCategoryCallback("FUNCTIONS", function () {
+        let node = XML.getChildNode(toolbox, "Functions", "originalName");
+        let nodes = Array.from(node.children);
+
+        // Handle func declaring blocks. Make sure a new name is set by default to avoid collisions
+        {
+          let interestingBlocks = ["func_definition_0args", "func_definition_1args",
+                                   "func_definition_2args", "func_definition_3args"];
+          let blocks = Array.from(node.getElementsByTagName("block"))
+            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
+
+          let fields = blocks.map(function (block) {
+            return Array.from(block.getElementsByTagName("field"))
+              .filter(field => field.getAttribute("name") == "funcName");
+          }).flat();
+
+          let defaultName = "default";
+          let i = 1;
+          let funcs = getCurrentScriptNames();
+          while (funcs.includes(defaultName)) {
+            defaultName = "default" + i;
+            i++;
+          }
+
+          fields.forEach(field => field.innerText = defaultName);
+        }
+
+        // Handle function call blocks. Make sure they refer to the last existing func by default.
+        {
+          let interestingBlocks = ["func_call_0args", "func_call_1args", "func_call_2args", "func_call_3args"];
+          interestingBlocks.forEach(function (type, nargs) {
+            let funcs = getCurrentFunctionNames(nargs);
+            if (funcs.length == 0) {
+              let index = nodes.findIndex(n => n.getAttribute("type") == type);
+              if (index > -1) { nodes.splice(index, 1); }
+            } else {
+              let defaultName = funcs.length > 0 ? funcs[funcs.length-1] : "default";
+              Array.from(node.getElementsByTagName("block"))
+                .filter(block => block.getAttribute("type") == type)
+                .map(block => Array.from(block.getElementsByTagName("field"))
+                    .filter(field => field.getAttribute("name") == "funcName"))
                 .flat()
                 .forEach(field => field.innerText = defaultName);
               }
@@ -1426,7 +1478,10 @@ let UziBlock = (function () {
   }
 
   function getCurrentScriptNames() {
-    return new getCurrentTaskNames().concat(getCurrentProcedureNames());
+    // NOTE(Richo): This function returns all the scripts (task, proc, and func)
+    return getCurrentTaskNames()
+      .concat(getCurrentProcedureNames())
+      .concat(getCurrentFunctionNames());
   }
 
   function getCurrentTaskNames() {
@@ -1443,6 +1498,15 @@ let UziBlock = (function () {
     return workspace.getAllBlocks()
       .filter(b => interestingBlocks.includes(b.type))
       .map(b => b.getFieldValue("procName"));
+  }
+
+  function getCurrentFunctionNames(nargs) {
+    let interestingBlocks = ["func_definition_0args", "func_definition_1args",
+                             "func_definition_2args", "func_definition_3args"];
+    if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
+    return workspace.getAllBlocks()
+      .filter(b => interestingBlocks.includes(b.type))
+      .map(b => b.getFieldValue("funcName"));
   }
 
   function getDefaultTaskName() {
@@ -1466,6 +1530,12 @@ let UziBlock = (function () {
     let procs = getCurrentProcedureNames(nargs);
     if (procs.length == 0) return [["", ""]];
     return procs.map(function (name) { return [ name, name ]; });
+  }
+
+  function currentFunctionsForDropdown(nargs) {
+    let funcs = getCurrentFunctionNames(nargs);
+    if (funcs.length == 0) return [["", ""]];
+    return funcs.map(function (name) { return [ name, name ]; });
   }
 
   function currentMotorsForDropdown() {
@@ -1498,6 +1568,27 @@ let UziBlock = (function () {
         workspace.getAllBlocks()
           .filter(b => callBlock == b.type)
           .map(b => b.getField("procName"))
+          .filter(f => f != undefined && f.getValue() == evt.oldValue)
+          .forEach(f => f.setValue(evt.newValue));
+      }
+    }
+  }
+
+  function handleFunctionBlocks(evt) {
+    // NOTE(Richo): If a function is renamed we want to update all referencing blocks.
+    let definitionBlocks = ["func_definition_0args", "func_definition_1args",
+                            "func_definition_2args", "func_definition_3args"];
+    let callBlocks = ["func_call_0args", "func_call_1args",
+                      "func_call_2args", "func_call_3args"];
+    if (evt.type == Blockly.Events.CHANGE
+       && evt.element == "field"
+       && evt.name == "funcName") {
+      let block = workspace.getBlockById(evt.blockId);
+      if (block != undefined && definitionBlocks.includes(block.type)) {
+        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
+        workspace.getAllBlocks()
+          .filter(b => callBlock == b.type)
+          .map(b => b.getField("funcName"))
           .filter(f => f != undefined && f.getValue() == evt.oldValue)
           .forEach(f => f.setValue(evt.newValue));
       }
@@ -1540,13 +1631,13 @@ let UziBlock = (function () {
     }
 
     /*
-     * NOTE(Richo): Procedure definitions also create variables for their arguments
+     * NOTE(Richo): Procedure and Function definitions also create variables for their arguments
      */
     {
       let blocks = [
-        {types: ["proc_definition_1args"], fields: ["arg0"]},
-        {types: ["proc_definition_2args"], fields: ["arg0", "arg1"]},
-        {types: ["proc_definition_3args"], fields: ["arg0", "arg1", "arg2"]}
+        {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
+        {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
+        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]}
       ];
       blocks.forEach(function (block) {
         if (evt.type == Blockly.Events.CREATE && block.types.includes(evt.xml.getAttribute("type"))) {
@@ -1564,20 +1655,20 @@ let UziBlock = (function () {
     }
 
     /*
-     * NOTE(Richo): Renaming a procedure argument should update the variables.
+     * NOTE(Richo): Renaming a procedure/function argument should update the variables.
      */
     {
       let interestingBlocks = [
-        {type: "proc_definition_1args", fields: ["arg0"]},
-        {type: "proc_definition_2args", fields: ["arg0", "arg1"]},
-        {type: "proc_definition_3args", fields: ["arg0", "arg1", "arg2"]},
+        {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
+        {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
+        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]},
       ];
       interestingBlocks.forEach(function (each) {
         if (evt.type == Blockly.Events.CHANGE
             && evt.element == "field"
             && each.fields.includes(evt.name)) {
           let block = workspace.getBlockById(evt.blockId);
-          if (block != undefined && block.type == each.type) {
+          if (block != undefined && each.types.includes(block.type)) {
             let newName = evt.newValue;
             let oldName = evt.oldValue;
             renameVariable(oldName, newName, block);
@@ -1704,6 +1795,9 @@ let UziBlock = (function () {
       proc_definition_1args: ["arg0"],
       proc_definition_2args: ["arg0", "arg1"],
       proc_definition_3args: ["arg0", "arg1", "arg2"],
+      func_definition_1args: ["arg0"],
+      func_definition_2args: ["arg0", "arg1"],
+      func_definition_3args: ["arg0", "arg1", "arg2"],
     };
     return (interestingBlocks[block.type] || []).map(f => block.getField(f));
   }
