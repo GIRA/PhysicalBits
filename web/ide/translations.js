@@ -154,6 +154,11 @@ var TRANSLATIONS = [
     ["procedure named % with arguments %", "procedimiento llamado % con argumentos %", "procedure named % with arguments %"],
     ["procedure named %", "procedimiento llamado %", "procedure named %"],
     ["procedure named % with argument %", "procedimiento llamado % con argumento %", "procedure named % with argument %"],
-    ["return", "volver", "return"],
-    ["call", "ejecutar", "call"],
+    ["exit", "salir", "exit"],
+    ["execute", "ejecutar", "execute"],
+    ["function named % with arguments %", "función llamada % con argumentos %", "function named % with arguments %"],
+    ["function named %", "función llamada %", "function named %"],
+    ["function named % with argument %", "función llamada % con argumento %", "function named % with argument %"],
+    ["return", "devolver", "return"],
+    ["evaluate", "evaluar", "evaluate"],
 ];
