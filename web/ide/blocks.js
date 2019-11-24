@@ -304,7 +304,7 @@ let UziBlock = (function () {
         this.appendValueInput("pinNumber")
           .setCheck("Number")
           .appendField(i18n.translate("toggle pin"));
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(0);
@@ -344,7 +344,7 @@ let UziBlock = (function () {
           input.appendField(parts[i]);
         }
 
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(0);
@@ -369,7 +369,7 @@ let UziBlock = (function () {
           input.appendField(parts[i]);
         }
 
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(0);
         this.setTooltip("");
@@ -382,7 +382,7 @@ let UziBlock = (function () {
         this.appendValueInput("pinNumber")
           .setCheck("Number")
           .appendField(i18n.translate("read pin"));
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
@@ -393,7 +393,7 @@ let UziBlock = (function () {
     Blockly.Blocks['write_pin_variable'] = {
       init: function() {
         let msg = i18n.translate("write pin % value %");
-        let parts = msg.split("%").map(trim);
+        let parts = msg.split("%").map(trim).filter(s => s.length > 0);
         let inputs = [
           this.appendValueInput("pinNumber")
             .setCheck("Number")
@@ -407,7 +407,7 @@ let UziBlock = (function () {
           let part = parts[i];
           input.appendField(part);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(0);
@@ -439,7 +439,7 @@ let UziBlock = (function () {
           .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                   [i18n.translate("seconds"),"s"],
                                                   [i18n.translate("minutes"),"m"]]), "unit");
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -471,7 +471,7 @@ let UziBlock = (function () {
         this.appendValueInput("NAME")
           .setCheck(null)
           .setAlign(Blockly.ALIGN_CENTRE);
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, null);
         this.setColour(20);
         this.setTooltip("");
@@ -495,7 +495,7 @@ let UziBlock = (function () {
           }
           input.appendField(parts[i]);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(210);
         this.setTooltip("");
@@ -506,7 +506,7 @@ let UziBlock = (function () {
     Blockly.Blocks['degrees_servo_variable'] = {
       init: function() {
         let msg = i18n.translate("move servo on pin % degrees %");
-        let parts = msg.split("%").map(trim);
+        let parts = msg.split("%").map(trim).filter(s => s.length > 0);
         let inputs = [
           this.appendValueInput("pinNumber")
             .setCheck("Number")
@@ -520,7 +520,7 @@ let UziBlock = (function () {
           let part = parts[i];
           input.appendField(part);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(0);
@@ -561,7 +561,7 @@ let UziBlock = (function () {
           input.appendField(part);
         }
 
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -591,7 +591,7 @@ let UziBlock = (function () {
           .setCheck(null)
           .appendField(parts[i++]);
 
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -717,7 +717,7 @@ let UziBlock = (function () {
             .appendField(new Blockly.FieldDropdown([[i18n.translate("and"),"and"], [i18n.translate("or"),"or"]]), "operator");
         this.appendValueInput("right")
             .setCheck("Boolean");
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(210);
         this.setTooltip("");
@@ -774,7 +774,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField(new Blockly.FieldNumber(0), "value");
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
@@ -848,7 +848,7 @@ let UziBlock = (function () {
           let part = parts[i];
           input.appendField(part);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
@@ -876,7 +876,7 @@ let UziBlock = (function () {
           let part = parts[i];
           input.appendField(part);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
@@ -901,7 +901,7 @@ let UziBlock = (function () {
           let part = parts[i];
           input.appendField(part);
         }
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
@@ -913,7 +913,7 @@ let UziBlock = (function () {
       init: function() {
         this.appendDummyInput()
             .appendField(i18n.translate("random fraction"));
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
@@ -1045,7 +1045,7 @@ let UziBlock = (function () {
           input.appendField(parts[i]);
         }
 
-        this.setInputsInline(true);
+        //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
