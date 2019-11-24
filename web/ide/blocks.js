@@ -1404,8 +1404,7 @@ let UziBlock = (function () {
         this.appendDummyInput()
             .appendField(i18n.translate("evaluate"))
             .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
@@ -1421,8 +1420,7 @@ let UziBlock = (function () {
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField("arg0");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
@@ -1442,8 +1440,7 @@ let UziBlock = (function () {
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField("arg1");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setOutput(true, null);
         this.setColour(265);
      this.setTooltip("");
      this.setHelpUrl("");
@@ -1467,8 +1464,7 @@ let UziBlock = (function () {
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
             .appendField("arg2");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
+        this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
