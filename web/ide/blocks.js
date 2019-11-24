@@ -876,6 +876,7 @@ let UziBlock = (function () {
     initSonarBlocks();
     initVariableBlocks();
     initProcedureBlocks();
+    initFunctionBlocks();
   }
 
   function initTaskBlocks() {
@@ -1230,6 +1231,178 @@ let UziBlock = (function () {
         this.appendDummyInput()
             .appendField(i18n.translate("call"))
             .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.appendValueInput("arg1")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg1");
+        this.appendValueInput("arg2")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg2");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+  }
+
+  function initFunctionBlocks() {
+
+    Blockly.Blocks['func_definition_0args'] = {
+      init: function() {
+        let msg = i18n.translate("function named %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
+        this.appendDummyInput()
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("default"), "funcName");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_definition_1args'] = {
+      init: function() {
+        let msg = i18n.translate("function named % with argument %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
+        this.appendDummyInput()
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("default"), "funcName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_definition_2args'] = {
+      init: function() {
+        let msg = i18n.translate("function named % with arguments %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
+        this.appendDummyInput()
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("default"), "funcName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+            .appendField(new Blockly.FieldTextInput("arg1"), "arg1");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_definition_3args'] = {
+      init: function() {
+        let msg = i18n.translate("function named % with arguments %");
+        let parts = msg.split("%").map(trim);
+        let i = 0;
+        this.appendDummyInput()
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("default"), "funcName");
+        this.appendDummyInput()
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(parts[i++])
+            .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+            .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+            .appendField(new Blockly.FieldTextInput("arg2"), "arg2");
+        this.appendStatementInput("statements")
+            .setCheck(null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['return_value'] = {
+      init: function() {
+        this.appendValueInput("value")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField(i18n.translate("return"));
+        this.setPreviousStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_call_0args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(i18n.translate("call"))
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_call_1args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(i18n.translate("call"))
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_call_2args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(i18n.translate("call"))
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName");
+        this.appendValueInput("arg0")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg0");
+        this.appendValueInput("arg1")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+            .appendField("arg1");
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(285);
+     this.setTooltip("");
+     this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['func_call_3args'] = {
+      init: function() {
+        this.appendDummyInput()
+            .appendField(i18n.translate("call"))
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName");
         this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
