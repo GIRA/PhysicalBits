@@ -834,9 +834,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_random_int'] = {
       init: function() {
-        let msg = i18n.translate("random integer from % to %");
-        let parts = msg.split("%").map(trim);
-        let inputs = [
+        let msg = i18n.translate("random integer from %0 to %1");
+        let parts = msg.split(" ").map(trim);
+        let inputFields = [
           this.appendValueInput("from")
             .setCheck("Number")
             .setAlign(Blockly.ALIGN_RIGHT),
@@ -844,11 +844,18 @@ let UziBlock = (function () {
              .setCheck("Number")
              .setAlign(Blockly.ALIGN_RIGHT)
         ];
+        let isInputField = /^%\d+$/; // for testing %1, %2 etc
         for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
           let part = parts[i];
-          input.appendField(part);
+          if (isInputField.test(part)) { // if translation part is an input field
+            let fieldNumber = Number(part.substring(1)); // convert to int
+            let inputField = inputFields[fieldNumber]; // get correct input field
+            inputField.appendField(); // not sure?
+          } else {
+            this.appendDummyInput().appendField(part); // not sure
+          }
         }
+	    
         this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
