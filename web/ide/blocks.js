@@ -836,23 +836,30 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("random integer from %0 to %1");
         let parts = msg.split(" ").map(trim);
-        let inputFields = [
-          this.appendValueInput("from")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT),
-          this.appendValueInput("to")
-             .setCheck("Number")
-             .setAlign(Blockly.ALIGN_RIGHT)
-        ];
-        let isInputField = /^%\d+$/; // for testing %1, %2 etc
+        let isInputField = /^%\d+$/; // for testing references %1, %2 etc
+
         for (let i = 0; i < parts.length; i++) {
           let part = parts[i];
-          if (isInputField.test(part)) { // if translation part is an input field
+          if (isInputField.test(part)) { // if part is an input field reference
             let fieldNumber = Number(part.substring(1)); // convert to int
-            let inputField = inputFields[fieldNumber]; // get correct input field
-            inputField.appendField(); // not sure?
+
+            switch (fieldNumber) {
+	      case 0:
+		  this.appendValueInput("from")
+		      .setCheck("Number")
+		      .setAlign(Blockly.ALIGN_RIGHT);
+		  break;
+	      case 1:
+		  this.appendValueInput("to")
+		      .setCheck("Number")
+		      .setAlign(Blockly.ALIGN_RIGHT);
+		  break;
+	      default:
+		  console.debug("Non-existing field number referenced in translation for 'number_random_int'");
+		  break;
+	      }
           } else {
-            this.appendDummyInput().appendField(part); // not sure
+              this.appendDummyInput().appendField(part); // not sure why appendDummyInput is needed
           }
         }
 	    
