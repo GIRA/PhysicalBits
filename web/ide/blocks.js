@@ -907,22 +907,28 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_random_int'] = {
       init: function() {
-        let msg = i18n.translate("random integer from % to %");
-        let parts = msg.split("%").map(trim);
-        let inputs = [
-          this.appendValueInput("from")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT),
-          this.appendValueInput("to")
-             .setCheck("Number")
-             .setAlign(Blockly.ALIGN_RIGHT)
+        let msg = i18n.translate("random integer from %1 to %2");
+        let parts = msg.split(" ").map(trim);
+        let isInputFieldReference = /^%\d+$/;
+        let inputFields = [
+            () => this.appendValueInput("from")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("to")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT)
         ];
+
         for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
           let part = parts[i];
-          input.appendField(part);
+            if (isInputFieldReference.test(part)) {
+              fieldNumber = parseInt(part.substring(1), 10) - 1;
+              inputFields[fieldNumber]();
+            } else {
+              this.appendDummyInput().appendField(part);
+            }
         }
-        //this.setInputsInline(true);
+        this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");

@@ -125,7 +125,7 @@ var TRANSLATIONS = [
     ["Procedures", "Procedimientos", "Procedures"],
     ["Configure DC motors...", "Configurar motores CC...", "Seadista mootorid..."],
     ["Configure sonars...", "Configurar sonares...", "Seadista kajalood..."],
-    ["random integer from % to %", "número entero al azar entre % y %", "suvaline täisarv % ja % vahel"],
+    ["random integer from %1 to %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel"],
     ["constrain % low % high %", "mantener % entre % y %", "piira % madal % kõrge %"],
     ["random fraction", "fracción al azar", "suvaline murdarv"],
     ["square root", "raíz cuadrada", "ruutjuur"],
