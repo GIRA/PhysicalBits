@@ -880,7 +880,7 @@ let UziBlock = (function () {
     Blockly.Blocks['number_constrain'] = {
       init: function() {
         let msg = i18n.translate("constrain %1 low %2 high %3");
-        let isInputFieldRef = /%\d+/g;
+        let inputFieldRefPattern = /%\d+/g;
         let inputFields = [
             () => this.appendValueInput("value")
                       .setCheck("Number")
@@ -899,12 +899,12 @@ let UziBlock = (function () {
         var msgUntillFieldRef;
         var previousRefMatchIndex = 0;
         var input;
-        while((fieldRefMatch = isInputFieldRef.exec(msg)) != null) {
+        while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
             fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
             msgUntillFieldRef = msg.substring(previousRefMatchIndex,
       	                                      fieldRefMatch.index);
             msgUntillFieldRef = trim(msgUntillFieldRef);
-            previousRefMatchIndex = isInputFieldRef.lastIndex;
+            previousRefMatchIndex = inputFieldRefPattern.lastIndex;
             input = inputFields[fieldRefNum]();
             input.appendField(msgUntillFieldRef);
         }
