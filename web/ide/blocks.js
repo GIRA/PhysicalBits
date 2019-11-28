@@ -940,14 +940,31 @@ let UziBlock = (function () {
                       .setAlign(Blockly.ALIGN_RIGHT)
         ];
 
-        for (let i = 0; i < parts.length; i++) {
-          let part = parts[i];
-            if (isInputFieldReference.test(part)) {
-              fieldNumber = parseInt(part.substring(1), 10) - 1;
-              inputFields[fieldNumber]();
-            } else {
-              this.appendDummyInput().appendField(part);
-            }
+        // split msg into parts for each input field reference and create
+        // corresponding Blockly input
+        let inputFieldRefPattern = /%\d+/g;
+        let fieldRefMatch;
+        let fieldRefNum;
+        let msgUntilFieldRef;
+        let previousRefMatchIndex = 0;
+        let input;
+        while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
+            fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
+            msgUntilFieldRef = msg.substring(previousRefMatchIndex,
+      	                                     fieldRefMatch.index);
+            msgUntilFieldRef = trim(msgUntilFieldRef);
+            previousRefMatchIndex = inputFieldRefPattern.lastIndex;
+            input = inputFields[fieldRefNum]();
+            input.appendField(msgUntilFieldRef);
+        }
+        // append loose text if there exists any after the last input
+        // field reference
+        if (msg.length > previousRefMatchIndex) {
+            var msgAfterLastFieldRef;
+            input = this.appendDummyInput();
+            msgAfterLastFieldRef = msg.substring(previousRefMatchIndex);
+            msgAfterLastFieldRef = trim(msgAfterLastFieldRef);
+            input.appendField(msgAfterLastFieldRef);
         }
         this.setInputsInline(true);
         this.setOutput(true, "Number");
