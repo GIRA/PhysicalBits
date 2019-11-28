@@ -879,25 +879,44 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_constrain'] = {
       init: function() {
-        let msg = i18n.translate("constrain % low % high %");
-        let parts = msg.split("%").map(trim);
-        let inputs = [
-          this.appendValueInput("value")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT),
-          this.appendValueInput("low")
-             .setCheck("Number")
-             .setAlign(Blockly.ALIGN_RIGHT),
-           this.appendValueInput("high")
-              .setCheck("Number")
-              .setAlign(Blockly.ALIGN_RIGHT)
+        let msg = i18n.translate("constrain %1 low %2 high %3");
+        let isInputFieldRef = /%\d+/g;
+        let inputFields = [
+            () => this.appendValueInput("value")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("low")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("high")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT)
         ];
-        for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
-          let part = parts[i];
-          input.appendField(part);
+
+        // go through the msg parts up untill the last input field reference
+        var fieldRefMatch;
+        var fieldRefNum;
+        var msgUntillFieldRef;
+        var previousRefMatchIndex = 0;
+        var input;
+        while((fieldRefMatch = isInputFieldRef.exec(msg)) != null) {
+            fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
+            msgUntillFieldRef = msg.substring(previousRefMatchIndex,
+      	                                      fieldRefMatch.index);
+            msgUntillFieldRef = trim(msgUntillFieldRef);
+            previousRefMatchIndex = isInputFieldRef.lastIndex;
+            input = inputFields[fieldRefNum]();
+            input.appendField(msgUntillFieldRef);
         }
-        //this.setInputsInline(true);
+        // if there is text after the last input field reference
+        if (msg.length > previousRefMatchIndex) {
+            var msgAfterLastFieldRef;
+            input = this.appendDummyInput();
+            msgAfterLastFieldRef = msg.substring(previousRefMatchIndex);
+            msgAfterLastFieldRef = trim(msgAfterLastFieldRef);
+            input.appendField(msgAfterLastFieldRef);
+        }
+        this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
