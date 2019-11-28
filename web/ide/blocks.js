@@ -880,7 +880,6 @@ let UziBlock = (function () {
     Blockly.Blocks['number_constrain'] = {
       init: function() {
         let msg = i18n.translate("constrain %1 low %2 high %3");
-        let inputFieldRefPattern = /%\d+/g;
         let inputFields = [
             () => this.appendValueInput("value")
                       .setCheck("Number")
@@ -893,22 +892,25 @@ let UziBlock = (function () {
                       .setAlign(Blockly.ALIGN_RIGHT)
         ];
 
-        // go through the msg parts up untill the last input field reference
-        var fieldRefMatch;
-        var fieldRefNum;
-        var msgUntillFieldRef;
-        var previousRefMatchIndex = 0;
-        var input;
+        // split msg into parts for each input field reference and create
+        // corresponding Blockly input
+        let inputFieldRefPattern = /%\d+/g;
+        let fieldRefMatch;
+        let fieldRefNum;
+        let msgUntilFieldRef;
+        let previousRefMatchIndex = 0;
+        let input;
         while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
             fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
-            msgUntillFieldRef = msg.substring(previousRefMatchIndex,
-      	                                      fieldRefMatch.index);
-            msgUntillFieldRef = trim(msgUntillFieldRef);
+            msgUntilFieldRef = msg.substring(previousRefMatchIndex,
+      	                                     fieldRefMatch.index);
+            msgUntilFieldRef = trim(msgUntilFieldRef);
             previousRefMatchIndex = inputFieldRefPattern.lastIndex;
             input = inputFields[fieldRefNum]();
-            input.appendField(msgUntillFieldRef);
+            input.appendField(msgUntilFieldRef);
         }
-        // if there is text after the last input field reference
+        // append loose text if there exists any after the last input
+        // field reference
         if (msg.length > previousRefMatchIndex) {
             var msgAfterLastFieldRef;
             input = this.appendDummyInput();
