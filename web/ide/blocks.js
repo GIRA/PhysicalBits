@@ -330,18 +330,42 @@ let UziBlock = (function () {
 
     Blockly.Blocks['turn_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("% pin");
-        let fields = [
-          [new Blockly.FieldDropdown([[i18n.translate("turn on"),"on"],
-                                      [i18n.translate("turn off"),"off"]]), "pinState"],
+        let msg = i18n.translate("%1 pin");
+        let inputFields = [
+            () => {let field = this.appendValueInput("pinNumber")
+                                   .setCheck("Number");
+                   field.appendField(new Blockly.FieldDropdown(
+                                     [[i18n.translate("turn on"),"on"],
+                                     [i18n.translate("turn off"),"off"]]
+                                    ), "pinState");
+                   return field;
+            }
         ];
-        let input = this.appendValueInput("pinNumber").setCheck("Number");
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
+        // split msg into parts for each input field reference and create
+        // corresponding Blockly input
+        let inputFieldRefPattern = /%\d+/g;
+        let fieldRefMatch;
+        let fieldRefNum;
+        let msgUntilFieldRef;
+        let previousRefMatchIndex = 0;
+        let input;
+        while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
+            fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
+            msgUntilFieldRef = msg.substring(previousRefMatchIndex,
+      	                                     fieldRefMatch.index);
+            msgUntilFieldRef = trim(msgUntilFieldRef);
+            previousRefMatchIndex = inputFieldRefPattern.lastIndex;
+            input = inputFields[fieldRefNum]();
+            input.appendField(msgUntilFieldRef);
+        }
+        // append loose text if there exists any after the last input
+        // field reference
+        if (msg.length > previousRefMatchIndex) {
+            var msgAfterLastFieldRef;
+            input = this.appendDummyInput();
+            msgAfterLastFieldRef = msg.substring(previousRefMatchIndex);
+            msgAfterLastFieldRef = trim(msgAfterLastFieldRef);
+            input.appendField(msgAfterLastFieldRef);
         }
 
         //this.setInputsInline(true);
