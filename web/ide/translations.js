@@ -56,7 +56,7 @@ var TRANSLATIONS = [
 
     // Blockly
     ["toggle pin", "alternar pin", "lülita viik ümber"],
-    ["%1 pin", "%1 pin", "viik %1"],
+    ["pin %1", "pin %1", "viik %1"],
     ["wait", "esperar", "oota"],
     ["is % pin", "está % el pin", "on viik %"],
     ["read pin", "leer pin", "loe viik"],
