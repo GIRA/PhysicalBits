@@ -548,18 +548,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat_times'] = {
       init: function() {
-        let msg = i18n.translate("repeat % times");
-        let parts = msg.split("%").map(trim);
-        let inputs = [
-          this.appendValueInput("times").setCheck(null),
-          this.appendDummyInput(),
-          this.appendStatementInput("statements").setCheck(null)
+        let msg = i18n.translate("repeat %1 times");
+        let inputFields = [
+          () => this.appendValueInput("times").setCheck(null),
+          () => this.appendStatementInput("statements").setCheck(null)
         ];
-        for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
-          let part = parts[i];
-          input.appendField(part);
-        }
+
+        let dummyInputField = () => this.appendDummyInput();
+        buildBlocksFromMsg(msg, inputFields, dummyInputField);
 
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);

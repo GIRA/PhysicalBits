@@ -65,7 +65,7 @@ var TRANSLATIONS = [
     ["elapsed %1", "%1 transcurridos", "%1 on möödunud"],
     ["move servo on pin %1 degrees %2", "mover servo en pin %1 grados %2", "pööra viigus %1 servot %2 kraadi"],
     ["repeat", "repetir", "korda"],
-    ["repeat % times", "repetir % veces", "korda % korda"],
+    ["repeat %1 times", "repetir %1 veces", "korda %1 korda"],
     ["count with % from % to % by %", "contar con % desde % hasta % por %", "loenda % kuni % sammuga %"],
     ["timer named % running % times per % initial state %", "temporizador llamado % ejecutándose % veces por % estado inicial %", "kell nimega % tiksub % korda iga % algseis %"],
     ["task named", "tarea llamada", "ülesanne nimega"],
