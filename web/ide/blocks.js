@@ -507,21 +507,19 @@ let UziBlock = (function () {
 
     Blockly.Blocks['degrees_servo_variable'] = {
       init: function() {
-        let msg = i18n.translate("move servo on pin % degrees %");
-        let parts = msg.split("%").map(trim).filter(s => s.length > 0);
-        let inputs = [
-          this.appendValueInput("pinNumber")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT),
-          this.appendValueInput("servoValue")
-             .setCheck("Number")
-             .setAlign(Blockly.ALIGN_RIGHT)
+        let msg = i18n.translate("move servo on pin %1 degrees %2");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("servoValue")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
         ];
-        for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
-          let part = parts[i];
-          input.appendField(part);
-        }
+
+        let dummyInputField = () => this.appendDummyInput();
+        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
