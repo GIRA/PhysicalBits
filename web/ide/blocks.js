@@ -336,7 +336,7 @@ let UziBlock = (function () {
                                    .setCheck("Number");
                    field.appendField(new Blockly.FieldDropdown(
                                      [[i18n.translate("turn on"),"on"],
-                                     [i18n.translate("turn off"),"off"]]
+                                      [i18n.translate("turn off"),"off"]]
                                     ), "pinState");
                    return field;
             }
