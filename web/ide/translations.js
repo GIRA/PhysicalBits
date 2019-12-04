@@ -58,7 +58,7 @@ var TRANSLATIONS = [
     ["toggle pin", "alternar pin", "lülita viik ümber"],
     ["pin %1", "pin %1", "viik %1"],
     ["wait", "esperar", "oota"],
-    ["is % pin", "está % el pin", "on viik %"],
+    ["is %1 pin", "está %1 el pin", "on viik %1"],
     ["read pin", "leer pin", "loe viik"],
     ["write pin % value %", "escribir en el pin % el valor %", "kirjuta viigu % väärtus %"],
     ["repeat forever", "repetir por siempre", "korda igavesti"],

@@ -356,19 +356,21 @@ let UziBlock = (function () {
 
     Blockly.Blocks['is_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("is % pin");
-        let fields = [
-          [new Blockly.FieldDropdown([[i18n.translate("on"),"on"],
-                                      [i18n.translate("off"),"off"]]), "pinState"],
+        let msg = i18n.translate("is %1 pin");
+        let inputFields = [
+            () => {
+                let field = this.appendValueInput("pinNumber")
+                                .setCheck("Number");
+                field.appendField(new Blockly.FieldDropdown(
+                    [[i18n.translate("on"),"on"],
+                     [i18n.translate("off"),"off"]]
+                ), "pinState");
+                return field;
+            }
         ];
-        let input = this.appendValueInput("pinNumber").setCheck("Number");
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
+
+        let dummyInputField = () => this.appendDummyInput();
+        buildBlocksFromMsg(msg, inputFields, dummyInputField);
 
         //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
@@ -926,7 +928,7 @@ let UziBlock = (function () {
         // field reference
         if (msg.length > previousRefMatchIndex) {
             var msgAfterLastFieldRef;
-            input = this.appendDummyInput();
+            input = dummyInputField();//this.appendDummyInput();
             msgAfterLastFieldRef = msg.substring(previousRefMatchIndex);
             msgAfterLastFieldRef = trim(msgAfterLastFieldRef);
             input.appendField(msgAfterLastFieldRef);
