@@ -60,7 +60,7 @@ var TRANSLATIONS = [
     ["wait", "esperar", "oota"],
     ["is %1 pin", "está %1 el pin", "on viik %1"],
     ["read pin", "leer pin", "loe viik"],
-    ["write pin % value %", "escribir en el pin % el valor %", "kirjuta viigu % väärtus %"],
+    ["write pin %1 value %2", "escribir en el pin %1 el valor %2", "kirjuta viigu %1 väärtuseks %2"],
     ["repeat forever", "repetir por siempre", "korda igavesti"],
     ["elapsed %", "% transcurridos", "% on möödunud"],
     ["move servo on pin % degrees %", "mover servo en pin % grados %", "pööra viigus % servot % kraadi"],
