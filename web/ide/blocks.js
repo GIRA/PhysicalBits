@@ -482,20 +482,21 @@ let UziBlock = (function () {
 
     Blockly.Blocks['elapsed_time'] = {
       init: function() {
-        let msg = i18n.translate("elapsed %");
-        let fields = [
-          [new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+        let msg = i18n.translate("elapsed %1");
+        let inputFields = [
+            () => {let field = this.appendDummyInput();
+                   field.appendField(new Blockly.FieldDropdown(
+                                     [[i18n.translate("milliseconds"),"ms"],
                                       [i18n.translate("seconds"),"s"],
-                                      [i18n.translate("minutes"),"m"]]), "unit"]
+                                      [i18n.translate("minutes"),"m"]]
+                  ), "unit");
+		  return field;
+            }
         ];
-        let input = this.appendDummyInput();
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
+
+        let dummyInputField = () => this.appendDummyInput();
+        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(210);
