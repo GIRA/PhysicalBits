@@ -568,26 +568,24 @@ let UziBlock = (function () {
 
     Blockly.Blocks['for'] = {
       init: function() {
-        let msg = i18n.translate("count with % from % to % by %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendDummyInput()
-          .appendField(parts[i++])
-          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName");
-        this.appendValueInput("start")
-          .setCheck("Number")
-          .appendField(parts[i++]);
-        this.appendValueInput("stop")
-          .setCheck("Number")
-          .appendField(parts[i++]);
-        this.appendValueInput("step")
-          .setCheck("Number")
-          .appendField(parts[i++]);
-        this.appendStatementInput("statements")
-          .setCheck(null)
-          .appendField(parts[i++]);
+        let msg = i18n.translate("count with %1 from %2 to %3 by %4");
+          let inputFields = [
+	      () => this.appendDummyInput()
+		  .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
+              () => this.appendValueInput("start")
+		  .setCheck("Number"),
+              () => this.appendValueInput("stop")
+		  .setCheck("Number"),
+              () => this.appendValueInput("step")
+		  .setCheck("Number")
+	  ];
 
-        //this.setInputsInline(true);
+	  
+        let dummyInputField = () => this.appendDummyInput();
+        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+
+          //this.setInputsInline(true);
+        this.appendStatementInput("statements").setCheck(null);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -926,7 +924,6 @@ let UziBlock = (function () {
             msgAfterLastFieldRef = trim(msgAfterLastFieldRef);
             input.appendField(msgAfterLastFieldRef);
         }
-
       };
       
     Blockly.Blocks['number_random_int'] = {
