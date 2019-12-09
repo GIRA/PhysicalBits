@@ -572,9 +572,8 @@ let UziBlock = (function () {
 		  .setCheck("Number")
 	  ];
 
-	  
-        let dummyInputField = () => this.appendDummyInput();
-        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+
+        initBlock(this, msg, inputFields);
 
           //this.setInputsInline(true);
         this.appendStatementInput("statements").setCheck(null);
