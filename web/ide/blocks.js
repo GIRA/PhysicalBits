@@ -485,8 +485,7 @@ let UziBlock = (function () {
             }
         ];
 
-        let dummyInputField = () => this.appendDummyInput();
-        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+        initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
