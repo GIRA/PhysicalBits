@@ -878,8 +878,7 @@ let UziBlock = (function () {
                       .setAlign(Blockly.ALIGN_RIGHT)
         ];
 
-        let dummyInputField = () => this.appendDummyInput();
-        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+        initBlock(this, msg, inputFields);
 
         this.setInputsInline(true);
         this.setOutput(true, "Number");
