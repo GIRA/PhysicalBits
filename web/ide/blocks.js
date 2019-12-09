@@ -543,8 +543,7 @@ let UziBlock = (function () {
           () => this.appendStatementInput("statements").setCheck(null)
         ];
 
-        let dummyInputField = () => this.appendDummyInput();
-        buildBlocksFromMsg(msg, inputFields, dummyInputField);
+        initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
