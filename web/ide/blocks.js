@@ -1035,21 +1035,16 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_sonar_distance'] = {
       init: function() {
-        let msg = i18n.translate("read distance from % in %");
-        let fields = [
-          [new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"],
-          [new Blockly.FieldDropdown([[i18n.translate("mm"),"mm"],
-                                      [i18n.translate("cm"),"cm"],
-                                      [i18n.translate("m"),"m"]]), "unit"],
+        let msg = i18n.translate("read distance from %1 in %2");
+        let inputFields = [
+          input => input.appendField(
+	    new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("mm"),"mm"],
+								[i18n.translate("cm"),"cm"],
+								[i18n.translate("m"),"m"]]), "unit")
         ];
-        let input = this.appendDummyInput();
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
+
+        initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
