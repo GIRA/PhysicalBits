@@ -70,7 +70,7 @@ var TRANSLATIONS = [
     ["timer named %1 running %2 times per %3 initial state %4 %5", "temporizador llamado %1 ejecutándose %2 veces por %2 estado inicial %4 %5", "kell nimega %1 tiksub %2 korda iga %3 algseisuga %4 %5"],
     ["task named %1 %2", "tarea llamada %1 %2", "ülesanne nimega %1 %2"],
     ["if %1 then %2", "si %1 entonces %2", "juhul kui %1 siis %2"],
-    ["if % then % else %", "si % entonces % si no %", "juhul kui %, siis %, muidu %"],
+    ["if %1 then %2 else %3", "si %1 entonces %2 si no %3", "juhul kui %1 siis %2 muidu %3"],
     ["stop", "detener", "peata"],
     ["start", "iniciar", "start"],
     ["resume", "continuar", "jätka"],

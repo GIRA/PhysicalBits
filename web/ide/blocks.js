@@ -662,19 +662,19 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_full'] = {
       init: function() {
-        let msg = i18n.translate("if % then % else %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendValueInput("condition")
-          .setCheck("Boolean")
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField(parts[i++]);
-        this.appendStatementInput("trueBranch")
-          .setCheck(null)
-          .appendField(parts[i++]);
-        this.appendStatementInput("falseBranch")
-          .setCheck(null)
-          .appendField(parts[i++]);
+        let msg = i18n.translate("if %1 then %2 else %3");
+        let inputFields = [
+          () => this.appendValueInput("condition")
+                    .setCheck("Boolean")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendStatementInput("trueBranch")
+                    .setCheck(null),
+          () => this.appendStatementInput("falseBranch")
+                    .setCheck(null)
+	];
+
+	initBlock(this, msg, inputFields);
+	
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
