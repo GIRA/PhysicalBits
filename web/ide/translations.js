@@ -88,7 +88,7 @@ var TRANSLATIONS = [
     ["hour", "hour", "tund"],
     ["started", "iniciado", "käivitatud"],
     ["stopped", "detenido", "peatatud"],
-    ["move %% at speed", "mover % hacia % a velocidad", "liigu %% kiirusega"],
+    ["move %1 %2 at speed %3", "mover %1 hacia %2 a velocidad %3", "liiguta mootorit %1 suunas %2 kiirusega %3"],
     ["set % speed to", "fijar velocidad de % a", "vali % kiirus"],
     ["read distance from % in %", "leer distancia de % en %", "mõõda kaugust %-st % ühikutes"],
     ["forward", "adelante", "edasi"],

@@ -975,20 +975,17 @@ let UziBlock = (function () {
 
     Blockly.Blocks['move_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("move %% at speed");
-        let fields = [
-          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
-          [new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
-                                      [i18n.translate("backward"),"bwd"]]), "direction"],
+        let msg = i18n.translate("move %1 %2 at speed %3");
+        let inputFields = [
+          input => input.appendField(
+	    new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
+	  input => input.appendField(
+	    new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
+				       [i18n.translate("backward"),"bwd"]]), "direction"),
+	  () => this.appendValueInput("speed").setCheck("Number")
         ];
-        let input = this.appendValueInput("speed").setCheck("Number");
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
+
+	initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
