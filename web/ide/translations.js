@@ -67,7 +67,7 @@ var TRANSLATIONS = [
     ["repeat", "repetir", "korda"],
     ["repeat %1 times", "repetir %1 veces", "korda %1 korda"],
     ["count with %1 from %2 to %3 by %4", "contar con %1 desde %2 hasta %3 por %4", "loenda muutujat %1 alates %2 kuni %3 sammuga %4"],
-    ["timer named % running % times per % initial state %", "temporizador llamado % ejecutándose % veces por % estado inicial %", "kell nimega % tiksub % korda iga % algseis %"],
+    ["timer named %1 running %2 times per %3 initial state %4 %5", "temporizador llamado %1 ejecutándose %2 veces por %2 estado inicial %4 %5", "kell nimega %1 tiksub %2 korda iga %3 algseisuga %4 %5"],
     ["task named %1 %2", "tarea llamada %1 %2", "ülesanne nimega %1 %2"],
     ["if % then %", "si % entonces %", "juhul kui %, siis %"],
     ["if % then % else %", "si % entonces % si no %", "juhul kui %, siis %, muidu %"],

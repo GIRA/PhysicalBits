@@ -594,27 +594,26 @@ let UziBlock = (function () {
 
     Blockly.Blocks['timer'] = {
       init: function() {
-        let msg = i18n.translate("timer named % running % times per % initial state %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendDummyInput()
-          .appendField(parts[i++])
-          .appendField(new Blockly.FieldTextInput("default"), "taskName");
-        this.appendDummyInput()
-          .appendField(parts[i++])
-          .appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes")
-          .appendField(parts[i++])
-          .appendField(new Blockly.FieldDropdown([[i18n.translate("second"),"s"],
-                                                  [i18n.translate("minute"),"m"],
-                                                  [i18n.translate("hour"),"h"]]), "tickingScale");
-        this.appendDummyInput()
-          .appendField(parts[i++])
-          .appendField(new Blockly.FieldDropdown([[i18n.translate("started"),"started"],
-                                                  [i18n.translate("stopped"),"stopped"]]), "initialState");
-        this.appendStatementInput("statements")
-          .setCheck(null)
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField(parts[i++]);
+        let msg = i18n.translate("timer named %1 running %2 times per %3 initial state %4 %5");
+        let inputFields = [
+          () => this.appendDummyInput()
+            .appendField(new Blockly.FieldTextInput("default"), "taskName"),
+          () => this.appendDummyInput()
+            .appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
+          () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("second"),"s"],
+                                                    [i18n.translate("minute"),"m"],
+                                                    [i18n.translate("hour"),"h"]]), "tickingScale"),
+          () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("started"),"started"],
+                                                    [i18n.translate("stopped"),"stopped"]]), "initialState"),
+          () => this.appendStatementInput("statements")
+            .setCheck(null)
+            .setAlign(Blockly.ALIGN_RIGHT)
+	];
+
+        initBlock(this, msg, inputFields);
+	
         this.setColour(175);
         this.setTooltip("");
         this.setHelpUrl("");
