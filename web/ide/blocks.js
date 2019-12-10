@@ -641,16 +641,17 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_simple'] = {
       init: function() {
-        let msg = i18n.translate("if % then %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendValueInput("condition")
-          .setCheck("Boolean")
-          .setAlign(Blockly.ALIGN_RIGHT)
-          .appendField(parts[i++]);
-        this.appendStatementInput("trueBranch")
-          .setCheck(null)
-          .appendField(parts[i++]);
+        let msg = i18n.translate("if %1 then %2");
+        let inputFields = [
+          () => this.appendValueInput("condition")
+                    .setCheck("Boolean")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendStatementInput("trueBranch")
+                    .setCheck(null)
+	];
+
+        initBlock(this, msg, inputFields);
+	
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
