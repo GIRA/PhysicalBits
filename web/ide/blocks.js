@@ -1078,19 +1078,16 @@ let UziBlock = (function () {
 
     Blockly.Blocks['increment_variable'] = {
       init: function() {
-        let msg = i18n.translate("increment % by");
-        let fields = [
-          [new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"],
+        let msg = i18n.translate("increment %1 by %2");
+        let inputFields = [
+	  input => input.appendField(
+            new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
+	  () => this.appendValueInput("value").setCheck(null)
         ];
-        let input = this.appendValueInput("value").setCheck(null);
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
-        this.setPreviousStatement(true, null);
+
+        initBlock(this, msg, inputFields);
+
+	this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(330);
         this.setTooltip("");

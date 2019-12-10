@@ -150,7 +150,7 @@ var TRANSLATIONS = [
     ["Variable name", "Nombre de variable", "Muutuja nimi"],
     ["declare local variable %1 with value %2", "declarar variable local %1 con valor %2", "määra muutuja %1 väärtusega %2"],
     ["set %1 to %2", "establecer %1 a %2", "määra %1 väärtuseks %2"],
-    ["increment % by", "incrementar % por", "kasvata % suurusega"],
+    ["increment %1 by %2", "incrementar %1 por %2", "kasvata %1 suurusega %2"],
     ["procedure named % with arguments %", "procedimiento llamado % con argumentos %", "procedure named % with arguments %"],
     ["procedure named %", "procedimiento llamado %", "procedure named %"],
     ["procedure named % with argument %", "procedimiento llamado % con argumento %", "procedure named % with argument %"],
