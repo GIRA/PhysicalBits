@@ -1012,18 +1012,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['change_speed_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("set % speed to");
-        let fields = [
-          [new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"],
+        let msg = i18n.translate("set %1 speed to %2");
+        let inputFields = [
+          input => input.appendField(
+	    new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
+	  () => this.appendValueInput("speed").setCheck("Number")
         ];
-        let input = this.appendValueInput("speed").setCheck("Number");
-        let parts = msg.split("%").map(trim);
-        for (let i = 0; i < parts.length; i++) {
-          if (i > 0) {
-            input.appendField(fields[i - 1][0], fields[i - 1][1]);
-          }
-          input.appendField(parts[i]);
-        }
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
