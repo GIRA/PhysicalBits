@@ -144,7 +144,7 @@ var TRANSLATIONS = [
     ["round", "redondear", "ümardamine"],
     ["round up", "redondear hacia arriba", "ümarda üles"],
     ["round down", "redondear hacia abajo", "ümarda alla"],
-    ["remainder of % ÷ %", "resto de % ÷ %", "% ÷ % jääk"],
+    ["remainder of %1 ÷ %2", "resto de %1 ÷ %2", "%1 ÷ %2 jääk"],
     ["Configure variables...", "Configurar variables...","Seadista muutujaid..."],
     ["Configure variables", "Configurar variables", "Seadista muutujaid"],
     ["Variable name", "Nombre de variable", "Muutuja nimi"],

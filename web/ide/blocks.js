@@ -851,21 +851,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_modulo'] = {
       init: function() {
-        let msg = i18n.translate("remainder of % ÷ %");
-        let parts = msg.split("%").map(trim);
-        let inputs = [
-          this.appendValueInput("dividend")
-            .setCheck("Number")
-            .setAlign(Blockly.ALIGN_RIGHT),
-          this.appendValueInput("divisor")
-             .setCheck("Number")
-             .setAlign(Blockly.ALIGN_RIGHT)
+        let msg = i18n.translate("remainder of %1 ÷ %2");
+        let inputFields = [
+          () => this.appendValueInput("dividend")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("divisor")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
         ];
-        for (let i = 0; i < parts.length; i++) {
-          let input = i < inputs.length ? inputs[i] : this.appendDummyInput();
-          let part = parts[i];
-          input.appendField(part);
-        }
+
+	initBlock(this, msg, inputFields);
+	
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
