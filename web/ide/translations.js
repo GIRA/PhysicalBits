@@ -158,7 +158,7 @@ var TRANSLATIONS = [
     ["exit", "salir", "exit"],
     ["execute", "ejecutar", "execute"],
     ["function named % with arguments %", "función llamada % con argumentos %", "function named % with arguments %"],
-    ["function named %", "función llamada %", "function named %"],
+    ["function named %1 %2", "función llamada %1 %2", "funktsioon nimega %1 %2"],
     ["function named % with argument %", "función llamada % con argumento %", "function named % with argument %"],
     ["return", "devolver", "return"],
     ["evaluate", "evaluar", "evaluate"],

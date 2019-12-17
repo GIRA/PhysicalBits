@@ -1309,14 +1309,16 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_definition_0args'] = {
       init: function() {
-        let msg = i18n.translate("function named %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendDummyInput()
-            .appendField(parts[i++])
-            .appendField(new Blockly.FieldTextInput("default"), "funcName");
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("function named %1 %2");
+        let inputFields = [
+          () => this.appendDummyInput()
+            .appendField(new Blockly.FieldTextInput("default"), "funcName"),
+          () => this.appendStatementInput("statements")
+            .setCheck(null)
+	];
+
+        initBlock(this, msg, inputFields);
+
         this.setColour(265);
         this.setTooltip("");
         this.setHelpUrl("");
