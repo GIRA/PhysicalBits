@@ -1168,7 +1168,6 @@ let UziBlock = (function () {
     Blockly.Blocks['proc_definition_2args'] = {
       init: function() {
         let msg = i18n.translate("procedure named %1 with arguments %2 %3 %4");
-        let parts = msg.split("%").map(trim);
         let inputFields = [
           () => this.appendDummyInput()
                     .appendField(new Blockly.FieldTextInput("default"), "procName"),
@@ -1192,20 +1191,25 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_definition_3args'] = {
       init: function() {
-        let msg = i18n.translate("procedure named % with arguments %");
-        let parts = msg.split("%").map(trim);
-        let i = 0;
-        this.appendDummyInput()
-            .appendField(parts[i++])
-            .appendField(new Blockly.FieldTextInput("default"), "procName");
-        this.appendDummyInput()
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField(parts[i++])
-            .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
-            .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
-            .appendField(new Blockly.FieldTextInput("arg2"), "arg2");
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("procedure named %1 with arguments %2 %3 %4 %5");
+        let inputFields = [
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldTextInput("default"), "procName"),
+          () => this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_RIGHT)
+                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
+          () => this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_RIGHT)
+                    .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
+          () => this.appendDummyInput()
+                    .setAlign(Blockly.ALIGN_RIGHT)
+                    .appendField(new Blockly.FieldTextInput("arg2"), "arg2"),
+          () => this.appendStatementInput("statements")
+                    .setCheck(null)
+	];
+
+        initBlock(this, msg, inputFields);
+
         this.setColour(285);
         this.setTooltip("");
         this.setHelpUrl("");

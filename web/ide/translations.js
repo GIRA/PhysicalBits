@@ -152,6 +152,7 @@ var TRANSLATIONS = [
     ["set %1 to %2", "establecer %1 a %2", "määra %1 väärtuseks %2"],
     ["increment %1 by %2", "incrementar %1 por %2", "kasvata %1 suurusega %2"],
     ["procedure named %1 with arguments %2 %3 %4", "procedimiento llamado %1 con argumentos %2 %3 %4", "protseduur nimega %1 argumentidega %2 %3 %4"],
+    ["procedure named %1 with arguments %2 %3 %4 %5", "procedimiento llamado %1 con argumentos %2 %3 %4 %5", "protseduur nimega %1 argumentidega %2 %3 %4 %5"],
     ["procedure named %1 %2", "procedimiento llamado %1 %2", "protseduur nimega %1 %2"],
     ["procedure named %1 with argument %2 %3", "procedimiento llamado %1 con argumento %2 %3", "protseduur nimega %1 argumendiga %2 %3"],
     ["exit", "salir", "exit"],
