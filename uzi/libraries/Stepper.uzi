@@ -1,36 +1,80 @@
-var m1 = 8;
-var m2 = 9;
-var m3 = 10;
-var m4 = 11;
+var m1 = 8; "8"
+var m2 = 9; "9" 
+var m3 = 10; "10"
+var m4 = 11; "11"
 var delay = 100;
+var currentState = 0;
+var totalSteps = 48;
 
-proc step(numberOfSteps)
+proc steps(numberOfSteps)
 {
-repeat(numberOfSteps)
-{
-	turnOn(m1);
-	turnOff(m2);
-	turnOn(m3);
-	turnOff(m4);
-	delayMs(delay);
-	turnOff(m1);
-	turnOn(m2);
-	turnOn(m3);
-	turnOff(m4);
-	delayMs(delay);
-	turnOff(m1);
-	turnOn(m2);
-	turnOff(m3);
-	turnOn(m4);
-	delayMs(delay);
-	turnOn(m1);
-	turnOff(m2);
-	turnOff(m3);
-	turnOn(m4);
-	delayMs(delay);
+	repeat(numberOfSteps)
+	{
+		step();
+		delayMs(delay);
+	}
 }
+
+proc step()
+{
+   if(currentState ==0){step1();}
+   if(currentState ==1){step2();}
+   if(currentState ==2){step3();}
+   if(currentState ==3){step4();}
+   currentState = (currentState + 1) % 4;
+}
+
+proc degrees(degreesToStep)
+{
+	steps(degreesToStep * totalSteps/360);
+	
+}
+
+proc setSpeed(rpm)
+{
+	var spm = totalSteps*rpm;
+	var sps = spm / 60;
+	delay = 1000/sps;
+}
+
+proc stop()
+{
 turnOff(m1);
 turnOff(m2);
 turnOff(m3);
 turnOff(m4);
 }
+
+
+proc step1()
+{
+	turnOn(m1);
+	turnOff(m2);
+	turnOn(m3);
+	turnOff(m4);
+}
+
+proc step2()
+{
+	turnOff(m1);
+	turnOn(m2);
+	turnOn(m3);
+	turnOff(m4);
+}
+
+proc step3()
+{
+	turnOff(m1);
+	turnOn(m2);
+	turnOff(m3);
+	turnOn(m4);
+}
+
+proc step4()
+{
+	turnOn(m1);
+	turnOff(m2);
+	turnOff(m3);
+	turnOn(m4);
+}
+
