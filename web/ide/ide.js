@@ -622,6 +622,9 @@
       });
       console.log(locale);
     });
+
+    $("#all-caps-mode-checkbox").get(0).checked = false;
+    $("#all-caps-mode-checkbox").on("change", toggleAllCaps);
   }
 
   function checkBrokenLayout() {
@@ -800,6 +803,35 @@
   function toggleInteractive() {
     scheduleAutorun($("#interactive-checkbox").get(0).checked);
     saveToLocalStorage();
+  }
+
+  function toggleAllCaps() {
+    // @todo: it would be good to select the one with href="web/ide/ide.css"
+    var ss = document.styleSheets[0]; // Get the first stylesheet
+    var rules = ss.cssRules ? ss.cssRules : ss.rules;
+
+    // if tickbox has been checked
+    if ($("#all-caps-mode-checkbox").get(0).checked) {
+      if (ss.insertRule) ss.insertRule("* { text-transform: uppercase; }", rules.length);
+      else if (ss.addRule) ss.addRule("*", "text-transform: uppercase;", rules.length); // IE
+    }
+    // else tickbox has been unmarked
+    else {
+      if (ss.deleteRule) ss.deleteRule(rules.length - 1);
+      else if (ss.removeRule) ss.removeRule(rules.length - 1); // IE
+    }
+
+    // re-set the localization to re-draw all blocks and translations
+    // this is done to fix the padding around the text
+    let currentLocale = i18n.currentLocale();
+    let anotherLocale;
+    $('input[name="language-radios"]:radio').each(function () {
+        if (!$(this).get(0).checked){
+	  anotherLocale = $(this).val();
+        }
+      });
+    i18n.currentLocale(anotherLocale);
+    i18n.currentLocale(currentLocale);
   }
 
   function openOptionsDialog() {
