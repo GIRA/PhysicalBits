@@ -549,7 +549,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat_times'] = {
       init: function() {
-        let msg = i18n.translate("repeat %1 times");
+        let msg = i18n.translate("repeat %1 times %2");
         let inputFields = [
           () => this.appendValueInput("times")
                     .setCheck(null),
