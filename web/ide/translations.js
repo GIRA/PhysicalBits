@@ -157,7 +157,6 @@ var TRANSLATIONS = [
     ["procedure named %1 with argument %2 %3", "procedimiento llamado %1 con argumento %2 %3", "protseduur nimega %1 argumendiga %2 %3"],
     ["exit", "salir", "exit"],
     ["execute", "ejecutar", "execute"],
-    ["function named % with arguments %", "función llamada % con argumentos %", "function named % with arguments %"],
     ["function named %1 %2", "función llamada %1 %2", "funktsioon nimega %1 %2"],
     ["function named %1 with argument %2 %3", "función llamada %1 con argumento %2 %3", "funktsioon nimega %1 argumentidega %2 %3"],
     ["function named %1 with arguments %2 %3 %4", "función llamada %1 con argumentos %2 %3 %4", "funktsioon nimega %1 argumentidega %2 %3 %4"],
