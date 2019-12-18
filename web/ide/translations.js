@@ -161,6 +161,7 @@ var TRANSLATIONS = [
     ["function named %1 %2", "función llamada %1 %2", "funktsioon nimega %1 %2"],
     ["function named %1 with argument %2 %3", "función llamada %1 con argumento %2 %3", "funktsioon nimega %1 argumentidega %2 %3"],
     ["function named %1 with arguments %2 %3 %4", "función llamada %1 con argumentos %2 %3 %4", "funktsioon nimega %1 argumentidega %2 %3 %4"],
+    ["function named %1 with arguments %2 %3 %4 %5", "función llamada %1 con argumentos %2 %3 %4 %5", "funktsioon nimega %1 argumentidega %2 %3 %4 %5"],
     ["return", "devolver", "return"],
     ["evaluate", "evaluar", "evaluate"],
 ];
