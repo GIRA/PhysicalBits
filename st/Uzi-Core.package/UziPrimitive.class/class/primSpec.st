@@ -67,5 +67,6 @@ primSpec
 		{#delayM . 16r3E . 1 -> 0 }.
 		{#minutes . 16r3F . 0 -> 1}.
 		{#sonarDistCm . 16r40. 3 -> 1}.
-		{#matrix8x8 . 16r41 . 24 -> 0}
+		{#matrix8x8 . 16r41 . 24 -> 0}.
+		{#mathMod . 16r42 . 2 -> 1}.
 	}
