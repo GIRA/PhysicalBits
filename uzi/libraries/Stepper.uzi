@@ -5,6 +5,7 @@ var m4 = 11; "11"
 var delay = 100;
 var currentState = 0;
 var totalSteps = 48;
+var direction = 1;
 
 proc steps(numberOfSteps)
 {
@@ -13,25 +14,27 @@ proc steps(numberOfSteps)
 		step();
 		delayMs(delay);
 	}
+	stop();
 }
 
 proc step()
 {
-   if(currentState ==0){step1();}
-   if(currentState ==1){step2();}
-   if(currentState ==2){step3();}
-   if(currentState ==3){step4();}
-   currentState = (currentState + 1) % 4;
+   if(currentState == 0){step1();}
+   if(currentState == 1){step2();}
+   if(currentState == 2){step3();}
+   if(currentState == 3){step4();}
+   currentState = (((currentState + direction) % 4) + 4) % 4;
 }
 
 proc degrees(degreesToStep)
 {
 	steps(degreesToStep * totalSteps/360);
-	
 }
 
 proc setSpeed(rpm)
 {
+	if(rpm > 0) { direction = 1;} else { direction = -1;}
+	rpm = abs(rpm);
 	var spm = totalSteps*rpm;
 	var sps = spm / 60;
 	delay = 1000/sps;
@@ -39,10 +42,10 @@ proc setSpeed(rpm)
 
 proc stop()
 {
-turnOff(m1);
-turnOff(m2);
-turnOff(m3);
-turnOff(m4);
+	turnOff(m1);
+	turnOff(m2);
+	turnOff(m3);
+	turnOff(m4);
 }
 
 
