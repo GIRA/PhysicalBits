@@ -1038,6 +1038,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			}
 		}
 		break;
+		
+		case PRIM_MATH_MOD:
+		{
+			float n = stack.pop();
+			float a = stack.pop();
+			stack.push(a - (floor(a/n) * n));
+		}
+		break;
+		
 	}
 }
 
