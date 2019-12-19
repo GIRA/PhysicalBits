@@ -57,3 +57,4 @@ prim isCloseTo;
 prim delayS;
 prim delayM;
 prim minutes;
+prim mod : mathMod;
