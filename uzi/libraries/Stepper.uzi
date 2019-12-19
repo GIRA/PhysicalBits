@@ -81,3 +81,11 @@ proc step4()
 	turnOn(m4);
 }
 
+func getSpeed()
+{
+	var sps =  1000 / delay;
+	var spm = sps * 60;
+	var rpm = spm/ totalSteps;
+	return rpm * direction;
+}
+	
