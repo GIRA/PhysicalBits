@@ -434,10 +434,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['forever'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("repeat forever"));
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("repeat forever %1");
+        let inputFields = [
+          () => this.appendStatementInput("statements")
+                    .setCheck(null)
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
