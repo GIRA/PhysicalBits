@@ -51,7 +51,7 @@ primSpec
 		{#power . 16r2E . 2 -> 1}.
 		{#isOn . 16r2F . 1 -> 1}.
 		{#isOff . 16r30 . 1 -> 1}.
-		{#mod . 16r31 . 2 -> 1}.
+		{#remainder . 16r31 . 2 -> 1}.
 		{#constrain . 16r32 . 3 -> 1}.
 		{#randomInt . 16r33 . 2 -> 1}.
 		{#random . 16r34 . 0 -> 1}.
@@ -68,5 +68,5 @@ primSpec
 		{#minutes . 16r3F . 0 -> 1}.
 		{#sonarDistCm . 16r40. 3 -> 1}.
 		{#matrix8x8 . 16r41 . 24 -> 0}.
-		{#mathMod . 16r42 . 2 -> 1}.
+		{#modulo . 16r42 . 2 -> 1}.
 	}
