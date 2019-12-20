@@ -623,6 +623,7 @@
       console.log(locale);
     });
 
+    // initialize the all-caps mode checkbox as not checked
     $("#all-caps-mode-checkbox").get(0).checked = false;
     $("#all-caps-mode-checkbox").on("change", toggleAllCaps);
   }
@@ -812,8 +813,8 @@
 
     // if tickbox has been checked
     if ($("#all-caps-mode-checkbox").get(0).checked) {
-      if (ss.insertRule) ss.insertRule("* { text-transform: uppercase; }", rules.length);
-      else if (ss.addRule) ss.addRule("*", "text-transform: uppercase;", rules.length); // IE
+      if (ss.insertRule) ss.insertRule("* { font-variant: small-caps; }", rules.length);
+      else if (ss.addRule) ss.addRule("*", "font-variant: small-caps;", rules.length); // IE
     }
     // else tickbox has been unmarked
     else {
