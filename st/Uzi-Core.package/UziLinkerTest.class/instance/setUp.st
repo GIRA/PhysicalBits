@@ -3,6 +3,8 @@ setUp
 	linker := UziLinker 
 		parser: UziParser new  
 		librariesDirectory: Uzi defaultDirectory / 'uzi' / 'tests'.
+	
+	primitives := linker corePrimitives.
 
 	program := UziProgramNode.
 	varDec := UziVariableDeclarationNode.
@@ -29,5 +31,4 @@ setUp
 	for := UziForNode.
 	pin := UziPinLiteralNode.
 	tickingRate := UziTickingRateNode.
-	prim := UziPrimitiveDeclarationNode.
-	primitives := self corePrimitives
+	prim := UziPrimitiveDeclarationNode

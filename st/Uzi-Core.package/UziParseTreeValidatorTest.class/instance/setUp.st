@@ -1,5 +1,7 @@
 private
 setUp
+	primitives := Uzi corePrimitives.
+	
 	program := UziProgramNode.
 	varDec := UziVariableDeclarationNode.
 	proc := UziProcedureNode.
@@ -25,5 +27,4 @@ setUp
 	for := UziForNode.
 	pin := UziPinLiteralNode.
 	tickingRate := UziTickingRateNode.
-	prim := UziPrimitiveDeclarationNode.
-	primitives := self corePrimitives
+	prim := UziPrimitiveDeclarationNode
