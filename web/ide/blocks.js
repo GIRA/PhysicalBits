@@ -337,8 +337,7 @@ let UziBlock = (function () {
             new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
                                        [i18n.translate("until"),"true"]]), "negate"),
           () => this.appendValueInput("condition")
-                     .setCheck("Boolean")
-
+                    .setCheck("Boolean")
         ];
 
         initBlock(this, msg, inputFields);
@@ -401,6 +400,7 @@ let UziBlock = (function () {
         ];
 
         initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(0);
