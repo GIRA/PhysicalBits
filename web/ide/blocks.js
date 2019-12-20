@@ -331,11 +331,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['wait'] = {
       init: function() {
-        this.appendValueInput("condition")
-          .setCheck("Boolean")
-          .appendField(i18n.translate("wait"))
-          .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                  [i18n.translate("until"),"true"]]), "negate");
+        let msg = i18n.translate("wait %1 %2");
+        let inputFields = [
+          (input) => input.appendField(
+            new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                       [i18n.translate("until"),"true"]]), "negate"),
+          () => this.appendValueInput("condition")
+                     .setCheck("Boolean")
+
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);

@@ -57,6 +57,7 @@ var TRANSLATIONS = [
     // Blockly
     ["toggle pin %1", "alternar pin %1", "lülita ümber viigu %1 väärtus"],
     ["%1 pin %2", "%1 pin %2", "%1 viik %2"],
+    ["wait %1 %2", "esperar %1 %2", "oota %1 kehtib %2"],
     ["wait", "esperar", "oota"],
     ["is %1 pin %2", "está %1 el pin %2", "on viik %1 %2"],
     ["read pin %1", "leer pin %1", "loe viiku %1"],
@@ -96,7 +97,7 @@ var TRANSLATIONS = [
     ["mm", "mm", "mm"],
     ["cm", "cm", "cm"],
     ["m", "m", "m"],
-    ["while", "mientras que", "senikaua"],
+    ["while", "mientras que", "senikaua kuni"],
     ["until", "hasta que", "kuni"],
     ["true", "verdadero", "tõene"],
     ["false", "falso", "väär"],
