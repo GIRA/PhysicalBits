@@ -138,7 +138,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x2E: instruction->opcode = PRIM_POWER; break;
 				case 0x2F: instruction->opcode = PRIM_IS_ON; break;
 				case 0x30: instruction->opcode = PRIM_IS_OFF; break;
-				case 0x31: instruction->opcode = PRIM_MOD; break;
+				case 0x31: instruction->opcode = PRIM_REMAINDER; break;
 				case 0x32: instruction->opcode = PRIM_CONSTRAIN; break;
 				case 0x33: instruction->opcode = PRIM_RANDOM_INT; break;
 				case 0x34: instruction->opcode = PRIM_RANDOM; break;
@@ -155,7 +155,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x3F: instruction->opcode = PRIM_MINUTES; break;
 				case 0x40: instruction->opcode = PRIM_SONAR_DIST_CM; break;
 				case 0x41: instruction->opcode = PRIM_MATRIX_8x8_DISPLAY; break;
-				case 0x42: instruction->opcode = PRIM_MATH_MOD; break;
+				case 0x42: instruction->opcode = PRIM_MOD; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

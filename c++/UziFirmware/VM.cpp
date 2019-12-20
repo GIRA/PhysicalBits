@@ -832,11 +832,19 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
-		case PRIM_MOD:
+		case PRIM_REMAINDER:
 		{
 			float b = stack.pop();
 			float a = stack.pop();
 			stack.push(fmod(a, b));
+		}
+		break;
+
+		case PRIM_MOD:
+		{
+			float n = stack.pop();
+			float a = stack.pop();
+			stack.push(a - (floor(a / n) * n));
 		}
 		break;
 
@@ -1036,14 +1044,6 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				}
 				io->setValue(pins_y[i], HIGH);
 			}
-		}
-		break;
-		
-		case PRIM_MATH_MOD:
-		{
-			float n = stack.pop();
-			float a = stack.pop();
-			stack.push(a - (floor(a/n) * n));
 		}
 		break;
 		
