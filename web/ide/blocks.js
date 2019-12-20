@@ -312,9 +312,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['toggle_variable'] = {
       init: function() {
-        this.appendValueInput("pinNumber")
-          .setCheck("Number")
-          .appendField(i18n.translate("toggle pin"));
+	let msg = i18n.translate("toggle pin %1");
+	let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);

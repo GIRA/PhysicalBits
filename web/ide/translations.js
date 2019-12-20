@@ -55,7 +55,7 @@ var TRANSLATIONS = [
     ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi programmis!"],
 
     // Blockly
-    ["toggle pin", "alternar pin", "lülita viik ümber"],
+    ["toggle pin %1", "alternar pin %1", "lülita ümber viigu %1 väärtus"],
     ["%1 pin %2", "%1 pin %2", "%1 viik %2"],
     ["wait", "esperar", "oota"],
     ["is %1 pin %2", "está %1 el pin %2", "on viik %1 %2"],
