@@ -69,4 +69,6 @@ primSpec
 		{#sonarDistCm . 16r40. 3 -> 1}.
 		{#matrix8x8 . 16r41 . 24 -> 0}.
 		{#modulo . 16r42 . 2 -> 1}.
+		{#tone . 16r43 . 2 -> 0}.
+		{#noTone . 16r44 . 1 -> 0}
 	}
