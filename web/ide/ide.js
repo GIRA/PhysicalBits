@@ -624,8 +624,8 @@
     });
 
     // initialize the all-caps mode checkbox as not checked
-    $("#all-caps-mode-checkbox").get(0).checked = false;
-    $("#all-caps-mode-checkbox").on("change", toggleAllCaps);
+    $("#all-caps-checkbox").get(0).checked = false;
+    $("#all-caps-checkbox").on("change", toggleAllCaps);
   }
 
   function checkBrokenLayout() {
@@ -812,7 +812,7 @@
     var rules = ss.cssRules ? ss.cssRules : ss.rules;
 
     // if tickbox has been checked
-    if ($("#all-caps-mode-checkbox").get(0).checked) {
+    if ($("#all-caps-checkbox").get(0).checked) {
       if (ss.insertRule) ss.insertRule("* { font-variant: small-caps; }", rules.length);
       else if (ss.addRule) ss.addRule("*", "font-variant: small-caps;", rules.length); // IE
     }
