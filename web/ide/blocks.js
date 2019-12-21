@@ -36,6 +36,7 @@ let UziBlock = (function () {
     blocklyDiv = $("#blockly").get(0);
 
     initCommonBlocks();
+    initSoundBlocks();
     initSpecialBlocks();
 
     i18n.on("change", refreshWorkspace);
@@ -929,6 +930,83 @@ let UziBlock = (function () {
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+  }
+
+  function initSoundBlocks() {
+
+    Blockly.Blocks['start_tone'] = {
+      init: function() {
+        let msg = i18n.translate("play tone %1 on pin %2");
+        let inputFields = [
+          () => this.appendValueInput("tone")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['play_tone'] = {
+      init: function() {
+        let msg = i18n.translate("play tone %1 on pin %2 for %3 %4");
+        let inputFields = [
+          () => this.appendValueInput("tone")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("time")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          input => input
+          .setAlign(Blockly.ALIGN_RIGHT).appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                [i18n.translate("seconds"),"s"],
+                                                                [i18n.translate("minutes"),"m"]]), "unit")
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+
+    Blockly.Blocks['stop_tone'] = {
+      init: function() {
+        let msg = i18n.translate("stop tone on pin %1");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
         this.setTooltip("");
         this.setHelpUrl("");
       }
