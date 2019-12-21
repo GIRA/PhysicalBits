@@ -582,6 +582,17 @@
     setInterval(autorun, 150);
   }
 
+  function getNavigatorLanguages (defaultLanguage) {
+    let defaultLang = defaultLanguage || "es";
+    if (navigator.languages && navigator.languages.length) {
+      let languages = Array.prototype.concat(navigator.languages, defaultLang);
+      return languages;
+    } else {
+      let language = navigator.userLanguage || navigator.language || navigator.browserLanguage || defaultLang;
+      return [language];
+    }
+  }
+  
   function initializeInternationalization() {
     i18n.init(TRANSLATIONS);
     i18n.currentLocale("es");
