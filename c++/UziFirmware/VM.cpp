@@ -1047,6 +1047,20 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 		
+		case PRIM_TONE:
+		{
+			float freq = stack.pop();
+			uint8 pin = stack.pop();
+			tone(pin, freq);
+		}
+		break;
+
+		case PRIM_NO_TONE:
+		{
+			uint8 pin = stack.pop();
+			noTone(pin);
+		}
+		break;
 	}
 }
 
