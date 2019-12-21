@@ -885,7 +885,43 @@ let BlocksToAST = (function () {
 		return_value: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, generateCodeForValue(block, ctx, "value")));
-		}
+		},
+		start_tone: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "startTone";
+			let args = [
+				generateCodeForValue(block, ctx, "tone"),
+				generateCodeForValue(block, ctx, "pinNumber"),
+			];
+			stream.push(builder.primitiveCall(id, selector, args));
+		},
+		play_tone: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "playTone";
+			let tone = generateCodeForValue(block, ctx, "tone");
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time")
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let delay;
+			if (unit === "ms") {
+				delay = time;
+			}	else if (unit === "s") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid delay unit: '" + unit + "'";
+			}
+			stream.push(builder.primitiveCall(id, selector, [tone, pinNumber, delay]));
+		},
+		stop_tone: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "stopTone";
+			let args = [
+				generateCodeForValue(block, ctx, "pinNumber"),
+			];
+			stream.push(builder.primitiveCall(id, selector, args));
+		},
 	};
 
 	function asIdentifier(str) {
