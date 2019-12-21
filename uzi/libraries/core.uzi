@@ -58,3 +58,5 @@ prim delayS;
 prim delayM;
 prim minutes;
 prim mod : modulo;
+prim tone;
+prim noTone;
