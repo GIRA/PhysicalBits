@@ -2,6 +2,7 @@
 let i18n = (function () {
     let spec = [],
         locales = {},
+	availableLocales = [],
         current = "en",
         untranslatable = [];
 
@@ -18,7 +19,8 @@ let i18n = (function () {
 
         // Create locales according to spec;
         for (let i = 0; i < spec.length; i++) {
-            locales[spec[i]] = {};
+          locales[spec[i]] = {};
+          availableLocales.push(spec[i]);
         }
 
         for (let i = 1; i < translations.length; i++) {
@@ -128,6 +130,7 @@ let i18n = (function () {
 
     return {
         currentLocale: currentLocale,
+        availableLocales: availableLocales,
         init: init,
         translate: translate,
         updateUI: updateUI,
