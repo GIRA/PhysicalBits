@@ -594,8 +594,15 @@
   }
   
   function initializeInternationalization() {
+    let navigatorLanguages = getNavigatorLanguages("es");
+    let preferredLanguage;
     i18n.init(TRANSLATIONS);
-    i18n.currentLocale("es");
+    for (let i = 0; i < navigatorLanguages.length; i++) {
+      preferredLanguage = navigatorLanguages[i];
+      if (i18n.availableLocales.includes(preferredLanguage))
+	break;
+    }
+    i18n.currentLocale(preferredLanguage);
     $("#spinner-container").hide();
   }
 
