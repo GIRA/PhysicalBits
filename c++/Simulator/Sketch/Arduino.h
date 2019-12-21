@@ -103,6 +103,9 @@ extern bool digitalRead(int);
 extern unsigned short analogRead(unsigned int);
 extern void analogWrite(unsigned int, unsigned short);
 
+void tone(uint8_t _pin, unsigned int frequency, unsigned long duration = 0);
+void noTone(uint8_t _pin);
+
 extern void setup();
 extern void loop();
 
