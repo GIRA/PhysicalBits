@@ -66,3 +66,8 @@ proc playTone(pin, tone, ms) {
   delayMs(ms);
   stopTone(pin);
 }
+
+proc stopToneAndWait(pin, ms) {
+  stopTone(pin);
+  delayMs(ms);
+}
