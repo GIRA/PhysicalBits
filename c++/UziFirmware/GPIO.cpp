@@ -169,6 +169,7 @@ void GPIO::reset()
 	{
 		if (pinModes[i] == OUTPUT)
 		{
+			noTone(PIN_NUMBER(i));
 			setValue(PIN_NUMBER(i), 0);
 			setMode(PIN_NUMBER(i), INPUT);
 		}
