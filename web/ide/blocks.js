@@ -434,13 +434,17 @@ let UziBlock = (function () {
 
     Blockly.Blocks['forever'] = {
       init: function() {
-        let msg = i18n.translate("repeat forever %1");
+        let msg = i18n.translate("repeat forever ^^ %1");
         let inputFields = [
           () => this.appendStatementInput("statements")
                     .setCheck(null)
         ];
 
-        initBlock(this, msg, inputFields);
+        let msgParts = msg.split("^^");
+        for (let i = 0; i < msgParts.length; i++) {
+	  let msgPart = msgParts[i];
+          initBlock(this, msgPart, inputFields);
+        }
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
