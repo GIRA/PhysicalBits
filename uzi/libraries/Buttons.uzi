@@ -17,7 +17,7 @@ proc waitForPress(pin) {
 	delayMs(debounceMs);
 }
 
-func waitLongPress(pin) {
+func waitForHold(pin) {
 	until isPressed(pin);
 	var begin = millis();
 	delayMs(debounceMs);
