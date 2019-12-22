@@ -582,27 +582,30 @@
     setInterval(autorun, 150);
   }
 
-  function getNavigatorLanguages (defaultLanguage) {
-    let defaultLang = defaultLanguage || "es";
+  function getNavigatorLanguages() {
     if (navigator.languages && navigator.languages.length) {
-      let languages = Array.prototype.concat(navigator.languages, defaultLang);
-      return languages;
+      return navigator.languages;
     } else {
-      let language = navigator.userLanguage || navigator.language || navigator.browserLanguage || defaultLang;
-      return [language];
+      return navigator.userLanguage || navigator.language || navigator.browserLanguage;
     }
   }
   
   function initializeInternationalization() {
-    let navigatorLanguages = getNavigatorLanguages("es");
-    let preferredLanguage;
+    let navigatorLanguages = getNavigatorLanguages();
+    let defaultLanguage    = "es";
+    let preferredLanguage  = undefined;
+    
     i18n.init(TRANSLATIONS);
+
     for (let i = 0; i < navigatorLanguages.length; i++) {
-      preferredLanguage = navigatorLanguages[i];
-      if (i18n.availableLocales.includes(preferredLanguage))
-	break;
+      let languageCode = navigatorLanguages[i];
+      if (i18n.availableLocales.includes(languageCode)) {
+        preferredLanguage = languageCode;
+        break;
+      }
     }
-    i18n.currentLocale(preferredLanguage);
+    
+    i18n.currentLocale(preferredLanguage || defaultLanguage);
     $("#spinner-container").hide();
   }
 
