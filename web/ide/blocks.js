@@ -489,14 +489,9 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("elapsed %1");
         let inputFields = [
-            () => {let field = this.appendDummyInput();
-                   field.appendField(new Blockly.FieldDropdown(
-                                     [[i18n.translate("milliseconds"),"ms"],
-                                      [i18n.translate("seconds"),"s"],
-                                      [i18n.translate("minutes"),"m"]]
-                  ), "unit");
-                  return field;
-            }
+            input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                  [i18n.translate("seconds"),"s"],
+                                                                  [i18n.translate("minutes"),"m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);
