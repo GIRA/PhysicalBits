@@ -890,8 +890,8 @@ let BlocksToAST = (function () {
 			let id = XML.getId(block);
 			let selector = "startTone";
 			let args = [
-				generateCodeForValue(block, ctx, "tone"),
 				generateCodeForValue(block, ctx, "pinNumber"),
+				generateCodeForValue(block, ctx, "tone"),
 			];
 			stream.push(builder.primitiveCall(id, selector, args));
 		},
@@ -912,7 +912,7 @@ let BlocksToAST = (function () {
 			}	else {
 				throw "Invalid delay unit: '" + unit + "'";
 			}
-			stream.push(builder.primitiveCall(id, selector, [tone, pinNumber, delay]));
+			stream.push(builder.primitiveCall(id, selector, [pinNumber, tone, delay]));
 		},
 		stop_tone: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -922,6 +922,41 @@ let BlocksToAST = (function () {
 			];
 			stream.push(builder.primitiveCall(id, selector, args));
 		},
+		button_wait_for_action: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pin = generateCodeForValue(block, ctx, "pinNumber");
+			let action = XML.getChildNode(block, "action").innerText;
+			let selector;
+			if (action === "press") {	selector = "waitForPress"; }
+			else if (action === "release") { selector = "waitForRelease"}
+			else {
+				throw "Invalid button action: '" + action + "'";
+			}
+			selector = "buttons." + selector;
+			ctx.addButtonsImport();
+			stream.push(builder.primitiveCall(id, selector, [pin]));
+		},
+		button_check_state: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pin = generateCodeForValue(block, ctx, "pinNumber");
+			let state = XML.getChildNode(block, "state").innerText;
+			let selector;
+			if (state === "press") {	selector = "isPressed"; }
+			else if (state === "release") { selector = "isReleased"}
+			else {
+				throw "Invalid button state: '" + state + "'";
+			}
+			selector = "buttons." + selector;
+			ctx.addButtonsImport();
+			stream.push(builder.primitiveCall(id, selector, [pin]));
+		},
+		button_long_action: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pin = generateCodeForValue(block, ctx, "pinNumber");
+			let selector = "buttons.waitForHold";
+			ctx.addButtonsImport();
+			stream.push(builder.primitiveCall(id, selector, [pin]));
+		}
 	};
 
 	function asIdentifier(str) {
@@ -1091,6 +1126,13 @@ let BlocksToAST = (function () {
 						stmts.push(builder.assignment(null, "echoPin", pin(sonar.echo)));
 						stmts.push(builder.assignment(null, "maxDistance", builder.number(null, parseInt(sonar.maxDist))));
 						stmts.push(builder.start(null, ["reading"]));
+						return builder.block(null, stmts);
+					});
+				},
+				addButtonsImport: function () {
+					ctx.addImport("buttons", "Buttons.uzi", function () {
+						let stmts = [];
+						stmts.push(builder.assignment(null, "debounceMs", builder.number(null, 50)));
 						return builder.block(null, stmts);
 					});
 				},

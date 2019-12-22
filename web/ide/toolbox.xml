@@ -158,6 +158,31 @@
         <field name="unit">cm</field>
       </block>
     </category>
+    <category name="Buttons">
+      <block type="button_wait_for_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="action">press</field>
+      </block>
+      <block type="button_check_state">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="state">press</field>
+      </block>
+      <block type="button_long_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
   </category>
   <category name="Control" colour="#5b80a5">
     <block type="conditional_simple">

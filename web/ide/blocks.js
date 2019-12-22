@@ -37,6 +37,7 @@ let UziBlock = (function () {
 
     initCommonBlocks();
     initSoundBlocks();
+    initButtonBlocks();
     initSpecialBlocks();
 
     i18n.on("change", refreshWorkspace);
@@ -1006,6 +1007,76 @@ let UziBlock = (function () {
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+  }
+
+  function initButtonBlocks() {
+    Blockly.Blocks['button_check_state'] = {
+      init: function() {
+        let msg = i18n.translate("is button %1 on pin %2");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pressed"),"press"],
+                                                                [i18n.translate("released"),"release"]]), "state"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['button_wait_for_action'] = {
+      init: function() {
+        let msg = i18n.translate("wait for button %1 on pin %2");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("press"),"press"],
+                                                                [i18n.translate("release"),"release"]]), "action"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['button_long_action'] = {
+      init: function() {
+        /*
+         TODO(Richo): This block is useful to react to long presses. It will wait
+         for a long press and then return the time passed in milliseconds. The name
+         is confusing, though. And the usage is complicated as well. Maybe I should
+         simplify it to simply "wait for button hold x seconds" or something like that...
+         */
+        let msg = i18n.translate("wait for button hold on pin %1");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
         this.setHelpUrl("");
