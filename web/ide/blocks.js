@@ -1695,7 +1695,9 @@ let UziBlock = (function () {
     for (let i = inputs.length - 1; i >= 0; i--) {
       let input = inputs[i];
       if (placeholders.has(input)) {
-        if (current != null) {
+        if (current == null) {
+          current = input;
+        } else {
           let fields = input.fieldRow.slice();
           for (let j = fields.length - 1; j >= 0; j--) {
             let field = fields[j];
