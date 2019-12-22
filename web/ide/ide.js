@@ -582,9 +582,30 @@
     setInterval(autorun, 150);
   }
 
+  function getNavigatorLanguages() {
+    if (navigator.languages && navigator.languages.length) {
+      return navigator.languages;
+    } else {
+      return navigator.userLanguage || navigator.language || navigator.browserLanguage;
+    }
+  }
+  
   function initializeInternationalization() {
+    let navigatorLanguages = getNavigatorLanguages();
+    let defaultLanguage    = "es";
+    let preferredLanguage  = undefined;
+    
     i18n.init(TRANSLATIONS);
-    i18n.currentLocale("es");
+
+    for (let i = 0; i < navigatorLanguages.length; i++) {
+      let languageCode = navigatorLanguages[i];
+      if (i18n.availableLocales.includes(languageCode)) {
+        preferredLanguage = languageCode;
+        break;
+      }
+    }
+    
+    i18n.currentLocale(preferredLanguage || defaultLanguage);
     $("#spinner-container").hide();
   }
 
