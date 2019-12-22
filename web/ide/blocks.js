@@ -975,8 +975,8 @@ let UziBlock = (function () {
           () => this.appendValueInput("time")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT),
-          input => input
-          .setAlign(Blockly.ALIGN_RIGHT).appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                 [i18n.translate("seconds"),"s"],
                                                                 [i18n.translate("minutes"),"m"]]), "unit")
         ];
@@ -1000,6 +1000,33 @@ let UziBlock = (function () {
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['stop_tone_wait'] = {
+      init: function() {
+        let msg = i18n.translate("stop tone on pin %1 and wait %2 %3");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("time")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                [i18n.translate("seconds"),"s"],
+                                                                [i18n.translate("minutes"),"m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);

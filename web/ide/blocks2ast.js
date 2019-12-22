@@ -922,6 +922,24 @@ let BlocksToAST = (function () {
 			];
 			stream.push(builder.primitiveCall(id, selector, args));
 		},
+		stop_tone_wait: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "stopToneAndWait";
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time")
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let delay;
+			if (unit === "ms") {
+				delay = time;
+			}	else if (unit === "s") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid delay unit: '" + unit + "'";
+			}
+			stream.push(builder.primitiveCall(id, selector, [pinNumber, delay]));
+		},
 		button_wait_for_action: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pin = generateCodeForValue(block, ctx, "pinNumber");
