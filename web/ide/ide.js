@@ -609,6 +609,8 @@
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", initializeDefaultLayout);
 
+    $("#all-caps-checkbox").on("change", toggleAllCaps);
+
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
     });
@@ -622,10 +624,6 @@
       });
       console.log(locale);
     });
-
-    // initialize the all-caps mode checkbox as not checked
-    $("#all-caps-checkbox").get(0).checked = false;
-    $("#all-caps-checkbox").on("change", toggleAllCaps);
   }
 
   function checkBrokenLayout() {
@@ -688,6 +686,7 @@
     return {
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
+        allcaps:     $("#all-caps-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
       blockly: UziBlock.getDataForStorage(),
@@ -698,6 +697,8 @@
     try {
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+        $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
+	toggleAllCaps(); // initializeAllCaps would be nicer?
       }
 
       if (ui.layout) {
@@ -815,10 +816,17 @@
     if ($("#all-caps-checkbox").get(0).checked) {
       if (ss.insertRule) ss.insertRule("* { font-variant: small-caps; }", rules.length);
       else if (ss.addRule) ss.addRule("*", "font-variant: small-caps;", rules.length); // IE
+
+      console.log("inserted ");
+      console.log(ss.cssRules[rules.length - 1]);
     }
     // else tickbox has been unmarked
     else {
-      if (ss.deleteRule) ss.deleteRule(rules.length - 1);
+      if (ss.deleteRule) {
+	console.log("deleted ");
+	console.log(ss.cssRules[rules.length - 1]);
+	ss.deleteRule(rules.length - 1);
+      }
       else if (ss.removeRule) ss.removeRule(rules.length - 1); // IE
     }
 
@@ -833,6 +841,8 @@
       });
     i18n.currentLocale(anotherLocale);
     i18n.currentLocale(currentLocale);
+
+    saveToLocalStorage();
   }
 
   function openOptionsDialog() {
