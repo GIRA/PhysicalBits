@@ -72,58 +72,6 @@
       <field name="pinNumber">D13</field>
     </block>
   </category>
-  <category name="Sound" colour="#a55b5b">
-    <block type="start_tone">
-      <value name="tone">
-        <shadow type="number">
-          <field name="value">220</field>
-        </shadow>
-      </value>
-      <value name="pinNumber">
-        <shadow type="pin">
-          <field name="pinNumber">D9</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="play_tone">
-      <value name="tone">
-        <shadow type="number">
-          <field name="value">220</field>
-        </shadow>
-      </value>
-      <value name="pinNumber">
-        <shadow type="pin">
-          <field name="pinNumber">D9</field>
-        </shadow>
-      </value>
-      <field name="unit">ms</field>
-      <value name="time">
-        <shadow type="number">
-          <field name="value">1000</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="stop_tone">
-      <value name="pinNumber">
-        <shadow type="pin">
-          <field name="pinNumber">D9</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="stop_tone_wait">
-      <value name="pinNumber">
-        <shadow type="pin">
-          <field name="pinNumber">D9</field>
-        </shadow>
-      </value>
-      <field name="unit">ms</field>
-      <value name="time">
-        <shadow type="number">
-          <field name="value">1000</field>
-        </shadow>
-      </value>
-    </block>
-  </category>
   <category name="Motors" colour="#a55b5b">
     <category name="Servo">
       <block type="degrees_servo_variable">
@@ -196,6 +144,59 @@
         </value>
       </block>
     </category>
+  </category>
+
+  <category name="Sound" colour="#a55b5b">
+    <block type="play_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone_wait">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="start_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category name="Control" colour="#5b80a5">
     <block type="conditional_simple">
