@@ -1093,7 +1093,7 @@ let UziBlock = (function () {
          is confusing, though. And the usage is complicated as well. Maybe I should
          simplify it to simply "wait for button hold x seconds" or something like that...
          */
-        let msg = i18n.translate("wait for button hold on pin %1");
+        let msg = i18n.translate("elapsed milliseconds while pressing %1");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")

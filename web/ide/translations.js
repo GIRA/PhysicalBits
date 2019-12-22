@@ -171,7 +171,7 @@ var TRANSLATIONS = [
     ["Buttons", "Botones", "Buttons"],
     ["is button %1 on pin %2", "está %1 el botón en el pin %2", "is button %1 on pin %2"],
     ["wait for button %1 on pin %2", "esperar hasta que %1 el botón en el pin %2", "wait for button %1 on pin %2"],
-    ["wait for button hold on pin %1", "esperar presión sostenida en el pin %1", "wait for button hold on pin %1"],
+    ["elapsed milliseconds while pressing %1", "milisegundos transcurridos presionando el pin %1", "elapsed milliseconds while pressing %1"],
     ["pressed", "presionado", "pressed"],
     ["released", "suelto", "released"],
     ["press", "presione", "press"],
