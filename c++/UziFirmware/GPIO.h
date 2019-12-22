@@ -33,6 +33,8 @@ public:
 	float getValue(uint8);
 	void setValue(uint8, float);
 	void servoWrite(uint8, float);
+	void startTone(uint8, float);
+	void stopTone(uint8);
 	bool getReport(uint8);
 	void setReport(uint8, bool);
 	void reset(void);

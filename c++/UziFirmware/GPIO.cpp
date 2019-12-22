@@ -138,6 +138,18 @@ void GPIO::servoWrite(uint8 pin, float value)
 	servos[index].write(degrees);
 }
 
+void GPIO::startTone(uint8 pin, float freq) 
+{
+	setMode(pin, OUTPUT);
+	tone(pin, freq);
+}
+
+void GPIO::stopTone(uint8 pin)
+{
+	setMode(pin, OUTPUT);
+	noTone(pin);
+}
+
 void GPIO::setReport(uint8 pin, bool report)
 {
 	uint8 index = ARRAY_INDEX(pin);
