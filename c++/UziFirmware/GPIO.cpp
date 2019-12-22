@@ -1,6 +1,7 @@
 #include "GPIO.h"
 
 Servo servos[TOTAL_PINS];
+uint8 tonePin = 0;
 
 uint8 GPIO::getMode(uint8 pin)
 {
@@ -140,6 +141,15 @@ void GPIO::servoWrite(uint8 pin, float value)
 
 void GPIO::startTone(uint8 pin, float freq) 
 {
+	if (tonePin != pin) 
+	{
+		/* 
+		 * NOTE(Richo): Make sure we send noTone(..) before changing pins. Otherwise the tone won't play. 
+		 * See the "Notes and warning" section on: https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/
+		 */
+		if (tonePin > 0) { noTone(tonePin); }
+		tonePin = pin;
+	}
 	setMode(pin, OUTPUT);
 	tone(pin, freq);
 }
