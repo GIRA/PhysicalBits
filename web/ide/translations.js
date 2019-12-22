@@ -163,6 +163,7 @@ var TRANSLATIONS = [
     ["function named %1 with arguments %2 %3 %4 %5", "función llamada %1 con argumentos %2 %3 %4 %5", "funktsioon nimega %1 argumentidega %2 %3 %4 %5"],
     ["return", "devolver", "tagasta"],
     ["evaluate", "evaluar", "arvuta"],
+    ["Sound", "Sonido", "Sound"],
     ["play tone %1 on pin %2", "reproducir tono %1 en el pin %2", "play tone %1 on pin %2"],
     ["play tone %1 on pin %2 for %3 %4", "reproducir tono %1 en el pin %2 durante %3 %4", "play tone %1 on pin %2 for %3 %4"],
     ["stop tone on pin %1", "detener tono en el pin %1", "stop tone on pin %1"],
