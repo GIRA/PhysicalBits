@@ -16,6 +16,7 @@ detail: req
 		at: #output put: (out 
 			collect: [:entry | Dictionary new 
 				at: #type put: entry key; 
-				at: #text put: entry value; 
+				at: #text put: entry value first;
+				at: #args put: entry value second;
 				yourself]);
 		yourself 
