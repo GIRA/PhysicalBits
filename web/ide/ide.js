@@ -573,7 +573,13 @@
   function initializeOutputPanel() {
     Uzi.on("update", function () {
       Uzi.state.output.forEach(function (entry) {
-        appendToOutput(entry.text, entry.type);
+        let args = entry.args;
+        let regex = /%(\d+)/g;
+        let text = i18n.translate(entry.text).replace(regex, function (m, i) {
+          let arg = args[parseInt(i) - 1];
+          return arg || m;
+        });
+        appendToOutput(text, entry.type);
       });
     });
   }
@@ -589,12 +595,12 @@
       return navigator.userLanguage || navigator.language || navigator.browserLanguage;
     }
   }
-  
+
   function initializeInternationalization() {
     let navigatorLanguages = getNavigatorLanguages();
     let defaultLanguage    = "es";
     let preferredLanguage  = undefined;
-    
+
     i18n.init(TRANSLATIONS);
 
     for (let i = 0; i < navigatorLanguages.length; i++) {
@@ -604,7 +610,7 @@
         break;
       }
     }
-    
+
     i18n.currentLocale(preferredLanguage || defaultLanguage);
     $("#spinner-container").hide();
   }
