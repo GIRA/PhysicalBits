@@ -6,6 +6,7 @@
   let autorunInterval, autorunNextTime;
   let lastProgram;
   let lastFileName;
+  let outputHistory = [];
 
   let IDE = {
     init: function () {
@@ -572,16 +573,15 @@
 
   function initializeOutputPanel() {
     Uzi.on("update", function () {
-      Uzi.state.output.forEach(function (entry) {
-        let args = entry.args;
-        let regex = /%(\d+)/g;
-        let text = i18n.translate(entry.text).replace(regex, function (m, i) {
-          let arg = args[parseInt(i) - 1];
-          return arg || m;
-        });
-        appendToOutput(text, entry.type);
-      });
+      Uzi.state.output.forEach(appendToOutput);
     });
+
+    i18n.on("change", function () {
+      $("#output-console").html("");
+      let temp = outputHistory;
+      outputHistory = [];
+      temp.forEach(appendToOutput);
+    })
   }
 
   function initializeAutorun() {
@@ -660,21 +660,31 @@
     }, 1000);
   }
 
-  function appendToOutput(text, type) {
+  function appendToOutput(entry) {
+    // Remember the entry in case we need to update the panel (up to a fixed limit)
+    if (outputHistory.length == 100) { outputHistory.shift(); }
+    outputHistory.push(entry);
+
+    // Translate and format the message
+    let type = entry.type || "info";
+    let args = entry.args || [];
+    let regex = /%(\d+)/g;
+    let text = i18n.translate(entry.text).replace(regex, function (m, i) {
+      let arg = args[parseInt(i) - 1];
+      return arg || m;
+    });
+
+    // Append element
     let css = {
       info: "text-white",
       success: "text-success",
       error: "text-danger",
       warning: "text-warning"
     };
-
-    let entry = $("<div>")
-      .addClass("small")
-      .addClass(css[type]);
-    if (text) { entry.text(text); }
-    else { entry.html("&nbsp;"); }
-
-    $("#output-console").append(entry);
+    let el = $("<div>").addClass("small").addClass(css[type]);
+    if (text) { el.text(text); }
+    else { el.html("&nbsp;"); }
+    $("#output-console").append(el);
 
     // Scroll to bottom
     let panel = $("#output-panel").get(0);
@@ -756,7 +766,7 @@
           setUIState(ui);
         } catch (err) {
           console.log(err);
-          appendToOutput("Error attempting to read the project file", "error");
+          appendToOutput({text: "Error attempting to read the project file", type: "error"});
         }
       };
       reader.readAsText(file);
@@ -777,7 +787,7 @@
       saveAs(blob, lastFileName);
     } catch (err) {
       console.log(err);
-      appendToOutput("Error attempting to write the project file", "error");
+      appendToOutput({text: "Error attempting to write the project file", type: "error"});
     }
   }
 
