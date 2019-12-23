@@ -434,17 +434,13 @@ let UziBlock = (function () {
 
     Blockly.Blocks['forever'] = {
       init: function() {
-        let msg = i18n.translate("repeat forever ^^ %1");
+        let msg = i18n.translate("repeat forever \n %1");
         let inputFields = [
           () => this.appendStatementInput("statements")
                     .setCheck(null)
         ];
 
-        let msgParts = msg.split("^^");
-        for (let i = 0; i < msgParts.length; i++) {
-	  let msgPart = msgParts[i];
-          initBlock(this, msgPart, inputFields);
-        }
+        initBlock(this, msg, inputFields);
 
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -569,7 +565,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat_times'] = {
       init: function() {
-        let msg = i18n.translate("repeat %1 times %2");
+        let msg = i18n.translate("repeat %1 times \n %2");
         let inputFields = [
           () => this.appendValueInput("times")
                     .setCheck(null),
@@ -874,7 +870,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_modulo'] = {
       init: function() {
-        let msg = i18n.translate("remainder of %1 ÷ %2");
+        let msg = i18n.translate("remainder of %1 ÷ %2 \n");
         let inputFields = [
           () => this.appendValueInput("dividend")
                     .setCheck("Number")
@@ -1505,8 +1501,20 @@ let UziBlock = (function () {
   }
 
   function initBlock (block, msg, inputFields) {
-    // split msg into parts for each input field reference and create
-    // corresponding Blockly input
+    // if the translation msg contains line breaks, then
+    // each part is created on separate rows
+    let lineSeparator = "\n";
+    if (msg.indexOf(lineSeparator) != -1) {
+      msgRows = msg.split(lineSeparator);
+      for (let i = 0; i < msgRows.length; i++) {
+	let msgRow = msgRows[i];
+	initBlock(block, msgRow, inputFields);
+      }
+      return;
+    }
+    // the translation msg or its separate rows are split into parts
+    // for each input field reference and their corresponding
+    // Blockly input fields are created together text labels
     let inputFieldRefPattern = /%\d+/g;
     let fieldRefMatch;
     let fieldRefNum;
