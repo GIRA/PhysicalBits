@@ -54,6 +54,26 @@ var TRANSLATIONS = [
     ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Hetkel kasutatakse seda mootorit programmis!"],
     ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi programmis!"],
 
+    // Server
+    ["Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Program size (bytes): %1"],
+    ["Compilation successful!", "¡Compilación exitosa!", "Compilation successful!"],
+    ["Connecting on serial...", "Conectando por serie...", "Connecting on serial..."],
+    ["Connecting on socket...", "Conectando por socket...", "Connecting on socket..."],
+    ["Installed program successfully!", "¡Programa instalado correctamente!", "Installed program successfully!"],
+    ["Opening port: %1", "Abriendo puerto: %1", "Opening port: %1"],
+    ["Opening port failed!", "¡La apertura del puerto falló!", "Opening port failed!"],
+    ["Connection lost!", "¡Conexión perdida!", "Connection lost!"],
+    ["%1 detected. The program has been stopped.", "Se detectó %1. El programa ha sido detenido.", "%1 detected. The program has been stopped."],
+    ["Free Arduino RAM: %1 bytes", "RAM de Arduino disponible: %1 bytes", "Free Arduino RAM: %1 bytes"],
+    ["Free Uzi RAM: %1 bytes", "RAM de Uzi disponible: %1 bytes", "Free Uzi RAM: %1 bytes"],
+    ["Uzi - Invalid response code: %1", "Uzi - Código de respuesta inválido: %1", "Uzi - Invalid response code: %1"],
+    ["Connection timeout!", "¡Expiró el tiempo de espera de la conexión!", "Connection timeout!"],
+    ['%1 detected on script "%2". The script has been stopped.', 'Se detectó %1 en el script "%2". El script ha sido detenido.', '%1 detected on script "%2". The script has been stopped.'],
+    ["Requesting connection...", "Solicitando conexión...", "Requesting connection..."],
+    ["Connection accepted!", "¡Conexión aceptada!", "Connection accepted!"],
+    ["Connection rejected", "Conexión rechazada", "Connection rejected"],
+    ["Connection timeout", "Expiró el tiempo de espera de la conexión", "Connection timeout"],
+
     // Blockly
     ["toggle pin", "alternar pin", "lülita viik ümber"],
     ["%1 pin %2", "%1 pin %2", "%1 viik %2"],
