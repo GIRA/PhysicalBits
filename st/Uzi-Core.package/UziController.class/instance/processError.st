@@ -6,7 +6,7 @@ processError
 	errorMsg := self errorMsgForCode: errorCode.
 	Uzi logger
 		cr;
-		warning: '{1} detected. The program has been stopped.'
+		warning: '%1 detected. The program has been stopped.'
 		format: { errorMsg };
 		flush.
 	errorCode = 6 

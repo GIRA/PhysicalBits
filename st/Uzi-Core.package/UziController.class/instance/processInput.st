@@ -17,7 +17,7 @@ processInput
 		[self class msgInFreeRam] -> [self processFreeRAM].
 		[self class msgInSerialTunnel] -> [self processSerialTunnel]
 	} otherwise: [Uzi logger 
-			warning: 'Uzi - Invalid response code: {1}' 
+			warning: 'Uzi - Invalid response code: %1' 
 			format: { cmd };
 			flush]]
 		on: ConnectionTimedOut

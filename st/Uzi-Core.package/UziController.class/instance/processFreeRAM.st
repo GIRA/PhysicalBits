@@ -11,7 +11,7 @@ processFreeRAM
 	valueArduino := next value.
 	freeArduinoRAM ~= valueArduino
 		ifTrue: [	Uzi logger 
-			log: 'Free Arduino RAM: {1} bytes' 
+			log: 'Free Arduino RAM: %1 bytes' 
 			format: { valueArduino };
 			flush].
 	freeArduinoRAM := valueArduino.
@@ -19,7 +19,7 @@ processFreeRAM
 	valueUzi := next value.
 	freeUziRAM ~= valueUzi
 		ifTrue: [	Uzi logger 
-			log: 'Free Uzi RAM: {1} bytes' 
+			log: 'Free Uzi RAM: %1 bytes' 
 			format: { valueUzi };
 			flush].
 	freeUziRAM := valueUzi.

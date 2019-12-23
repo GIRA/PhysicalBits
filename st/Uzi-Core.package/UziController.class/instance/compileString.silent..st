@@ -5,7 +5,7 @@ compileString: aString silent: silentFlag
 	encoded :=  Uzi encode: program.
 	silentFlag ifFalse: [
 		Uzi logger cr; 
-			log: 'Program size (bytes): {1}' format: { encoded size };
+			log: 'Program size (bytes): %1' format: { encoded size };
 			log: encoded printString;
 			success: 'Compilation successful!';
 			flush].
