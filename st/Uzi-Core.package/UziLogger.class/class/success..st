@@ -1,3 +1,3 @@
 writing
 success: aString
-	aString lines do: [:line | buffer add: #success -> line]
+	self append: #success msg: aString args: #()

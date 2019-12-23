@@ -1,5 +1,3 @@
 writing
 info: aString format: anArray
-	| msg |
-	msg := aString format: anArray.
-	self info: msg
+	self append: #info msg: aString args: anArray

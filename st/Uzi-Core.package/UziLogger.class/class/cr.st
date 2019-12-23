@@ -1,3 +1,3 @@
 writing
 cr
-	buffer add: #info -> ''
+	buffer add: #info -> {'' . #()}
