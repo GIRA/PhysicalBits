@@ -3,6 +3,8 @@ prim turnOn;
 prim turnOff;
 prim read;
 prim write;
+prim getPinMode;
+prim setPinMode;
 prim toggle;
 prim servoDegrees;
 prim servoWrite;
