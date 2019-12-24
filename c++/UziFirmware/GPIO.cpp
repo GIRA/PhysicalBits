@@ -82,7 +82,7 @@ void GPIO::setValue(uint8 pin, float value)
 	}
 
 	pinValues[index] = actualValue;
-	if (getMode(pin) == INPUT)
+	if (getMode(pin) != OUTPUT)
 	{
 		setMode(pin, OUTPUT);
 	}
