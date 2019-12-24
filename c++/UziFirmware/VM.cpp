@@ -1061,6 +1061,21 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			io->stopTone(pin);
 		}
 		break;
+
+		case PRIM_GET_PIN_MODE:
+		{
+			uint8 pin = stack.pop();
+			stack.push(io->getMode(pin));
+		}
+		break;
+
+		case PRIM_SET_PIN_MODE:
+		{
+			uint8 mode = stack.pop();
+			uint8 pin = stack.pop();
+			io->setMode(pin, mode);
+		}
+		break;
 	}
 }
 

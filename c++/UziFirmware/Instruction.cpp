@@ -158,6 +158,8 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x42: instruction->opcode = PRIM_MOD; break;
 				case 0x43: instruction->opcode = PRIM_TONE; break;
 				case 0x44: instruction->opcode = PRIM_NO_TONE; break;
+				case 0x45: instruction->opcode = PRIM_GET_PIN_MODE; break;
+				case 0x46: instruction->opcode = PRIM_SET_PIN_MODE; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

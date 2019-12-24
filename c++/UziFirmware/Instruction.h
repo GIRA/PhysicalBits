@@ -43,6 +43,7 @@ enum Opcode
 	PRIM_MATRIX_8x8_DISPLAY,
 	PRIM_MOD,
 	PRIM_TONE, PRIM_NO_TONE,
+	PRIM_GET_PIN_MODE, PRIM_SET_PIN_MODE,
 };
 
 struct Instruction
