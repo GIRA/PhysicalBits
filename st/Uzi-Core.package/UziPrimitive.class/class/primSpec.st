@@ -70,5 +70,7 @@ primSpec
 		{#matrix8x8 . 16r41 . 24 -> 0}.
 		{#modulo . 16r42 . 2 -> 1}.
 		{#tone . 16r43 . 2 -> 0}.
-		{#noTone . 16r44 . 1 -> 0}
+		{#noTone . 16r44 . 1 -> 0}.
+		{#getPinMode . 16r45 . 1 -> 1}.
+		{#setPinMode . 16r46 . 2 -> 0}.
 	}
