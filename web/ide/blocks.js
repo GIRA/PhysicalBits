@@ -314,9 +314,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['toggle_variable'] = {
       init: function() {
-        this.appendValueInput("pinNumber")
-          .setCheck("Number")
-          .appendField(i18n.translate("toggle pin"));
+	let msg = i18n.translate("toggle pin %1");
+	let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -328,11 +333,17 @@ let UziBlock = (function () {
 
     Blockly.Blocks['wait'] = {
       init: function() {
-        this.appendValueInput("condition")
-          .setCheck("Boolean")
-          .appendField(i18n.translate("wait"))
-          .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                  [i18n.translate("until"),"true"]]), "negate");
+        let msg = i18n.translate("wait %1 %2");
+        let inputFields = [
+          (input) => input.appendField(
+            new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                       [i18n.translate("until"),"true"]]), "negate"),
+          () => this.appendValueInput("condition")
+                    .setCheck("Boolean")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -391,6 +402,7 @@ let UziBlock = (function () {
         ];
 
         initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(0);
@@ -424,10 +436,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['forever'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("repeat forever"));
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("repeat forever \n %1");
+        let inputFields = [
+          () => this.appendStatementInput("statements")
+                    .setCheck(null)
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -546,7 +562,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat_times'] = {
       init: function() {
-        let msg = i18n.translate("repeat %1 times %2");
+        let msg = i18n.translate("repeat %1 times \n %2");
         let inputFields = [
           () => this.appendValueInput("times")
                     .setCheck(null),
@@ -851,7 +867,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_modulo'] = {
       init: function() {
-        let msg = i18n.translate("remainder of %1 ÷ %2");
+        let msg = i18n.translate("remainder of %1 ÷ %2 \n");
         let inputFields = [
           () => this.appendValueInput("dividend")
                     .setCheck("Number")
@@ -1656,8 +1672,20 @@ let UziBlock = (function () {
   }
 
   function initBlock (block, msg, inputFields) {
-    // split msg into parts for each input field reference and create
-    // corresponding Blockly input
+    // if the translation msg contains line breaks, then
+    // each part is created on separate rows
+    let lineSeparator = "\n";
+    if (msg.indexOf(lineSeparator) != -1) {
+      msgRows = msg.split(lineSeparator);
+      for (let i = 0; i < msgRows.length; i++) {
+	let msgRow = msgRows[i];
+	initBlock(block, msgRow, inputFields);
+      }
+      return;
+    }
+    // the translation msg or its separate rows are split into parts
+    // for each input field reference and their corresponding
+    // Blockly input fields are created together text labels
     let inputFieldRefPattern = /%\d+/g;
     let fieldRefMatch;
     let fieldRefNum;
