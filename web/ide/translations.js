@@ -53,6 +53,7 @@ var TRANSLATIONS = [
     ["This variable is being used by the program!", "¡Esta variable está siendo usada en el programa!", "Hetkel kasutatakse seda muutujat programmis!"],
     ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Hetkel kasutatakse seda mootorit programmis!"],
     ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi programmis!"],
+    ["Display text in ALL-CAPS", "Mostrar todo el texto en mayúsculas", "Kuva kõik tekst TRÜKITÄHTEDES"],
 
     // Blockly
     ["toggle pin", "alternar pin", "lülita viik ümber"],
@@ -163,5 +164,4 @@ var TRANSLATIONS = [
     ["function named %1 with arguments %2 %3 %4 %5", "función llamada %1 con argumentos %2 %3 %4 %5", "funktsioon nimega %1 argumentidega %2 %3 %4 %5"],
     ["return", "devolver", "tagasta"],
     ["evaluate", "evaluar", "arvuta"],
-    ["Display text in ALL-CAPS", "Display text in ALL-CAPS", "Kuva teksti TRÜKITÄHTEDEGA"],
 ];
