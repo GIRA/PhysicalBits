@@ -434,6 +434,31 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['set_pin_mode'] = {
+      init: function() {
+        let msg = i18n.translate("set pin %1 mode to %2");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          input => input
+                    .setAlign(Blockly.ALIGN_RIGHT)
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
+                                                            [i18n.translate("OUTPUT"),"OUTPUT"],
+                                                            [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), "mode")
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
     Blockly.Blocks['forever'] = {
       init: function() {
         let msg = i18n.translate("repeat forever \n %1");

@@ -536,6 +536,23 @@ let BlocksToAST = (function () {
 			let pinValue = generateCodeForValue(block, ctx, "pinValue");
 			stream.push(builder.primitiveCall(id, "write", [pinNumber, pinValue]));
 		},
+		set_pin_mode: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let validModes = {
+				INPUT: 0,
+				OUTPUT: 1,
+				INPUT_PULLUP: 2
+			};
+			let mode = XML.getChildNode(block, "mode").innerText;
+			let actualMode = validModes[mode];
+			if (actualMode != undefined) {
+				actualMode = builder.number(id, actualMode);
+			} else {
+				throw "Invalid pin mode: '" + mode + "'";
+			}
+			stream.push(builder.primitiveCall(id, "setPinMode", [pinNumber, actualMode]));
+		},
 		read_pin_variable: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");

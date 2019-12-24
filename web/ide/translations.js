@@ -197,4 +197,8 @@ var TRANSLATIONS = [
     ["released", "suelto", "released"],
     ["press", "presione", "press"],
     ["release", "suelte", "release"],
+    ["INPUT", "ENTRADA", "INPUT"],
+    ["OUTPUT", "SALIDA", "OUTPUT"],
+    ["INPUT PULLUP", "ENTRADA PULLUP", "INPUT PULLUP"],
+    ["set pin %1 mode to %2", "configurar pin %1 como %2", "set pin %1 mode to %2"],
 ];

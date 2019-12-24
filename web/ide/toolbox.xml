@@ -68,6 +68,14 @@
         </shadow>
       </value>
     </block>
+    <block type="set_pin_mode">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D4</field>
+        </shadow>
+      </value>
+      <field name="mode">INPUT</field>
+    </block>
     <block type="pin">
       <field name="pinNumber">D13</field>
     </block>
