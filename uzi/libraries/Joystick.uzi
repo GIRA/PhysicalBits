@@ -11,5 +11,8 @@ proc init(x, y) {
 
 task reading() stopped {
 	x = 2 * read(xPin) - 1;
-	y = 2 * read(yPin) - 1;
+	y = 2 * read(yPin) - 1;}
+
+func getAngle() {
+	return atan2((0 - y), x) / 0.017453292519943295;
 }
