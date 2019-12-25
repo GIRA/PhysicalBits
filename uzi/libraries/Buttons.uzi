@@ -25,3 +25,19 @@ func millisecondsHolding(pin) {
 	delayMs(debounceMs);
 	return millis() - begin;
 }
+
+proc waitForHoldAndRelease(pin, ms) {
+	until millisecondsHolding(pin) >= ms;
+}
+
+proc waitForHold(pin, ms) {
+	forever {
+		until isReleased(pin);
+		delayMs(debounceMs);
+		until isPressed(pin);
+		var begin = millis();
+		while isPressed(pin) {
+			if millis() - begin >= ms { return; }
+		}
+	}
+}
