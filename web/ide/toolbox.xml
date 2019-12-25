@@ -166,6 +166,18 @@
         </value>
       </block>
     </category>
+    <category name="Joystick" custom="JOYSTICK">
+      <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
+      <block type="get_joystick_x">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_y">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_angle">
+        <field name="joystickName">joystick</field>
+      </block>
+    </category>
   </category>
 
   <category name="Sound" colour="#a55b5b">

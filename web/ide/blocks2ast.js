@@ -766,6 +766,33 @@ let BlocksToAST = (function () {
 			let selector = sonarName + "." + "distance_" + unit;
 			stream.push(builder.scriptCall(id, selector, []));
 		},
+		get_joystick_x: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let variableName = joystickName + "." + "x";
+			stream.push(builder.variable(id, variableName));
+		},
+		get_joystick_y: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let variableName = joystickName + "." + "y";
+			stream.push(builder.variable(id, variableName));
+		},
+		get_joystick_angle: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let selector = joystickName + "." + "getAngle";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
 		declare_local_variable: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = asIdentifier(XML.getChildNode(block, "variableName").innerText);
@@ -1088,7 +1115,7 @@ let BlocksToAST = (function () {
 	}
 
 	return {
-		generate: function (xml, motors, sonars) {
+		generate: function (xml, motors, sonars, joysticks) {
 			let setup = [];
 			let scripts = [];
 			let ctx = {
@@ -1188,6 +1215,24 @@ let BlocksToAST = (function () {
 						stmts.push(builder.assignment(null, "trigPin", pin(sonar.trig)));
 						stmts.push(builder.assignment(null, "echoPin", pin(sonar.echo)));
 						stmts.push(builder.assignment(null, "maxDistance", builder.number(null, parseInt(sonar.maxDist))));
+						stmts.push(builder.start(null, ["reading"]));
+						return builder.block(null, stmts);
+					});
+				},
+				addJoystickImport: function (alias) {
+					ctx.addImport(alias, "Joystick.uzi", function () {
+						let joystick = joysticks.find(function (m) { return m.name === alias; });
+						if (joystick == undefined) return null;
+
+						function pin(pin) {
+							let type = pin[0];
+							let number = parseInt(pin.slice(1));
+							return builder.pin(null, type, number);
+						}
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "xPin", pin(joystick.xPin)));
+						stmts.push(builder.assignment(null, "yPin", pin(joystick.yPin)));
 						stmts.push(builder.start(null, ["reading"]));
 						return builder.block(null, stmts);
 					});

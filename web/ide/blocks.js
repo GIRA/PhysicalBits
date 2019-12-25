@@ -26,6 +26,7 @@ let UziBlock = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
+  let joysticks = [];
   let variables = [];
   let observers = {
     "change" : [],
@@ -38,6 +39,7 @@ let UziBlock = (function () {
     initCommonBlocks();
     initSoundBlocks();
     initButtonBlocks();
+    initJoystickBlocks();
     initSpecialBlocks();
 
     i18n.on("change", refreshWorkspace);
@@ -178,6 +180,23 @@ let UziBlock = (function () {
             let field = fields[i];
             if (field.getAttribute("name") === "sonarName") {
               field.innerText = sonars[sonars.length-1].name;
+            }
+          }
+        }
+        return nodes;
+      });
+
+      workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
+        let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+        let nodes = Array.from(node.children);
+        if (joysticks.length == 0) {
+          nodes.splice(1); // Leave the button only
+        } else {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "joystickName") {
+              field.innerText = joysticks[joysticks.length-1].name;
             }
           }
         }
@@ -1126,7 +1145,7 @@ let UziBlock = (function () {
         /*
          TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
          but too ugly when its inputs are external. I don't know how to make it smaller...
-         */        
+         */
         let msg = i18n.translate("wait button %1 on pin %2 for %3 %4");
         let inputFields = [
           input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("hold"),"press"],
@@ -1167,6 +1186,59 @@ let UziBlock = (function () {
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+  }
+
+  function initJoystickBlocks() {
+    Blockly.Blocks['get_joystick_x'] = {
+      init: function() {
+        let msg = i18n.translate("read x position from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_joystick_y'] = {
+      init: function() {
+        let msg = i18n.translate("read y position from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_joystick_angle'] = {
+      init: function() {
+        let msg = i18n.translate("read angle from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         ];
 
         initBlock(this, msg, inputFields);
@@ -1871,6 +1943,11 @@ let UziBlock = (function () {
     return sonars.map(function(each) { return [ each.name, each.name ]; });
   }
 
+  function currentJoysticksForDropdown() {
+    if (joysticks.length == 0) return [["", ""]];
+    return joysticks.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function currentVariablesForDropdown() {
     if (variables.length == 0) return [["", ""]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
@@ -2082,7 +2159,7 @@ let UziBlock = (function () {
 
   function getGeneratedCode(){
     let xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars);
+    return BlocksToAST.generate(xml, motors, sonars, joysticks);
   }
 
   function refreshWorkspace() {
@@ -2179,6 +2256,28 @@ let UziBlock = (function () {
 
       sonars = data;
     },
+    getJoysticks: function () { return joysticks; },
+    setJoysticks: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (joysticks[m.index] == undefined) return;
+        renames.set(joysticks[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("joystickName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      joysticks = data;
+    },
     getVariables: function () { return variables; },
     setVariables: function (data) {
       let renames = new Map();
@@ -2206,6 +2305,7 @@ let UziBlock = (function () {
         blocks: toXML(),
         motors: motors,
         sonars: sonars,
+        joysticks: joysticks,
         variables: variables,
       };
     },
@@ -2216,6 +2316,7 @@ let UziBlock = (function () {
       fromXML(d.blocks);
       motors = d.motors || [];
       sonars = d.sonars || [];
+      joysticks = d.joysticks || [];
       variables = d.variables || [];
     },
     getUsedVariables: getUsedVariables,
