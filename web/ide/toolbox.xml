@@ -144,7 +144,7 @@
         </value>
         <field name="state">press</field>
       </block>
-      <block type="button_long_action">
+      <block type="button_ms_holding">
         <value name="pinNumber">
           <shadow type="pin">
             <field name="pinNumber">D7</field>

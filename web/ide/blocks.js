@@ -1121,7 +1121,7 @@ let UziBlock = (function () {
       }
     };
 
-    Blockly.Blocks['button_long_action'] = {
+    Blockly.Blocks['button_ms_holding'] = {
       init: function() {
         /*
          TODO(Richo): This block is useful to react to long presses. It will wait

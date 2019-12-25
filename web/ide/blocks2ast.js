@@ -985,10 +985,10 @@ let BlocksToAST = (function () {
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin]));
 		},
-		button_long_action: function (block, ctx, stream) {
+		button_ms_holding: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pin = generateCodeForValue(block, ctx, "pinNumber");
-			let selector = "buttons.waitForHold";
+			let selector = "buttons.millisecondsHolding";
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin]));
 		}
