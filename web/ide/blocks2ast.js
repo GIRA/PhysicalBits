@@ -991,7 +991,35 @@ let BlocksToAST = (function () {
 			let selector = "buttons.millisecondsHolding";
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin]));
-		}
+		},
+		button_wait_for_long_action: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pin = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time");
+
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let duration;
+			if (unit === "ms") {
+				duration = time;
+			}	else if (unit === "s") {
+				duration = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				duration = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid time unit: '" + unit + "'";
+			}
+
+			let action = XML.getChildNode(block, "action").innerText;
+			let selector;
+			if (action === "press") {	selector = "waitForHold"; }
+			else if (action === "release") { selector = "waitForHoldAndRelease"}
+			else {
+				throw "Invalid button action: '" + action + "'";
+			}
+			selector = "buttons." + selector;
+			ctx.addButtonsImport();
+			stream.push(builder.primitiveCall(id, selector, [pin, duration]));
+		},
 	};
 
 	function asIdentifier(str) {

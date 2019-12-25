@@ -136,6 +136,20 @@
         </value>
         <field name="action">press</field>
       </block>
+      <block type="button_wait_for_long_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="action">press</field>
+        <field name="unit">ms</field>
+        <value name="time">
+          <shadow type="number">
+            <field name="value">1000</field>
+          </shadow>
+        </value>
+      </block>
       <block type="button_check_state">
         <value name="pinNumber">
           <shadow type="pin">

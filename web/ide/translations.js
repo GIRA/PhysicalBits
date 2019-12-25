@@ -196,9 +196,12 @@ var TRANSLATIONS = [
     ["pressed", "presionado", "pressed"],
     ["released", "suelto", "released"],
     ["press", "presione", "press"],
-    ["release", "suelte", "release"],
+    ["press and release", "presione y suelte", "press and release"],
     ["INPUT", "ENTRADA", "INPUT"],
     ["OUTPUT", "SALIDA", "OUTPUT"],
     ["INPUT PULLUP", "ENTRADA PULLUP", "INPUT PULLUP"],
     ["set pin %1 mode to %2", "configurar pin %1 como %2", "set pin %1 mode to %2"],
+    ["hold", "mantenga presionado", "hold"],
+    ["hold and release", "mantenga presionado y suelte", "hold and release"],
+    ["wait button %1 on pin %2 for %3 %4", "esperar que %1 durante %3 %4 \n el botón en %2", "wait button %1 on pin %2 for %3 %4"],
 ];

@@ -1104,10 +1104,43 @@ let UziBlock = (function () {
         let msg = i18n.translate("wait for button %1 on pin %2");
         let inputFields = [
           input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("press"),"press"],
-                                                                [i18n.translate("release"),"release"]]), "action"),
+                                                                [i18n.translate("press and release"),"release"]]), "action"),
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['button_wait_for_long_action'] = {
+      init: function() {
+        /*
+         TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
+         but too ugly when its inputs are external. I don't know how to make it smaller...
+         */        
+        let msg = i18n.translate("wait button %1 on pin %2 for %3 %4");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("hold"),"press"],
+                                                                [i18n.translate("hold and release"),"release"]]), "action"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("time")
+                  .setCheck("Number")
+                  .setAlign(Blockly.ALIGN_RIGHT),
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                  .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                          [i18n.translate("seconds"),"s"],
+                                                          [i18n.translate("minutes"),"m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);
