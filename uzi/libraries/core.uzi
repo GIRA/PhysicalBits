@@ -40,6 +40,7 @@ prim pow10;
 prim asin;
 prim acos;
 prim atan;
+prim atan2;
 prim ** : power;
 prim isOn;
 prim isOff;

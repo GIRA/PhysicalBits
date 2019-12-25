@@ -810,6 +810,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
+		case PRIM_ATAN2:
+		{
+			float x = stack.pop();
+			float y = stack.pop();
+			stack.push(atan2(y, x));
+		}
+		break;
+
 		case PRIM_POWER:
 		{
 			float b = stack.pop();

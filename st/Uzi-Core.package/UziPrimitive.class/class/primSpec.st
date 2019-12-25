@@ -73,4 +73,5 @@ primSpec
 		{#noTone . 16r44 . 1 -> 0}.
 		{#getPinMode . 16r45 . 1 -> 1}.
 		{#setPinMode . 16r46 . 2 -> 0}.
+		{#atan2 . 16r47 . 2 -> 1}.
 	}
