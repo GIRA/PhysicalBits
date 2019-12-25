@@ -1,5 +1,5 @@
 visiting
 visitReturnNode: node
 	^ (node class 
-		value: (self visit: node value)) 
+		value: (node value ifNotNil: [:value | self visit: value])) 
 		token: node token
