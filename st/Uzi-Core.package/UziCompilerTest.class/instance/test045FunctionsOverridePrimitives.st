@@ -4,8 +4,8 @@ test045FunctionsOverridePrimitives
 	program := self compile: '
 	task main() running { delayMs(millis()); }
 	func millis() { return -1; }'.
-	main := program scripts first.
-	millis := program scripts second.
+	main := program scripts detect: [:s | s name = #main].
+	millis := program scripts detect: [:s | s name = #millis].
 	self assert: main instructions = {
 		call arg: #millis.
 		prim arg: (UziPrimitive named: #delayMs)

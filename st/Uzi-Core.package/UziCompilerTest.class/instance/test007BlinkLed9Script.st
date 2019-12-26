@@ -9,12 +9,11 @@ test007BlinkLed9Script
 			turnOn(D9);
 		}
 	}'.
-	self assert: 1 equals: program scripts size.
-	script1 := program scripts first.
+	script1 := program scripts last.
 	self assert: script1 name = #blinkLed9.
 	self assert: script1 isTicking.
 	self assert: script1 delay value = 1000.
-	self assert: #(1000 9) equals: (program globals collect: #value).
+	self assert: #(0 9 1000) equals: (program sortedGlobals collect: #value).
 	self assert: script1 instructions = {
 		push arg: (program globals detect: [:v | v value = 9]).
 		prim arg: (UziPrimitive named: #read).

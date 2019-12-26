@@ -69,7 +69,13 @@ proc foo_bar_baz(a, b, c) {
 		    if a { turnOn(D11); }
 		    else { turnOff(D11); }
 		}'.
-	expected := (Uzi resolveImports: expected) withImports: original imports.
+	expected := Uzi resolveImports: expected.
+	expected := (expected class
+		imports: original imports
+		globals: expected globals
+		scripts: (expected scripts select: [:s | #(blink13 blink12 setup) includes: s name])
+		primitives: expected primitives)
+		token: expected token.
 	remover := UziDeadCodeRemover new.
 	actual := remover applyOn: original.
 	self assert: expected equals: actual
