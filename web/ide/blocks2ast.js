@@ -621,6 +621,14 @@ let BlocksToAST = (function () {
 			let high = generateCodeForValue(block, ctx, "high");
 			stream.push(builder.primitiveCall(id, "constrain", [value, low, high]));
 		},
+		number_between: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let args = [
+				{name: "value", value: generateCodeForValue(block, ctx, "value")},
+				{name: "min", value: generateCodeForValue(block, ctx, "low")},
+				{name: "max", value: generateCodeForValue(block, ctx, "high")}];
+			stream.push(builder.scriptCall(id, "isBetween", args));
+		},
 		number_random_int: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let from = generateCodeForValue(block, ctx, "from");

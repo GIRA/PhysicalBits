@@ -956,6 +956,30 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['number_between'] = {
+      init: function() {
+        let msg = i18n.translate("is %1 between %2 and %3");
+        let inputFields = [
+            () => this.appendValueInput("value")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("low")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("high")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
 
     Blockly.Blocks['number_random_int'] = {
       init: function() {
