@@ -78,3 +78,7 @@ proc stopToneAndWait(pin, ms) {
 func map(value, fromLow, fromHigh, toLow, toHigh) {
   return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }
+
+func isBetween(value, min, max) {
+  return value >= min && value <= max;
+}
