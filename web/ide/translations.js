@@ -53,6 +53,7 @@ var TRANSLATIONS = [
     ["This variable is being used by the program!", "¡Esta variable está siendo usada en el programa!", "Hetkel kasutatakse seda muutujat programmis!"],
     ["This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Hetkel kasutatakse seda mootorit programmis!"],
     ["This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi programmis!"],
+    ["Display text in ALL-CAPS", "Mostrar todo el texto en mayúsculas", "Kuva kõik tekst TRÜKITÄHTEDES"],
 
     // Server
     ["Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Program size (bytes): %1"],

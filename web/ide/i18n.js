@@ -59,11 +59,10 @@ let i18n = (function () {
 
     function currentLocale (newLocale) {
         if (newLocale === undefined) return current;
-        if (newLocale !== current) {
-          current = newLocale;
-          trigger("change");
-          updateUI();
-        }
+
+        current = newLocale;
+        trigger("change");
+        updateUI();
     }
 
     /**
