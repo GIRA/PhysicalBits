@@ -114,6 +114,9 @@
           </shadow>
         </value>
       </block>
+      <block type="get_speed_dcmotor">
+        <field name="motorName"></field>
+      </block>
       <block type="stop_dcmotor">
         <field name="motorName"></field>
       </block>

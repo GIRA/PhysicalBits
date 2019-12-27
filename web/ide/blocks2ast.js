@@ -755,6 +755,15 @@ let BlocksToAST = (function () {
 			let arg = {name: "speed", value: speed};
 			stream.push(builder.scriptCall(id, selector, [arg]));
 		},
+		get_speed_dcmotor: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
+
+			ctx.addDCMotorImport(motorName);
+
+			let selector = motorName + "." + "getSpeed";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
 		stop_dcmotor: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);

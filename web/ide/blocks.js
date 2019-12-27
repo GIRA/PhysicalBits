@@ -1371,6 +1371,24 @@ let UziBlock = (function () {
         this.setHelpUrl("");
       }
     };
+
+    Blockly.Blocks['get_speed_dcmotor'] = {
+      init: function() {
+        let msg = i18n.translate("get %1 speed");
+        let inputFields = [
+          input => input.appendField(
+            new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
   function initSonarBlocks() {
