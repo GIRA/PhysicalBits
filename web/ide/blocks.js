@@ -564,7 +564,7 @@ let UziBlock = (function () {
       }
     };
 
-    Blockly.Blocks['degrees_servo_variable'] = {
+    Blockly.Blocks['set_servo_degrees'] = {
       init: function() {
         let msg = i18n.translate("move servo on pin %1 degrees %2");
         let inputFields = [
@@ -581,6 +581,26 @@ let UziBlock = (function () {
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+
+    Blockly.Blocks['get_servo_degrees'] = {
+      init: function() {
+        let msg = i18n.translate("get degrees of servo on pin %1");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
         this.setHelpUrl("");

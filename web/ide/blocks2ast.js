@@ -558,11 +558,16 @@ let BlocksToAST = (function () {
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			stream.push(builder.primitiveCall(id, "read", [pinNumber]));
 		},
-		degrees_servo_variable: function (block, ctx, stream) {
+		get_servo_degrees: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			stream.push(builder.primitiveCall(id, "getServoDegrees", [pinNumber]));
+		},
+		set_servo_degrees: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			let servoValue = generateCodeForValue(block, ctx, "servoValue");
-			stream.push(builder.primitiveCall(id, "servoDegrees", [pinNumber, servoValue]));
+			stream.push(builder.primitiveCall(id, "setServoDegrees", [pinNumber, servoValue]));
 		},
 		repeat: function (block, ctx, stream) {
 			let id = XML.getId(block);

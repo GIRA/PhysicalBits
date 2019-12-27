@@ -82,7 +82,7 @@
   </category>
   <category name="Motors" colour="#a55b5b">
     <category name="Servo">
-      <block type="degrees_servo_variable">
+      <block type="set_servo_degrees">
         <value name="pinNumber">
           <shadow type="pin">
             <field name="pinNumber">D3</field>
@@ -91,6 +91,13 @@
         <value name="servoValue">
           <shadow type="number">
             <field name="value">90</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="get_servo_degrees">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D3</field>
           </shadow>
         </value>
       </block>
