@@ -440,7 +440,16 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
-		case PRIM_SERVO_DEGREES:
+		case PRIM_GET_SERVO_DEGREES:
+		{
+			uint8 pin = (uint8)stack.pop();
+			float value = io->getValue(pin);
+			float degrees = value * 180.0f;
+			stack.push(degrees);
+		}
+		break;
+
+		case PRIM_SET_SERVO_DEGREES:
 		{
 			float value = stack.pop() / 180.0f;
 			uint8 pin = (uint8)stack.pop();

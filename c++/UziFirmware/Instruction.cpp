@@ -92,7 +92,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x00: instruction->opcode = PRIM_READ_PIN; break;
 				case 0x01: instruction->opcode = PRIM_WRITE_PIN; break;
 				case 0x02: instruction->opcode = PRIM_TOGGLE_PIN; break;
-				case 0x03: instruction->opcode = PRIM_SERVO_DEGREES; break;
+				case 0x03: instruction->opcode = PRIM_SET_SERVO_DEGREES; break;
 				case 0x04: instruction->opcode = PRIM_SERVO_WRITE; break;
 				case 0x05: instruction->opcode = PRIM_MULTIPLY; break;
 				case 0x06: instruction->opcode = PRIM_ADD; break;
@@ -161,6 +161,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x45: instruction->opcode = PRIM_GET_PIN_MODE; break;
 				case 0x46: instruction->opcode = PRIM_SET_PIN_MODE; break;
 				case 0x47: instruction->opcode = PRIM_ATAN2; break;
+				case 0x48: instruction->opcode = PRIM_GET_SERVO_DEGREES; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}
