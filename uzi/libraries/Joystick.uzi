@@ -16,3 +16,10 @@ task reading() stopped {
 func getAngle() {
 	return atan2((0 - y), x) / 0.017453292519943295;
 }
+
+func getMagnitude() {
+	var angle = atan2((0 - y), x);
+	var o = y * sin(angle);
+	var a = x * cos(angle);
+	return sqrt(o * o + a * a);
+}
