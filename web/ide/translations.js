@@ -186,6 +186,8 @@ var TRANSLATIONS = [
     ["return", "devolver", "tagasta"],
     ["evaluate", "evaluar", "arvuta"],
     ["Sound", "Sonido", "Sound"],
+    ["play note %1 on pin %2", "reproducir nota %1 en el pin %2", "play note %1 on pin %2"],
+    ["play note %1 on pin %2 for %3 %4", "reproducir nota %1 en el pin %2 durante %3 %4", "play note %1 on pin %2 for %3 %4"],
     ["play tone %1 on pin %2", "reproducir tono %1 en el pin %2", "play tone %1 on pin %2"],
     ["play tone %1 on pin %2 for %3 %4", "reproducir tono %1 en el pin %2 durante %3 %4", "play tone %1 on pin %2 for %3 %4"],
     ["silence pin %1", "silenciar el pin %1", "silence pin %1"],
