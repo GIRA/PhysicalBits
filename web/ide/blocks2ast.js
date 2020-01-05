@@ -989,6 +989,35 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.primitiveCall(id, selector, [pinNumber, tone, delay]));
 		},
+		start_note: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "startTone";
+			let note = parseInt(XML.getChildNode(block, "note").innerText);
+			let args = [
+				generateCodeForValue(block, ctx, "pinNumber"),
+				builder.number(id, note)
+			];
+			stream.push(builder.primitiveCall(id, selector, args));
+		},
+		play_note: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "playTone";
+			let note = builder.number(id, parseInt(XML.getChildNode(block, "note").innerText));
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time")
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let delay;
+			if (unit === "ms") {
+				delay = time;
+			}	else if (unit === "s") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid delay unit: '" + unit + "'";
+			}
+			stream.push(builder.primitiveCall(id, selector, [pinNumber, note, delay]));
+		},
 		stop_tone: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let selector = "stopTone";

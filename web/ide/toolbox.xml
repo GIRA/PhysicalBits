@@ -194,12 +194,8 @@
   </category>
 
   <category name="Sound" colour="#a55b5b">
-    <block type="play_tone">
-      <value name="tone">
-        <shadow type="number">
-          <field name="value">220</field>
-        </shadow>
-      </value>
+    <block type="play_note">
+      <field name="note">220</field>
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
@@ -212,7 +208,20 @@
         </shadow>
       </value>
     </block>
-    <block type="stop_tone_wait">
+    <block type="start_note">
+      <field name="note">220</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="play_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
@@ -234,6 +243,19 @@
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone_wait">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
         </shadow>
       </value>
     </block>
