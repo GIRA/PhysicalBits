@@ -815,6 +815,15 @@ let BlocksToAST = (function () {
 			let selector = joystickName + "." + "getAngle";
 			stream.push(builder.scriptCall(id, selector, []));
 		},
+		get_joystick_magnitude: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let selector = joystickName + "." + "getMagnitude";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
 		declare_local_variable: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = asIdentifier(XML.getChildNode(block, "variableName").innerText);

@@ -1294,6 +1294,23 @@ let UziBlock = (function () {
         this.setHelpUrl("");
       }
     };
+
+    Blockly.Blocks['get_joystick_magnitude'] = {
+      init: function() {
+        let msg = i18n.translate("read magnitude from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
   }
 
   function initSpecialBlocks() {

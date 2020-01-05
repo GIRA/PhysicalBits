@@ -187,6 +187,9 @@
       <block type="get_joystick_angle">
         <field name="joystickName">joystick</field>
       </block>
+      <block type="get_joystick_magnitude">
+        <field name="joystickName">joystick</field>
+      </block>
     </category>
   </category>
 
