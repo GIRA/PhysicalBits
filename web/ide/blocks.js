@@ -640,8 +640,7 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("task %1 () { \n %2 }");
         let inputFields = [
-          () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "taskName"),
+          (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
           () => this.appendStatementInput("statements")
                     .setCheck(null)
                     .setAlign(Blockly.ALIGN_RIGHT)

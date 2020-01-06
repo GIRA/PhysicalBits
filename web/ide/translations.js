@@ -89,7 +89,7 @@ var TRANSLATIONS = [
   ["repeat %1 times \n %2", "repeat %1 times \n %2", "repetir %1 veces \n %2", "korda %1 korda \n %2", "upprepa %1 gånger \n %2"],
   ["count with %1 from %2 to %3 by %4", "count with %1 from %2 to %3 by %4", "contar con %1 desde %2 hasta %3 por %4", "loenda muutujat %1 \n alates %2 kuni %3 sammuga %4", "räkna med variabeln %1 från %2 till %3 med steg av %4"],
   ["timer named %1 running %2 times per %3 initial state %4 %5", "timer named %1 running %2 times per %3 initial state %4 %5", "temporizador llamado %1 ejecutándose %2 veces por %3 estado inicial %4 %5", "kell nimega %1 tiksub %2 korda iga %3 algseisuga %4 %5", "timer med namn %1 som tickar %2 gånger per %3 med initialt tillstånd %4 %5"],
-  ["task %1 () { \n %2 }", "task named %1 %2", "tarea llamada %1 %2", "ülesanne nimega %1 %2", "jobb med namn %1 %2"],
+  ["task %1 () { \n %2 }", "task named %1 \n %2", "tarea llamada %1 \n %2", "ülesanne nimega %1 \n %2", "jobb med namn %1 \n %2"],
   ["if %1 then %2", "if %1 then %2", "si %1 entonces %2", "juhul kui kehtib %1 siis %2", "om %1 isåfall %2"],
   ["if %1 then %2 else %3", "if %1 then %2 else %3", "si %1 entonces %2 si no %3", "juhul kui kehtib %1 siis %2 muidu %3", "om %1 isåfall %2 annars %3"],
   ["stop", "stop", "detener", "peata", "stop"],
