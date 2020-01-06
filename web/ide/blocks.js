@@ -354,10 +354,10 @@ let UziBlock = (function () {
 
     Blockly.Blocks['turn_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("%1 pin %2");
+        let msg = i18n.translate("turn %1 ( %2 ) ;");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn on"), "on"],
-                                                                [i18n.translate("turn off"), "off"]]),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("On"), "on"],
+                                                                [i18n.translate("Off"), "off"]]),
                                                                "pinState"),
           () => this.appendValueInput("pinNumber").setCheck("Number")
         ];
