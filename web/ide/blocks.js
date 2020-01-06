@@ -638,7 +638,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['task'] = {
       init: function() {
-        let msg = i18n.translate("task named %1 %2");
+        let msg = i18n.translate("task %1 () { \n %2 }");
         let inputFields = [
           () => this.appendDummyInput()
                     .appendField(new Blockly.FieldTextInput("default"), "taskName"),
