@@ -656,7 +656,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_simple'] = {
       init: function() {
-        let msg = i18n.translate("if %1 then %2");
+        let msg = i18n.translate("if %1 { \n %2 }");
         let inputFields = [
           () => this.appendValueInput("condition")
                     .setCheck("Boolean")
@@ -677,7 +677,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_full'] = {
       init: function() {
-        let msg = i18n.translate("if %1 then %2 else %3");
+        let msg = i18n.translate("if %1 { \n %2 } else { \n %3 }");
         let inputFields = [
           () => this.appendValueInput("condition")
                     .setCheck("Boolean")
