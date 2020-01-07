@@ -610,18 +610,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['timer'] = {
       init: function() {
-        let msg = i18n.translate("timer named %1 running %2 times per %3 initial state %4 %5");
+        let msg = i18n.translate("task %1 () %4 %2 / %3 { \n %5 }");
         let inputFields = [
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldTextInput("default"), "taskName"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("second"),"s"],
-                                                    [i18n.translate("minute"),"m"],
-                                                    [i18n.translate("hour"),"h"]]), "tickingScale"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("started"),"started"],
+          (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
+          (input) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
+          (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("s"),"s"],
+                                                    [i18n.translate("m"),"m"],
+                                                    [i18n.translate("h"),"h"]]), "tickingScale"),
+          (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
                                                     [i18n.translate("stopped"),"stopped"]]), "initialState"),
           () => this.appendStatementInput("statements")
             .setCheck(null)
@@ -1222,13 +1218,13 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_sonar_distance'] = {
       init: function() {
-        let msg = i18n.translate("read distance from %1 in %2");
+        let msg = i18n.translate("%1 . %2 ()");
         let inputFields = [
           input => input.appendField(
             new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"),
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("mm"),"mm"],
-                                                                [i18n.translate("cm"),"cm"],
-                                                                [i18n.translate("m"),"m"]]), "unit")
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
+                                                                [i18n.translate("distance_cm"), "cm"],
+                                                                [i18n.translate("distance_m"), "m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);
