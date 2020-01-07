@@ -81,7 +81,7 @@ var TRANSLATIONS = [
   ["wait", "wait", "esperar", "oota", "vänta"],
   ["is %1 pin %2", "is %1 pin %2", "está %1 el pin %2", "on viik %1 %2", "är ben %1 %2"],
   ["read pin %1", "read pin %1", "leer pin %1", "loe viiku %1", "läs värdet på ben %1"],
-  ["write pin %1 value %2", "write pin %1 value %2", "escribir en el pin %1 el valor %2", "määra viigu %1 väärtuseks %2", "sätt värde %2 på ben %1"],
+  ["write( %1 , %2 );", "write pin %1 value %2", "escribir en el pin %1 el valor %2", "määra viigu %1 väärtuseks %2", "sätt värde %2 på ben %1"],
   ["repeat forever \n %1", "repeat forever \n %1", "repetir por siempre \n %1", "korda igavesti \n %1", "upprepa för evigt \n %1"],
   ["elapsed %1", "elapsed %1", "%1 transcurridos", "kuni %1 on möödunud", "tills %1 förflutit"],
   ["move servo on pin %1 degrees %2", "move servo on pin %1 degrees %2", "mover servo en pin %1 grados %2", "pööra servot viigus %1 %2 kraadini", "vrid servot i ben %1 till %2 grader"],
