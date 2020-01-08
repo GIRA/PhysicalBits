@@ -92,7 +92,7 @@ var TRANSLATIONS = [
   ["task %1 () { \n %2 }", "task %1 () { \n %2 }", "task named %1 \n %2", "tarea llamada %1 \n %2", "ülesanne nimega %1 \n %2", "jobb med namn %1 \n %2"],
   ["if %1 { \n %2 }", "if %1 { \n %2 }", "if %1 then %2", "si %1 entonces %2", "juhul kui kehtib %1 siis %2", "om %1 isåfall %2"],
   ["if %1 { \n %2 } else { \n %3 }", "if %1 { \n %2 } else { \n %3 }", "if %1 then %2 else %3", "si %1 entonces %2 si no %3", "juhul kui kehtib %1 siis %2 muidu %3", "om %1 isåfall %2 annars %3"],
-  ["stop", "stop", "stop", "detener", "peata", "stop"],
+  ["stop dcmotor %1", "%1 . brake( ) ;", "stop %1", "detener %1", "peata mootor %1", "stop %1"],
   ["start", "start", "start", "iniciar", "start", "start"],
   ["resume", "resume", "resume", "continuar", "jätka", "återta"],
   ["pause", "pause", "pause", "pausar", "paus", "paus"],

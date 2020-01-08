@@ -1186,9 +1186,13 @@ let UziBlock = (function () {
 
     Blockly.Blocks['stop_dcmotor'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("stop"))
-            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName");
+        let msg = i18n.translate("stop dcmotor %1");
+        let inputFields = [
+          (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
