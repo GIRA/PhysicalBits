@@ -378,9 +378,9 @@ let UziBlock = (function () {
         let msg = i18n.translate("is %1 pin %2");
         let inputFields = [
           input => input.appendField(
-            new Blockly.FieldDropdown([[i18n.translate("on"), "on"],
-                                       [i18n.translate("off"), "off"]]),
-            "pinState"),
+            new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
+                                       [i18n.translate("pin state off"), "off"]]),
+                                      "pinState"),
           () => this.appendValueInput("pinNumber").setCheck("Number")
         ];
 

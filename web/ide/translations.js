@@ -79,7 +79,7 @@ var TRANSLATIONS = [
   ["turn %1 ( %2 ) ;", "turn %1 ( %2 ) ;", "%1 pin %2", "%1 pin %2", "%1 viik %2", "%1 ben %2"],
   ["wait %1 %2", "wait %1 %2", "wait %1 %2", "esperar %1 %2", "oota %1 kehtib %2", "vänta %1 %2"],
   ["delay %1 %2", "%2 ( %1 ) ;", "wait %1 %2", "esperar %1 %2", "oota %1 %2", "vänta %1 %2"],
-  ["is %1 pin %2", "is %1 pin %2", "is %1 pin %2", "está %1 el pin %2", "on viik %1 %2", "är ben %1 %2"],
+  ["is %1 pin %2", "%1 ( %2 )", "is %1 pin %2", "está %1 el pin %2", "on viik %1 %2", "är ben %1 %2"],
   ["read pin %1", "read pin %1", "read pin %1", "leer pin %1", "loe viiku %1", "läs värdet på ben %1"],
   ["write( %1 , %2 );", "write( %1 , %2 );", "write pin %1 value %2", "escribir en el pin %1 el valor %2", "määra viigu %1 väärtuseks %2", "sätt värde %2 på ben %1"],
   ["repeat forever \n %1", "repeat forever \n %1", "repeat forever \n %1", "repetir por siempre \n %1", "korda igavesti \n %1", "upprepa för evigt \n %1"],
@@ -99,8 +99,8 @@ var TRANSLATIONS = [
   ["run", "run", "run", "ejecutar", "käivita", "kör"],
   ["On", "On", "turn on", "encender", "lülita sisse", "slå på"], // was "turn on"
   ["Off", "Off", "turn off", "apagar", "lülita välja", "slå av"], // was "turn off"
-  ["on", "on", "on", "encendido", "sees", "på"],
-  ["off", "off", "off", "apagado", "väljas", "av"],
+  ["pin state on", "isOn", "on", "encendido", "sees", "på"],
+  ["pin state off", "isOff", "off", "apagado", "väljas", "av"],
   ["milliseconds", "milliseconds", "milliseconds", "milisegundos", "millisekundit", "millisekunder"],
   ["delay in milliseconds", "delayMs", "milliseconds", "milisegundos", "millisekundit", "millisekunder"],
   ["seconds", "seconds", "seconds", "segundos", "sekundit", "sekunder"],
