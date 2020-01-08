@@ -454,13 +454,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['delay'] = {
       init: function() {
-        this.appendValueInput("time")
-            .setCheck("Number")
-            .appendField(i18n.translate("wait"));
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                    [i18n.translate("seconds"),"s"],
-                                                    [i18n.translate("minutes"),"m"]]), "unit");
+        let msg = i18n.translate("delay %1 %2");
+        let inputFields = [
+          () => this.appendValueInput("time")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                            [i18n.translate("seconds"),"s"],
+                                                            [i18n.translate("minutes"),"m"]]), "unit")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
