@@ -459,9 +459,9 @@ let UziBlock = (function () {
           () => this.appendValueInput("time")
                     .setCheck("Number"),
           () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                            [i18n.translate("seconds"),"s"],
-                                                            [i18n.translate("minutes"),"m"]]), "unit")
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
+                                                            [i18n.translate("delay in seconds"),"s"],
+                                                            [i18n.translate("delay in minutes"),"m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);
