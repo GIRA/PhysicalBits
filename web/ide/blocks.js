@@ -1078,8 +1078,8 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("wait for button %1 on pin %2");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("press"),"press"],
-                                                                [i18n.translate("release"),"release"]]), "action"),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                [i18n.translate("button waitForRelease"),"release"]]), "action"),
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
