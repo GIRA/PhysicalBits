@@ -146,7 +146,7 @@ var TRANSLATIONS = [
   ["Procedures", "Procedures", "Procedures", "Procedimientos", "Protseduurid", "Procedurer"],
   ["Configure DC motors...", "Configure DC motors...", "Configure DC motors...", "Configurar motores CC...", "Seadista mootorid...", "Konfigurera motorer..."],
   ["Configure sonars...", "Configure sonars...", "Configure sonars...", "Configurar sonares...", "Seadista kajalood...", "Konfigurera ekolod..."],
-  ["random integer from %1 to %2", "random integer from %1 to %2", "random integer from %1 to %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
+  ["random integer from %1 to %2", "randomInt(%1, %2)", "random integer from %1 to %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
   ["constrain %1 low %2 high %3", "constrain %1 low %2 high %3", "constrain %1 low %2 high %3", "mantener %1 entre %2 y %3", "piira %1 olema %2 ja %3 vahel", "begränsa %1 att vara mellan %2 och %3"],
   ["random fraction", "random fraction", "random fraction", "fracción al azar", "suvaline murdarv 0.0 ja 1.0 vahel", "slumpmässig bråkdel mellan 0.0 och 1.0"],
   ["square root", "square root", "square root", "raíz cuadrada", "ruutjuur", "roten ur"],
