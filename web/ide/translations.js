@@ -75,7 +75,7 @@ var TRANSLATIONS = [
   ["Connection timeout", "Connection timeout", "Connection timeout", "Expiró el tiempo de espera de la conexión", "Ühendus aegus", "Anslutnings-timeout"],
 
   // Blockly
-  ["toggle pin %1", "toggle pin %1", "toggle pin %1", "alternar pin %1", "lülita ümber viigu %1 väärtus", "växla värdet på ben %1"],
+  ["toggle pin %1", "toggle( %1 ) ;", "toggle pin %1", "alternar pin %1", "lülita ümber viigu %1 väärtus", "växla värdet på ben %1"],
   ["turn %1 ( %2 ) ;", "turn %1 ( %2 ) ;", "%1 pin %2", "%1 pin %2", "%1 viik %2", "%1 ben %2"],
   ["wait %1 %2", "wait %1 %2", "wait %1 %2", "esperar %1 %2", "oota %1 kehtib %2", "vänta %1 %2"],
   ["delay %1 %2", "%2 ( %1 ) ;", "wait %1 %2", "esperar %1 %2", "oota %1 %2", "vänta %1 %2"],
