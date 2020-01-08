@@ -1057,8 +1057,8 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("is button %1 on pin %2");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pressed"),"press"],
-                                                                [i18n.translate("released"),"release"]]), "state"),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
+                                                                [i18n.translate("button released"),"release"]]), "state"),
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
