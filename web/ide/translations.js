@@ -136,7 +136,7 @@ var TRANSLATIONS = [
   ["is whole", "isWhole", "is whole", "es entero", "on täisarv", "är ett heltal"],
   ["is positive", "isPositive", "is positive", "es positivo", "on positiivne", "är positivt"],
   ["is negative", "isNegative", "is negative", "es negativo", "on negatiivne", "är negativt"],
-  ["is divisible by", "is divisible by", "is divisible by", "es divisible por", "jaguneb arvuga", "är delbart med"],
+  ["number %1 is divisible by number %2", "isDivisibleBy( %1 , %2 )", "%1 is divisible by %2", "%1 es divisible por %2", "%1 jaguneb arvuga %2", "%1 är delbart med %2"],
   ["Tasks", "Tasks", "Tasks", "Tareas", "Tööd", "Jobb"],
   ["GPIO", "GPIO", "GPIO", "GPIO", "Viigud", "Ben"],
   ["Motors", "Motors", "Motors", "Motores", "Mootorid", "Motorer"],

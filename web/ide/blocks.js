@@ -823,12 +823,16 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_divisibility'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(i18n.translate("is divisible by"));
-        this.appendValueInput("right")
-            .setCheck("Number");
+        let msg = i18n.translate("number %1 is divisible by number %2");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Number"),
+          () => this.appendValueInput("right")
+                    .setCheck("Number"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(225);
         this.setTooltip("");
