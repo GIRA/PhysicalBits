@@ -745,12 +745,20 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_operation'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Boolean");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("and"),"and"], [i18n.translate("or"),"or"]]), "operator");
-        this.appendValueInput("right")
-            .setCheck("Boolean");
+        let msg = i18n.translate("logical operation %1 left %2 operator %3 right");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Boolean"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown(
+                                   [[i18n.translate("logical and"),"and"],
+                                    [i18n.translate("logical or"),"or"]]), "operator"),
+          () => this.appendValueInput("right")
+                    .setCheck("Boolean")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(210);
