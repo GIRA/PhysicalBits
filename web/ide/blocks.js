@@ -727,12 +727,12 @@ let UziBlock = (function () {
         this.appendValueInput("left")
             .setCheck("Number");
         this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("="), "=="],
-                                                    [i18n.translate("≠"), "!="],
-                                                    [i18n.translate("<"), "<"],
-                                                    [i18n.translate("≤"), "<="],
-                                                    [i18n.translate(">"), ">"],
-                                                    [i18n.translate("≥"), ">="]]), "operator");
+            .appendField(new Blockly.FieldDropdown([[i18n.translate("logical operator ="), "=="],
+                                                    [i18n.translate("logical operator ≠"), "!="],
+                                                    [i18n.translate("logical operator <"), "<"],
+                                                    [i18n.translate("logical operator ≤"), "<="],
+                                                    [i18n.translate("logical operator >"), ">"],
+                                                    [i18n.translate("logical operator ≥"), ">="]]), "operator");
         this.appendValueInput("right")
             .setCheck("Number");
         //this.setInputsInline(true);
