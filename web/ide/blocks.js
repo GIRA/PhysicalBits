@@ -594,7 +594,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['for'] = {
       init: function() {
-        let msg = i18n.translate("count with %1 from %2 to %3 by %4");
+        let msg = i18n.translate("count with %1 from %2 to %3 by %4 %5");
           let inputFields = [
               () => this.appendDummyInput()
                         .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown),
@@ -604,13 +604,13 @@ let UziBlock = (function () {
               () => this.appendValueInput("stop")
                         .setCheck("Number"),
               () => this.appendValueInput("step")
-                        .setCheck("Number")
+                        .setCheck("Number"),
+              () => this.appendStatementInput("statements").setCheck(null)
           ];
 
         initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
-        this.appendStatementInput("statements").setCheck(null);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
