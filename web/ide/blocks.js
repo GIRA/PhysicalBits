@@ -793,15 +793,21 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_property'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
+        let msg = i18n.translate("number property %1 value %2 property");
+        let inputFields = [
+          () => this.appendValueInput("value")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
                                                     [i18n.translate("is odd"),"odd"],
                                                     [i18n.translate("is prime"),"prime"],
                                                     [i18n.translate("is whole"),"whole"],
                                                     [i18n.translate("is positive"),"positive"],
-                                                    [i18n.translate("is negative"),"negative"]]), "property");
+                                                    [i18n.translate("is negative"),"negative"]]), "property")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(225);
         this.setTooltip("");
