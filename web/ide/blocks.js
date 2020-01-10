@@ -550,13 +550,19 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat'] = {
       init: function() {
-        this.appendValueInput("condition")
-            .setCheck("Boolean")
-            .appendField(i18n.translate("repeat"))
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                    [i18n.translate("until"),"true"]]), "negate");
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("repeat %1 mode %2 condition %3 statements");
+        let inputFields = [
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                                            [i18n.translate("until"),"true"]]), "negate"),
+          () => this.appendValueInput("condition")
+                    .setCheck("Boolean"),
+          () => this.appendStatementInput("statements")
+                    .setCheck(null)
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
