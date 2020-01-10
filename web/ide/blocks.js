@@ -776,9 +776,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_not'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck("Boolean")
-            .appendField(i18n.translate("not"));
+        let msg = i18n.translate("logical not %1");
+        let inputFields = [
+          () => this.appendValueInput("value")
+                    .setCheck("Boolean")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(210);
         this.setTooltip("");

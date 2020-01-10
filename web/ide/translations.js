@@ -128,7 +128,7 @@ var TRANSLATIONS = [
   ["logical or", "||", "or", "o", "või", "eller"],
   ["logical comparison %1 left %2 operator %3 right", "( %1 %2 %3 )", "%1 %2 %3", "%1 %2 %3", "%1 %2 %3", "%1 %2 %3"],
   ["logical operation %1 left %2 operator %3 right", "( %1 %2 %3 )", "%1 %2 %3", "%1 %2 %3", "%1 %2 %3", "%1 %2 %3"],
-  ["not", "not", "not", "no", "mitte", "inte"],
+  ["logical not %1", "! %1", "not %1", "no %1", "mitte %1", "inte %1"],
   ["is even", "is even", "is even", "es par", "on paarisarv", "är ett jämnt tal"],
   ["is odd", "is odd", "is odd", "es impar", "on paaritu arv", "är ett ojämnt tal"],
   ["is prime", "is prime", "is prime", "es primo", "on algarv", "är ett primtal"],
