@@ -724,17 +724,24 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_compare'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("logical operator ="), "=="],
-                                                    [i18n.translate("logical operator ≠"), "!="],
-                                                    [i18n.translate("logical operator <"), "<"],
-                                                    [i18n.translate("logical operator ≤"), "<="],
-                                                    [i18n.translate("logical operator >"), ">"],
-                                                    [i18n.translate("logical operator ≥"), ">="]]), "operator");
-        this.appendValueInput("right")
-            .setCheck("Number");
+        let msg = i18n.translate("logical comparison %1 left %2 operator %3 right");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown(
+                                   [[i18n.translate("logical operator ="), "=="],
+                                    [i18n.translate("logical operator ≠"), "!="],
+                                    [i18n.translate("logical operator <"), "<"],
+                                    [i18n.translate("logical operator ≤"), "<="],
+                                    [i18n.translate("logical operator >"), ">"],
+                                    [i18n.translate("logical operator ≥"), ">="]]), "operator"),
+          () => this.appendValueInput("right")
+                    .setCheck("Number")
+	];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(210);
