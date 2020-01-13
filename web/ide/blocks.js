@@ -1170,11 +1170,11 @@ let UziBlock = (function () {
   function initTaskBlocks() {
 
     let blocks = [
-      ["start_task", "start"],
-      ["stop_task", "stop"],
-      ["run_task", "run"],
-      ["resume_task", "resume"],
-      ["pause_task", "pause"],
+      ["start_task", "start task %1"],
+      ["stop_task", "stop task %1"],
+      ["run_task", "run task %1"],
+      ["resume_task", "resume task %1"],
+      ["pause_task", "pause task %1"],
     ];
 
     blocks.forEach(function (block) {
@@ -1182,9 +1182,15 @@ let UziBlock = (function () {
       let block_msg = block[1];
       Blockly.Blocks[block_id] = {
         init: function() {
-          this.appendDummyInput()
-              .appendField(i18n.translate(block_msg))
-              .appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName");
+	  let msg = i18n.translate(block_msg);
+          let inputFields = [
+            (input) => //this.appendDummyInput()
+              //.appendField(i18n.translate(block_msg))
+              input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+	  ];
+
+          initBlock(this, msg, inputFields);
+
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(175);

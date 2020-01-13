@@ -92,11 +92,12 @@ var TRANSLATIONS = [
   ["task %1 () { \n %2 }", "task %1 () { \n %2 }", "task named %1 \n %2", "tarea llamada %1 \n %2", "ülesanne nimega %1 \n %2", "jobb med namn %1 \n %2"],
   ["if %1 { \n %2 }", "if %1 { \n %2 }", "if %1 then %2", "si %1 entonces %2", "juhul kui kehtib %1 siis %2", "om %1 isåfall %2"],
   ["if %1 { \n %2 } else { \n %3 }", "if %1 { \n %2 } else { \n %3 }", "if %1 then %2 else %3", "si %1 entonces %2 si no %3", "juhul kui kehtib %1 siis %2 muidu %3", "om %1 isåfall %2 annars %3"],
-  ["stop dcmotor %1", "%1 . brake( ) ;", "stop %1", "detener %1", "peata mootor %1", "stop %1"],
-  ["start", "start", "start", "iniciar", "start", "start"],
-  ["resume", "resume", "resume", "continuar", "jätka", "återta"],
-  ["pause", "pause", "pause", "pausar", "paus", "paus"],
-  ["run", "run", "run", "ejecutar", "käivita", "kör"],
+  ["stop dcmotor %1", "%1 . brake() ;", "stop %1", "detener %1", "peata mootor %1", "stop %1"],
+  ["start task %1", "start %1 ;", "start %1", "iniciar %1", "alusta %1", "starta %1"],
+  ["stop task %1", "stop %1 ;", "stop %1", "detener %1", "peata %1", "stoppa %1"],
+  ["resume task %1", "resume %1 ;", "resume %1", "continuar %1", "jätka %1", "återta %1"],
+  ["pause task %1", "pause %1 ;", "pause %1", "pausar %1", "pausi %1", "paus %1"],
+  ["run task %1", "%1 () ;", "run %1", "ejecutar %1", "käivita %1", "kör %1"],
   ["On", "On", "turn on", "encender", "lülita sisse", "slå på"], // was "turn on"
   ["Off", "Off", "turn off", "apagar", "lülita välja", "slå av"], // was "turn off"
   ["pin state on", "isOn", "on", "encendido", "sees", "på"],
