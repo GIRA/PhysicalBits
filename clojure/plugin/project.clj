@@ -6,4 +6,9 @@
   :dependencies [[org.clojure/clojure "1.9.0"]]
   :main ^:skip-aot plugin.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}
+             :dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]]
+                   :source-paths ["env/dev/clj"]
+                   :resource-paths ["env/dev/resources"]
+                   :repl-options {:init-ns user
+                                  :timeout 120000}}})
