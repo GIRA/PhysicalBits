@@ -1,6 +1,7 @@
 {
 	"class" : {
-		"arg:" : "Richo 9/29/2014 17:30" },
+		"arg:" : "Richo 9/29/2014 17:30",
+		"jsonExcludedInstVarNames" : "Richo 1/14/2020 16:46" },
 	"instance" : {
 		"=" : "Richo 10/9/2014 18:05",
 		"argument" : "Richo 9/29/2014 17:46",
