@@ -27,16 +27,19 @@
       (swap! state assoc :a0 (a/<! in))
       (recur))))
 
-(defn connect [port-name baud-rate]
-  (if (connected?)
-    (error "The board is already connected")
-    (let [port (s/open port-name :baud-rate baud-rate)
-          in (a/chan 1000)]
-      (s/listen! port #(a/>!! in (.read %)))
-      (swap! state assoc
-             :port port
-             :port-name port-name)
-      (process-input in))))
+(defn connect
+  ([] (connect (first (available-ports)) 115200))
+  ([port-name] (connect port-name 115200))
+  ([port-name baud-rate]
+   (if (connected?)
+     (error "The board is already connected")
+     (let [port (s/open port-name :baud-rate baud-rate)
+           in (a/chan 1000)]
+       (s/listen! port #(a/>!! in (.read %)))
+       (swap! state assoc
+              :port port
+              :port-name port-name)
+       (process-input in)))))
 
 (defn disconnect []
   (check-connection
