@@ -99,8 +99,8 @@
    :headers {"Content-Type" "application/hal+json; charset=utf-8"}
    :body    (json/generate-string data)})
 
-(defn connect-handler [req]
-  (connect)
+(defn connect-handler [params]
+  (connect (params "port"))
   (let [port-name (@state :port-name)]
     (json-response {:port-name port-name})))
 
@@ -113,7 +113,7 @@
                         (GET "/seconds" [] (wrap-websocket seconds-handler))
                         (GET "/echo" [] (wrap-websocket echo-handler))
                         (GET "/analog-read" [] (wrap-websocket analog-read-handler))
-                        (POST "/connect" req (connect-handler req))
+                        (POST "/connect" {params :params} (connect-handler params))
                         (POST "/disconnect" req (disconnect-handler req))
                         (GET "/available-ports" [] (json-response {:ports (available-ports)}))
                         (route/not-found "No such page."))

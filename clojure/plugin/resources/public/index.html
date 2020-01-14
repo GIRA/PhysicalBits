@@ -10,8 +10,8 @@
         return ajax.POST(url, data);
       }
 
-      function connect() {
-        POST("/connect", {}).then(log);
+      function connect(portName) {
+        POST("/connect", {port: portName}).then(log);
       }
 
       function disconnect() {
