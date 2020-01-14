@@ -115,13 +115,14 @@
                         (POST "/connect" req (connect-handler req))
                         (POST "/disconnect" req (disconnect-handler req))
                         (route/not-found "No such page."))
+
+      (wrap-params)
       (wrap-resource "public")
       (wrap-content-type)
-      (wrap-not-modified)
-      (wrap-params)))
+      (wrap-not-modified)))
 
 (defn start-server []
-  (when-not (nil? @server)
+  (when (nil? @server)
     (let [s (http/start-server handler {:port 3000})]
       (reset! server s))))
 
