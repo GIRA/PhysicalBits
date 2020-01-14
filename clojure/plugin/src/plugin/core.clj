@@ -38,7 +38,7 @@
      (reset! state default-state)
      (s/close! port))))
 
-(defn send [bytes]
+(defn send-data [bytes]
   (check-connection (s/write (@state :port) bytes)))
 
 (defn -main
