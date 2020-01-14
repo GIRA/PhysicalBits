@@ -38,6 +38,9 @@
      (reset! state default-state)
      (s/close! port))))
 
+(defn send [bytes]
+  (check-connection (s/write (@state :port) bytes)))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
