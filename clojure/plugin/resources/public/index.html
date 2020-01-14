@@ -1,0 +1,31 @@
+<html>
+  <body>
+    <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
+    <script src="ajax.js" type="text/javascript"></script>
+    <script>
+
+      function log(data) { console.log(data); }
+
+      function POST(url, data) {
+        return ajax.POST(url, data);
+      }
+
+      function connect() {
+        POST("/connect", {}).then(log);
+      }
+
+      function disconnect() {
+        POST("/disconnect", {}).then(log);
+      }
+
+      function analogRead() {
+        var socket = new WebSocket('ws://localhost:3000/analog-read');
+        socket.onopen = function() {
+          console.log('connected to server');
+          socket.onmessage = function(evt) { console.log(evt); };
+          socket.onclose = function() { console.log('disconnected from server'); };
+        };
+      }
+    </script>
+  </body>
+</html>
