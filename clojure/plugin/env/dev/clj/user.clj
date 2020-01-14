@@ -6,6 +6,7 @@
 
 (defn reload []
   (disconnect)
+  (stop-server)
   (repl/refresh))
 
 (defn millis [] (System/currentTimeMillis))
