@@ -79,16 +79,17 @@
 
 (defn seconds-handler [socket _]
   (a/go-loop [i 0]
-    (ws/put! socket (str "seconds: " i))
-    (a/<! (a/timeout 1000))
-    (recur (inc i))))
+    (when-not (ws/closed? socket)
+      (ws/put! socket (str "seconds: " i))
+      (a/<! (a/timeout 1000))
+      (recur (inc i)))))
 
 (defn echo-handler [socket _]
   (ws/connect socket socket))
 
 (defn analog-read-handler [socket _]
   (a/go-loop []
-    (when (not (ws/closed? socket))
+    (when-not (ws/closed? socket)
       (ws/put! socket (str "A0: " (@state :a0)))
       (a/<! (a/timeout 100))
       (recur))))
