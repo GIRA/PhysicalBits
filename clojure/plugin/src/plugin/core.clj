@@ -15,13 +15,16 @@
             [cheshire.core :as json])
   (:gen-class))
 
+; TODO(Richo): Replace with log/error
+(defn- error [msg] (println "ERROR:" msg))
+
 ;;;;;;;;;;;;;;;;;;;;; ARDUINO ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def default-state {:port-name nil
                     :port nil
                     :a0 0})
 (def state (atom default-state))
 
-(defn- error [msg] (println "ERROR:" msg))
 
 (defn available-ports [] (su/get-port-names))
 
@@ -63,6 +66,7 @@
   (check-connection (s/write (@state :port) bytes)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;WEB SERVER;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(def server (atom nil))
 
 (defn wrap-websocket [handler]
   (fn [req]
@@ -117,7 +121,14 @@
       (wrap-params)))
 
 (defn start-server []
-  (http/start-server handler {:port 3000}))
+  (when-not (nil? @server)
+    (let [s (http/start-server handler {:port 3000})]
+      (reset! server s))))
+
+(defn stop-server []
+  (when-let [s @server]
+    (reset! server nil)
+    (.close s)))
 
 (defn -main [& args]
   (time (do
