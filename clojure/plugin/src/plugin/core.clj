@@ -1,6 +1,6 @@
 (ns plugin.core
   (:require [serial.core :as s]
-            [serial.util :refer :all]
+            [serial.util :as su]
             [clojure.core.async :as a])
   (:gen-class))
 
@@ -8,6 +8,8 @@
 (def state (atom default-state))
 
 (defn- error [msg] (println "ERROR:" msg))
+
+(defn available-ports [] (su/get-port-names))
 
 (defn connected? []
   (not (nil? (@state :port))))
