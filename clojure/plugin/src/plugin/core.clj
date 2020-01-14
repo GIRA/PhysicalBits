@@ -1,9 +1,11 @@
 (ns plugin.core
   (:require [serial.core :as s]
-            [serial.util :refer :all])
+            [serial.util :refer :all]
+            [clojure.core.async :as a])
   (:gen-class))
 
-(def state (atom {:port nil}))
+(def default-state {:port nil :a0 0})
+(def state (atom default-state))
 
 (defn- error [msg] (println "ERROR:" msg))
 
@@ -15,20 +17,25 @@
      ~then-form
      (error "The board is not connected!")))
 
-(defn- process-input [input]
-  (println "I:" (.read input)))
+(defn- process-input [in]
+  (a/go-loop []
+    (when (connected?)
+      (swap! state assoc :a0 (a/<! in))
+      (recur))))
 
 (defn connect [port-name baud-rate]
   (if (connected?)
     (error "The board is already connected")
-    (let [port (s/open port-name :baud-rate baud-rate)]
-      (s/listen! port process-input)
-      (reset! state {:port port}))))
+    (let [port (s/open port-name :baud-rate baud-rate)
+          in (a/chan 1000)]
+      (s/listen! port #(a/>!! in (.read %)))
+      (reset! state {:port port})
+      (process-input in))))
 
 (defn disconnect []
   (check-connection
    (let [port (@state :port)]
-     (reset! state {:port nil})
+     (reset! state default-state)
      (s/close! port))))
 
 (defn -main
