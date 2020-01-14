@@ -4,7 +4,9 @@
             [clojure.core.async :as a])
   (:gen-class))
 
-(def default-state {:port nil :a0 0})
+(def default-state {:port-name nil
+                    :port nil
+                    :a0 0})
 (def state (atom default-state))
 
 (defn- error [msg] (println "ERROR:" msg))
@@ -31,7 +33,9 @@
     (let [port (s/open port-name :baud-rate baud-rate)
           in (a/chan 1000)]
       (s/listen! port #(a/>!! in (.read %)))
-      (reset! state {:port port})
+      (swap! state assoc
+             :port port
+             :port-name port-name)
       (process-input in))))
 
 (defn disconnect []
