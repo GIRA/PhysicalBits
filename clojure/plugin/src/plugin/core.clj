@@ -41,11 +41,10 @@
 (def MAJOR_VERSION 0)
 (def MINOR_VERSION 7)
 
-(defn- read-from [in timeout]
-  (let [[value _] (a/alts!! [in (a/timeout timeout)])]
-    (if-not value
-      (error "TIMEOUT!")
-      value)))
+(defmacro <? [chan timeout]
+  `(first (a/alts! [~chan (a/timeout ~timeout)])))
+(defmacro <?? [chan timeout]
+  `(first (a/alts!! [~chan (a/timeout ~timeout)])))
 
 (defn- request-connection [port in]
   (a/<!! (a/timeout 2000)) ; NOTE(Richo): Needed in Mac
@@ -56,11 +55,11 @@
   (println "Requesting connection...")
   ;(a/<!! (a/timeout 500)) ; TODO(Richo): Not needed in Mac
 
-  (when-let [n1 (read-from in 1000)]
+  (when-let [n1 (<?? in 1000)]
     (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
       (s/write port n2)
       ;(a/<!! (a/timeout 500)) ; TODO(Richo): Not needed in Mac
-      (if (= n2 (read-from in 1000))
+      (if (= n2 (<?? in 1000))
         (println "Connection accepted!")
         (println "Connection rejected")))))
 
