@@ -1,12 +1,14 @@
 (ns user
   (:require [plugin.core :refer :all]
-            [clojure.core.async :refer [go-loop <! <!! timeout]]
+            [plugin.device :as device :refer [state]]
+            [plugin.server :as server :refer [server]]
+            [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl])
   (:use [clojure.repl]))
 
 (defn reload []
-  (disconnect)
-  (stop-server)
+  (device/disconnect)
+  (server/stop)
   (repl/refresh))
 
 (defn millis [] (System/currentTimeMillis))
@@ -25,4 +27,6 @@
                  (<! (timeout interval))
                  (recur)))))))))
 
-(def blink13 [0 1 2 4 13 5 3 232 192 4 2 131 162])
+(def programs
+  {:empty [0 0]
+   :blink13 [0 1 2 4 13 5 3 232 192 4 2 131 162]})
