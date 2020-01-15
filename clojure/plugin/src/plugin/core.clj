@@ -73,7 +73,9 @@
 (defn- process-input [in]
   (a/go-loop []
     (when (connected?)
-      (swap! state assoc :a0 (a/<! in))
+      (when-let [cmd (<? in 1000)]
+        (println "IN:" cmd))
+      ;(swap! state assoc :a0 (a/<! in))
       (recur))))
 
 (defn connect
