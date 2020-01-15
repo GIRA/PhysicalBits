@@ -178,7 +178,7 @@ var TRANSLATIONS = [
   ["round", "round", "round", "redondear", "ümardamine", "avrunda"],
   ["round up", "round up", "round up", "redondear hacia arriba", "ümarda üles", "avrunda uppåt"],
   ["round down", "round down", "round down", "redondear hacia abajo", "ümarda alla", "avrunda nedåt"],
-  ["remainder of %1 ÷ %2 \n", "remainder of %1 ÷ %2 \n", "remainder of %1 ÷ %2 \n", "resto de %1 ÷ %2 \n", "%1 ÷ %2 jääk", "resten av %1 ÷ %2"],
+  ["remainder of %1 ÷ %2 \n", "%1 % %2 \n", "remainder of %1 ÷ %2 \n", "resto de %1 ÷ %2 \n", "%1 ÷ %2 jääk", "resten av %1 ÷ %2"],
   ["Configure variables...", "Configure variables...", "Configure variables...", "Configurar variables...","Seadista muutujaid...", "Konfigurera variabler..."],
   ["Configure variables", "Configure variables", "Configure variables", "Configurar variables", "Seadista muutujaid", "Konfigurera variabler"],
   ["Variable name", "Variable name", "Variable name", "Nombre de variable", "Muutuja nimi", "Variabelns namn"],
