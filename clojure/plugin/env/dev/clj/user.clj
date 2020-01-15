@@ -24,3 +24,5 @@
                  (println (- now begin) ":" (@state :a0))
                  (<! (timeout interval))
                  (recur)))))))))
+
+(def blink13 [0 1 2 4 13 5 3 232 192 4 2 131 162])
