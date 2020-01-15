@@ -62,9 +62,11 @@ void Monitor::initSerial(UziSerial* s)
 	stream.init(serial);
 }
 
+GPIO* _io;
 
 void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
+  _io = io;
 	if (!serial->available()) return;
 	
 	if (state == DISCONNECTED)
@@ -79,6 +81,7 @@ void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 	{
 		executeCommand(program, io, vm);
 	}
+
 }
 
 void Monitor::connectionRequest()
@@ -110,6 +113,8 @@ void Monitor::acceptConnection()
 	state = CONNECTED; 
 	executeKeepAlive();
 	serial->write(expected);
+  
+  _io->setValue(10, HIGH);
 }
 
 void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
@@ -117,10 +122,15 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 	checkKeepAlive();
 	if (state == CONNECTED) 
 	{
+    _io->setValue(10, HIGH);
 		sendReport(io, program);
 		sendProfile();
 		sendVMState(program, vm);
 	}
+  else 
+  {    
+    _io->setValue(10, LOW);
+  }
 }
 
 void Monitor::sendError(uint8 errorCode)
@@ -369,6 +379,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
 		executeSetProgram(program, io);
+    _io->setValue(11, HIGH);
 		break;
 	case MSG_IN_SET_VALUE:
 		executeSetValue(io);
