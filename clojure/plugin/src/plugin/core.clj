@@ -36,13 +36,8 @@
      ~then-form
      (error "The board is not connected!")))
 
-(defn- process-input [in]
-  (a/go-loop []
-    (when (connected?)
-      (swap! state assoc :a0 (a/<! in))
-      (recur))))
-
 (def MSG_OUT_CONNECTION_REQUEST 255)
+(def MSG_OUT_KEEP_ALIVE 7)
 (def MAJOR_VERSION 0)
 (def MINOR_VERSION 7)
 
@@ -69,6 +64,19 @@
         (println "Connection accepted!")
         (println "Connection rejected")))))
 
+(defn- keep-alive [port]
+  (a/go-loop []
+    (when (connected?)
+      (s/write port [MSG_OUT_KEEP_ALIVE])
+      (a/<! (a/timeout 100))
+      (recur))))
+
+(defn- process-input [in]
+  (a/go-loop []
+    (when (connected?)
+      (swap! state assoc :a0 (a/<! in))
+      (recur))))
+
 (defn connect
   ([] (connect (first (available-ports))))
   ([port-name] (connect port-name 57600))
@@ -79,6 +87,7 @@
            in (a/chan 1000)]
        (s/listen! port #(a/>!! in (.read %)))
        (request-connection port in)
+       (keep-alive port)
        (swap! state assoc
               :port port
               :port-name port-name)
