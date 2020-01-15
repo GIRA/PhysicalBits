@@ -42,15 +42,43 @@
       (swap! state assoc :a0 (a/<! in))
       (recur))))
 
+(def MSG_OUT_CONNECTION_REQUEST 255)
+(def MAJOR_VERSION 0)
+(def MINOR_VERSION 7)
+
+(defn- read-from [in timeout]
+  (let [[value _] (a/alts!! [in (a/timeout timeout)])]
+    (if-not value
+      (error "TIMEOUT!")
+      value)))
+
+(defn- request-connection [port in]
+  (a/<!! (a/timeout 2000)) ; NOTE(Richo): Needed in Mac
+  (s/write port [MSG_OUT_CONNECTION_REQUEST
+                 MAJOR_VERSION
+                 MINOR_VERSION])
+
+  (println "Requesting connection...")
+  ;(a/<!! (a/timeout 500)) ; TODO(Richo): Not needed in Mac
+
+  (when-let [n1 (read-from in 1000)]
+    (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
+      (s/write port n2)
+      ;(a/<!! (a/timeout 500)) ; TODO(Richo): Not needed in Mac
+      (if (= n2 (read-from in 1000))
+        (println "Connection accepted!")
+        (println "Connection rejected")))))
+
 (defn connect
-  ([] (connect (first (available-ports)) 115200))
-  ([port-name] (connect port-name 115200))
+  ([] (connect (first (available-ports))))
+  ([port-name] (connect port-name 57600))
   ([port-name baud-rate]
    (if (connected?)
      (error "The board is already connected")
      (let [port (s/open port-name :baud-rate baud-rate)
            in (a/chan 1000)]
        (s/listen! port #(a/>!! in (.read %)))
+       (request-connection port in)
        (swap! state assoc
               :port port
               :port-name port-name)
