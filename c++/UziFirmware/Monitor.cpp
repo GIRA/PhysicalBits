@@ -2,7 +2,7 @@
 
 /* VERSION NUMBER */
 #define MAJOR_VERSION                                       0
-#define MINOR_VERSION                                       6
+#define MINOR_VERSION                                       7
 
 /* INCOMING */
 #define MSG_IN_CONNECTION_REQUEST                         255
