@@ -373,10 +373,10 @@ let UziBlock = (function () {
 
     Blockly.Blocks['turn_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("%1 pin %2");
+        let msg = i18n.translate("turn %1 ( %2 ) ;");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn on"), "on"],
-                                                                [i18n.translate("turn off"), "off"]]),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("On"), "on"],
+                                                                [i18n.translate("Off"), "off"]]),
                                                                "pinState"),
           () => this.appendValueInput("pinNumber").setCheck("Number")
         ];
@@ -397,9 +397,9 @@ let UziBlock = (function () {
         let msg = i18n.translate("is %1 pin %2");
         let inputFields = [
           input => input.appendField(
-            new Blockly.FieldDropdown([[i18n.translate("on"), "on"],
-                                       [i18n.translate("off"), "off"]]),
-            "pinState"),
+            new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
+                                       [i18n.translate("pin state off"), "off"]]),
+                                      "pinState"),
           () => this.appendValueInput("pinNumber").setCheck("Number")
         ];
 
@@ -432,7 +432,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['write_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("write pin %1 value %2");
+        let msg = i18n.translate("write( %1 , %2 );");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
@@ -498,13 +498,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['delay'] = {
       init: function() {
-        this.appendValueInput("time")
-            .setCheck("Number")
-            .appendField(i18n.translate("wait"));
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                    [i18n.translate("seconds"),"s"],
-                                                    [i18n.translate("minutes"),"m"]]), "unit");
+        let msg = i18n.translate("delay %1 %2");
+        let inputFields = [
+          () => this.appendValueInput("time")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
+                                                            [i18n.translate("delay in seconds"),"s"],
+                                                            [i18n.translate("delay in minutes"),"m"]]), "unit")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -609,13 +614,19 @@ let UziBlock = (function () {
 
     Blockly.Blocks['repeat'] = {
       init: function() {
-        this.appendValueInput("condition")
-            .setCheck("Boolean")
-            .appendField(i18n.translate("repeat"))
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                    [i18n.translate("until"),"true"]]), "negate");
-        this.appendStatementInput("statements")
-            .setCheck(null);
+        let msg = i18n.translate("repeat %1 mode %2 condition %3 statements");
+        let inputFields = [
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                                            [i18n.translate("until"),"true"]]), "negate"),
+          () => this.appendValueInput("condition")
+                    .setCheck("Boolean"),
+          () => this.appendStatementInput("statements")
+                    .setCheck(null)
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -647,7 +658,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['for'] = {
       init: function() {
-        let msg = i18n.translate("count with %1 from %2 to %3 by %4");
+        let msg = i18n.translate("count with %1 from %2 to %3 by %4 %5");
           let inputFields = [
               () => this.appendDummyInput()
                         .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown),
@@ -657,13 +668,13 @@ let UziBlock = (function () {
               () => this.appendValueInput("stop")
                         .setCheck("Number"),
               () => this.appendValueInput("step")
-                        .setCheck("Number")
+                        .setCheck("Number"),
+              () => this.appendStatementInput("statements").setCheck(null)
           ];
 
         initBlock(this, msg, inputFields);
 
         //this.setInputsInline(true);
-        this.appendStatementInput("statements").setCheck(null);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(210);
@@ -674,18 +685,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['timer'] = {
       init: function() {
-        let msg = i18n.translate("timer named %1 running %2 times per %3 initial state %4 %5");
+        let msg = i18n.translate("task %1 () %4 %2 / %3 { \n %5 }");
         let inputFields = [
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldTextInput("default"), "taskName"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("second"),"s"],
-                                                    [i18n.translate("minute"),"m"],
-                                                    [i18n.translate("hour"),"h"]]), "tickingScale"),
-          () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("started"),"started"],
+          (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
+          (input) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
+          (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("s"),"s"],
+                                                    [i18n.translate("m"),"m"],
+                                                    [i18n.translate("h"),"h"]]), "tickingScale"),
+          (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
                                                     [i18n.translate("stopped"),"stopped"]]), "initialState"),
           () => this.appendStatementInput("statements")
             .setCheck(null)
@@ -702,10 +709,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['task'] = {
       init: function() {
-        let msg = i18n.translate("task named %1 %2");
+        let msg = i18n.translate("task %1 () { \n %2 }");
         let inputFields = [
-          () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "taskName"),
+          (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
           () => this.appendStatementInput("statements")
                     .setCheck(null)
                     .setAlign(Blockly.ALIGN_RIGHT)
@@ -721,7 +727,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_simple'] = {
       init: function() {
-        let msg = i18n.translate("if %1 then %2");
+        let msg = i18n.translate("if %1 { \n %2 }");
         let inputFields = [
           () => this.appendValueInput("condition")
                     .setCheck("Boolean")
@@ -742,7 +748,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['conditional_full'] = {
       init: function() {
-        let msg = i18n.translate("if %1 then %2 else %3");
+        let msg = i18n.translate("if %1 { \n %2 } else { \n %3 }");
         let inputFields = [
           () => this.appendValueInput("condition")
                     .setCheck("Boolean")
@@ -788,17 +794,24 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_compare'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("="), "=="],
-                                                    [i18n.translate("≠"), "!="],
-                                                    [i18n.translate("<"), "<"],
-                                                    [i18n.translate("≤"), "<="],
-                                                    [i18n.translate(">"), ">"],
-                                                    [i18n.translate("≥"), ">="]]), "operator");
-        this.appendValueInput("right")
-            .setCheck("Number");
+        let msg = i18n.translate("logical comparison %1 left %2 operator %3 right");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown(
+                                   [[i18n.translate("logical operator ="), "=="],
+                                    [i18n.translate("logical operator ≠"), "!="],
+                                    [i18n.translate("logical operator <"), "<"],
+                                    [i18n.translate("logical operator ≤"), "<="],
+                                    [i18n.translate("logical operator >"), ">"],
+                                    [i18n.translate("logical operator ≥"), ">="]]), "operator"),
+          () => this.appendValueInput("right")
+                    .setCheck("Number")
+	];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(210);
@@ -809,12 +822,20 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_operation'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Boolean");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("and"),"and"], [i18n.translate("or"),"or"]]), "operator");
-        this.appendValueInput("right")
-            .setCheck("Boolean");
+        let msg = i18n.translate("logical operation %1 left %2 operator %3 right");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Boolean"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown(
+                                   [[i18n.translate("logical and"),"and"],
+                                    [i18n.translate("logical or"),"or"]]), "operator"),
+          () => this.appendValueInput("right")
+                    .setCheck("Boolean")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Boolean");
         this.setColour(210);
@@ -825,9 +846,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['logical_not'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck("Boolean")
-            .appendField(i18n.translate("not"));
+        let msg = i18n.translate("logical not %1");
+        let inputFields = [
+          () => this.appendValueInput("value")
+                    .setCheck("Boolean")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(210);
         this.setTooltip("");
@@ -837,15 +863,21 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_property'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
+        let msg = i18n.translate("number property %1 value %2 property");
+        let inputFields = [
+          () => this.appendValueInput("value")
+                    .setCheck("Number"),
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
                                                     [i18n.translate("is odd"),"odd"],
                                                     [i18n.translate("is prime"),"prime"],
                                                     [i18n.translate("is whole"),"whole"],
                                                     [i18n.translate("is positive"),"positive"],
-                                                    [i18n.translate("is negative"),"negative"]]), "property");
+                                                    [i18n.translate("is negative"),"negative"]]), "property")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(225);
         this.setTooltip("");
@@ -855,12 +887,16 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_divisibility'] = {
       init: function() {
-        this.appendValueInput("left")
-            .setCheck("Number");
-        this.appendDummyInput()
-            .appendField(i18n.translate("is divisible by"));
-        this.appendValueInput("right")
-            .setCheck("Number");
+        let msg = i18n.translate("number %1 is divisible by number %2");
+        let inputFields = [
+          () => this.appendValueInput("left")
+                    .setCheck("Number"),
+          () => this.appendValueInput("right")
+                    .setCheck("Number"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(225);
         this.setTooltip("");
@@ -1221,8 +1257,8 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("is button %1 on pin %2");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pressed"),"press"],
-                                                                [i18n.translate("released"),"release"]]), "state"),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
+                                                                [i18n.translate("button released"),"release"]]), "state"),
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
@@ -1242,8 +1278,8 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("wait for button %1 on pin %2");
         let inputFields = [
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("press"),"press"],
-                                                                [i18n.translate("press and release"),"release"]]), "action"),
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                [i18n.translate("button waitForRelease"),"release"]]), "action"),
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
@@ -1401,11 +1437,11 @@ let UziBlock = (function () {
   function initTaskBlocks() {
 
     let blocks = [
-      ["start_task", "start"],
-      ["stop_task", "stop"],
-      ["run_task", "run"],
-      ["resume_task", "resume"],
-      ["pause_task", "pause"],
+      ["start_task", "start task %1"],
+      ["stop_task", "stop task %1"],
+      ["run_task", "run task %1"],
+      ["resume_task", "resume task %1"],
+      ["pause_task", "pause task %1"],
     ];
 
     blocks.forEach(function (block) {
@@ -1413,9 +1449,15 @@ let UziBlock = (function () {
       let block_msg = block[1];
       Blockly.Blocks[block_id] = {
         init: function() {
-          this.appendDummyInput()
-              .appendField(i18n.translate(block_msg))
-              .appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName");
+	  let msg = i18n.translate(block_msg);
+          let inputFields = [
+            (input) => //this.appendDummyInput()
+              //.appendField(i18n.translate(block_msg))
+              input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+	  ];
+
+          initBlock(this, msg, inputFields);
+
           this.setPreviousStatement(true, null);
           this.setNextStatement(true, null);
           this.setColour(175);
@@ -1453,9 +1495,13 @@ let UziBlock = (function () {
 
     Blockly.Blocks['stop_dcmotor'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("stop"))
-            .appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName");
+        let msg = i18n.translate("stop dcmotor %1");
+        let inputFields = [
+          (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
@@ -1508,13 +1554,13 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_sonar_distance'] = {
       init: function() {
-        let msg = i18n.translate("read distance from %1 in %2");
+        let msg = i18n.translate("%1 . %2 ()");
         let inputFields = [
           input => input.appendField(
             new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"),
-          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("mm"),"mm"],
-                                                                [i18n.translate("cm"),"cm"],
-                                                                [i18n.translate("m"),"m"]]), "unit")
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
+                                                                [i18n.translate("distance_cm"), "cm"],
+                                                                [i18n.translate("distance_m"), "m"]]), "unit")
         ];
 
         initBlock(this, msg, inputFields);
