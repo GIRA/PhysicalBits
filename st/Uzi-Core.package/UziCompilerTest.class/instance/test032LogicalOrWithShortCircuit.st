@@ -4,7 +4,7 @@ test032LogicalOrWithShortCircuit
 	program := self compile: '
 	func foo() { return 1 || bar();}
 	func bar() { return 42; }'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #foo].
 	self assert: script instructions = {
 		push arg: (program constants detect: [:var | var value = 1]).
 		jnz arg: 2.

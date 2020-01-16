@@ -1,6 +1,6 @@
 as yet unclassified
 test018AMoreCompleteExample3
-	| actual expected original remover |
+	| actual expected original remover scripts |
 	original := Uzi parse: '
 "This is just an example of code that uses all the available syntax
 in the language."
@@ -149,7 +149,14 @@ proc foo_bar_baz(a, b, c) {
 	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
 	bar.init(trig: a, echo: b, maxDist: c);
 }'.
-	expected := (Uzi resolveImports: expected) withImports: original imports.
+	scripts := expected scripts collect: #name.
+	expected := Uzi resolveImports: expected.
+	expected := (expected class
+		imports: original imports
+		globals: expected globals
+		scripts: (expected scripts select: [:s | scripts includes: s name])
+		primitives: expected primitives)
+		token: expected token.
 	remover := UziDeadCodeRemover new.
 	actual := remover applyOn: original.
 	self assert: expected equals: actual

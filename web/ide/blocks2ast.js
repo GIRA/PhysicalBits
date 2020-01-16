@@ -536,16 +536,38 @@ let BlocksToAST = (function () {
 			let pinValue = generateCodeForValue(block, ctx, "pinValue");
 			stream.push(builder.primitiveCall(id, "write", [pinNumber, pinValue]));
 		},
+		set_pin_mode: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let validModes = {
+				INPUT: 0,
+				OUTPUT: 1,
+				INPUT_PULLUP: 2
+			};
+			let mode = XML.getChildNode(block, "mode").innerText;
+			let actualMode = validModes[mode];
+			if (actualMode != undefined) {
+				actualMode = builder.number(id, actualMode);
+			} else {
+				throw "Invalid pin mode: '" + mode + "'";
+			}
+			stream.push(builder.primitiveCall(id, "setPinMode", [pinNumber, actualMode]));
+		},
 		read_pin_variable: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			stream.push(builder.primitiveCall(id, "read", [pinNumber]));
 		},
-		degrees_servo_variable: function (block, ctx, stream) {
+		get_servo_degrees: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			stream.push(builder.primitiveCall(id, "getServoDegrees", [pinNumber]));
+		},
+		set_servo_degrees: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			let servoValue = generateCodeForValue(block, ctx, "servoValue");
-			stream.push(builder.primitiveCall(id, "servoDegrees", [pinNumber, servoValue]));
+			stream.push(builder.primitiveCall(id, "setServoDegrees", [pinNumber, servoValue]));
 		},
 		repeat: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -603,6 +625,14 @@ let BlocksToAST = (function () {
 			let low = generateCodeForValue(block, ctx, "low");
 			let high = generateCodeForValue(block, ctx, "high");
 			stream.push(builder.primitiveCall(id, "constrain", [value, low, high]));
+		},
+		number_between: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let args = [
+				{name: "value", value: generateCodeForValue(block, ctx, "value")},
+				{name: "min", value: generateCodeForValue(block, ctx, "low")},
+				{name: "max", value: generateCodeForValue(block, ctx, "high")}];
+			stream.push(builder.scriptCall(id, "isBetween", args));
 		},
 		number_random_int: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -730,6 +760,15 @@ let BlocksToAST = (function () {
 			let arg = {name: "speed", value: speed};
 			stream.push(builder.scriptCall(id, selector, [arg]));
 		},
+		get_speed_dcmotor: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
+
+			ctx.addDCMotorImport(motorName);
+
+			let selector = motorName + "." + "getSpeed";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
 		stop_dcmotor: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let motorName = asIdentifier(XML.getChildNode(block, "motorName").innerText);
@@ -747,6 +786,42 @@ let BlocksToAST = (function () {
 			ctx.addSonarImport(sonarName);
 
 			let selector = sonarName + "." + "distance_" + unit;
+			stream.push(builder.scriptCall(id, selector, []));
+		},
+		get_joystick_x: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let variableName = joystickName + "." + "x";
+			stream.push(builder.variable(id, variableName));
+		},
+		get_joystick_y: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let variableName = joystickName + "." + "y";
+			stream.push(builder.variable(id, variableName));
+		},
+		get_joystick_angle: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let selector = joystickName + "." + "getAngle";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
+		get_joystick_magnitude: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let joystickName = asIdentifier(XML.getChildNode(block, "joystickName").innerText);
+
+			ctx.addJoystickImport(joystickName);
+
+			let selector = joystickName + "." + "getMagnitude";
 			stream.push(builder.scriptCall(id, selector, []));
 		},
 		declare_local_variable: function (block, ctx, stream) {
@@ -914,6 +989,35 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.primitiveCall(id, selector, [pinNumber, tone, delay]));
 		},
+		start_note: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "startTone";
+			let note = parseInt(XML.getChildNode(block, "note").innerText);
+			let args = [
+				generateCodeForValue(block, ctx, "pinNumber"),
+				builder.number(id, note)
+			];
+			stream.push(builder.primitiveCall(id, selector, args));
+		},
+		play_note: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let selector = "playTone";
+			let note = builder.number(id, parseInt(XML.getChildNode(block, "note").innerText));
+			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time")
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let delay;
+			if (unit === "ms") {
+				delay = time;
+			}	else if (unit === "s") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				delay = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid delay unit: '" + unit + "'";
+			}
+			stream.push(builder.primitiveCall(id, selector, [pinNumber, note, delay]));
+		},
 		stop_tone: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let selector = "stopTone";
@@ -968,13 +1072,41 @@ let BlocksToAST = (function () {
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin]));
 		},
-		button_long_action: function (block, ctx, stream) {
+		button_ms_holding: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pin = generateCodeForValue(block, ctx, "pinNumber");
-			let selector = "buttons.waitForHold";
+			let selector = "buttons.millisecondsHolding";
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin]));
-		}
+		},
+		button_wait_for_long_action: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let pin = generateCodeForValue(block, ctx, "pinNumber");
+			let time = generateCodeForValue(block, ctx, "time");
+
+			let unit = XML.getChildNode(block, "unit").innerText;
+			let duration;
+			if (unit === "ms") {
+				duration = time;
+			}	else if (unit === "s") {
+				duration = builder.primitiveCall(id, "*", [time, builder.number(id, 1000)]);
+			}	else if (unit === "m") {
+				duration = builder.primitiveCall(id, "*", [time, builder.number(id, 60000)]);
+			}	else {
+				throw "Invalid time unit: '" + unit + "'";
+			}
+
+			let action = XML.getChildNode(block, "action").innerText;
+			let selector;
+			if (action === "press") {	selector = "waitForHold"; }
+			else if (action === "release") { selector = "waitForHoldAndRelease"}
+			else {
+				throw "Invalid button action: '" + action + "'";
+			}
+			selector = "buttons." + selector;
+			ctx.addButtonsImport();
+			stream.push(builder.primitiveCall(id, selector, [pin, duration]));
+		},
 	};
 
 	function asIdentifier(str) {
@@ -1043,7 +1175,7 @@ let BlocksToAST = (function () {
 	}
 
 	return {
-		generate: function (xml, motors, sonars) {
+		generate: function (xml, motors, sonars, joysticks) {
 			let setup = [];
 			let scripts = [];
 			let ctx = {
@@ -1143,6 +1275,24 @@ let BlocksToAST = (function () {
 						stmts.push(builder.assignment(null, "trigPin", pin(sonar.trig)));
 						stmts.push(builder.assignment(null, "echoPin", pin(sonar.echo)));
 						stmts.push(builder.assignment(null, "maxDistance", builder.number(null, parseInt(sonar.maxDist))));
+						stmts.push(builder.start(null, ["reading"]));
+						return builder.block(null, stmts);
+					});
+				},
+				addJoystickImport: function (alias) {
+					ctx.addImport(alias, "Joystick.uzi", function () {
+						let joystick = joysticks.find(function (m) { return m.name === alias; });
+						if (joystick == undefined) return null;
+
+						function pin(pin) {
+							let type = pin[0];
+							let number = parseInt(pin.slice(1));
+							return builder.pin(null, type, number);
+						}
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "xPin", pin(joystick.xPin)));
+						stmts.push(builder.assignment(null, "yPin", pin(joystick.yPin)));
 						stmts.push(builder.start(null, ["reading"]));
 						return builder.block(null, stmts);
 					});

@@ -11,6 +11,13 @@
 #define IS_ANALOG(pin)							 ((pin) >= 14 && (pin) <= 19)
 #define IS_DIGITAL(pin)										(!IS_ANALOG(pin))
 
+struct PinFlags 
+{
+	uint8 mode : 2;
+	uint8 report : 1;
+	uint8 type : 5; // TODO(Richo)
+};
+
 class GPIO
 {
 public:
@@ -18,12 +25,10 @@ public:
 	{
 		for (uint8 i = 0; i < TOTAL_PINS; i++)
 		{
+			pinFlags[i].mode = INPUT;
+			pinFlags[i].report = false;
+			pinFlags[i].type = 0;
 			pinValues[i] = 0;
-			pinModes[i] = INPUT;
-			if (i < 1 + TOTAL_PINS/8) 
-			{
-				pinReport[i] = 0;
-			}
 		}
 	}
 	~GPIO(void) {}
@@ -42,8 +47,7 @@ public:
 private:
 
 	float pinValues[TOTAL_PINS];
-	uint8 pinModes[TOTAL_PINS];
-	uint8 pinReport[1 + TOTAL_PINS/8];
+	PinFlags pinFlags[TOTAL_PINS];
 };
 
 

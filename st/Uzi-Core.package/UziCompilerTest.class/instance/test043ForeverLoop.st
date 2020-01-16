@@ -4,7 +4,7 @@ test043ForeverLoop
 	program := self compile: 'func c() { 
 		forever { toggle(D13); delayMs(1000); }
 	}'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #c].
 	self assert: script instructions = {
 		push arg: (program globals detect: [:var | var value = 13]).
 		prim arg: (UziPrimitive named: #toggle).

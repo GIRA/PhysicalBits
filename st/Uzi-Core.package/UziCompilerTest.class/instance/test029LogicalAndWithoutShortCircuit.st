@@ -2,7 +2,7 @@ tests
 test029LogicalAndWithoutShortCircuit
 	| program script |
 	program := self compile: 'func foo() { return 1 && 0;}'.
-	script := program scripts first.
+	script := program scripts last.
 	self assert: script instructions = {
 		push arg: (program constants detect: [:var | var value = 1]).
 		push arg: (program constants detect: [:var | var value = 0]).

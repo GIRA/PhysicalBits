@@ -12,7 +12,7 @@ uint8 GPIO::getMode(uint8 pin)
 	}
 	else
 	{
-		return pinModes[index];
+		return pinFlags[index].mode;
 	}
 }
 
@@ -24,11 +24,11 @@ void GPIO::setMode(uint8 pin, uint8 mode)
 		return;
 	}
 	// Avoid changing the pin mode if it was already set
-	if (pinModes[index] == mode)
+	if (pinFlags[index].mode == mode)
 	{
 		return;
 	}
-	pinModes[index] = mode;
+	pinFlags[index].mode = mode;
 	pinMode(pin, mode);
 }
 
@@ -82,7 +82,7 @@ void GPIO::setValue(uint8 pin, float value)
 	}
 
 	pinValues[index] = actualValue;
-	if (getMode(pin) == INPUT)
+	if (getMode(pin) != OUTPUT)
 	{
 		setMode(pin, OUTPUT);
 	}
@@ -129,7 +129,7 @@ void GPIO::servoWrite(uint8 pin, float value)
 		actualValue = value;
 	}
 	pinValues[index] = actualValue;
-	pinModes[index] = OUTPUT;
+	pinFlags[index].mode = OUTPUT;
 
 	int16 degrees = (int16)round(actualValue * 180.0);
 	if (!servos[index].attached())
@@ -165,37 +165,28 @@ void GPIO::setReport(uint8 pin, bool report)
 	uint8 index = ARRAY_INDEX(pin);
 	if (index >= TOTAL_PINS) return;
 
-	uint8 actualIndex = (int)floor((double)index / 8);
-	uint8 mask = 1 << (index % 8);
-	if (report) {
-		pinReport[actualIndex] |= mask;
-	}
-	else {
-		pinReport[actualIndex] &= ~(mask);
-	}
+	pinFlags[index].report = report;
 }
 
 bool GPIO::getReport(uint8 pin)
 {
 	uint8 index = ARRAY_INDEX(pin);
 	if (index >= TOTAL_PINS) return false;
-	
-	uint8 actualIndex = (int)floor((double)index / 8);
-	uint8 byteValue = pinReport[actualIndex];
-	return byteValue & (1 << (index % 8));
+
+	return pinFlags[index].report;
 }
 
 void GPIO::reset()
 {
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
 	{
-		if (pinModes[i] == OUTPUT)
+		if (pinFlags[i].mode == OUTPUT)
 		{
 			noTone(PIN_NUMBER(i));
 			setValue(PIN_NUMBER(i), 0);
 			setMode(PIN_NUMBER(i), INPUT);
 		}
 		pinValues[i] = 0;
-		pinModes[i] = INPUT;
+		pinFlags[i].mode = INPUT;
 	}
 }

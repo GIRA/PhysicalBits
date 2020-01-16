@@ -68,13 +68,21 @@
         </shadow>
       </value>
     </block>
+    <block type="set_pin_mode">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D4</field>
+        </shadow>
+      </value>
+      <field name="mode">INPUT</field>
+    </block>
     <block type="pin">
       <field name="pinNumber">D13</field>
     </block>
   </category>
   <category name="Motors" colour="#a55b5b">
     <category name="Servo">
-      <block type="degrees_servo_variable">
+      <block type="set_servo_degrees">
         <value name="pinNumber">
           <shadow type="pin">
             <field name="pinNumber">D3</field>
@@ -83,6 +91,13 @@
         <value name="servoValue">
           <shadow type="number">
             <field name="value">90</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="get_servo_degrees">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D3</field>
           </shadow>
         </value>
       </block>
@@ -106,6 +121,9 @@
           </shadow>
         </value>
       </block>
+      <block type="get_speed_dcmotor">
+        <field name="motorName"></field>
+      </block>
       <block type="stop_dcmotor">
         <field name="motorName"></field>
       </block>
@@ -128,6 +146,20 @@
         </value>
         <field name="action">press</field>
       </block>
+      <block type="button_wait_for_long_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="action">press</field>
+        <field name="unit">ms</field>
+        <value name="time">
+          <shadow type="number">
+            <field name="value">1000</field>
+          </shadow>
+        </value>
+      </block>
       <block type="button_check_state">
         <value name="pinNumber">
           <shadow type="pin">
@@ -136,7 +168,7 @@
         </value>
         <field name="state">press</field>
       </block>
-      <block type="button_long_action">
+      <block type="button_ms_holding">
         <value name="pinNumber">
           <shadow type="pin">
             <field name="pinNumber">D7</field>
@@ -144,15 +176,26 @@
         </value>
       </block>
     </category>
+    <category name="Joystick" custom="JOYSTICK">
+      <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
+      <block type="get_joystick_x">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_y">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_angle">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_magnitude">
+        <field name="joystickName">joystick</field>
+      </block>
+    </category>
   </category>
 
   <category name="Sound" colour="#a55b5b">
-    <block type="play_tone">
-      <value name="tone">
-        <shadow type="number">
-          <field name="value">220</field>
-        </shadow>
-      </value>
+    <block type="play_note">
+      <field name="note">220</field>
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
@@ -165,7 +208,20 @@
         </shadow>
       </value>
     </block>
-    <block type="stop_tone_wait">
+    <block type="start_note">
+      <field name="note">220</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="play_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
@@ -187,6 +243,19 @@
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone_wait">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
         </shadow>
       </value>
     </block>
@@ -380,6 +449,23 @@
       </value>
     </block>
     <block type="number_constrain">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">50</field>
+        </shadow>
+      </value>
+      <value name="low">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="high">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_between">
       <value name="value">
         <shadow type="number">
           <field name="value">50</field>

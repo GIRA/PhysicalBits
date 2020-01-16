@@ -440,7 +440,16 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
-		case PRIM_SERVO_DEGREES:
+		case PRIM_GET_SERVO_DEGREES:
+		{
+			uint8 pin = (uint8)stack.pop();
+			float value = io->getValue(pin);
+			float degrees = value * 180.0f;
+			stack.push(degrees);
+		}
+		break;
+
+		case PRIM_SET_SERVO_DEGREES:
 		{
 			float value = stack.pop() / 180.0f;
 			uint8 pin = (uint8)stack.pop();
@@ -810,6 +819,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		}
 		break;
 
+		case PRIM_ATAN2:
+		{
+			float x = stack.pop();
+			float y = stack.pop();
+			stack.push(atan2(y, x));
+		}
+		break;
+
 		case PRIM_POWER:
 		{
 			float b = stack.pop();
@@ -1059,6 +1076,21 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			uint8 pin = stack.pop();
 			io->stopTone(pin);
+		}
+		break;
+
+		case PRIM_GET_PIN_MODE:
+		{
+			uint8 pin = stack.pop();
+			stack.push(io->getMode(pin));
+		}
+		break;
+
+		case PRIM_SET_PIN_MODE:
+		{
+			uint8 mode = stack.pop();
+			uint8 pin = stack.pop();
+			io->setMode(pin, mode);
 		}
 		break;
 	}

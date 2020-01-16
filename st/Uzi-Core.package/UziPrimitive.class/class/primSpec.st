@@ -5,7 +5,7 @@ primSpec
 		{#read . 16r0 . 1 -> 1}.
 		{#write . 16r1 . 2 -> 0}.
 		{#toggle . 16r2 . 1 -> 0}.
-		{#servoDegrees . 16r3 . 2 -> 0}.
+		{#setServoDegrees . 16r3 . 2 -> 0}.
 		{#servoWrite . 16r4 . 2 -> 0}.
 		{#multiply . 16r5 . 2 -> 1}.
 		{#add . 16r6 . 2 -> 1}.
@@ -70,5 +70,9 @@ primSpec
 		{#matrix8x8 . 16r41 . 24 -> 0}.
 		{#modulo . 16r42 . 2 -> 1}.
 		{#tone . 16r43 . 2 -> 0}.
-		{#noTone . 16r44 . 1 -> 0}
+		{#noTone . 16r44 . 1 -> 0}.
+		{#getPinMode . 16r45 . 1 -> 1}.
+		{#setPinMode . 16r46 . 2 -> 0}.
+		{#atan2 . 16r47 . 2 -> 1}.
+		{#getServoDegrees . 16r48 . 1 -> 1}.
 	}

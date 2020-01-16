@@ -26,6 +26,7 @@ let UziBlock = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
+  let joysticks = [];
   let variables = [];
   let observers = {
     "change" : [],
@@ -38,6 +39,7 @@ let UziBlock = (function () {
     initCommonBlocks();
     initSoundBlocks();
     initButtonBlocks();
+    initJoystickBlocks();
     initSpecialBlocks();
 
     i18n.on("change", refreshWorkspace);
@@ -178,6 +180,23 @@ let UziBlock = (function () {
             let field = fields[i];
             if (field.getAttribute("name") === "sonarName") {
               field.innerText = sonars[sonars.length-1].name;
+            }
+          }
+        }
+        return nodes;
+      });
+
+      workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
+        let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+        let nodes = Array.from(node.children);
+        if (joysticks.length == 0) {
+          nodes.splice(1); // Leave the button only
+        } else {
+          let fields = node.getElementsByTagName("field");
+          for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            if (field.getAttribute("name") === "joystickName") {
+              field.innerText = joysticks[joysticks.length-1].name;
             }
           }
         }
@@ -434,6 +453,31 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['set_pin_mode'] = {
+      init: function() {
+        let msg = i18n.translate("set pin %1 mode to %2");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          input => input
+                    .setAlign(Blockly.ALIGN_RIGHT)
+                    .appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
+                                                            [i18n.translate("OUTPUT"),"OUTPUT"],
+                                                            [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), "mode")
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
     Blockly.Blocks['forever'] = {
       init: function() {
         let msg = i18n.translate("repeat forever \n %1");
@@ -525,7 +569,7 @@ let UziBlock = (function () {
       }
     };
 
-    Blockly.Blocks['degrees_servo_variable'] = {
+    Blockly.Blocks['set_servo_degrees'] = {
       init: function() {
         let msg = i18n.translate("move servo on pin %1 degrees %2");
         let inputFields = [
@@ -542,6 +586,26 @@ let UziBlock = (function () {
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+
+    Blockly.Blocks['get_servo_degrees'] = {
+      init: function() {
+        let msg = i18n.translate("get degrees of servo on pin %1");
+        let inputFields = [
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
         this.setHelpUrl("");
@@ -948,6 +1012,30 @@ let UziBlock = (function () {
       }
     };
 
+    Blockly.Blocks['number_between'] = {
+      init: function() {
+        let msg = i18n.translate("is %1 between %2 and %3");
+        let inputFields = [
+            () => this.appendValueInput("value")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("low")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT),
+            () => this.appendValueInput("high")
+                      .setCheck("Number")
+                      .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
 
     Blockly.Blocks['number_random_int'] = {
       init: function() {
@@ -1039,6 +1127,82 @@ let UziBlock = (function () {
       }
     };
 
+    function getNotes() {
+      return [["B0", "31"], ["C1", "33"], ["C#1", "35"], ["D1", "37"],
+             ["D#1", "39"], ["E1", "41"], ["F1", "44"], ["F#1", "46"],
+             ["G1", "49"], ["G#1", "52"], ["A1", "55"], ["A#1", "58"],
+             ["B1", "62"], ["C2", "65"], ["C#2", "69"], ["D2", "73"],
+             ["D#2", "78"], ["E2", "82"], ["F2", "87"], ["F#2", "93"],
+             ["G2", "98"], ["G#2", "104"], ["A2", "110"], ["A#2", "117"],
+             ["B2", "123"], ["C3", "131"], ["C#3", "139"], ["D3", "147"],
+             ["D#3", "156"], ["E3", "165"], ["F3", "175"], ["F#3", "185"],
+             ["G3", "196"], ["G#3", "208"], ["A3", "220"], ["A#3", "233"],
+             ["B3", "247"], ["C4", "262"], ["C#4", "277"], ["D4", "294"],
+             ["D#4", "311"], ["E4", "330"], ["F4", "349"], ["F#4", "370"],
+             ["G4", "392"], ["G#4", "415"], ["A4", "440"], ["A#4", "466"],
+             ["B4", "494"], ["C5", "523"], ["C#5", "554"], ["D5", "587"],
+             ["D#5", "622"], ["E5", "659"], ["F5", "698"], ["F#5", "740"],
+             ["G5", "784"], ["G#5", "831"], ["A5", "880"], ["A#5", "932"],
+             ["B5", "988"], ["C6", "1047"], ["C#6", "1109"], ["D6", "1175"],
+             ["D#6", "1245"], ["E6", "1319"], ["F6", "1397"], ["F#6", "1480"],
+             ["G6", "1568"], ["G#6", "1661"], ["A6", "1760"], ["A#6", "1865"],
+             ["B6", "1976"], ["C7", "2093"], ["C#7", "2217"], ["D7", "2349"],
+             ["D#7", "2489"], ["E7", "2637"], ["F7", "2794"], ["F#7", "2960"],
+             ["G7", "3136"], ["G#7", "3322"], ["A7", "3520"], ["A#7", "3729"],
+             ["B7", "3951"], ["C8", "4186"], ["C#8", "4435"], ["D8", "4699"],
+             ["D#8", "4978"]].map(each => [i18n.translate(each["0"]), each["1"]]);
+    }
+
+    Blockly.Blocks['start_note'] = {
+      init: function() {
+        let msg = i18n.translate("play note %1 on pin %2");
+        let inputFields = [
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                      .appendField(new Blockly.FieldDropdown(getNotes), "note"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['play_note'] = {
+      init: function() {
+        let msg = i18n.translate("play note %1 on pin %2 for %3 %4");
+        let inputFields = [
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                      .appendField(new Blockly.FieldDropdown(getNotes), "note"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("time")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                [i18n.translate("seconds"),"s"],
+                                                                [i18n.translate("minutes"),"m"]]), "unit")
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(false);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
 
     Blockly.Blocks['stop_tone'] = {
       init: function() {
@@ -1132,7 +1296,40 @@ let UziBlock = (function () {
       }
     };
 
-    Blockly.Blocks['button_long_action'] = {
+    Blockly.Blocks['button_wait_for_long_action'] = {
+      init: function() {
+        /*
+         TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
+         but too ugly when its inputs are external. I don't know how to make it smaller...
+         */
+        let msg = i18n.translate("wait button %1 on pin %2 for %3 %4");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("hold"),"press"],
+                                                                [i18n.translate("hold and release"),"release"]]), "action"),
+          () => this.appendValueInput("pinNumber")
+                    .setCheck("Number")
+                    .setAlign(Blockly.ALIGN_RIGHT),
+          () => this.appendValueInput("time")
+                  .setCheck("Number")
+                  .setAlign(Blockly.ALIGN_RIGHT),
+          input => input.setAlign(Blockly.ALIGN_RIGHT)
+                  .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                          [i18n.translate("seconds"),"s"],
+                                                          [i18n.translate("minutes"),"m"]]), "unit")
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setPreviousStatement(true, null);
+        this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['button_ms_holding'] = {
       init: function() {
         /*
          TODO(Richo): This block is useful to react to long presses. It will wait
@@ -1145,6 +1342,76 @@ let UziBlock = (function () {
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+  }
+
+  function initJoystickBlocks() {
+    Blockly.Blocks['get_joystick_x'] = {
+      init: function() {
+        let msg = i18n.translate("read x position from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_joystick_y'] = {
+      init: function() {
+        let msg = i18n.translate("read y position from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_joystick_angle'] = {
+      init: function() {
+        let msg = i18n.translate("read angle from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_joystick_magnitude'] = {
+      init: function() {
+        let msg = i18n.translate("read magnitude from %1");
+        let inputFields = [
+          input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         ];
 
         initBlock(this, msg, inputFields);
@@ -1258,6 +1525,24 @@ let UziBlock = (function () {
         //this.setInputsInline(true);
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['get_speed_dcmotor'] = {
+      init: function() {
+        let msg = i18n.translate("get %1 speed");
+        let inputFields = [
+          input => input.appendField(
+            new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
+        ];
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
         this.setHelpUrl("");
@@ -1859,6 +2144,11 @@ let UziBlock = (function () {
     return sonars.map(function(each) { return [ each.name, each.name ]; });
   }
 
+  function currentJoysticksForDropdown() {
+    if (joysticks.length == 0) return [["", ""]];
+    return joysticks.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function currentVariablesForDropdown() {
     if (variables.length == 0) return [["", ""]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
@@ -2070,7 +2360,7 @@ let UziBlock = (function () {
 
   function getGeneratedCode(){
     let xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars);
+    return BlocksToAST.generate(xml, motors, sonars, joysticks);
   }
 
   function refreshWorkspace() {
@@ -2167,6 +2457,28 @@ let UziBlock = (function () {
 
       sonars = data;
     },
+    getJoysticks: function () { return joysticks; },
+    setJoysticks: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (joysticks[m.index] == undefined) return;
+        renames.set(joysticks[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("joystickName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      joysticks = data;
+    },
     getVariables: function () { return variables; },
     setVariables: function (data) {
       let renames = new Map();
@@ -2194,6 +2506,7 @@ let UziBlock = (function () {
         blocks: toXML(),
         motors: motors,
         sonars: sonars,
+        joysticks: joysticks,
         variables: variables,
       };
     },
@@ -2204,6 +2517,7 @@ let UziBlock = (function () {
       fromXML(d.blocks);
       motors = d.motors || [];
       sonars = d.sonars || [];
+      joysticks = d.joysticks || [];
       variables = d.variables || [];
     },
     getUsedVariables: getUsedVariables,

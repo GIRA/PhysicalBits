@@ -2,7 +2,7 @@ tests
 test036LocalDeclaredWithExpressionValue
 	| program script |
 	program := self compile: 'func mul(a) { var b = a * 2; return b; }'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #mul].
 	self assert: #(a) equals: (script arguments collect: [:var | var name copyUpTo: $#]).
 	self assert: #(b) equals: (script locals collect: [:var | var name copyUpTo: $#]).
 	self assert: script instructions = {

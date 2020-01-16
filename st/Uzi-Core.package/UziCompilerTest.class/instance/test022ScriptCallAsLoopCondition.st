@@ -4,7 +4,7 @@ test022ScriptCallAsLoopCondition
 	program := self compile: '
 	proc main() { while foo() { toggle(D13); }}
 	func foo() { return 1; }'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #main].
 	self assert: script instructions = {
 		call arg: #foo.
 		jz arg: 3.

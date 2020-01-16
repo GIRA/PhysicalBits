@@ -7,8 +7,8 @@ test046ProceduresOverridePrimitives
 		if read(pin) { turnOff(pin); }
 		else { turnOn(pin); }
 	 }'.
-	main := program scripts first.
-	toggle := program scripts second.
+	main := program scripts detect: [:s | s name = #main].
+	toggle := program scripts detect: [:s | s name = #toggle].
 	self assert: main instructions = {
 		push arg: (program globals detect: [:each | each value = 13]).
 		call arg: #toggle.		

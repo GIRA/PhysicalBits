@@ -4,7 +4,7 @@ test044ForLoop
 	program := self compile: 'func c() { 
 		for i = 3 to 13 by 2 { toggle(i); delayMs(1000); }
 	}'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #c].
 	self assert: 1 equals: script locals size.
 	counter := script locals first.
 	self assert: script instructions = {

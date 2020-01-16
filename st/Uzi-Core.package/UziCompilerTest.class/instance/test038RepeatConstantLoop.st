@@ -7,7 +7,7 @@ test038RepeatConstantLoop
 				toggle(D13); 
 			}
 		}'.
-	script := program scripts first.
+	script := program scripts detect: [:s | s name = #main].
 	self assert: 1 equals: script locals size.
 	self assert: script instructions = {
 		push arg: (program globals detect: [:var | var value = 0]).

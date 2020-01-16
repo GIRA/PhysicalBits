@@ -3,8 +3,7 @@ test009CompilerPreservesParseNodes
 	| program instr1 instr2 script |
 	program := self compile: 'task main() stopped 1 / s { toggle( D13); }'.
 	self assert: program node globals isEmpty.
-	self assert: 1 equals: program node scripts size.
-	script := program scripts first.
+	script := program scripts last.
 	self assert: #main equals: script node name.
 	self assert: 2 equals: script instructions size.
 	instr1 := script instructions first.
