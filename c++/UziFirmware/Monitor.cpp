@@ -122,10 +122,10 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 	checkKeepAlive();
 	if (state == CONNECTED) 
 	{
-    _io->setValue(10, HIGH);
+		_io->setValue(10, HIGH);
 		sendReport(io, program);
-		sendProfile();
-		sendVMState(program, vm);
+		//sendProfile();
+		//sendVMState(program, vm);
 	}
   else 
   {    
@@ -166,9 +166,9 @@ void Monitor::sendReport(GPIO* io, Program* program)
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
 		sendPinValues(io);
-		sendGlobalValues(program);
+		/*sendGlobalValues(program);
 		sendRunningTasks(program);
-		sendFreeRAM();
+		sendFreeRAM();*/
 		lastTimeReport = now;
 	}
 }
