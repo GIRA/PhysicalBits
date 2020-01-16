@@ -1206,7 +1206,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['stop_tone'] = {
       init: function() {
-        let msg = i18n.translate("stop tone on pin %1");
+        let msg = i18n.translate("silence pin %1");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
@@ -1226,7 +1226,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['stop_tone_wait'] = {
       init: function() {
-        let msg = i18n.translate("stop tone on pin %1 and wait %2 %3");
+        let msg = i18n.translate("silence pin %1 and wait %2 %3");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
