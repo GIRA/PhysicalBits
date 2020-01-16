@@ -25,27 +25,21 @@
 (defn connected? []
   (not (nil? (@state :port))))
 
-(defmacro check-connection [then-form]
-  `(if (connected?)
-     ~then-form
-     (error "The board is not connected!")))
-
 (defn disconnect []
-  (check-connection
-   (let [port (@state :port)]
-     (reset! state initial-state)
-     (try
-       (s/close! port)
-       (catch Throwable e
-         (error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e))))))))
+  (when-let [port (@state :port)]
+    (reset! state initial-state)
+    (try
+      (s/close! port)
+      (catch Throwable e
+        (error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))))
 
 (defn send [bytes]
-  (check-connection
-   (try
-     (s/write (@state :port) bytes)
-     (catch Throwable e
-       (error (str "ERROR WHILE SENDING -> " (.getMessage e)))
-       (disconnect))))
+  (when-let [port (@state :port)]
+    (try
+      (s/write port bytes)
+      (catch Throwable e
+        (error (str "ERROR WHILE SENDING -> " (.getMessage e)))
+        (disconnect))))
   bytes)
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
