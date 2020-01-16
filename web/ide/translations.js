@@ -212,5 +212,12 @@ var TRANSLATIONS = [
   ["button pressed", "pressed", "pressed", "presionado", "vajutatud", "nedtryckt"],
   ["button released", "released", "released", "suelto", "vabastatud", "släppt"],
   ["button waitForPress", "waitForPress", "press", "presione", "vajutamist", "tryck"],
-  ["button waitForRelease", "waitForRelease", "release", "suelte", "vabastamist", "släpp"],
+  ["button waitForRelease", "waitForRelease", "press and release", "presioe y suelte", "vajutamist ja vabastamist", "tryck och släpp"],
+  ["button mode INPUT", "INPUT", "INPUT", "ENTRADA", "SISEND", "INGÅNG"],
+  ["button mode OUTPUT", "OUTPUT", "OUTPUT", "SALIDA", "VÄLJUND", "UTGÅNG"],
+  ["button mode INPUT PULLUP", "INPUT PULLUP", "INPUT PULLUP", "ENTRADA PULLUP", "PULLUP-SISEND", "PULLUP-INGÅNG"],
+  ["set pin %1 mode to %2", "set pin %1 mode to %2", "set pin %1 mode to %2", "configurar pin %1 como %2", "vali viigu %1 režiimiks %2", "sätt ben %1 i läge %2"],
+  ["button hold", "hold", "hold", "mantenga presionado", "alla-hoidmist", "nedtryckt"],
+  ["button hold and release", "hold and release", "hold and release", "mantenga presionado y suelte", "alla-hoidmine ja vabastamine", "nedtryckt och frigjord"],
+  ["wait button %1 on pin %2 for %3 %4", "wait button %1 on pin %2 for %3 %4", "wait button %1 on pin %2 for %3 %4", "esperar que %1 durante %3 %4 \n el botón en %2", "oota nuppu %1 viigus %2 %3 %4", "vänta på knapp %1 ansluten till ben %2 på %3 %4"],
 ];
