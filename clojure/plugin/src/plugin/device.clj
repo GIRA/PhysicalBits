@@ -2,63 +2,10 @@
   (:refer-clojure :exclude [send])
   (:require [serial.core :as s]
             [serial.util :as su]
-            [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]))
-
-; Version number
-(def MAJOR_VERSION 0)
-(def MINOR_VERSION 7)
-
-; Outgoing
-(def MSG_OUT_CONNECTION_REQUEST 255)
-(def MSG_OUT_SET_PROGRAM 0)
-(def MSG_OUT_SET_VALUE 1)
-(def MSG_OUT_SET_MODE 2)
-(def MSG_OUT_START_REPORTING 3)
-(def MSG_OUT_STOP_REPORTING 4)
-(def MSG_OUT_SET_REPORT 5)
-(def MSG_OUT_SAVE_PROGRAM 6)
-(def MSG_OUT_KEEP_ALIVE 7)
-(def MSG_OUT_PROFILE 8)
-(def MSG_OUT_SET_GLOBAL 10)
-(def MSG_OUT_SET_GLOBAL_REPORT 11)
-(def MSG_OUT_DEBUG_CONTINUE	12)
-(def MSG_OUT_DEBUG_SET_BREAKPOINTS 13)
-(def MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 14)
-
-; Incoming
-(def MSG_IN_ERROR 0)
-(def MSG_IN_PIN_VALUE 1)
-(def MSG_IN_PROFILE 2)
-(def MSG_IN_GLOBAL_VALUE 3)
-(def MSG_IN_TRACE 4)
-(def MSG_IN_COROUTINE_STATE 5)
-(def MSG_IN_TICKING_SCRIPTS 6)
-(def MSG_IN_FREE_RAM 7)
-(def MSG_IN_SERIAL_TUNNEL 8)
-
-
-
-(def boards
-  {:uno {:pin-names ["D2" "D3" "D4" "D5" "D6" "D7" "D8" "D9" "D10" "D11" "D12" "D13"
-                     "A0" "A1" "A2" "A3" "A4" "A5"]
-         :pin-numbers [2 3 4 5 6 7 8 9 10 11 12 13
-                       14 15 16 17 18 19]}})
-
-(defn get-pin-name [pin-number]
-  (let [board (boards :uno) ; TODO(Richo): Hardcoded UNO board!
-        index (.indexOf (board :pin-numbers) pin-number)]
-    (if-not (= -1 index)
-      (nth (board :pin-names) index)
-      nil)))
-
-(defn get-pin-number [pin-name]
-  (let [board (boards :uno) ; TODO(Richo): Hardcoded UNO board!
-        index (.indexOf (board :pin-names) pin-name)]
-    (if-not (= -1 index)
-      (nth (board :pin-numbers) index)
-      nil)))
-
-
+            [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
+            [plugin.utils.async :refer [<? <??]]
+            [plugin.protocol :refer :all]
+            [plugin.boards :refer :all]))
 
 ; TODO(Richo): Replace with log/error
 (defn- error [msg] (println "ERROR:" msg))
@@ -80,17 +27,6 @@
   `(if (connected?)
      ~then-form
      (error "The board is not connected!")))
-
-(def default-timeout 1000)
-
-(defmacro <?
-  ([chan] `(<? ~chan ~default-timeout))
-  ([chan timeout] `(first (a/alts! [~chan (timeout ~timeout)]))))
-
-(defmacro <??
-  ([chan] `(<?? ~chan ~default-timeout))
-  ([chan timeout] `(first (a/alts!! [~chan (timeout ~timeout)]))))
-
 
 (defn disconnect []
   (check-connection
