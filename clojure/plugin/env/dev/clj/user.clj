@@ -23,7 +23,7 @@
       (<!! (go-loop []
              (let [now (millis)]
                (when (< now end)
-                 (println (- now begin) ":" (@state :a0))
+                 (println (- now begin) ":" (device/get-pin-value "A0"))
                  (<! (timeout interval))
                  (recur)))))))))
 
