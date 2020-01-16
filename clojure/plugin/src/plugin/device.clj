@@ -106,7 +106,7 @@
                     value (/ (bit-or n2
                                      (bit-shift-left (bit-and n1 2r11)
                                                      8))
-                             1023)]
+                             1023.0)]
                 (when-let [pin-name (get-pin-name pin-number)]
                   #_(println (str timestamp " -> " pin-name " : " value))
                   (swap! state update-in [:pins pin-name]
