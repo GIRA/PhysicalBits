@@ -17,6 +17,8 @@
                     :pins {}})
 (def state (atom initial-state))
 
+(defn get-pin-value [pin-name]
+  (-> @state :pins (get pin-name) :value))
 
 (defn available-ports [] (su/get-port-names))
 
