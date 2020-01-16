@@ -38,7 +38,7 @@
 (defn analog-read-handler [socket _]
   (a/go-loop []
     (when-not (ws/closed? socket)
-      (ws/put! socket (str "A0: " (@device/state :a0)))
+      (ws/put! socket (str "A0: " (device/get-pin-value "A0")))
       (a/<! (a/timeout 100))
       (recur))))
 
