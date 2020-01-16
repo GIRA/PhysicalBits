@@ -134,10 +134,10 @@
            in (a/chan 1000)]
        (s/listen! port #(>!! in (.read %)))
        (request-connection port in)
-       (keep-alive port)
        (swap! state assoc
               :port port
               :port-name port-name)
+       (keep-alive port)
        (process-input in)
        (start-reporting)
        (send-pins-reporting)))))
