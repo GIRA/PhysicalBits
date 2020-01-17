@@ -1472,7 +1472,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['move_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("move %1 %2 at speed %3");
+        let msg = i18n.translate("move dcmotor %1 %2 at speed %3");
         let inputFields = [
           input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
@@ -1513,7 +1513,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['change_speed_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("set %1 speed to %2");
+        let msg = i18n.translate("set dcmotor %1 speed to %2");
         let inputFields = [
           input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
@@ -1533,7 +1533,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_speed_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("get %1 speed");
+        let msg = i18n.translate("get dcmotor %1 speed");
         let inputFields = [
           input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
