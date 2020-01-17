@@ -571,7 +571,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['set_servo_degrees'] = {
       init: function() {
-        let msg = i18n.translate("move servo on pin %1 degrees %2");
+        let msg = i18n.translate("set degrees of servo on pin %1 to %2");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
