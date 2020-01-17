@@ -906,8 +906,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldNumber(0), "value");
+        let msg = i18n.translate("number %1");
+        let inputFields = [
+          () => this.appendDummyInput()
+                    .appendField(new Blockly.FieldNumber(0), "value")
+        ];
+
+        initBlock(this, msg, inputFields);
+
         //this.setInputsInline(true);
         this.setOutput(true, "Number");
         this.setColour(230);

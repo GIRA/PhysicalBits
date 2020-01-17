@@ -227,4 +227,5 @@ var TRANSLATIONS = [
   ["button hold", "hold", "hold", "mantenga presionado", "alla-hoidmist", "nedtryckt"],
   ["button hold and release", "hold and release", "hold and release", "mantenga presionado y suelte", "alla-hoidmist ja vabastamist", "nedtryckt och frigjord"],
   ["wait button %1 on pin %2 for %3 %4", "wait button %1 on pin %2 for %3 %4", "wait button %1 on pin %2 for %3 %4", "esperar que %1 durante %3 %4 \n el botón en %2", "oota lüliti %1 viigus %2 %3 %4", "vänta på knapp %1 ansluten till ben %2 på %3 %4"],
+  ["number %1", "%1", "%1", "%1", "arv %1", "%1"],
 ];
