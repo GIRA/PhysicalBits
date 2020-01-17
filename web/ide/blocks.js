@@ -432,7 +432,7 @@ let UziBlock = (function () {
 
     Blockly.Blocks['write_pin_variable'] = {
       init: function() {
-        let msg = i18n.translate("write( %1 , %2 );");
+        let msg = i18n.translate("set pin %1 to value %2");
         let inputFields = [
           () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
