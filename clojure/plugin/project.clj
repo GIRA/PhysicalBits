@@ -12,15 +12,20 @@
   :main ^:skip-aot plugin.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
-             :test {:resource-paths ["env/test/resources"]}
-             :dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
-                                  [pjstadig/humane-test-output "0.10.0"]
-                                  [org.clojars.beppu/clj-audio "0.3.0"]]
-                   :source-paths ["env/dev/clj"]
-                   :resource-paths ["env/dev/resources"]
-                   :repl-options {:init-ns user
-                                  :timeout 120000}
-                   :plugins [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                             [venantius/ultra "0.6.0"]]
-                   :injections [(require 'pjstadig.humane-test-output)
-                                (pjstadig.humane-test-output/activate!)]}})
+
+             :test [:project/test :user/test]
+             :dev [:project/dev :user/dev]
+
+             :project/test {:resource-paths ["env/test/resources"]}
+            
+             :project/dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
+                                          [pjstadig/humane-test-output "0.10.0"]
+                                          [org.clojars.beppu/clj-audio "0.3.0"]]
+                           :source-paths ["env/dev/clj"]
+                           :resource-paths ["env/dev/resources"]
+                           :repl-options {:init-ns user
+                                          :timeout 120000}
+                           :plugins [[com.jakemccrary/lein-test-refresh "0.24.1"]
+                                     [venantius/ultra "0.6.0"]]
+                           :injections [(require 'pjstadig.humane-test-output)
+                                        (pjstadig.humane-test-output/activate!)]}})
