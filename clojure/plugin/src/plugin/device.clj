@@ -14,7 +14,8 @@
                     :port nil
                     :reporting {:pins #{}
                                 :globals #{}}
-                    :pins {}})
+                    :pins {}
+                    :globals {}})
 (def state (atom initial-state))
 
 (defn get-pin-value [pin-name]
@@ -44,6 +45,14 @@
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
 (defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
+
+(defn set-global-report [global-number report?]
+  (swap! state update-in [:reporting :globals]
+         (if report? conj disj) global-number)
+  (send [MSG_OUT_SET_GLOBAL_REPORT
+         global-number
+         (if report? 1 0)]))
+
 
 (defn set-pin-report [pin-name report?]
   (when-let [pin-number (get-pin-number pin-name)]
@@ -110,12 +119,36 @@
                                   :number pin-number
                                   :value value}))))))))
 
+(defn- process-global-value [in]
+  (go
+   (let [timestamp (<! (read-timestamp in))
+         count (<? in)]
+     (dotimes [_ count]
+              (let [number (<? in)
+                    n1 (<? in)
+                    n2 (<? in)
+                    n3 (<? in)
+                    n4 (<? in)
+                    float-value (Float/intBitsToFloat
+                                 (unchecked-int
+                                  (bit-or (bit-shift-left n1 24)
+                                          (bit-shift-left n2 16)
+                                          (bit-shift-left n3 8)
+                                          n4)))]
+                (swap! state update-in [:globals number]
+                       (fn [_] {:name "?"
+                                :number number
+                                :value float-value
+                                :raw-bytes [n1 n2 n3 n4]})))))))
+
+
 (defn- process-input [in]
   (go-loop []
     (when (connected?)
       (when-let [cmd (<? in)]
         (<! (condp = cmd
               MSG_IN_PIN_VALUE (process-pin-value in)
+              MSG_IN_GLOBAL_VALUE (process-global-value in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
