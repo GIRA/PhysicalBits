@@ -166,8 +166,8 @@ void Monitor::sendReport(GPIO* io, Program* program)
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
 		sendPinValues(io);
-		/*sendGlobalValues(program);
-		sendRunningTasks(program);
+		sendGlobalValues(program);
+		/*sendRunningTasks(program);
 		sendFreeRAM();*/
 		lastTimeReport = now;
 	}
