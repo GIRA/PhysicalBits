@@ -552,9 +552,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['elapsed_time'] = {
       init: function() {
-        let msg = i18n.translate("elapsed %1");
+        let msg = i18n.translate("elapsed time since bootup in %timeUnit");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          "timeUnit": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                   [i18n.translate("seconds"),"s"],
                                                                   [i18n.translate("minutes"),"m"]]), "unit")
         };

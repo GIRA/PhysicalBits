@@ -88,7 +88,7 @@ var TRANSLATIONS = [
   ["read pin %1", "read( %1 )", "read pin %1", "leer pin %1", "loe viiku %1", "läs värdet på ben %1"],
   ["set pin %1 to value %2", "write( %1 , %2 );", "write pin %1 value %2 \n", "escribir en el pin %1 el valor %2 \n", "määra viigu %1 väärtuseks %2 \n", "sätt värde %2 på ben %1 \n"],
   ["repeat forever \n %1", "forever { \n %1 }", "repeat forever \n %1", "repetir por siempre \n %1", "korda igavesti \n %1", "upprepa för evigt \n %1"],
-  ["elapsed %1", "elapsed %1", "elapsed %1", "%1 transcurridos", "kuni %1 on möödunud", "tills %1 förflutit"],
+  ["elapsed time since bootup in %timeUnit", "elapsed %timeUnit since bootup", "elapsed %timeUnit", "%timeUnit transcurridos", "möödunud %timeUnit algusest", "förfluten tid sen start i %timeUnit"],
   ["set degrees of servo on pin %1 to %2", "setServoDegrees( %1 , %2 ) ;", "move servo on pin %1 degrees %2", "mover servo en pin %1 grados %2", "pööra servot viigus %1 %2 kraadini", "vrid servot i ben %1 till %2 grader"],
   ["get degrees of servo on pin %1", "getServoDegrees( %1 ) ;", "get degrees of servo on pin %1", "obtener grados de servo en el pin %1", "servo asend viigus %1", "läs servots lutning i ben %1"],
   ["repeat %1 mode %2 condition %3 statements", "%1 %2 { \n %3 }", "repeat %1 %2 \n %3", "repetir %1 %2 \n %3", "korda %1 %2 \n %3", "upprepa %1 %2 \n %3"],
