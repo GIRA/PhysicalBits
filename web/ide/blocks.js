@@ -1364,9 +1364,9 @@ let UziBlock = (function () {
   function initJoystickBlocks() {
     Blockly.Blocks['get_joystick_x'] = {
       init: function() {
-        let msg = i18n.translate("read joystick x position from %1");
+        let msg = i18n.translate("read joystick x position from %name");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         };
 
         initBlock(this, msg, inputFields);
@@ -1381,9 +1381,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_joystick_y'] = {
       init: function() {
-        let msg = i18n.translate("read joystick y position from %1");
+        let msg = i18n.translate("read joystick y position from %name");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         };
 
         initBlock(this, msg, inputFields);
@@ -1398,9 +1398,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_joystick_angle'] = {
       init: function() {
-        let msg = i18n.translate("read joystick angle from %1");
+        let msg = i18n.translate("read joystick angle from %name");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         };
 
         initBlock(this, msg, inputFields);
@@ -1415,9 +1415,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_joystick_magnitude'] = {
       init: function() {
-        let msg = i18n.translate("read joystick magnitude from %1");
+        let msg = i18n.translate("read joystick magnitude from %name");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
         };
 
         initBlock(this, msg, inputFields);
