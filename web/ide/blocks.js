@@ -2023,20 +2023,20 @@ let UziBlock = (function () {
     // the translation msg or its separate rows are split into parts
     // for each input field reference and their corresponding
     // Blockly input fields are created together text labels
-    let inputFieldRefPattern = /%\d+/g;
+    let inputFieldRefPattern = /%[^ ]+/g;
     let fieldRefMatch;
-    let fieldRefNum;
+    let fieldRefName;
     let msgUntilFieldRef;
     let previousRefMatchIndex = 0;
     let placeholders = new Set();
     while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
-        fieldRefNum = parseInt(fieldRefMatch[0].substring(1), 10) -1;
+        fieldRefName = fieldRefMatch[0].substring(1);
         msgUntilFieldRef = trim(msg.substring(previousRefMatchIndex, fieldRefMatch.index));
         previousRefMatchIndex = inputFieldRefPattern.lastIndex;
 
-        let tempInputName = "___" + fieldRefNum + "___";
+        let tempInputName = "___" + fieldRefName + "___";
         let tempInput = block.appendDummyInput(tempInputName);
-        let input = inputFields[fieldRefNum](tempInput);
+        let input = inputFields[fieldRefName](tempInput);
         if (tempInput == input) {
           placeholders.add(input);
         } else {
