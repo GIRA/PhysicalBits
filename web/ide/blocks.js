@@ -1443,11 +1443,11 @@ let UziBlock = (function () {
   function initTaskBlocks() {
 
     let blocks = [
-      ["start_task", "start task %1"],
-      ["stop_task", "stop task %1"],
-      ["run_task", "run task %1"],
-      ["resume_task", "resume task %1"],
-      ["pause_task", "pause task %1"],
+      ["start_task", "start task %name"],
+      ["stop_task", "stop task %name"],
+      ["run_task", "run task %name"],
+      ["resume_task", "resume task %name"],
+      ["pause_task", "pause task %name"],
     ];
 
     blocks.forEach(function (block) {
@@ -1457,7 +1457,7 @@ let UziBlock = (function () {
         init: function() {
 	  let msg = i18n.translate(block_msg);
           let inputFields = {
-            "1": (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+            "name": (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
 	  };
 
           initBlock(this, msg, inputFields);
@@ -1476,14 +1476,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['move_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("move dcmotor %1 %2 at speed %3");
+        let msg = i18n.translate("move dcmotor %name in %direction at speed %speed");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
-          "2": input => input.appendField(
+          "direction": input => input.appendField(
             new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
                                        [i18n.translate("backward"),"bwd"]]), "direction"),
-          "3": () => this.appendValueInput("speed").setCheck("Number")
+          "speed": () => this.appendValueInput("speed").setCheck("Number")
         };
 
         initBlock(this, msg, inputFields);
@@ -1499,9 +1499,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['stop_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("stop dcmotor %1");
+        let msg = i18n.translate("stop dcmotor %name");
         let inputFields = {
-          "1": (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+          "name": (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
         };
 
         initBlock(this, msg, inputFields);
@@ -1517,11 +1517,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['change_speed_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("set dcmotor %1 speed to %2");
+        let msg = i18n.translate("set dcmotor %name speed to %speed");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
-          "2": () => this.appendValueInput("speed").setCheck("Number")
+          "speed": () => this.appendValueInput("speed").setCheck("Number")
         };
 
         initBlock(this, msg, inputFields);
@@ -1537,9 +1537,9 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_speed_dcmotor'] = {
       init: function() {
-        let msg = i18n.translate("get dcmotor %1 speed");
+        let msg = i18n.translate("get dcmotor %name speed");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
         };
 
@@ -1558,11 +1558,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['get_sonar_distance'] = {
       init: function() {
-        let msg = i18n.translate("read distance from sonar %1 in units %2");
+        let msg = i18n.translate("read distance from sonar %name in units %unit");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"),
-          "2": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
+          "unit": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
                                                                 [i18n.translate("distance_cm"), "cm"],
                                                                 [i18n.translate("distance_m"), "m"]]), "unit")
         };
@@ -1582,11 +1582,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['set_variable'] = {
       init: function() {
-        let msg = i18n.translate("set variable %1 to value %2");
+        let msg = i18n.translate("set variable %name to value %value");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
-          "2": () => this.appendValueInput("value").setCheck(null)
+          "value": () => this.appendValueInput("value").setCheck(null)
         };
 
         initBlock(this, msg, inputFields);
@@ -1601,11 +1601,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['increment_variable'] = {
       init: function() {
-        let msg = i18n.translate("increment variable %1 value by %2");
+        let msg = i18n.translate("increment variable %name value by %value");
         let inputFields = {
-          "1": input => input.appendField(
+          "name": input => input.appendField(
             new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
-          "2": () => this.appendValueInput("value").setCheck(null)
+          "value": () => this.appendValueInput("value").setCheck(null)
         };
 
         initBlock(this, msg, inputFields);
@@ -1632,10 +1632,10 @@ let UziBlock = (function () {
 
     Blockly.Blocks['declare_local_variable'] = {
       init: function() {
-        let msg = i18n.translate("declare local variable %1 with value %2");
+        let msg = i18n.translate("declare local variable %name with %value");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldTextInput("temp"), "variableName"),
-          "2": () => this.appendValueInput("value").setCheck(null)
+          "name": input => input.appendField(new Blockly.FieldTextInput("temp"), "variableName"),
+          "value": () => this.appendValueInput("value").setCheck(null)
         };
         initBlock(this, msg, inputFields);
         this.setPreviousStatement(true, null);
