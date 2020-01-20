@@ -1621,8 +1621,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['variable'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName");
+        let msg = i18n.translate("variable %name");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+                            .appendField(new Blockly.FieldDropdown(
+                                    currentVariablesForDropdown), "variableName")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, null);
         this.setColour(330);
         this.setTooltip("");
