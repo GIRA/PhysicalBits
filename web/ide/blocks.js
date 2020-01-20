@@ -1261,11 +1261,11 @@ let UziBlock = (function () {
   function initButtonBlocks() {
     Blockly.Blocks['button_check_state'] = {
       init: function() {
-        let msg = i18n.translate("is button %1 on pin %2");
+        let msg = i18n.translate("is button %state on pin %pin");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
+          "state": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
                                                                 [i18n.translate("button released"),"release"]]), "state"),
-          "2": () => this.appendValueInput("pinNumber")
+          "pin": () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
         };
@@ -1282,11 +1282,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['button_wait_for_action'] = {
       init: function() {
-        let msg = i18n.translate("wait for button %1 on pin %2");
+        let msg = i18n.translate("wait for button %action on pin %pin");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+          "action": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
                                                                 [i18n.translate("button waitForRelease"),"release"]]), "action"),
-          "2": () => this.appendValueInput("pinNumber")
+          "pin": () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
         };
@@ -1308,17 +1308,17 @@ let UziBlock = (function () {
          TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
          but too ugly when its inputs are external. I don't know how to make it smaller...
          */
-        let msg = i18n.translate("wait button %1 on pin %2 for %3 %4");
+        let msg = i18n.translate("wait button %action on pin %pin for %time %timeUnit");
         let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button hold"),"press"],
+          "action": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button hold"),"press"],
                                                                 [i18n.translate("button hold and release"),"release"]]), "action"),
-          "2": () => this.appendValueInput("pinNumber")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "3": () => this.appendValueInput("time")
-                  .setCheck("Number")
-                  .setAlign(Blockly.ALIGN_RIGHT),
-          "4": input => input.setAlign(Blockly.ALIGN_RIGHT)
+          "pin": () => this.appendValueInput("pinNumber")
+                           .setCheck("Number")
+                           .setAlign(Blockly.ALIGN_RIGHT),
+          "time": () => this.appendValueInput("time")
+                           .setCheck("Number")
+                           .setAlign(Blockly.ALIGN_RIGHT),
+          "timeUnit": input => input.setAlign(Blockly.ALIGN_RIGHT)
                   .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                           [i18n.translate("seconds"),"s"],
                                                           [i18n.translate("minutes"),"m"]]), "unit")
@@ -1343,9 +1343,9 @@ let UziBlock = (function () {
          is confusing, though. And the usage is complicated as well. Maybe I should
          simplify it to simply "wait for button hold x seconds" or something like that...
          */
-        let msg = i18n.translate("elapsed milliseconds while pressing %1");
+        let msg = i18n.translate("elapsed milliseconds while pressing %pin");
         let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
+          "pin": () => this.appendValueInput("pinNumber")
                     .setCheck("Number")
                     .setAlign(Blockly.ALIGN_RIGHT)
         };
