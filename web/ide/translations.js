@@ -156,9 +156,9 @@ var TRANSLATIONS = [
   ["Control", "Control", "Control", "Control", "Kontroll", "Kontroll"],
   ["Math", "Math", "Math", "Matemática", "Aritmeetika", "Matematik"],
   ["Variables", "Variables", "Variables", "Variables", "Muutujad", "Variabler"],
-  ["Functions", "Functions", "Functions", "Funciones", "Funktsioonid", "Funktioner"],
+  ["Functions", "Functions", "Functions", "Funciones", "Arvutused", "Funktioner"],
   ["Comments", "Comments", "Comments", "Comentarios", "Kommentaarid", "Kommentarer"],
-  ["Procedures", "Procedures", "Procedures", "Procedimientos", "Protseduurid", "Procedurer"],
+  ["Procedures", "Procedures", "Procedures", "Procedimientos", "Toimingud", "Procedurer"],
   ["Configure DC motors...", "Configure DC motors...", "Configure DC motors...", "Configurar motores CC...", "Seadista mootorid...", "Konfigurera motorer..."],
   ["Configure sonars...", "Configure sonars...", "Configure sonars...", "Configurar sonares...", "Seadista kajalood...", "Konfigurera ekolod..."],
   ["random integer from %1 to %2", "randomInt(%1, %2)", "random integer from %1 to %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
@@ -229,4 +229,6 @@ var TRANSLATIONS = [
   ["wait button %action on pin %pin for %time %timeUnit", "wait button %action on pin %pin for %time %timeUnit", "wait button %action on pin %pin for %time %timeUnit", "esperar que %action durante %time %timeUnit \n el botón en %pin", "oota lüliti %action viigus %pin %time %timeUnit", "vänta på knapp %action ansluten till ben %pin för %time %timeUnit"],
   ["number %1", "%1", "%1", "%1", "arv %1", "%1"],
   ["variable %name", "%name", "%name", "%name", "muutuja %name", "%name"],
+  ["procedure exit e.g. return with no value", "exit ;", "exit", "salir", "lõpeta", "sluta"],
+  ["function return with value %value", "return %value ;", "return %value", "devolver %value", "tagasta %value", "svara %value"],
 ];

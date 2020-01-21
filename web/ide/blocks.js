@@ -1749,7 +1749,7 @@ let UziBlock = (function () {
     Blockly.Blocks['return'] = {
       init: function() {
         this.appendDummyInput()
-            .appendField(i18n.translate("exit"));
+            .appendField(i18n.translate("procedure exit e.g. return with no value"));
         this.setPreviousStatement(true, null);
         this.setColour(285);
         this.setTooltip("");
@@ -1929,10 +1929,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['return_value'] = {
       init: function() {
-        this.appendValueInput("value")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField(i18n.translate("return"));
+        let msg = i18n.translate("function return with value %value");
+        let inputFields = {
+          "value": () => this.appendValueInput("value")
+                             .setCheck(null)
+                             .setAlign(Blockly.ALIGN_RIGHT)
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setColour(265);
         this.setTooltip("");
