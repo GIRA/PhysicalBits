@@ -771,8 +771,19 @@ let UziBlock = (function () {
 
     Blockly.Blocks['pin'] = {
       init: function() {
-        this.appendDummyInput()
-          .appendField(new Blockly.FieldDropdown([["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"], ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"], ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"], ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"], ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]), "pinNumber");
+        let msg = i18n.translate("pin %pin");
+        let inputFields = {
+          "pin": () => this.appendDummyInput()
+                           .appendField(new Blockly.FieldDropdown(
+                             [["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"],
+			      ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"],
+			      ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"],
+			      ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"],
+			      ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]), "pinNumber")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Number");
         this.setColour(0);
         this.setTooltip("");
