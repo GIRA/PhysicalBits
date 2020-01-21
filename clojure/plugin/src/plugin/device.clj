@@ -102,12 +102,7 @@
   (uint32->float (bytes->uint32 bytes)))
 
 (defn- read-uint32 [in]
-  (go
-   (let [n1 (<? in)
-         n2 (<? in)
-         n3 (<? in)
-         n4 (<? in)]
-     (bytes->uint32 [n1 n2 n3 n4]))))
+  (go (bytes->uint32 (<! (next-n 4 in)))))
 
 (def read-timestamp read-uint32)
 
