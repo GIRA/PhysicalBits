@@ -154,13 +154,12 @@
                (fn [_] {:arduino arduino
                         :uzi uzi})))))
 
-(defn next-n
-  ([n in] (next-n n in []))
-  ([n in v]
-   (go (if (<= n 0)
-         v
-         (let [temp (<? in)]
-           (<! (next-n (dec n) in (conj v temp))))))))
+(defn next-n [count in]
+  (go-loop [i count
+            v []]
+    (if (<= i 0)
+      v
+      (recur (dec i) (conj v (<? in))))))
 
 (defn- process-script-state [i byte]
   {:index i
