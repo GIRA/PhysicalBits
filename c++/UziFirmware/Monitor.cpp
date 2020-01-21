@@ -167,8 +167,8 @@ void Monitor::sendReport(GPIO* io, Program* program)
 	{
 		sendPinValues(io);
 		sendGlobalValues(program);
-		/*sendRunningTasks(program);
-		sendFreeRAM();*/
+		/*sendRunningTasks(program);*/
+		sendFreeRAM();
 		lastTimeReport = now;
 	}
 }
