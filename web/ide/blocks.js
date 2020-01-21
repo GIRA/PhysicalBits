@@ -1759,9 +1759,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_call_0args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("execute"))
-            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName");
+        let msg = i18n.translate("execute procedure %name");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+                 .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(285);
@@ -1772,13 +1777,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_call_1args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("execute"))
-            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName");
-        this.appendValueInput("arg0")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
+        let msg = i18n.translate("execute procedure %name with %arg1");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+                   .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName"),
+          "arg1": () => this.appendValueInput("arg0")
+                            .setCheck(null)
+                            .setAlign(Blockly.ALIGN_RIGHT)
+                            .appendField("arg0")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(285);
@@ -1789,17 +1799,22 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_call_2args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("execute"))
-            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName");
-        this.appendValueInput("arg0")
+        let msg = i18n.translate("execute procedure %name with %arg1 and %arg2");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName"),
+          "arg1": () => this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
-        this.appendValueInput("arg1")
+            .appendField("arg0"),
+          "arg2": () => this.appendValueInput("arg1")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1");
+            .appendField("arg1")
+	};
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(285);
@@ -1839,11 +1854,11 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_definition_0args'] = {
       init: function() {
-        let msg = i18n.translate("function named %1 %2");
+        let msg = i18n.translate("function named %name %statements");
         let inputFields = {
-          "1": () => this.appendDummyInput()
+          "name": () => this.appendDummyInput()
             .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "2": () => this.appendStatementInput("statements")
+          "statements": () => this.appendStatementInput("statements")
             .setCheck(null)
         };
 
@@ -1857,14 +1872,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_definition_1args'] = {
       init: function() {
-        let msg = i18n.translate("function named %1 with argument %2 %3");
+        let msg = i18n.translate("function named %name with argument %arg1 %statements");
         let inputFields = {
-          "1": () => this.appendDummyInput()
+          "name": () => this.appendDummyInput()
                     .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "2": () => this.appendDummyInput()
+          "arg1": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendStatementInput("statements")
+          "statements": () => this.appendStatementInput("statements")
                     .setCheck(null)
         };
 
@@ -1878,17 +1893,17 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_definition_2args'] = {
       init: function() {
-        let msg = i18n.translate("function named %1 with arguments %2 %3 %4");
+        let msg = i18n.translate("function named %name with arguments %arg1 %arg2 %statements");
         let inputFields = {
-          "1": () => this.appendDummyInput()
+          "name": () => this.appendDummyInput()
                     .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "2": () => this.appendDummyInput()
+          "arg1": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendDummyInput()
+          "arg2": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "4": () => this.appendStatementInput("statements")
+          "statements": () => this.appendStatementInput("statements")
                     .setCheck(null)
         };
 
@@ -1902,20 +1917,20 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_definition_3args'] = {
       init: function() {
-        let msg = i18n.translate("function named %1 with arguments %2 %3 %4 %5");
+        let msg = i18n.translate("function named %name with arguments %arg1 %arg2 %arg3 %statements");
         let inputFields = {
-          "1": () => this.appendDummyInput()
+          "name": () => this.appendDummyInput()
                     .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "2": () => this.appendDummyInput()
+          "arg1": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendDummyInput()
+          "arg2": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "4": () => this.appendDummyInput()
+          "arg3": () => this.appendDummyInput()
                     .setAlign(Blockly.ALIGN_RIGHT)
                     .appendField(new Blockly.FieldTextInput("arg2"), "arg2"),
-          "5": () => this.appendStatementInput("statements")
+          "statements": () => this.appendStatementInput("statements")
                     .setCheck(null)
         };
 
@@ -1947,9 +1962,14 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_call_0args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("evaluate"))
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName");
+        let msg = i18n.translate("evaluate function %name");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName")
+	};
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
@@ -1959,13 +1979,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_call_1args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("evaluate"))
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName");
-        this.appendValueInput("arg0")
+        let msg = i18n.translate("evaluate function %name with argument %arg1");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName"),
+          "arg1": () => this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
+            .appendField("arg0")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
@@ -1975,41 +2000,52 @@ let UziBlock = (function () {
 
     Blockly.Blocks['func_call_2args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("evaluate"))
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName");
-        this.appendValueInput("arg0")
+        let msg = i18n.translate("evaluate function %name with arguments %arg1 %arg2");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName"),
+          "arg1": () => this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
-        this.appendValueInput("arg1")
+            .appendField("arg0"),
+          "arg2": () => this.appendValueInput("arg1")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1");
+            .appendField("arg1")
+	};
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, null);
         this.setColour(265);
-     this.setTooltip("");
-     this.setHelpUrl("");
+        this.setTooltip("");
+        this.setHelpUrl("");
       }
     };
 
     Blockly.Blocks['func_call_3args'] = {
       init: function() {
-        this.appendDummyInput()
+        let msg = i18n.translate("evaluate function %name with arguments %arg1 %arg2 %arg3");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
             .appendField(i18n.translate("evaluate"))
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName");
-        this.appendValueInput("arg0")
+            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName"),
+          "arg1": () => this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
-        this.appendValueInput("arg1")
+            .appendField("arg0"),
+          "arg2": () => this.appendValueInput("arg1")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1");
-        this.appendValueInput("arg2")
+            .appendField("arg1"),
+          "arg3": () => this.appendValueInput("arg2")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg2");
+            .appendField("arg2")
+	};
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, null);
         this.setColour(265);
         this.setTooltip("");
