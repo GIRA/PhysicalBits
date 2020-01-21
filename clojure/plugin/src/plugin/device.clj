@@ -147,6 +147,12 @@
                                 :value float-value
                                 :raw-bytes [n1 n2 n3 n4]})))))))
 
+(defn- process-free-ram [in]
+  (go (let [arduino (<! (read-uint32 in))
+            uzi (<! (read-uint32 in))]
+        (swap! state update-in [:memory]
+               (fn [_] {:arduino arduino
+                        :uzi uzi})))))
 
 (defn- process-input [in]
   (go-loop []
@@ -155,6 +161,7 @@
         (<! (condp = cmd
               MSG_IN_PIN_VALUE (process-pin-value in)
               MSG_IN_GLOBAL_VALUE (process-global-value in)
+              MSG_IN_FREE_RAM (process-free-ram in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
