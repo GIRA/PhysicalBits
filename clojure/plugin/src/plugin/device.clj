@@ -154,6 +154,27 @@
                (fn [_] {:arduino arduino
                         :uzi uzi})))))
 
+(defn next-n
+  ([n in] (next-n n in []))
+  ([n in v]
+   (go (if (<= n 0)
+         v
+         (let [temp (<? in)]
+           (<! (next-n (dec n) in (conj v temp))))))))
+
+(defn- process-script-state [i byte]
+  {:index i
+   :running? (> (bit-and 2r10000000 byte) 0)
+   :error-code (bit-and 2r01111111 byte)})
+
+(defn- process-running-scripts [in]
+  (go
+   (let [count (<? in)
+         values (map-indexed process-script-state
+                             (<! (next-n count in)))]
+     (swap! state assoc
+            :scripts values))))
+
 (defn- process-input [in]
   (go-loop []
     (when (connected?)
@@ -161,6 +182,7 @@
         (<! (condp = cmd
               MSG_IN_PIN_VALUE (process-pin-value in)
               MSG_IN_GLOBAL_VALUE (process-global-value in)
+              MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
               MSG_IN_FREE_RAM (process-free-ram in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
