@@ -102,7 +102,7 @@
   (uint32->float (bytes->uint32 bytes)))
 
 (defn- read-uint32 [in]
-  (go (bytes->uint32 (<! (next-n 4 in)))))
+  (go (bytes->uint32 (<! (read-vec? 4 in)))))
 
 (def read-timestamp read-uint32)
 
@@ -158,7 +158,7 @@
   (go
    (let [count (<? in)
          values (map-indexed process-script-state
-                             (<! (next-n count in)))]
+                             (<! (read-vec? count in)))]
      (swap! state assoc
             :scripts values))))
 

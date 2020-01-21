@@ -11,7 +11,7 @@
   ([chan] `(<?? ~chan ~default-timeout))
   ([chan timeout] `(first (a/alts!! [~chan (a/timeout ~timeout)]))))
 
-(defn next-n [count in]
+(defn read-vec? [count in]
   (a/go-loop [i count
             v []]
     (if (<= i 0)
