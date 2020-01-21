@@ -10,3 +10,10 @@
 (defmacro <??
   ([chan] `(<?? ~chan ~default-timeout))
   ([chan timeout] `(first (a/alts!! [~chan (a/timeout ~timeout)]))))
+
+(defn next-n [count in]
+  (a/go-loop [i count
+            v []]
+    (if (<= i 0)
+      v
+      (recur (dec i) (conj v (<? in))))))

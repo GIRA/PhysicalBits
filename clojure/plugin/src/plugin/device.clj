@@ -3,7 +3,7 @@
   (:require [serial.core :as s]
             [serial.util :as su]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
-            [plugin.utils.async :refer [<? <??]]
+            [plugin.utils.async :refer :all]
             [plugin.protocol :refer :all]
             [plugin.boards :refer :all]))
 
@@ -153,13 +153,6 @@
         (swap! state update-in [:memory]
                (fn [_] {:arduino arduino
                         :uzi uzi})))))
-
-(defn next-n [count in]
-  (go-loop [i count
-            v []]
-    (if (<= i 0)
-      v
-      (recur (dec i) (conj v (<? in))))))
 
 (defn- process-script-state [i byte]
   {:index i
