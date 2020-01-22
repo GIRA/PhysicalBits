@@ -15,7 +15,9 @@
                     :reporting {:pins #{}
                                 :globals #{}}
                     :pins {}
-                    :globals {}})
+                    :globals {}
+                    :scripts []
+                    :profile nil})
 (def state (atom initial-state))
 
 (defn get-pin-value [pin-name]
@@ -45,6 +47,9 @@
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
 (defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
+
+(defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
+(defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
 
 (defn set-global-report [global-number report?]
   (swap! state update-in [:reporting :globals]
@@ -162,6 +167,15 @@
      (swap! state assoc
             :scripts values))))
 
+(defn- process-profile [in]
+  (go (let [n1 (<? in)
+            n2 (<? in)
+            value (bit-or n2
+                          (bit-shift-left n1 7))]
+        (swap! state assoc
+               :profile {:ticks value
+                         :interval-ms 100}))))
+
 (defn- process-input [in]
   (go-loop []
     (when (connected?)
@@ -171,6 +185,7 @@
               MSG_IN_GLOBAL_VALUE (process-global-value in)
               MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
               MSG_IN_FREE_RAM (process-free-ram in)
+              MSG_IN_PROFILE (process-profile in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
