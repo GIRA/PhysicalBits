@@ -125,7 +125,7 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 		_io->setValue(10, HIGH);
 		sendReport(io, program);
 		sendProfile();
-		//sendVMState(program, vm);
+		sendVMState(program, vm);
 	}
   else 
   {    
@@ -156,8 +156,6 @@ void Monitor::sendProfile()
 
 		tickCount = 0;
 		lastTimeProfile = now;
-    
-    _io->setValue(11, HIGH);
 	}
 }
 
@@ -181,6 +179,8 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	{
 		sent = true;
 		sendCoroutineState(vm->haltedScript);
+
+    _io->setValue(11, HIGH);
 		/*
 		TODO(Richo): Send the state of all the coroutines?
 		If we do that we need to make sure that all the coroutines are updated!
@@ -194,6 +194,9 @@ void Monitor::sendCoroutineState(Script* script)
 {
 	if (script != NULL && script->hasCoroutine())
 	{
+  
+    _io->setValue(12, HIGH);
+    
 		uint8 scriptIndex = script->getIndex();
 		Coroutine* coroutine = script->getCoroutine();
 		if (coroutine->getError() != NO_ERROR)
@@ -534,8 +537,6 @@ void Monitor::executeProfile()
 
 	tickCount = 0;
 	lastTimeProfile = millis();
- 
-    _io->setValue(12, HIGH);
 }
 
 void Monitor::executeSetGlobal(Program* program)
