@@ -214,6 +214,11 @@
                  " has been detected. The program has been stopped")
           (disconnect)))))
 
+(defn- process-trace [in]
+  (go (let [count (<? in)
+            msg (new String (byte-array (<! (read-vec? count in))) "UTF-8")]
+        (println "TRACE:" msg))))
+
 (defn- process-input [in]
   (go-loop []
     (when (connected?)
@@ -226,6 +231,7 @@
               MSG_IN_PROFILE (process-profile in)
               MSG_IN_COROUTINE_STATE (process-coroutine-state in)
               MSG_IN_ERROR (process-error in)
+              MSG_IN_TRACE (process-trace in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
