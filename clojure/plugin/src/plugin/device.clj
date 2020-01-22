@@ -5,7 +5,8 @@
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [plugin.utils.async :refer :all]
             [plugin.protocol :refer :all]
-            [plugin.boards :refer :all]))
+            [plugin.boards :refer :all]
+            [plugin.utils.conversions :refer :all]))
 
 ; TODO(Richo): Replace with log/error
 (defn- error [msg] (println "ERROR:" msg))
@@ -102,26 +103,10 @@
       (<! (timeout 100))
       (recur))))
 
-(defn- bytes->uint32 [[n1 n2 n3 n4]]
-  (bit-or (bit-shift-left n1 24)
-          (bit-shift-left n2 16)
-          (bit-shift-left n3 8)
-          n4))
-
-(defn- uint32->float [uint32]
-  (Float/intBitsToFloat (unchecked-int uint32)))
-
-(defn- bytes->float [bytes]
-  (uint32->float (bytes->uint32 bytes)))
-
 (defn- read-uint32 [in]
   (go (bytes->uint32 (<! (read-vec? 4 in)))))
 
 (def read-timestamp read-uint32)
-
-(defn- bytes->uint16 [[msb lsb]]
-  (bit-or (bit-shift-left msb 8)
-          lsb))
 
 (defn- read-uint16 [in]
   (go (bytes->uint16 (<! (read-vec? 2 in)))))
