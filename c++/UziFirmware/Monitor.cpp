@@ -124,7 +124,7 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 	{
 		_io->setValue(10, HIGH);
 		sendReport(io, program);
-		//sendProfile();
+		sendProfile();
 		//sendVMState(program, vm);
 	}
   else 
@@ -156,6 +156,8 @@ void Monitor::sendProfile()
 
 		tickCount = 0;
 		lastTimeProfile = now;
+    
+    _io->setValue(11, HIGH);
 	}
 }
 
@@ -379,7 +381,6 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
 		executeSetProgram(program, io);
-    _io->setValue(11, HIGH);
 		break;
 	case MSG_IN_SET_VALUE:
 		executeSetValue(io);
@@ -533,6 +534,8 @@ void Monitor::executeProfile()
 
 	tickCount = 0;
 	lastTimeProfile = millis();
+ 
+    _io->setValue(12, HIGH);
 }
 
 void Monitor::executeSetGlobal(Program* program)
