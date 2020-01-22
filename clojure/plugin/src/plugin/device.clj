@@ -54,6 +54,7 @@
 
 (defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
 (defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
+
 (defn send-continue []
   (swap! state assoc :debugger nil)
   (send [MSG_OUT_DEBUG_CONTINUE]))
@@ -169,9 +170,13 @@
                         :uzi uzi})))))
 
 (defn- process-script-state [i byte]
-  {:index i
-   :running? (> (bit-and 2r10000000 byte) 0)
-   :error-code (bit-and 2r01111111 byte)})
+  (let [running? (> (bit-and 2r10000000 byte) 0)
+        error-code (bit-and 2r01111111 byte)
+        error-msg (error-msg error-code)]
+    {:index i
+     :running? running?
+     :error-code error-code
+     :error-msg error-msg}))
 
 (defn- process-running-scripts [in]
   (go

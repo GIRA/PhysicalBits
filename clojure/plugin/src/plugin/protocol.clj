@@ -31,3 +31,15 @@
 (def MSG_IN_RUNNING_SCRIPTS 6)
 (def MSG_IN_FREE_RAM 7)
 (def MSG_IN_SERIAL_TUNNEL 8)
+
+; Error messages
+(defn error-msg [code]
+  (case code
+    0 "NO_ERROR"
+    1 "STACK_OVERFLOW"
+    2 "STACK_UNDERFLOW"
+    3 "STACK_ACCESS_VIOLATION"
+    4 "OUT_OF_MEMORY"
+    5 "READER_TIMEOUT"
+    6 "DISCONNECT_ERROR"
+    "UNKNOWN_ERROR"))
