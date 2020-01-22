@@ -17,7 +17,8 @@
                     :pins {}
                     :globals {}
                     :scripts []
-                    :profile nil})
+                    :profiler nil
+                    :debugger nil})
 (def state (atom initial-state))
 
 (defn get-pin-value [pin-name]
@@ -50,6 +51,12 @@
 
 (defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
 (defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
+
+(defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
+(defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
+(defn send-continue []
+  (swap! state assoc :debugger nil)
+  (send [MSG_OUT_DEBUG_CONTINUE]))
 
 (defn set-global-report [global-number report?]
   (swap! state update-in [:reporting :globals]
@@ -110,6 +117,13 @@
   (go (bytes->uint32 (<! (read-vec? 4 in)))))
 
 (def read-timestamp read-uint32)
+
+(defn- bytes->uint16 [[msb lsb]]
+  (bit-or (bit-shift-left msb 8)
+          lsb))
+
+(defn- read-uint16 [in]
+  (go (bytes->uint16 (<! (read-vec? 2 in)))))
 
 (defn- process-pin-value [in]
   (go
@@ -173,8 +187,20 @@
             value (bit-or n2
                           (bit-shift-left n1 7))]
         (swap! state assoc
-               :profile {:ticks value
+               :profiler {:ticks value
                          :interval-ms 100}))))
+
+(defn- process-coroutine-state [in]
+  (go (let [index (<? in)
+            pc (<! (read-uint16 in))
+            fp (<? in)
+            stack-size (<? in)
+            stack (<! (read-vec? (* 4 stack-size) in))]
+        (swap! state assoc
+               :debugger {:index index
+                          :pc pc
+                          :fp fp
+                          :stack stack}))))
 
 (defn- process-input [in]
   (go-loop []
@@ -186,6 +212,7 @@
               MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
               MSG_IN_FREE_RAM (process-free-ram in)
               MSG_IN_PROFILE (process-profile in)
+              MSG_IN_COROUTINE_STATE (process-coroutine-state in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
