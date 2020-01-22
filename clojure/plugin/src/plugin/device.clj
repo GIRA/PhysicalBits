@@ -193,7 +193,7 @@
                           (bit-shift-left n1 7))]
         (swap! state assoc
                :profiler {:ticks value
-                         :interval-ms 100}))))
+                          :interval-ms 100}))))
 
 (defn- process-coroutine-state [in]
   (go (let [index (<? in)
@@ -207,6 +207,13 @@
                           :fp fp
                           :stack stack}))))
 
+(defn- process-error [in]
+  (go (let [error-code (<? in)]
+        (when (> error-code 0)
+          (error (error-msg error-code)
+                 " has been detected. The program has been stopped")
+          (disconnect)))))
+
 (defn- process-input [in]
   (go-loop []
     (when (connected?)
@@ -218,6 +225,7 @@
               MSG_IN_FREE_RAM (process-free-ram in)
               MSG_IN_PROFILE (process-profile in)
               MSG_IN_COROUTINE_STATE (process-coroutine-state in)
+              MSG_IN_ERROR (process-error in)
               (go (println "UNRECOGNIZED:" cmd)))))
       ;(swap! state assoc :a0 (<! in))
       (recur))))
