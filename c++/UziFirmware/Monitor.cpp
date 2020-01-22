@@ -180,7 +180,6 @@ void Monitor::sendVMState(Program* program, VM* vm)
 		sent = true;
 		sendCoroutineState(vm->haltedScript);
 
-    _io->setValue(11, HIGH);
 		/*
 		TODO(Richo): Send the state of all the coroutines?
 		If we do that we need to make sure that all the coroutines are updated!
@@ -193,10 +192,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 void Monitor::sendCoroutineState(Script* script)
 {
 	if (script != NULL && script->hasCoroutine())
-	{
-  
-    _io->setValue(12, HIGH);
-    
+	{    
 		uint8 scriptIndex = script->getIndex();
 		Coroutine* coroutine = script->getCoroutine();
 		if (coroutine->getError() != NO_ERROR)
