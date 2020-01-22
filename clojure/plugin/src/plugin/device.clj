@@ -139,7 +139,6 @@
                                                      8))
                              1023.0)]
                 (when-let [pin-name (get-pin-name pin-number)]
-                  #_(println (str timestamp " -> " pin-name " : " value))
                   (swap! state update-in [:pins pin-name]
                          (fn [_] {:name pin-name
                                   :number pin-number
@@ -237,7 +236,6 @@
               MSG_IN_TRACE (process-trace in)
               MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
               (go (println "UNRECOGNIZED:" cmd)))))
-      ;(swap! state assoc :a0 (<! in))
       (recur))))
 
 (defn connect
