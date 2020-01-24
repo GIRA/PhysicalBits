@@ -2,6 +2,7 @@
   (:require [plugin.core :refer :all]
             [plugin.device :as device :refer [state]]
             [plugin.server :as server :refer [server]]
+            [plugin.compiler :as compiler ]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl])
   (:use [clojure.repl]))
