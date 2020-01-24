@@ -33,3 +33,14 @@
    :blink13 [0 1 2 4 13 5 3 232 192 4 2 131 162]
    :seconds-counter [0 2 3 12 0 13 200 192 5 2 132 162 128 2 169 147]
    :ticking-test [0 3 4 16 5 9 13 200 192 6 2 133 162 128 2 132 162 128 6 131 250 29 225 131 250 29 209]})
+
+
+(def asts
+  {:empty {:__class__ "UziProgramNode"
+           :globals []
+           :id "a1049b64-6166-ae43-b295-6848823eb0ed"
+           :imports []
+           :primitives []
+           :primitivesDict []
+           :scripts []}
+   })
