@@ -2,8 +2,16 @@
   (:require  [cheshire.core :refer [parse-string]] )
   
   (:gen-class))
- 
-(defn compile-ast [tree] tree)
+
+(defmulti compile-node :__class__)
+
+(defmethod compile-node "UziProgramNode" [n] n)
+(defmethod compile-node :default [_] :oops)
+
+(defn compile-ast [tree] (compile-node tree))
 (defn compile-json-string [str] 
-  (compile-ast (cheshire.core/parse-string str true)))
+  (compile-ast (parse-string str true)))
+
+
+
 
