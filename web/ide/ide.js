@@ -892,7 +892,7 @@
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
-	toggleAllCaps(); // initializeAllCaps would be nicer?
+	      toggleAllCaps(); // initializeAllCaps would be nicer?
       }
 
       if (ui.layout) {
@@ -1005,10 +1005,12 @@
     // if the checkbox has been checked
     if ($("#all-caps-checkbox").get(0).checked) {
       document.body.classList.add("allCapsMode");
+      $("button").addClass("allCapsMode");
     }
     // else tickbox has been unmarked
     else {
       document.body.classList.remove("allCapsMode");
+      $("button").removeClass("allCapsMode");
     }
 
     // re-set the localization to re-draw all blocks and translations
