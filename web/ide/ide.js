@@ -986,6 +986,19 @@
 
   function verify() {
     Uzi.compile(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
+
+    // HACK(Richo)
+    function clj_print(obj) {
+      let json = JSON.stringify(obj, null, 4);
+      json = json.replace(/"([^"]+)":/g, ":$1");
+      json = json.replace(/null/g, "nil");
+      json = json.replace(/([{[])\s+/g, "$1");
+      json = json.replace(/\s*(}|\])/g, "$1");
+      console.log(json);
+    }
+
+    clj_print(UziBlock.getGeneratedCode());
+    setTimeout(() => clj_print(Uzi.state.program.current.compiled), 100);
   }
 
   function run() {
