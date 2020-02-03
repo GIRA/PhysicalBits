@@ -23,7 +23,6 @@
                         "d" (* 1000 60 60 24))
                       (node :value)))]
     {:__class__ "UziVariable"
-     :name nil
      :value delay-ms}))
 
 (defmethod compile-node "UziTaskNode" [node]

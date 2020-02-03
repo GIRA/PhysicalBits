@@ -1,7 +1,7 @@
 (ns plugin.compiler-test
   (:require [clojure.test :refer :all]
-            [plugin.compiler :refer :all]))
-
+            [plugin.compiler :refer :all])
+  (:use [plugin.test-utils]))
 
 (deftest empty-program-test
   (let [ast {:__class__ "UziProgramNode",
@@ -18,14 +18,12 @@
                   :scripts [{:__class__ "UziScript",
                              :arguments [],
                              :delay {:__class__ "UziVariable",
-                                     :name nil,
                                      :value 1000},
                              :instructions [],
                              :locals [],
                              :name "empty",
                              :ticking true}],
                   :variables [{:__class__ "UziVariable",
-                               :name nil,
                                :value 1000}]}
         actual (compile-node ast)]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
