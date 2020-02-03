@@ -25,5 +25,5 @@
                              :ticking true}],
                   :variables [{:__class__ "UziVariable",
                                :value 1000}]}
-        actual (compile-node ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
