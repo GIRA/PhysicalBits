@@ -1,6 +1,6 @@
 (ns plugin.compiler-test
   (:require [clojure.test :refer :all]
-            [plugin.compiler :refer :all])
+            [plugin.compiler :as compiler :refer [compile-tree]])
   (:use [plugin.test-utils]))
 
 (deftest empty-program-test
@@ -23,8 +23,8 @@
                              :locals [],
                              :name "empty",
                              :ticking true}],
-                  :variables [{:__class__ "UziVariable",
-                               :value 1000}]}
+                  :variables #{{:__class__ "UziVariable",
+                                :value 1000}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
 
@@ -82,14 +82,12 @@
                              :locals [],
                              :name "empty",
                              :ticking true}],
-                  :variables [;{:__class__ "UziVariable",
-                              ; :name "counter",
-                              ; :value 0},
-                              {:__class__ "UziVariable",
-                               :value 1000},
-                              ;{:__class__ "UziVariable",
-                              ; :value 1}
-                              ]
-                  }
+                  :variables #{{:__class__ "UziVariable",
+                                :name "counter",
+                                :value 0},
+                               {:__class__ "UziVariable",
+                                :value 1000},
+                               {:__class__ "UziVariable",
+                                :value 1}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))

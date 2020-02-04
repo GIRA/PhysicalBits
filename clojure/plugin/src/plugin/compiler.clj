@@ -1,5 +1,7 @@
 (ns plugin.compiler
-  (:require [cheshire.core :refer [parse-string]]))
+  (:refer-clojure :exclude [compile])
+  (:require [cheshire.core :refer [parse-string]]
+            [clojure.walk :as w]))
 
 (defmulti compile-node :__class__)
 
@@ -9,32 +11,44 @@
    (println)
    (compile-node node (conj path node)))
 
+(defn- rate->delay [node]
+  (if (= (node :value) 0)
+    (double Double/MAX_VALUE)
+    (/ (case (node :scale)
+         "s" 1000
+         "m" (* 1000 60)
+         "h" (* 1000 60 60)
+         "d" (* 1000 60 60 24))
+       (node :value))))
+
+(defn collect-globals [ast]
+  (let [vars (atom #{})
+        find-var #(condp = (get % :__class__)
+                    "UziTickingRateNode" (swap! vars conj {:__class__ "UziVariable"
+                                                           :value (rate->delay %)})
+                    "UziNumberLiteralNode" (swap! vars conj {:__class__ "UziVariable"
+                                                             :value (% :value)})
+
+                    ; TODO(Richo): Variable declarations could mean local variables, not globals
+                    "UziVariableDeclarationNode" (swap! vars conj {:__class__ "UziVariable"
+                                                                   :name (% :name)
+                                                                   :value (or (% :value) 0)})
+                    nil)]
+    (w/prewalk (fn [x] (find-var x) x) ast)
+    @vars))
+
+
 (defmethod compile-node "UziProgramNode" [node path]
   {:__class__ "UziProgram"
-   :variables (->> (node :scripts)
-                   (map #(% :tickingRate))
-                   (map #(compile-node % path))
-                   vec)
+   :variables (collect-globals node)
    :scripts (->> (node :scripts)
                  (map #(compile % path))
                  vec)})
 
-(defmethod compile-node "UziTickingRateNode" [node path]
-  (let [delay-ms (if (= (node :value) 0)
-                   (double Double/MAX_VALUE)
-                   (/ (case (node :scale)
-                        "s" 1000
-                        "m" (* 1000 60)
-                        "h" (* 1000 60 60)
-                        "d" (* 1000 60 60 24))
-                      (node :value)))]
-    {:__class__ "UziVariable"
-     :value delay-ms}))
-
 (defmethod compile-node "UziTaskNode" [node path]
   {:__class__ "UziScript",
    :arguments [],
-   :delay (compile (node :tickingRate) path),
+   :delay {:__class__ "UziVariable" :value (rate->delay (node :tickingRate))},
    :instructions (compile (node :body) path),
    :locals [],
    :name (node :name),
