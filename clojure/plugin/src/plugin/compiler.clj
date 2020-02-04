@@ -42,7 +42,8 @@
                        (node :state))})
 
 (defmethod compile-node "UziBlockNode" [node path]
-  (vec (flatten (map #(compile % path) (node :statements))))) ; TODO(Richo): Add pop instruction if last stmt is expr
+  ; TODO(Richo): Add pop instruction if last stmt is expression
+  (vec (mapcat #(compile % path) (node :statements))))
 
 (defmethod compile-node "UziAssignmentNode" [node path]
   (let [right (compile (node :right) path)
@@ -52,9 +53,10 @@
            :argument {:__class__ "UziVariable"
                       :name var-name}})))
 
-(defmethod compile-node "UziCallNode" [node path] ; TODO(Richo): Detect primitive calls correctly!
-  (conj (vec (flatten (map #(compile (:value %) path)
-                           (node :arguments))))
+(defmethod compile-node "UziCallNode" [node path]
+  ; TODO(Richo): Detect primitive calls correctly!
+  (conj (vec (mapcat #(compile (:value %) path)
+                     (node :arguments)))
         {:__class__ "UziPrimitiveCallInstruction"
          :argument {:__class__ "UziPrimitive"
                     :name "add"}}))
@@ -65,6 +67,7 @@
                :value (node :value)}}])
 
 (defmethod compile-node "UziVariableNode" [node path]
+  ; TODO(Richo): Detect if var is global or local
   [{:__class__ "UziPushInstruction"
     :argument {:__class__ "UziVariable"
                :name (node :name)}}])
