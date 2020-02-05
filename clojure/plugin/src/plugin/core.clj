@@ -1,5 +1,5 @@
 (ns plugin.core
-  (:require [plugin.server :as server])
+  (:require [plugin.server.core :as server])
   (:gen-class))
 
 (defn -main [& args]

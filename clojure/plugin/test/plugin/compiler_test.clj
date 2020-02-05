@@ -1,6 +1,6 @@
 (ns plugin.compiler-test
   (:require [clojure.test :refer :all]
-            [plugin.compiler :as compiler :refer [compile-tree]])
+            [plugin.compiler.core :as compiler :refer [compile-tree]])
   (:use [plugin.test-utils]))
 
 (deftest empty-program-test

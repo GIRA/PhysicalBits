@@ -1,4 +1,4 @@
-(ns plugin.protocol)
+(ns plugin.device.protocol)
 
 ; Version number
 (def MAJOR_VERSION 0)

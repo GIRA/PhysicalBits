@@ -1,11 +1,11 @@
-(ns plugin.device
+(ns plugin.device.core
   (:refer-clojure :exclude [send])
   (:require [serial.core :as s]
             [serial.util :as su]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [plugin.utils.async :refer :all]
-            [plugin.protocol :refer :all]
-            [plugin.boards :refer :all]
+            [plugin.device.protocol :refer :all]
+            [plugin.device.boards :refer :all]
             [plugin.utils.conversions :refer :all]))
 
 ; TODO(Richo): Replace with log/error

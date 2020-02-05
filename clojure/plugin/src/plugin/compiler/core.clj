@@ -1,8 +1,8 @@
-(ns plugin.compiler
+(ns plugin.compiler.core
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
             [clojure.walk :as w]
-            [plugin.emitter :as emit]))
+            [plugin.compiler.emitter :as emit]))
 
 (defmulti compile-node :__class__)
 

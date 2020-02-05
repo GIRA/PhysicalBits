@@ -1,4 +1,5 @@
-(ns plugin.emitter)
+(ns plugin.compiler.emitter
+  (:refer-clojure :exclude [pop]))
 
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
