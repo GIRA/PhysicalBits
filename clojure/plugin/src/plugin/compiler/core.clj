@@ -6,11 +6,12 @@
 
 (defmulti compile-node :__class__)
 
-(defn compile [node path]
-   (println "node: " (node :__class__))
-   (println "path: "  (map :__class__ path))
-   (println)
-   (compile-node node (conj path node)))
+(defn compile [node ctx]
+  (println "node:" (node :__class__))
+  (println "path:" (map :__class__ (ctx :path)))
+  (println "vars:" @(ctx :variable-names))
+  (println)
+  (compile-node node (update-in ctx [:path] conj node)))
 
 (defn- rate->delay [node]
   (if (= (node :value) 0)
@@ -37,40 +38,40 @@
     @vars))
 
 
-(defmethod compile-node "UziProgramNode" [node path]
+(defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
    :globals (collect-globals node)
    :scripts (->> (node :scripts)
-                 (map #(compile % path))
+                 (map #(compile % ctx))
                  vec)))
 
-(defmethod compile-node "UziTaskNode" [node path]
+(defmethod compile-node "UziTaskNode" [node ctx]
   (emit/script
    :delay (rate->delay (node :tickingRate)),
-   :instructions (compile (node :body) path),
+   :instructions (compile (node :body) ctx),
    :name (node :name),
    :running? (contains? #{"running" "once"}
                         (node :state))))
 
-(defmethod compile-node "UziBlockNode" [node path]
+(defmethod compile-node "UziBlockNode" [node ctx]
   ; TODO(Richo): Add pop instruction if last stmt is expression
-  (vec (mapcat #(compile % path) (node :statements))))
+  (vec (mapcat #(compile % ctx) (node :statements))))
 
-(defmethod compile-node "UziAssignmentNode" [node path]
-  (let [right (compile (node :right) path)
+(defmethod compile-node "UziAssignmentNode" [node ctx]
+  (let [right (compile (node :right) ctx)
         var-name (-> node :left :name)]
     (conj right (emit/pop var-name))))
 
-(defmethod compile-node "UziCallNode" [node path]
+(defmethod compile-node "UziCallNode" [node ctx]
   ; TODO(Richo): Detect primitive calls correctly!
-  (conj (vec (mapcat #(compile (:value %) path)
+  (conj (vec (mapcat #(compile (:value %) ctx)
                      (node :arguments)))
         (emit/prim "add"))) ; TODO(Richo): Hardcoded prim just to pass test
 
-(defmethod compile-node "UziNumberLiteralNode" [node path]
+(defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
 
-(defmethod compile-node "UziVariableNode" [node path]
+(defmethod compile-node "UziVariableNode" [node _]
   ; TODO(Richo): Detect if var is global or local
   [(emit/push-var (node :name))])
 
@@ -78,8 +79,12 @@
   (println "ERROR! Unknown node: " (:__class__ node))
   :oops)
 
+(defn- create-context []
+  {:path (list)
+   :variable-names (atom [])})
+
 (defn compile-tree [ast]
-  (compile ast (list)))
+  (compile ast (create-context)))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
