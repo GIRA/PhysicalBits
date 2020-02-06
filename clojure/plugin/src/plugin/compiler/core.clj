@@ -2,7 +2,9 @@
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
             [clojure.walk :as w]
-            [plugin.compiler.emitter :as emit]))
+            [plugin.compiler.emitter :as emit]
+            [plugin.compiler.primitives :as prims]
+            [plugin.compiler.linker :as linker]))
 
 (defmulti compile-node :__class__)
 
@@ -66,7 +68,7 @@
   ; TODO(Richo): Detect primitive calls correctly!
   (conj (vec (mapcat #(compile (:value %) ctx)
                      (node :arguments)))
-        (emit/prim "add"))) ; TODO(Richo): Hardcoded prim just to pass test
+        (emit/prim (node :primitive-name))))
 
 (defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
@@ -84,7 +86,8 @@
    :variable-names (atom [])})
 
 (defn compile-tree [ast]
-  (compile ast (create-context)))
+  (compile (linker/bind-primitives ast)
+           (create-context)))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
