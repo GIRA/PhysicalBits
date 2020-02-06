@@ -640,7 +640,7 @@ let UziBlock = (function () {
         let msg = i18n.translate("repeat %1 times \n %2");
         let inputFields = {
           "1": () => this.appendValueInput("times")
-                    .setCheck(null),
+                    .setCheck("Number"),
           "2": () => this.appendStatementInput("statements")
                     .setCheck(null)
         };
