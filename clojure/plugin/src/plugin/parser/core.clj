@@ -9,9 +9,12 @@
          script = #'\\w+'
          block = '{' ws '}'
          variableDeclaration = #'\\w+'
-         identifier = #'\\w+'
+         identifier = name ('.' name)*
+         <name>=#'[a-zA-Z_][_\\w]*'
          <ws> = <#'\\s'*>
-         number = #'\\d*\\.?\\d*'"))
+         <letter> = #'[a-zA-Z]'
+         <word> = #'\\w'
+         <number> = #'\\d*\\.?\\d*'"))
 
 (defn parse [str] (parse-program str))
 
