@@ -1616,7 +1616,7 @@ let UziBlock = (function () {
         let inputFields = {
           "name": input => input.appendField(
             new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
-          "value": () => this.appendValueInput("value").setCheck(null)
+          "value": () => this.appendValueInput("value").setCheck("Number")
         };
 
         initBlock(this, msg, inputFields);
