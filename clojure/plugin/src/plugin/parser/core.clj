@@ -4,12 +4,17 @@
 (def parse-program
       (insta/parser
         "program = ws import* ws variableDeclaration* ws script * ws
-         import = ws <'import'> ws identifier ws <'from'> ws importPath ws (';' | block)
+         import = ws <'import'> ws identifier ws <'from'> ws importPath ws (endl | block)
          importPath = #'\\'[^\\']+\\''
          script = #'\\w+'
          block = '{' ws '}'
-         variableDeclaration = #'\\w+'
+
+         variableDeclaration = <'var'> ws variable (ws <'='> ws expr)? ws endl
          identifier = name ('.' name)*
+         variable = ws identifier ws
+         expr=(number | variable)
+
+         <endl>=ws <';'> ws
          <name>=#'[a-zA-Z_][_\\w]*'
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
