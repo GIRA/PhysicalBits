@@ -7,7 +7,7 @@
          import = ws <'import'> ws identifier ws <'from'> ws importPath ws (endl | block)
          importPath = #'\\'[^\\']+\\''
          script =  (task | function | procedure)
-         block = ws '{' ws statementList ws'}' ws
+         block = ws <'{'> ws statementList ws <'}'> ws
 
          statementList = ws statement* statement
          statement = ws (variableDeclaration | assignment | return | conditional
@@ -66,14 +66,15 @@
          namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
-         binaryExpr = ''
+         binaryExpr = ws nonBinaryExpr ws (binarySelector ws nonBinaryExpr)+ ws
+         binarySelector = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]'
 
          <endl>=ws <';'> ws
          <name>=#'[a-zA-Z_][_\\w]*'
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
-         <integer> = #'\\d+'
+         <integer> = #'-?\\d+'
          <number> = #'\\d*\\.?\\d*'"))
 
 (defn parse [str] (parse-program str))
