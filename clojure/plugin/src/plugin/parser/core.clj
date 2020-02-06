@@ -6,11 +6,11 @@
         "program = ws import* ws variableDeclaration* ws script * ws
          import = ws <'import'> ws identifier ws <'from'> ws importPath ws (endl | block)
          importPath = #'\\'[^\\']+\\''
-         script =  (task | function | procedure)
+         <script> =  (task | function | procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
 
-         statementList = ws statement* statement
-         statement = ws (variableDeclaration | assignment | return | conditional
+         <statementList> = ws statement* statement
+         <statement> = ws (variableDeclaration | assignment | return | conditional
                       | startTask | stopTask | pauseTask | resumeTask
                       |while|doWhile|until|doUntil|repeat|forever|for|yield|expressionStatement) ws
 
@@ -26,7 +26,7 @@
          forever = ws <'forever'> ws block ws
          for = ws <'for'> ws variable ws <'='> ws expr ws <'to'> expr ws (<'by'> ws expr ws)? block ws
          yield = ws <'yield'> endl
-         expressionStatement = expr endl
+         <expressionStatement> = expr endl
 
          startTask = ws <'start'> ws scriptList endl
          stopTask = ws <'stop'> ws scriptList endl
@@ -46,7 +46,7 @@
          paramsList = ws<'('> (ws argument (ws ',' ws argument)*)? ws <')'> ws
          argument = ws identifier ws
          taskState = ws ('running'|'stopped') ws
-         tickingRate = number ws '/' ( 's' | 'm' | 'h' | 'd')
+         tickingRate = number ws <'/'> ( 's' | 'm' | 'h' | 'd')
 
          function = ws <'func'> ws identifier ws paramsList ws block ws
          procedure = ws <'proc'> ws identifier ws paramsList ws block ws
@@ -56,14 +56,15 @@
 
 
 
-         expr=(binaryExpr | nonBinaryExpr)
-         nonBinaryExpr = (unary | literal | call | variable | subExpr)
-         unary = ws <'!'> ws nonBinaryExpr ws
+         <expr>=(binaryExpr | nonBinaryExpr)
+         <nonBinaryExpr> = (unary | literal | call | variable | subExpr)
+         <unary> = not
+         not = ws <'!'> ws nonBinaryExpr ws
          literal = (constant | number )
          constant = ws ('D'|'A') integer ws
          call = ws scriptReference argList ws
          argList = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
-         namedArg = ws( identifier ws <':'> ws)? expr ws
+         <namedArg> = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
          binaryExpr = ws nonBinaryExpr ws (binarySelector ws nonBinaryExpr)+ ws
