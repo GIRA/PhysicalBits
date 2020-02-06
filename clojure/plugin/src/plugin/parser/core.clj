@@ -56,13 +56,24 @@
 
 
 
-         expr=(number | variable)
+         expr=(binaryExpr | nonBinaryExpr)
+         nonBinaryExpr = (unary | literal | call | variable | subExpr)
+         unary = ws <'!'> ws nonBinaryExpr ws
+         literal = (constant | number )
+         constant = ws ('D'|'A') integer ws
+         call = ws scriptReference argList ws
+         argList = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
+         namedArg = ws( identifier ws <':'> ws)? expr ws
+         subExpr = ws <'('> ws expr ws <')'> ws
+
+         binaryExpr = ''
 
          <endl>=ws <';'> ws
          <name>=#'[a-zA-Z_][_\\w]*'
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
+         <integer> = #'\\d+'
          <number> = #'\\d*\\.?\\d*'"))
 
 (defn parse [str] (parse-program str))
