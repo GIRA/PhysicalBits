@@ -8,7 +8,8 @@
                  [clj-serial "2.0.5"]
                  [compojure "1.6.1"]
                  [aleph "0.4.6"]
-                 [cheshire "5.9.0"]]
+                 [cheshire "5.9.0"]
+                 [instaparse "1.4.10"]]
   :main ^:skip-aot plugin.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}
