@@ -1,5 +1,9 @@
 (ns plugin.parser.core
   (:require [instaparse.core :as insta]))
+(def transformations
+  {:number (comp clojure.edn/read-string str)
+   :program  (fn [& arg] {:A arg})
+   })
 
 (def parse-program
       (insta/parser
@@ -76,7 +80,7 @@
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          <integer> = #'-?\\d+'
-         <number> = #'\\d*\\.?\\d*'"))
+         number = #'\\d*\\.?\\d*'"))
 
-(defn parse [str] (parse-program str))
+(defn parse [str] (insta/transform transformations (parse-program str)))
 
