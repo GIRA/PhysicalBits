@@ -941,15 +941,22 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_operation'] = {
       init: function() {
-        this.appendValueInput("number")
-            .setCheck("Number")
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
-                                                    [i18n.translate("absolute"),"abs"],
-                                                    [i18n.translate("-"),"negate"],
-                                                    [i18n.translate("ln"),"ln"],
-                                                    [i18n.translate("log10"),"log10"],
-                                                    [i18n.translate("e^"),"exp"],
-                                                    [i18n.translate("10^"),"pow10"]]), "operator");
+        let msg = i18n.translate("perform %operation on %number");
+        let inputFields = {
+          "number": () => this.appendValueInput("number")
+                                 .setCheck("Number"),
+          "operation": () => this.appendDummyInput().appendField(
+                 new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
+                                            [i18n.translate("absolute"),"abs"],
+                                            [i18n.translate("-"),"negate"],
+                                            [i18n.translate("ln"),"ln"],
+                                            [i18n.translate("log10"),"log10"],
+                                            [i18n.translate("e^"),"exp"],
+                                            [i18n.translate("10^"),"pow10"]]), "operator")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
