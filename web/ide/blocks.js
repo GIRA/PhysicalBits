@@ -966,14 +966,21 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_trig'] = {
       init: function() {
-        this.appendValueInput("number")
-            .setCheck("Number")
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
+        let msg = i18n.translate("perform trigonometric %operation on %number");
+        let inputFields = {
+          "number": () => this.appendValueInput("number")
+                              .setCheck("Number"),
+          "operation": () => this.appendDummyInput().appendField(
+	                 new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
                                                     [i18n.translate("cos"),"cos"],
                                                     [i18n.translate("tan"),"tan"],
                                                     [i18n.translate("asin"),"asin"],
                                                     [i18n.translate("acos"),"acos"],
-                                                    [i18n.translate("atan"),"atan"]]), "operator");
+                                                    [i18n.translate("atan"),"atan"]]), "operator")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
