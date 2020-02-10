@@ -435,11 +435,11 @@ let UziBlock = (function () {
         let msg = i18n.translate("set pin %1 to value %2");
         let inputFields = {
           "1": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
+                         .setCheck("Pin")
+                         .setAlign(Blockly.ALIGN_RIGHT),
           "2": () => this.appendValueInput("pinValue")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT)
+                         .setCheck(["Number", "Boolean"])
+                         .setAlign(Blockly.ALIGN_RIGHT)
         };
 
         initBlock(this, msg, inputFields);
