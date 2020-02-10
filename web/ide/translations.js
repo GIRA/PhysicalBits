@@ -239,4 +239,5 @@ var TRANSLATIONS = [
   ["evaluate function %name with arguments %arg1 %arg2", "evaluate function %name with argument %arg1 %arg2", "evaluate function %name %arg1 %arg2", "evaluar %name %arg1 %arg2", "arvuta %name argumentidega %arg1 %arg", "beräkna %name med argumenten %arg1 %arg2"],
   ["evaluate function %name with arguments %arg1 %arg2 %arg3", "evaluate function %name with argument %arg1 %arg2 %arg3", "evaluate function %name %arg1 %arg2 %arg3", "evaluar %name %arg1 %arg2 %arg3", "arvuta %name argumentidega %arg1 %arg2 %arg3", "beräkna %name med argumenten %arg1 %arg2 %arg3"],
   ["pin %pin", "%pin", "%pin", "%pin", "viik %pin", "%pin"],
+  ["boolean %value", "%value", "%value", "%value", "%value", "%value"],
 ];

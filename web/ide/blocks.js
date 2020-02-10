@@ -793,9 +793,15 @@ let UziBlock = (function () {
 
     Blockly.Blocks['boolean'] = {
       init: function() {
-        this.appendDummyInput()
-          .appendField(new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
-                                                  [i18n.translate("false"), "false"]]), "value");
+        let msg = i18n.translate("boolean %value");
+        let inputFields = {
+          "value": () => this.appendDummyInput().appendField(
+              new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
+                                         [i18n.translate("false"), "false"]]), "value")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Boolean");
         this.setColour(210);
         this.setTooltip("");
