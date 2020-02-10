@@ -242,4 +242,5 @@ var TRANSLATIONS = [
   ["boolean %value", "%value", "%value", "%value", "%value", "%value"],
   ["perform %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
   ["perform trigonometric %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
+  ["perform rounding %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
 ];

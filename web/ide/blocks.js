@@ -990,11 +990,18 @@ let UziBlock = (function () {
 
     Blockly.Blocks['number_round'] = {
       init: function() {
-        this.appendValueInput("number")
-            .setCheck("Number")
-            .appendField(new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
-                                                    [i18n.translate("round up"),"ceil"],
-                                                    [i18n.translate("round down"),"floor"]]), "operator");
+        let msg = i18n.translate("perform rounding %operation on %number");
+        let inputFields = {
+          "number": () => this.appendValueInput("number")
+            .setCheck("Number"),
+          "operation": () => this.appendDummyInput().appendField(
+                  new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
+                                             [i18n.translate("round up"),"ceil"],
+                                             [i18n.translate("round down"),"floor"]]), "operator")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setOutput(true, "Number");
         this.setColour(230);
         this.setTooltip("");
