@@ -1863,21 +1863,26 @@ let UziBlock = (function () {
 
     Blockly.Blocks['proc_call_3args'] = {
       init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("execute"))
-            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName");
-        this.appendValueInput("arg0")
+        let msg = i18n.translate("execute procedure %name with %arg1, %arg2 and %arg3");
+        let inputFields = {
+          "name": () => this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName"),
+          "arg1": () => this.appendValueInput("arg0")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0");
-        this.appendValueInput("arg1")
+            .appendField("arg0"),
+        "arg2": () => this.appendValueInput("arg1")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1");
-        this.appendValueInput("arg2")
+            .appendField("arg1"),
+        "arg3": () => this.appendValueInput("arg2")
             .setCheck(null)
             .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg2");
+            .appendField("arg2")
+        };
+
+        initBlock(this, msg, inputFields);
+
         this.setPreviousStatement(true, null);
         this.setNextStatement(true, null);
         this.setColour(285);
