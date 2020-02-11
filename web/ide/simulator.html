@@ -19,7 +19,10 @@
   var jne = [ {op_code:"turn_on", arg:0},{op_code: "read_pin", arg: 1},{op_code: "read_pin", arg: 1}, {op_code: "jgt", arg: 1}, {op_code: "turn_off", arg: 2}];
 
   $(document).ready(function () {
-    Uzi.start().then(() => console.log("Uzi started successfully!"));
+    Uzi.start().then(() => {
+      console.log("Uzi started successfully!");
+      sim.loadCurrentProgram();
+    });
     sim.drawCircles(svg, 20);
   });
   </script>

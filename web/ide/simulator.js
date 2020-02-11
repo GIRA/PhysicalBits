@@ -1,12 +1,12 @@
 // Uzi.state.program.current.compiled
-function ctorSimulator()
-{
-  let simulator={
+function ctorSimulator() {
+  let simulator = {
      pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
      stack: [],
      next: next,
      execute: execute,
-     loadInstructions: loadInstructions,
+     loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
+     getProgram: () => Uzi.state.program.current.compiled,
      framePointer: 0,
      globals:[],
      instructions:[],
@@ -57,10 +57,10 @@ function ctorSimulator()
   }
 
 
-  function loadInstructions(newIns) {
+  function loadProgram(program) {
     simulator.pc = 0;
     simulator.stack = [];
-    simulator.instructions = newIns;
+    simulator.instructions = program.scripts[0].instructions;
   }
 
   function writeConsole(pin) {
@@ -81,29 +81,37 @@ function ctorSimulator()
   }
 
   function execute() {
-
     let instruction = simulator.next();
     if(instruction == undefined) {
       throw "undefined found as instruction" ;
       simulator.pc=0;
     }
-    switch (instruction.op_code) {
+    let argument = instruction.argument;
+
+    switch (instruction.__class__) {
+      case "UziPushInstruction": {
+        simulator.stack.push(instruction.argument.value);
+      } break;
+      case "UziPrimitiveCallInstruction": {
+        executePrimitive(argument);
+      } break;
+      /////////////////
       case 'turn_on':
-        simulator.pins[instruction.arg] = 1;
+        simulator.pins[instruction.argument] = 1;
         break;
       case 'turn_off':
-        simulator.pins[instruction.arg] = 0;
+        simulator.pins[instruction.argument] = 0;
         break;
       case'write_pin':
-        simulator.pins[instruction.arg] = simulator.stack.pop();
+        simulator.pins[instruction.argument] = simulator.stack.pop();
         break;
       case'read_pin':
-        if (instruction.arg < 0 ) {
-          instruction.arg = 0;
-        } else if (instruction.arg > 1) {
-          instruction.arg = 1;
+        if (instruction.argument < 0 ) {
+          instruction.argument = 0;
+        } else if (instruction.argument > 1) {
+          instruction.argument = 1;
         }
-        simulator.stack.push(instruction.arg);
+        simulator.stack.push(instruction.argument);
         break;
       case'read_global':
         throw "TO DO";
@@ -124,23 +132,23 @@ function ctorSimulator()
         throw "TO DO";
         break;
       case'jmp':
-        simulator.pc += instruction.arg;
+        simulator.pc += instruction.argument;
         break;
       case'jz':
         if (simulator.stack.pop() == 0) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
         }
         break;
       case'jnz':
         if (simulator.stack.pop() != 0) {
-          simulator.pc += instruction.arg;
+          simulator.pc += instruction.argument;
         }
         break;
       case 'jne': {
           let a = simulator.stack.pop();
           let b = simulator.stack.pop();
           if (a != b) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
           }
         }
         break;
@@ -148,7 +156,7 @@ function ctorSimulator()
           let a = simulator.stack.pop();
           let b = simulator.stack.pop();
           if (a < b) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
           }
         }
         break;
@@ -156,7 +164,7 @@ function ctorSimulator()
           let a = simulator.stack.pop();
           let b = simulator.stack.pop();
           if (a <= b) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
           }
         }
         break;
@@ -164,7 +172,7 @@ function ctorSimulator()
           let a = simulator.stack.pop();
           let b = simulator.stack.pop();
           if (a > b) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
           }
         }
         break;
@@ -172,7 +180,7 @@ function ctorSimulator()
           let a = simulator.stack.pop();
           let b = simulator.stack.pop();
           if (a >= b) {
-            simulator.pc += instruction.arg;
+            simulator.pc += instruction.argument;
           }
         }
         break;
@@ -203,7 +211,22 @@ function ctorSimulator()
         break;
 
       default:
-        throw "Missing instruction "+instruction.op_code;
+        throw "Missing instruction "+ instruction.__class__;
+    }
+  }
+
+  function executePrimitive(prim) {
+    switch (prim.name) {
+      case "turnOn": {
+        simulator.pins[simulator.stack.pop()] = 1;
+      } break;
+
+      case "turnOff": {
+        simulator.pins[simulator.stack.pop()] = 0;
+      } break;
+
+      default:
+        throw "Missing primitive "+ prim.name;
     }
   }
 
