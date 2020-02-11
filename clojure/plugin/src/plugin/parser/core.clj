@@ -1,8 +1,10 @@
 (ns plugin.parser.core
   (:require [instaparse.core :as insta]))
 
+
 (defn- first-or-default [pred col default]
   (or (first (filter pred col)) default) )
+(defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (def scriptTypes #{"UziTaskNode"} )
 (def transformations
   {:number (comp clojure.edn/read-string str)
@@ -11,12 +13,14 @@
                           :imports [],
                           :globals [],
                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
-                          :primitives []}),
+                          :primitives [],
+                          :A arg}),
    :task (fn [identifier params state & rest] {:__class__ "UziTaskNode",
                         :name (second identifier),
                         :arguments params,
                         :state (second state),
-                        :tickingRate (first-or-default #(= (:__class__ %) "UziTickingRateNode") rest 3) })
+                        :tickingRate (first-class-or-default "UziTickingRateNode" rest nil),
+                        :body   (first-class-or-default "UziBlockNode" rest nil)})
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value times,
                                   :scale unit}),
