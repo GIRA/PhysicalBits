@@ -7,33 +7,33 @@
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (def scriptTypes #{"UziTaskNode"} )
 (def transformations
-  {:number (comp clojure.edn/read-string str)
-   :integer (comp clojure.edn/read-string str)
+  {:integer (comp clojure.edn/read-string str)
+   :float (comp clojure.edn/read-string str)
    :program  (fn [& arg] {:__class__ "UziProgramNode"
                           :imports [],
                           :globals [],
                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
-                          :primitives [],
-                          :A arg}),
+                          :primitives []}),
    :task (fn [identifier params state & rest] {:__class__ "UziTaskNode",
-                        :name (second identifier),
+                        :name identifier,
                         :arguments params,
                         :state (second state),
                         :tickingRate (first-class-or-default "UziTickingRateNode" rest nil),
                         :body   (first-class-or-default "UziBlockNode" rest nil)})
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
-                                  :value times,
+                                  :value (:value times),
                                   :scale unit}),
    :namedArg (fn [a & b] {:__class__ "Association",
-                          :key (if b (second a) nil),
+                          :key (if b a nil),
                           :value (or b a)
                           })
-   :constant (fn [letter number] {:__class__ "UziPin",
+   :constant (fn [letter number] {:__class__ "UziPinLiteralNode",
                                   :type letter,
                                   :number number})
-   :literal (fn [p] (conj p {:__class__ (str (:__class__ p) "LiteralNode")}))
+   :number (fn [number] {:__class__ "UziNumberLiteralNode",
+                                :value number})
    :call (fn [selector & args] {:__class__ "UziCallNode",
-                                :selector (second (second selector))
+                                :selector selector
                                 :arguments args})
    :block (fn [& statements] {:__class__ "UziBlockNode" :statements statements})
    :paramsList (fn [& params] (or params []))
@@ -74,9 +74,9 @@
 
 
          scriptList = ws scriptReference (ws <','> ws scriptReference)* endl
-         scriptReference = ws identifier ws
+         <scriptReference> = ws identifier ws
 
-         identifier = name ('.' name)*
+         <identifier> = name ('.' name)*
          variable = ws identifier ws
 
          task=<'task'> ws identifier paramsList taskState tickingRate? block ws
@@ -98,7 +98,7 @@
          <nonBinaryExpr> = (unary / literal / call / variable / subExpr)
          <unary> = not
          not = ws <'!'> ws nonBinaryExpr ws
-         literal = (constant | number )
+         <literal> = (constant | number )
          constant = ws ('D'|'A') integer ws
          call = ws scriptReference argList ws
          <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
@@ -114,7 +114,8 @@
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          integer = #'-?\\d+'
-         number = #'\\d*\\.?\\d*'"))
+         float = #'\\d*\\.\\d*'
+         number = (float / integer)"))
 
 (defn parse [str] (insta/transform transformations (parse-program str )))
 
