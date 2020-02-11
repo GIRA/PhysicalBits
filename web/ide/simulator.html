@@ -12,16 +12,16 @@
   var onOff=[{op_code:"turn_on", arg:2},{op_code:"turn_off", arg:2}];
   var readWrite = [{op_code: 'read_pin', arg: 15}, {op_code: 'write_pin', arg: 3}];
   var jmp=[ {op_code:"turn_on", arg:2}, {op_code: "jmp", arg: 1}, {op_code:"turn_off", arg:2},
-{op_code:"turn_on", arg:4}, {op_code:"turn_off", arg:4}];
+            {op_code:"turn_on", arg:4}, {op_code:"turn_off", arg:4}];
 
-var jz = [ {op_code:"turn_on", arg:2},{op_code: "read_pin", arg: 0}, {op_code: "jz", arg: 1}, {op_code: "turn_off", arg: 2}];
-var jnz = [ {op_code:"turn_on", arg:2},{op_code: "read_pin", arg: 1}, {op_code: "jnz", arg: 1}, {op_code: "turn_off", arg: 2}];
-var jne = [ {op_code:"turn_on", arg:0},{op_code: "read_pin", arg: 1},{op_code: "read_pin", arg: 1}, {op_code: "jgt", arg: 1}, {op_code: "turn_off", arg: 2}];
+  var jz = [ {op_code:"turn_on", arg:2},{op_code: "read_pin", arg: 0}, {op_code: "jz", arg: 1}, {op_code: "turn_off", arg: 2}];
+  var jnz = [ {op_code:"turn_on", arg:2},{op_code: "read_pin", arg: 1}, {op_code: "jnz", arg: 1}, {op_code: "turn_off", arg: 2}];
+  var jne = [ {op_code:"turn_on", arg:0},{op_code: "read_pin", arg: 1},{op_code: "read_pin", arg: 1}, {op_code: "jgt", arg: 1}, {op_code: "turn_off", arg: 2}];
 
   $(document).ready(function () {
     Uzi.start().then(() => console.log("Uzi started successfully!"));
+    sim.drawCircles(svg, 20);
   });
-  window.onload = ()=>{sim.drawCircles(svg, 20);}
   </script>
 </body>
 </html>
