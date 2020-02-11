@@ -190,7 +190,7 @@ var TRANSLATIONS = [
   ["Configure variables...", "Configure variables...", "Configure variables...", "Configurar variables...","Seadista muutujaid...", "Konfigurera variabler..."],
   ["Configure variables", "Configure variables", "Configure variables", "Configurar variables", "Seadista muutujaid", "Konfigurera variabler"],
   ["Variable name", "Variable name", "Variable name", "Nombre de variable", "Muutuja nimi", "Variabelns namn"],
-  ["declare local variable %name with %value", "declare local variable %name with value %value", "declare local variable %2name with value %value", "declarar variable local %name con valor %value", "loo muutuja %name väärtusega %value", "skapa variabeln %name med värdet %value"],
+  ["declare local variable %name with %value", "declare local variable %name with value %value", "declare local variable %name with value %value", "declarar variable local %name con valor %value", "loo muutuja %name väärtusega %value", "skapa variabeln %name med värdet %value"],
   ["set variable %name to value %value", "set %name to %value", "set %name to %value", "establecer %name a %value", "määra %name väärtuseks %value \n", "sätt värdet på %name till %value"],
   ["increment variable %name value by %value", "increment %name by %value", "increment %name by %value", "incrementar %name por %value", "kasvata %name suurusega %value", "lägg till %value på %name"],
   ["procedure named %1 %2", "procedure named %1 %2", "procedure named %1 %2", "procedimiento llamado %1 %2", "protseduur nimega %1 %2", "procedur med namn %1 %2"],
