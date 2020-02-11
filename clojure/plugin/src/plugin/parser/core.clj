@@ -1,14 +1,22 @@
 (ns plugin.parser.core
   (:require [instaparse.core :as insta]))
+
+(defn- first-or-default [pred col default]
+  (or (first (filter pred col)) default) )
+(def scriptTypes #{"UziTaskNode"} )
 (def transformations
   {:number (comp clojure.edn/read-string str)
    :integer (comp clojure.edn/read-string str)
    :program  (fn [& arg] {:__class__ "UziProgramNode"
                           :imports [],
                           :globals [],
-                          :scripts [],
-                          :primitives [],
-                          :A arg}),
+                          :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
+                          :primitives []}),
+   :task (fn [identifier params state & rest] {:__class__ "UziTaskNode",
+                        :name (second identifier),
+                        :arguments params,
+                        :state (second state),
+                        :tickingRate (first-or-default #(= (:__class__ %) "UziTickingRateNode") rest 3) })
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value times,
                                   :scale unit}),
@@ -23,7 +31,8 @@
    :call (fn [selector & args] {:__class__ "UziCallNode",
                                 :selector (second (second selector))
                                 :arguments args})
-
+   :block (fn [& statements] {:__class__ "UziBlockNode" :statements statements})
+   :paramsList (fn [& params] (or params []))
    })
 
 (def parse-program
@@ -88,15 +97,15 @@
          literal = (constant | number )
          constant = ws ('D'|'A') integer ws
          call = ws scriptReference argList ws
-         argList = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
+         <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
          namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
          binaryExpr = ws nonBinaryExpr ws (binarySelector ws nonBinaryExpr)+ ws
          binarySelector = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]'
 
-         <endl>=ws <';'> ws
-         <name>=#'[a-zA-Z_][_\\w]*'
+         <endl> =ws <';'> ws
+         <name> =#'[a-zA-Z_][_\\w]*'
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
