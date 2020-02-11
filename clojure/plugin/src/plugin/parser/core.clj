@@ -9,6 +9,9 @@
                           :scripts [],
                           :primitives [],
                           :A arg}),
+   :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
+                                  :value times,
+                                  :scale unit}),
    :namedArg (fn [a & b] {
                           :__class__ "Association",
                           :key (if b a nil),
