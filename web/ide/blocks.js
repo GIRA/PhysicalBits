@@ -2080,7 +2080,7 @@ let UziBlock = (function () {
     // the translation msg or its separate rows are split into parts
     // for each input field reference and their corresponding
     // Blockly input fields are created together text labels
-    let inputFieldRefPattern = /%[^ ]+/g;
+    let inputFieldRefPattern = /%[^ ]+\b/g;
     let fieldRefMatch;
     let fieldRefName;
     let msgUntilFieldRef;
