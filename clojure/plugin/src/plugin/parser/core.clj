@@ -20,6 +20,9 @@
                                   :type letter,
                                   :number number})
    :literal (fn [p] (conj p {:__class__ (str (:__class__ p) "LiteralNode")}))
+   :call (fn [selector & args] {:__class__ "UziCallNode",
+                                :selector (second (second selector))
+                                :arguments args})
 
    })
 
