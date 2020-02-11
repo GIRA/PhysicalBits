@@ -2,8 +2,8 @@
   (:require [instaparse.core :as insta]))
 (def transformations
   {:number (comp clojure.edn/read-string str)
-   :program  (fn [& arg] {
-                          :__class__ "UziProgramNode"
+   :integer (comp clojure.edn/read-string str)
+   :program  (fn [& arg] {:__class__ "UziProgramNode"
                           :imports [],
                           :globals [],
                           :scripts [],
@@ -12,11 +12,14 @@
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value times,
                                   :scale unit}),
-   :namedArg (fn [a & b] {
-                          :__class__ "Association",
-                          :key (if b a nil),
+   :namedArg (fn [a & b] {:__class__ "Association",
+                          :key (if b (second a) nil),
                           :value (or b a)
                           })
+   :constant (fn [letter number] {:__class__ "UziPin",
+                                  :type letter,
+                                  :number number})
+   :literal (fn [p] (conj p {:__class__ (str (:__class__ p) "LiteralNode")}))
 
    })
 
@@ -94,7 +97,7 @@
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
-         <integer> = #'-?\\d+'
+         integer = #'-?\\d+'
          number = #'\\d*\\.?\\d*'"))
 
 (defn parse [str] (insta/transform transformations (parse-program str )))
