@@ -2,7 +2,19 @@
   (:require [instaparse.core :as insta]))
 (def transformations
   {:number (comp clojure.edn/read-string str)
-   :program  (fn [& arg] {:A arg})
+   :program  (fn [& arg] {
+                          :__class__ "UziProgramNode"
+                          :imports [],
+                          :globals [],
+                          :scripts [],
+                          :primitives [],
+                          :A arg}),
+   :namedArg (fn [a & b] {
+                          :__class__ "Association",
+                          :key (if b a nil),
+                          :value (or b a)
+                          })
+
    })
 
 (def parse-program
@@ -60,7 +72,7 @@
 
 
 
-         <expr>=(binaryExpr | nonBinaryExpr)
+         <expr> =(binaryExpr | nonBinaryExpr)
          <nonBinaryExpr> = (unary | literal | call | variable | subExpr)
          <unary> = not
          not = ws <'!'> ws nonBinaryExpr ws
@@ -68,7 +80,7 @@
          constant = ws ('D'|'A') integer ws
          call = ws scriptReference argList ws
          argList = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
-         <namedArg> = ws( identifier ws <':'> ws)? expr ws
+         namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
          binaryExpr = ws nonBinaryExpr ws (binarySelector ws nonBinaryExpr)+ ws
@@ -82,5 +94,5 @@
          <integer> = #'-?\\d+'
          number = #'\\d*\\.?\\d*'"))
 
-(defn parse [str] (insta/transform transformations (parse-program str)))
+(defn parse [str] (insta/transform transformations (parse-program str )))
 
