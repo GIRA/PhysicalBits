@@ -22,7 +22,7 @@
 (defn- for-node
   [var from to by block]
   {:__class__ "UziForNode",
-   :counter var,
+   :counter { :__class__ "UziVariableDeclarationNode" :name (:name var)},
    :start from,
    :stop to,
    :step by,
@@ -76,9 +76,11 @@
    :paramsList (fn [& params] (or  (vec params) []))
    :argument (fn [name] {:__class__ "UziVariableDeclarationNode",
                          :name name})
-   :variableDeclaration (fn [variable & rest]
-                          { :__class__ "UziVariableDeclarationNode",
-                           :name (:name variable)})
+   :variableDeclaration (fn
+                          ([variable]
+                           { :__class__ "UziVariableDeclarationNode" :name (:name variable)})
+                          ([variable expr]
+                           { :__class__ "UziVariableDeclarationNode" :name (:name variable) :value expr}))
    :variable (fn [name] {:__class__ "UziVariableNode",
                          :name name})
    :return (fn [& expr] {:__class__ "UziReturnNode",
@@ -88,6 +90,7 @@
           ([var from to block] (for-node var from to (literal-number-node 1)  block))
           ([var from to by block] (for-node var from to by block))
           )
+   :assignment (fn [var expr] {:__class__ "UziAssignmentNode" :left var :right expr})
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
                                        :selector op,
