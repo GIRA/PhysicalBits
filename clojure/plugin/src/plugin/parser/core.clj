@@ -5,6 +5,22 @@
 (defn- first-or-default [pred col default]
   (or (first (filter pred col)) default) )
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
+
+(defn script
+  [type & {:keys [identifier arguments tick-rate state locals body]
+      :or {arguments []
+           tick-rate nil
+           state nil
+           body nil}}]
+  {:__class__ type,
+   :name identifier,
+   :arguments arguments,
+   :state state,
+   :tickingRate tick-rate,
+   :body body})
+
+
+
 (def scriptTypes #{"UziTaskNode"} )
 (def transformations
   {:integer (comp clojure.edn/read-string str)
@@ -14,12 +30,13 @@
                           :globals [],
                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
                           :primitives []}),
-   :task (fn [identifier params state & rest] {:__class__ "UziTaskNode",
-                        :name identifier,
-                        :arguments params,
-                        :state (second state),
-                        :tickingRate (first-class-or-default "UziTickingRateNode" rest nil),
-                        :body   (first-class-or-default "UziBlockNode" rest nil)})
+   :task (fn [identifier params state & rest]
+           (script "UziTaskNode"
+                   :identifier identifier
+                   :arguments params
+                   :state (second state)
+                   :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
+                   :body (first-class-or-default "UziBlockNode" rest nil)))
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value (:value times),
                                   :scale unit}),
