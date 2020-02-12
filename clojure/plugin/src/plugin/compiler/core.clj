@@ -2,6 +2,8 @@
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
             [clojure.walk :as w]
+            [plugin.device.boards :as boards]
+            [plugin.compiler.ast-utils :as ast-utils]
             [plugin.compiler.emitter :as emit]
             [plugin.compiler.primitives :as prims]
             [plugin.compiler.linker :as linker]))
@@ -22,13 +24,17 @@
            "d" (* 1000 60 60 24))
          value))))
 
-(defn collect-globals [ast]
+(defn collect-globals [ast board]
   (let [vars (atom #{})]
-    ; Collect all literal numbers
-    (w/prewalk
-     (fn [x] (when (= "UziNumberLiteralNode" (get x :__class__))
-               (swap! vars conj (emit/variable :value (x :value)))) x)
-     ast)
+    ; Collect all number literals
+    (swap! vars into
+           (map (fn [{:keys [value]}] (emit/variable :value value))
+                (ast-utils/filter ast "UziNumberLiteralNode")))
+
+    ; Collect all pin literals
+    (swap! vars into
+           (map (fn [{:keys [type number]}] (emit/variable :value (boards/get-pin-number (str type number) board)))
+                (ast-utils/filter ast "UziPinLiteralNode")))
 
     ; Collect all globals
     (swap! vars into
@@ -46,7 +52,7 @@
 
 (defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
-   :globals (collect-globals node)
+   :globals (collect-globals node (ctx :board))
    :scripts (->> (node :scripts)
                  (map #(compile % ctx))
                  vec)))
@@ -89,8 +95,9 @@
   (println "ERROR! Unknown node: " (:__class__ node))
   :oops)
 
-(defn- create-context []
-  {:path (list)})
+(defn- create-context [board]
+  {:path (list)
+   :board board})
 
 (defn- assign-unique-variable-names [ast]
   ; TODO(Richo): Only apply to locals?
@@ -101,11 +108,13 @@
         %)
      ast)))
 
-(defn compile-tree [ast]
-  (-> ast
-      linker/bind-primitives
-      assign-unique-variable-names
-      (compile (create-context))))
+(defn compile-tree
+  ([ast] (compile-tree ast boards/UNO))
+  ([ast board]
+   (-> ast
+       linker/bind-primitives
+       assign-unique-variable-names
+       (compile (create-context board)))))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
