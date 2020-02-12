@@ -8,7 +8,7 @@
    :scripts scripts})
 
 (defn variable [& {:keys [name value] :or {value 0}}]
-  (let [result {:__class__ "UziVariable" :value value}]
+  (let [result {:__class__ "UziVariable" :value (or value 0)}]
     (if name
       (assoc result :name name)
       result)))
@@ -39,4 +39,16 @@
 
 (defn push-var [var-name]
   {:__class__ "UziPushInstruction"
+   :argument (variable :name var-name)})
+
+(defn stop [script-name]
+  {:__class__ "UziStopScriptInstruction"
+   :argument script-name})
+
+(defn write-local [var-name]
+  {:__class__ "UziWriteLocalInstruction"
+   :argument (variable :name var-name)})
+
+(defn read-local [var-name]
+  {:__class__ "UziReadLocalInstruction"
    :argument (variable :name var-name)})
