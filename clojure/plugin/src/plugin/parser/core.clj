@@ -115,7 +115,7 @@
 
          task=<'task'> ws identifier paramsList taskState tickingRate? block ws
 
-         paramsList = ws<'('> (ws argument (ws ',' ws argument)*)? ws <')'> ws
+         paramsList = ws<'('> (ws argument (ws <','> ws argument)*)? ws <')'> ws
          argument = ws identifier ws
          taskState = ws ('running'|'stopped') ws
          tickingRate = number ws <'/'> ( 's' | 'm' | 'h' | 'd')
