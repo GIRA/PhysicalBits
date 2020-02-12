@@ -6,7 +6,7 @@
   (or (first (filter pred col)) default) )
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
-(defn script
+(defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
       :or {arguments []
            tick-rate nil
@@ -19,6 +19,16 @@
    :tickingRate tick-rate,
    :body body})
 
+(defn- for-node
+  [var from to by block]
+  {:__class__ "UziForNode",
+   :counter var,
+   :start from,
+   :stop to,
+   :step by,
+   :body block})
+(defn- literal-number-node [value] {:__class__ "UziNumberLiteralNode",
+                                    :value value})
 
 
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"} )
@@ -31,22 +41,22 @@
                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
                           :primitives []}),
    :task (fn [identifier params state & rest]
-           (script "UziTaskNode"
-                   :identifier identifier
-                   :arguments params
-                   :state (second state)
-                   :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
-                   :body (first-class-or-default "UziBlockNode" rest nil)))
+           (script-node "UziTaskNode"
+                        :identifier identifier
+                        :arguments params
+                        :state (second state)
+                        :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
+                        :body (first-class-or-default "UziBlockNode" rest nil)))
    :procedure (fn [identifier params  & rest]
-                (script "UziProcedureNode"
-                        :identifier identifier
-                        :arguments params
-                        :body (first-class-or-default "UziBlockNode" rest nil)))
+                (script-node "UziProcedureNode"
+                             :identifier identifier
+                             :arguments params
+                             :body (first-class-or-default "UziBlockNode" rest nil)))
    :function (fn [identifier params  & rest]
-                (script "UziFunctionNode"
-                        :identifier identifier
-                        :arguments params
-                        :body (first-class-or-default "UziBlockNode" rest nil)))
+                (script-node "UziFunctionNode"
+                             :identifier identifier
+                             :arguments params
+                             :body (first-class-or-default "UziBlockNode" rest nil)))
 
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value (:value times),
@@ -58,8 +68,7 @@
    :constant (fn [letter number] {:__class__ "UziPinLiteralNode",
                                   :type letter,
                                   :number number})
-   :number (fn [number] {:__class__ "UziNumberLiteralNode",
-                                :value number})
+   :number (fn [number] (literal-number-node number))
    :call (fn [selector & args] {:__class__ "UziCallNode",
                                 :selector selector
                                 :arguments args})
@@ -73,9 +82,12 @@
    :variable (fn [name] {:__class__ "UziVariableNode",
                          :name name})
    :return (fn [& expr] {:__class__ "UziReturnNode",
-                       :value (or (first expr) {:__class__ "UziNumberLiteralNode",
-                                                :value 0})})
+                       :value (or (first expr) (literal-number-node 0))})
    :subExpr (fn [rest] rest)
+   :for (fn
+          ([var from to block] (for-node var from to (literal-number-node 1)  block))
+          ([var from to by block] (for-node var from to by block))
+          )
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
                                        :selector op,
