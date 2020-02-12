@@ -44,12 +44,12 @@
         "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
          import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
          importPath = #'\\'[^\\']+\\''
-         <script> =  (task | function | procedure)
+         <script> =  (task / function / procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
 
          primitive = ws <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
 
-         <statementList> = ws statement* statement
+         <statementList> = ws statement*
          <statement> = ws (variableDeclaration | assignment | return | conditional
                       | startTask | stopTask | pauseTask | resumeTask
                       |while|doWhile|until|doUntil|repeat|forever|for|yield|expressionStatement) ws
