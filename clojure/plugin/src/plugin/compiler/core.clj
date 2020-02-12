@@ -11,15 +11,16 @@
 (defn compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defn- rate->delay [node]
-  (if (= (node :value) 0)
-    (double Double/MAX_VALUE)
-    (/ (case (node :scale)
-         "s" 1000
-         "m" (* 1000 60)
-         "h" (* 1000 60 60)
-         "d" (* 1000 60 60 24))
-       (node :value))))
+(defn- rate->delay [{:keys [value scale] :as node}]
+  (if-not node 0
+    (if (= value 0)
+      (double Double/MAX_VALUE)
+      (/ (case scale
+           "s" 1000
+           "m" (* 1000 60)
+           "h" (* 1000 60 60)
+           "d" (* 1000 60 60 24))
+         value))))
 
 (defn collect-globals [ast]
   (let [vars (atom #{})
