@@ -9,9 +9,6 @@
 (defmulti compile-node :__class__)
 
 (defn compile [node ctx]
-  (println "node:" (node :__class__))
-  (println "path:" (map :__class__ (ctx :path)))
-  (println)
   (compile-node node (update-in ctx [:path] conj node)))
 
 (defn- rate->delay [node]
