@@ -50,6 +50,7 @@
                   :primitives []}
         actual (parse src) ]
     (is (equivalent? expected actual)))))
+
 (deftest procedure-with-argument
   (testing "A procedure with a single argument"
     (let [src "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
@@ -80,5 +81,33 @@
                                                                   :value {:__class__ "UziVariableNode",
                                                                           :name "arg0"}}]}]}}],
                      :primitives []}
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
+(deftest function-with-arguments
+  (testing "A Function with two arguments and a return"
+    (let [ src "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}"
+          expected {:__class__ "UziProgramNode",
+                    :imports [],
+                    :globals [],
+                    :scripts [{:__class__ "UziFunctionNode",
+                               :name "default",
+                               :arguments [{:__class__ "UziVariableDeclarationNode",
+                                            :name "arg0"},
+                                           {:__class__ "UziVariableDeclarationNode",
+                                            :name "arg1"}],
+                               :body {:__class__ "UziBlockNode",
+                                      :statements [{:__class__ "UziReturnNode",
+                                                    :value {:__class__ "UziCallNode",
+                                                            :selector "%",
+                                                            :arguments [{:__class__ "Association",
+                                                                         :key nil,
+                                                                         :value {:__class__ "UziVariableNode",
+                                                                                 :name "arg0"}},
+                                                                        {:__class__ "Association",
+                                                                         :key nil,
+                                                                         :value {:__class__ "UziVariableNode",
+                                                                                 :name "arg1"}}]}}]}}],
+                    :primitives []}
           actual (parse src)]
       (is (equivalent? expected actual)))))
