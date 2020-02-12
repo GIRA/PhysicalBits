@@ -150,7 +150,7 @@
          <literal> = (constant / number)
          constant = ws ('D'/'A') integer ws
          call = ws scriptReference argList ws
-         <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
+         <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)*)?<')'>
          namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
