@@ -21,7 +21,7 @@
 
 
 
-(def scriptTypes #{"UziTaskNode"} )
+(def scriptTypes #{"UziTaskNode" "UziProcedureNode"} )
 (def transformations
   {:integer (comp clojure.edn/read-string str)
    :float (comp #(Float/parseFloat %) str)
@@ -37,6 +37,13 @@
                    :state (second state)
                    :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
                    :body (first-class-or-default "UziBlockNode" rest nil)))
+   :procedure (fn [identifier params  & rest]
+           (script "UziProcedureNode"
+                   :identifier identifier
+                   :arguments params
+                   :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
+                   :body (first-class-or-default "UziBlockNode" rest nil)))
+
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value (:value times),
                                   :scale unit}),
@@ -53,7 +60,11 @@
                                 :selector selector
                                 :arguments args})
    :block (fn [& statements] {:__class__ "UziBlockNode" :statements statements})
-   :paramsList (fn [& params] (or params []))
+   :paramsList (fn [& params] (or  (vec params) []))
+   :argument (fn [name] {:__class__ "UziVariableDeclarationNode",
+                         :name name})
+   :variable (fn [name] {:__class__ "UziVariableNode",
+                         :name name})
    })
 
 (def parse-program
