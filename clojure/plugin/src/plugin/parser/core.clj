@@ -73,9 +73,15 @@
                        :value (or (first expr) {:__class__ "UziNumberLiteralNode",
                                                 :value 0})})
    :subExpr (fn [rest] rest)
+   ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
                                        :selector op,
-                                       :arguments [left right]})
+                                       :arguments [{:__class__ "Association",
+                                                    :key nil,
+                                                    :value left}
+                                                   {:__class__ "Association",
+                                                    :key nil,
+                                                    :value right}]})
    })
 
 (def parse-program
