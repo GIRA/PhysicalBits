@@ -91,6 +91,11 @@
   ; TODO(Richo): Detect if var is global or local
   [(emit/push-var (node :name))])
 
+(defmethod compile-node "UziVariableDeclarationNode"
+  [{:keys [unique-name value]} ctx]
+  ; TODO(Richo): Check if the variable value is a literal number
+  (conj (compile value ctx)
+        (emit/write-local unique-name)))
 
 (defmethod compile-node "UziPinLiteralNode" [{:keys [type number]} ctx]
   [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
