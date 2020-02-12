@@ -91,3 +91,26 @@
                                 :value 1}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
+
+(deftest task-without-ticking-rate
+  (let [ast {:__class__ "UziProgramNode",
+             :scripts [{:__class__ "UziTaskNode",,
+                        :name "foo",
+                        :arguments [],
+                        :state "running",
+                        :body {:__class__ "UziBlockNode",
+                               :statements []}}],
+             :primitives []}
+        expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [],
+                             :locals [],
+                             :name "foo",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                               :value 0}}}
+        actual (compile-tree ast)]
+    (is (equivalent? expected actual))))
