@@ -40,3 +40,7 @@
 (defn push-var [var-name]
   {:__class__ "UziPushInstruction"
    :argument (variable :name var-name)})
+
+(defn stop [script-name]
+  {:__class__ "UziStopScriptInstruction"
+   :argument script-name})

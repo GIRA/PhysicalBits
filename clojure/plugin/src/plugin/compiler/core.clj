@@ -51,13 +51,17 @@
                  (map #(compile % ctx))
                  vec)))
 
-(defmethod compile-node "UziTaskNode" [node ctx]
+(defmethod compile-node "UziTaskNode"
+  [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
+   ctx]
   (emit/script
-   :delay (rate->delay (node :tickingRate)),
-   :instructions (compile (node :body) ctx),
-   :name (node :name),
-   :running? (contains? #{"running" "once"}
-                        (node :state))))
+   :name task-name,
+   :delay (rate->delay ticking-rate),
+   :running? (contains? #{"running" "once"} state)
+   :instructions (let [instructions (compile body ctx)]
+                   (if (= "once" state)
+                     (conj instructions (emit/stop task-name))
+                     instructions))))
 
 (defmethod compile-node "UziBlockNode" [node ctx]
   ; TODO(Richo): Add pop instruction if last stmt is expression
