@@ -69,8 +69,9 @@
                          :name name})
    :variable (fn [name] {:__class__ "UziVariableNode",
                          :name name})
-   :return (fn [expr] {:__class__ "UziReturnNode",
-                       :value expr})
+   :return (fn [& expr] {:__class__ "UziReturnNode",
+                       :value (or (first expr) {:__class__ "UziNumberLiteralNode",
+                                                :value 0})})
    :subExpr (fn [rest] rest)
    :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
                                        :selector op,
