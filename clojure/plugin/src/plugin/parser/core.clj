@@ -42,7 +42,7 @@
 (def parse-program
       (insta/parser
         "program = ws import* ws variableDeclaration* ws script * ws
-         import = ws <'import'> ws identifier ws <'from'> ws importPath ws (endl | block)
+         import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
          importPath = #'\\'[^\\']+\\''
          <script> =  (task | function | procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
@@ -94,12 +94,12 @@
 
 
 
-         <expr> =(binaryExpr | nonBinaryExpr)
+         <expr> =(binaryExpr / nonBinaryExpr)
          <nonBinaryExpr> = (unary / literal / call / variable / subExpr)
          <unary> = not
          not = ws <'!'> ws nonBinaryExpr ws
-         <literal> = (constant | number )
-         constant = ws ('D'|'A') integer ws
+         <literal> = (constant / number)
+         constant = ws ('D'/'A') integer ws
          call = ws scriptReference argList ws
          <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)?)?<')'>
          namedArg = ws( identifier ws <':'> ws)? expr ws
@@ -113,8 +113,9 @@
          <ws> = <#'\\s'*>
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
-         integer = #'-?\\d+'
-         float = ('NaN' /#'-?Infinity' / #'-?\\d*\\.\\d*')
+         <digits> = #'\\d+'
+         integer = '-'? digits
+         float = ('NaN' /#'-?Infinity' / integer '.' digits)
          number = (float / integer)"))
 
 (defn parse [str] (insta/transform transformations (parse-program str )))
