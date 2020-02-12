@@ -91,6 +91,8 @@
          function = ws <'func'> ws identifier ws paramsList ws block ws
          procedure = ws <'proc'> ws identifier ws paramsList ws block ws
 
+         comments = (<'\"'> #'[^\"]*' <'\"'>)
+
 
 
 
@@ -112,7 +114,7 @@
 
          <endl> =ws <';'> ws
          <name> =#'[a-zA-Z_][_\\w]*'
-         <ws> = <#'\\s'*>
+         <ws> = (<#'\\s'*> / comments)+
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          <digits> = #'\\d+'
