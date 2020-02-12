@@ -44,3 +44,11 @@
 (defn stop [script-name]
   {:__class__ "UziStopScriptInstruction"
    :argument script-name})
+
+(defn write-local [var-name]
+  {:__class__ "UziWriteLocalInstruction"
+   :argument (variable :name var-name)})
+
+(defn read-local [var-name]
+  {:__class__ "UziReadLocalInstruction"
+   :argument (variable :name var-name)})
