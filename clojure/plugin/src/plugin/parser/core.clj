@@ -57,8 +57,8 @@
          variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
          return =  ws 'return' ws expr? endl
-         conditional = ws <'if'> ws expr ws block (ws <'else'> ws expr) endl
-         while = ws <'while'> ws expr ws block
+         conditional = ws <'if'> ws expr ws block (ws <'else'> ws expr)
+         while = ws <'while'> ws expr ws ( block ws / endl )
          doWhile = ws <'do'> ws block ws <'while'> ws expr endl
          until = ws <'until'> ws expr ws block
          doUntil = ws <'do'> ws block ws <'until'> ws expr endl
