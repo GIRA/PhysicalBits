@@ -8,7 +8,7 @@
    :scripts scripts})
 
 (defn variable [& {:keys [name value] :or {value 0}}]
-  (let [result {:__class__ "UziVariable" :value value}]
+  (let [result {:__class__ "UziVariable" :value (or value 0)}]
     (if name
       (assoc result :name name)
       result)))
