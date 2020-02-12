@@ -5,7 +5,7 @@
 (defn- first-or-default [pred col default]
   (or (first (filter pred col)) default) )
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
-
+(defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
 (defn script
   [type & {:keys [identifier arguments tick-rate state locals body]
       :or {arguments []
@@ -27,7 +27,7 @@
    :float (comp #(Float/parseFloat %) str)
    :program  (fn [& arg] {:__class__ "UziProgramNode"
                           :imports [],
-                          :globals [],
+                          :globals (filter-class "UziVariableDeclarationNode" arg),
                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
                           :primitives []}),
    :task (fn [identifier params state & rest]
@@ -67,6 +67,9 @@
    :paramsList (fn [& params] (or  (vec params) []))
    :argument (fn [name] {:__class__ "UziVariableDeclarationNode",
                          :name name})
+   :variableDeclaration (fn [variable & rest]
+                          { :__class__ "UziVariableDeclarationNode",
+                           :name (:name variable)})
    :variable (fn [name] {:__class__ "UziVariableNode",
                          :name name})
    :return (fn [& expr] {:__class__ "UziReturnNode",
