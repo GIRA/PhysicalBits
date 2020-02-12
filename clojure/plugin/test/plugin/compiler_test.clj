@@ -115,7 +115,6 @@
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
 
-
 (deftest task-with-once
   (let [ast {:__class__ "UziProgramNode",
              :scripts [{:__class__ "UziTaskNode",,
@@ -139,3 +138,60 @@
                                 :value 0}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
+
+; TODO(RICHO): Uncomment this test and make it pass!
+#_(deftest program-with-local-variable
+    (let [ast {:__class__ "UziProgramNode",
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "foo",
+                          :arguments [],
+                          :state "once",
+                          :tickingRate nil,
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziVariableDeclarationNode",
+                                               :name "pin",
+                                               :value {:__class__ "UziPinLiteralNode",
+                                                       :type "D",
+                                                       :number 13}},
+                                              {:__class__ "UziCallNode",
+                                               :selector "toggle",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziVariableNode",
+                                                                    :name "pin"}}]}]}}]}
+          expected {:__class__ "UziProgram",
+                    :scripts [{:__class__ "UziScript",
+                               :name "foo",
+                               :ticking true,
+                               :delay {:__class__ "UziVariable",
+                                       :value 0},
+                               :locals [{:__class__ "UziVariable",
+                                         :name "pin#1",
+                                         :value 0}],
+                               :instructions [{:__class__ "UziPushInstruction",
+                                               :argument {:__class__ "UziVariable",
+                                                          :value 13}},
+                                              {:__class__ "UziWriteLocalInstruction",
+                                               :argument {:__class__ "UziVariable",
+                                                          :name "pin#1",
+                                                          :value 0}},
+                                              {:__class__ "UziReadLocalInstruction",
+                                               :argument {:__class__ "UziVariable",
+                                                          :name "pin#1",
+                                                          :value 0}},
+                                              {:__class__ "UziPrimitiveCallInstruction",
+                                               :argument {:__class__ "UziPrimitive",
+                                                          ;:code 2,
+                                                          :name "toggle",
+                                                          ;:stackTransition {:__class__ "Association",
+                                                          ;                  :key 1,
+                                                          ;                  :value 0}
+                                                          }},
+                                              {:__class__ "UziStopScriptInstruction",
+                                               :argument "foo"}]}],
+                    :variables #{{:__class__ "UziVariable",
+                                  :value 0},
+                                 {:__class__ "UziVariable",
+                                  :value 13}}}
+          actual (compile-tree ast)]
+      (is (equivalent? expected actual))))
