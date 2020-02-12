@@ -6,6 +6,28 @@
   (or (first (filter pred col)) default) )
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
+
+(def operator-precedence ["**"
+                          "*"
+                          "/"
+                          "%"
+                          "+"
+                          "-"
+                          "<<"
+                          ">>"
+                          "<"
+                          "<="
+                          ">"
+                          ">="
+                          "=="
+                          "!="
+                          "&"
+                          "^"
+                          "|"
+                          "&&"
+                          "||"])
+(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) ") ws\n"))
+
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
       :or {arguments []
@@ -92,7 +114,7 @@
           )
    :assignment (fn [var expr] {:__class__ "UziAssignmentNode" :left var :right expr})
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
-   :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
+   :binaryExpr (fn [left op right] {:__class__ "UziCallNode",
                                        :selector op,
                                        :arguments [{:__class__ "Association",
                                                     :key nil,
@@ -104,7 +126,7 @@
 
 (def parse-program
       (insta/parser
-        "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
+        (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
          import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
          importPath = #'\\'[^\\']+\\''
          <script> =  (task / function / procedure)
@@ -172,7 +194,6 @@
          namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
-         binaryExpr = ws nonBinaryExpr ws (binarySelector ws nonBinaryExpr)+ ws
          binarySelector = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]'
 
          <endl> =ws <';'> ws
@@ -183,7 +204,7 @@
          <digits> = #'\\d+'
          integer = '-'? digits
          float = ('NaN' /#'-?Infinity' / integer '.' digits)
-         number = (float / integer)"))
+         number = (float / integer)" operator-grammar)))
 
 (defn parse [str] (insta/transform transformations (parse-program str )))
 

@@ -176,5 +176,50 @@
                                                                                  :value 0.5}}]}}]}}],
                     :primitives []}
           actual (parse src)
-          ]
-      (is (equivalent? expected actual)))))
+          ](is (equivalent? expected actual)))))
+
+
+(deftest operator-precedence
+  ;TODO(Tera): This should probably test all the operators
+  (testing "A Function with some of the operators to check if the correct precedence is being built"
+    (let [src "func operate(arg0, arg1) {\n\treturn arg0 + arg1**2*3;\n}"
+          expected  {:__class__ "UziProgramNode",
+                     :imports [],
+                     :globals [],
+                     :scripts [{:__class__ "UziFunctionNode",
+                                :name "operate",
+                                :arguments [{:__class__ "UziVariableDeclarationNode", :name "arg0"}
+                                            {:__class__ "UziVariableDeclarationNode", :name "arg1"}],
+                                :state nil,
+                                :tickingRate nil,
+                                :body {:__class__ "UziBlockNode",
+                                       :statements [{:__class__ "UziReturnNode",
+                                                     :value {:__class__ "UziCallNode",
+                                                             :selector "+",
+                                                             :arguments [{:__class__ "Association",
+                                                                          :key nil,
+                                                                          :value {:__class__ "UziVariableNode", :name "arg0"}}
+                                                                         {:__class__ "Association",
+                                                                          :key nil,
+                                                                          :value {:__class__ "UziCallNode",
+                                                                                  :selector "*",
+                                                                                  :arguments [{:__class__ "Association",
+                                                                                               :key nil,
+                                                                                               :value {:__class__ "UziCallNode",
+                                                                                                       :selector "**",
+                                                                                                       :arguments [{:__class__ "Association",
+                                                                                                                    :key nil,
+                                                                                                                    :value {:__class__ "UziVariableNode",
+                                                                                                                            :name "arg1"}}
+                                                                                                                   {:__class__ "Association",
+                                                                                                                    :key nil,
+                                                                                                                    :value {:__class__ "UziNumberLiteralNode",
+                                                                                                                            :value 2}}]}}
+                                                                                              {:__class__ "Association",
+                                                                                               :key nil,
+                                                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                                                       :value 3}}]}}]}}]}}],
+                     :primitives []}
+          actual (parse src)
+          ] (is (equivalent? expected actual)))
+    ))
