@@ -91,6 +91,10 @@
   ; TODO(Richo): Detect if var is global or local
   [(emit/push-var (node :name))])
 
+
+(defmethod compile-node "UziPinLiteralNode" [{:keys [type number]} ctx]
+  [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (:__class__ node))
   :oops)
