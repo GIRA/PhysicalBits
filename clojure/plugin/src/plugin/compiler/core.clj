@@ -23,19 +23,26 @@
          value))))
 
 (defn collect-globals [ast]
-  (let [vars (atom #{})
-        find-var #(condp = (get % :__class__)
-                    "UziTickingRateNode" (swap! vars conj (emit/variable :value (rate->delay %)))
-                    "UziNumberLiteralNode" (swap! vars conj (emit/variable :value (% :value)))
+  (let [vars (atom #{})]
+    ; Collect all literal numbers
+    (w/prewalk
+     (fn [x] (when (= "UziNumberLiteralNode" (get x :__class__))
+               (swap! vars conj (emit/variable :value (x :value)))) x)
+     ast)
 
-                    ; TODO(Richo): Variable declarations could mean local variables, not globals
-                    "UziVariableDeclarationNode" (swap! vars conj (emit/variable
-                                                                   :name (% :name)
-                                                                   :value (or (% :value) 0)))
-                    nil)]
-    (w/prewalk (fn [x] (find-var x) x) ast)
+    ; Collect all globals
+    (swap! vars into
+           (map (fn [{:keys [name value]}]
+                  (emit/variable :name name :value value))
+                (:globals ast)))
+
+    ; Collect all ticking rates
+    (swap! vars into
+           (map (fn [{:keys [tickingRate]}]
+                  (emit/variable :value (rate->delay tickingRate)))
+                (:scripts ast)))
+
     @vars))
-
 
 (defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
