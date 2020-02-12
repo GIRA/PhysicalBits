@@ -21,7 +21,7 @@
 
 
 
-(def scriptTypes #{"UziTaskNode" "UziProcedureNode"} )
+(def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"} )
 (def transformations
   {:integer (comp clojure.edn/read-string str)
    :float (comp #(Float/parseFloat %) str)
@@ -38,11 +38,15 @@
                    :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
                    :body (first-class-or-default "UziBlockNode" rest nil)))
    :procedure (fn [identifier params  & rest]
-           (script "UziProcedureNode"
-                   :identifier identifier
-                   :arguments params
-                   :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
-                   :body (first-class-or-default "UziBlockNode" rest nil)))
+                (script "UziProcedureNode"
+                        :identifier identifier
+                        :arguments params
+                        :body (first-class-or-default "UziBlockNode" rest nil)))
+   :function (fn [identifier params  & rest]
+                (script "UziFunctionNode"
+                        :identifier identifier
+                        :arguments params
+                        :body (first-class-or-default "UziBlockNode" rest nil)))
 
    :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
                                   :value (:value times),
