@@ -7,17 +7,17 @@
 
 
 (deftest empty-program
-  (let [src ""
+ (testing "An Empty Program" (let [src ""
         expected {:__class__ "UziProgramNode",
                   :imports [],
                   :globals [],
                   :scripts [],
                   :primitives []}
         actual (parse src) ]
-    (is (equivalent? expected actual))))
+    (is (equivalent? expected actual)))))
 
 (deftest blink13
-  (let [src "task default() running 1/s {\n\ttoggle(D13);\n}"
+ (testing "A Task that blinks the pin 13" (let [src "task default() running 1/s {\n\ttoggle(D13);\n}"
         expected {:__class__ "UziProgramNode",
                   :imports [],
                   :globals [],
@@ -43,7 +43,7 @@
                                                                        :number 13}}]}]}}],
                   :primitives []}
         actual (parse src) ]
-    (is (equivalent? expected actual))))
+    (is (equivalent? expected actual)))))
 
 (deftest sanity-check
   (testing "Sanity check."
