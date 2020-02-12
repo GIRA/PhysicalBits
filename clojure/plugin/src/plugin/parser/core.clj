@@ -63,12 +63,18 @@
    :call (fn [selector & args] {:__class__ "UziCallNode",
                                 :selector selector
                                 :arguments args})
-   :block (fn [& statements] {:__class__ "UziBlockNode" :statements statements})
+   :block (fn [& statements] {:__class__ "UziBlockNode" :statements (vec statements)})
    :paramsList (fn [& params] (or  (vec params) []))
    :argument (fn [name] {:__class__ "UziVariableDeclarationNode",
                          :name name})
    :variable (fn [name] {:__class__ "UziVariableNode",
                          :name name})
+   :return (fn [expr] {:__class__ "UziReturnNode",
+                       :value expr})
+   :subExpr (fn [rest] rest)
+   :binaryExpr (fn [left [_ op] right] {:__class__ "UziCallNode",
+                                       :selector op,
+                                       :arguments [left right]})
    })
 
 (def parse-program
@@ -88,7 +94,7 @@
 
          variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
-         return =  ws 'return' ws expr? endl
+         return =  ws <'return'> ws expr? endl
          conditional = ws <'if'> ws expr ws block (ws <'else'> ws expr)
          while = ws <'while'> ws expr ws ( block ws / endl )
          doWhile = ws <'do'> ws block ws <'while'> ws expr endl
