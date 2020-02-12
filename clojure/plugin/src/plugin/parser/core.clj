@@ -8,7 +8,7 @@
 (def scriptTypes #{"UziTaskNode"} )
 (def transformations
   {:integer (comp clojure.edn/read-string str)
-   :float (comp clojure.edn/read-string str)
+   :float (comp #(Float/parseFloat %) str)
    :program  (fn [& arg] {:__class__ "UziProgramNode"
                           :imports [],
                           :globals [],
@@ -114,7 +114,7 @@
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          integer = #'-?\\d+'
-         float = #'\\d*\\.\\d*'
+         float = ('NaN' /#'-?Infinity' / #'-?\\d*\\.\\d*')
          number = (float / integer)"))
 
 (defn parse [str] (insta/transform transformations (parse-program str )))
