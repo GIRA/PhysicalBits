@@ -11,7 +11,6 @@
 (defn compile [node ctx]
   (println "node:" (node :__class__))
   (println "path:" (map :__class__ (ctx :path)))
-  (println "vars:" @(ctx :variable-names))
   (println)
   (compile-node node (update-in ctx [:path] conj node)))
 
@@ -82,12 +81,22 @@
   :oops)
 
 (defn- create-context []
-  {:path (list)
-   :variable-names (atom [])})
+  {:path (list)})
+
+(defn- assign-unique-variable-names [ast]
+  ; TODO(Richo): Only apply to locals?
+  (let [counter (atom 0)]
+    (w/postwalk
+     #(if (= "UziVariableDeclarationNode" (get % :__class__ ))
+        (assoc % :unique-name (str (:name %) "#" (swap! counter inc)))
+        %)
+     ast)))
 
 (defn compile-tree [ast]
-  (compile (linker/bind-primitives ast)
-           (create-context)))
+  (-> ast
+      linker/bind-primitives
+      assign-unique-variable-names
+      (compile (create-context))))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
