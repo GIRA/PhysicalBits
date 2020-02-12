@@ -47,6 +47,8 @@
          <script> =  (task | function | procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
 
+         primitive = ws <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
+
          <statementList> = ws statement* statement
          <statement> = ws (variableDeclaration | assignment | return | conditional
                       | startTask | stopTask | pauseTask | resumeTask
