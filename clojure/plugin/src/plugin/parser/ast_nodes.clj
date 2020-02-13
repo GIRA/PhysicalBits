@@ -10,6 +10,12 @@
    :globals    globals
    :scripts    scripts
    :primitives primitives})
+(defn import-node
+  [alias path block]
+  {:__class__           "UziImportNode",
+   :alias               alias,
+   :path                path,
+   :initializationBlock block})
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
            :or   {arguments []

@@ -38,7 +38,7 @@
    :float               (comp #(Float/parseFloat %) str)
    :program             (fn [& arg]
                           (program-node
-                            []
+                            (filter-class "UziImportNode" arg)
                             (filter-class "UziVariableDeclarationNode" arg)
                             (filterv #(contains? scriptTypes (:__class__ %)) arg)
                             [])),
@@ -88,6 +88,16 @@
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
    :yield               yield-node
+   :import              (fn [& args]
+                          (let [path (first (filter #(= (first %) :importPath) args))
+                                block (first-class-or-default "UziBlockNode" args (block-node []))
+                                ;TODO(Tera): there is probably a better way of doing this.
+                                name (first (filter
+                                              #(and (not= (:__class__ %) "UziBlockNode")
+                                                    (not= (first %) :importPath))
+                                              args))
+                                ]
+                            (import-node name (second path) block)))
    })
 
 (def parse-program
