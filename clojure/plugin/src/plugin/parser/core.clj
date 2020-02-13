@@ -77,11 +77,8 @@
    :paramsList          (fn [& params] (or (vec params) []))
    :argument            (fn [name] {:__class__ "UziVariableDeclarationNode",
                                     :name      name})
-   :variableDeclaration (fn
-                          ([variable]
-                           {:__class__ "UziVariableDeclarationNode" :name (:name variable)})
-                          ([variable expr]
-                           {:__class__ "UziVariableDeclarationNode" :name (:name variable) :value expr}))
+   :variableDeclaration (fn [variable & expr]
+                          (variable-declaration-node (:name variable) (first expr)))
    :variable            (fn [name] {:__class__ "UziVariableNode",
                                     :name      name})
    :return              (fn [& expr] {:__class__ "UziReturnNode",
