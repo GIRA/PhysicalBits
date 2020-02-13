@@ -87,7 +87,7 @@
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))
                           ([var from to by block] (for-node (:name var) from to by block))
                           )
-   :assignment          (fn [var expr] {:__class__ "UziAssignmentNode" :left var :right expr})
+   :assignment          assignment-node
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr          (fn [left op right] {:__class__ "UziCallNode",
                                              :selector  op,
