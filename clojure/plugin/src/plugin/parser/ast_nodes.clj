@@ -78,8 +78,10 @@
    :pre       pre,
    :condition condition,
    :post      post,
-   :negated   negated}
-  )
+   :negated   negated})
+(defn forever-node
+  [block] {:__class__ "UziForeverNode",
+           :body      block})
 (defn block-node
   [statements]
   {:__class__ "UziBlockNode" :statements statements})

@@ -80,6 +80,7 @@
    :until               (fn [expr & block] (while-node (block-node []) expr (first block) true))
    :doWhile             (fn [block expr] (while-node block expr (block-node []) false))
    :doUntil             (fn [block expr] (while-node block expr (block-node []) true))
+   :forever             forever-node
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
    })
