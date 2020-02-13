@@ -1,5 +1,9 @@
 (ns plugin.parser.ast-nodes)
-
+(defn- conj-if-not-nil
+  [map key value]
+  (conj map
+        (when value [key value]))
+  )
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
            :or   {arguments []
@@ -29,7 +33,8 @@
 (defn variable-declaration-node
   ([name] (variable-declaration-node name nil))
   ([name expr]
-   (conj {:__class__ "UziVariableDeclarationNode"
-          :name      name}
-         (when expr [:value expr]))
+   (conj-if-not-nil
+     {:__class__ "UziVariableDeclarationNode"
+      :name      name}
+     :value expr)
    ))

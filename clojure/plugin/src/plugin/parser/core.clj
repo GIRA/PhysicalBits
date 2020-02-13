@@ -75,8 +75,7 @@
                                                :arguments args})
    :block               (fn [& statements] {:__class__ "UziBlockNode" :statements (vec statements)})
    :paramsList          (fn [& params] (or (vec params) []))
-   :argument            (fn [name] {:__class__ "UziVariableDeclarationNode",
-                                    :name      name})
+   :argument            (fn [name] (variable-declaration-node name))
    :variableDeclaration (fn [variable & expr]
                           (variable-declaration-node (:name variable) (first expr)))
    :variable            (fn [name] {:__class__ "UziVariableNode",
