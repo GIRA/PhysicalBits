@@ -36,9 +36,10 @@
 (def transformations
   {:integer             (comp clojure.edn/read-string str)
    :float               (comp #(Float/parseFloat %) str)
+   :identifier          str
    :program             (fn [& arg]
                           (program-node
-                            []
+                            (filter-class "UziImportNode" arg)
                             (filter-class "UziVariableDeclarationNode" arg)
                             (filterv #(contains? scriptTypes (:__class__ %)) arg)
                             [])),
@@ -46,7 +47,7 @@
                           (script-node "UziTaskNode"
                                        :identifier identifier
                                        :arguments params
-                                       :state (second state)
+                                       :state (or (second state) "once")
                                        :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
    :procedure           (fn [identifier params & rest]
@@ -61,10 +62,10 @@
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
 
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
-   :namedArg            (fn [a & b] (association-node (if b a nil) (or b a)))
+   :namedArg            (fn [a & b] (association-node (if b a nil) (or (first b) a)))
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
-   :call                call-node
+   :call                (fn [selector & args] (call-node selector (vec args)))
    :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
    :argument            variable-declaration-node
@@ -76,15 +77,35 @@
    :for                 (fn
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))
                           ([var from to by block] (for-node (:name var) from to by block)))
+   :while               (fn [expr & block] (while-node (block-node []) expr (or (first block) (block-node [])) false))
+   :until               (fn [expr & block] (while-node (block-node []) expr (or (first block) (block-node [])) true))
+   :doWhile             (fn [block expr] (do-while-node block expr (block-node []) false))
+   :doUntil             (fn [block expr] (do-until-node block expr (block-node []) true))
+   :forever             forever-node
+   :repeat              repeat-node
+   :conditional         (fn
+                          ([expr block] (conditional-node expr block (block-node [])))
+                          ([expr block else-block] (conditional-node expr block else-block)))
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
+   :yield               yield-node
+   :import              (fn [& args]
+                          (let [path (first (filter #(= (first %) :importPath) args))
+                                block (first-class-or-default "UziBlockNode" args (block-node []))
+                                ;TODO(Tera): there is probably a better way of doing this.
+                                name (first (filter
+                                              #(and (not= (:__class__ %) "UziBlockNode")
+                                                    (not= (first %) :importPath))
+                                              args))
+                                ]
+                            (import-node name (second path) block)))
    })
 
 (def parse-program
   (insta/parser
     (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
          import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
-         importPath = #'\\'[^\\']+\\''
+         importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> =  (task / function / procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
 
@@ -98,10 +119,10 @@
          variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
          return =  ws <'return'> ws expr? endl
-         conditional = ws <'if'> ws expr ws block (ws <'else'> ws expr)
+         conditional = ws <'if'> ws expr ws block (ws <'else'> ws block ws)?
          while = ws <'while'> ws expr ws ( block ws / endl )
          doWhile = ws <'do'> ws block ws <'while'> ws expr endl
-         until = ws <'until'> ws expr ws block
+         until = ws <'until'> ws expr ws (block ws / endl )
          doUntil = ws <'do'> ws block ws <'until'> ws expr endl
          repeat = ws <'repeat'> ws expr ws block ws
          forever = ws <'forever'> ws block ws
@@ -119,14 +140,14 @@
          scriptList = ws scriptReference (ws <','> ws scriptReference)* endl
          <scriptReference> = ws identifier ws
 
-         <identifier> = name ('.' name)*
+         identifier = name ('.' name)*
          variable = ws identifier ws
 
          task=<'task'> ws identifier paramsList taskState tickingRate? block ws
 
          paramsList = ws<'('> (ws argument (ws <','> ws argument)*)? ws <')'> ws
          argument = ws identifier ws
-         taskState = ws ('running'|'stopped') ws
+         taskState = ws ('running'|'stopped')? ws
          tickingRate = number ws <'/'> ( 's' | 'm' | 'h' | 'd')
 
          function = ws <'func'> ws identifier ws paramsList ws block ws

@@ -10,6 +10,12 @@
    :globals    globals
    :scripts    scripts
    :primitives primitives})
+(defn import-node
+  [alias path block]
+  {:__class__           "UziImportNode",
+   :alias               alias,
+   :path                path,
+   :initializationBlock block})
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
            :or   {arguments []
@@ -17,12 +23,11 @@
                   state     nil
                   body      nil}}]
   (conj-if-not-nil
-    (conj-if-not-nil {:__class__ type,
-                      :name      identifier,
-                      :arguments arguments,
-
-                      :body      body}
-                     :tickingRate tick-rate)
+    {:__class__   type,
+     :name        identifier,
+     :arguments   arguments,
+     :tickingRate tick-rate
+     :body        body}
     :state state))
 (defn literal-number-node
   [value]
@@ -60,7 +65,7 @@
   [expr]
   {:__class__ "UziReturnNode", :value expr})
 (defn call-node
-  [selector & args]
+  [selector args]
   {:__class__ "UziCallNode",
    :selector  selector
    :arguments args})
@@ -72,6 +77,45 @@
    :stop      to,
    :step      by,
    :body      block})
+(defn while-node
+  [pre condition post negated]
+  {:__class__ "UziWhileNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
+;TODO(Tera): The Do While Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
+(defn do-while-node
+  [pre condition post negated]
+  {:__class__ "UziDoWhileNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
+
+;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
+(defn do-until-node
+  [pre condition post negated]
+  {:__class__ "UziDoUntilNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
+(defn yield-node
+  [] {:__class__ "UziYieldNode"})
+(defn forever-node
+  [block] {:__class__ "UziForeverNode",
+           :body      block})
+(defn repeat-node
+  [times block] {:__class__ "UziRepeatNode"
+                 :times     times
+                 :body      block})
+(defn conditional-node
+  [condition true-branch false-branch]
+  {:__class__   "UziConditionalNode"
+   :condition   condition
+   :trueBranch  true-branch
+   :falseBranch false-branch})
 (defn block-node
   [statements]
   {:__class__ "UziBlockNode" :statements statements})
