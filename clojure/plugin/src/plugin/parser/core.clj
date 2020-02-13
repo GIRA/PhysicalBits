@@ -75,7 +75,7 @@
                                                :arguments args})
    :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
-   :argument            (fn [name] (variable-declaration-node name))
+   :argument            variable-declaration-node
    :variableDeclaration (fn [variable & expr]
                           (variable-declaration-node (:name variable) (first expr)))
    :variable            variable-node
