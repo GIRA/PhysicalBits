@@ -17,12 +17,11 @@
                   state     nil
                   body      nil}}]
   (conj-if-not-nil
-    (conj-if-not-nil {:__class__ type,
-                      :name      identifier,
-                      :arguments arguments,
-
-                      :body      body}
-                     :tickingRate tick-rate)
+    {:__class__ type,
+     :name      identifier,
+     :arguments arguments,
+     :tickingRate tick-rate
+     :body      body}
     :state state))
 (defn literal-number-node
   [value]
