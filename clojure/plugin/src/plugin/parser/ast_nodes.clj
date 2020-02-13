@@ -72,6 +72,14 @@
    :stop      to,
    :step      by,
    :body      block})
+(defn while-node
+  [pre condition post negated]
+  {:__class__ "UziWhileNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated}
+  )
 (defn block-node
   [statements]
   {:__class__ "UziBlockNode" :statements statements})

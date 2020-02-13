@@ -76,6 +76,10 @@
    :for                 (fn
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))
                           ([var from to by block] (for-node (:name var) from to by block)))
+   :while               (fn [expr & block] (while-node (block-node []) expr (first block) false))
+   :until               (fn [expr & block] (while-node (block-node []) expr (first block) true))
+   :doWhile             (fn [block expr] (while-node block expr (block-node []) false))
+   :doUntil             (fn [block expr] (while-node block expr (block-node []) true))
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
    })
@@ -101,7 +105,7 @@
          conditional = ws <'if'> ws expr ws block (ws <'else'> ws block ws)?
          while = ws <'while'> ws expr ws ( block ws / endl )
          doWhile = ws <'do'> ws block ws <'while'> ws expr endl
-         until = ws <'until'> ws expr ws (block ws / endl)
+         until = ws <'until'> ws expr ws (block ws / endl )
          doUntil = ws <'do'> ws block ws <'until'> ws expr endl
          repeat = ws <'repeat'> ws expr ws block ws
          forever = ws <'forever'> ws block ws
