@@ -35,6 +35,9 @@
      :value expr)
    ))
 
+(defn variable-node
+  [name]
+  {:__class__ "UziVariableNode", :name name})
 (defn return-node
   [expr]
   {:__class__ "UziReturnNode", :value expr})

@@ -78,14 +78,12 @@
    :argument            (fn [name] (variable-declaration-node name))
    :variableDeclaration (fn [variable & expr]
                           (variable-declaration-node (:name variable) (first expr)))
-   :variable            (fn [name] {:__class__ "UziVariableNode",
-                                    :name      name})
+   :variable            variable-node
    :return              (fn [& expr] (return-node (or (first expr) (literal-number-node 0))))
    :subExpr             (fn [rest] rest)
    :for                 (fn
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))
-                          ([var from to by block] (for-node (:name var) from to by block))
-                          )
+                          ([var from to by block] (for-node (:name var) from to by block)))
    :assignment          assignment-node
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr          binary-expression-node
