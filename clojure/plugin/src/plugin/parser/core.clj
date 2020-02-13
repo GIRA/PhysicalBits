@@ -77,7 +77,6 @@
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))
                           ([var from to by block] (for-node (:name var) from to by block)))
    :assignment          assignment-node
-   ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :binaryExpr          binary-expression-node
    })
 

@@ -79,6 +79,7 @@
   [left op right]
   {:__class__ "UziCallNode",
    :selector  op,
+   ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
    :arguments [{:__class__ "Association",
                 :key       nil,
                 :value     left}
