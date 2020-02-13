@@ -36,6 +36,7 @@
 (def transformations
   {:integer             (comp clojure.edn/read-string str)
    :float               (comp #(Float/parseFloat %) str)
+   :identifier str
    :program             (fn [& arg]
                           (program-node
                             (filter-class "UziImportNode" arg)
@@ -139,7 +140,7 @@
          scriptList = ws scriptReference (ws <','> ws scriptReference)* endl
          <scriptReference> = ws identifier ws
 
-         <identifier> = name ('.' name)*
+         identifier = name ('.' name)*
          variable = ws identifier ws
 
          task=<'task'> ws identifier paramsList taskState tickingRate? block ws
