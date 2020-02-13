@@ -46,6 +46,11 @@
 (defn return-node
   [expr]
   {:__class__ "UziReturnNode", :value expr})
+(defn call-node
+  [selector & args]
+  {:__class__ "UziCallNode",
+                    :selector  selector
+                    :arguments args})
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",

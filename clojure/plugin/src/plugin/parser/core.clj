@@ -68,9 +68,7 @@
                                      })
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
-   :call                (fn [selector & args] {:__class__ "UziCallNode",
-                                               :selector  selector
-                                               :arguments args})
+   :call                call-node
    :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
    :argument            variable-declaration-node
