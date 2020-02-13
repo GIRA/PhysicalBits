@@ -316,3 +316,43 @@
           ] (is (equivalent? expected actual)))
 
     ))
+
+(deftest control-structures-part-II
+  (testing "A task with a do while, do until and a yield"
+    (let
+      [src "task test()\n{\n\tdo{var a = 3;}\n\tuntil(1);\n\tdo{\n\t\tvar a= 4;\n\t\tyield;\n\t}while(1);\n}"
+       expected {:__class__ "UziProgramNode",
+                 :globals   [],
+                 :imports   [],
+                 :scripts   [{:__class__   "UziTaskNode",
+                              :arguments   [],
+                              :body        {:__class__  "UziBlockNode",
+                                            :statements [{:__class__ "UziDoUntilNode",
+                                                          :condition {:__class__ "UziNumberLiteralNode",
+                                                                      :value     1},
+                                                          :negated   true,
+                                                          :post      {:__class__  "UziBlockNode",
+                                                                      :statements []},
+                                                          :pre       {:__class__  "UziBlockNode",
+                                                                      :statements [{:__class__ "UziVariableDeclarationNode",
+                                                                                    :name      "a",
+                                                                                    :value     {:__class__ "UziNumberLiteralNode",
+                                                                                                :value     3}}]}},
+                                                         {:__class__ "UziDoWhileNode",
+                                                          :condition {:__class__ "UziNumberLiteralNode",
+                                                                      :value     1},
+                                                          :negated   false,
+                                                          :post      {:__class__  "UziBlockNode",
+                                                                      :statements []},
+                                                          :pre       {:__class__  "UziBlockNode",
+                                                                      :statements [{:__class__ "UziVariableDeclarationNode",
+                                                                                    :name      "a",
+                                                                                    :value     {:__class__ "UziNumberLiteralNode",
+                                                                                                :value     4}},
+                                                                                   {:__class__ "UziYieldNode",
+                                                                                    }]}}]},
+                              :name        "test",
+                              :state       "once",
+                              :tickingRate nil}]}
+
+       actual (parse src)] (is (equivalent? expected actual)))))
