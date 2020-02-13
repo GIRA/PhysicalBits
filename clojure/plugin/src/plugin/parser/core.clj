@@ -46,7 +46,7 @@
                           (script-node "UziTaskNode"
                                        :identifier identifier
                                        :arguments params
-                                       :state (second state)
+                                       :state (or (second state) "once")
                                        :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
    :procedure           (fn [identifier params & rest]
