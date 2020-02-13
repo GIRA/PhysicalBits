@@ -62,10 +62,7 @@
    :tickingRate         (fn [times unit] {:__class__ "UziTickingRateNode",
                                           :value     (:value times),
                                           :scale     unit}),
-   :namedArg            (fn [a & b] {:__class__ "Association",
-                                     :key       (if b a nil),
-                                     :value     (or b a)
-                                     })
+   :namedArg            (fn [a & b] (association-node (if b a nil) (or b a)))
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
    :call                call-node
