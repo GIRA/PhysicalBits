@@ -87,6 +87,7 @@
                           ([expr block else-block] (conditional-node expr block else-block)))
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
+   :yield               yield-node
    })
 
 (def parse-program

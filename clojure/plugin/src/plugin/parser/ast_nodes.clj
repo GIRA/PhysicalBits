@@ -17,11 +17,11 @@
                   state     nil
                   body      nil}}]
   (conj-if-not-nil
-    {:__class__ type,
-     :name      identifier,
-     :arguments arguments,
+    {:__class__   type,
+     :name        identifier,
+     :arguments   arguments,
      :tickingRate tick-rate
-     :body      body}
+     :body        body}
     :state state))
 (defn literal-number-node
   [value]
@@ -88,13 +88,15 @@
    :negated   negated})
 
 ;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
- (defn do-until-node
+(defn do-until-node
   [pre condition post negated]
   {:__class__ "UziDoUntilNode",
    :pre       pre,
    :condition condition,
    :post      post,
    :negated   negated})
+(defn yield-node
+  [] {:__class__ "UziYieldNode"})
 (defn forever-node
   [block] {:__class__ "UziForeverNode",
            :body      block})
