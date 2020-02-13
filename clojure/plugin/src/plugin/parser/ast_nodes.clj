@@ -78,6 +78,23 @@
    :condition condition,
    :post      post,
    :negated   negated})
+;TODO(Tera): The Do While Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
+(defn do-while-node
+  [pre condition post negated]
+  {:__class__ "UziDoWhileNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
+
+;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
+ (defn do-until-node
+  [pre condition post negated]
+  {:__class__ "UziDoUntilNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
 (defn forever-node
   [block] {:__class__ "UziForeverNode",
            :body      block})

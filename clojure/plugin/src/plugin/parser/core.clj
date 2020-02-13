@@ -78,8 +78,8 @@
                           ([var from to by block] (for-node (:name var) from to by block)))
    :while               (fn [expr & block] (while-node (block-node []) expr (or (first block) (block-node [])) false))
    :until               (fn [expr & block] (while-node (block-node []) expr (or (first block) (block-node [])) true))
-   :doWhile             (fn [block expr] (while-node block expr (block-node []) false))
-   :doUntil             (fn [block expr] (while-node block expr (block-node []) true))
+   :doWhile             (fn [block expr] (do-while-node block expr (block-node []) false))
+   :doUntil             (fn [block expr] (do-until-node block expr (block-node []) true))
    :forever             forever-node
    :repeat              repeat-node
    :conditional         (fn
