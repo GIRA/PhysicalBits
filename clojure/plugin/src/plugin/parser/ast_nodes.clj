@@ -65,7 +65,7 @@
   [expr]
   {:__class__ "UziReturnNode", :value expr})
 (defn call-node
-  [selector & args]
+  [selector args]
   {:__class__ "UziCallNode",
    :selector  selector
    :arguments args})

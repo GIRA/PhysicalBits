@@ -36,7 +36,7 @@
 (def transformations
   {:integer             (comp clojure.edn/read-string str)
    :float               (comp #(Float/parseFloat %) str)
-   :identifier str
+   :identifier          str
    :program             (fn [& arg]
                           (program-node
                             (filter-class "UziImportNode" arg)
@@ -62,10 +62,10 @@
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
 
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
-   :namedArg            (fn [a & b] (association-node (if b a nil) (or b a)))
+   :namedArg            (fn [a & b] (association-node (if b a nil) (or (first b) a)))
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
-   :call                call-node
+   :call                (fn [selector & args] (call-node selector (vec args)))
    :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
    :argument            variable-declaration-node
@@ -105,7 +105,7 @@
   (insta/parser
     (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
          import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
-         importPath = #'\\'[^\\']+\\''
+         importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> =  (task / function / procedure)
          block = ws <'{'> ws statementList ws <'}'> ws
 
