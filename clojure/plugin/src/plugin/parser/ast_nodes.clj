@@ -17,15 +17,6 @@
    :tickingRate tick-rate,
    :body        body})
 
-(defn for-node
-  [var from to by block]
-  {:__class__ "UziForNode",
-   :counter   {:__class__ "UziVariableDeclarationNode"
-               :name      (:name var)},
-   :start     from,
-   :stop      to,
-   :step      by,
-   :body      block})
 (defn literal-number-node
   [value]
   {:__class__ "UziNumberLiteralNode",
@@ -38,3 +29,12 @@
       :name      name}
      :value expr)
    ))
+
+(defn for-node
+  [name from to by block]
+  {:__class__ "UziForNode",
+   :counter   (variable-declaration-node name),
+   :start     from,
+   :stop      to,
+   :step      by,
+   :body      block})
