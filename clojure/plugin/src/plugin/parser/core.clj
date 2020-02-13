@@ -66,9 +66,7 @@
                                      :key       (if b a nil),
                                      :value     (or b a)
                                      })
-   :constant            (fn [letter number] {:__class__ "UziPinLiteralNode",
-                                             :type      letter,
-                                             :number    number})
+   :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
    :call                (fn [selector & args] {:__class__ "UziCallNode",
                                                :selector  selector

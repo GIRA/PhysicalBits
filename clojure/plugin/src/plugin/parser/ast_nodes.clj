@@ -21,6 +21,11 @@
   [value]
   {:__class__ "UziNumberLiteralNode",
    :value     value})
+(defn literal-pin-node
+  [letter number]
+  {:__class__ "UziPinLiteralNode",
+                  :type      letter,
+                  :number    number})
 
 (defn assignment-node
   [var expr]
