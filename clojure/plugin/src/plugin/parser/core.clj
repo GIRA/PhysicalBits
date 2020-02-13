@@ -4,7 +4,7 @@
 
 
 (defn- first-or-default [pred col default]
-  (or (first (filter pred col)) default) )
+  (or (first (filter pred col)) default))
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
 
@@ -32,80 +32,80 @@
 
 
 
-(def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"} )
+(def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
-  {:integer (comp clojure.edn/read-string str)
-   :float (comp #(Float/parseFloat %) str)
-   :program  (fn [& arg] {:__class__ "UziProgramNode"
-                          :imports [],
-                          :globals (filter-class "UziVariableDeclarationNode" arg),
-                          :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg),
-                          :primitives []}),
-   :task (fn [identifier params state & rest]
-           (script-node "UziTaskNode"
-                        :identifier identifier
-                        :arguments params
-                        :state (second state)
-                        :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
-                        :body (first-class-or-default "UziBlockNode" rest nil)))
-   :procedure (fn [identifier params  & rest]
-                (script-node "UziProcedureNode"
-                             :identifier identifier
-                             :arguments params
-                             :body (first-class-or-default "UziBlockNode" rest nil)))
-   :function (fn [identifier params  & rest]
-                (script-node "UziFunctionNode"
-                             :identifier identifier
-                             :arguments params
-                             :body (first-class-or-default "UziBlockNode" rest nil)))
+  {:integer             (comp clojure.edn/read-string str)
+   :float               (comp #(Float/parseFloat %) str)
+   :program             (fn [& arg] {:__class__  "UziProgramNode"
+                                     :imports    [],
+                                     :globals    (filter-class "UziVariableDeclarationNode" arg),
+                                     :scripts    (filterv #(contains? scriptTypes (:__class__ %)) arg),
+                                     :primitives []}),
+   :task                (fn [identifier params state & rest]
+                          (script-node "UziTaskNode"
+                                       :identifier identifier
+                                       :arguments params
+                                       :state (second state)
+                                       :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
+                                       :body (first-class-or-default "UziBlockNode" rest nil)))
+   :procedure           (fn [identifier params & rest]
+                          (script-node "UziProcedureNode"
+                                       :identifier identifier
+                                       :arguments params
+                                       :body (first-class-or-default "UziBlockNode" rest nil)))
+   :function            (fn [identifier params & rest]
+                          (script-node "UziFunctionNode"
+                                       :identifier identifier
+                                       :arguments params
+                                       :body (first-class-or-default "UziBlockNode" rest nil)))
 
-   :tickingRate (fn [times unit] {:__class__ "UziTickingRateNode",
-                                  :value (:value times),
-                                  :scale unit}),
-   :namedArg (fn [a & b] {:__class__ "Association",
-                          :key (if b a nil),
-                          :value (or b a)
-                          })
-   :constant (fn [letter number] {:__class__ "UziPinLiteralNode",
-                                  :type letter,
-                                  :number number})
-   :number (fn [number] (literal-number-node number))
-   :call (fn [selector & args] {:__class__ "UziCallNode",
-                                :selector selector
-                                :arguments args})
-   :block (fn [& statements] {:__class__ "UziBlockNode" :statements (vec statements)})
-   :paramsList (fn [& params] (or  (vec params) []))
-   :argument (fn [name] {:__class__ "UziVariableDeclarationNode",
-                         :name name})
+   :tickingRate         (fn [times unit] {:__class__ "UziTickingRateNode",
+                                          :value     (:value times),
+                                          :scale     unit}),
+   :namedArg            (fn [a & b] {:__class__ "Association",
+                                     :key       (if b a nil),
+                                     :value     (or b a)
+                                     })
+   :constant            (fn [letter number] {:__class__ "UziPinLiteralNode",
+                                             :type      letter,
+                                             :number    number})
+   :number              (fn [number] (literal-number-node number))
+   :call                (fn [selector & args] {:__class__ "UziCallNode",
+                                               :selector  selector
+                                               :arguments args})
+   :block               (fn [& statements] {:__class__ "UziBlockNode" :statements (vec statements)})
+   :paramsList          (fn [& params] (or (vec params) []))
+   :argument            (fn [name] {:__class__ "UziVariableDeclarationNode",
+                                    :name      name})
    :variableDeclaration (fn
                           ([variable]
-                           { :__class__ "UziVariableDeclarationNode" :name (:name variable)})
+                           {:__class__ "UziVariableDeclarationNode" :name (:name variable)})
                           ([variable expr]
-                           { :__class__ "UziVariableDeclarationNode" :name (:name variable) :value expr}))
-   :variable (fn [name] {:__class__ "UziVariableNode",
-                         :name name})
-   :return (fn [& expr] {:__class__ "UziReturnNode",
-                       :value (or (first expr) (literal-number-node 0))})
-   :subExpr (fn [rest] rest)
-   :for (fn
-          ([var from to block] (for-node var from to (literal-number-node 1)  block))
-          ([var from to by block] (for-node var from to by block))
-          )
-   :assignment (fn [var expr] {:__class__ "UziAssignmentNode" :left var :right expr})
+                           {:__class__ "UziVariableDeclarationNode" :name (:name variable) :value expr}))
+   :variable            (fn [name] {:__class__ "UziVariableNode",
+                                    :name      name})
+   :return              (fn [& expr] {:__class__ "UziReturnNode",
+                                      :value     (or (first expr) (literal-number-node 0))})
+   :subExpr             (fn [rest] rest)
+   :for                 (fn
+                          ([var from to block] (for-node var from to (literal-number-node 1) block))
+                          ([var from to by block] (for-node var from to by block))
+                          )
+   :assignment          (fn [var expr] {:__class__ "UziAssignmentNode" :left var :right expr})
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
-   :binaryExpr (fn [left op right] {:__class__ "UziCallNode",
-                                       :selector op,
-                                       :arguments [{:__class__ "Association",
-                                                    :key nil,
-                                                    :value left}
-                                                   {:__class__ "Association",
-                                                    :key nil,
-                                                    :value right}]})
+   :binaryExpr          (fn [left op right] {:__class__ "UziCallNode",
+                                             :selector  op,
+                                             :arguments [{:__class__ "Association",
+                                                          :key       nil,
+                                                          :value     left}
+                                                         {:__class__ "Association",
+                                                          :key       nil,
+                                                          :value     right}]})
    })
 
 (def parse-program
-      (insta/parser
-        (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
+  (insta/parser
+    (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
          import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
          importPath = #'\\'[^\\']+\\''
          <script> =  (task / function / procedure)
@@ -185,5 +185,5 @@
          float = ('NaN' /#'-?Infinity' / integer '.' digits)
          number = (float / integer)" operator-grammar)))
 
-(defn parse [str] (insta/transform transformations (parse-program str )))
+(defn parse [str] (insta/transform transformations (parse-program str)))
 
