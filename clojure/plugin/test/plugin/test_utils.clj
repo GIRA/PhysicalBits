@@ -1,6 +1,7 @@
 (ns plugin.test-utils
   (:require [clojure.test :refer :all]
-            [clojure.data :as data]))
+            [clojure.data :as data]
+            [ultra.test :as ultra-test]))
 
 (defmethod assert-expr 'equivalent? [msg form]
   (let [args (rest form)
@@ -9,10 +10,16 @@
            result# (apply ~pred values#)
            expected#  (first values#)
            actual# (second values#)]
-       (do-report {:type (if result# :pass :fail)
-                   :message ~msg
-                   :expected expected#
-                   :actual actual#})
+       (if result#
+         (do-report {:type :pass
+                     :message ~msg
+                     :expected expected#
+                     :actual actual#})
+         (do-report {:type :fail
+                     :message ~msg
+                     :expected expected#
+                     :actual actual#
+                     :diffs (ultra-test/generate-diffs expected# [actual#])}))
        result#)))
 
 (defn equivalent? [a b]
