@@ -1,6 +1,6 @@
 (ns plugin.parser.core
   (:require [instaparse.core :as insta])
-  (:require [plugin.parser.ast-nodes]))
+  (:require [plugin.parser.ast-nodes :refer :all]))
 
 
 (defn- first-or-default [pred col default]
