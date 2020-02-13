@@ -16,12 +16,14 @@
                   tick-rate nil
                   state     nil
                   body      nil}}]
-  {:__class__   type,
-   :name        identifier,
-   :arguments   arguments,
-   :state       state,
-   :tickingRate tick-rate,
-   :body        body})
+  (conj-if-not-nil
+    (conj-if-not-nil {:__class__ type,
+                      :name      identifier,
+                      :arguments arguments,
+
+                      :body      body}
+                     :tickingRate tick-rate)
+    :state state))
 (defn literal-number-node
   [value]
   {:__class__ "UziNumberLiteralNode",
