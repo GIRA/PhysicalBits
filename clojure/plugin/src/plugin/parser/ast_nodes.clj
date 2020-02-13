@@ -82,6 +82,16 @@
 (defn forever-node
   [block] {:__class__ "UziForeverNode",
            :body      block})
+(defn repeat-node
+  [times block] {:__class__ "UziRepeatNode"
+                 :times     times
+                 :body      block})
+(defn conditional-node
+  [condition true-branch false-branch]
+  {:__class__   "UziConditionalNode"
+   :condition   condition
+   :trueBranch  true-branch
+   :falseBranch false-branch})
 (defn block-node
   [statements]
   {:__class__ "UziBlockNode" :statements statements})
