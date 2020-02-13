@@ -36,6 +36,12 @@
    :key       key
    :value     value}
   )
+(defn ticking-rate-node
+  [times scale]
+  {:__class__ "UziTickingRateNode",
+   :value     times,
+   :scale     scale}
+  )
 (defn variable-declaration-node
   ([name] (variable-declaration-node name nil))
   ([name expr]

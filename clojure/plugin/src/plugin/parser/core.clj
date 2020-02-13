@@ -59,9 +59,7 @@
                                        :arguments params
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
 
-   :tickingRate         (fn [times unit] {:__class__ "UziTickingRateNode",
-                                          :value     (:value times),
-                                          :scale     unit}),
+   :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
    :namedArg            (fn [a & b] (association-node (if b a nil) (or b a)))
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
