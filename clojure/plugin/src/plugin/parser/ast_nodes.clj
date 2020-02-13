@@ -41,7 +41,6 @@
 (defn return-node
   [expr]
   {:__class__ "UziReturnNode", :value expr})
-
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
@@ -50,7 +49,9 @@
    :stop      to,
    :step      by,
    :body      block})
-
+(defn block-node
+  [statements]
+  {:__class__ "UziBlockNode" :statements statements})
 (defn binary-expression-node
   [left op right]
   {:__class__ "UziCallNode",

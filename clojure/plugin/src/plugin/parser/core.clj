@@ -73,7 +73,7 @@
    :call                (fn [selector & args] {:__class__ "UziCallNode",
                                                :selector  selector
                                                :arguments args})
-   :block               (fn [& statements] {:__class__ "UziBlockNode" :statements (vec statements)})
+   :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
    :argument            (fn [name] (variable-declaration-node name))
    :variableDeclaration (fn [variable & expr]
