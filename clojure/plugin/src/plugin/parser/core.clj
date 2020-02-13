@@ -80,8 +80,7 @@
                           (variable-declaration-node (:name variable) (first expr)))
    :variable            (fn [name] {:__class__ "UziVariableNode",
                                     :name      name})
-   :return              (fn [& expr] {:__class__ "UziReturnNode",
-                                      :value     (or (first expr) (literal-number-node 0))})
+   :return              (fn [& expr] (return-node (or (first expr) (literal-number-node 0))))
    :subExpr             (fn [rest] rest)
    :for                 (fn
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))

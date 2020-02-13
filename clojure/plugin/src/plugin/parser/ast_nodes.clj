@@ -35,6 +35,10 @@
      :value expr)
    ))
 
+(defn return-node
+  [expr]
+  {:__class__ "UziReturnNode", :value expr})
+
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
