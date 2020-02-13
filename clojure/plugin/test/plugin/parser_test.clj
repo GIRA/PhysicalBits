@@ -190,8 +190,6 @@
                                   :name        "operate",
                                   :arguments   [{:__class__ "UziVariableDeclarationNode", :name "arg0"}
                                                 {:__class__ "UziVariableDeclarationNode", :name "arg1"}],
-                                  :state       nil,
-                                  :tickingRate nil,
                                   :body        {:__class__  "UziBlockNode",
                                                 :statements [{:__class__ "UziReturnNode",
                                                               :value     {:__class__ "UziCallNode",
