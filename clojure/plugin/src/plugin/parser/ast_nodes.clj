@@ -2,8 +2,7 @@
 (defn- conj-if-not-nil
   [map key value]
   (conj map
-        (when value [key value]))
-  )
+        (when value [key value])))
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
            :or   {arguments []
@@ -16,7 +15,6 @@
    :state       state,
    :tickingRate tick-rate,
    :body        body})
-
 (defn literal-number-node
   [value]
   {:__class__ "UziNumberLiteralNode",
@@ -26,7 +24,6 @@
   {:__class__ "UziPinLiteralNode",
    :type      letter,
    :number    number})
-
 (defn assignment-node
   [var expr]
   {:__class__ "UziAssignmentNode" :left var :right expr})
@@ -34,23 +31,19 @@
   [key value]
   {:__class__ "Association",
    :key       key
-   :value     value}
-  )
+   :value     value})
 (defn ticking-rate-node
   [times scale]
   {:__class__ "UziTickingRateNode",
    :value     times,
-   :scale     scale}
-  )
+   :scale     scale})
 (defn variable-declaration-node
   ([name] (variable-declaration-node name nil))
   ([name expr]
    (conj-if-not-nil
      {:__class__ "UziVariableDeclarationNode"
       :name      name}
-     :value expr)
-   ))
-
+     :value expr)))
 (defn variable-node
   [name]
   {:__class__ "UziVariableNode", :name name})
