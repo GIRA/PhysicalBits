@@ -476,7 +476,7 @@ let BlocksToAST = (function () {
 		},
 		math_constant: function (block, ctx, stream) {
 			let id = XML.getId(block);
-			let type = XML.getChildNode(block, "CONSTANT").innerText;
+			let type = XML.getChildNode(block, "constant").innerText;
 			let value;
 			if (type === "PI") {
 				value = Math.PI;

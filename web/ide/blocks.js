@@ -994,12 +994,12 @@ let UziBlock = (function () {
         let msg = i18n.translate("math %constant");
         let inputFields = {
           "constant": () => this.appendDummyInput().appendField(
-                  new Blockly.FieldDropdown([[i18n.translate("constant π"),"3.141592653589793"],
-                                             [i18n.translate("constant ℯ"),"2.718281828459045"],
-                                             [i18n.translate("constant φ"),"1.61803398875"],
-                                             [i18n.translate("constant √2"),"1.4142135623730951"],
-                                             [i18n.translate("constant √½"),"0.7071067811865476"],
-                                             [i18n.translate("constant ∞"),"Infinity"]]), "constant")
+                  new Blockly.FieldDropdown([[i18n.translate("constant π"),"PI"],
+                                             [i18n.translate("constant ℯ"),"E"],
+                                             [i18n.translate("constant φ"),"GOLDEN_RATIO"],
+                                             [i18n.translate("constant √2"),"SQRT2"],
+                                             [i18n.translate("constant √½"),"SQRT1_2"],
+                                             [i18n.translate("constant ∞"),"INFINITY"]]), "constant")
         };
 
         initBlock(this, msg, inputFields);
