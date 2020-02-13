@@ -98,10 +98,10 @@
          variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
          return =  ws <'return'> ws expr? endl
-         conditional = ws <'if'> ws expr ws block (ws <'else'> ws expr)
+         conditional = ws <'if'> ws expr ws block (ws <'else'> ws block ws)?
          while = ws <'while'> ws expr ws ( block ws / endl )
          doWhile = ws <'do'> ws block ws <'while'> ws expr endl
-         until = ws <'until'> ws expr ws block
+         until = ws <'until'> ws expr ws (block ws / endl)
          doUntil = ws <'do'> ws block ws <'until'> ws expr endl
          repeat = ws <'repeat'> ws expr ws block ws
          forever = ws <'forever'> ws block ws
@@ -126,7 +126,7 @@
 
          paramsList = ws<'('> (ws argument (ws <','> ws argument)*)? ws <')'> ws
          argument = ws identifier ws
-         taskState = ws ('running'|'stopped') ws
+         taskState = ws ('running'|'stopped')? ws
          tickingRate = number ws <'/'> ( 's' | 'm' | 'h' | 'd')
 
          function = ws <'func'> ws identifier ws paramsList ws block ws
