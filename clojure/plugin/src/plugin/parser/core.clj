@@ -89,14 +89,7 @@
                           )
    :assignment          assignment-node
    ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
-   :binaryExpr          (fn [left op right] {:__class__ "UziCallNode",
-                                             :selector  op,
-                                             :arguments [{:__class__ "Association",
-                                                          :key       nil,
-                                                          :value     left}
-                                                         {:__class__ "Association",
-                                                          :key       nil,
-                                                          :value     right}]})
+   :binaryExpr          binary-expression-node
    })
 
 (def parse-program

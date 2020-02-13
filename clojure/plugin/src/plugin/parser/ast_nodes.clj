@@ -21,9 +21,11 @@
   [value]
   {:__class__ "UziNumberLiteralNode",
    :value     value})
+
 (defn assignment-node
   [var expr]
   {:__class__ "UziAssignmentNode" :left var :right expr})
+
 (defn variable-declaration-node
   ([name] (variable-declaration-node name nil))
   ([name expr]
@@ -41,3 +43,14 @@
    :stop      to,
    :step      by,
    :body      block})
+
+(defn binary-expression-node
+  [left op right]
+  {:__class__ "UziCallNode",
+   :selector  op,
+   :arguments [{:__class__ "Association",
+                :key       nil,
+                :value     left}
+               {:__class__ "Association",
+                :key       nil,
+                :value     right}]})
