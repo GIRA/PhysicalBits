@@ -988,6 +988,30 @@ let UziBlock = (function () {
       }
     };
 
+
+    Blockly.Blocks['math_constant'] = {
+      init: function() {
+        let msg = i18n.translate("math %constant");
+        let inputFields = {
+          "constant": () => this.appendDummyInput().appendField(
+                  new Blockly.FieldDropdown([[i18n.translate("constant π"),"3.141592653589793"],
+                                             [i18n.translate("constant ℯ"),"2.718281828459045"],
+                                             [i18n.translate("constant φ"),"1.61803398875"],
+                                             [i18n.translate("constant √2"),"1.4142135623730951"],
+                                             [i18n.translate("constant √½"),"0.7071067811865476"],
+                                             [i18n.translate("constant ∞"),"Infinity"]]), "constant")
+        };
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
     Blockly.Blocks['number_round'] = {
       init: function() {
         let msg = i18n.translate("perform rounding %operation on %number");
