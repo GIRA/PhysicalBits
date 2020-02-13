@@ -33,8 +33,8 @@
 (defn association-node
   [key value]
   {:__class__ "Association",
-   :key key
-   :value value}
+   :key       key
+   :value     value}
   )
 (defn variable-declaration-node
   ([name] (variable-declaration-node name nil))
