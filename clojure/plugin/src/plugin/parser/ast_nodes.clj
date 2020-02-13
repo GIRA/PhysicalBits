@@ -3,6 +3,13 @@
   [map key value]
   (conj map
         (when value [key value])))
+(defn program-node
+  [imports globals scripts primitives]
+  {:__class__  "UziProgramNode"
+   :imports    imports,
+   :globals    globals
+   :scripts    scripts
+   :primitives primitives})
 (defn script-node
   [type & {:keys [identifier arguments tick-rate state locals body]
            :or   {arguments []

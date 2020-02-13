@@ -36,11 +36,12 @@
 (def transformations
   {:integer             (comp clojure.edn/read-string str)
    :float               (comp #(Float/parseFloat %) str)
-   :program             (fn [& arg] {:__class__  "UziProgramNode"
-                                     :imports    [],
-                                     :globals    (filter-class "UziVariableDeclarationNode" arg),
-                                     :scripts    (filterv #(contains? scriptTypes (:__class__ %)) arg),
-                                     :primitives []}),
+   :program             (fn [& arg]
+                          (program-node
+                            []
+                            (filter-class "UziVariableDeclarationNode" arg)
+                            (filterv #(contains? scriptTypes (:__class__ %)) arg)
+                            [])),
    :task                (fn [identifier params state & rest]
                           (script-node "UziTaskNode"
                                        :identifier identifier
