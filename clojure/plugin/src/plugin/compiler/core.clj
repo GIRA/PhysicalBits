@@ -111,11 +111,9 @@
 (defn- assign-unique-variable-names [ast]
   ; TODO(Richo): Only apply to locals?
   (let [counter (atom 0)]
-    (w/postwalk
-     #(if (= "UziVariableDeclarationNode" (get % :__class__ ))
-        (assoc % :unique-name (str (:name %) "#" (swap! counter inc)))
-        %)
-     ast)))
+    (ast-utils/transform
+     ast
+     "UziVariableDeclarationNode" #(assoc % :unique-name (str (:name %) "#" (swap! counter inc))))))
 
 (defn compile-tree
   ([ast] (compile-tree ast boards/UNO))
