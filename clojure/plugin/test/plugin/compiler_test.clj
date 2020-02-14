@@ -260,8 +260,62 @@
                 :default #(assoc % :__bar__ 5))]
     (is (= expected actual))))
 
-
-
+(deftest ast-transform-without-default-clause
+  (let [original {:__class__ "UziProgramNode",
+                  :scripts [{:__class__ "UziTaskNode",
+                             :name "empty",
+                             :arguments [],
+                             :state "running",
+                             :tickingRate {:__class__ "UziTickingRateNode",
+                                           :value 1,
+                                           :scale "s"},
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :selector "toggle",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :value 13}}]},
+                                                 {:__class__ "UziCallNode",
+                                                  :selector "turnOn",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :value 12}}]}]}}]}
+        expected {:__class__ "UziProgramNode",
+                  :__foo__ 1,
+                  :scripts [{:__class__ "UziTaskNode",
+                             :__foo__ 2,
+                             :name "empty",
+                             :arguments [],
+                             :state "running",
+                             :tickingRate {:__class__ "UziTickingRateNode",
+                                           :value 1,
+                                           :scale "s"},
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :__foo__ 3,
+                                                  :selector "toggle",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :__foo__ 4
+                                                                       :value 13}}]},
+                                                 {:__class__ "UziCallNode",
+                                                  :__foo__ 3,
+                                                  :selector "turnOn",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :__foo__ 4,
+                                                                       :value 12}}]}]}}]}
+        actual (ast-utils/transform
+                original
+                "UziProgramNode" #(assoc % :__foo__ 1)
+                "UziTaskNode" #(assoc % :__foo__ 2)
+                "UziCallNode" #(assoc % :__foo__ 3)
+                "UziNumberLiteralNode" #(assoc % :__foo__ 4))]
+    (is (= expected actual))))
 
 (deftest ast-transform-pred-test
   (let [original {:__class__ "UziProgramNode",
@@ -323,4 +377,61 @@
                 #(= "UziCallNode" (get % :__class__)) #(assoc % :__foo__ 3)
                 #(= "UziNumberLiteralNode" (get % :__class__)) #(assoc % :__foo__ 4)
                 :default #(assoc % :__bar__ 5))]
+    (is (= expected actual))))
+
+(deftest ast-transform-pred-without-default-clause
+  (let [original {:__class__ "UziProgramNode",
+                  :scripts [{:__class__ "UziTaskNode",
+                             :name "empty",
+                             :arguments [],
+                             :state "running",
+                             :tickingRate {:__class__ "UziTickingRateNode",
+                                           :value 1,
+                                           :scale "s"},
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :selector "toggle",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :value 13}}]},
+                                                 {:__class__ "UziCallNode",
+                                                  :selector "turnOn",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :value 12}}]}]}}]}
+        expected {:__class__ "UziProgramNode",
+                  :__foo__ 1,
+                  :scripts [{:__class__ "UziTaskNode",
+                             :__foo__ 2,
+                             :name "empty",
+                             :arguments [],
+                             :state "running",
+                             :tickingRate {:__class__ "UziTickingRateNode",
+                                           :value 1,
+                                           :scale "s"},
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :__foo__ 3,
+                                                  :selector "toggle",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :__foo__ 4
+                                                                       :value 13}}]},
+                                                 {:__class__ "UziCallNode",
+                                                  :__foo__ 3,
+                                                  :selector "turnOn",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                       :__foo__ 4,
+                                                                       :value 12}}]}]}}]}
+        actual (ast-utils/transform-pred
+                original
+                #(= "UziProgramNode" (get % :__class__)) #(assoc % :__foo__ 1)
+                #(= "UziTaskNode" (get % :__class__)) #(assoc % :__foo__ 2)
+                #(= "UziCallNode" (get % :__class__)) #(assoc % :__foo__ 3)
+                #(= "UziNumberLiteralNode" (get % :__class__)) #(assoc % :__foo__ 4))]
     (is (= expected actual))))
