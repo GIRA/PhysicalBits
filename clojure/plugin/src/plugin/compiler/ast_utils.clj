@@ -17,28 +17,28 @@
                ast)
     @result))
 
-(defmacro transform-pred [ast & clauses]
-  (let [node (gensym 'node)]
-    `(w/prewalk
-      (fn [~node]
-        (if (node? ~node)
-          (cond
-            ~@(mapcat (fn [[pred result-expr]]
-                        (if (= :default pred)
-                          `(:else (~result-expr ~node))
-                          `((~pred ~node) (~result-expr ~node))))
-                      (partition 2 clauses))
-            :else ~node)
-          ~node))
-      ~ast)))
+(defn transform-pred [ast & clauses]
+  (w/prewalk (fn [node]
+               (if (node? node)
+                 (loop [[pred result-fn & rest] clauses]
+                   (if (or (= :default pred)
+                           (pred node))
+                     (result-fn node)
+                     (if (empty? rest)
+                       node
+                       (recur rest))))
+                 node))
+             ast))
 
-(defmacro transform [ast & clauses]
-  `(transform-pred ~ast
-                   ~@(mapcat (fn [[type result-fn]]
-                               (if (= :default type)
-                                 `(~type ~result-fn)
-                                 `((fn [node#] (= ~type (get node# :__class__))) ~result-fn)))
-                             (partition 2 clauses))))
+(defn transform [ast & clauses]
+  (let [as-pred (fn [type]
+                  (if (= :default type)
+                    type
+                    #(= type (get % :__class__))))]
+    (apply transform-pred
+      ast (mapcat (fn [[type result-fn]]
+                    [(as-pred type) result-fn])
+                  (partition 2 clauses)))))
 
 (defn children [ast]
   (->> ast
