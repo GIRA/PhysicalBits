@@ -1,5 +1,7 @@
 (ns plugin.compiler.ast-utils
-  (:require [clojure.walk :as w]))
+  (:refer-clojure :exclude [filter])
+  (:require [clojure.core :as clj-core]
+            [clojure.walk :as w]))
 
 (defn node? [node]
   (and (map? node)
@@ -14,3 +16,12 @@
                  x)
                ast)
     @result))
+
+(defn children [ast]
+  (->> ast
+       vals
+       (mapcat #(cond
+                  (node? %) [%]
+                  (vector? %) (clj-core/filter node? %)
+                  :else nil))
+       (clj-core/filter (complement nil?))))
