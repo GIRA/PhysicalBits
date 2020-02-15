@@ -88,6 +88,7 @@
                           ([expr block else-block] (conditional-node expr block else-block)))
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
+   :not                 (fn [& arg] (call-node "!" (map #(association-node nil %) arg)))
    :yield               yield-node
    :import              (fn [& args]
                           (let [path (first (filter #(= (first %) :importPath) args))
@@ -100,9 +101,9 @@
                                 ]
                             (import-node name (second path) block)))
    :startTask           (fn [& scripts] (start-node (vec scripts)))
-   :stopTask           (fn [& scripts] (stop-node (vec scripts)))
+   :stopTask            (fn [& scripts] (stop-node (vec scripts)))
    :pauseTask           (fn [& scripts] (pause-node (vec scripts)))
-   :resumeTask           (fn [& scripts] (resume-node (vec scripts)))
+   :resumeTask          (fn [& scripts] (resume-node (vec scripts)))
    })
 
 (def parse-program
