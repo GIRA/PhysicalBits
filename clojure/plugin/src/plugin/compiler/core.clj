@@ -13,6 +13,7 @@
 (defn compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
+
 (defn- rate->delay [{:keys [value scale] :as node}]
   (if-not node 0
     (if (= value 0)
@@ -23,6 +24,13 @@
            "h" (* 1000 60 60)
            "d" (* 1000 60 60 24))
          value))))
+
+(defn variables-in-scope [path]
+  (mapcat (fn [[first second]]
+            (filter #(= "UziVariableDeclarationNode" (get % :__class__))
+                    (take-while #(not (= % first))
+                                (ast-utils/children second))))
+          (partition 2 1 path)))
 
 (defn collect-globals [ast board]
   (let [vars (atom #{})]
@@ -57,6 +65,12 @@
                  (map #(compile % ctx))
                  vec)))
 
+(defn collect-locals [script-body]
+  ; TODO(Richo): Don't ignore the values for local declarations. The compiler is
+  ; supposed to check if they are literals and register their value already computed (if possible)
+  (mapv (fn [{:keys [unique-name value]}] (emit/variable :name unique-name))
+       (ast-utils/filter script-body "UziVariableDeclarationNode")))
+
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
    ctx]
@@ -64,6 +78,7 @@
    :name task-name,
    :delay (rate->delay ticking-rate),
    :running? (contains? #{"running" "once"} state)
+   :locals (collect-locals body)
    :instructions (let [instructions (compile body ctx)]
                    (if (= "once" state)
                      (conj instructions (emit/stop task-name))
@@ -87,9 +102,15 @@
 (defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
 
-(defmethod compile-node "UziVariableNode" [node _]
-  ; TODO(Richo): Detect if var is global or local
-  [(emit/push-var (node :name))])
+(defmethod compile-node "UziVariableNode" [node ctx]
+  (let [variables-in-scope (variables-in-scope (ctx :path))
+        globals (-> ctx :path last :globals set)
+        variable (first (filter #(= (:name node) (:name %))
+                                variables-in-scope))
+        global? (contains? globals variable)]
+    [(if global?
+       (emit/push-var (node :name))
+       (emit/read-local (variable :unique-name)))]))
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
