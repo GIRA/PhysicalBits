@@ -27,7 +27,7 @@
                           "&&"
                           "||"])
 
-(def operator-grammar (str "\nbinaryExpr = ws ( customSelectorBinaryExpression /" (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) ") ws\n"))
+(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) " /customSelectorBinaryExpression ) ws\n"))
 
 
 
