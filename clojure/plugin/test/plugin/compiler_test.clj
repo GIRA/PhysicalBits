@@ -140,8 +140,7 @@
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
 
-; TODO(RICHO): Uncomment this test and make it pass!
-#_(deftest program-with-local-variable
+(deftest program-with-local-variable
   (let [ast {:__class__ "UziProgramNode",
              :scripts [{:__class__ "UziTaskNode",
                         :name "foo",
