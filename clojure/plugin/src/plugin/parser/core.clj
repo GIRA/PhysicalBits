@@ -61,7 +61,8 @@
                                        :identifier identifier
                                        :arguments params
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
-
+   ;TODO(Tera): the comments are ignored by the syntax definition for now.
+   :comments (fn [ strings] (comment-node strings))
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
    :namedArg            (fn [a & b] (association-node (if b a nil) (or (first b) a)))
    :constant            literal-pin-node
@@ -182,7 +183,7 @@
 
          <endl> =ws <';'> ws
          <name> =#'[a-zA-Z_][_\\w]*'
-         <ws> = (<#'\\s'*> / comments)+
+         <ws> = (<#'\\s'*> / <comments>)+
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          <digits> = #'\\d+'

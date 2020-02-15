@@ -16,7 +16,10 @@
     :alias     alias,
     :name      name})
   ([name] (primitive-node name name)))
-
+(defn comment-node [text]
+  {:__class__ "UziCommentNode"
+   :value text}
+  )
 (defn import-node
   [alias path block]
   {:__class__           "UziImportNode",
