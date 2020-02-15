@@ -99,6 +99,10 @@
                                               args))
                                 ]
                             (import-node name (second path) block)))
+   :startTask           (fn [& scripts] (start-node (vec scripts)))
+   :stopTask           (fn [& scripts] (stop-node (vec scripts)))
+   :pauseTask           (fn [& scripts] (pause-node (vec scripts)))
+   :resumeTask           (fn [& scripts] (resume-node (vec scripts)))
    })
 
 (def parse-program
@@ -137,7 +141,7 @@
 
 
 
-         scriptList = ws scriptReference (ws <','> ws scriptReference)* endl
+         <scriptList> = ws scriptReference (ws <','> ws scriptReference)*
          <scriptReference> = ws identifier ws
 
          identifier = name ('.' name)*

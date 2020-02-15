@@ -130,3 +130,11 @@
                {:__class__ "Association",
                 :key       nil,
                 :value     right}]})
+(defn start-node [scripts] {:__class__ "UziScriptStartNode",
+                          :scripts scripts})
+(defn stop-node [scripts] {:__class__ "UziScriptStopNode",
+                          :scripts scripts})
+(defn pause-node [scripts] {:__class__ "UziScriptPauseNode",
+                          :scripts scripts})
+(defn resume-node [scripts] {:__class__ "UziScriptResumeNode",
+                          :scripts scripts})
