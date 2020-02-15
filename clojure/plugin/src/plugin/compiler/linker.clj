@@ -3,7 +3,8 @@
 
 ; TODO(Richo): Hack until we can actually parse core.uzi and get the actual prims
 (def core-primitives
-  {"+" "add"})
+  {"+" "add"
+   "toggle" "toggle"})
 
 (defn bind-primitives [ast]
   (w/postwalk #(if (= "UziCallNode" (get % :__class__ ))
