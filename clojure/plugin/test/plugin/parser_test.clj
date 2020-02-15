@@ -549,7 +549,7 @@
 
 (deftest prim-overriding
   (testing "Renaming a few primitives"
-    (let [src "\nprim add;\nprim ~= : notEquals;\n\nproc test() {\n\tvar a = add(3, 4);\n\tvar b = 3 ~= 4;\n}"
+    (let [src "\nprim add;\nprim ~= : notEquals;\n\ntask test() {\n\tvar a = add(3, 4);\n\tvar b = 3 ~= 4;\n}"
           expected {:__class__  "UziProgramNode",
                     :globals    [],
                     :imports    [],

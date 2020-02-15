@@ -10,6 +10,13 @@
    :globals    globals
    :scripts    scripts
    :primitives primitives})
+(defn primitive-node
+  ([alias name]
+   {:__class__ "UziPrimitiveDeclarationNode",
+    :alias     alias,
+    :name      name})
+  ([name] (primitive-node name name)))
+
 (defn import-node
   [alias path block]
   {:__class__           "UziImportNode",
@@ -131,10 +138,10 @@
                 :key       nil,
                 :value     right}]})
 (defn start-node [scripts] {:__class__ "UziScriptStartNode",
-                          :scripts scripts})
+                            :scripts   scripts})
 (defn stop-node [scripts] {:__class__ "UziScriptStopNode",
-                          :scripts scripts})
+                           :scripts   scripts})
 (defn pause-node [scripts] {:__class__ "UziScriptPauseNode",
-                          :scripts scripts})
+                            :scripts   scripts})
 (defn resume-node [scripts] {:__class__ "UziScriptResumeNode",
-                          :scripts scripts})
+                             :scripts   scripts})
