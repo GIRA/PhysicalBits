@@ -118,9 +118,9 @@
          primitive = ws <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
 
          <statementList> = ws statement*
-         <statement> = ws (variableDeclaration / assignment / return / conditional
-                      / startTask / stopTask / pauseTask / resumeTask
-                      /while/doWhile/until/doUntil/repeat/forever/for/yield/expressionStatement) ws
+         <statement> = ws (variableDeclaration | assignment | return | conditional
+                      | startTask | stopTask | pauseTask | resumeTask
+                      |while|doWhile|until|doUntil|repeat|forever|for|yield|expressionStatement) ws
 
          variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
