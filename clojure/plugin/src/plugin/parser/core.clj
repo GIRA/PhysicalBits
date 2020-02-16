@@ -7,7 +7,6 @@
   (or (first (filter pred col)) default))
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
-
 (def operator-precedence ["**"
                           "*"
                           "/"
@@ -27,7 +26,8 @@
                           "|"
                           "&&"
                           "||"])
-(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) ") ws\n"))
+
+(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) " /customSelectorBinaryExpression ) ws\n"))
 
 
 
@@ -42,7 +42,8 @@
                             (filter-class "UziImportNode" arg)
                             (filter-class "UziVariableDeclarationNode" arg)
                             (filterv #(contains? scriptTypes (:__class__ %)) arg)
-                            [])),
+                            (filter-class "UziPrimitiveDeclarationNode" arg))),
+   :primitive           primitive-node
    :task                (fn [identifier params state & rest]
                           (script-node "UziTaskNode"
                                        :identifier identifier
@@ -88,6 +89,7 @@
                           ([expr block else-block] (conditional-node expr block else-block)))
    :assignment          assignment-node
    :binaryExpr          binary-expression-node
+   :not                 (fn [& arg] (call-node "!" (map #(association-node nil %) arg)))
    :yield               yield-node
    :import              (fn [& args]
                           (let [path (first (filter #(= (first %) :importPath) args))
@@ -99,6 +101,10 @@
                                               args))
                                 ]
                             (import-node name (second path) block)))
+   :startTask           (fn [& scripts] (start-node (vec scripts)))
+   :stopTask            (fn [& scripts] (stop-node (vec scripts)))
+   :pauseTask           (fn [& scripts] (pause-node (vec scripts)))
+   :resumeTask          (fn [& scripts] (resume-node (vec scripts)))
    })
 
 (def parse-program
@@ -137,7 +143,7 @@
 
 
 
-         scriptList = ws scriptReference (ws <','> ws scriptReference)* endl
+         <scriptList> = ws scriptReference (ws <','> ws scriptReference)*
          <scriptReference> = ws identifier ws
 
          identifier = name ('.' name)*
@@ -171,7 +177,8 @@
          namedArg = ws( identifier ws <':'> ws)? expr ws
          subExpr = ws <'('> ws expr ws <')'> ws
 
-         binarySelector = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]'
+         <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
+         <customSelectorBinaryExpression> = ws expr ws binarySelector ws expr ws
 
          <endl> =ws <';'> ws
          <name> =#'[a-zA-Z_][_\\w]*'
@@ -183,5 +190,13 @@
          float = ('NaN' /#'-?Infinity' / integer '.' digits)
          number = (float / integer)" operator-grammar)))
 
-(defn parse [str] (insta/transform transformations (parse-program str)))
+(defn- add-prim-name-to-node [primitives node] (conj node
+                                                     (when-let
+                                                       [name (:name (first-or-default #(= (:alias %) (:selector node)) primitives nil))]
+                                                       {:primitiveName name}
+                                                       )))
+(defn- add-prims-name [ast]
+  (clojure.walk/postwalk (fn [node]
+                           (if (= (:__class__ node) "UziCallNode") (add-prim-name-to-node (:primitives ast) node) node)) ast))
+(defn parse [str] (add-prims-name (insta/transform transformations (parse-program str))))
 
