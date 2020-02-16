@@ -7,6 +7,12 @@
   (and (map? node)
        (contains? node :__class__)))
 
+(defn node-type [node]
+  (get node :__class__))
+
+(defn compile-time-constant? [node]
+  (= "UziNumberLiteralNode" (node-type node)))
+
 (defn filter [ast & types]
   (let [type-set (into #{} types)
         result (atom [])]
