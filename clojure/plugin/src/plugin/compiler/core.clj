@@ -68,7 +68,11 @@
 (defn collect-locals [script-body]
   ; TODO(Richo): Don't ignore the values for local declarations. The compiler is
   ; supposed to check if they are literals and register their value already computed (if possible)
-  (mapv (fn [{:keys [unique-name value]}] (emit/variable :name unique-name))
+  (mapv (fn [{:keys [unique-name value]}]
+          (emit/variable :name unique-name
+                         :value (if (= "UziNumberLiteralNode" (:__class__ value))
+                                  (-> value :value)
+                                  0)))
        (ast-utils/filter script-body "UziVariableDeclarationNode")))
 
 (defmethod compile-node "UziTaskNode"
