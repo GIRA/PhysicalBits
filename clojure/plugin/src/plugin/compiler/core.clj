@@ -46,14 +46,12 @@
 
     ; Collect all globals
     (swap! vars into
-           (map (fn [{:keys [name value]}]
-                  (emit/variable :name name :value value))
+           (map (fn [{:keys [name value]}] (emit/variable :name name :value value))
                 (:globals ast)))
 
     ; Collect all ticking rates
     (swap! vars into
-           (map (fn [{:keys [tickingRate]}]
-                  (emit/variable :value (rate->delay tickingRate)))
+           (map (fn [{:keys [tickingRate]}] (emit/variable :value (rate->delay tickingRate)))
                 (:scripts ast)))
 
     @vars))
