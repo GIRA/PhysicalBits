@@ -131,11 +131,15 @@
    :board board})
 
 (defn- assign-unique-variable-names [ast]
-  ; TODO(Richo): Only apply to locals?
-  (let [counter (atom 0)]
+  (let [counter (atom 0)
+        globals (-> ast :globals set)]
     (ast-utils/transform
      ast
-     "UziVariableDeclarationNode" #(assoc % :unique-name (str (:name %) "#" (swap! counter inc))))))
+     "UziVariableDeclarationNode"
+     (fn [var]
+       (if (contains? globals var)
+         var
+         (assoc var :unique-name (str (:name var) "#" (swap! counter inc))))))))
 
 (defn compile-tree
   ([ast] (compile-tree ast boards/UNO))
