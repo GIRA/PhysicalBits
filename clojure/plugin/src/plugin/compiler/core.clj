@@ -27,7 +27,7 @@
 
 (defn variables-in-scope [path]
   (mapcat (fn [[first second]]
-            (filter #(= "UziVariableDeclarationNode" (get % :__class__))
+            (filter #(= "UziVariableDeclarationNode" (ast-utils/node-type %))
                     (take-while #(not (= % first))
                                 (ast-utils/children second))))
           (partition 2 1 path)))
@@ -66,10 +66,10 @@
 (defn collect-locals [script-body]
   (mapv (fn [{:keys [unique-name value]}]
           (emit/variable :name unique-name
-                         :value (if (= "UziNumberLiteralNode" (:__class__ value))
+                         :value (if (ast-utils/compile-time-constant? value)
                                   (-> value :value)
                                   0)))
-       (ast-utils/filter script-body "UziVariableDeclarationNode")))
+        (ast-utils/filter script-body "UziVariableDeclarationNode")))
 
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
@@ -114,7 +114,7 @@
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
-  (if (= "UziNumberLiteralNode" (:__class__ value))
+  (if (ast-utils/compile-time-constant? value)
     []
     (conj (compile value ctx)
           (emit/write-local unique-name))))
@@ -123,7 +123,7 @@
   [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
 
 (defmethod compile-node :default [node _]
-  (println "ERROR! Unknown node: " (:__class__ node))
+  (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
 
 (defn- create-context [board]

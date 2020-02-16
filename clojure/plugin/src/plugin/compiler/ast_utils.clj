@@ -17,7 +17,7 @@
   (let [type-set (into #{} types)
         result (atom [])]
     (w/prewalk (fn [x]
-                 (when (contains? type-set (get x :__class__))
+                 (when (contains? type-set (node-type x))
                    (swap! result conj x))
                  x)
                ast)
@@ -40,7 +40,7 @@
   (let [as-pred (fn [type]
                   (if (= :default type)
                     type
-                    #(= type (get % :__class__))))]
+                    #(= type (node-type %))))]
     (apply transform-pred
       ast (mapcat (fn [[type result-fn]]
                     [(as-pred type) result-fn])
