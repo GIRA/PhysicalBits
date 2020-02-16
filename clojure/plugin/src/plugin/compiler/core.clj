@@ -141,12 +141,24 @@
          var
          (assoc var :unique-name (str (:name var) "#" (swap! counter inc))))))))
 
+(defn- assign-internal-ids
+  "This function is important because it will guarantee that all nodes are different
+   when compared with =. Due to clojure's philosophy regarding values, identity, and
+   equality I need to do this to be able to distinguish two otherwise equal nodes.
+   This is particularly crucial for the variables-in-scope function because it relies
+   on = to know when to stop looking for variables.
+   An alternative could be to use identical? instead of = but I feel it would make
+   the code more fragile than simply adding this artificial :internal-id"
+  [ast]
+  (ast-utils/transform ast :default #(assoc % :internal-id (.toString (java.util.UUID/randomUUID)))))
+
 (defn compile-tree
   ([ast] (compile-tree ast boards/UNO))
   ([ast board]
    (-> ast
        linker/bind-primitives
        assign-unique-variable-names
+       assign-internal-ids
        (compile (create-context board)))))
 
 (defn compile-json-string [str]
