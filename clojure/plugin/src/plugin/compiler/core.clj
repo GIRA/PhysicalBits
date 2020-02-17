@@ -101,11 +101,13 @@
             (emit/pop var-name)
             (emit/write-local var-name)))))
 
-(defmethod compile-node "UziCallNode" [node ctx]
-  ; TODO(Richo): Detect primitive calls correctly!
+(defmethod compile-node "UziCallNode"
+  [{:keys [selector arguments primitive-name]} ctx]
   (conj (vec (mapcat #(compile (:value %) ctx)
-                     (node :arguments)))
-        (emit/prim (node :primitive-name))))
+                     arguments))
+        (if primitive-name
+          (emit/prim primitive-name)
+          (emit/script-call selector))))
 
 (defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
