@@ -88,9 +88,11 @@
                      (conj instructions (emit/stop task-name))
                      instructions))))
 
-(defmethod compile-node "UziBlockNode" [node ctx]
-  ; TODO(Richo): Add pop instruction if last stmt is expression
-  (vec (mapcat #(compile % ctx) (node :statements))))
+(defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
+  (let [instructions (vec (mapcat #(compile % ctx) statements))]
+    (if (ast-utils/expression? (last statements))
+      (conj instructions (emit/prim "pop"))
+      instructions)))
 
 (defmethod compile-node "UziAssignmentNode" [{:keys [left right]} ctx]
   (let [[var-name global?] (variable-name-and-scope left ctx)]
