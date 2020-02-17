@@ -128,6 +128,12 @@
 (defmethod compile-node "UziPinLiteralNode" [{:keys [type number]} ctx]
   [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
 
+(defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
+  ; TODO(Richo): Handle arguments!
+  (emit/script
+   :name name,
+   :instructions (compile body ctx)))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
