@@ -67,7 +67,9 @@
   (concat imports globals scripts))
 
 (defmethod children "UziTaskNode" [{:keys [arguments tickingRate body]}]
-  (concat arguments (or tickingRate []) [body]))
+  (concat arguments
+          (if tickingRate [tickingRate] [])
+          [body]))
 
 (defmethod children "UziProcedureNode" [{:keys [arguments body]}]
   (concat arguments [body]))
