@@ -44,19 +44,19 @@
   (set (concat
 
         ; Collect all number literals
-        (map (fn [{:keys [value]}] (emit/variable :value value))
+        (map (fn [{:keys [value]}] (emit/constant value))
              (ast-utils/filter ast "UziNumberLiteralNode"))
 
         ; Collect all pin literals
-        (map (fn [{:keys [type number]}] (emit/variable :value (boards/get-pin-number (str type number) board)))
+        (map (fn [{:keys [type number]}] (emit/constant (boards/get-pin-number (str type number) board)))
              (ast-utils/filter ast "UziPinLiteralNode"))
 
         ; Collect all globals
-        (map (fn [{:keys [name value]}] (emit/variable :name name :value value))
+        (map (fn [{:keys [name value]}] (emit/variable name value))
              (:globals ast))
 
         ; Collect all ticking rates
-        (map (fn [{:keys [tickingRate]}] (emit/variable :value (rate->delay tickingRate)))
+        (map (fn [{:keys [tickingRate]}] (emit/constant (rate->delay tickingRate)))
              (:scripts ast)))))
 
 (defmethod compile-node "UziProgramNode" [node ctx]
@@ -67,8 +67,8 @@
 
 (defn collect-locals [script-body]
   (mapv (fn [{:keys [unique-name value]}]
-          (emit/variable :name unique-name
-                         :value (ast-utils/compile-time-value value 0)))
+          (emit/variable unique-name
+                         (ast-utils/compile-time-value value 0)))
         (ast-utils/filter script-body "UziVariableDeclarationNode")))
 
 (defmethod compile-node "UziTaskNode"
@@ -131,7 +131,7 @@
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
-                      (emit/variable :name unique-name :value value))
+                      (emit/variable unique-name value))
                     arguments)
    :instructions (compile body ctx)))
 

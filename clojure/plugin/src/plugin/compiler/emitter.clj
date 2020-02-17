@@ -6,18 +6,19 @@
    :variables globals
    :scripts scripts})
 
-(defn variable [& {:keys [name value] :or {value 0}}]
-  (let [result {:__class__ "UziVariable" :value (or value 0)}]
-    (if name
-      (assoc result :name name)
-      result)))
+(defn variable
+  ([name] (variable name 0))
+  ([name value] {:__class__ "UziVariable" :name name :value (or value 0)}))
+
+(defn constant [value]
+  {:__class__ "UziVariable" :value value})
 
 (defn script
   [& {:keys [name arguments delay running? locals instructions]
       :or {arguments [] delay 0 running? false locals [] instructions []}}]
   {:__class__ "UziScript"
    :arguments arguments
-   :delay (variable :value delay)
+   :delay (constant delay)
    :instructions instructions
    :locals locals
    :name name
@@ -25,7 +26,7 @@
 
 (defn write-global [var-name]
   {:__class__ "UziPopInstruction"
-   :argument (variable :name var-name)})
+   :argument (variable var-name)})
 
 (defn prim-call [prim-name]
   {:__class__ "UziPrimitiveCallInstruction"
@@ -34,11 +35,11 @@
 
 (defn push-value [value]
   {:__class__ "UziPushInstruction"
-    :argument (variable :value value)})
+    :argument (constant value)})
 
 (defn read-global [var-name]
   {:__class__ "UziPushInstruction"
-   :argument (variable :name var-name)})
+   :argument (variable var-name)})
 
 (defn stop [script-name]
   {:__class__ "UziStopScriptInstruction"
@@ -46,11 +47,11 @@
 
 (defn write-local [var-name]
   {:__class__ "UziWriteLocalInstruction"
-   :argument (variable :name var-name)})
+   :argument (variable var-name)})
 
 (defn read-local [var-name]
   {:__class__ "UziReadLocalInstruction"
-   :argument (variable :name var-name)})
+   :argument (variable var-name)})
 
 (defn script-call [script-name]
   {:__class__ "UziScriptCallInstruction"
