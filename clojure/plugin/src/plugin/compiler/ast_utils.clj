@@ -14,6 +14,11 @@
 (defn compile-time-constant? [node]
   (= "UziNumberLiteralNode" (node-type node)))
 
+(defn compile-time-value [node not-constant]
+  (if (compile-time-constant? node)
+    (:value node)
+    not-constant))
+
 (defn expression? [{:keys [primitive-name] :as node}]
   (let [type (node-type node)]
     (if (= "UziCallNode" type) ; Special case for calls

@@ -13,7 +13,6 @@
 (defn compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-
 (defn- rate->delay [{:keys [value scale] :as node}]
   (if-not node 0
     (if (= value 0)
@@ -70,9 +69,7 @@
 (defn collect-locals [script-body]
   (mapv (fn [{:keys [unique-name value]}]
           (emit/variable :name unique-name
-                         :value (if (ast-utils/compile-time-constant? value)
-                                  (-> value :value)
-                                  0)))
+                         :value (ast-utils/compile-time-value value 0)))
         (ast-utils/filter script-body "UziVariableDeclarationNode")))
 
 (defmethod compile-node "UziTaskNode"
