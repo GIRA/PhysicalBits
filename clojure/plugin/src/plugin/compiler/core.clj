@@ -149,6 +149,18 @@
           (emit/prim-call "retv"))
     [(emit/prim-call "ret")]))
 
+(defmethod compile-node "UziScriptStartNode" [{:keys [scripts]} ctx]
+  (mapv #(emit/start %) scripts))
+
+(defmethod compile-node "UziScriptStopNode" [{:keys [scripts]} ctx]
+  (mapv #(emit/stop %) scripts))
+
+(defmethod compile-node "UziScriptPauseNode" [{:keys [scripts]} ctx]
+  (mapv #(emit/pause %) scripts))
+
+(defmethod compile-node "UziScriptResumeNode" [{:keys [scripts]} ctx]
+  (mapv #(emit/resume %) scripts))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)

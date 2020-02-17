@@ -41,8 +41,21 @@
   {:__class__ "UziPushInstruction"
    :argument (variable var-name)})
 
+
+(defn start [script-name]
+  {:__class__ "UziStartScriptInstruction"
+   :argument script-name})
+
 (defn stop [script-name]
   {:__class__ "UziStopScriptInstruction"
+   :argument script-name})
+
+(defn pause [script-name]
+  {:__class__ "UziPauseScriptInstruction"
+   :argument script-name})
+
+(defn resume [script-name]
+  {:__class__ "UziResumeScriptInstruction"
    :argument script-name})
 
 (defn write-local [var-name]
