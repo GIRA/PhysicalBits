@@ -124,7 +124,7 @@
                       / while / doWhile / until / doUntil / repeat / forever / for
                       / yield / expressionStatement) ws
 
-         variableDeclaration = <'var'> ws variable (ws <'='> ws expr)?  endl
+         variableDeclaration = <'var '> ws variable (ws <'='> ws expr)?  endl
          assignment = ws variable ws <'='> ws expr  endl
          return =  ws <'return'> ws expr? endl
          conditional = ws <'if'> ws expr ws block (ws <'else'> ws block ws)?
