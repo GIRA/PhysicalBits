@@ -135,6 +135,14 @@
                     arguments)
    :instructions (compile body ctx)))
 
+(defmethod compile-node "UziFunctionNode" [{:keys [name arguments body]} ctx]
+  (emit/script
+   :name name,
+   :arguments (mapv (fn [{:keys [unique-name value]}]
+                      (emit/variable unique-name value))
+                    arguments)
+   :instructions (compile body ctx)))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
