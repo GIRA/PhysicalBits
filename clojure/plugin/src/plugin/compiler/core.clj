@@ -132,9 +132,11 @@
   [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
 
 (defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
-  ; TODO(Richo): Handle arguments!
   (emit/script
    :name name,
+   :arguments (mapv (fn [{:keys [unique-name value]}]
+                      (emit/variable :name unique-name :value value))
+                    arguments)
    :instructions (compile body ctx)))
 
 (defmethod compile-node :default [node _]
