@@ -60,7 +60,19 @@
                     [(as-pred type) result-fn])
                   (partition 2 clauses)))))
 
-(defn children [ast]
+
+(defmulti children :__class__)
+
+(defmethod children "UziProgramNode" [{:keys [imports globals scripts]}]
+  (concat imports globals scripts))
+
+(defmethod children "UziTaskNode" [{:keys [arguments tickingRate body]}]
+  (concat arguments (or tickingRate []) [body]))
+
+(defmethod children "UziProcedureNode" [{:keys [arguments body]}]
+  (concat arguments [body]))
+
+(defmethod children :default [ast]
   (->> ast
        vals
        (mapcat #(cond
