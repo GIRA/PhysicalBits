@@ -1012,6 +1012,32 @@ let UziBlock = (function () {
       }
     };
 
+
+    Blockly.Blocks['math_arithmetic'] = {
+      init: function() {
+        let msg = i18n.translate("arithmetic function %left %operator %right");
+        let inputFields = {
+          "left": () => this.appendValueInput("left").setCheck("Number"), 
+          "operator": () => this.appendDummyInput().appendField(
+                  new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
+                                             [i18n.translate("arithmetic operator *"),"MULTIPLY"],
+                                             [i18n.translate("arithmetic operator -"),"MINUS"],
+                                             [i18n.translate("arithmetic operator +"),"ADD"],
+                                             [i18n.translate("arithmetic operator ^"),"POWER"]]), "operator"),
+          "right": () => this.appendValueInput("right").setCheck("Number")
+        };
+
+        initBlock(this, msg, inputFields);
+
+        //this.setInputsInline(true);
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+
     Blockly.Blocks['number_round'] = {
       init: function() {
         let msg = i18n.translate("perform rounding %operation on %number");

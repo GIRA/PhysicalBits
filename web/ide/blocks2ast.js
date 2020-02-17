@@ -498,9 +498,9 @@ let BlocksToAST = (function () {
 		},
 		math_arithmetic: function (block, ctx, stream) {
 			let id = XML.getId(block);
-			let type = XML.getChildNode(block, "OP").innerText;
-			let left = generateCodeForValue(block, ctx, "A");
-			let right = generateCodeForValue(block, ctx, "B");
+			let type = XML.getChildNode(block, "operator").innerText;
+			let left = generateCodeForValue(block, ctx, "left");
+			let right = generateCodeForValue(block, ctx, "right");
 			let selector;
 			if (type === "DIVIDE") {
 				selector = "/";
