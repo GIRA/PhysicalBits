@@ -52,3 +52,7 @@
 (defn read-local [var-name]
   {:__class__ "UziReadLocalInstruction"
    :argument (variable :name var-name)})
+
+(defn script-call [script-name]
+  {:__class__ "UziScriptCallInstruction"
+   :argument script-name})
