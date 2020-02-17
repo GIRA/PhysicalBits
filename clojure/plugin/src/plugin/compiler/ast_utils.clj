@@ -79,6 +79,9 @@
 (defmethod children "UziProcedureNode" [{:keys [arguments body]}]
   (concat arguments [body]))
 
+(defmethod children "UziFunctionNode" [{:keys [arguments body]}]
+  (concat arguments [body]))
+
 (defmethod children :default [ast]
   (->> ast
        vals
