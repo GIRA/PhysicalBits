@@ -62,9 +62,8 @@
 (defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
    :globals (collect-globals node (ctx :board))
-   :scripts (->> (node :scripts)
-                 (map #(compile % ctx))
-                 vec)))
+   :scripts (mapv #(compile % ctx)
+                  (:scripts node))))
 
 (defn collect-locals [script-body]
   (mapv (fn [{:keys [unique-name value]}]
@@ -88,7 +87,7 @@
 (defn- compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
     (if (ast-utils/expression? node)
-      (conj instructions (emit/prim "pop"))
+      (conj instructions (emit/prim-call "pop"))
       instructions)))
 
 (defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
@@ -98,7 +97,7 @@
   (let [[var-name global?] (variable-name-and-scope left ctx)]
     (conj (compile right ctx)
           (if global?
-            (emit/pop var-name)
+            (emit/write-global var-name)
             (emit/write-local var-name)))))
 
 (defmethod compile-node "UziCallNode"
@@ -106,7 +105,7 @@
   (conj (vec (mapcat #(compile (:value %) ctx)
                      arguments))
         (if primitive-name
-          (emit/prim primitive-name)
+          (emit/prim-call primitive-name)
           (emit/script-call selector))))
 
 (defmethod compile-node "UziNumberLiteralNode" [node _]
@@ -115,7 +114,7 @@
 (defmethod compile-node "UziVariableNode" [node ctx]
   (let [[var-name global?] (variable-name-and-scope node ctx)]
     [(if global?
-       (emit/push-var var-name)
+       (emit/read-global var-name)
        (emit/read-local var-name))]))
 
 (defmethod compile-node "UziVariableDeclarationNode"

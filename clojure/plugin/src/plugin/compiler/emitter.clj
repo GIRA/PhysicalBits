@@ -1,5 +1,4 @@
-(ns plugin.compiler.emitter
-  (:refer-clojure :exclude [pop]))
+(ns plugin.compiler.emitter)
 
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
@@ -16,19 +15,19 @@
 (defn script
   [& {:keys [name arguments delay running? locals instructions]
       :or {arguments [] delay 0 running? false locals [] instructions []}}]
-  {:__class__ "UziScript",
-   :arguments arguments,
-   :delay (variable :value delay),
-   :instructions instructions,
-   :locals locals,
-   :name name,
+  {:__class__ "UziScript"
+   :arguments arguments
+   :delay (variable :value delay)
+   :instructions instructions
+   :locals locals
+   :name name
    :ticking running?})
 
-(defn pop [var-name]
+(defn write-global [var-name]
   {:__class__ "UziPopInstruction"
    :argument (variable :name var-name)})
 
-(defn prim [prim-name]
+(defn prim-call [prim-name]
   {:__class__ "UziPrimitiveCallInstruction"
    :argument {:__class__ "UziPrimitive"
               :name prim-name}})
@@ -37,7 +36,7 @@
   {:__class__ "UziPushInstruction"
     :argument (variable :value value)})
 
-(defn push-var [var-name]
+(defn read-global [var-name]
   {:__class__ "UziPushInstruction"
    :argument (variable :name var-name)})
 
