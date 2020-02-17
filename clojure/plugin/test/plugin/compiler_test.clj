@@ -625,3 +625,83 @@
                                {:__class__ "UziVariable", :value 2}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
+
+
+(deftest program-with-assignment-to-global
+  (let [ast {:__class__ "UziProgramNode",
+             :imports [],
+             :globals [{:__class__ "UziVariableDeclarationNode",
+                        :name "temp"}],
+             :scripts [{:__class__ "UziTaskNode",
+                        :name "default",
+                        :arguments [],
+                        :state "once",
+                        :tickingRate nil,
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziAssignmentNode",
+                                             :left {:__class__ "UziVariableNode",
+                                                    :name "temp"},
+                                             :right {:__class__ "UziNumberLiteralNode",
+                                                     :value 0}}]}}],
+             :primitives []}
+        expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable", :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable", :value 0}},
+                                            {:__class__ "UziPopInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :name "temp",
+                                                        :value 0}},
+                                            {:__class__ "UziStopScriptInstruction",
+                                             :argument "default"}],
+                             :locals [],
+                             :name "default",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable", :name "temp", :value 0},
+                               {:__class__ "UziVariable", :value 0}}}
+        actual (compile-tree ast)]
+    (is (equivalent? expected actual))))
+
+
+(deftest program-with-assignment-to-local
+  (let [ast {:__class__ "UziProgramNode",
+             :imports [],
+             :globals [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :name "default",
+                        :arguments [],
+                        :state "once",
+                        :tickingRate nil,
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziVariableDeclarationNode",
+                                             :name "temp",
+                                             :value {:__class__ "UziNumberLiteralNode",
+                                                     :value 0}},
+                                            {:__class__ "UziAssignmentNode",
+                                             :left {:__class__ "UziVariableNode",
+                                                    :name "temp"},
+                                             :right {:__class__ "UziNumberLiteralNode",
+                                                     :value 0}}]}}],
+             :primitives []}
+        expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable", :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable", :value 0}},
+                                            {:__class__ "UziWriteLocalInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :name "temp#1",
+                                                        :value 0}},
+                                            {:__class__ "UziStopScriptInstruction",
+                                             :argument "default"}],
+                             :locals [{:__class__ "UziVariable",
+                                       :name "temp#1",
+                                       :value 0}],
+                             :name "default",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable", :value 0}}}
+        actual (compile-tree ast)]
+    (is (equivalent? expected actual))))

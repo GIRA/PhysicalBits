@@ -88,10 +88,16 @@
   ; TODO(Richo): Add pop instruction if last stmt is expression
   (vec (mapcat #(compile % ctx) (node :statements))))
 
-(defmethod compile-node "UziAssignmentNode" [node ctx]
-  (let [right (compile (node :right) ctx)
-        var-name (-> node :left :name)]
-    (conj right (emit/pop var-name))))
+(defmethod compile-node "UziAssignmentNode" [{:keys [left right]} ctx]
+  (let [variables-in-scope (variables-in-scope (ctx :path))
+        globals (-> ctx :path last :globals set)
+        variable (first (filter #(= (:name left) (:name %))
+                                variables-in-scope))
+        global? (contains? globals variable)]
+    (conj (compile right ctx)
+          (if global?
+            (emit/pop (left :name))
+            (emit/write-local (variable :unique-name))))))
 
 (defmethod compile-node "UziCallNode" [node ctx]
   ; TODO(Richo): Detect primitive calls correctly!
