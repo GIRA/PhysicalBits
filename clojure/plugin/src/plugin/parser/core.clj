@@ -27,7 +27,7 @@
                           "&&"
                           "||"])
 
-(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) " / customSelectorBinaryExpression ) ws\n"))
+(def operator-grammar (str "\nbinaryExpr = ws? ( " (String/join " / " (reverse (map #(str " ws? expr ws? '" % "' ws? expr ws? ") operator-precedence))) " / customSelectorBinaryExpression ) ws?\n"))
 
 
 
@@ -110,56 +110,56 @@
 
 (def parse-program
   (insta/parser
-    (str "program = ws import* ws variableDeclaration* ws (primitive / script) * ws
-         import = ws <'import'> ws (identifier ws <'from'> ws)? importPath ws (endl / block)
+    (str "program = ws? import* ws? variableDeclaration* ws? (primitive / script) * ws?
+         import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl / block)
          importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> =  (task / function / procedure)
-         block = ws <'{'> ws statementList ws <'}'> ws
+         block = ws? <'{'> ws? statementList ws? <'}'> ws?
 
-         primitive = ws <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
+         primitive = ws? <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
 
-         <statementList> = ws statement*
-         <statement> = ws (variableDeclaration / assignment / return / conditional
+         <statementList> = ws? statement* ws?
+         <statement> = ws? (variableDeclaration / assignment / return / conditional
                       / startTask / stopTask / pauseTask / resumeTask
                       / while / doWhile / until / doUntil / repeat / forever / for
-                      / yield / expressionStatement) ws
+                      / yield / expressionStatement) ws?
 
-         variableDeclaration = <'var '> ws variable (ws <'='> ws expr)?  endl
-         assignment = ws variable ws <'='> ws expr  endl
-         return =  ws <'return'> ws expr? endl
-         conditional = ws <'if'> ws expr ws block (ws <'else'> ws block ws)?
-         while = ws <'while'> ws expr ws ( block ws / endl )
-         doWhile = ws <'do'> ws block ws <'while'> ws expr endl
-         until = ws <'until'> ws expr ws (block ws / endl )
-         doUntil = ws <'do'> ws block ws <'until'> ws expr endl
-         repeat = ws <'repeat'> ws expr ws block ws
-         forever = ws <'forever'> ws block ws
-         for = ws <'for'> ws variable ws <'='> ws expr ws <'to'> ws expr ws (<'by'> ws expr ws)? block ws
-         yield = ws <'yield'> endl
-         <expressionStatement> = expr endl
+         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr)?  endl
+         assignment = ws? variable ws? <'='> ws? expr  endl
+         return =  ws? <'return'> separatedExpr? endl
+         conditional = ws? <'if'> separatedExpr ws? block (ws? <'else'> ws? block ws?)?
+         while = ws? <'while'> separatedExpr ws? ( block ws? / endl )
+         doWhile = ws? <'do'> ws? block ws? <'while'> separatedExpr endl
+         until = ws? <'until'> separatedExpr ws? (block ws? / endl )
+         doUntil = ws? <'do'> ws? block ws? <'until'> separatedExpr endl
+         repeat = ws? <'repeat'> separatedExpr ws? block ws?
+         forever = ws? <'forever'> ws? block ws?
+         for = ws? <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block ws?
+         yield = ws? <'yield'> endl
+         <expressionStatement> = ws? expr endl
 
-         startTask = ws <'start'> ws scriptList endl
-         stopTask = ws <'stop'> ws scriptList endl
-         pauseTask = ws <'pause'> ws scriptList endl
-         resumeTask = ws <'resume'> ws scriptList endl
+         startTask = ws? <'start'> ws scriptList endl
+         stopTask = ws? <'stop'> ws scriptList endl
+         pauseTask = ws? <'pause'> ws scriptList endl
+         resumeTask = ws? <'resume'> ws scriptList endl
 
 
 
-         <scriptList> = ws scriptReference (ws <','> ws scriptReference)*
-         <scriptReference> = ws identifier ws
+         <scriptList> = ws? scriptReference (ws? <','> ws? scriptReference)* ws?
+         <scriptReference> = ws? identifier ws?
 
          identifier = name ('.' name)*
-         variable = ws identifier ws
+         variable = ws? identifier ws?
 
-         task=<'task'> ws identifier paramsList taskState tickingRate? block ws
+         task=<'task'> ws identifier paramsList taskState tickingRate? block ws?
 
-         paramsList = ws<'('> (ws argument (ws <','> ws argument)*)? ws <')'> ws
-         argument = ws identifier ws
-         taskState = ws ('running'|'stopped')? ws
-         tickingRate = number ws <'/'> ( 's' | 'm' | 'h' | 'd')
+         paramsList = ws?<'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'> ws?
+         argument = ws? identifier ws?
+         taskState = ws? ('running'|'stopped')? ws?
+         tickingRate = ws? number ws? <'/'> ws? ( 's' | 'm' | 'h' | 'd') ws?
 
-         function = ws <'func'> ws identifier ws paramsList ws block ws
-         procedure = ws <'proc'> ws identifier ws paramsList ws block ws
+         function = ws? <'func'> ws identifier ws? paramsList ws? block ws?
+         procedure = ws? <'proc'> ws identifier ws? paramsList ws? block ws?
 
          comments = (<'\"'> #'[^\"]*' <'\"'>)
 
@@ -171,20 +171,22 @@
          <expr> =(binaryExpr / nonBinaryExpr)
          <nonBinaryExpr> = (unary / literal / call / variable / subExpr)
          <unary> = not
-         not = ws <'!'> ws nonBinaryExpr ws
+         not = ws? <'!'> ws? nonBinaryExpr ws?
          <literal> = (constant / number)
-         constant = ws ('D'/'A') integer ws
-         call = ws scriptReference argList ws
-         <argList> = ws <'('> ws (namedArg (ws <','> ws namedArg)*)?<')'>
-         namedArg = ws( identifier ws <':'> ws)? expr ws
-         subExpr = ws <'('> ws expr ws <')'> ws
+         constant = ws? ('D'/'A') integer ws?
+         call = ws? scriptReference argList ws?
+         <argList> = ws? <'('> ws? (namedArg (ws? <','> ws? namedArg)*)?<')'>
+         namedArg = ws?( identifier ws? <':'> ws?)? expr ws?
+         subExpr = ws? <'('> ws? expr ws? <')'> ws?
+         <separatedExpr> = ws? (subExpr / ws expr) ws?
 
          <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
-         <customSelectorBinaryExpression> = ws expr ws binarySelector ws expr ws
+         <customSelectorBinaryExpression> = ws? expr ws? binarySelector ws? expr ws?
 
-         <endl> =ws <';'> ws
+         <endl> =ws? <';'> ws?
          <name> =#'[a-zA-Z_][_\\w]*'
-         <ws> = (<#'\\s'*> / <comments>)+
+         <ws> = (<#'\\s'> / <comments>)+
+
          <letter> = #'[a-zA-Z]'
          <word> = #'\\w'
          <digits> = #'\\d+'
