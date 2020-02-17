@@ -88,11 +88,14 @@
                      (conj instructions (emit/stop task-name))
                      instructions))))
 
-(defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
-  (let [instructions (vec (mapcat #(compile % ctx) statements))]
-    (if (ast-utils/expression? (last statements))
+(defn- compile-stmt [node ctx]
+  (let [instructions (compile node ctx)]
+    (if (ast-utils/expression? node)
       (conj instructions (emit/prim "pop"))
       instructions)))
+
+(defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
+  (vec (mapcat #(compile-stmt % ctx) statements)))
 
 (defmethod compile-node "UziAssignmentNode" [{:keys [left right]} ctx]
   (let [[var-name global?] (variable-name-and-scope left ctx)]
