@@ -27,7 +27,7 @@
                           "&&"
                           "||"])
 
-(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) " /customSelectorBinaryExpression ) ws\n"))
+(def operator-grammar (str "\nbinaryExpr = ws ( " (String/join " / " (reverse (map #(str " ws expr ws '" % "' ws expr ws ") operator-precedence))) " / customSelectorBinaryExpression ) ws\n"))
 
 
 
@@ -62,7 +62,7 @@
                                        :arguments params
                                        :body (first-class-or-default "UziBlockNode" rest nil)))
    ;TODO(Tera): the comments are ignored by the syntax definition for now.
-   :comments (fn [ strings] (comment-node strings))
+   :comments            (fn [strings] (comment-node strings))
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
    :namedArg            (fn [a & b] (association-node (if b a nil) (or (first b) a)))
    :constant            literal-pin-node
@@ -134,7 +134,7 @@
          doUntil = ws <'do'> ws block ws <'until'> ws expr endl
          repeat = ws <'repeat'> ws expr ws block ws
          forever = ws <'forever'> ws block ws
-         for = ws <'for'> ws variable ws <'='> ws expr ws <'to'> expr ws (<'by'> ws expr ws)? block ws
+         for = ws <'for'> ws variable ws <'='> ws expr ws <'to'> ws expr ws (<'by'> ws expr ws)? block ws
          yield = ws <'yield'> endl
          <expressionStatement> = expr endl
 
