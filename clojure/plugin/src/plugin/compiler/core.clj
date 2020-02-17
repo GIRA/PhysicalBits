@@ -143,6 +143,12 @@
                     arguments)
    :instructions (compile body ctx)))
 
+(defmethod compile-node "UziReturnNode" [{:keys [value]} ctx]
+  (if value
+    (conj (compile value ctx)
+          (emit/prim-call "retv"))
+    [(emit/prim-call "ret")]))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
