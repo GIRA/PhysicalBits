@@ -42,28 +42,23 @@
     [var-name global?]))
 
 (defn collect-globals [ast board]
-  (let [vars (atom #{})]
-    ; Collect all number literals
-    (swap! vars into
-           (map (fn [{:keys [value]}] (emit/variable :value value))
-                (ast-utils/filter ast "UziNumberLiteralNode")))
+  (set (concat
 
-    ; Collect all pin literals
-    (swap! vars into
-           (map (fn [{:keys [type number]}] (emit/variable :value (boards/get-pin-number (str type number) board)))
-                (ast-utils/filter ast "UziPinLiteralNode")))
+        ; Collect all number literals
+        (map (fn [{:keys [value]}] (emit/variable :value value))
+             (ast-utils/filter ast "UziNumberLiteralNode"))
 
-    ; Collect all globals
-    (swap! vars into
-           (map (fn [{:keys [name value]}] (emit/variable :name name :value value))
-                (:globals ast)))
+        ; Collect all pin literals
+        (map (fn [{:keys [type number]}] (emit/variable :value (boards/get-pin-number (str type number) board)))
+             (ast-utils/filter ast "UziPinLiteralNode"))
 
-    ; Collect all ticking rates
-    (swap! vars into
-           (map (fn [{:keys [tickingRate]}] (emit/variable :value (rate->delay tickingRate)))
-                (:scripts ast)))
+        ; Collect all globals
+        (map (fn [{:keys [name value]}] (emit/variable :name name :value value))
+             (:globals ast))
 
-    @vars))
+        ; Collect all ticking rates
+        (map (fn [{:keys [tickingRate]}] (emit/variable :value (rate->delay tickingRate)))
+             (:scripts ast)))))
 
 (defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
