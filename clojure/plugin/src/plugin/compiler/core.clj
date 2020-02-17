@@ -32,6 +32,15 @@
                                 (ast-utils/children second))))
           (partition 2 1 path)))
 
+(defn- variable-name-and-scope [{:keys [name]} ctx]
+  (let [variables-in-scope (variables-in-scope (ctx :path))
+        globals (-> ctx :path last :globals set)
+        variable (first (filter #(= name (:name %))
+                                variables-in-scope))
+        global? (contains? globals variable)
+        var-name (variable (if global? :name :unique-name))]
+    [var-name global?]))
+
 (defn collect-globals [ast board]
   (let [vars (atom #{})]
     ; Collect all number literals
@@ -89,15 +98,11 @@
   (vec (mapcat #(compile % ctx) (node :statements))))
 
 (defmethod compile-node "UziAssignmentNode" [{:keys [left right]} ctx]
-  (let [variables-in-scope (variables-in-scope (ctx :path))
-        globals (-> ctx :path last :globals set)
-        variable (first (filter #(= (:name left) (:name %))
-                                variables-in-scope))
-        global? (contains? globals variable)]
+  (let [[var-name global?] (variable-name-and-scope left ctx)]
     (conj (compile right ctx)
           (if global?
-            (emit/pop (left :name))
-            (emit/write-local (variable :unique-name))))))
+            (emit/pop var-name)
+            (emit/write-local var-name)))))
 
 (defmethod compile-node "UziCallNode" [node ctx]
   ; TODO(Richo): Detect primitive calls correctly!
@@ -109,14 +114,10 @@
   [(emit/push-value (node :value))])
 
 (defmethod compile-node "UziVariableNode" [node ctx]
-  (let [variables-in-scope (variables-in-scope (ctx :path))
-        globals (-> ctx :path last :globals set)
-        variable (first (filter #(= (:name node) (:name %))
-                                variables-in-scope))
-        global? (contains? globals variable)]
+  (let [[var-name global?] (variable-name-and-scope node ctx)]
     [(if global?
-       (emit/push-var (node :name))
-       (emit/read-local (variable :unique-name)))]))
+       (emit/push-var var-name)
+       (emit/read-local var-name))]))
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
