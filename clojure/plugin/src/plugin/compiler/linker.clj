@@ -70,6 +70,14 @@
    "stopTone" "noTone"})
 
 (defn bind-primitives [ast]
-  (ast-utils/transform
-   ast
-   "UziCallNode" #(assoc % :primitive-name (core-primitives (:selector %)))))
+  (let [scripts (set (map :name
+                          (:scripts ast)))]
+    (ast-utils/transform
+     ast
+     ; NOTE(Richo): We should only associate a prim name if the selector doesn't match
+     ; an existing script. Scripts have precedence over primitives!
+     "UziCallNode" (fn [{:keys [selector] :as node}]
+                     (if (contains? scripts selector)
+                       node
+                       (assoc node
+                              :primitive-name (core-primitives selector)))))))
