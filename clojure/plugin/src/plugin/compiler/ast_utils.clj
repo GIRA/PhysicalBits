@@ -1,7 +1,8 @@
 (ns plugin.compiler.ast-utils
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj-core]
-            [clojure.walk :as w]))
+            [clojure.walk :as w]
+            [plugin.compiler.primitives :as prims]))
 
 (defn node? [node]
   (and (map? node)
@@ -12,6 +13,19 @@
 
 (defn compile-time-constant? [node]
   (= "UziNumberLiteralNode" (node-type node)))
+
+(defn expression? [{:keys [primitive-name] :as node}]
+  (let [type (node-type node)]
+    (if (= "UziCallNode" type) ; Special case for calls
+      (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
+        (= 1 after)
+        true)
+      (contains? #{"UziLogicalAndNode"
+                   "UziLogicalOrNode"
+                   "UziNumberLiteralNode"
+                   "UziPinLiteralNode"
+                   "UziVariableNode"}
+                 type))))
 
 (defn filter [ast & types]
   (let [type-set (into #{} types)
