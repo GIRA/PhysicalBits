@@ -100,13 +100,29 @@
             (emit/write-global var-name)
             (emit/write-local var-name)))))
 
-(defmethod compile-node "UziCallNode"
-  [{:keys [selector arguments primitive-name]} ctx]
+(defn- compile-primitive-call [{:keys [arguments primitive-name]} ctx]
   (conj (vec (mapcat #(compile (:value %) ctx)
                      arguments))
-        (if primitive-name
-          (emit/prim-call primitive-name)
+        (emit/prim-call primitive-name)))
+
+(defn- compile-script-call [{:keys [selector arguments]} ctx]
+  (let [script (first (filter #(= selector (:name %))
+                              (-> ctx :path last :scripts)))
+        positional-args? (every? #(nil? (:key %)) arguments)
+        sorted-args (if positional-args?
+                    arguments
+                    (map (fn [{:keys [name]}]
+                           (first (filter #(= name (:key %))
+                                          arguments)))
+                         (:arguments script)))]
+    (conj (vec (mapcat #(compile (:value %) ctx)
+                       sorted-args))
           (emit/script-call selector))))
+
+(defmethod compile-node "UziCallNode" [{:keys [primitive-name] :as node} ctx]
+  (if primitive-name
+    (compile-primitive-call node ctx)
+    (compile-script-call node ctx)))
 
 (defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
