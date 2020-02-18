@@ -41,8 +41,21 @@
   {:__class__ "UziPushInstruction"
    :argument (variable var-name)})
 
+
+(defn start [script-name]
+  {:__class__ "UziStartScriptInstruction"
+   :argument script-name})
+
 (defn stop [script-name]
   {:__class__ "UziStopScriptInstruction"
+   :argument script-name})
+
+(defn pause [script-name]
+  {:__class__ "UziPauseScriptInstruction"
+   :argument script-name})
+
+(defn resume [script-name]
+  {:__class__ "UziResumeScriptInstruction"
    :argument script-name})
 
 (defn write-local [var-name]
@@ -56,3 +69,19 @@
 (defn script-call [script-name]
   {:__class__ "UziScriptCallInstruction"
    :argument script-name})
+
+(defn jmp [offset]
+  {:__class__ "UziJMPInstruction",
+   :argument offset})
+
+(defn jz [offset]
+  {:__class__ "UziJZInstruction",
+   :argument offset})
+
+(defn jnz [offset]
+  {:__class__ "UziJNZInstruction",
+   :argument offset})
+
+(defn jlte [offset]
+  {:__class__ "UziJLTEInstruction",
+   :argument offset})
