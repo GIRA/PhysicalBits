@@ -66,10 +66,18 @@
                   (:scripts node))))
 
 (defn collect-locals [script-body]
-  (mapv (fn [{:keys [unique-name value]}]
-          (emit/variable unique-name
-                         (ast-utils/compile-time-value value 0)))
-        (ast-utils/filter script-body "UziVariableDeclarationNode")))
+  (vec (concat
+        ; Collect all variable declarations
+        (map (fn [{:keys [unique-name value]}]
+               (emit/variable unique-name
+                              (ast-utils/compile-time-value value 0)))
+             (ast-utils/filter script-body "UziVariableDeclarationNode"))
+
+        ; Special case: for-loop with variable step
+        (map (fn [{:keys [temp-name]}] (emit/variable temp-name))
+             (filter (fn [{:keys [temp-name]}] (not (nil? temp-name)))
+                     (ast-utils/filter script-body "UziForNode")))
+        )))
 
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
@@ -248,7 +256,7 @@
 (defmethod compile-node "UziDoUntilNode" [node ctx]
   (compile-loop node ctx))
 
-(defn- compile-for-with-constant-step
+(defn- compile-for-loop-with-constant-step
   [{:keys [counter start stop step body]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -289,10 +297,54 @@
                          (count compiled-body)
                          (count compiled-stop))))])))
 
+
+(defn- compile-for-loop
+  [{:keys [counter start stop step body temp-name]} ctx]
+  (let [compiled-start (compile start ctx)
+        compiled-stop (compile stop ctx)
+        compiled-step (compile step ctx)
+        compiled-body (compile body ctx)
+        counter-name (:unique-name counter)]
+    (concat
+     ; First, we initialize counter
+     compiled-start
+     [(emit/write-local counter-name)
+
+      ; This is where the loop begins!
+
+      ; Then, we compare counter with stop. The comparison can either be
+      ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
+      (emit/read-local counter-name)]
+     compiled-stop
+     compiled-step
+     [(emit/write-local temp-name)
+      (emit/read-local temp-name)
+      (emit/push-value 0)
+      (emit/jlte 2)
+      (emit/prim-call "lessThanOrEquals")
+      (emit/jmp 1)
+      (emit/prim-call "greaterThanOrEquals")
+      (emit/jz (+ 5 (count compiled-body)))]
+
+     ; While counter doesn't reach the stop we execute the body
+     compiled-body
+
+     ; Before jumping back to the comparison, we increment counter by step
+     [(emit/read-local counter-name)
+      (emit/read-local temp-name)
+      (emit/prim-call "add")
+      (emit/write-local counter-name)
+
+      ; And now we jump to the beginning
+      (emit/jmp (* -1 (+ 14
+                         (count compiled-body)
+                         (count compiled-step)
+                         (count compiled-stop))))])))
+
 (defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
   (if (ast-utils/compile-time-constant? step)
-    (compile-for-with-constant-step node ctx)
-    []))
+    (compile-for-loop-with-constant-step node ctx)
+    (compile-for-loop node ctx)))
 
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
@@ -304,9 +356,22 @@
 
 (defn- assign-unique-variable-names [ast]
   (let [counter (atom 0)
+        temp-counter (atom 0)
         globals (-> ast :globals set)]
     (ast-utils/transform
      ast
+
+     ; Temporary variables are local to their script
+     "UziTaskNode" (fn [node] (reset! temp-counter 0) node)
+     "UziProcedureNode" (fn [node] (reset! temp-counter 0) node)
+     "UziFunctionNode" (fn [node] (reset! temp-counter 0) node)
+
+     "UziForNode" ; Some for-loops declare a temporary variable.
+     (fn [{:keys [step] :as node}]
+       (if (ast-utils/compile-time-constant? step)
+         node
+         (assoc node :temp-name (str "@" (swap! temp-counter inc)))))
+
      "UziVariableDeclarationNode"
      (fn [var]
        (if (contains? globals var)

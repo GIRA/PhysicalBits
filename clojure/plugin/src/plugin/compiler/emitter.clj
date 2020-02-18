@@ -81,3 +81,7 @@
 (defn jnz [offset]
   {:__class__ "UziJNZInstruction",
    :argument offset})
+
+(defn jlte [offset]
+  {:__class__ "UziJLTEInstruction",
+   :argument offset})
