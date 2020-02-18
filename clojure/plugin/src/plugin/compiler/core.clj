@@ -51,13 +51,23 @@
         (map (fn [{:keys [type number]}] (emit/constant (boards/get-pin-number (str type number) board)))
              (ast-utils/filter ast "UziPinLiteralNode"))
 
-        ; Collect repeat-loop (they push 1 to increment times)
-        (map (fn [_] (emit/constant 1))
-             (ast-utils/filter ast "UziRepeatNode"))
+        ; Collect repeat-loops (they use 0 to initialize temp and 1 to increment times)
+        (mapcat (fn [_] [(emit/constant 0)
+                         (emit/constant 1)])
+                (ast-utils/filter ast "UziRepeatNode"))
+
+        ; Collect for-loops (they use 0 to initialize temp)
+        (mapcat (fn [_] [(emit/constant 0)])
+                (ast-utils/filter ast "UziForNode"))
 
         ; Collect all globals
         (map (fn [{:keys [name value]}] (emit/variable name value))
              (:globals ast))
+
+        ; Collect all local values
+        (map (fn [{:keys [value]}] (emit/constant (or value 0)))
+             (mapcat (fn [{:keys [body]}] (ast-utils/filter body "UziVariableDeclarationNode"))
+                     (:scripts ast)))
 
         ; Collect all ticking rates
         (map (fn [{:keys [tickingRate]}] (emit/constant (rate->delay tickingRate)))
@@ -144,7 +154,8 @@
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
-  (if (ast-utils/compile-time-constant? value)
+  (if (or (nil? value)
+          (ast-utils/compile-time-constant? value))
     []
     (conj (compile value ctx)
           (emit/write-local unique-name))))
