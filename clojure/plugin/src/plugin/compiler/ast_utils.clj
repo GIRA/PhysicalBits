@@ -32,7 +32,14 @@
                    "UziVariableNode"}
                  type))))
 
-(def has-side-effects? (complement expression?))
+
+(defn has-side-effects? [node]
+  (if (= "UziCallNode" (node-type node))
+    (if-not (:primitive-name node)
+      true ; Script calls could always have side-effects
+      ; TODO(Richo): Check arguments and primitive
+      false)
+    (not (expression? node))))
 
 (defn filter [ast & types]
   (let [type-set (into #{} types)
