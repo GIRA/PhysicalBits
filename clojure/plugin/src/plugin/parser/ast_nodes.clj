@@ -101,7 +101,13 @@
    :condition condition,
    :post      post,
    :negated   negated})
-
+(defn until-node
+  [pre condition post negated]
+  {:__class__ "UziUntilNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
 ;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
 (defn do-until-node
   [pre condition post negated]
