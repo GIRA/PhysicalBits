@@ -89,7 +89,11 @@
                           ([expr block] (conditional-node expr block (block-node [])))
                           ([expr block else-block] (conditional-node expr block else-block)))
    :assignment          assignment-node
-   :binaryExpr          binary-expression-node
+   :binaryExpr          (fn [left op right]
+                          (case op
+                            "&&" (logical-and-node left right)
+                            "||" (logical-or-node left right)
+                            (binary-expression-node left op right)))
    :not                 (fn [& arg] (call-node "!" (map #(association-node nil %) arg)))
    :yield               yield-node
    :import              (fn [& args]

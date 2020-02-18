@@ -140,6 +140,12 @@
                {:__class__ "Association",
                 :key       nil,
                 :value     right}]})
+(defn logical-and-node [left right] {:__class__ "UziLogicalAndNode",
+                                     :left left,
+                                     :right right})
+(defn logical-or-node [left right] {:__class__ "UziLogicalOrNode",
+                                     :left left,
+                                     :right right})
 (defn start-node [scripts] {:__class__ "UziScriptStartNode",
                             :scripts   scripts})
 (defn stop-node [scripts] {:__class__ "UziScriptStopNode",
