@@ -213,6 +213,41 @@
     (conj compiled-body
           (emit/jmp (* -1 (inc (count compiled-body)))))))
 
+(defn- compile-loop
+  [{negated? :negated, :keys [pre condition post]} ctx]
+  (let [compiled-pre (compile pre ctx)
+        compiled-condition (compile condition ctx)
+        compiled-post (compile post ctx)]
+    (concat compiled-pre
+            compiled-condition
+            (if (empty? (:statements post))
+              (let [count (* -1 (+ 1
+                                   (count compiled-pre)
+                                   (count compiled-condition)))]
+                (if negated?
+                  [(emit/jz count)]
+                  [(emit/jnz count)]))
+              (let [count-start (* -1 (+ 2
+                                         (count compiled-pre)
+                                         (count compiled-condition)
+                                         (count compiled-post)))
+                    count-end (inc (count compiled-post))]
+                (concat [(if negated?
+                           (emit/jnz count-end)
+                           (emit/jz count-end))]
+                        compiled-post
+                        [(emit/jmp count-start)]))))))
+
+; TODO(Richo): The following four node types could be merged into one
+(defmethod compile-node "UziWhileNode" [node ctx]
+  (compile-loop node ctx))
+(defmethod compile-node "UziUntilNode" [node ctx]
+  (compile-loop node ctx))
+(defmethod compile-node "UziDoWhileNode" [node ctx]
+  (compile-loop node ctx))
+(defmethod compile-node "UziDoUntilNode" [node ctx]
+  (compile-loop node ctx))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
