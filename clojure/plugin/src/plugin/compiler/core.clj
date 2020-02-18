@@ -57,8 +57,19 @@
                 (ast-utils/filter ast "UziRepeatNode"))
 
         ; Collect for-loops (they use 0 to initialize temp)
-        (mapcat (fn [_] [(emit/constant 0)])
-                (ast-utils/filter ast "UziForNode"))
+        (map (fn [_] [(emit/constant 0)])
+             (ast-utils/filter ast "UziForNode"))
+
+        ; Collect logical-or (with short-circuit)
+        (map (fn [_] (emit/constant 1))
+             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
+                     (ast-utils/filter ast "UziLogicalOrNode")))
+
+
+        ; Collect logical-and (with short-circuit)
+        (map (fn [_] (emit/constant 0))
+             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
+                     (ast-utils/filter ast "UziLogicalAndNode")))
 
         ; Collect all globals
         (map (fn [{:keys [name value]}] (emit/variable name value))
@@ -407,7 +418,6 @@
       (concat compiled-left
               compiled-right
               [(emit/prim-call "logicalAnd")]))))
-
 
 (defmethod compile-node "UziLogicalOrNode" [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
