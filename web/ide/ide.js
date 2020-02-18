@@ -27,6 +27,57 @@
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
         .then(initializeInternationalization);
+
+      Uzi.on("update", function () {
+
+            // HACK(Richo)
+            function sanitized(obj) {
+              if (obj instanceof Array) return obj.map(sanitized);
+              if (typeof obj != "object") return obj;
+              if (obj === null) return null;
+              if (obj === undefined) return undefined;
+
+              obj.id = undefined;
+
+              if (obj.__class__ == "UziPrimitive") {
+                obj.code = undefined;
+                obj.stackTransition = undefined;
+              }
+
+              if (obj.__class__ == "UziVariable"
+                  && obj.name == null) {
+                obj.name = undefined;
+              }
+
+              if (obj.__class__ == "UziProgramNode") {
+                obj.primitives = [];
+                obj.primitivesDict = undefined;
+              }
+
+              if (obj.__class__ == "UziCallNode") {
+                obj.primitiveName = undefined;
+              }
+
+              let value = {};
+              for (let m in obj) {
+                value[m] = sanitized(obj[m]);
+              }
+              return value;
+            }
+
+            function clj_print(obj) {
+              let json = JSON.stringify(obj, null, 4);
+              json = json.replace(/"([^"]+)":/g, ":$1");
+              json = json.replace(/null/g, "nil");
+              json = json.replace(/([{[])\s+/g, "$1");
+              json = json.replace(/\s*(}|\])/g, "$1");
+              console.log(json);
+            }
+
+            console.clear();
+            clj_print(sanitized(Uzi.state.program.current.ast));
+            clj_print(sanitized(Uzi.state.program.current.compiled));
+      });
     },
   };
 
@@ -986,19 +1037,6 @@
 
   function verify() {
     Uzi.compile(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
-
-    // HACK(Richo)
-    function clj_print(obj) {
-      let json = JSON.stringify(obj, null, 4);
-      json = json.replace(/"([^"]+)":/g, ":$1");
-      json = json.replace(/null/g, "nil");
-      json = json.replace(/([{[])\s+/g, "$1");
-      json = json.replace(/\s*(}|\])/g, "$1");
-      console.log(json);
-    }
-
-    clj_print(UziBlock.getGeneratedCode());
-    setTimeout(() => clj_print(Uzi.state.program.current.compiled), 100);
   }
 
   function run() {
