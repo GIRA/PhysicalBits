@@ -51,6 +51,10 @@
         (map (fn [{:keys [type number]}] (emit/constant (boards/get-pin-number (str type number) board)))
              (ast-utils/filter ast "UziPinLiteralNode"))
 
+        ; Collect repeat-loop (they push 1 to increment times)
+        (map (fn [_] (emit/constant 1))
+             (ast-utils/filter ast "UziRepeatNode"))
+
         ; Collect all globals
         (map (fn [{:keys [name value]}] (emit/variable name value))
              (:globals ast))
@@ -73,11 +77,14 @@
                               (ast-utils/compile-time-value value 0)))
              (ast-utils/filter script-body "UziVariableDeclarationNode"))
 
-        ; Special case: for-loop with variable step
+        ; Special case #1: for-loop with variable step
         (map (fn [{:keys [temp-name]}] (emit/variable temp-name))
              (filter (fn [{:keys [temp-name]}] (not (nil? temp-name)))
                      (ast-utils/filter script-body "UziForNode")))
-        )))
+
+        ; Special case #2: repeat-loop
+        (map (fn [{:keys [temp-name]}] (emit/variable temp-name))
+             (ast-utils/filter script-body "UziRepeatNode")))))
 
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
@@ -346,6 +353,35 @@
     (compile-for-loop-with-constant-step node ctx)
     (compile-for-loop node ctx)))
 
+(defmethod compile-node "UziRepeatNode"
+  [{:keys [body times temp-name]} ctx]
+  (let [compiled-body (compile body ctx)
+        compiled-times (compile times ctx)]
+    (concat
+     ; First, we set temp = 0
+     [(emit/push-value 0)
+      (emit/write-local temp-name)]
+
+     ; This is where the loop begins!
+
+     ; Then, we compare temp with times
+     [(emit/read-local temp-name)]
+     compiled-times
+     [(emit/prim-call "lessThan")
+      (emit/jz (+ 5 (count compiled-body)))]
+
+     ; While temp is less than the expected times we execute the body
+     compiled-body
+
+     ; Before jumping back to the comparison, we increment temp
+     [(emit/read-local temp-name)
+      (emit/push-value 1)
+      (emit/prim-call "add")
+      (emit/write-local temp-name)
+      (emit/jmp (* -1 (+ 8
+                         (count compiled-body)
+                         (count compiled-times))))])))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
@@ -371,6 +407,10 @@
        (if (ast-utils/compile-time-constant? step)
          node
          (assoc node :temp-name (str "@" (swap! temp-counter inc)))))
+
+     "UziRepeatNode" ; All repeat-loops declare a temporary variable
+     (fn [node]
+       (assoc node :temp-name (str "@" (swap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
      (fn [var]
