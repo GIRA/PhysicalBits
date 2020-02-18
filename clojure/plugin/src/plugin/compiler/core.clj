@@ -174,6 +174,18 @@
 (defmethod compile-node "UziYieldNode" [_ _]
   [(emit/prim-call "yield")])
 
+(defmethod compile-node "UziConditionalNode"
+  [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
+   ctx]
+  (let [compiled-condition (compile condition ctx)
+        compiled-true-branch (compile true-branch ctx)
+        compiled-false-branch (compile false-branch ctx)]
+    (concat compiled-condition
+            [(emit/jz (inc (count compiled-true-branch)))]
+            compiled-true-branch
+            [(emit/jmp (count compiled-false-branch))]
+            compiled-false-branch)))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
