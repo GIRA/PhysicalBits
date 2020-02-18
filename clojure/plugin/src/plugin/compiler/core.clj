@@ -248,6 +248,52 @@
 (defmethod compile-node "UziDoUntilNode" [node ctx]
   (compile-loop node ctx))
 
+(defn- compile-for-with-constant-step
+  [{:keys [counter start stop step body]} ctx]
+  (let [compiled-start (compile start ctx)
+        compiled-stop (compile stop ctx)
+        compiled-step (compile step ctx)
+        compiled-body (compile body ctx)
+        counter-name (:unique-name counter)]
+    (concat
+     ; First, we initialize counter
+     compiled-start
+     [(emit/write-local counter-name)
+
+      ; Then, we compare counter with stop
+      (emit/read-local counter-name)]
+     compiled-stop
+
+     ; We can do this statically because we know step is a compile-time constant
+     [(if (> (ast-utils/compile-time-value step 0) 0)
+        (emit/prim-call "lessThanOrEquals")
+        (emit/prim-call "greaterThanOrEquals"))
+
+      ; If the condition succeeds, we jump to the end (break out of the loop)
+      (emit/jz (+ 4
+                  (count compiled-body)
+                  (count compiled-step)))]
+
+     ; We execute the body
+     compiled-body
+
+     ; But before jumping back to the comparison, we increment counter by step
+     [(emit/read-local counter-name)]
+     compiled-step
+     [(emit/prim-call "add")
+      (emit/write-local counter-name)
+
+      ; And now we jump to the beginning
+      (emit/jmp (* -1 (+ 7
+                         (count compiled-step)
+                         (count compiled-body)
+                         (count compiled-stop))))])))
+
+(defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
+  (if (ast-utils/compile-time-constant? step)
+    (compile-for-with-constant-step node ctx)
+    []))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)

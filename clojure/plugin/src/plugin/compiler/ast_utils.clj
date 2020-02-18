@@ -82,6 +82,9 @@
 (defmethod children "UziFunctionNode" [{:keys [arguments body]}]
   (concat arguments [body]))
 
+(defmethod children "UziForNode" [{:keys [counter start stop step body]}]
+  [counter start stop step body])
+
 (defmethod children :default [ast]
   (->> ast
        vals
