@@ -32,13 +32,15 @@
                    "UziVariableNode"}
                  type))))
 
-
-(defn has-side-effects? [node]
+(defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
-    (if-not (:primitive-name node)
+    (if-not primitive-name
       true ; Script calls could always have side-effects
-      ; TODO(Richo): Check arguments and primitive
-      false)
+      (if (some has-side-effects? (map :value arguments))
+        true
+        (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
+          (not (= 1 after))
+          true)))
     (not (expression? node))))
 
 (defn filter [ast & types]
