@@ -408,6 +408,22 @@
               compiled-right
               [(emit/prim-call "logicalAnd")]))))
 
+
+(defmethod compile-node "UziLogicalOrNode" [{:keys [left right]} ctx]
+  (let [compiled-left (compile left ctx)
+        compiled-right (compile right ctx)]
+    (if (ast-utils/has-side-effects? right)
+      ; We need to short-circuit
+      (concat compiled-left
+              [(emit/jnz (inc (count compiled-right)))]
+              compiled-right
+              [(emit/jmp 1)
+               (emit/push-value 1)])
+      ; Primitive call is enough
+      (concat compiled-left
+              compiled-right
+              [(emit/prim-call "logicalOr")]))))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
