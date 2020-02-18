@@ -70,10 +70,14 @@
   {:__class__ "UziScriptCallInstruction"
    :argument script-name})
 
+(defn jmp [offset]
+  {:__class__ "UziJMPInstruction",
+   :argument offset})
+
 (defn jz [offset]
   {:__class__ "UziJZInstruction",
    :argument offset})
 
-(defn jmp [offset]
-  {:__class__ "UziJMPInstruction",
+(defn jnz [offset]
+  {:__class__ "UziJNZInstruction",
    :argument offset})

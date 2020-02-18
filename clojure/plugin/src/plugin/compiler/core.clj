@@ -174,7 +174,7 @@
 (defmethod compile-node "UziYieldNode" [_ _]
   [(emit/prim-call "yield")])
 
-(defmethod compile-node "UziConditionalNode"
+(defn- compile-if-true-if-false
   [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
    ctx]
   (let [compiled-condition (compile condition ctx)
@@ -185,6 +185,28 @@
             compiled-true-branch
             [(emit/jmp (count compiled-false-branch))]
             compiled-false-branch)))
+
+(defn- compile-if-true
+ [{condition :condition, true-branch :trueBranch} ctx]
+ (let [compiled-condition (compile condition ctx)
+       compiled-true-branch (compile true-branch ctx)]
+   (concat compiled-condition
+           [(emit/jz (count compiled-true-branch))]
+           compiled-true-branch)))
+
+(defn- compile-if-false
+  [{condition :condition, false-branch :falseBranch} ctx]
+  (let [compiled-condition (compile condition ctx)
+        compiled-false-branch (compile false-branch ctx)]
+    (concat compiled-condition
+            [(emit/jnz (count compiled-false-branch))]
+            compiled-false-branch)))
+
+(defmethod compile-node "UziConditionalNode" [node ctx]
+  (cond
+    (empty? (-> node :falseBranch :statements)) (compile-if-true node ctx)
+    (empty? (-> node :trueBranch :statements)) (compile-if-false node ctx)
+    :else (compile-if-true-if-false node ctx)))
 
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
