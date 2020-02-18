@@ -27,10 +27,28 @@
                           "&&"
                           "||"])
 
-(def operator-grammar (str "\nbinaryExpr = ws? ( " (String/join " / " (reverse (map #(str " ws? expr ws? '" % "' ws? expr ws? ") operator-precedence))) " / customSelectorBinaryExpression ) ws?\n"))
-
-
-
+(defn group-binary-by [op [_ & in]]
+  (let [
+        expr (vec in)
+        size (count expr)
+        index (.indexOf expr op)
+        add-header (fn [v] (vec (concat [:binaryExpr] v)))]
+    (add-header (if (= index -1)
+      expr
+      (let [prev (subvec expr 0 (- index 1))]
+        (if (< index (- size 1))
+          (vec (concat(conj prev (add-header (subvec expr (- index 1) (+ index 2)))) (subvec expr (+ index 2))))
+          (conj prev (add-header(subvec expr (- index 1))))))))))
+(defn- build-binary-expression
+  [n]
+  (loop [node n
+         [currentOp & restOps :as all] operator-precedence]
+    (if (nil? currentOp)
+      n
+     (if (some #(= currentOp %) n)
+      (recur (group-binary-by currentOp n) all)
+      (recur n restOps)
+      ))    ))
 
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
@@ -196,7 +214,10 @@
          <digits> = #'\\d+'
          integer = '-'? digits
          float = ('NaN' /#'-?Infinity' / integer '.' digits)
-         number = (float / integer)" operator-grammar)))
+         number = (float / integer)"
+         ;operator-grammar
+         "binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+"
+         )))
 
 (defn- add-prim-name-to-node [primitives node] (conj node
                                                      (when-let
