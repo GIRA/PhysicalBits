@@ -1,9 +1,13 @@
 // Uzi.state.program.current.compiled
+
+//buttons execute, stop, next instruction
+//expand primitives switch
+//
+
 function ctorSimulator() {
   let simulator = {
      pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
      stack: [],
-     next: next,
      execute: execute,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
      getProgram: () => Uzi.state.program.current.compiled,
@@ -11,16 +15,31 @@ function ctorSimulator() {
      globals:[],
      instructions:[],
      pc:0,
-     drawCircles: drawCircles
+     drawCircles: drawCircles,
+     update: updateProgram,
+     start: startProgram,
+     stop: stopProgram,
   };
 
   //simulator.pins.forEach((item) => console.log(item));
-
+  let interval = null;
 
   function getRandomInt(min, max){
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  function updateProgram() {
+    simulator.loadCurrentProgram();
+  }
+  function startProgram(){
+    if (interval) return;
+    interval = setInterval(()=>simulator.execute(), 500);
+  }
+  function stopProgram(){
+    if (!interval) return;
+    clearInterval(interval);
+    interval = null;
   }
 
   function drawCircles(target,radius) {
@@ -58,6 +77,7 @@ function ctorSimulator() {
 
 
   function loadProgram(program) {
+
     simulator.pc = 0;
     simulator.stack = [];
     simulator.instructions = program.scripts[0].instructions;
@@ -81,7 +101,7 @@ function ctorSimulator() {
   }
 
   function execute() {
-    let instruction = simulator.next();
+    let instruction = next();
     if(instruction == undefined) {
       throw "undefined found as instruction" ;
       simulator.pc=0;
