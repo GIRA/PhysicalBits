@@ -213,12 +213,12 @@
             compiled-false-branch)))
 
 (defn- compile-if-true
- [{condition :condition, true-branch :trueBranch} ctx]
- (let [compiled-condition (compile condition ctx)
-       compiled-true-branch (compile true-branch ctx)]
-   (concat compiled-condition
-           [(emit/jz (count compiled-true-branch))]
-           compiled-true-branch)))
+  [{condition :condition, true-branch :trueBranch} ctx]
+  (let [compiled-condition (compile condition ctx)
+        compiled-true-branch (compile true-branch ctx)]
+    (concat compiled-condition
+            [(emit/jz (count compiled-true-branch))]
+            compiled-true-branch)))
 
 (defn- compile-if-false
   [{condition :condition, false-branch :falseBranch} ctx]
