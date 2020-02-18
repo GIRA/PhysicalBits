@@ -1868,7 +1868,7 @@
     (is (equivalent? expected actual))))
 
 
-(deftest forever
+(deftest forever-loop
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports [],
