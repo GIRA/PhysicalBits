@@ -208,6 +208,11 @@
     (empty? (-> node :trueBranch :statements)) (compile-if-false node ctx)
     :else (compile-if-true-if-false node ctx)))
 
+(defmethod compile-node "UziForeverNode" [{:keys [body]} ctx]
+  (let [compiled-body (compile body ctx)]
+    (conj compiled-body
+          (emit/jmp (* -1 (inc (count compiled-body)))))))
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)

@@ -1866,3 +1866,49 @@
                                 :value 13}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
+
+
+(deftest forever
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [],
+             :primitives [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziForeverNode",
+                                             :body {:__class__ "UziBlockNode",
+                                                    :statements [{:__class__ "UziCallNode",
+                                                                  :arguments [{:__class__ "Association",
+                                                                               :key nil,
+                                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                                       :number 13,
+                                                                                       :type "D"}}],
+                                                                  :selector "toggle"}]}}]},
+                        :name "main",
+                        :state "once",
+                        :tickingRate nil}]}
+        expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}},
+                                            {:__class__ "UziJMPInstruction",
+                                             :argument -3},
+                                            {:__class__ "UziStopScriptInstruction",
+                                             :argument "main"}],
+                             :locals [],
+                             :name "main",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 0},
+                               {:__class__ "UziVariable",
+                                :value 13}}}
+        actual (compile-tree ast)]
+    (is (equivalent? expected actual))))
