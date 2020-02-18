@@ -70,9 +70,9 @@
    :call                (fn [selector & args] (call-node selector (vec args)))
    :block               (fn [& statements] (block-node (vec statements)))
    :paramsList          (fn [& params] (or (vec params) []))
-   :argument            variable-declaration-node
+   :argument            (fn [name] (variable-declaration-node name (literal-number-node 0)))
    :variableDeclaration (fn [variable & expr]
-                          (variable-declaration-node (:name variable) (first expr)))
+                          (variable-declaration-node (:name variable) (or (first expr) (literal-number-node 0))))
    :variable            variable-node
    :return              (fn [& expr] (return-node (or (first expr) (literal-number-node 0))))
    :subExpr             (fn [rest] rest)
