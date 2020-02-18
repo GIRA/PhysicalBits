@@ -32,6 +32,8 @@
                    "UziVariableNode"}
                  type))))
 
+(def has-side-effects? (complement expression?))
+
 (defn filter [ast & types]
   (let [type-set (into #{} types)
         result (atom [])]
