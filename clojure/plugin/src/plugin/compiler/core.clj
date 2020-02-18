@@ -161,6 +161,9 @@
 (defmethod compile-node "UziScriptResumeNode" [{:keys [scripts]} ctx]
   (mapv #(emit/resume %) scripts))
 
+(defmethod compile-node "UziYieldNode" [_ _]
+  [(emit/prim-call "yield")])
+
 (defmethod compile-node :default [node _]
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
