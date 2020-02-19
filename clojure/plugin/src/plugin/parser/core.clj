@@ -149,7 +149,7 @@
 
 
 
-         <expr> =(binaryExpr / nonBinaryExpr)
+         <expr> =( nonBinaryExpr / binaryExpr)
          <nonBinaryExpr> = (unary / literal / call / variable / subExpr)
          <unary> = not
          not = ws? <'!'> ws? nonBinaryExpr ws?
