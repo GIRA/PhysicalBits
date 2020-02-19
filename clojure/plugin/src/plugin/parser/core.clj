@@ -1,54 +1,13 @@
 (ns plugin.parser.core
   (:require [instaparse.core :as insta])
-  (:require [plugin.parser.ast-nodes :refer :all]))
+  (:require [plugin.parser.ast-nodes :refer :all])
+  (:require [plugin.parser.binary-operator :refer :all]))
 
 
 (defn- first-or-default [pred col default]
   (or (first (filter pred col)) default))
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
-(def operator-precedence ["**"
-                          "*"
-                          "/"
-                          "%"
-                          "+"
-                          "-"
-                          "<<"
-                          ">>"
-                          "<"
-                          "<="
-                          ">"
-                          ">="
-                          "=="
-                          "!="
-                          "&"
-                          "^"
-                          "|"
-                          "&&"
-                          "||"])
-
-(defn group-binary-by [op [_ & in]]
-  (let [
-        expr (vec in)
-        size (count expr)
-        index (.indexOf expr op)
-        add-header (fn [v] (vec (concat [:binaryExpr] v)))]
-    (add-header (if (= index -1)
-      expr
-      (let [prev (subvec expr 0 (- index 1))]
-        (if (< index (- size 1))
-          (vec (concat(conj prev (add-header (subvec expr (- index 1) (+ index 2)))) (subvec expr (+ index 2))))
-          (conj prev (add-header(subvec expr (- index 1))))))))))
-(defn- build-binary-expression
-  [n]
-  (loop [node n
-         [currentOp & restOps :as all] operator-precedence]
-    (if (nil? currentOp)
-      n
-     (if (some #(= currentOp %) n)
-      (recur (group-binary-by currentOp n) all)
-      (recur n restOps)
-      ))    ))
 
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
@@ -219,6 +178,15 @@
          "binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+"
          )))
 
+(defn build-binaries [ast]
+  (clojure.walk/postwalk
+    (fn [node]
+      (if (and (vector? node) (= :binaryExpr (first node)))
+        (build-binary-expression (rest node))
+        node
+        ))
+    ast))
+
 (defn- add-prim-name-to-node [primitives node] (conj node
                                                      (when-let
                                                        [name (:name (first-or-default #(= (:alias %) (:selector node)) primitives nil))]
@@ -226,6 +194,7 @@
                                                        )))
 (defn- add-prims-name [ast]
   (clojure.walk/postwalk (fn [node]
-                           (if (= (:__class__ node) "UziCallNode") (add-prim-name-to-node (:primitives ast) node) node)) ast))
-(defn parse [str] (add-prims-name (insta/transform transformations (parse-program str))))
+                           (if (= (:__class__ node) "UziCallNode")
+                             (add-prim-name-to-node (:primitives ast) node) node)) ast))
+(defn parse [str] (add-prims-name (insta/transform transformations (build-binaries(parse-program str)))))
 
