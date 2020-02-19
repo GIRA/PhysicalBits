@@ -476,7 +476,7 @@ let BlocksToAST = (function () {
 		},
 		math_constant: function (block, ctx, stream) {
 			let id = XML.getId(block);
-			let type = XML.getChildNode(block, "CONSTANT").innerText;
+			let type = XML.getChildNode(block, "constant").innerText;
 			let value;
 			if (type === "PI") {
 				value = Math.PI;
@@ -498,9 +498,9 @@ let BlocksToAST = (function () {
 		},
 		math_arithmetic: function (block, ctx, stream) {
 			let id = XML.getId(block);
-			let type = XML.getChildNode(block, "OP").innerText;
-			let left = generateCodeForValue(block, ctx, "A");
-			let right = generateCodeForValue(block, ctx, "B");
+			let type = XML.getChildNode(block, "operator").innerText;
+			let left = generateCodeForValue(block, ctx, "left");
+			let right = generateCodeForValue(block, ctx, "right");
 			let selector;
 			if (type === "DIVIDE") {
 				selector = "/";
