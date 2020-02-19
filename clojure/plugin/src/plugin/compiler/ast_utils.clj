@@ -96,6 +96,9 @@
 (defmethod children "UziForNode" [{:keys [counter start stop step body]}]
   [counter start stop step body])
 
+(defmethod children "UziConditionalNode" [{:keys [condition trueBranch falseBranch]}]
+  [condition trueBranch falseBranch])
+
 (defmethod children :default [ast]
   (->> ast
        vals
