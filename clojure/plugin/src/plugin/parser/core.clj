@@ -178,7 +178,7 @@
          "binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+"
          )))
 
-(defn build-binaries [ast]
+(defn expand-binary-expression-nodes [ast]
   (clojure.walk/postwalk
     (fn [node]
       (if (and (vector? node) (= :binaryExpr (first node)))
@@ -196,5 +196,5 @@
   (clojure.walk/postwalk (fn [node]
                            (if (= (:__class__ node) "UziCallNode")
                              (add-prim-name-to-node (:primitives ast) node) node)) ast))
-(defn parse [str] (add-prims-name (insta/transform transformations (build-binaries(parse-program str)))))
+(defn parse [str] (add-prims-name (insta/transform transformations (expand-binary-expression-nodes (parse-program str)))))
 
