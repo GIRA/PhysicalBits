@@ -609,8 +609,8 @@
                     :primitives []}
           actual (parse src)] (is (equivalent? expected actual)))))
 
-(deftest prim-overriding
-  (testing "Renaming a few primitives"
+(deftest primitive-definition
+  (testing "Creating a few primitives"
     (let [src "\nprim add;\nprim ~= : notEquals;\n\ntask test() {\n\tvar a = add(3, 4);\n\tvar b = 3 ~= 4;\n}"
           expected {:__class__  "UziProgramNode",
                     :globals    [],
@@ -635,7 +635,6 @@
                                                                                          :key       nil,
                                                                                          :value     {:__class__ "UziNumberLiteralNode",
                                                                                                      :value     4}}],
-                                                                        :primitiveName "add",
                                                                         :selector      "add"}},
                                                            {:__class__ "UziVariableDeclarationNode",
                                                             :name      "b",
@@ -648,7 +647,6 @@
                                                                                          :key       nil,
                                                                                          :value     {:__class__ "UziNumberLiteralNode",
                                                                                                      :value     4}}],
-                                                                        :primitiveName "notEquals",
                                                                         :selector      "~="}}]},
                                   :name      "test",
                                   :state     "once"}]}

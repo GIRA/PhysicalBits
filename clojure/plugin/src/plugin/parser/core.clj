@@ -187,14 +187,7 @@
         ))
     ast))
 
-(defn- add-prim-name-to-node [primitives node] (conj node
-                                                     (when-let
-                                                       [name (:name (first-or-default #(= (:alias %) (:selector node)) primitives nil))]
-                                                       {:primitiveName name}
-                                                       )))
-(defn- add-prims-name [ast]
-  (clojure.walk/postwalk (fn [node]
-                           (if (= (:__class__ node) "UziCallNode")
-                             (add-prim-name-to-node (:primitives ast) node) node)) ast))
-(defn parse [str] (add-prims-name (insta/transform transformations (expand-binary-expression-nodes (parse-program str)))))
+
+()
+(defn parse [str] (insta/transform transformations (expand-binary-expression-nodes (parse-program str))))
 
