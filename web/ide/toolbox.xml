@@ -413,7 +413,7 @@
       </value>
     </block>
     <block type="math_constant">
-      <field name="CONSTANT">PI</field>
+      <field name="constant">PI</field>
     </block>
     <block type="number_round">
       <field name="operator">round</field>
@@ -424,13 +424,13 @@
       </value>
     </block>
     <block type="math_arithmetic">
-      <field name="OP">ADD</field>
-      <value name="A">
+      <field name="operator">ADD</field>
+      <value name="left">
         <shadow type="number">
           <field name="value">1</field>
         </shadow>
       </value>
-      <value name="B">
+      <value name="right">
         <shadow type="number">
           <field name="value">1</field>
         </shadow>
