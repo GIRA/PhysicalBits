@@ -91,13 +91,14 @@
 
 (def parse-program
   (insta/parser
-    (str "program = ws? import* ws? variableDeclaration* ws? (primitive / script) * ws?
-         import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl / block)
+
+    "program = ws? import* ws? variableDeclaration* ws? (primitive | script) * ws?
+         import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl | block)
          importPath = <'\\''> #'[^\\']+' <'\\''>
-         <script> =  (task / function / procedure)
+         <script> =  (task | function | procedure)
          block = ws? <'{'> ws? statementList ws? <'}'> ws?
 
-         primitive = ws? <'prim'> ws ((binarySelector / identifier) ws <':'> ws)? identifier endl
+         primitive = ws? <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
 
          <statementList> = ws? statement* ws?
          <statement> = ws? (variableDeclaration / assignment / return / conditional
@@ -109,9 +110,9 @@
          assignment = ws? variable ws? <'='> ws? expr  endl
          return =  ws? <'return'> separatedExpr? endl
          conditional = ws? <'if'> separatedExpr ws? block (ws? <'else'> ws? block ws?)?
-         while = ws? <'while'> separatedExpr ws? ( block ws? / endl )
+         while = ws? <'while'> separatedExpr ws? ( block ws? | endl )
          doWhile = ws? <'do'> ws? block ws? <'while'> separatedExpr endl
-         until = ws? <'until'> separatedExpr ws? (block ws? / endl )
+         until = ws? <'until'> separatedExpr ws? (block ws? | endl )
          doUntil = ws? <'do'> ws? block ws? <'until'> separatedExpr endl
          repeat = ws? <'repeat'> separatedExpr ws? block ws?
          forever = ws? <'forever'> ws? block ws?
@@ -150,30 +151,28 @@
 
 
          <expr> =( nonBinaryExpr / binaryExpr)
-         <nonBinaryExpr> = (unary / literal / call / variable / subExpr)
+         <nonBinaryExpr> = (unary | call | subExpr | valueExpression )
+         <valueExpression> = ( literal / variable )
          <unary> = not
          not = ws? <'!'> ws? nonBinaryExpr ws?
-         <literal> = (constant / number)
-         constant = ws? ('D'/'A') integer ws?
+         <literal> = (constant | number)
+         constant = ws? ('D'|'A') integer ws?
          call = ws? scriptReference argList ws?
          <argList> = ws? <'('> ws? (namedArg (ws? <','> ws? namedArg)*)?<')'>
          namedArg = ws?( identifier ws? <':'> ws?)? expr ws?
          subExpr = ws? <'('> ws? expr ws? <')'> ws?
-         <separatedExpr> = ws? (subExpr / ws expr) ws?
+         <separatedExpr> = ws? (subExpr | ws expr) ws?
 
          <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
-
+         binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+
          <endl> =ws? <';'> ws?
          <name> =#'[a-zA-Z_][_\\w]*'
-         <ws> = (<#'\\s+'> / <comments>)+
+         <ws> = (<#'\\s+'> | <comments>)+
 
          <digits> = #'\\d+'
          integer = '-'? digits
-         float = ('NaN' / '-'?'Infinity' / integer '.' digits)
-         number = (float / integer)"
-         ;operator-grammar
-         "binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+"
-         )))
+         float = ('NaN' | '-'?'Infinity' | integer '.' digits)
+         number = (float / integer)" ))
 
 (defn expand-binary-expression-nodes [ast]
   (clojure.walk/postwalk
