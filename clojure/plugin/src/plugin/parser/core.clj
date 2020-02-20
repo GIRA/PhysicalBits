@@ -92,76 +92,71 @@
 (def parse-program
   (insta/parser
 
-    "program = ws? import* ws? variableDeclaration* ws? (primitive | script) * ws?
-         import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl | block)
+    "program = ws? import*  variableDeclaration*  (ws? (primitive | script) ws?)* ws?
+         import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ws?)
          importPath = <'\\''> #'[^\\']+' <'\\''>
-         <script> =  (task | function | procedure)
-         block = ws? <'{'> ws? statementList ws? <'}'> ws?
+         <script> = (task | function | procedure)
+         block = <'{'>  statementList  <'}'>
 
-         primitive = ws? <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
+         primitive = <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
 
-         <statementList> = ws? statement* ws?
+         <statementList> = statement*
          <statement> = ws? (variableDeclaration / assignment / return / conditional
                       / startTask / stopTask / pauseTask / resumeTask
                       / while / doWhile / until / doUntil / repeat / forever / for
                       / yield / expressionStatement) ws?
 
-         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr)?  endl
-         assignment = ws? variable ws? <'='> ws? expr  endl
-         return =  ws? <'return'> separatedExpr? endl
-         conditional = ws? <'if'> separatedExpr ws? block (ws? <'else'> ws? block ws?)?
-         while = ws? <'while'> separatedExpr ws? ( block ws? | endl )
-         doWhile = ws? <'do'> ws? block ws? <'while'> separatedExpr endl
-         until = ws? <'until'> separatedExpr ws? (block ws? | endl )
-         doUntil = ws? <'do'> ws? block ws? <'until'> separatedExpr endl
-         repeat = ws? <'repeat'> separatedExpr ws? block ws?
-         forever = ws? <'forever'> ws? block ws?
-         for = ws? <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block ws?
-         yield = ws? <'yield'> endl
+         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr)? endl
+         assignment = variable ws? <'='> ws? expr endl
+         return = <'return'> separatedExpr? endl
+         conditional = <'if'> separatedExpr ws? block (ws? <'else'> ws? block)?
+         while = <'while'> separatedExpr ws? ( block ws? | endl )
+         doWhile = <'do'> ws? block ws? <'while'> separatedExpr endl
+         until = <'until'> separatedExpr ws? (block ws? | endl )
+         doUntil = <'do'> ws? block ws? <'until'> separatedExpr endl
+         repeat = <'repeat'> separatedExpr ws? block
+         forever = <'forever'> ws? block
+         for = <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block
+         yield = <'yield'> endl
          <expressionStatement> = ws? expr endl
 
-         startTask = ws? <'start'> ws scriptList endl
-         stopTask = ws? <'stop'> ws scriptList endl
-         pauseTask = ws? <'pause'> ws scriptList endl
-         resumeTask = ws? <'resume'> ws scriptList endl
+         startTask = <'start'> ws scriptList endl
+         stopTask = <'stop'> ws scriptList endl
+         pauseTask = <'pause'> ws scriptList endl
+         resumeTask = <'resume'> ws scriptList endl
 
 
 
-         <scriptList> = ws? scriptReference (ws? <','> ws? scriptReference)* ws?
-         <scriptReference> = ws? identifier ws?
+         <scriptList> = scriptReference (ws? <','> ws? scriptReference)*
+         <scriptReference> = identifier
 
          identifier = #'[a-zA-Z_][_\\w]*(\\.[a-zA-Z_][_\\w]*)*'
-         variable = ws? identifier ws?
+         variable = identifier
 
-         task=<'task'> ws identifier paramsList taskState tickingRate? block ws?
+         task=<'task'> ws identifier paramsList ws? taskState ws? tickingRate? ws? block
 
-         paramsList = ws?<'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'> ws?
-         argument = ws? identifier ws?
-         taskState = ws? ('running'|'stopped')? ws?
-         tickingRate = ws? number ws? <'/'> ws? ( 's' | 'm' | 'h' | 'd') ws?
+         paramsList = <'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'>
+         argument =  identifier
+         taskState =  ('running'|'stopped')?
+         tickingRate =  number ws? <'/'> ws? ( 's' | 'm' | 'h' | 'd')
 
-         function = ws? <'func'> ws identifier ws? paramsList ws? block ws?
-         procedure = ws? <'proc'> ws identifier ws? paramsList ws? block ws?
+         function = <'func'> ws identifier ws? paramsList ws? block
+         procedure = <'proc'> ws identifier ws? paramsList ws? block
 
          comments = (<'\"'> #'[^\"]*' <'\"'>)
-
-
-
-
-
 
          <expr> =( nonBinaryExpr / binaryExpr)
          <nonBinaryExpr> = (unary | call | subExpr | valueExpression )
          <valueExpression> = ( literal / variable )
          <unary> = not
-         not = ws? <'!'> ws? nonBinaryExpr ws?
+         not = <'!'> ws? nonBinaryExpr
          <literal> = (constant | number)
-         constant = ws? ('D'|'A') integer ws?
-         call = ws? scriptReference argList ws?
-         <argList> = ws? <'('> ws? (namedArg (ws? <','> ws? namedArg)*)?<')'>
-         namedArg = ws?( identifier ws? <':'> ws?)? expr ws?
-         subExpr = ws? <'('> ws? expr ws? <')'> ws?
-         <separatedExpr> = ws? (subExpr | ws expr) ws?
+         constant = ('D'|'A') integer
+         call = scriptReference argList
+         <argList> = <'('> ws? (namedArg (ws? <','> ws? namedArg)*)?<')'>
+         namedArg = ( identifier ws? <':'> ws?)? expr
+         subExpr = <'('> ws? expr ws? <')'>
+         <separatedExpr> =  (ws? subExpr | ws expr)
 
          <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
          binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+
