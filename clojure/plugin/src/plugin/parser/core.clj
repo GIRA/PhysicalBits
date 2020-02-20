@@ -166,9 +166,7 @@
          <endl> =ws? <';'> ws?
          <name> =#'[a-zA-Z_][_\\w]*'
          <ws> = (<#'\\s+'> / <comments>)+
-
-         <letter> = #'[a-zA-Z]'
-         <word> = #'\\w'
+         
          <digits> = #'\\d+'
          integer = '-'? digits
          float = ('NaN' / '-'?'Infinity' / integer '.' digits)
