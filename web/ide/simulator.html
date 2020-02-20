@@ -5,9 +5,11 @@
   <script src="ajax.js" type="text/javascript"></script>
   <script src="uzi.js" type="text/javascript" ></script>
   <script src="simulator.js" type="text/javascript"></script>
+  <script src="graphics.js" type="text/javascript" ></script>
   <script>
   var svg = document.getElementById("svg");
   var sim = ctorSimulator();
+  var g = ctorGraphics();
   var toggle = [{op_code:'toggle', arg: 2}];
   var onOff=[{op_code:"turn_on", arg:2},{op_code:"turn_off", arg:2}];
   var readWrite = [{op_code: 'read_pin', arg: 15}, {op_code: 'write_pin', arg: 3}];
@@ -24,7 +26,8 @@
       console.log("Uzi started successfully!");
       sim.loadCurrentProgram();
     });
-    sim.drawCircles(svg, 20);
+    g.drawCircles(svg,20,sim);
+    //sim.drawCircles(svg, 20);
   });
   </script>
   <button onclick="sim.update()" id="update-button" type="button">Update</button>

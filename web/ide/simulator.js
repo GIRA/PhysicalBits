@@ -7,6 +7,7 @@
 function ctorSimulator() {
   let simulator = {
      pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     globals:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
      stack: [],
      execute: execute,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
@@ -15,10 +16,11 @@ function ctorSimulator() {
      globals:[],
      instructions:[],
      pc:0,
-     drawCircles: drawCircles,
+    // drawCircles: drawCircles(,),
      update: updateProgram,
      start: startProgram,
      stop: stopProgram,
+     startDate: new Date()
   };
 
   //simulator.pins.forEach((item) => console.log(item));
@@ -42,7 +44,7 @@ function ctorSimulator() {
     interval = null;
   }
 
-  function drawCircles(target,radius) {
+  /*function drawCircles(target,radius) {
   	target.innerHTML="";
   	let x= 0;
     let index = 0;
@@ -66,20 +68,23 @@ function ctorSimulator() {
   		target.appendChild(c);
       target.appendChild(t);
   		setInterval(() => {
-  			if(sim.pins[i]>=0.5) {
+  			if(simulator.pins[i]>=0.5) {
   					c.setAttribute("fill", "chartreuse");
   			} else {
   					c.setAttribute("fill", "black");
   			}
   		}, 50);
   	}
-  }
+  }*/
 
 
   function loadProgram(program) {
 
     simulator.pc = 0;
     simulator.stack = [];
+
+    simulator.globals=  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    simulator.startDate = new Date();
     simulator.instructions = program.scripts[0].instructions;
   }
 
@@ -100,7 +105,7 @@ function ctorSimulator() {
     return result;
   }
 
-  function getValue(pinIndex){
+  function getPinValue(pinIndex){
     if (simulator.pins[pinIndex] > 1) {
       return 1;
     }
@@ -110,13 +115,22 @@ function ctorSimulator() {
     else
       return simulator.pins[pinIndex];
   }
-  function setValue(pin, value){
+  function setPinValue(pin, value){
     if (value > 1)
       value = 1;
     if (value < 0) {
       value = 0;
     }
     simulator.pins[pin] = value;
+  }
+
+  function getGlobalValue(global)
+  {
+    return simulator.globals[global];
+  }
+  function setGlobalValue(global, value)
+  {
+    simulator.globals[global] = value;
   }
 
   function execute() {
@@ -153,11 +167,10 @@ function ctorSimulator() {
         simulator.stack.push(instruction.argument);
         break;
       case'read_global':
-
-        throw "TO DO";
+        simulator.stack.push(getGlobalValue(instruction.argument));
         break;
       case'write_global':
-        throw "TO DO";
+        setGlobalValue(instruction.argument, simulator.stack.pop());
         break;
       case'script_start':
         throw "TO DO";
@@ -255,19 +268,28 @@ function ctorSimulator() {
     }
   }
 
+  function millis()
+  {
+      let d = new Date();
+      return d - simulator.startDate;
+  }
+
+
+
   function executePrimitive(prim) {
     switch (prim.name) {
       case "read": {
         let pin = simulator.stack.pop();
-        simulator.stack.push(getValue(pin));
+        simulator.stack.push(getPinValue(pin));
       }break;
       case "write": {
         let value = simulator.stack.pop();
         let pin = simulator.stack.pop();
-        setValue(pin,value);
+        setPinValue(pin,value);
       }break;
       case "toggle": {
         let pin = simulator.stack.pop();
+        setPinValue(pin, 1 - getPinValue(pin));
       }break;
       case "getservodegrees": {
         //TO DO
@@ -299,48 +321,64 @@ function ctorSimulator() {
         simulator.stack.push(val1 - val2);
       }break;
       case "seconds": {
-        //TO DO
+        simulator.stack.push(millis() / 1000);
       }break;
       case "minutes": {
-        //TO DO
+        simulator.stack.push(millis() / 1000 / 60);
       }break;
       case "eq": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 == val2);
       }break;
       case "neq": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 != val2);
       }break;
       case "gt": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 > val2);
       }break;
       case "gteq": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 >= val2);
       }break;
       case "lt": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 < val2);
       }break;
       case "lteq": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 <= val2);
       }break;
       case "negate": {
-        //TO DO
+        let val = simulator.stack.pop();
+        simulator.stack.push(val == 0 ? 1 : 0);
       }break;
       case "sin": {
-        //TO DO
+          let val = simulator.stack.pop();
+          simultor.stack.push(Math.sin(val));
       }break;
       case "cos": {
-        //TO DO
+        let val = simulator.stack.pop();
+        simultor.stack.push(Math.cos(val));
       }break;
       case "tan": {
-        //TO DO
+        let val = simulator.stack.pop();
+        simultor.stack.push(Math.tan(val));
       }break;
       case "turnOn": {
         //simulator.pins[simulator.stack.pop()] = 1;
-        setValue(simulator.stack.pop(),1);
+        setPinValue(simulator.stack.pop(),1);
       } break;
       case "turnOff": {
         //simulator.pins[simulator.stack.pop()] = 0;
-        setValue(simulator.stack.pop(),0);
+        setPinValue(simulator.stack.pop(),0);
       } break;
       case "yield": {
         //TO DO
@@ -355,7 +393,7 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "millis": {
-        //TO DO
+        simulator.stack.push(millis());
       }break;
       case "ret": {
         //TO DO
@@ -370,16 +408,24 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "logicaland": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 && val2);
       }break;
       case "logicalor": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 || val2);
       }break;
       case "bitwiseand": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 & val2);
       }break;
       case "bitwiseor": {
-        //TO DO
+        let val2 = simulator.stack.pop();
+        let val1 = simulator.stack.pop();
+        simulator.stack.push(val1 | val2);
       }break;
       case "serialwrite": {
         //TO DO
@@ -444,11 +490,11 @@ function ctorSimulator() {
       }break;
       case "isOn": {
         let pin = simulator.stack.pop();
-        simulator.stack.push(getValue(pin) > 0);
+        simulator.stack.push(getPinValue(pin) > 0);
       }break;
       case "isOff": {
         let pin = simulator.stack.pop();
-        simulator.stack.push(getValue(pin) == 0);
+        simulator.stack.push(getPinValue(pin) == 0);
       }break;
       case "remainder": {
         let b = simulator.stack.pop();
