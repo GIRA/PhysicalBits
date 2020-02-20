@@ -7,7 +7,7 @@
 function ctorSimulator() {
   let simulator = {
      pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     globals:  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+     globals: {},
      stack: [],
      execute: execute,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
@@ -16,7 +16,6 @@ function ctorSimulator() {
      globals:[],
      instructions:[],
      pc:0,
-    // drawCircles: drawCircles(,),
      update: updateProgram,
      start: startProgram,
      stop: stopProgram,
@@ -44,48 +43,21 @@ function ctorSimulator() {
     interval = null;
   }
 
-  /*function drawCircles(target,radius) {
-  	target.innerHTML="";
-  	let x= 0;
-    let index = 0;
-  	for( let i=0;i<simulator.pins.length;i++) {
-  		x+=radius*2 + 10;
-  		let c =  document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      let t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  		c.setAttribute("fill", "blue");
-  		c.setAttribute("cx", x );
-  		c.setAttribute("cy", radius);
-  		c.setAttribute("r", radius);
-      t.setAttribute("x", x - radius);
-      t.setAttribute("y",(radius + 40));
-      t.setAttribute( "font-size", "25");
-      t.setAttribute("font-family", "sans-serif");
-      t.setAttribute( "width", "50");
-      t.setAttribute("height", "50");
-      t.textContent = "D" + index++;
-      t.setAttribute('fill', '#000');
-      t.setAttribute("viewBox", "0 0 1000 300");
-  		target.appendChild(c);
-      target.appendChild(t);
-  		setInterval(() => {
-  			if(simulator.pins[i]>=0.5) {
-  					c.setAttribute("fill", "chartreuse");
-  			} else {
-  					c.setAttribute("fill", "black");
-  			}
-  		}, 50);
-  	}
-  }*/
-
-
   function loadProgram(program) {
 
     simulator.pc = 0;
     simulator.stack = [];
-
-    simulator.globals=  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    loadGlobals(program);
     simulator.startDate = new Date();
     simulator.instructions = program.scripts[0].instructions;
+  }
+  function loadGlobals(program){
+    simulator.globals ={};
+    program.variables.forEach(
+      (v)=>{if(v.name!=null){
+        simulator.globals[v.name]=v.value;
+      }}
+    );
   }
 
   function writeConsole(pin) {
@@ -143,10 +115,18 @@ function ctorSimulator() {
 
     switch (instruction.__class__) {
       case "UziPushInstruction": {
-        simulator.stack.push(instruction.argument.value);
+        if(instruction.argument.name==null){
+          simulator.stack.push(instruction.argument.value);
+        }else{
+          simulator.stack.push(getGlobalValue(instruction.argument.name));
+        }
       } break;
       case "UziPrimitiveCallInstruction": {
         executePrimitive(argument);
+      } break;
+      case "UziPopInstruction":{
+        let g = simulator.stack.pop();
+        setGlobalValue(instruction.argument.name,g);
       } break;
       /////////////////
       /*case 'turn_on':
