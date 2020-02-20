@@ -91,7 +91,7 @@
 
 (def parse-program
   (insta/parser
-    (str "program = ws? import* ws? variableDeclaration* ws? (primitive / script) * ws?
+    (str "program = ws? import* ws? variableDeclaration* ws? (primitive | script) * ws?
          import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl / block)
          importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> =  (task / function / procedure)
@@ -162,7 +162,6 @@
          <separatedExpr> = ws? (subExpr / ws expr) ws?
 
          <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
-         <customSelectorBinaryExpression> = ws? expr ws? binarySelector ws? expr ws?
 
          <endl> =ws? <';'> ws?
          <name> =#'[a-zA-Z_][_\\w]*'
@@ -172,7 +171,7 @@
          <word> = #'\\w'
          <digits> = #'\\d+'
          integer = '-'? digits
-         float = ('NaN' /#'-?Infinity' / integer '.' digits)
+         float = ('NaN' / '-'?'Infinity' / integer '.' digits)
          number = (float / integer)"
          ;operator-grammar
          "binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+"
@@ -187,7 +186,5 @@
         ))
     ast))
 
-
-()
 (defn parse [str] (insta/transform transformations (expand-binary-expression-nodes (parse-program str))))
 
