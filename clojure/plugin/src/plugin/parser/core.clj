@@ -91,7 +91,7 @@
 
 (def parse-program
   (insta/parser
-    (str "program = ws? import* ws? variableDeclaration* ws? (primitive | script) * ws?
+    (str "program = ws? import* ws? variableDeclaration* ws? (primitive / script) * ws?
          import = ws? <'import'> ws (identifier ws <'from'> ws)? importPath ws? (endl / block)
          importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> =  (task / function / procedure)
@@ -129,7 +129,7 @@
          <scriptList> = ws? scriptReference (ws? <','> ws? scriptReference)* ws?
          <scriptReference> = ws? identifier ws?
 
-         identifier = name ('.' name)*
+         identifier = #'[a-zA-Z_][_\\w]*(\\.[a-zA-Z_][_\\w]*)*'
          variable = ws? identifier ws?
 
          task=<'task'> ws identifier paramsList taskState tickingRate? block ws?
@@ -166,7 +166,7 @@
          <endl> =ws? <';'> ws?
          <name> =#'[a-zA-Z_][_\\w]*'
          <ws> = (<#'\\s+'> / <comments>)+
-         
+
          <digits> = #'\\d+'
          integer = '-'? digits
          float = ('NaN' / '-'?'Infinity' / integer '.' digits)
