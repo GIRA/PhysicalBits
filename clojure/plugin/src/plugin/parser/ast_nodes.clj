@@ -18,7 +18,7 @@
   ([name] (primitive-node name name)))
 (defn comment-node [text]
   {:__class__ "UziCommentNode"
-   :value text}
+   :value     text}
   )
 (defn import-node
   [alias path block]
@@ -33,12 +33,13 @@
                   state     nil
                   body      nil}}]
   (conj-if-not-nil
+    (conj-if-not-nil
     {:__class__   type,
      :name        identifier,
      :arguments   arguments,
-     :tickingRate tick-rate
      :body        body}
-    :state state))
+    :state state)
+    :tickingRate tick-rate))
 (defn literal-number-node
   [value]
   {:__class__ "UziNumberLiteralNode",
@@ -62,12 +63,10 @@
    :value     times,
    :scale     scale})
 (defn variable-declaration-node
-  ([name] (variable-declaration-node name nil))
-  ([name expr]
-   (conj-if-not-nil
-     {:__class__ "UziVariableDeclarationNode"
-      :name      name}
-     :value expr)))
+  [name expr]
+  {:__class__ "UziVariableDeclarationNode"
+   :name      name
+   :value     expr})
 (defn variable-node
   [name]
   {:__class__ "UziVariableNode", :name name})
@@ -82,7 +81,7 @@
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
-   :counter   (variable-declaration-node name),
+   :counter   (variable-declaration-node name (literal-number-node 0)),
    :start     from,
    :stop      to,
    :step      by,
@@ -102,7 +101,13 @@
    :condition condition,
    :post      post,
    :negated   negated})
-
+(defn until-node
+  [pre condition post negated]
+  {:__class__ "UziUntilNode",
+   :pre       pre,
+   :condition condition,
+   :post      post,
+   :negated   negated})
 ;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
 (defn do-until-node
   [pre condition post negated]
@@ -140,6 +145,12 @@
                {:__class__ "Association",
                 :key       nil,
                 :value     right}]})
+(defn logical-and-node [left right] {:__class__ "UziLogicalAndNode",
+                                     :left      left,
+                                     :right     right})
+(defn logical-or-node [left right] {:__class__ "UziLogicalOrNode",
+                                    :left      left,
+                                    :right     right})
 (defn start-node [scripts] {:__class__ "UziScriptStartNode",
                             :scripts   scripts})
 (defn stop-node [scripts] {:__class__ "UziScriptStopNode",
