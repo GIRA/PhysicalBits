@@ -4099,8 +4099,7 @@
            (:variables actual)))))
 
 
-; TODO(Richo)
-#_(deftest conditional-children-order-should-not-impact-compilation
+(deftest conditional-children-order-should-not-impact-compilation
     (let [ast {:__class__ "UziProgramNode",
                :globals [],
                :imports [],

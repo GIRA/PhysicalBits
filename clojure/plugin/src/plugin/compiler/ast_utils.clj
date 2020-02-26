@@ -43,29 +43,6 @@
           true)))
     (not (expression? node))))
 
-(defn transform-pred [ast & clauses]
-  (w/prewalk (fn [node]
-               (if (node? node)
-                 (loop [[pred result-fn & rest] clauses]
-                   (if (or (= :default pred)
-                           (pred node))
-                     (result-fn node)
-                     (if (empty? rest)
-                       node
-                       (recur rest))))
-                 node))
-             ast))
-
-(defn transform [ast & clauses]
-  (let [as-pred (fn [type]
-                  (if (= :default type)
-                    type
-                    #(= type (node-type %))))]
-    (apply transform-pred
-      ast (mapcat (fn [[type result-fn]]
-                    [(as-pred type) result-fn])
-                  (partition 2 clauses)))))
-
 
 (defmulti ^:private children-keys :__class__)
 (defmethod children-keys "UziAssignmentNode" [_] [:left :right])
@@ -106,3 +83,45 @@
   (let [type-set (set types)]
     (clj-core/filter #(type-set (node-type %))
                      (all-children ast))))
+
+; TODO(Richo): Refactor this function. This is a mess...
+(defn transform-pred [ast & clauses]
+  (cond
+
+    (node? ast)
+    (let [node (loop [[pred result-fn & rest] clauses]
+                 (if (or (= :default pred)
+                         (pred ast))
+                   (result-fn ast)
+                   (if (empty? rest)
+                     ast
+                     (recur rest))))
+          valid-keys (clj-core/filter #(not (nil? (node %)))
+                                       (children-keys node))]
+      (loop [keys valid-keys, result node]
+        (let [[first & rest] keys]
+          (if first
+            (let [new-result (assoc result
+                                    first
+                                    (apply transform-pred (result first) clauses))]
+              (if (empty? rest)
+                new-result
+                (recur rest new-result)))
+            result))))
+
+    (vector? ast)
+    (mapv #(apply transform-pred % clauses)
+          ast)
+
+    :else ast))
+
+
+(defn transform [ast & clauses]
+  (let [as-pred (fn [type]
+                  (if (= :default type)
+                    type
+                    #(= type (node-type %))))]
+    (apply transform-pred
+      ast (mapcat (fn [[type result-fn]]
+                    [(as-pred type) result-fn])
+                  (partition 2 clauses)))))
