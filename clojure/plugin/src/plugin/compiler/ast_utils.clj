@@ -43,28 +43,78 @@
           true)))
     (not (expression? node))))
 
-(defn filter [ast & types]
-  (let [type-set (into #{} types)
-        result (atom [])]
-    (w/prewalk (fn [x]
-                 (when (contains? type-set (node-type x))
-                   (swap! result conj x))
-                 x)
-               ast)
-    @result))
 
+(defmulti ^:private children-keys :__class__)
+(defmethod children-keys "UziAssignmentNode" [_] [:left :right])
+(defmethod children-keys "UziBlockNode" [_] [:statements])
+(defmethod children-keys "UziCallNode" [_] [:arguments])
+(defmethod children-keys "UziConditionalNode" [_] [:condition :trueBranch :falseBranch])
+(defmethod children-keys "UziForNode" [_] [:counter :start :stop :step :body])
+(defmethod children-keys "UziForeverNode" [_] [:body])
+(defmethod children-keys "UziImportNode" [_] [:initializationBlock])
+(defmethod children-keys "UziLogicalAndNode" [_] [:left :right])
+(defmethod children-keys "UziLogicalOrNode" [_] [:left :right])
+(defmethod children-keys "UziLoopNode" [_] [:pre :condition :post])
+(defmethod children-keys "UziWhileNode" [_] [:pre :condition :post])
+(defmethod children-keys "UziUntilNode" [_] [:pre :condition :post])
+(defmethod children-keys "UziDoWhileNode" [_] [:pre :condition :post])
+(defmethod children-keys "UziDoUntilNode" [_] [:pre :condition :post])
+(defmethod children-keys "UziProgramNode" [_] [:imports :globals :scripts])
+(defmethod children-keys "UziRepeatNode" [_] [:times :body])
+(defmethod children-keys "UziReturnNode" [_] [:value])
+(defmethod children-keys "UziTaskNode" [_] [:arguments :tickingRate :body])
+(defmethod children-keys "UziProcedureNode" [_] [:arguments :body])
+(defmethod children-keys "UziFunctionNode" [_] [:arguments :body])
+(defmethod children-keys "UziVariableDeclarationNode" [_] [:value])
+(defmethod children-keys "Association" [_] [:value])
+(defmethod children-keys :default [_] [])
+
+(defn children [ast]
+  (filterv (complement nil?)
+           (flatten (map (fn [key] (key ast))
+                         (children-keys ast)))))
+
+(defn all-children [ast]
+  (concat [ast]
+          (mapcat all-children
+                  (children ast))))
+
+(defn filter [ast & types]
+  (let [type-set (set types)]
+    (clj-core/filter #(type-set (node-type %))
+                     (all-children ast))))
+
+; TODO(Richo): Refactor this function. This is a mess...
 (defn transform-pred [ast & clauses]
-  (w/prewalk (fn [node]
-               (if (node? node)
-                 (loop [[pred result-fn & rest] clauses]
-                   (if (or (= :default pred)
-                           (pred node))
-                     (result-fn node)
-                     (if (empty? rest)
-                       node
-                       (recur rest))))
-                 node))
-             ast))
+  (cond
+
+    (node? ast)
+    (let [node (loop [[pred result-fn & rest] clauses]
+                 (if (or (= :default pred)
+                         (pred ast))
+                   (result-fn ast)
+                   (if (empty? rest)
+                     ast
+                     (recur rest))))
+          valid-keys (clj-core/filter #(not (nil? (node %)))
+                                       (children-keys node))]
+      (loop [keys valid-keys, result node]
+        (let [[first & rest] keys]
+          (if first
+            (let [new-result (assoc result
+                                    first
+                                    (apply transform-pred (result first) clauses))]
+              (if (empty? rest)
+                new-result
+                (recur rest new-result)))
+            result))))
+
+    (vector? ast)
+    (mapv #(apply transform-pred % clauses)
+          ast)
+
+    :else ast))
+
 
 (defn transform [ast & clauses]
   (let [as-pred (fn [type]
@@ -75,32 +125,3 @@
       ast (mapcat (fn [[type result-fn]]
                     [(as-pred type) result-fn])
                   (partition 2 clauses)))))
-
-
-(defmulti children :__class__)
-
-(defmethod children "UziProgramNode" [{:keys [imports globals scripts]}]
-  (concat imports globals scripts))
-
-(defmethod children "UziTaskNode" [{:keys [arguments tickingRate body]}]
-  (concat arguments
-          (if tickingRate [tickingRate] [])
-          [body]))
-
-(defmethod children "UziProcedureNode" [{:keys [arguments body]}]
-  (concat arguments [body]))
-
-(defmethod children "UziFunctionNode" [{:keys [arguments body]}]
-  (concat arguments [body]))
-
-(defmethod children "UziForNode" [{:keys [counter start stop step body]}]
-  [counter start stop step body])
-
-(defmethod children :default [ast]
-  (->> ast
-       vals
-       (mapcat #(cond
-                  (node? %) [%]
-                  (vector? %) (clj-core/filter node? %)
-                  :else nil))
-       (clj-core/filter (complement nil?))))

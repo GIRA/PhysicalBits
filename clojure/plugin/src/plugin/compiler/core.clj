@@ -45,7 +45,8 @@
 
         ; Collect all number literals
         (map (fn [{:keys [value]}] (emit/constant value))
-             (ast-utils/filter ast "UziNumberLiteralNode"))
+             (mapcat #(ast-utils/filter % "UziNumberLiteralNode")
+                     (:scripts ast)))
 
         ; Collect all pin literals
         (map (fn [{:keys [type number]}] (emit/constant (boards/get-pin-number (str type number) board)))
@@ -72,11 +73,12 @@
                      (ast-utils/filter ast "UziLogicalAndNode")))
 
         ; Collect all globals
-        (map (fn [{:keys [name value]}] (emit/variable name value))
+        (map (fn [{:keys [name value]}] (emit/variable name (ast-utils/compile-time-value value 0)))
              (:globals ast))
 
         ; Collect all local values
-        (map (fn [{:keys [value]}] (emit/constant (or value 0)))
+        (map (fn [{:keys [value]}] (emit/constant (if (nil? value) 0
+                                                    (ast-utils/compile-time-value value 0))))
              (mapcat (fn [{:keys [body]}] (ast-utils/filter body "UziVariableDeclarationNode"))
                      (:scripts ast)))
 
