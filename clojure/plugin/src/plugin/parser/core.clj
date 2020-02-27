@@ -92,7 +92,7 @@
 (def parse-program
   (insta/parser
 
-    "program = ws? import*  variableDeclaration*  (ws? (primitive | script) ws?)* ws?
+    "program = ws? import*  variableDeclaration*  ((primitive | script) ws?)* ws?
          import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ) ws?
          importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> = (task | function | procedure)
@@ -100,8 +100,8 @@
 
          primitive = <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
 
-         <statementList> = statement*
-         <statement> = ws? (variableDeclaration / assignment / return / conditional
+         <statementList> = ws? statement*
+         <statement> =  (variableDeclaration / assignment / return / conditional
                       / startTask / stopTask / pauseTask / resumeTask
                       / while / doWhile / until / doUntil / repeat / forever / for
                       / yield / expressionStatement) ws?
@@ -118,7 +118,7 @@
          forever = <'forever'> ws? block
          for = <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block
          yield = <'yield'> endl
-         <expressionStatement> = ws? expr endl
+         <expressionStatement> = expr endl
 
          startTask = <'start'> ws scriptList endl
          stopTask = <'stop'> ws scriptList endl
