@@ -93,7 +93,7 @@
   (insta/parser
 
     "program = ws? import*  variableDeclaration*  (ws? (primitive | script) ws?)* ws?
-         import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ws?)
+         import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ) ws?
          importPath = <'\\''> #'[^\\']+' <'\\''>
          <script> = (task | function | procedure)
          block = <'{'>  statementList  <'}'>
@@ -106,7 +106,7 @@
                       / while / doWhile / until / doUntil / repeat / forever / for
                       / yield / expressionStatement) ws?
 
-         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr)? endl
+         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr ws?)? endl ws?
          assignment = variable ws? <'='> ws? expr endl
          return = <'return'> separatedExpr? endl
          conditional = <'if'> separatedExpr ws? block (ws? <'else'> ws? block)?
@@ -160,7 +160,7 @@
 
          <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
          binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+
-         <endl> =ws? <';'> ws?
+         <endl> =ws? <';'>
          <name> =#'[a-zA-Z_][_\\w]*'
          <ws> = (<#'\\s+'> | <comments>)+
 
