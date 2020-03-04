@@ -84,7 +84,7 @@ function ctorSimulator() {
     simulator.pins[r] = Math.random();
     console.log("Pin" + r + " = " + simulator.pins[r])
   }
-  function doReturn(){
+  function doReturn(pushedValue=false){
       if(  simulator.callStack.length==0){
           simulator.pc = 0;
         }else{
@@ -92,6 +92,10 @@ function ctorSimulator() {
           simulator.currentScript=frame.returnScript;
           simulator.locals=frame.returnLocals;
           simulator.pc=frame.returnPC;
+          if(!pushedValue)
+          {
+            push(0);
+          }
         }
   }
   function next() {
@@ -139,6 +143,17 @@ function ctorSimulator() {
   {
     simulator.locals[local] = value;
   }
+  function push(value)
+  {
+    simulator.stack.push(value);
+  }
+  function pop(){
+    if(simulator.stack.length==0)
+    {
+      throw "Stack Underflow";
+    }
+    return simulator.stack.pop();
+  }
 
   function execute() {
     let instruction = next();
@@ -151,9 +166,9 @@ function ctorSimulator() {
     switch (instruction.__class__) {
       case "UziPushInstruction": {
         if(instruction.argument.name==null){
-          simulator.stack.push(instruction.argument.value);
+          push(instruction.argument.value);
         }else{
-          simulator.stack.push(getGlobalValue(instruction.argument.name));
+          push(getGlobalValue(instruction.argument.name));
         }
       } break;
       case "UziScriptCallInstruction":{
@@ -166,7 +181,7 @@ function ctorSimulator() {
         simulator.pc=0;
         simulator.locals ={};
         simulator.currentScript.arguments.slice().reverse().forEach((arg) => {
-            simulator.locals[arg.name] = simulator.stack.pop();
+            simulator.locals[arg.name] = pop();
         });
 
       }break;
@@ -174,7 +189,7 @@ function ctorSimulator() {
         executePrimitive(argument);
       } break;
       case "UziPopInstruction":{
-        let g = simulator.stack.pop();
+        let g = pop();
         setGlobalValue(instruction.argument.name,g);
       } break;
       /////////////////
@@ -185,7 +200,7 @@ function ctorSimulator() {
         simulator.pins[instruction.argument] = 0;
         break;*/
       case'write_pin':
-        simulator.pins[instruction.argument] = simulator.stack.pop();
+        simulator.pins[instruction.argument] = pop();
         break;
       case'read_pin':
         if (instruction.argument < 0 ) {
@@ -193,13 +208,13 @@ function ctorSimulator() {
         } else if (instruction.argument > 1) {
           instruction.argument = 1;
         }
-        simulator.stack.push(instruction.argument);
+        push(instruction.argument);
         break;
       case'read_global':
-        simulator.stack.push(getGlobalValue(instruction.argument));
+        push(getGlobalValue(instruction.argument));
         break;
       case'write_global':
-        setGlobalValue(instruction.argument, simulator.stack.pop());
+        setGlobalValue(instruction.argument, pop());
         break;
       case'script_start':
         throw "TO DO";
@@ -217,57 +232,57 @@ function ctorSimulator() {
         simulator.pc += instruction.argument;
         break;
       case'UziJZInstruction':
-        if (simulator.stack.pop() == 0) {
+        if (pop() == 0) {
             simulator.pc += instruction.argument;
         }
         break;
       case'jnz':
-        if (simulator.stack.pop() != 0) {
+        if (pop() != 0) {
           simulator.pc += instruction.argument;
         }
         break;
       case 'jne': {
-          let a = simulator.stack.pop();
-          let b = simulator.stack.pop();
+          let a = pop();
+          let b = pop();
           if (a != b) {
             simulator.pc += instruction.argument;
           }
         }
         break;
       case 'jlt': {
-          let a = simulator.stack.pop();
-          let b = simulator.stack.pop();
+          let a = pop();
+          let b = pop();
           if (a < b) {
             simulator.pc += instruction.argument;
           }
         }
         break;
       case 'jlte': {
-          let a = simulator.stack.pop();
-          let b = simulator.stack.pop();
+          let a = pop();
+          let b = pop();
           if (a <= b) {
             simulator.pc += instruction.argument;
           }
         }
         break;
       case 'jgt': {
-          let a = simulator.stack.pop();
-          let b = simulator.stack.pop();
+          let a = pop();
+          let b = pop();
           if (a > b) {
             simulator.pc += instruction.argument;
           }
         }
         break;
       case 'jgte': {
-          let a = simulator.stack.pop();
-          let b = simulator.stack.pop();
+          let a = pop();
+          let b = pop();
           if (a >= b) {
             simulator.pc += instruction.argument;
           }
         }
         break;
       case 'UziReadLocalInstruction': {
-        simulator.stack.push(getLocalValue(argument.name));
+        push(getLocalValue(argument.name));
         }
         break;
       case 'write_local': {
@@ -275,14 +290,14 @@ function ctorSimulator() {
         }
         break;
       case 'prim_read_pin': {
-          /*let pin = simulator.stack.pop();
-          simulator.stack.push(pin);*/
+          /*let pin = pop();
+          push(pin);*/
           throw "TO DO";
         }
         break;
       case 'prim_write_pin': {
-          /*let pin = simulator.stack.pop();
-          let value = simulator.stack.pop();
+          /*let pin = pop();
+          let value = pop();
           simulator.pins[pin] =value;*/
           throw "TO DO";
         }
@@ -308,16 +323,16 @@ function ctorSimulator() {
   function executePrimitive(prim) {
     switch (prim.name) {
       case "read": {
-        let pin = simulator.stack.pop();
-        simulator.stack.push(getPinValue(pin));
+        let pin = pop();
+        push(getPinValue(pin));
       }break;
       case "write": {
-        let value = simulator.stack.pop();
-        let pin = simulator.stack.pop();
+        let value = pop();
+        let pin = pop();
         setPinValue(pin,value);
       }break;
       case "toggle": {
-        let pin = simulator.stack.pop();
+        let pin = pop();
         setPinValue(pin, 1 - getPinValue(pin));
       }break;
       case "getservodegrees": {
@@ -330,84 +345,84 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "multiply": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 * val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 * val2);
       }break;
       case "add": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 + val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 + val2);
       }break;
       case "divide": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 / val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 / val2);
       }break;
       case "subtract": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 - val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 - val2);
       }break;
       case "seconds": {
-        simulator.stack.push(millis() / 1000);
+        push(millis() / 1000);
       }break;
       case "minutes": {
-        simulator.stack.push(millis() / 1000 / 60);
+        push(millis() / 1000 / 60);
       }break;
       case "eq": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 == val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 == val2);
       }break;
       case "neq": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 != val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 != val2);
       }break;
       case "greaterThan": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 > val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 > val2);
       }break;
       case "gteq": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 >= val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 >= val2);
       }break;
       case "lt": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 < val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 < val2);
       }break;
       case "lteq": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 <= val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 <= val2);
       }break;
       case "negate": {
-        let val = simulator.stack.pop();
-        simulator.stack.push(val == 0 ? 1 : 0);
+        let val = pop();
+        push(val == 0 ? 1 : 0);
       }break;
       case "sin": {
-          let val = simulator.stack.pop();
-          simulator.stack.push(Math.sin(val));
+          let val = pop();
+          push(Math.sin(val));
       }break;
       case "cos": {
-        let val = simulator.stack.pop();
-        simulator.stack.push(Math.cos(val));
+        let val = pop();
+        push(Math.cos(val));
       }break;
       case "tan": {
-        let val = simulator.stack.pop();
-        simulator.stack.push(Math.tan(val));
+        let val = pop();
+        push(Math.tan(val));
       }break;
       case "turnOn": {
-        //simulator.pins[simulator.stack.pop()] = 1;
-        setPinValue(simulator.stack.pop(),1);
+        //simulator.pins[pop()] = 1;
+        setPinValue(pop(),1);
       } break;
       case "turnOff": {
-        //simulator.pins[simulator.stack.pop()] = 0;
-        setPinValue(simulator.stack.pop(),0);
+        //simulator.pins[pop()] = 0;
+        setPinValue(pop(),0);
       } break;
       case "yield": {
         //TO DO
@@ -422,145 +437,144 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "millis": {
-        simulator.stack.push(millis());
+        push(millis());
       }break;
       case "ret": {
-        simulator.stack.push(0);
         doReturn();
       }break;
       case "pop": {
-        simulator.stack.pop();
+        pop();
       }break;
       case "retv": {
-        doReturn();
+        doReturn(true);
       }break;
       case "coroutine": {
         //TO DO
       }break;
       case "logicaland": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 && val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 && val2);
       }break;
       case "logicalor": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 || val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 || val2);
       }break;
       case "bitwiseand": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 & val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 & val2);
       }break;
       case "bitwiseor": {
-        let val2 = simulator.stack.pop();
-        let val1 = simulator.stack.pop();
-        simulator.stack.push(val1 | val2);
+        let val2 = pop();
+        let val1 = pop();
+        push(val1 | val2);
       }break;
       case "serialwrite": {
         //TO DO
       }break;
       case "round": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.round(a));
+        let a = pop();
+        push(Math.round(a));
       }break;
       case "ceil": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.ceil(a));
+        let a = pop();
+        push(Math.ceil(a));
       }break;
       case "floor": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.floor(a));
+        let a = pop();
+        push(Math.floor(a));
       }break;
       case "sqrt": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.sqrt(a));
+        let a = pop();
+        push(Math.sqrt(a));
       }break;
       case "abs": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.abs(a));
+        let a = pop();
+        push(Math.abs(a));
       }break;
       case "ln": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.log(a));
+        let a = pop();
+        push(Math.log(a));
       }break;
       case "log10": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.log10(a));
+        let a = pop();
+        push(Math.log10(a));
       }break;
       case "exp": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.exp(a));
+        let a = pop();
+        push(Math.exp(a));
       }break;
       case "pow": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.pow(10,a));
+        let a = pop();
+        push(Math.pow(10,a));
       }break;
       case "asin": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.asin(a));
+        let a = pop();
+        push(Math.asin(a));
       }break;
       case "acos": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.acos(a));
+        let a = pop();
+        push(Math.acos(a));
       }break;
       case "atan": {
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.atan(a));
+        let a = pop();
+        push(Math.atan(a));
       }break;
       case "atan2": {
-        let x = simulator.stack.pop();
-        let y = simulator.stack.pop();
-        simulator.stack.push(Math.atan2(y,x));
+        let x = pop();
+        let y = pop();
+        push(Math.atan2(y,x));
       }break;
       case "power": {
-        let b = simulator.stack.pop();
-        let a = simulator.stack.pop();
-        simulator.stack.push(Math.pow(a,b));
+        let b = pop();
+        let a = pop();
+        push(Math.pow(a,b));
       }break;
       case "isOn": {
-        let pin = simulator.stack.pop();
-        simulator.stack.push(getPinValue(pin) > 0);
+        let pin = pop();
+        push(getPinValue(pin) > 0);
       }break;
       case "isOff": {
-        let pin = simulator.stack.pop();
-        simulator.stack.push(getPinValue(pin) == 0);
+        let pin = pop();
+        push(getPinValue(pin) == 0);
       }break;
       case "remainder": {
-        let b = simulator.stack.pop();
-        let a = simulator.stack.pop();
-        simulator.stack.push(a % b);
+        let b = pop();
+        let a = pop();
+        push(a % b);
       }break;
       case "mod": {
-        let n = simulator.stack.pop();
-        let a = simulator.stack.pop();
-        simulator.stack.push(a - (Math.floor(a/n)*n));
+        let n = pop();
+        let a = pop();
+        push(a - (Math.floor(a/n)*n));
       }break;
       case "constrain": {
-        let c = simulator.stack.pop();
-        let b = simulator.stack.pop();
-        let a = simulator.stack.pop();
+        let c = pop();
+        let b = pop();
+        let a = pop();
         if (a < b) {
-          simulator.stack.push(b);
+          push(b);
         } else if (a > c) {
-          simulator.stack.push(c);
+          push(c);
         } else{
-          simulator.stack.push(a);
+          push(a);
         }
       }break;
       case "randomint": {
-        let b = simulator.stack.pop();
-        let a = simulator.stack.pop();
+        let b = pop();
+        let a = pop();
         if (b > a ) {
-          simulator.stack.push(getRandomInt(a,b));
+          push(getRandomInt(a,b));
         }
         else {
-          simulator.stack.push(getRandomInt(b,a));
+          push(getRandomInt(b,a));
         }
         getRandomInt()
       }break;
       case "isEven":{
-          simulator.stack.push(simulator.stack.pop()%2==0);
+          push(pop()%2==0);
       }break;
       default:
         throw "Missing primitive "+ prim.name;
