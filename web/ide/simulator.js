@@ -198,7 +198,7 @@ function ctorSimulator() {
       case'jmp':
         simulator.pc += instruction.argument;
         break;
-      case'jz':
+      case'UziJZInstruction':
         if (simulator.stack.pop() == 0) {
             simulator.pc += instruction.argument;
         }
@@ -347,7 +347,7 @@ function ctorSimulator() {
         let val1 = simulator.stack.pop();
         simulator.stack.push(val1 != val2);
       }break;
-      case "gt": {
+      case "greaterThan": {
         let val2 = simulator.stack.pop();
         let val1 = simulator.stack.pop();
         simulator.stack.push(val1 > val2);
