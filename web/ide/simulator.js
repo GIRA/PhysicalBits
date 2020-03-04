@@ -8,19 +8,21 @@ function ctorSimulator() {
   let simulator = {
      pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
      globals: {},
+     scripts: {},
+     startDate: new Date(),
+
      stack: [],
+     callStack:[],
+     pc:0,
+     currentScript:null,
+
      execute: execute,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
      getProgram: () => Uzi.state.program.current.compiled,
-     framePointer: 0,
-     globals:[],
-     instructions:[],
-     pc:0,
      update: updateProgram,
      start: startProgram,
-     stop: stopProgram,
-     startDate: new Date()
-  };
+     stop: stopProgram
+     };
 
   //simulator.pins.forEach((item) => console.log(item));
   let interval = null;
@@ -44,19 +46,31 @@ function ctorSimulator() {
   }
 
   function loadProgram(program) {
-
     simulator.pc = 0;
     simulator.stack = [];
+    simulator.callStack=[];
     loadGlobals(program);
+    loadScripts(program);
     simulator.startDate = new Date();
-    simulator.instructions = program.scripts[0].instructions;
+    simulator.currentScript = program.scripts[0];
   }
+
+
+
   function loadGlobals(program){
     simulator.globals ={};
     program.variables.forEach(
       (v)=>{if(v.name!=null){
-        simulator.globals[v.name]=v.value;
+        simulator.globals[v.name] = v.value;
       }}
+    );
+  }
+  function loadScripts(program){
+    simulator.scripts = {};
+    program.scripts.forEach(
+      (v)=>{
+        simulator.scripts[v.name] = v;
+      }
     );
   }
 
@@ -71,9 +85,18 @@ function ctorSimulator() {
   }
 
   function next() {
-    simulator.pc = simulator.pc % simulator.instructions.length;
-    var result = simulator.instructions[(simulator.pc++)];
-    simulator.pc = simulator.pc % simulator.instructions.length;
+    if(simulator.pc>= simulator.currentScript.instructions.length)
+    {
+        if(  simulator.callStack.length==0){
+            simulator.pc = 0;
+          }else{
+            let frame= simulator.callStack.pop();
+            simulator.currentScript=frame.returnScript;
+            simulator.pc=frame.returnPC;
+            return next();
+          }
+    }
+    var result = simulator.currentScript.instructions[(simulator.pc++)];
     return result;
   }
 
@@ -121,6 +144,14 @@ function ctorSimulator() {
           simulator.stack.push(getGlobalValue(instruction.argument.name));
         }
       } break;
+      case "UziScriptCallInstruction":{
+        simulator.callStack.push({
+          returnScript:simulator.currentScript,
+          returnPC:simulator.pc+1
+        });
+        simulator.currentScript=simulator.scripts[argument];
+        simulator.pc=0;
+      }break;
       case "UziPrimitiveCallInstruction": {
         executePrimitive(argument);
       } break;
@@ -342,15 +373,15 @@ function ctorSimulator() {
       }break;
       case "sin": {
           let val = simulator.stack.pop();
-          simultor.stack.push(Math.sin(val));
+          simulator.stack.push(Math.sin(val));
       }break;
       case "cos": {
         let val = simulator.stack.pop();
-        simultor.stack.push(Math.cos(val));
+        simulator.stack.push(Math.cos(val));
       }break;
       case "tan": {
         let val = simulator.stack.pop();
-        simultor.stack.push(Math.tan(val));
+        simulator.stack.push(Math.tan(val));
       }break;
       case "turnOn": {
         //simulator.pins[simulator.stack.pop()] = 1;

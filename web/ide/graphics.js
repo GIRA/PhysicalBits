@@ -38,3 +38,10 @@ function drawCircles(target,radius, simulator) {
     }, 50);
   }
 }
+
+function writeGlobals()
+{
+      let t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+
+}
