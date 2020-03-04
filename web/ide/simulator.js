@@ -159,13 +159,13 @@ function ctorSimulator() {
       case "UziScriptCallInstruction":{
         simulator.callStack.push({
           returnScript:simulator.currentScript,
-          returnPC:simulator.pc+1,
+          returnPC:simulator.pc,
           returnLocals:simulator.locals
         });
         simulator.currentScript=simulator.scripts[argument];
         simulator.pc=0;
         simulator.locals ={};
-        simulator.currentScript.arguments.forEach((arg) => {
+        simulator.currentScript.arguments.slice().reverse().forEach((arg) => {
             simulator.locals[arg.name] = simulator.stack.pop();
         });
 
@@ -425,13 +425,14 @@ function ctorSimulator() {
         simulator.stack.push(millis());
       }break;
       case "ret": {
+        simulator.stack.push(0);
         doReturn();
       }break;
       case "pop": {
         simulator.stack.pop();
       }break;
       case "retv": {
-        //TO DO
+        doReturn();
       }break;
       case "coroutine": {
         //TO DO
