@@ -14,6 +14,7 @@ function ctorSimulator() {
      stack: [],
      callStack:[],
      pc:0,
+     locals:{},
      currentScript:null,
 
      execute: execute,
@@ -37,7 +38,7 @@ function ctorSimulator() {
   }
   function startProgram(){
     if (interval) return;
-    interval = setInterval(()=>simulator.execute(), 500);
+    interval = setInterval(()=>simulator.execute(), 50);
   }
   function stopProgram(){
     if (!interval) return;
@@ -47,17 +48,17 @@ function ctorSimulator() {
 
   function loadProgram(program) {
     simulator.pc = 0;
+    simulator.pins=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     simulator.stack = [];
     simulator.callStack=[];
+    simulator.locals={};
     loadGlobals(program);
     loadScripts(program);
     simulator.startDate = new Date();
     simulator.currentScript = program.scripts[0];
   }
 
-
-
-  function loadGlobals(program){
+   function loadGlobals(program){
     simulator.globals ={};
     program.variables.forEach(
       (v)=>{if(v.name!=null){
@@ -92,6 +93,7 @@ function ctorSimulator() {
           }else{
             let frame= simulator.callStack.pop();
             simulator.currentScript=frame.returnScript;
+            simulator.locals=frame.returnLocals;
             simulator.pc=frame.returnPC;
             return next();
           }
@@ -127,6 +129,14 @@ function ctorSimulator() {
   {
     simulator.globals[global] = value;
   }
+  function getLocalValue(local)
+  {
+    return simulator.locals[local];
+  }
+  function setLocalValue(local, value)
+  {
+    simulator.locals[local] = value;
+  }
 
   function execute() {
     let instruction = next();
@@ -147,10 +157,16 @@ function ctorSimulator() {
       case "UziScriptCallInstruction":{
         simulator.callStack.push({
           returnScript:simulator.currentScript,
-          returnPC:simulator.pc+1
+          returnPC:simulator.pc+1,
+          returnLocals:simulator.locals
         });
         simulator.currentScript=simulator.scripts[argument];
         simulator.pc=0;
+        simulator.locals ={};
+        simulator.currentScript.arguments.forEach((arg) => {
+            simulator.locals[arg.name] = simulator.stack.pop();
+        });
+
       }break;
       case "UziPrimitiveCallInstruction": {
         executePrimitive(argument);
@@ -248,8 +264,8 @@ function ctorSimulator() {
           }
         }
         break;
-      case 'read_local': {
-          throw "TO DO";
+      case 'UziReadLocalInstruction': {
+        simulator.stack.push(getLocalValue(argument.name));
         }
         break;
       case 'write_local': {
