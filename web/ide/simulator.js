@@ -84,18 +84,16 @@ function ctorSimulator() {
     simulator.pins[r] = Math.random();
     console.log("Pin" + r + " = " + simulator.pins[r])
   }
-  function doReturn(pushedValue=false){
+  function doReturn(){
       if(  simulator.callStack.length==0){
+        //TODO: Coroutine change
           simulator.pc = 0;
         }else{
           let frame= simulator.callStack.pop();
           simulator.currentScript=frame.returnScript;
           simulator.locals=frame.returnLocals;
           simulator.pc=frame.returnPC;
-          if(!pushedValue)
-          {
-            push(0);
-          }
+          push(frame.returnValue);
         }
   }
   function next() {
@@ -175,7 +173,8 @@ function ctorSimulator() {
         simulator.callStack.push({
           returnScript:simulator.currentScript,
           returnPC:simulator.pc,
-          returnLocals:simulator.locals
+          returnLocals:simulator.locals,
+          returnValue:0
         });
         simulator.currentScript=simulator.scripts[argument];
         simulator.pc=0;
@@ -446,7 +445,11 @@ function ctorSimulator() {
         pop();
       }break;
       case "retv": {
-        doReturn(true);
+        let value = pop();
+        let frame = simulator.callStack.pop();
+        frame.returnValue=value;
+        simulator.callStack.push(frame);
+        doReturn();
       }break;
       case "coroutine": {
         //TO DO
