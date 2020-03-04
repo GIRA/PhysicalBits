@@ -84,19 +84,21 @@ function ctorSimulator() {
     simulator.pins[r] = Math.random();
     console.log("Pin" + r + " = " + simulator.pins[r])
   }
-
+  function doReturn(){
+      if(  simulator.callStack.length==0){
+          simulator.pc = 0;
+        }else{
+          let frame= simulator.callStack.pop();
+          simulator.currentScript=frame.returnScript;
+          simulator.locals=frame.returnLocals;
+          simulator.pc=frame.returnPC;
+        }
+  }
   function next() {
     if(simulator.pc>= simulator.currentScript.instructions.length)
     {
-        if(  simulator.callStack.length==0){
-            simulator.pc = 0;
-          }else{
-            let frame= simulator.callStack.pop();
-            simulator.currentScript=frame.returnScript;
-            simulator.locals=frame.returnLocals;
-            simulator.pc=frame.returnPC;
-            return next();
-          }
+      doReturn();
+      return next();
     }
     var result = simulator.currentScript.instructions[(simulator.pc++)];
     return result;
@@ -211,7 +213,7 @@ function ctorSimulator() {
       case'script_pause':
         throw "TO DO";
         break;
-      case'jmp':
+      case'UziJMPInstruction':
         simulator.pc += instruction.argument;
         break;
       case'UziJZInstruction':
@@ -423,7 +425,7 @@ function ctorSimulator() {
         simulator.stack.push(millis());
       }break;
       case "ret": {
-        //TO DO
+        doReturn();
       }break;
       case "pop": {
         simulator.stack.pop();
@@ -555,6 +557,9 @@ function ctorSimulator() {
           simulator.stack.push(getRandomInt(b,a));
         }
         getRandomInt()
+      }break;
+      case "isEven":{
+          simulator.stack.push(simulator.stack.pop()%2==0);
       }break;
       default:
         throw "Missing primitive "+ prim.name;
