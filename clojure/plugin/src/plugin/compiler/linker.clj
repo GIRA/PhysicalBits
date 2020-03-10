@@ -89,26 +89,65 @@
   (throw (Exception. msg)))
 
 (defn apply-alias [ast alias]
-  (ast-utils/transform
-   ast
-   "UziFunctionNode" #(assoc % :name (str alias "." (:name %)))))
+  (let [update-node (fn [key node] (assoc node key (str alias "." (key node))))
+        locals (atom #{})]
+    (ast-utils/transform
+     ast
+     "UziVariableDeclarationNode" (fn [node]
+                                    (if (:local? node)
+                                      node
+                                      (update-node :name node)))
+     "UziVariableNode" (fn [node]
+                         (if (:local? node)
+                           node
+                           (update-node :name node)))
+     "UziFunctionNode" (partial update-node :name)
+     "UziCallNode" (partial update-node :selector))))
+
+(declare resolve-imports)
 
 (defn resolve-import [{:keys [alias path] :as imp} libs-dir]
   (let [file (io/file libs-dir path)]
     (if (.exists file)
-      (let [imported-ast (parser/parse (slurp file))]
+      (let [imported-ast (resolve-imports (parser/parse (slurp file)) libs-dir)]
         {:import (assoc imp :isResolved true)
          :program (apply-alias imported-ast alias)})
       (error "FILE NOT FOUND"))))
 
+(defn resolve-variable-scope [ast]
+  (let [locals (atom #{})
+        reset-locals! (fn [{:keys [arguments body] :as node}]
+                        (reset! locals (set (concat (map :name arguments)
+                                                    (map :name (ast-utils/filter node "UziVariableDeclarationNode")))))
+                        node)
+        assign-scope (fn [{:keys [name] :as node}]
+                       (assoc node :local? (contains? @locals name)))]
+    (ast-utils/transform
+     ast
+
+     "UziTaskNode" reset-locals!
+     "UziProcedureNode" reset-locals!
+     "UziFunctionNode" reset-locals!
+
+     "UziVariableNode" assign-scope
+     "UziVariableDeclarationNode" assign-scope)))
+
+(defn print [a] (pprint a) a)
+
+(defn build-new-program [ast resolved-imports]
+  (let [imported-programs (map :program resolved-imports)
+         imported-globals (mapcat :globals imported-programs)
+         imported-scripts (mapcat :scripts imported-programs)]
+    (assoc ast
+           :imports (map :import resolved-imports)
+           :globals (vec (concat imported-globals (:globals ast)))
+           :scripts (vec (concat imported-scripts (:scripts ast))))))
+
 (defn resolve-imports [ast libs-dir]
   (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir))
                               (filter (complement :isResolved)
-                                      (:imports ast)))
-        imported-programs (map :program resolved-imports)]
+                                      (:imports ast)))]
     (-> ast
-        (assoc
-         :imports (map :import resolved-imports)
-         :scripts (vec (concat (mapcat :scripts imported-programs)
-                               (:scripts ast))))
+        resolve-variable-scope
+        (build-new-program resolved-imports)
         bind-primitives)))
