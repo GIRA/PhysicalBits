@@ -40,7 +40,7 @@
       (if (= 1 (count parts))
         (first parts)
         parts)
-      (let [[left [op & right]] (split-at (.indexOf parts operator) parts)]
+      (let [[left [op & right]] (split-at (.lastIndexOf parts operator) parts)]
         [:binaryExpr (build-binary-expression left) op (build-binary-expression right)]
         )
       )))
