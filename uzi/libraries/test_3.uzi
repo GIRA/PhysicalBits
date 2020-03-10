@@ -1,0 +1,2 @@
+import t1 from 'test_2.uzi';
+func bar(a) { return t1.v + a + t1.foo(); }
