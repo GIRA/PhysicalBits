@@ -35,7 +35,7 @@ function drawCircles(target,radius, simulator) {
       } else {
           c.setAttribute("fill", "black");
       }
-    }, 50);
+    }, 1);
   }
 }
 

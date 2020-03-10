@@ -17,6 +17,7 @@ function ctorSimulator() {
      locals:{},
      currentScript:null,
 
+
      execute: execute,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
      getProgram: () => Uzi.state.program.current.compiled,
@@ -38,8 +39,19 @@ function ctorSimulator() {
   }
   function startProgram(){
     if (interval) return;
-    interval = setInterval(()=>simulator.execute(), 50);
+    interval = setInterval(()=>executeProgram(), 1);
   }
+
+  function executeProgram(){
+    if (simulator.currentScript.ticking) {
+      if (simulator.currentScript.nextRun < millis()) {
+          simulator.execute();
+      }
+
+    }
+
+  }
+
   function stopProgram(){
     if (!interval) return;
     clearInterval(interval);
@@ -66,11 +78,15 @@ function ctorSimulator() {
       }}
     );
   }
+
   function loadScripts(program){
     simulator.scripts = {};
     program.scripts.forEach(
-      (v)=>{
-        simulator.scripts[v.name] = v;
+      (script)=>{
+        simulator.scripts[script.name] =script;
+        script.nextRun = 0;
+        //TODO: this should go into the coroutine start
+        script.lastStart=millis();
       }
     );
   }
@@ -85,9 +101,11 @@ function ctorSimulator() {
     console.log("Pin" + r + " = " + simulator.pins[r])
   }
   function doReturn(){
-      if(  simulator.callStack.length==0){
+      if(simulator.callStack.length==0){
         //TODO: Coroutine change
           simulator.pc = 0;
+          simulator.currentScript.nextRun = simulator.currentScript.lastStart + simulator.currentScript.delay.value;
+          simulator.currentScript.lastStart=millis();
         }else{
           let frame= simulator.callStack.pop();
           simulator.currentScript=frame.returnScript;
@@ -176,7 +194,7 @@ function ctorSimulator() {
           returnLocals:simulator.locals,
           returnValue:0
         });
-        simulator.currentScript=simulator.scripts[argument];
+        simulator.currentScript = simulator.scripts[argument];
         simulator.pc=0;
         simulator.locals ={};
         simulator.currentScript.arguments.slice().reverse().forEach((arg) => {
@@ -311,12 +329,14 @@ function ctorSimulator() {
     }
   }
 
-  function millis()
-  {
+  function millis(){
       let d = new Date();
       return d - simulator.startDate;
   }
 
+  function doYield(){
+
+  }
 
 
   function executePrimitive(prim) {
@@ -426,14 +446,23 @@ function ctorSimulator() {
       case "yield": {
         //TO DO
       }break;
-      case "delaymilis": {
-        //TO DO
+      case "delayMs": {
+        let time = pop();
+        simulator.currentScript.nextRun = millis() + time;
+        doYield();
       }break;
-      case "delayseconds": {
-        //TO DO
+      case "delayS": {
+        let time = pop();
+        time = time * 1000;
+        simulator.currentScript.nextRun = millis() + time;
+        doYield();
       }break;
-      case "delayminutes": {
-        //TO DO
+      case "delayM": {
+        let time = pop();
+        time = time * 1000;
+        time = time * 60;
+        simulator.currentScript.nextRun = millis() + time;
+        doYield();
       }break;
       case "millis": {
         push(millis());
