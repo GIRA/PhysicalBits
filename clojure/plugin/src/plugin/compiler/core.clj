@@ -484,13 +484,13 @@
   (ast-utils/transform ast :default #(assoc % :internal-id (.toString (java.util.UUID/randomUUID)))))
 
 (defn compile-tree
-  ([ast] (compile-tree ast boards/UNO))
-  ([ast board]
-   (-> ast
-       linker/bind-primitives
-       assign-unique-variable-names
-       assign-internal-ids
-       (compile (create-context board)))))
+  [ast & {:keys [board lib-dir]
+          :or {board boards/UNO, lib-dir "../../uzi/libraries"}}]
+  (-> ast
+      (linker/resolve-imports lib-dir)
+      assign-unique-variable-names
+      assign-internal-ids
+      (compile (create-context board))))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))

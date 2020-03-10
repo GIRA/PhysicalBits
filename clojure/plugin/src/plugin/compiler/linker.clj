@@ -1,5 +1,8 @@
 (ns plugin.compiler.linker
-  (:require [plugin.compiler.ast-utils :as ast-utils]))
+  (:require [plugin.compiler.ast-utils :as ast-utils]
+            [clojure.java.io :as io]
+            [plugin.parser.core :as parser]
+            [clojure.pprint :refer [pprint]]))
 
 ; TODO(Richo): Hack until we can actually parse core.uzi and get the actual prims
 (def core-primitives
@@ -81,3 +84,31 @@
                        node
                        (assoc node
                               :primitive-name (core-primitives selector)))))))
+
+(defn error [msg]
+  (throw (Exception. msg)))
+
+(defn apply-alias [ast alias]
+  (ast-utils/transform
+   ast
+   "UziFunctionNode" #(assoc % :name (str alias "." (:name %)))))
+
+(defn resolve-import [{:keys [alias path] :as imp} libs-dir]
+  (let [file (io/file libs-dir path)]
+    (if (.exists file)
+      (let [imported-ast (parser/parse (slurp file))]
+        {:import (assoc imp :isResolved true)
+         :program (apply-alias imported-ast alias)})
+      (error "FILE NOT FOUND"))))
+
+(defn resolve-imports [ast libs-dir]
+  (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir))
+                              (filter (complement :isResolved)
+                                      (:imports ast)))
+        imported-programs (map :program resolved-imports)]
+    (-> ast
+        (assoc
+         :imports (map :import resolved-imports)
+         :scripts (vec (concat (mapcat :scripts imported-programs)
+                               (:scripts ast))))
+        bind-primitives)))
