@@ -89,20 +89,29 @@
   (throw (Exception. msg)))
 
 (defn apply-alias [ast alias]
-  (let [update-node (fn [key node] (assoc node key (str alias "." (key node))))
-        locals (atom #{})]
+  (let [with-alias #(str alias "." %)
+         update (fn [key node] (assoc node key (-> node key with-alias)))
+         update-name (partial update :name)
+         update-selector (partial update :selector)
+         update-variable (fn [node] (if (:local? node) node (update :name node)))
+         update-script-list (fn [node] (assoc node :scripts (mapv with-alias (:scripts node))))]
     (ast-utils/transform
      ast
-     "UziVariableDeclarationNode" (fn [node]
-                                    (if (:local? node)
-                                      node
-                                      (update-node :name node)))
-     "UziVariableNode" (fn [node]
-                         (if (:local? node)
-                           node
-                           (update-node :name node)))
-     "UziFunctionNode" (partial update-node :name)
-     "UziCallNode" (partial update-node :selector))))
+
+     "UziVariableDeclarationNode" update-variable
+     "UziVariableNode" update-variable
+
+     "UziTaskNode" update-name
+     "UziFunctionNode" update-name
+     "UziProcedureNode" update-name
+
+     "UziCallNode" update-selector
+
+     "UziScriptStopNode" update-script-list
+     "UziScriptStartNode" update-script-list
+     "UziScriptPauseNode" update-script-list
+     "UziScriptResumeNode" update-script-list
+     )))
 
 (declare resolve-imports)
 

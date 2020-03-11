@@ -249,3 +249,228 @@
                              :tickingRate nil}]}
         actual (link ast)]
     (is (equivalent? expected actual))))
+
+(deftest stopping-imported-task
+  ; import t3 from 'test_4.uzi';
+  ; task main() running { stop t3.blink13; }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t3",
+                        :initializationBlock nil,
+                        :isResolved false,
+                        :path "test_4.uzi"}],
+             :primitives [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziScriptStopNode",
+                                             :scripts ["t3.blink13"]}]},
+                        :name "main",
+                        :state "running",
+                        :tickingRate nil}]}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :imports [{:__class__ "UziImportNode",
+                             :alias "t3",
+                             :isResolved true,
+                             :path "test_4.uzi"}],
+                  :primitives [],
+                  :scripts [{:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                       :number 13,
+                                                                       :type "D"}}],
+                                                  :selector "t3.toggle"}]},
+                             :name "t3.blink13",
+                             :state "running"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziScriptStopNode",
+                                                  :scripts ["t3.blink13"]}]},
+                             :name "main",
+                             :state "running",
+                             :tickingRate nil}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
+
+(deftest starting-imported-task
+  ; import t3 from 'test_4.uzi';
+  ; task main() running { start t3.blink13; }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t3",
+                        :initializationBlock nil,
+                        :isResolved false,
+                        :path "test_4.uzi"}],
+             :primitives [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziScriptStartNode",
+                                             :scripts ["t3.blink13"]}]},
+                        :name "main",
+                        :state "running",
+                        :tickingRate nil}]}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :imports [{:__class__ "UziImportNode",
+                             :alias "t3",
+                             :isResolved true,
+                             :path "test_4.uzi"}],
+                  :primitives [],
+                  :scripts [{:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                       :number 13,
+                                                                       :type "D"}}],
+                                                  :selector "t3.toggle"}]},
+                             :name "t3.blink13",
+                             :state "running"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziScriptStartNode",
+                                                  :scripts ["t3.blink13"]}]},
+                             :name "main",
+                             :state "running",
+                             :tickingRate nil}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
+
+(deftest importing-script-that-stops-a-task
+  ; import t from 'test_5.uzi';
+  ; task main() running { t.stopTask(); }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t",
+                        :initializationBlock nil,
+                        :isResolved false,
+                        :path "test_5.uzi"}],
+             :primitives [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziCallNode",
+                                             :arguments [],
+                                             :selector "t.stopTask"}]},
+                        :name "main",
+                        :state "running",
+                        :tickingRate nil}]}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :imports [{:__class__ "UziImportNode",
+                             :alias "t",
+                             :initializationBlock nil,
+                             :isResolved true,
+                             :path "test_5.uzi"}],
+                  :primitives [],
+                  :scripts [{:__class__ "UziProcedureNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziScriptStopNode",
+                                                  :scripts ["t.blink"]}]},
+                             :name "t.stopTask"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                       :number 13,
+                                                                       :type "D"}}],
+                                                  :selector "t.toggle"}]},
+                             :name "t.blink",
+                             :state "running"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [],
+                                                  :selector "t.stopTask"}]},
+                             :name "main",
+                             :state "running",
+                             :tickingRate nil}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
+
+(deftest importing-script-that-starts-a-task
+  ; import t from 'test_6.uzi';
+  ; task main() running { t.startTask(); }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t",
+                        :initializationBlock nil,
+                        :isResolved false,
+                        :path "test_6.uzi"}],
+             :primitives [],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziCallNode",
+                                             :arguments [],
+                                             :selector "t.startTask"}]},
+                        :name "main",
+                        :state "running",
+                        :tickingRate nil}]}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :imports [{:__class__ "UziImportNode",
+                             :alias "t",
+                             :isResolved true,
+                             :path "test_6.uzi"}],
+                  :primitives [],
+                  :scripts [{:__class__ "UziProcedureNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziScriptStartNode",
+                                                  :scripts ["t.blink"]}]},
+                             :name "t.startTask"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                       :number 13,
+                                                                       :type "D"}}],
+                                                  :selector "t.toggle"}]},
+                             :name "t.blink",
+                             :state "stopped"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [],
+                                                  :selector "t.startTask"}]},
+                             :name "main",
+                             :state "running",
+                             :tickingRate nil}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
+
+#_(
+  ; TEMPLATE
+
+  (deftest
+    ; uzi src
+    (let [ast
+          expected
+          actual (link ast)]
+      (is (equivalent? expected actual))))
+
+  )
