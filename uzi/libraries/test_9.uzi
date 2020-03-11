@@ -1,0 +1,5 @@
+proc foo() {
+	for i = 1 to 10 by 1 {
+		yield;
+	}
+}

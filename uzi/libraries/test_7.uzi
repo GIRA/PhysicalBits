@@ -1,0 +1,4 @@
+
+proc foo() {
+	repeat 5 { toggle(D13); }
+}

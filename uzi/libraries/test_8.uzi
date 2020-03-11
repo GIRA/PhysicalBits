@@ -1,0 +1,9 @@
+
+proc toggleAndWait(pin, ms) {
+	toggle(pin);
+	delayMs(ms);
+}
+
+proc blink() {
+	toggleAndWait(D13, 100);
+}
