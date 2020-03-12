@@ -43,6 +43,18 @@
           true)))
     (not (expression? node))))
 
+(defn script-control? [node]
+  (contains? #{"UziScriptStopNode" "UziScriptStartNode"
+               "UziScriptPauseNode" "UziScriptResumeNode"}
+             (node-type node)))
+
+(defn script-control-state [node]
+  (condp = (node-type node)
+    "UziScriptStartNode" "running"
+    "UziScriptResumeNode" "running"
+    "UziScriptStopNode" "stopped"
+    "UziScriptPauseNode" "stopped"
+    nil))
 
 (defmulti ^:private children-keys :__class__)
 (defmethod children-keys "UziAssignmentNode" [_] [:left :right])

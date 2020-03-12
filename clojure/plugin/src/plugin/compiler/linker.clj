@@ -122,20 +122,10 @@
                                    statements)))
         scripts (into {}
                       (mapcat (fn [{:keys [scripts] :as node}]
-                                (let [state (condp = (ast-utils/node-type node)
-                                              "UziScriptStartNode" "running"
-                                              "UziScriptResumeNode" "running"
-                                              "UziScriptStopNode" "stopped"
-                                              "UziScriptPauseNode" "stopped"
-                                              nil)]
+                                (let [state (ast-utils/script-control-state node)]
                                   (map (fn [name] [name state])
                                        scripts)))
-                              (filter (fn [node]
-                                        (contains? #{"UziScriptStopNode"
-                                                     "UziScriptStartNode"
-                                                     "UziScriptPauseNode"
-                                                     "UziScriptResumeNode"}
-                                                   (ast-utils/node-type node)))
+                              (filter ast-utils/script-control?
                                       statements)))]
     (assoc ast
            :globals (mapv (fn [{:keys [name value] :as global}]
