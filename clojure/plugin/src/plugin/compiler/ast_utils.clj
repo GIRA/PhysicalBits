@@ -12,11 +12,13 @@
   (get node :__class__))
 
 (defn compile-time-constant? [node]
-  (= "UziNumberLiteralNode" (node-type node)))
+  (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
+             (node-type node)))
 
 (defn compile-time-value [node not-constant]
-  (if (compile-time-constant? node)
-    (:value node)
+  (condp = (node-type node)
+    "UziNumberLiteralNode" (:value node)
+    "UziPinLiteralNode" (:value node)
     not-constant))
 
 (defn expression? [{:keys [primitive-name] :as node}]

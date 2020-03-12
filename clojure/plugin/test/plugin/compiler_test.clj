@@ -150,9 +150,15 @@
                         :body {:__class__ "UziBlockNode",
                                :statements [{:__class__ "UziVariableDeclarationNode",
                                              :name "pin",
-                                             :value {:__class__ "UziPinLiteralNode",
-                                                     :type "D",
-                                                     :number 13}},
+                                             :value {:__class__ "UziCallNode"
+                                                     :selector "+"
+                                                     :arguments [{:__class__ "Association",
+                                                                  :value {:__class__ "UziNumberLiteralNode",
+                                                                          :value 1}}
+                                                                 {:__class__ "Association"
+                                                                  :value {:__class__ "UziPinLiteralNode",
+                                                                          :type "D",
+                                                                          :number 13}}]}},
                                             {:__class__ "UziCallNode",
                                              :selector "toggle",
                                              :arguments [{:__class__ "Association",
@@ -170,7 +176,13 @@
                                        :value 0}],
                              :instructions [{:__class__ "UziPushInstruction",
                                              :argument {:__class__ "UziVariable",
+                                                        :value 1}},
+                                            {:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
                                                         :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "add"}},
                                             {:__class__ "UziWriteLocalInstruction",
                                              :argument {:__class__ "UziVariable",
                                                         :name "pin#1",}},
@@ -179,18 +191,12 @@
                                                         :name "pin#1"}},
                                             {:__class__ "UziPrimitiveCallInstruction",
                                              :argument {:__class__ "UziPrimitive",
-                                                        ;:code 2,
-                                                        :name "toggle",
-                                                        ;:stackTransition {:__class__ "Association",
-                                                        ;                  :key 1,
-                                                        ;                  :value 0}
-                                                        }},
+                                                        :name "toggle"}},
                                             {:__class__ "UziStopScriptInstruction",
                                              :argument "foo"}]}],
-                  :variables #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13}}}
+                  :variables #{{:__class__ "UziVariable", :value 0},
+                               {:__class__ "UziVariable", :value 1},
+                               {:__class__ "UziVariable", :value 13}}}
         actual (compile-tree ast)]
     (is (equivalent? expected actual))))
 

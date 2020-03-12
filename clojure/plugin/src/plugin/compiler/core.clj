@@ -483,6 +483,18 @@
   [ast]
   (ast-utils/transform ast :default #(assoc % :internal-id (.toString (java.util.UUID/randomUUID)))))
 
+(defn assign-pin-values
+ "This function augments all pin literals with a :value that corresponds to their
+  pin number for the given board. This is useful because it makes pin literals
+  polymorphic with number literals. And also, we'll need this value later and it
+  would be a pain in the ass to pass around the board every time"
+  [ast board]
+  (ast-utils/transform
+   ast
+   "UziPinLiteralNode"
+   (fn [{:keys [type number] :as pin}]
+     (assoc pin :value (boards/get-pin-number (str type number) board)))))
+
 (defn compile-tree
   [ast & {:keys [board lib-dir]
           :or {board boards/UNO, lib-dir "../../uzi/libraries"}}]
@@ -490,6 +502,7 @@
       (linker/resolve-imports lib-dir)
       assign-unique-variable-names
       assign-internal-ids
+      (assign-pin-values board)
       (compile (create-context board))))
 
 (defn compile-json-string [str]
