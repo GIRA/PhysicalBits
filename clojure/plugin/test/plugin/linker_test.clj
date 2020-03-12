@@ -786,6 +786,45 @@
     (is (equivalent? expected actual))))
 
 
+(deftest stopping-once-task-from-init-block-should-have-no-effect
+  ; import t from 'test_12.uzi' { stop setup; }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t",
+                        :initializationBlock {:__class__ "UziBlockNode",
+                                              :statements [{:__class__ "UziScriptStopNode",
+                                                            :scripts ["setup"]}]},
+                        :isResolved false,
+                        :path "test_12.uzi"}],
+             :primitives [],
+             :scripts []}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :imports [{:__class__ "UziImportNode",
+                             :alias "t",
+                             :initializationBlock {:__class__ "UziBlockNode",
+                                                   :statements [{:__class__ "UziScriptStopNode",
+                                                                 :scripts ["setup"]}]},
+                             :isResolved true,
+                             :path "test_12.uzi"}],
+                  :primitives [],
+                  :scripts [{:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :key nil,
+                                                               :value {:__class__ "UziPinLiteralNode",
+                                                                       :number 13,
+                                                                       :type "D"}}],
+                                                  :selector "t.turnOn"}]},
+                             :name "t.setup",
+                             :state "once"}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
+
+
 #_(
   ; TEMPLATE
 

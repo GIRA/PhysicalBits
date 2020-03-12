@@ -138,9 +138,13 @@
                                                    (ast-utils/node-type node)))
                                       statements)))]
     (assoc ast
-           :globals (mapv (fn [g] (assoc g :value (get globals (:name g) (:value g))))
+           :globals (mapv (fn [{:keys [name value] :as global}]
+                            (assoc global :value (get globals name value)))
                           (:globals ast))
-           :scripts (mapv (fn [s] (assoc s :state (get scripts (:name s) (:state s))))
+           :scripts (mapv (fn [{:keys [name state] :as script}]
+                            (if (= "once" state)
+                              script
+                              (assoc script :state (get scripts name state))))
                           (:scripts ast)))))
 
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
