@@ -40,7 +40,7 @@
         var-name (variable (if global? :name :unique-name))]
     [var-name global?]))
 
-(defn collect-globals [ast board]
+(defn collect-globals [ast]
   (set (concat
 
         ; Collect all number literals
@@ -49,7 +49,7 @@
                      (:scripts ast)))
 
         ; Collect all pin literals
-        (map (fn [{:keys [type number]}] (emit/constant (boards/get-pin-number (str type number) board)))
+        (map (fn [{:keys [value]}] (emit/constant value))
              (ast-utils/filter ast "UziPinLiteralNode"))
 
         ; Collect repeat-loops (they use 0 to initialize temp and 1 to increment times)
@@ -88,7 +88,7 @@
 
 (defmethod compile-node "UziProgramNode" [node ctx]
   (emit/program
-   :globals (collect-globals node (ctx :board))
+   :globals (collect-globals node)
    :scripts (mapv #(compile % ctx)
                   (:scripts node))))
 
@@ -173,8 +173,8 @@
     (conj (compile value ctx)
           (emit/write-local unique-name))))
 
-(defmethod compile-node "UziPinLiteralNode" [{:keys [type number]} ctx]
-  [(emit/push-value (boards/get-pin-number (str type number) (ctx :board)))])
+(defmethod compile-node "UziPinLiteralNode" [{:keys [value]} ctx]
+  [(emit/push-value value)])
 
 (defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
   (emit/script
@@ -440,9 +440,8 @@
   (println "ERROR! Unknown node: " (ast-utils/node-type node))
   :oops)
 
-(defn- create-context [board]
-  {:path (list)
-   :board board})
+(defn- create-context []
+  {:path (list)})
 
 (defn- assign-unique-variable-names [ast]
   (let [counter (atom 0)
@@ -503,7 +502,7 @@
       assign-unique-variable-names
       assign-internal-ids
       (assign-pin-values board)
-      (compile (create-context board))))
+      (compile (create-context))))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
