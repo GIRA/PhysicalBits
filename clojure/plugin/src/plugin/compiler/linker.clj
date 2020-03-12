@@ -125,9 +125,8 @@
 
 (defn resolve-variable-scope [ast]
   (let [locals (atom #{})
-        reset-locals! (fn [{:keys [arguments body] :as node}]
-                        (reset! locals (set (concat (map :name arguments)
-                                                    (map :name (ast-utils/filter node "UziVariableDeclarationNode")))))
+        reset-locals! (fn [node] 
+                        (reset! locals (set (map :name (ast-utils/filter node "UziVariableDeclarationNode"))))
                         node)
         assign-scope (fn [{:keys [name] :as node}]
                        (assoc node :local? (contains? @locals name)))]
