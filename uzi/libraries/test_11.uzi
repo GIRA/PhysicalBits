@@ -1,0 +1,15 @@
+task stopped1() stopped 1/s {
+	running1();
+}
+
+task stopped2() stopped 2/s {
+	running2();
+}
+
+task running1() running 3/s {
+	toggle(D12);
+}
+
+task running2() running 4/s {
+	toggle(D13);
+}

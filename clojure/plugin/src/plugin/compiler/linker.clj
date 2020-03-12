@@ -119,10 +119,29 @@
                            (filter (fn [node]
                                      (and (= "UziAssignmentNode" (ast-utils/node-type node))
                                           (ast-utils/compile-time-constant? (:right node))))
-                                   statements)))]
+                                   statements)))
+        scripts (into {}
+                      (mapcat (fn [{:keys [scripts] :as node}]
+                                (let [state (condp = (ast-utils/node-type node)
+                                              "UziScriptStartNode" "running"
+                                              "UziScriptResumeNode" "running"
+                                              "UziScriptStopNode" "stopped"
+                                              "UziScriptPauseNode" "stopped"
+                                              nil)]
+                                  (map (fn [name] [name state])
+                                       scripts)))
+                              (filter (fn [node]
+                                        (contains? #{"UziScriptStopNode"
+                                                     "UziScriptStartNode"
+                                                     "UziScriptPauseNode"
+                                                     "UziScriptResumeNode"}
+                                                   (ast-utils/node-type node)))
+                                      statements)))]
     (assoc ast
            :globals (mapv (fn [g] (assoc g :value (get globals (:name g) (:value g))))
-                          (:globals ast)))))
+                          (:globals ast))
+           :scripts (mapv (fn [s] (assoc s :state (get scripts (:name s) (:state s))))
+                          (:scripts ast)))))
 
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
 
