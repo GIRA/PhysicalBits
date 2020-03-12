@@ -113,19 +113,32 @@
      "UziScriptResumeNode" update-script-list
      )))
 
-(declare resolve-imports)
+(defn apply-initialization-block [ast {:keys [statements] :as init-block}]
+  (let [globals (into {}
+                      (map (fn [node] [(-> node :left :name), (-> node :right)])
+                           (filter (fn [node]
+                                     (and (= "UziAssignmentNode" (ast-utils/node-type node))
+                                          (ast-utils/compile-time-constant? (:right node))))
+                                   statements)))]
+    (assoc ast
+           :globals (mapv (fn [g] (assoc g :value (get globals (:name g) (:value g))))
+                          (:globals ast)))))
 
-(defn resolve-import [{:keys [alias path] :as imp} libs-dir]
+(declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
+
+(defn resolve-import [{:keys [alias path initializationBlock] :as imp} libs-dir]
   (let [file (io/file libs-dir path)]
     (if (.exists file)
-      (let [imported-ast (resolve-imports (parser/parse (slurp file)) libs-dir)]
+      (let [imported-ast (-> (parser/parse (slurp file))
+                             (resolve-imports libs-dir)
+                             (apply-initialization-block initializationBlock))]
         {:import (assoc imp :isResolved true)
          :program (apply-alias imported-ast alias)})
       (error "FILE NOT FOUND"))))
 
 (defn resolve-variable-scope [ast]
   (let [locals (atom #{})
-        reset-locals! (fn [node] 
+        reset-locals! (fn [node]
                         (reset! locals (set (map :name (ast-utils/filter node "UziVariableDeclarationNode"))))
                         node)
         assign-scope (fn [{:keys [name] :as node}]
