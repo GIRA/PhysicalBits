@@ -159,31 +159,6 @@
                     imported-ast)})
       (throw (ex-info "File not found" {:import imp})))))
 
-#_(
-   (def src "task blink13() running 1/s { toggle(D13); }")
-   (def ast (parser/parse src))
-   (def libs-dir "../../uzi/libraries")
-   (resolve-imports ast libs-dir)
-
-   (resolve-import (first (implicit-imports)) libs-dir #{})
-
-
-
-
-
-
-
-
-
-
-
-   )
-
-
-
-
-
-
 (defn resolve-variable-scope [ast]
   (let [locals (atom #{})
         reset-locals! (fn [node]
