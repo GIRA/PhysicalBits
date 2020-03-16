@@ -1,8 +1,20 @@
 (ns plugin.compiler-test
   (:require [clojure.test :refer :all]
             [plugin.compiler.ast-utils :as ast-utils]
-            [plugin.compiler.core :as compiler :refer [compile-tree]])
+            [plugin.compiler.core :as cc])
   (:use [plugin.test-utils]))
+
+(defn- remove-core-scripts [ast]
+  (let [core-scripts #{"playTone"
+                       "stopToneAndWait"
+                       "map"
+                       "isBetween"}]
+    (assoc ast
+           :scripts (filterv (fn [{:keys [name]}] (not (contains? core-scripts name)))
+                             (:scripts ast)))))
+
+(defn compile [ast]
+  (remove-core-scripts (cc/compile-tree ast)))
 
 (deftest empty-program-test
   (let [ast {:__class__ "UziProgramNode",
@@ -26,7 +38,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable",
                                 :value 1000}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -90,7 +102,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest task-without-ticking-rate
@@ -113,7 +125,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable",
                                :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest task-with-once
@@ -137,7 +149,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable",
                                 :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest program-with-local-variable
@@ -197,7 +209,7 @@
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -498,7 +510,7 @@
                              :name "default",
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable" :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -563,7 +575,7 @@
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 2}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -629,7 +641,7 @@
                                {:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 2}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -667,7 +679,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable", :name "temp", :value 0},
                                {:__class__ "UziVariable", :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -709,7 +721,7 @@
                              :name "default",
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable", :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -754,7 +766,7 @@
                              :name "default1",
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -812,7 +824,7 @@
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -878,7 +890,7 @@
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -929,7 +941,7 @@
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :name "temp", :value 0},
                                {:__class__ "UziVariable", :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -1002,7 +1014,7 @@
                                 :value 0},
                                {:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -1066,7 +1078,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest the-order-of-the-keys-in-a-procedure-map-should-not-matter
@@ -1131,7 +1143,7 @@
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest the-order-of-the-keys-in-a-function-map-should-not-matter
@@ -1203,7 +1215,7 @@
                                 :value 0},
                                {:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest return-without-value
@@ -1251,7 +1263,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1000}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest return-with-value
@@ -1348,7 +1360,7 @@
                                {:__class__ "UziVariable", :value 13},
                                {:__class__ "UziVariable", :value 0.25},
                                {:__class__ "UziVariable", :value 0.75}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -1425,7 +1437,7 @@
                   :variables #{{:__class__ "UziVariable", :value 1000},
                                {:__class__ "UziVariable", :value 13},
                                {:__class__ "UziVariable", :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest script-overriding-primitive
@@ -1495,7 +1507,7 @@
                              :ticking false}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest program-with-yield-statement
@@ -1552,7 +1564,7 @@
                              :ticking true}],
                   :variables #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest script-call-with-keyword-arguments
@@ -1676,7 +1688,7 @@
                                :value 0.75},
                                {:__class__ "UziVariable",
                                 :value 0.5}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest full-conditional
@@ -1750,7 +1762,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest conditional-with-only-true-branch
@@ -1810,7 +1822,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest conditional-with-only-false-branch
@@ -1870,7 +1882,7 @@
                                :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -1916,7 +1928,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -1974,7 +1986,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest until-loop
@@ -2031,7 +2043,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2087,7 +2099,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2143,7 +2155,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2208,7 +2220,7 @@
                                  :value 9},
                                 {:__class__ "UziVariable",
                                  :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2273,7 +2285,7 @@
                                  :value 9},
                                 {:__class__ "UziVariable",
                                  :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2365,7 +2377,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 10}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2479,7 +2491,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 10}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2593,7 +2605,7 @@
                                 :value 9},
                                {:__class__ "UziVariable",
                                 :value -10}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2732,7 +2744,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 10}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2855,7 +2867,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -2944,7 +2956,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3042,7 +3054,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 2}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3089,7 +3101,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 0}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3156,7 +3168,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3250,7 +3262,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3316,7 +3328,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3410,7 +3422,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3506,7 +3518,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest logical-or-with-short-circuit-declares-1-as-global-constant
@@ -3601,7 +3613,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3700,7 +3712,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest has-side-effects-checks-the-arguments-of-a-call-2
@@ -3771,7 +3783,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))))
 
 
@@ -3801,9 +3813,8 @@
                                                :condition {:__class__ "UziCallNode",
                                                            :arguments [{:__class__ "Association",
                                                                         :key nil,
-                                                                        :value {:__class__ "UziPinLiteralNode",
-                                                                                :number 13,
-                                                                                :type "D"}}],
+                                                                        :value {:__class__ "UziNumberLiteralNode",
+                                                                                :value 0}}],
                                                            :selector "isOn"},
                                                :trueBranch {:__class__ "UziBlockNode",
                                                             :statements [{:__class__ "UziVariableDeclarationNode",
@@ -3877,7 +3888,7 @@
                                                           :name "write"}},
                                               {:__class__ "UziPushInstruction",
                                                :argument {:__class__ "UziVariable",
-                                                          :value 13}},
+                                                          :value 0}},
                                               {:__class__ "UziPrimitiveCallInstruction",
                                                :argument {:__class__ "UziPrimitive",
                                                           :name "isOn"}},
@@ -3926,22 +3937,15 @@
                                          :value 10}],
                                :name "loop",
                                :ticking true}],
-                    :variables #{{:__class__ "UziVariable",
-                                  :name "a",
-                                  :value 42},
-                                 {:__class__ "UziVariable",
-                                  :value 1000},
-                                 {:__class__ "UziVariable",
-                                  :value 12},
-                                 {:__class__ "UziVariable",
-                                  :value 13},
-                                 {:__class__ "UziVariable",
-                                  :value -10},
-                                 {:__class__ "UziVariable",
-                                  :value 10},
-                                 {:__class__ "UziVariable",
-                                  :value -1}}}
-          actual (compile-tree ast)]
+                    :variables #{{:__class__ "UziVariable" :name "a" :value 42},
+                                 {:__class__ "UziVariable" :value 1000},
+                                 {:__class__ "UziVariable" :value 12},
+                                 {:__class__ "UziVariable" :value 13},
+                                 {:__class__ "UziVariable" :value -10},
+                                 {:__class__ "UziVariable" :value 10},
+                                 {:__class__ "UziVariable" :value -1}
+                                 {:__class__ "UziVariable", :value 0}}}
+          actual (compile ast)]
       (is (equivalent? expected actual))
       (is (= (:variables expected)
              (:variables actual)))))
@@ -4003,7 +4007,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 10}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:variables expected)
            (:variables actual)))))
@@ -4099,7 +4103,7 @@
                                 :value 15},
                                {:__class__ "UziVariable",
                                 :value 42}}}
-        actual (compile-tree ast)]
+        actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:variables expected)
            (:variables actual)))))
@@ -4221,7 +4225,7 @@
                                   :value 21},
                                  {:__class__ "UziVariable",
                                   :value 20}}}
-          actual (compile-tree ast)]
+          actual (compile ast)]
       (is (equivalent? expected actual))
       (is (= (:variables expected)
              (:variables actual)))))

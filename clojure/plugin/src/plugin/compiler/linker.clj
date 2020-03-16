@@ -85,9 +85,6 @@
                        (assoc node
                               :primitive-name (core-primitives selector)))))))
 
-(defn error [msg]
-  (throw (Exception. msg)))
-
 (defn apply-alias [ast alias]
   (let [with-alias #(str alias "." %)
          update (fn [key node] (assoc node key (-> node key with-alias)))
@@ -137,17 +134,55 @@
                               (assoc script :state (get scripts name state))))
                           (:scripts ast)))))
 
+(defn implicit-imports
+  ([] [{:__class__ "UziImportNode" :path "core.uzi"}])
+  ([import]
+   (filterv #(not= (:path import) (:path %))
+            (implicit-imports))))
+
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
 
-(defn resolve-import [{:keys [alias path initializationBlock] :as imp} libs-dir]
+(defn resolve-import
+  [{:keys [alias path initializationBlock] :as imp}, libs-dir, visited-imports]
+  (when (contains? visited-imports {:alias alias :path path})
+    (throw (ex-info "Dependency cycle detected" {:import imp, :visited visited-imports})))
   (let [file (io/file libs-dir path)]
     (if (.exists file)
       (let [imported-ast (-> (parser/parse (slurp file))
-                             (resolve-imports libs-dir)
-                             (apply-initialization-block initializationBlock))]
+                             (apply-initialization-block initializationBlock)
+                             (resolve-imports libs-dir
+                                              (implicit-imports imp)
+                                              (conj visited-imports imp)))]
         {:import (assoc imp :isResolved true)
-         :program (apply-alias imported-ast alias)})
-      (error "FILE NOT FOUND"))))
+         :program (if alias
+                    (apply-alias imported-ast alias)
+                    imported-ast)})
+      (throw (ex-info "File not found" {:import imp})))))
+
+#_(
+   (def src "task blink13() running 1/s { toggle(D13); }")
+   (def ast (parser/parse src))
+   (def libs-dir "../../uzi/libraries")
+   (resolve-imports ast libs-dir)
+
+   (resolve-import (first (implicit-imports)) libs-dir #{})
+
+
+
+
+
+
+
+
+
+
+
+   )
+
+
+
+
+
 
 (defn resolve-variable-scope [ast]
   (let [locals (atom #{})
@@ -173,15 +208,19 @@
          imported-globals (mapcat :globals imported-programs)
          imported-scripts (mapcat :scripts imported-programs)]
     (assoc ast
-           :imports (map :import resolved-imports)
+           :imports (mapv :import resolved-imports)
            :globals (vec (concat imported-globals (:globals ast)))
            :scripts (vec (concat imported-scripts (:scripts ast))))))
 
-(defn resolve-imports [ast libs-dir]
-  (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir))
-                              (filter (complement :isResolved)
-                                      (:imports ast)))]
-    (-> ast
-        resolve-variable-scope
-        (build-new-program resolved-imports)
-        bind-primitives)))
+(defn resolve-imports
+  ([ast libs-dir]
+   (resolve-imports ast libs-dir (implicit-imports) #{}))
+  ([ast libs-dir implicit-imports visited-imports]
+   (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir visited-imports))
+                               (concat implicit-imports
+                                       (filter (complement :isResolved)
+                                               (:imports ast))))]
+     (-> ast
+         resolve-variable-scope
+         (build-new-program resolved-imports)
+         bind-primitives))))

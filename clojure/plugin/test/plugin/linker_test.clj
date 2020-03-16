@@ -6,6 +6,8 @@
 (defn link [ast]
   (l/resolve-imports ast "../../uzi/tests"))
 
+(def core-import {:__class__ "UziImportNode", :isResolved true, :path "core.uzi"})
+
 (deftest importing-library-prepends-imported-tree-with-alias-applied
   ; import test from 'test_1.uzi';
   ; task main() { write(D13, test.foo()); }
@@ -37,7 +39,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "test",
                              :isResolved true,
                              :path "test_1.uzi"}],
@@ -77,7 +80,8 @@
   ; task main() { write(test2.foo(), test1.foo()); }
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
-             :imports [{:__class__ "UziImportNode",
+             :imports [core-import
+                       {:__class__ "UziImportNode",
                         :alias "test1",
                         :initializationBlock nil,
                         :isResolved false,
@@ -108,7 +112,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "test1",
                              :isResolved true,
                              :path "test_1.uzi"},
@@ -157,7 +162,8 @@
   ; task main() { write(D13, t2.bar(1)); }
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
-             :imports [{:__class__ "UziImportNode",
+             :imports [core-import
+                       {:__class__ "UziImportNode",
                         :alias "t2",
                         :initializationBlock nil,
                         :isResolved false,
@@ -189,7 +195,8 @@
                              :name "t2.t1.v",
                              :value {:__class__ "UziNumberLiteralNode",
                                      :value 42}}],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t2",
                              :isResolved true,
                              :path "test_3.uzi"}],
@@ -271,7 +278,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t3",
                              :isResolved true,
                              :path "test_4.uzi"}],
@@ -320,7 +328,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t3",
                              :isResolved true,
                              :path "test_4.uzi"}],
@@ -370,7 +379,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :initializationBlock nil,
                              :isResolved true,
@@ -428,7 +438,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :isResolved true,
                              :path "test_6.uzi"}],
@@ -486,7 +497,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :isResolved true,
                              :path "test_8.uzi"}],
@@ -560,7 +572,8 @@
                         :tickingRate nil}]}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :initializationBlock nil,
                              :isResolved true,
@@ -591,6 +604,7 @@
                              :state "running"}]}
         actual (link ast)]
     (is (equivalent? expected actual))))
+
 
 (deftest specifying-init-block-to-initialize-variables
   ; import t from 'test_10.uzi' {
@@ -633,7 +647,8 @@
                              :name "t.c",
                              :value {:__class__ "UziNumberLiteralNode",
                                      :value 30}}],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :initializationBlock {:__class__ "UziBlockNode",
                                                    :statements [{:__class__ "UziAssignmentNode",
@@ -716,7 +731,8 @@
              :scripts []}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :initializationBlock {:__class__ "UziBlockNode",
                                                    :statements [{:__class__ "UziScriptStartNode",
@@ -801,7 +817,8 @@
              :scripts []}
         expected {:__class__ "UziProgramNode",
                   :globals [],
-                  :imports [{:__class__ "UziImportNode",
+                  :imports [core-import
+                            {:__class__ "UziImportNode",
                              :alias "t",
                              :initializationBlock {:__class__ "UziBlockNode",
                                                    :statements [{:__class__ "UziScriptStopNode",

@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
             [clojure.walk :as w]
+            [plugin.parser.core :as parser]
             [plugin.device.boards :as boards]
             [plugin.compiler.ast-utils :as ast-utils]
             [plugin.compiler.emitter :as emit]
@@ -10,7 +11,7 @@
 
 (defmulti compile-node :__class__)
 
-(defn compile [node ctx]
+(defn- compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
 (defn- rate->delay [{:keys [value scale] :as node}]
@@ -444,16 +445,19 @@
   {:path (list)})
 
 (defn- assign-unique-variable-names [ast]
-  (let [counter (atom 0)
+  (let [local-counter (atom 0)
         temp-counter (atom 0)
+        reset-counters! (fn []
+                          (reset! local-counter 0)
+                          (reset! temp-counter 0))
         globals (-> ast :globals set)]
     (ast-utils/transform
      ast
 
      ; Temporary variables are local to their script
-     "UziTaskNode" (fn [node] (reset! temp-counter 0) node)
-     "UziProcedureNode" (fn [node] (reset! temp-counter 0) node)
-     "UziFunctionNode" (fn [node] (reset! temp-counter 0) node)
+     "UziTaskNode" (fn [node] (reset-counters!) node)
+     "UziProcedureNode" (fn [node] (reset-counters!) node)
+     "UziFunctionNode" (fn [node] (reset-counters!) node)
 
      "UziForNode" ; Some for-loops declare a temporary variable.
      (fn [{:keys [step] :as node}]
@@ -469,7 +473,7 @@
      (fn [var]
        (if (contains? globals var)
          var
-         (assoc var :unique-name (str (:name var) "#" (swap! counter inc))))))))
+         (assoc var :unique-name (str (:name var) "#" (swap! local-counter inc))))))))
 
 (defn- assign-internal-ids
   "This function is important because it will guarantee that all nodes are different
@@ -506,3 +510,6 @@
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
+
+(defn compile-uzi-string [str]
+  (compile-tree (parser/parse str)))
