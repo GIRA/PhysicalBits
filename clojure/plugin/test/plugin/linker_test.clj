@@ -920,6 +920,18 @@
              :scripts []}]
     (is (thrown? Exception (link ast)))))
 
+
+(deftest importing-non-existing-library-should-raise-error
+  ; import t from 'test0_NO_EXISTE.uzi';
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "t",
+                        :isResolved false,
+                        :path "test0_NO_EXISTE.uzi"}],
+             :scripts []}]
+    (is (thrown? Exception (link ast)))))
+
 #_(
   ; TEMPLATE
 
