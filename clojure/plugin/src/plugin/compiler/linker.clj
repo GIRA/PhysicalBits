@@ -18,77 +18,12 @@
                                         :content content})
         content))))
 
-; TODO(Richo): Hack until we can actually parse core.uzi and get the actual prims
-(def core-primitives
-  {"turnOn" "turnOn"
-   "turnOff" "turnOff"
-   "read" "read"
-   "write" "write"
-   "getPinMode" "getPinMode"
-   "setPinMode" "setPinMode"
-   "toggle" "toggle"
-   "getServoDegrees" "getServoDegrees"
-   "setServoDegrees" "setServoDegrees"
-   "servoWrite" "servoWrite"
-   "+" "add"
-   "-" "subtract"
-   "*" "multiply"
-   "/" "divide"
-   "sin" "sin"
-   "cos" "cos"
-   "tan" "tan"
-   "==" "equals"
-   "!=" "notEquals"
-   ">" "greaterThan"
-   ">=" "greaterThanOrEquals"
-   "<" "lessThan"
-   "<=" "lessThanOrEquals"
-   "!" "negate"
-   "delayMs" "delayMs"
-   "&" "bitwiseAnd"
-   "|" "bitwiseOr"
-   "millis" "millis"
-   "coroutine" "coroutine"
-   "serialWrite" "serialWrite"
-   "round" "round"
-   "ceil" "ceil"
-   "floor" "floor"
-   "sqrt" "sqrt"
-   "abs" "abs"
-   "ln" "ln"
-   "log10" "log10"
-   "exp" "exp"
-   "pow10" "pow10"
-   "asin" "asin"
-   "acos" "acos"
-   "atan" "atan"
-   "atan2" "atan2"
-   "**" "power"
-   "isOn" "isOn"
-   "isOff" "isOff"
-   "%" "remainder"
-   "constrain" "constrain"
-   "randomInt" "randomInt"
-   "random" "random"
-   "isEven" "isEven"
-   "isOdd" "isOdd"
-   "isPrime" "isPrime"
-   "isWhole" "isWhole"
-   "isPositive" "isPositive"
-   "isNegative" "isNegative"
-   "isDivisibleBy" "isDivisibleBy"
-   "seconds" "seconds"
-   "isCloseTo" "isCloseTo"
-   "delayS" "delayS"
-   "delayM" "delayM"
-   "minutes" "minutes"
-   "mod" "modulo"
-   "startTone" "tone"
-   "stopTone" "noTone"})
 
 (defn bind-primitives [ast]
   (let [scripts (set (map :name
-                          (:scripts ast)))]
+                          (:scripts ast)))
+        core-primitives (into {} (map (fn [{:keys [name alias]}] [alias name])
+                                      (:primitives ast)))]
     (ast-utils/transform
      ast
      ; NOTE(Richo): We should only associate a prim name if the selector doesn't match
@@ -195,11 +130,13 @@
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)
          imported-globals (mapcat :globals imported-programs)
-         imported-scripts (mapcat :scripts imported-programs)]
+         imported-scripts (mapcat :scripts imported-programs)
+         imported-prims (mapcat :primitives imported-programs)]
     (assoc ast
            :imports (mapv :import resolved-imports)
            :globals (vec (concat imported-globals (:globals ast)))
-           :scripts (vec (concat imported-scripts (:scripts ast))))))
+           :scripts (vec (concat imported-scripts (:scripts ast)))
+           :primitives (vec (concat imported-prims (:primitives ast))))))
 
 (defn resolve-imports
   ([ast libs-dir]
