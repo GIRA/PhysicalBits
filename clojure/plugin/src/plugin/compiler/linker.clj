@@ -39,6 +39,7 @@
          update (fn [key node] (assoc node key (-> node key with-alias)))
          update-name (partial update :name)
          update-selector (partial update :selector)
+         update-alias (partial update :alias)
          update-variable (fn [node] (if (:local? node) node (update :name node)))
          update-script-list (fn [node] (assoc node :scripts (mapv with-alias (:scripts node))))]
     (ast-utils/transform
@@ -57,7 +58,8 @@
      "UziScriptStartNode" update-script-list
      "UziScriptPauseNode" update-script-list
      "UziScriptResumeNode" update-script-list
-     )))
+
+     "UziPrimitiveDeclarationNode" update-alias)))
 
 (defn apply-initialization-block [ast {:keys [statements] :as init-block}]
   (let [globals (into {}
@@ -137,6 +139,7 @@
            :globals (vec (concat imported-globals (:globals ast)))
            :scripts (vec (concat imported-scripts (:scripts ast)))
            :primitives (vec (concat imported-prims (:primitives ast))))))
+
 
 (defn resolve-imports
   ([ast libs-dir]

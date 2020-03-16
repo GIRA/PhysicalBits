@@ -4,7 +4,10 @@
   (:use [plugin.test-utils]))
 
 (defn link [ast]
-  (l/resolve-imports ast "../../uzi/tests"))
+  (-> ast
+      (l/resolve-imports "../../uzi/tests")
+      ; HACK(Richo): I remove the :primitives key because it makes the diff hard to read
+      (dissoc :primitives)))
 
 (def core-import {:__class__ "UziImportNode", :isResolved true, :path "core.uzi"})
 
@@ -817,6 +820,89 @@
         actual (link ast)]
     (is (equivalent? expected actual))))
 
+(deftest importing-library-with-primitive-declarations
+  ; import a from 'test_13.uzi';
+  ; task main() { toggle(a.add(3, 4)); }
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "a",
+                        :isResolved false,
+                        :path "test_13.uzi"}],
+             :scripts [{:__class__ "UziTaskNode",
+                        :arguments [],
+                        :body {:__class__ "UziBlockNode",
+                               :statements [{:__class__ "UziCallNode",
+                                             :arguments [{:__class__ "Association",
+                                                          :value {:__class__ "UziCallNode",
+                                                                  :arguments [{:__class__ "Association",
+                                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                                       :value 3}},
+                                                                              {:__class__ "Association",
+                                                                               :value {:__class__ "UziNumberLiteralNode",
+                                                                                       :value 4}}],
+                                                                  :selector "a.add"}}],
+                                             :selector "toggle"}]},
+                        :name "main",
+                        :state "once"}]}
+        expected {:__class__ "UziProgramNode",
+                  :globals [],
+                  :scripts [{:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziVariableDeclarationNode",
+                                                  :name "a",
+                                                  :value {:__class__ "UziCallNode",
+                                                          :arguments [{:__class__ "Association",
+                                                                       :value {:__class__ "UziNumberLiteralNode",
+                                                                               :value 3}},
+                                                                      {:__class__ "Association",
+                                                                       :value {:__class__ "UziNumberLiteralNode",
+                                                                               :value 4}}],
+                                                          :primitive-name "add",
+                                                          :selector "a.add"}},
+                                                 {:__class__ "UziVariableDeclarationNode",
+                                                  :name "b",
+                                                  :value {:__class__ "UziCallNode",
+                                                          :arguments [{:__class__ "Association",
+                                                                       :value {:__class__ "UziNumberLiteralNode",
+                                                                               :value 3}},
+                                                                      {:__class__ "Association",
+                                                                       :value {:__class__ "UziNumberLiteralNode",
+                                                                               :value 4}}],
+                                                          :primitive-name "notEquals",
+                                                          :selector "a.~="}},
+                                                 {:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :value {:__class__ "UziVariableNode",
+                                                                       :name "a"}},
+                                                              {:__class__ "Association",
+                                                               :value {:__class__ "UziVariableNode",
+                                                                       :name "b"}}],
+                                                  :primitive-name "write",
+                                                  :selector "a.write"}]},
+                             :name "a.test",
+                             :state "once"},
+                            {:__class__ "UziTaskNode",
+                             :arguments [],
+                             :body {:__class__ "UziBlockNode",
+                                    :statements [{:__class__ "UziCallNode",
+                                                  :arguments [{:__class__ "Association",
+                                                               :value {:__class__ "UziCallNode",
+                                                                       :arguments [{:__class__ "Association",
+                                                                                    :value {:__class__ "UziNumberLiteralNode",
+                                                                                            :value 3}},
+                                                                                   {:__class__ "Association",
+                                                                                    :value {:__class__ "UziNumberLiteralNode",
+                                                                                            :value 4}}],
+                                                                       :primitive-name "add",
+                                                                       :selector "a.add"}}],
+                                                  :primitive-name "toggle",
+                                                  :selector "toggle"}]},
+                             :name "main",
+                             :state "once"}]}
+        actual (link ast)]
+    (is (equivalent? expected actual))))
 
 #_(
   ; TEMPLATE

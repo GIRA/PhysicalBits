@@ -73,7 +73,7 @@
 (defmethod children-keys "UziUntilNode" [_] [:pre :condition :post])
 (defmethod children-keys "UziDoWhileNode" [_] [:pre :condition :post])
 (defmethod children-keys "UziDoUntilNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziProgramNode" [_] [:imports :globals :scripts])
+(defmethod children-keys "UziProgramNode" [_] [:imports :globals :scripts :primitives])
 (defmethod children-keys "UziRepeatNode" [_] [:times :body])
 (defmethod children-keys "UziReturnNode" [_] [:value])
 (defmethod children-keys "UziTaskNode" [_] [:arguments :tickingRate :body])
