@@ -4,7 +4,7 @@
   (:use [plugin.test-utils]))
 
 (defn link [ast]
-  (l/resolve-imports ast "../../uzi/libraries"))
+  (l/resolve-imports ast "../../uzi/tests"))
 
 (deftest importing-library-prepends-imported-tree-with-alias-applied
   ; import test from 'test_1.uzi';
