@@ -103,7 +103,8 @@
                              (apply-initialization-block initializationBlock)
                              (resolve-imports libs-dir
                                               (implicit-imports imp)
-                                              (conj visited-imports imp)))]
+                                              (conj visited-imports
+                                                    {:alias alias :path path})))]
         {:import (assoc imp :isResolved true)
          :program (if alias
                     (apply-alias imported-ast alias)

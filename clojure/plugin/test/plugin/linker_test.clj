@@ -904,6 +904,22 @@
         actual (link ast)]
     (is (equivalent? expected actual))))
 
+(deftest dependency-cycles-should-not-hang-the-compiler
+  ; import a from 'test_14_a.uzi';
+  ; import b from 'test_14_b.uzi';
+  (let [ast {:__class__ "UziProgramNode",
+             :globals [],
+             :imports [{:__class__ "UziImportNode",
+                        :alias "a",
+                        :isResolved false,
+                        :path "test_14_a.uzi"},
+                        {:__class__ "UziImportNode",
+                                   :alias "b",
+                                   :isResolved false,
+                                   :path "test_14_b.uzi"}],
+             :scripts []}]
+    (is (thrown? Exception (link ast)))))
+
 #_(
   ; TEMPLATE
 
