@@ -4,6 +4,20 @@
             [plugin.parser.core :as parser]
             [clojure.pprint :refer [pprint]]))
 
+; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
+(def parser-cache (atom {}))
+(defn parse [file]
+  (let [path (.getAbsolutePath file)
+        last-modified (.lastModified file)
+        entry (get @parser-cache path)]
+    (if (= last-modified
+           (get entry :last-modified))
+      (get entry :content)
+      (let [content (parser/parse (slurp file))]
+        (swap! parser-cache assoc path {:last-modified last-modified
+                                        :content content})
+        content))))
+
 ; TODO(Richo): Hack until we can actually parse core.uzi and get the actual prims
 (def core-primitives
   {"turnOn" "turnOn"
@@ -148,7 +162,7 @@
     (throw (ex-info "Dependency cycle detected" {:import imp, :visited visited-imports})))
   (let [file (io/file libs-dir path)]
     (if (.exists file)
-      (let [imported-ast (-> (parser/parse (slurp file))
+      (let [imported-ast (-> (parse file)
                              (apply-initialization-block initializationBlock)
                              (resolve-imports libs-dir
                                               (implicit-imports imp)
