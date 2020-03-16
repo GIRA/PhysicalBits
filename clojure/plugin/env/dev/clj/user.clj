@@ -2,7 +2,7 @@
   (:require [plugin.core :refer :all]
             [plugin.device.core :as device :refer [state]]
             [plugin.server.core :as server :refer [server]]
-            [plugin.compiler.core :as compiler]
+            [plugin.compiler.core :as cc]
             [plugin.parser.core :refer :all]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl])
