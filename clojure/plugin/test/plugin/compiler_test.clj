@@ -14,7 +14,9 @@
                              (:scripts ast)))))
 
 (defn compile [ast]
-  (remove-core-scripts (cc/compile-tree ast)))
+  (remove-core-scripts
+   (cc/compile-tree ast
+                    :remove-dead-code? false)))
 
 (deftest empty-program-test
   (let [ast {:__class__ "UziProgramNode",
