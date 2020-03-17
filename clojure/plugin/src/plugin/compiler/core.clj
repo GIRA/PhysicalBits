@@ -181,7 +181,7 @@
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
-                      (emit/variable unique-name value))
+                      (emit/variable unique-name)) ; TODO(Richo): Handle default value
                     arguments)
    :instructions (compile body ctx)))
 
@@ -189,7 +189,7 @@
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
-                      (emit/variable unique-name value))
+                      (emit/variable unique-name)) ; TODO(Richo): Handle default value
                     arguments)
    :instructions (compile body ctx)))
 
