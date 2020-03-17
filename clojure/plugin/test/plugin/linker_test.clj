@@ -931,15 +931,3 @@
                         :path "test0_NO_EXISTE.uzi"}],
              :scripts []}]
     (is (thrown? Exception (link ast)))))
-
-#_(
-  ; TEMPLATE
-
-  (deftest
-    ; uzi src
-    (let [ast
-          expected
-          actual (link ast)]
-      (is (equivalent? expected actual))))
-
-  )
