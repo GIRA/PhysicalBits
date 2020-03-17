@@ -7,7 +7,8 @@
             [plugin.compiler.ast-utils :as ast-utils]
             [plugin.compiler.emitter :as emit]
             [plugin.compiler.primitives :as prims]
-            [plugin.compiler.linker :as linker]))
+            [plugin.compiler.linker :as linker]
+            [plugin.compiler.dead-code-remover :as dcr]))
 
 (defmulti compile-node :__class__)
 
@@ -498,14 +499,22 @@
    (fn [{:keys [type number] :as pin}]
      (assoc pin :value (boards/get-pin-number (str type number) board)))))
 
+(defn remove-dead-code [ast & [remove-dead-code?]]
+  (if remove-dead-code?
+    (dcr/remove-dead-code ast)
+    ast))
+
 (defn compile-tree
-  [ast & {:keys [board lib-dir]
-          :or {board boards/UNO, lib-dir "../../uzi/libraries"}}]
+  [ast & {:keys [board lib-dir remove-dead-code?]
+          :or {board boards/UNO,
+               lib-dir "../../uzi/libraries",
+               remove-dead-code? true}}]
   (-> ast
       (linker/resolve-imports lib-dir)
       assign-unique-variable-names
       assign-internal-ids
       (assign-pin-values board)
+      (remove-dead-code remove-dead-code?)
       (compile (create-context))))
 
 (defn compile-json-string [str]
