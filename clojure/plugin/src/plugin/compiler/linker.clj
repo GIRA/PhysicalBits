@@ -28,7 +28,7 @@
      ast
      ; NOTE(Richo): We should only associate a prim name if the selector doesn't match
      ; an existing script. Scripts have precedence over primitives!
-     "UziCallNode" (fn [{:keys [selector] :as node}]
+     "UziCallNode" (fn [{:keys [selector] :as node} _]
                      (if (contains? scripts selector)
                        node
                        (assoc node
@@ -36,12 +36,12 @@
 
 (defn apply-alias [ast alias]
   (let [with-alias #(str alias "." %)
-         update (fn [key node] (assoc node key (-> node key with-alias)))
+         update (fn [key node _] (assoc node key (-> node key with-alias)))
          update-name (partial update :name)
          update-selector (partial update :selector)
          update-alias (partial update :alias)
-         update-variable (fn [node] (if (:local? node) node (update :name node)))
-         update-script-list (fn [node] (assoc node :scripts (mapv with-alias (:scripts node))))]
+         update-variable (fn [node _] (if (:local? node) node (update :name node _)))
+         update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
     (ast-utils/transform
      ast
 
@@ -113,10 +113,10 @@
 
 (defn resolve-variable-scope [ast]
   (let [locals (atom #{})
-        reset-locals! (fn [node]
+        reset-locals! (fn [node _]
                         (reset! locals (set (map :name (ast-utils/filter node "UziVariableDeclarationNode"))))
                         node)
-        assign-scope (fn [{:keys [name] :as node}]
+        assign-scope (fn [{:keys [name] :as node} _]
                        (assoc node :local? (contains? @locals name)))]
     (ast-utils/transform
      ast
@@ -151,6 +151,7 @@
                                        (filter (complement :isResolved)
                                                (:imports ast))))]
      (-> ast
+         ast-utils/assign-internal-ids
          resolve-variable-scope
          (build-new-program resolved-imports)
          bind-primitives))))

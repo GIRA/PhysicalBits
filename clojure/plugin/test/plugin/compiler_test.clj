@@ -270,11 +270,11 @@
                                                                        :value 12}}]}]}}]}
         actual (ast-utils/transform
                 original
-                "UziProgramNode" #(assoc % :__foo__ 1)
-                "UziTaskNode" #(assoc % :__foo__ 2)
-                "UziCallNode" #(assoc % :__foo__ 3)
-                "UziNumberLiteralNode" #(assoc % :__foo__ 4)
-                :default #(assoc % :__bar__ 5))]
+                "UziProgramNode" (fn [node _] (assoc node :__foo__ 1))
+                "UziTaskNode" (fn [node _] (assoc node :__foo__ 2))
+                "UziCallNode" (fn [node _] (assoc node :__foo__ 3))
+                "UziNumberLiteralNode" (fn [node _] (assoc node :__foo__ 4))
+                :default (fn [node _] (assoc node :__bar__ 5)))]
     (is (= expected actual))))
 
 (deftest ast-transform-without-default-clause
@@ -328,10 +328,10 @@
                                                                        :value 12}}]}]}}]}
         actual (ast-utils/transform
                 original
-                "UziProgramNode" #(assoc % :__foo__ 1)
-                "UziTaskNode" #(assoc % :__foo__ 2)
-                "UziCallNode" #(assoc % :__foo__ 3)
-                "UziNumberLiteralNode" #(assoc % :__foo__ 4))]
+                "UziProgramNode" (fn [node _] (assoc node :__foo__ 1))
+                "UziTaskNode" (fn [node _] (assoc node :__foo__ 2))
+                "UziCallNode" (fn [node _] (assoc node :__foo__ 3))
+                "UziNumberLiteralNode" (fn [node _] (assoc node :__foo__ 4)))]
     (is (= expected actual))))
 
 (deftest ast-transform-pred-test
@@ -389,11 +389,11 @@
                                                                        :value 12}}]}]}}]}
         actual (ast-utils/transform-pred
                 original
-                #(= "UziProgramNode" (get % :__class__)) #(assoc % :__foo__ 1)
-                #(= "UziTaskNode" (get % :__class__)) #(assoc % :__foo__ 2)
-                #(= "UziCallNode" (get % :__class__)) #(assoc % :__foo__ 3)
-                #(= "UziNumberLiteralNode" (get % :__class__)) #(assoc % :__foo__ 4)
-                :default #(assoc % :__bar__ 5))]
+                (fn [node _] (= "UziProgramNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 1))
+                (fn [node _] (= "UziTaskNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 2))
+                (fn [node _] (= "UziCallNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 3))
+                (fn [node _] (= "UziNumberLiteralNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 4))
+                :default (fn [node _] (assoc node :__bar__ 5)))]
     (is (= expected actual))))
 
 (deftest ast-transform-pred-without-default-clause
@@ -447,10 +447,10 @@
                                                                        :value 12}}]}]}}]}
         actual (ast-utils/transform-pred
                 original
-                #(= "UziProgramNode" (get % :__class__)) #(assoc % :__foo__ 1)
-                #(= "UziTaskNode" (get % :__class__)) #(assoc % :__foo__ 2)
-                #(= "UziCallNode" (get % :__class__)) #(assoc % :__foo__ 3)
-                #(= "UziNumberLiteralNode" (get % :__class__)) #(assoc % :__foo__ 4))]
+                (fn [node _] (= "UziProgramNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 1))
+                (fn [node _] (= "UziTaskNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 2))
+                (fn [node _] (= "UziCallNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 3))
+                (fn [node _] (= "UziNumberLiteralNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 4)))]
     (is (= expected actual))))
 
 (deftest program-with-local-variable-whose-value-is-a-compile-time-constant

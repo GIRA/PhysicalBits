@@ -26,22 +26,6 @@
            "d" (* 1000 60 60 24))
          value))))
 
-(defn variables-in-scope [path]
-  (mapcat (fn [[first second]]
-            (filter #(= "UziVariableDeclarationNode" (ast-utils/node-type %))
-                    (take-while #(not (= % first))
-                                (ast-utils/children second))))
-          (partition 2 1 path)))
-
-(defn- variable-name-and-scope [{:keys [name]} ctx]
-  (let [variables-in-scope (variables-in-scope (ctx :path))
-        globals (-> ctx :path last :globals set)
-        variable (first (filter #(= name (:name %))
-                                variables-in-scope))
-        global? (contains? globals variable)
-        var-name (variable (if global? :name :unique-name))]
-    [var-name global?]))
-
 (defn collect-globals [ast]
   (set (concat
 
@@ -133,8 +117,8 @@
 (defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
   (vec (mapcat #(compile-stmt % ctx) statements)))
 
-(defmethod compile-node "UziAssignmentNode" [{:keys [left right]} ctx]
-  (let [[var-name global?] (variable-name-and-scope left ctx)]
+(defmethod compile-node "UziAssignmentNode" [{:keys [left right]} {:keys [path] :as ctx}]
+  (let [[var-name global?] (ast-utils/variable-name-and-scope left path)]
     (conj (compile right ctx)
           (if global?
             (emit/write-global var-name)
@@ -161,8 +145,8 @@
 (defmethod compile-node "UziNumberLiteralNode" [node _]
   [(emit/push-value (node :value))])
 
-(defmethod compile-node "UziVariableNode" [node ctx]
-  (let [[var-name global?] (variable-name-and-scope node ctx)]
+(defmethod compile-node "UziVariableNode" [node {:keys [path]}]
+  (let [[var-name global?] (ast-utils/variable-name-and-scope node path)]
     [(if global?
        (emit/read-global var-name)
        (emit/read-local var-name))]))
@@ -456,36 +440,25 @@
      ast
 
      ; Temporary variables are local to their script
-     "UziTaskNode" (fn [node] (reset-counters!) node)
-     "UziProcedureNode" (fn [node] (reset-counters!) node)
-     "UziFunctionNode" (fn [node] (reset-counters!) node)
+     "UziTaskNode" (fn [node _] (reset-counters!) node)
+     "UziProcedureNode" (fn [node _] (reset-counters!) node)
+     "UziFunctionNode" (fn [node _] (reset-counters!) node)
 
      "UziForNode" ; Some for-loops declare a temporary variable.
-     (fn [{:keys [step] :as node}]
+     (fn [{:keys [step] :as node} _]
        (if (ast-utils/compile-time-constant? step)
          node
          (assoc node :temp-name (str "@" (swap! temp-counter inc)))))
 
      "UziRepeatNode" ; All repeat-loops declare a temporary variable
-     (fn [node]
+     (fn [node _]
        (assoc node :temp-name (str "@" (swap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
-     (fn [var]
+     (fn [var _]
        (if (contains? globals var)
          var
          (assoc var :unique-name (str (:name var) "#" (swap! local-counter inc))))))))
-
-(defn- assign-internal-ids
-  "This function is important because it will guarantee that all nodes are different
-   when compared with =. Due to clojure's philosophy regarding values, identity, and
-   equality I need to do this to be able to distinguish two otherwise equal nodes.
-   This is particularly crucial for the variables-in-scope function because it relies
-   on = to know when to stop looking for variables.
-   An alternative could be to use identical? instead of = but I feel it would make
-   the code more fragile than simply adding this artificial :internal-id"
-  [ast]
-  (ast-utils/transform ast :default #(assoc % :internal-id (.toString (java.util.UUID/randomUUID)))))
 
 (defn assign-pin-values
  "This function augments all pin literals with a :value that corresponds to their
@@ -496,7 +469,7 @@
   (ast-utils/transform
    ast
    "UziPinLiteralNode"
-   (fn [{:keys [type number] :as pin}]
+   (fn [{:keys [type number] :as pin} _]
      (assoc pin :value (boards/get-pin-number (str type number) board)))))
 
 (defn remove-dead-code [ast & [remove-dead-code?]]
@@ -510,9 +483,9 @@
                lib-dir "../../uzi/libraries",
                remove-dead-code? true}}]
   (-> ast
+      ast-utils/assign-internal-ids
       (linker/resolve-imports lib-dir)
       assign-unique-variable-names
-      assign-internal-ids
       (assign-pin-values board)
       (remove-dead-code remove-dead-code?)
       (compile (create-context))))

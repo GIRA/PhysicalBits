@@ -99,14 +99,15 @@
                      (all-children ast))))
 
 ; TODO(Richo): Refactor this function. This is a mess...
-(defn transform-pred [ast & clauses]
+(defn- transformp* [ast path clauses]
   (cond
 
     (node? ast)
-    (let [node (loop [[pred result-fn & rest] clauses]
+    (let [new-path (conj path ast)
+          node (loop [[pred result-fn & rest] clauses]
                  (if (or (= :default pred)
-                         (pred ast))
-                   (result-fn ast)
+                         (pred ast new-path))
+                   (result-fn ast new-path)
                    (if (empty? rest)
                      ast
                      (recur rest))))
@@ -117,25 +118,66 @@
           (if first
             (let [new-result (assoc result
                                     first
-                                    (apply transform-pred (result first) clauses))]
+                                    (transformp* (result first)
+                                                 (conj path node)
+                                                 clauses))]
               (if (empty? rest)
                 new-result
                 (recur rest new-result)))
             result))))
 
     (vector? ast)
-    (mapv #(apply transform-pred % clauses)
+    (mapv #(transformp* % path clauses)
           ast)
 
     :else ast))
+
+(defn transform-pred [ast & clauses]
+  (transformp* ast (list) clauses))
 
 
 (defn transform [ast & clauses]
   (let [as-pred (fn [type]
                   (if (= :default type)
                     type
-                    #(= type (node-type %))))]
+                    (fn [node _] (= type (node-type node)))))]
     (apply transform-pred
-      ast (mapcat (fn [[type result-fn]]
-                    [(as-pred type) result-fn])
-                  (partition 2 clauses)))))
+      ast
+      (mapcat (fn [[type result-fn]]
+                [(as-pred type) result-fn])
+              (partition 2 clauses)))))
+
+
+(defn variables-in-scope [path]
+  (mapcat (fn [[first second]]
+            (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))
+                             (take-while #(not (= % first))
+                                         (children second))))
+          (partition 2 1 path)))
+
+(defn variable-name-and-scope [{:keys [name]} path]
+  (let [variables-in-scope (variables-in-scope path)
+        globals (-> path last :globals set)
+        variable (first (clj-core/filter #(= name (:name %))
+                                         variables-in-scope))
+        global? (contains? globals variable)
+        var-name (variable (if global? :name :unique-name))]
+    [var-name global?]))
+
+(defn global? [var path]
+  (let [[_ global?] (variable-name-and-scope var path)]
+    global?))
+
+(def local? (complement global?))
+
+(defn assign-internal-ids
+  "This function is important because it will guarantee that all nodes are different
+   when compared with =. Due to clojure's philosophy regarding values, identity, and
+   equality I need to do this to be able to distinguish two otherwise equal nodes.
+   This is particularly crucial for the variables-in-scope function because it relies
+   on = to know when to stop looking for variables.
+   An alternative could be to use identical? instead of = but I feel it would make
+   the code more fragile than simply adding this artificial :internal-id"
+  [ast]
+  (transform ast
+             :default (fn [node _] (assoc node :internal-id (.toString (java.util.UUID/randomUUID))))))
