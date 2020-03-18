@@ -520,5 +520,5 @@
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))
 
-(defn compile-uzi-string [str]
-  (compile-tree (parser/parse str)))
+(defn compile-uzi-string [str & args]
+  (apply compile-tree (parser/parse str) args))
