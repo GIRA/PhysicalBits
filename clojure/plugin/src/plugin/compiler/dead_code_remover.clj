@@ -1,26 +1,44 @@
 (ns plugin.compiler.dead-code-remover
   (:require [plugin.compiler.ast-utils :as ast-utils]))
 
-(defmulti ^:private visit :__class__)
+(defmulti ^:private visit-node :__class__)
 
-(defmethod visit "UziProgramNode" [{:keys [scripts]} visited]
+(defn- visit [node ctx]
+  (visit-node node (update-in ctx [:path] conj node)))
+
+(defn visit-children [node ctx]
+  (doseq [child (ast-utils/children node)]
+    (visit child ctx)))
+
+(defmethod visit-node "UziProgramNode" [{:keys [scripts]} ctx]
   (doseq [root (filter #(contains? #{"running" "once"} (:state %))
                        scripts)]
-    (visit root visited)))
+    (visit root ctx)))
 
-(defn visit-script [{:keys [name] :as script} visited]
-  (when (not (contains? @(:scripts visited) name))
-    (swap! (:scripts visited) conj name)
-    (doseq [child (ast-utils/children script)]
-      (visit child visited))))
+(defn visit-script [{:keys [name] :as script} ctx]
+  (when (not (contains? @(:visited-scripts ctx) name))
+    (swap! (:visited-scripts ctx) conj name)
+    (visit-children script ctx)))
 
-(defmethod visit "UziTaskNode" [node visited] (visit-script node visited))
-(defmethod visit "UziFunctionNode" [node visited] (visit-script node visited))
-(defmethod visit "UziProcedureNode" [node visited] (visit-script node visited))
+(defmethod visit-node "UziTaskNode" [node ctx] (visit-script node ctx))
+(defmethod visit-node "UziFunctionNode" [node ctx] (visit-script node ctx))
+(defmethod visit-node "UziProcedureNode" [node ctx] (visit-script node ctx))
 
-(defmethod visit :default [node visited]
-  (doseq [child (ast-utils/children node)]
-    (visit child visited)))
+(defn- get-script-named [name ctx]
+  (first (filter (fn [script] (= name (:name script)))
+                 (-> ctx :path last :scripts))))
+
+(defn visit-script-control [{:keys [scripts]} ctx]
+  (doseq [script (map #(get-script-named % ctx)
+                      scripts)]
+    (visit script ctx)))
+
+(defmethod visit-node "UziScriptStartNode" [node ctx] (visit-script-control node ctx))
+(defmethod visit-node "UziScriptStopNode" [node ctx] (visit-script-control node ctx))
+(defmethod visit-node "UziScriptResumeNode" [node ctx] (visit-script-control node ctx))
+(defmethod visit-node "UziScriptPauseNode" [node ctx] (visit-script-control node ctx))
+
+(defmethod visit-node :default [node ctx] (visit-children node ctx))
 
 
 #_(
@@ -30,10 +48,12 @@
    (remove-dead-code ast)
    )
 
+(defn create-context []
+  {:path (list), :visited-scripts (atom #{})})
 
 (defn remove-dead-code [{:keys [scripts] :as ast}]
-  (let [visited {:scripts (atom #{})}]
-    (visit ast visited)
+  (let [ctx (create-context)]
+    (visit ast ctx)
     (assoc ast
-           :scripts (filterv #(contains? @(:scripts visited) (:name %))
+           :scripts (filterv #(contains? @(:visited-scripts ctx) (:name %))
                              scripts))))
