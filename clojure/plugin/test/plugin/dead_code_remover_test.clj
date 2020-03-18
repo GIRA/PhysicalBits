@@ -50,7 +50,7 @@
                   task alive2() { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest stopped-tasks-that-get-started-from-running-tasks-should-not-be-removed
+(deftest start-task-should-mark-the-script-as-alive
   (let [expected {:__class__ "UziProgram",
                   :scripts [{:__class__ "UziScript",
                              :arguments [],
@@ -92,6 +92,131 @@
                 		task reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
+(deftest stop-task-should-mark-the-script-as-alive
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}},
+                                            {:__class__ "UziStopScriptInstruction",
+                                             :argument "dead"}],
+                             :locals [],
+                             :name "alive",
+                             :ticking true},
+                            {:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 12}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "dead",
+                             :ticking false}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 0},
+                               {:__class__ "UziVariable",
+                                :value 13},
+                               {:__class__ "UziVariable",
+                                :value 12}}}
+        actual (compile "
+              		task alive() running { toggle(D13); stop dead; }
+              		task dead() stopped { toggle(D12); }
+              		task reallyDead() stopped { toggle(D11); }")]
+    (is (= expected actual))))
+
+(deftest pause-task-should-mark-the-script-as-alive
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}},
+                                            {:__class__ "UziPauseScriptInstruction",
+                                             :argument "dead"}],
+                             :locals [],
+                             :name "alive",
+                             :ticking true},
+                            {:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 12}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "dead",
+                             :ticking false}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 0},
+                               {:__class__ "UziVariable",
+                                :value 13},
+                               {:__class__ "UziVariable",
+                                :value 12}}}
+        actual (compile "
+              		task alive() running { toggle(D13); pause dead; }
+              		task dead() stopped { toggle(D12); }
+              		task reallyDead() stopped { toggle(D11); }")]
+    (is (= expected actual))))
+
+(deftest resume-task-should-mark-the-script-as-alive
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}},
+                                            {:__class__ "UziResumeScriptInstruction",
+                                             :argument "dead"}],
+                             :locals [],
+                             :name "alive",
+                             :ticking true},
+                            {:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 0},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 12}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "dead",
+                             :ticking false}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 0},
+                               {:__class__ "UziVariable",
+                                :value 13},
+                               {:__class__ "UziVariable",
+                                :value 12}}}
+        actual (compile "
+              		task alive() running { toggle(D13); resume dead; }
+              		task dead() stopped { toggle(D12); }
+              		task reallyDead() stopped { toggle(D11); }")]
+    (is (= expected actual))))
 
 (deftest the-visit-order-should-not-matter
   (let [expected {:__class__ "UziProgram",
@@ -177,4 +302,9 @@
         actual (compile "
                   task foo() running { toggle(D13); start bar; }
                   task bar() stopped { start foo; toggle(D12); }")]
+    (is (= expected actual))))
+
+(deftest stopped-script-that-starts-itself-should-not-count
+  (let [expected {:__class__ "UziProgram", :scripts [], :variables #{}}
+        actual (compile "task bar() stopped { start bar; toggle(D12); }")]
     (is (= expected actual))))
