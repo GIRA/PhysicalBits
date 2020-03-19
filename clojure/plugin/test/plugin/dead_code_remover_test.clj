@@ -308,3 +308,107 @@
   (let [expected {:__class__ "UziProgram", :scripts [], :variables #{}}
         actual (compile "task bar() stopped { start bar; toggle(D12); }")]
     (is (= expected actual))))
+
+(deftest unused-globals-should-be-removed
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 1000},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "blink13",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 1000},
+                               {:__class__ "UziVariable",
+                                :value 13}}}
+        actual (compile "
+                  var a = 0;
+                  task blink13() running 1/s { toggle(D13); }")]
+    (is (= expected actual))))
+
+(deftest unused-globals-should-be-removed-even-if-they-have-references-from-dead-script
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 1000},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :value 13}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "blink13",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 1000},
+                               {:__class__ "UziVariable",
+                                :value 13}}}
+        actual (compile "
+                  var a = 0;
+                  task blink13() running 1/s { toggle(D13); }
+                  task test() stopped { a = 100; }")]
+    (is (= expected actual))))
+
+(deftest used-globals-should-not-be-removed
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 1000},
+                             :instructions [{:__class__ "UziPushInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :name "b"
+                                                        :value 0}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [],
+                             :name "blink13",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                                :name "b",
+                                :value 1},
+                               {:__class__ "UziVariable",
+                                :value 1000}}}
+        actual (compile "
+                var a = 0;
+                var b = 1;
+                task blink13() running 1/s { toggle(b); }
+                task test() stopped { a = b + 1; }")]
+    (is (= expected actual))))
+
+(deftest unused-globals-should-be-removed-even-if-they-are-hidden-by-a-local
+  (let [expected {:__class__ "UziProgram",
+                  :scripts [{:__class__ "UziScript",
+                             :arguments [],
+                             :delay {:__class__ "UziVariable",
+                                     :value 1000},
+                             :instructions [{:__class__ "UziReadLocalInstruction",
+                                             :argument {:__class__ "UziVariable",
+                                                        :name "a#1",
+                                                        :value 0}},
+                                            {:__class__ "UziPrimitiveCallInstruction",
+                                             :argument {:__class__ "UziPrimitive",
+                                                        :name "toggle"}}],
+                             :locals [{:__class__ "UziVariable",
+                                       :name "a#1",
+                                       :value 13}],
+                             :name "blink13",
+                             :ticking true}],
+                  :variables #{{:__class__ "UziVariable",
+                                :value 1000},
+                               {:__class__ "UziVariable",
+                                :value 13}}}
+        actual (compile "
+                  var a = 0;
+                  task blink13() running 1/s { var a = D13; toggle(a); }")]
+    (is (= expected actual))))

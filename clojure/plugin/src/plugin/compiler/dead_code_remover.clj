@@ -38,6 +38,11 @@
 (defmethod visit-node "UziScriptResumeNode" [node ctx] (visit-script-control node ctx))
 (defmethod visit-node "UziScriptPauseNode" [node ctx] (visit-script-control node ctx))
 
+(defmethod visit-node "UziVariableNode" [node ctx]
+  (when (ast-utils/global? node (:path ctx))
+    (swap! (:visited-globals ctx) conj (:name node)))
+  (visit-children node ctx))
+
 (defmethod visit-node :default [node ctx] (visit-children node ctx))
 
 
@@ -49,11 +54,15 @@
    )
 
 (defn create-context []
-  {:path (list), :visited-scripts (atom #{})})
+  {:path (list),
+   :visited-scripts (atom #{}),
+   :visited-globals (atom #{})})
 
-(defn remove-dead-code [{:keys [scripts] :as ast}]
-  (let [ctx (create-context)]
+(defn remove-dead-code [{:keys [scripts globals] :as ast}]
+  (let [{:keys [visited-globals visited-scripts] :as ctx} (create-context)]
     (visit ast ctx)
     (assoc ast
-           :scripts (filterv #(contains? @(:visited-scripts ctx) (:name %))
+           :globals (filterv #(contains? @visited-globals (:name %))
+                             globals)
+           :scripts (filterv #(contains? @visited-scripts (:name %))
                              scripts))))
