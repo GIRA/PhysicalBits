@@ -387,7 +387,7 @@
                                                                :value {:__class__ "UziNumberLiteralNode",
                                                                        :__foo__ 4,
                                                                        :value 12}}]}]}}]}
-        actual (ast-utils/transform-pred
+        actual (ast-utils/transformp
                 original
                 (fn [node _] (= "UziProgramNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 1))
                 (fn [node _] (= "UziTaskNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 2))
@@ -445,7 +445,7 @@
                                                                :value {:__class__ "UziNumberLiteralNode",
                                                                        :__foo__ 4,
                                                                        :value 12}}]}]}}]}
-        actual (ast-utils/transform-pred
+        actual (ast-utils/transformp
                 original
                 (fn [node _] (= "UziProgramNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 1))
                 (fn [node _] (= "UziTaskNode" (get node :__class__))) (fn [node _] (assoc node :__foo__ 2))

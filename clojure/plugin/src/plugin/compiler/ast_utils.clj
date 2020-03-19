@@ -132,7 +132,7 @@
 
     :else ast))
 
-(defn transform-pred [ast & clauses]
+(defn transformp [ast & clauses]
   (transformp* ast (list) clauses))
 
 
@@ -141,7 +141,7 @@
                   (if (= :default type)
                     type
                     (fn [node _] (= type (node-type node)))))]
-    (apply transform-pred
+    (apply transformp
       ast
       (mapcat (fn [[type result-fn]]
                 [(as-pred type) result-fn])
