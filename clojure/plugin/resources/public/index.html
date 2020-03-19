@@ -18,6 +18,10 @@
         POST("/disconnect", {}).then(log);
       }
 
+      function compile(src, libs) {
+        POST("/compile", {src: src, libs: libs || "uzi/libraries"}).then(log);
+      }
+
       function analogRead() {
         var socket = new WebSocket('ws://localhost:3000/analog-read');
         socket.onopen = function() {

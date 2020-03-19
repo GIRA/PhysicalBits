@@ -11,7 +11,8 @@
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [cheshire.core :as json]
-            [plugin.device.core :as device])
+            [plugin.device.core :as device]
+            [plugin.compiler.core :as cc])
   (:gen-class))
 
 (def server (atom nil))
@@ -56,6 +57,11 @@
   (device/disconnect)
   (json-response "OK"))
 
+(defn compile-handler [params]
+  (let [program (cc/compile-uzi-string (params "src")
+                                       :lib-dir (params "libs"))]
+    (json-response program)))
+
 (def handler
   (-> (compojure/routes (GET "/" [] (io/resource "public/index.html"))
                         (GET "/seconds" [] (wrap-websocket seconds-handler))
@@ -64,6 +70,7 @@
                         (POST "/connect" {params :params} (connect-handler params))
                         (POST "/disconnect" req (disconnect-handler req))
                         (GET "/available-ports" [] (json-response {:ports (device/available-ports)}))
+                        (POST "/compile" {params :params} (compile-handler params))
                         (route/not-found "No such page."))
 
       (wrap-params)
