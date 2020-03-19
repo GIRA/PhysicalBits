@@ -147,26 +147,31 @@
                 [(as-pred type) result-fn])
               (partition 2 clauses)))))
 
-
-(defn variables-in-scope [path]
+(defn variables-in-scope
+  "Returns all the variable declarations up to this point in the ast"
+  [path]
   (mapcat (fn [[first second]]
             (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))
                              (take-while #(not (= % first))
                                          (children second))))
           (partition 2 1 path)))
 
-(defn variable-name-and-scope [{:keys [name]} path]
-  (let [variables-in-scope (variables-in-scope path)
-        globals (-> path last :globals set)
-        variable (first (clj-core/filter #(= name (:name %))
-                                         variables-in-scope))
-        global? (contains? globals variable)
-        var-name (variable (if global? :name :unique-name))]
-    [var-name global?]))
+(defn variable-named
+  "Returns the variable declaration referenced by this name at this point in the ast"
+  [name path]
+  (first (clj-core/filter #(= name (:name %))
+                          (variables-in-scope path))))
 
-(defn global? [var path]
-  (let [[_ global?] (variable-name-and-scope var path)]
-    global?))
+(defn global?
+  "Works for both variable and variable declaration nodes."
+  [node path]
+  (let [globals (-> path last :globals set)]
+    (condp = (node-type node)
+      "UziVariableNode"
+      :>> (fn [_] (let [variable (variable-named (:name node) path)]
+                    (contains? globals variable)))
+      "UziVariableDeclarationNode"
+      :>> (fn [_] (contains? globals node)))))
 
 (def local? (complement global?))
 

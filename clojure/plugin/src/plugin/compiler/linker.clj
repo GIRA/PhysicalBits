@@ -40,7 +40,10 @@
          update-name (partial update :name)
          update-selector (partial update :selector)
          update-alias (partial update :alias)
-         update-variable (fn [node _] (if (:local? node) node (update :name node _)))
+         update-variable (fn [node path]
+                           (if (ast-utils/local? node path)
+                             node
+                             (update :name node path)))
          update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
     (ast-utils/transform
      ast
@@ -93,6 +96,7 @@
 
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
 
+
 (defn resolve-import
   [{:keys [alias path initializationBlock] :as imp}, libs-dir, visited-imports]
   (when (contains? visited-imports {:alias alias :path path})
@@ -100,6 +104,7 @@
   (let [file (io/file libs-dir path)]
     (if (.exists file)
       (let [imported-ast (-> (parse file)
+                             ast-utils/assign-internal-ids
                              (apply-initialization-block initializationBlock)
                              (resolve-imports libs-dir
                                               (implicit-imports imp)
@@ -112,23 +117,13 @@
       (throw (ex-info "File not found" {:import imp})))))
 
 (defn resolve-variable-scope [ast]
-  (let [locals (atom #{})
-        reset-locals! (fn [node _]
-                        (reset! locals (set (map :name (ast-utils/filter node "UziVariableDeclarationNode"))))
-                        node)
-        assign-scope (fn [{:keys [name] :as node} _]
-                       (assoc node :local? (contains? @locals name)))]
+  (let [assign-scope (fn [{:keys [name] :as node} path]
+                       (assoc node :local? (ast-utils/local? node path)))]
     (ast-utils/transform
      ast
 
-     "UziTaskNode" reset-locals!
-     "UziProcedureNode" reset-locals!
-     "UziFunctionNode" reset-locals!
-
      "UziVariableNode" assign-scope
      "UziVariableDeclarationNode" assign-scope)))
-
-(defn print [a] (pprint a) a)
 
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)
@@ -151,7 +146,5 @@
                                        (filter (complement :isResolved)
                                                (:imports ast))))]
      (-> ast
-         ast-utils/assign-internal-ids
-         resolve-variable-scope
          (build-new-program resolved-imports)
          bind-primitives))))

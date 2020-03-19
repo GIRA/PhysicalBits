@@ -118,7 +118,11 @@
   (vec (mapcat #(compile-stmt % ctx) statements)))
 
 (defmethod compile-node "UziAssignmentNode" [{:keys [left right]} {:keys [path] :as ctx}]
-  (let [[var-name global?] (ast-utils/variable-name-and-scope left path)]
+  (let [global? (ast-utils/global? left path)
+        variable (ast-utils/variable-named (:name left) path)
+        var-name (if global?
+                   (:name variable)
+                   (:unique-name variable))]
     (conj (compile right ctx)
           (if global?
             (emit/write-global var-name)
@@ -146,7 +150,11 @@
   [(emit/push-value (node :value))])
 
 (defmethod compile-node "UziVariableNode" [node {:keys [path]}]
-  (let [[var-name global?] (ast-utils/variable-name-and-scope node path)]
+  (let [global? (ast-utils/global? node path)
+        variable (ast-utils/variable-named (:name node) path)
+        var-name (if global?
+                   (:name variable)
+                   (:unique-name variable))]
     [(if global?
        (emit/read-global var-name)
        (emit/read-local var-name))]))
@@ -455,7 +463,7 @@
        (assoc node :temp-name (str "@" (swap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
-     (fn [var _]
+     (fn [var _] ; TODO(Richo): Avoid renaming a variable if its name is already unique
        (if (contains? globals var)
          var
          (assoc var :unique-name (str (:name var) "#" (swap! local-counter inc))))))))

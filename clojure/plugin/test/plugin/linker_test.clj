@@ -1,5 +1,6 @@
 (ns plugin.linker-test
   (:require [clojure.test :refer :all]
+            [plugin.compiler.core :as cc]
             [plugin.compiler.linker :as l])
   (:use [plugin.test-utils]))
 
@@ -931,3 +932,33 @@
                         :path "test0_NO_EXISTE.uzi"}],
              :scripts []}]
     (is (thrown? Exception (link ast)))))
+
+(deftest importing-a-script-with-a-local-var-that-shadows-global
+  (let [expected {:__class__ "UziProgram"
+                  :scripts [{:__class__ "UziScript"
+                             :arguments []
+                             :delay {:__class__ "UziVariable" :value 0}
+                             :instructions [{:__class__ "UziPushInstruction"
+                                             :argument {:__class__ "UziVariable" :value 10}}
+                                            {:__class__ "UziPopInstruction"
+                                             :argument {:__class__ "UziVariable" :name "t.a"}}
+                                            {:__class__ "UziPushInstruction"
+                                             :argument {:__class__ "UziVariable" :name "t.a"}}
+                                            {:__class__ "UziWriteLocalInstruction"
+                                             :argument {:__class__ "UziVariable" :name "b#1"}}
+                                            {:__class__ "UziReadLocalInstruction"
+                                             :argument {:__class__ "UziVariable" :name "a#2"}}
+                                            {:__class__ "UziWriteLocalInstruction"
+                                             :argument {:__class__ "UziVariable" :name "b#1"}}
+                                            {:__class__ "UziStopScriptInstruction"
+                                             :argument "t.foo"}]
+                             :locals [{:__class__ "UziVariable" :name "b#1" :value 0}
+                                      {:__class__ "UziVariable" :name "a#2" :value 100}]
+                             :name "t.foo"
+                             :ticking true}]
+                  :variables #{{:__class__ "UziVariable" :name "t.a" :value 0}
+                               {:__class__ "UziVariable" :value 0}
+                               {:__class__ "UziVariable" :value 10}
+                               {:__class__ "UziVariable" :value 100}}}
+        actual (cc/compile-uzi-string "import t from 'test_15.uzi';" :lib-dir "../../uzi/tests")]
+    (is (equivalent? expected actual))))

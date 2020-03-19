@@ -1,0 +1,9 @@
+var a;
+
+task foo() {
+	var b;
+	a = 10;
+	b = a;
+	var a = 100;
+	b = a;
+}
