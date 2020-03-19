@@ -43,15 +43,13 @@
     (swap! (:visited-globals ctx) conj (:name node)))
   (visit-children node ctx))
 
+(defmethod visit-node "UziCallNode" [node ctx]
+  (when-not (get node :primitive-name)
+    (visit (get-script-named (:selector node) ctx) ctx))
+  (visit-children node ctx))
+
 (defmethod visit-node :default [node ctx] (visit-children node ctx))
 
-
-#_(
-   (require '[plugin.parser.core :as parser])
-   (def src "task stopped_script() stopped {}")
-   (def ast (parser/parse src))
-   (remove-dead-code ast)
-   )
 
 (defn create-context []
   {:path (list),
