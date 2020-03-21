@@ -44,7 +44,7 @@
                 (ast-utils/filter ast "UziRepeatNode"))
 
         ; Collect for-loops (they use 0 to initialize temp)
-        (map (fn [_] [(emit/constant 0)])
+        (map (fn [_] (emit/constant 0))
              (ast-utils/filter ast "UziForNode"))
 
         ; Collect logical-or (with short-circuit)
