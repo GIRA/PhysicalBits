@@ -12,7 +12,7 @@
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
   {:integer             (comp clojure.edn/read-string str)
-   :float               (comp #(Float/parseFloat %) str)
+   :float               (comp #(Double/parseDouble %) str)
    :identifier          str
    :program             (fn [& arg]
                           (program-node
@@ -179,4 +179,3 @@
     ast))
 
 (defn parse [str] (insta/transform transformations (expand-binary-expression-nodes (parse-program str))))
-
