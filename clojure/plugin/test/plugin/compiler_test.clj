@@ -4,19 +4,8 @@
             [plugin.compiler.core :as cc])
   (:use [plugin.test-utils]))
 
-(defn- remove-core-scripts [ast]
-  (let [core-scripts #{"playTone"
-                       "stopToneAndWait"
-                       "map"
-                       "isBetween"}]
-    (assoc ast
-           :scripts (filterv (fn [{:keys [name]}] (not (contains? core-scripts name)))
-                             (:scripts ast)))))
 
-(defn compile [ast]
-  (remove-core-scripts
-   (cc/compile-tree ast
-                    :remove-dead-code? false)))
+(def compile cc/compile-tree)
 
 (deftest empty-program-test
   (let [ast {:__class__ "UziProgramNode",
