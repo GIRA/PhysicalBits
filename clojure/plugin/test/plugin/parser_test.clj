@@ -857,8 +857,7 @@
                                                                                       :scripts   ["blink12"]},
                                                                                      {:__class__ "UziYieldNode"},
                                                                                      {:__class__ "UziReturnNode",
-                                                                                      :value     {:__class__ "UziNumberLiteralNode",
-                                                                                                  :value     0}}]}},
+                                                                                      :value     nil}]}},
                                                            {:__class__ "UziWhileNode",
                                                             :condition {:__class__ "UziLogicalAndNode",
                                                                         :left      {:__class__ "UziNumberLiteralNode",
@@ -1084,5 +1083,5 @@
                                                                                      :name      "c"}}],
                                                             :selector  "bar.init"}]},
                                   :name      "foo_bar_baz"}]}
-          actual (parse src)
-          ] (is (equivalent? expected actual)))))
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
