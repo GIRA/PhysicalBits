@@ -3,7 +3,7 @@
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
   {:__class__ "UziProgram"
-   :variables globals
+   :globals globals
    :scripts scripts})
 
 (defn variable

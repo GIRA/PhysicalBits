@@ -27,7 +27,7 @@
                              :locals [],
                              :name "empty",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -86,7 +86,7 @@
                              :locals [],
                              :name "empty",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "counter",
                                 :value 0},
                                {:__class__ "UziVariable",
@@ -114,7 +114,7 @@
                              :locals [],
                              :name "foo",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -138,7 +138,7 @@
                              :locals [],
                              :name "foo",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -197,7 +197,7 @@
                                                         :name "toggle"}},
                                             {:__class__ "UziStopScriptInstruction",
                                              :argument "foo"}]}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 13}}}
         actual (compile ast)]
@@ -500,7 +500,7 @@
                                        :value 0}],
                              :name "default",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable" :value 0}}}
+                  :globals #{{:__class__ "UziVariable" :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -563,7 +563,7 @@
                                        :value 2}],
                              :name "default",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 2}}}
         actual (compile ast)]
@@ -628,7 +628,7 @@
                                        :value 2}],
                              :name "default",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :name "b", :value 0},
+                  :globals #{{:__class__ "UziVariable", :name "b", :value 0},
                                {:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1},
                                {:__class__ "UziVariable", :value 2}}}
@@ -668,7 +668,7 @@
                              :locals [],
                              :name "default",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :name "temp", :value 0},
+                  :globals #{{:__class__ "UziVariable", :name "temp", :value 0},
                                {:__class__ "UziVariable", :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -711,7 +711,7 @@
                                        :value 0}],
                              :name "default",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 0}}}
+                  :globals #{{:__class__ "UziVariable", :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -756,7 +756,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :value 0}}}
+                  :globals #{{:__class__ "UziVariable", :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -813,7 +813,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -879,7 +879,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -930,7 +930,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :name "temp", :value 0},
+                  :globals #{{:__class__ "UziVariable", :name "temp", :value 0},
                                {:__class__ "UziVariable", :value 0}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1000,7 +1000,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "temp",
                                 :value 0},
                                {:__class__ "UziVariable", :value 0},
@@ -1062,7 +1062,7 @@
                              :locals [],
                              :name "empty",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "counter",
                                 :value 0},
                                {:__class__ "UziVariable",
@@ -1132,7 +1132,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1201,7 +1201,7 @@
                              :locals [],
                              :name "default1",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "temp",
                                 :value 0},
                                {:__class__ "UziVariable", :value 0},
@@ -1252,7 +1252,7 @@
                              :locals [],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1000}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1346,7 +1346,7 @@
                              :locals [],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1000},
                                {:__class__ "UziVariable", :value 13},
                                {:__class__ "UziVariable", :value 0.25},
@@ -1425,7 +1425,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 1000},
+                  :globals #{{:__class__ "UziVariable", :value 1000},
                                {:__class__ "UziVariable", :value 13},
                                {:__class__ "UziVariable", :value 0}}}
         actual (compile ast)]
@@ -1496,7 +1496,7 @@
                              :locals [],
                              :name "turnOn",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 1}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1553,7 +1553,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable", :value 0},
+                  :globals #{{:__class__ "UziVariable", :value 0},
                                {:__class__ "UziVariable", :value 13}}}
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1671,7 +1671,7 @@
                              :locals [],
                              :name "foo",
                              :running? false}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                :value 0},
                               {:__class__ "UziVariable",
                                :value 9},
@@ -1749,7 +1749,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
@@ -1809,7 +1809,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
@@ -1869,7 +1869,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
@@ -1915,7 +1915,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13}}}
@@ -1971,7 +1971,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -2028,7 +2028,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -2084,7 +2084,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13},
@@ -2140,7 +2140,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13},
@@ -2205,7 +2205,7 @@
                               :locals [],
                               :name "main",
                               :running? true}],
-                   :variables #{{:__class__ "UziVariable",
+                   :globals #{{:__class__ "UziVariable",
                                  :value 0},
                                 {:__class__ "UziVariable",
                                  :value 9},
@@ -2270,7 +2270,7 @@
                               :locals [],
                               :name "main",
                               :running? true}],
-                   :variables #{{:__class__ "UziVariable",
+                   :globals #{{:__class__ "UziVariable",
                                  :value 0},
                                 {:__class__ "UziVariable",
                                  :value 9},
@@ -2362,7 +2362,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -2476,7 +2476,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -2588,7 +2588,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 100},
@@ -2729,7 +2729,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -2848,7 +2848,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 100},
@@ -2937,7 +2937,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 0},
@@ -3033,7 +3033,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 0},
@@ -3088,7 +3088,7 @@
                                        :value 0}],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 0}}}
@@ -3151,7 +3151,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -3243,7 +3243,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 42},
@@ -3311,7 +3311,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -3403,7 +3403,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 42},
@@ -3499,7 +3499,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 42},
@@ -3592,7 +3592,7 @@
                              :locals [],
                              :name "main",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 42},
@@ -3695,7 +3695,7 @@
                              :locals [],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 13},
@@ -3768,7 +3768,7 @@
                              :locals [],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 1},
@@ -3928,7 +3928,7 @@
                                          :value 10}],
                                :name "loop",
                                :running? true}],
-                    :variables #{{:__class__ "UziVariable" :name "a" :value 42},
+                    :globals #{{:__class__ "UziVariable" :name "a" :value 42},
                                  {:__class__ "UziVariable" :value 1000},
                                  {:__class__ "UziVariable" :value 12},
                                  {:__class__ "UziVariable" :value 13},
@@ -3938,8 +3938,8 @@
                                  {:__class__ "UziVariable", :value 0}}}
           actual (compile ast)]
       (is (equivalent? expected actual))
-      (is (= (:variables expected)
-             (:variables actual)))))
+      (is (= (:globals expected)
+             (:globals actual)))))
 
 
 (deftest global-variable-with-value-different-than-default
@@ -3991,7 +3991,7 @@
                              :locals [],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "a",
                                 :value 42},
                                {:__class__ "UziVariable",
@@ -4000,8 +4000,8 @@
                                 :value 10}}}
         actual (compile ast)]
     (is (equivalent? expected actual))
-    (is (= (:variables expected)
-           (:variables actual)))))
+    (is (= (:globals expected)
+           (:globals actual)))))
 
 (deftest local-variable-shadowing-global-variable
   (let [ast {:__class__ "UziProgramNode",
@@ -4083,7 +4083,7 @@
                                        :value 15}],
                              :name "loop",
                              :running? true}],
-                  :variables #{{:__class__ "UziVariable",
+                  :globals #{{:__class__ "UziVariable",
                                 :name "a",
                                 :value 42},
                                {:__class__ "UziVariable",
@@ -4096,8 +4096,8 @@
                                 :value 42}}}
         actual (compile ast)]
     (is (equivalent? expected actual))
-    (is (= (:variables expected)
-           (:variables actual)))))
+    (is (= (:globals expected)
+           (:globals actual)))))
 
 
 (deftest conditional-children-order-should-not-impact-compilation
@@ -4204,7 +4204,7 @@
                                          :value 21}],
                                :name "loop",
                                :running? true}],
-                    :variables #{{:__class__ "UziVariable",
+                    :globals #{{:__class__ "UziVariable",
                                   :value 0},
                                  {:__class__ "UziVariable",
                                   :value 9},
@@ -4218,5 +4218,5 @@
                                   :value 20}}}
           actual (compile ast)]
       (is (equivalent? expected actual))
-      (is (= (:variables expected)
-             (:variables actual)))))
+      (is (= (:globals expected)
+             (:globals actual)))))

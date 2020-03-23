@@ -956,7 +956,7 @@
                                       {:__class__ "UziVariable" :name "a#2" :value 100}]
                              :name "t.foo"
                              :running? true}]
-                  :variables #{{:__class__ "UziVariable" :name "t.a" :value 0}
+                  :globals #{{:__class__ "UziVariable" :name "t.a" :value 0}
                                {:__class__ "UziVariable" :value 0}
                                {:__class__ "UziVariable" :value 10}
                                {:__class__ "UziVariable" :value 100}}}
