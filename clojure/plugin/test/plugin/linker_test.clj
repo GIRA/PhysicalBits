@@ -955,7 +955,7 @@
                              :locals [{:__class__ "UziVariable" :name "b#1" :value 0}
                                       {:__class__ "UziVariable" :name "a#2" :value 100}]
                              :name "t.foo"
-                             :ticking true}]
+                             :running? true}]
                   :variables #{{:__class__ "UziVariable" :name "t.a" :value 0}
                                {:__class__ "UziVariable" :value 0}
                                {:__class__ "UziVariable" :value 10}

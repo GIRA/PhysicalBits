@@ -22,7 +22,7 @@
    :instructions instructions
    :locals locals
    :name name
-   :ticking running?})
+   :running? running?})
 
 (defn write-global [var-name]
   {:__class__ "UziPopInstruction"
