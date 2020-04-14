@@ -75,7 +75,17 @@
                   task main() running 1000/s {}")]
     (is (= expected actual))))
 
-(deftest toggle-primitive
+(deftest primitive-between-0-and-15
   (let [expected [1 2 4 13 5 3 232 192 4 2 131 162]
         actual (encode "task main() running 1/s { toggle(D13); }")]
+    (is (= expected actual))))
+
+(deftest primitive-between-16-and-31
+  (let [expected [1 2 4 13 5 3 232 192 4 2 131 180]
+        actual (encode "task main() running 1/s { turnOn(D13); }")]
+    (is (= expected actual))))
+
+(deftest primitive-between-32-and-286
+  (let [expected [1 1 5 3 232 192 3 2 129 250 30]
+        actual (encode "task main() running 1/s { delayM(1); }")]
     (is (= expected actual))))
