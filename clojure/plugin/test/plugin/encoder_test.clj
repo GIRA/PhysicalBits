@@ -66,3 +66,16 @@
                           resume main; start main;
                         }")]
     (is (= expected actual))))
+
+(deftest multiple-scripts
+  (let [expected [3 0 128 1 224 128 0 192 1 0]
+        actual (encode "
+                  task foo() {}
+                  task bar() running {}
+                  task main() running 1000/s {}")]
+    (is (= expected actual))))
+
+(deftest toggle-primitive
+  (let [expected [1 2 4 13 5 3 232 192 4 2 131 162]
+        actual (encode "task main() running 1/s { toggle(D13); }")]
+    (is (= expected actual))))

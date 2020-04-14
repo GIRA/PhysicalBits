@@ -1,6 +1,7 @@
 (ns plugin.compiler.encoder
   (:require [plugin.utils.conversions :refer :all]
-            [plugin.compiler.emitter :as emit]))
+            [plugin.compiler.emitter :as emit]
+            [plugin.compiler.primitives :as prims]))
 
 (defn variable-size
   "Return the number of bytes necessary to encode this variable.
@@ -29,8 +30,18 @@
           (filter (complement (set default-globals))
                   globals)))
 
-(defn index-of-constant [globals value]
-  (.indexOf globals (emit/constant value)))
+(defn index-of-constant [program value]
+  (.indexOf (all-globals program)
+            (emit/constant value)))
+
+(defn index-of-variable [program name]
+  (.indexOf (map :name (all-globals program))
+            name))
+
+(defn index-of-global [program global]
+  (if (contains? global :name) ; TODO(Richo): This sucks!
+    (index-of-variable program (:name global))
+    (index-of-constant program (:value global))))
 
 (defn encode-globals [globals]
   (let [to-encode (filter (complement (set (map :value default-globals)))
@@ -58,7 +69,7 @@
                     [1 2 3 4]))))
 
 (defn encode-script-header
-  [{:keys [arguments delay locals running?]} globals]
+  [{:keys [arguments delay locals running?]} program]
   (let [has-delay? (> (:value delay) 0)
         has-arguments? (not (empty? arguments))
         has-locals? (not (empty? locals))]
@@ -77,7 +88,7 @@
 
             ; If the script has a delay write its index on the global list
             (if has-delay?
-              [(index-of-constant globals (:value delay))]
+              [(index-of-constant program (:value delay))]
               [])
 
             ; TODO(Richo): Arguments!
@@ -86,20 +97,46 @@
             ; each local index on the global list
             (if has-locals?
               (concat [(count locals)]
-                      (map #(index-of-constant globals (:value %))
+                      (map #(index-of-constant program (:value %))
                            locals))
               []))))
 
 (defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
+(defn- throw-not-implemented [instr script program & data]
+  (throw (ex-info "Not implemented yet!"
+                  (apply merge
+                    {:instruction instr, :script script, :program program}
+                    data))))
+
+(defmethod encode-instruction "UziPushInstruction"
+  [instr script program]
+  (let [index (index-of-global program (:argument instr))]
+    (if (> index 16rFF)
+      (throw-not-implemented instr script program
+                             {:global-index index})
+      (if (> index 16rF)
+        [16rF8 index]
+        [(bit-or 16r80 index)]))))
+
+(defmethod encode-instruction "UziPrimitiveCallInstruction"
+  [instr script program]
+  (let [primitive (prims/primitive (-> instr :argument :name))
+        code (:code primitive)]
+    (if (< code 16)
+      [(bit-or 16rA0 code)]
+      (if (< code 32)
+        [(bit-or 16rB0 (- code 16))]
+        (if (< code 287)
+          [16rFA (- code 32)]
+          (throw-not-implemented instr script program {:primitive primitive}))))))
+
 (defn- encode-script-control [code instr script program]
   (let [index (.indexOf (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16r7F)
-      (throw (ex-info "Not implemented yet!" {:instruction instr
-                                              :script script
-                                              :program program
-                                              :script-index index}))
+      (throw-not-implemented instr script program
+                             {:script-index index})
       (if (> index 16r7)
         [(bit-or 16rF0 (bit-shift-right code 1))
          (bit-or (bit-and 16rFF (bit-shift-left code 7))
@@ -134,7 +171,7 @@
 
 (defn encode-script
   [{:keys [instructions] :as script} program]
-  (concat (encode-script-header script (all-globals program))
+  (concat (encode-script-header script program)
           (encode-instructions instructions script program)))
 
 (defn encode-program [{:keys [scripts sorted-globals] :as program}]
@@ -166,8 +203,6 @@
    (index-of-constant (all-globals program) 1000)
    (encode-script-header (get (:scripts program) 0) (all-globals program))
    (encode-program program)
-
-
 
 
 
