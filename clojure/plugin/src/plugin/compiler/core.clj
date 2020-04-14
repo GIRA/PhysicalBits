@@ -6,7 +6,6 @@
             [plugin.device.boards :as boards]
             [plugin.compiler.ast-utils :as ast-utils]
             [plugin.compiler.emitter :as emit]
-            [plugin.compiler.primitives :as prims]
             [plugin.compiler.linker :as linker]
             [plugin.compiler.dead-code-remover :as dcr]))
 
