@@ -92,53 +92,36 @@
 
 (defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
-(defmethod encode-instruction "UziPauseScriptInstruction"
-  [instr script program]
+(defn- encode-script-control [code instr script program]
   (let [index (.indexOf (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16r7F)
       (throw (ex-info "Not implemented yet!" {:instruction instr
                                               :script script
-                                              :program program}))
+                                              :program program
+                                              :script-index index}))
       (if (> index 16r7)
-        [16rFE (bit-or 16r80 index)]
-        [(bit-or 16rE8 index)]))))
+        [(bit-or 16rF0 (bit-shift-right code 1))
+         (bit-or (bit-and 16rFF (bit-shift-left code 7))
+                 (bit-and 16r7F index))]
+        [(bit-or (bit-shift-left code 3)
+                 index)]))))
+
+(defmethod encode-instruction "UziPauseScriptInstruction"
+  [instr script program]
+  (encode-script-control 2r11101 instr script program))
 
 (defmethod encode-instruction "UziStopScriptInstruction"
   [instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
-                        (:argument instr))]
-    (if (> index 16r7F)
-      (throw (ex-info "Not implemented yet!" {:instruction instr
-                                              :script script
-                                              :program program}))
-      (if (> index 16r7)
-        [16rFE index]
-        [(bit-or 16rE0 index)]))))
+  (encode-script-control 2r11100 instr script program))
 
 (defmethod encode-instruction "UziResumeScriptInstruction"
   [instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
-                        (:argument instr))]
-    (if (> index 16r7F)
-      (throw (ex-info "Not implemented yet!" {:instruction instr
-                                              :script script
-                                              :program program}))
-      (if (> index 16r7)
-        [16rFD (bit-or 16r80 index)]
-        [(bit-or 16rD8 index)]))))
+  (encode-script-control 2r11011 instr script program))
 
 (defmethod encode-instruction "UziStartScriptInstruction"
   [instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
-                        (:argument instr))]
-    (if (> index 16r7F)
-      (throw (ex-info "Not implemented yet!" {:instruction instr
-                                              :script script
-                                              :program program}))
-      (if (> index 16r7)
-        [16rFD index]
-        [(bit-or 16rD0 index)]))))
+  (encode-script-control 2r11010 instr script program))
 
 (defmethod encode-instruction :default [o _ _]
   (println "Error: MISSING ENCODE FUNCTION")
