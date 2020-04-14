@@ -41,7 +41,7 @@
       (if (some has-side-effects? (map :value arguments))
         true
         (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
-          (not (= 1 after))
+          (not= 1 after)
           true)))
     (not (expression? node))))
 
@@ -83,6 +83,12 @@
 (defmethod children-keys "Association" [_] [:value])
 (defmethod children-keys :default [_] [])
 
+(defn valid-keys [node]
+  "This function returns the keys for this node which, when evaluated
+   return a non-null value."
+  (clj-core/filter #(not (nil? (node %)))
+                   (children-keys node)))
+
 (defn children [ast]
   (filterv (complement nil?)
            (flatten (map (fn [key] (key ast))
@@ -98,45 +104,81 @@
     (clj-core/filter #(type-set (node-type %))
                      (all-children ast))))
 
-; TODO(Richo): Refactor this function. This is a mess...
+(defn- evaluate-pred-clauses [node path clauses]
+  "Evaluates each clause in order. The clauses are pairs of pred-fn/expr-fn.
+   Both functions accept the node and its path as arguments. If a pred-fn
+   return true it will evaluate expr-fn and return its result.
+   The optional :default clause will match any node, but only if no previous
+   matching clause was found."
+  (loop [[pred result-fn & rest] clauses]
+    (if (or (= :default pred)
+            (pred node path))
+      (result-fn node path)
+      (if (empty? rest)
+        node
+        (recur rest)))))
+
+(defn- replace-children [node keys expr-fn]
+  "Updates node by replacing each child on the given keys with the
+  result of evaluating expr-fn passing the child node as argument."
+  (loop [keys keys, result node]
+    (let [[first & rest] keys]
+      (if first
+        (let [new-result (assoc result
+                                first
+                                (expr-fn (result first)))]
+          (if (empty? rest)
+            new-result
+            (recur rest new-result)))
+        result))))
+
 (defn- transformp* [ast path clauses]
+  "I made this function because clojure.walk doesn't traverse the tree
+   in the order I need. Also, with this function I can keep track of the
+   path of parent nodes, which is very useful.
+   This function is private, you should call transformp or transform"
   (cond
-
+    ; If we find a node, we evaluate each clause in order and if we find
+    ; a match we replace the node with the result before recursively
+    ; transforming its children.
+    ; Here we take care of keeping track of the path so that we can pass
+    ; it as argument for both the predicates and the transforming functions.
     (node? ast)
-    (let [new-path (conj path ast)
-          node (loop [[pred result-fn & rest] clauses]
-                 (if (or (= :default pred)
-                         (pred ast new-path))
-                   (result-fn ast new-path)
-                   (if (empty? rest)
-                     ast
-                     (recur rest))))
-          valid-keys (clj-core/filter #(not (nil? (node %)))
-                                       (children-keys node))]
-      (loop [keys valid-keys, result node]
-        (let [[first & rest] keys]
-          (if first
-            (let [new-result (assoc result
-                                    first
-                                    (transformp* (result first)
-                                                 (conj path node)
-                                                 clauses))]
-              (if (empty? rest)
-                new-result
-                (recur rest new-result)))
-            result))))
+    (let [node (evaluate-pred-clauses ast
+                                      (conj path ast)
+                                      clauses)]
+      (replace-children node
+                        (valid-keys node)
+                        (fn [child]
+                          (transformp* child
+                                       (conj path node)
+                                       clauses))))
 
+    ; If we find a vector, we simply recursively transform each element
+    ; and return a new vector.
     (vector? ast)
     (mapv #(transformp* % path clauses)
           ast)
 
+    ; Anything else is simply returned without any transformation
     :else ast))
 
 (defn transformp [ast & clauses]
+  "This function lets you traverse the tree and transform any of its nodes.
+   The clauses are pairs of pred-fn/expr-fn. It will traverse the tree and
+   evaluate each clause's predicate in order. If the predicate evaluates to
+   true, it will evaluate expr-fn. Both pred-fn and expr-fn should accept
+   two arguments: the node and its path as arguments. The path is a list
+   containing all the parent nodes already traversed in the tree. If no
+   clause is valid, it will optionally accept a :default clause.
+   The original node will be replaced with the result of evaluating expr-fn
+   before continuing the traversal."
   (transformp* ast (list) clauses))
 
 
 (defn transform [ast & clauses]
+  "This function is exactly like transformp but instead of predicates it matches
+  node-types"
   (let [as-pred (fn [type]
                   (if (= :default type)
                     type
@@ -163,7 +205,7 @@
                           (variables-in-scope path))))
 
 (defn global?
-  "Works for both variable and variable declaration nodes."
+  "Works for both variable and variable-declaration nodes."
   [node path]
   (let [globals (-> path last :globals set)]
     (condp = (node-type node)
