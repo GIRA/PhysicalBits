@@ -2,8 +2,6 @@
   (:require [plugin.utils.conversions :refer :all]
             [plugin.compiler.emitter :as emit]))
 
-(defmulti encode-instruction :__class__)
-
 (defn variable-size
   "Return the number of bytes necessary to encode this variable.
 	If the value is negative or float then the size is 4 bytes. Also, the
@@ -92,22 +90,76 @@
                            locals))
               []))))
 
-(defn encode-instructions [instructions]
-  (concat [(count instructions)]
-          (mapcat encode-instruction instructions)))
+(defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
-(defn encode-script [{:keys [instructions] :as script} globals]
-  (concat (encode-script-header script globals)
-          (encode-instructions instructions)))
+(defmethod encode-instruction "UziPauseScriptInstruction"
+  [instr script program]
+  (let [index (.indexOf (map :name (:scripts program))
+                        (:argument instr))]
+    (if (> index 16r7F)
+      (throw (ex-info "Not implemented yet!" {:instruction instr
+                                              :script script
+                                              :program program}))
+      (if (> index 16r7)
+        [16rFE (bit-or 16r80 index)]
+        [(bit-or 16rE8 index)]))))
+
+(defmethod encode-instruction "UziStopScriptInstruction"
+  [instr script program]
+  (let [index (.indexOf (map :name (:scripts program))
+                        (:argument instr))]
+    (if (> index 16r7F)
+      (throw (ex-info "Not implemented yet!" {:instruction instr
+                                              :script script
+                                              :program program}))
+      (if (> index 16r7)
+        [16rFE index]
+        [(bit-or 16rE0 index)]))))
+
+(defmethod encode-instruction "UziResumeScriptInstruction"
+  [instr script program]
+  (let [index (.indexOf (map :name (:scripts program))
+                        (:argument instr))]
+    (if (> index 16r7F)
+      (throw (ex-info "Not implemented yet!" {:instruction instr
+                                              :script script
+                                              :program program}))
+      (if (> index 16r7)
+        [16rFD (bit-or 16r80 index)]
+        [(bit-or 16rD8 index)]))))
+
+(defmethod encode-instruction "UziStartScriptInstruction"
+  [instr script program]
+  (let [index (.indexOf (map :name (:scripts program))
+                        (:argument instr))]
+    (if (> index 16r7F)
+      (throw (ex-info "Not implemented yet!" {:instruction instr
+                                              :script script
+                                              :program program}))
+      (if (> index 16r7)
+        [16rFD index]
+        [(bit-or 16rD0 index)]))))
+
+(defmethod encode-instruction :default [o _ _]
+  (println "Error: MISSING ENCODE FUNCTION")
+  (prn o)
+  [])
+
+(defn encode-instructions [instructions script program]
+  (concat [(count instructions)]
+          (mapcat #(encode-instruction % script program) instructions)))
+
+(defn encode-script
+  [{:keys [instructions] :as script} program]
+  (concat (encode-script-header script (all-globals program))
+          (encode-instructions instructions script program)))
 
 (defn encode-program [{:keys [scripts sorted-globals] :as program}]
   (concat [(count scripts)]
           (encode-globals sorted-globals)
           (mapcat (fn [script]
-                    (encode-script script (all-globals program)))
+                    (encode-script script program))
                   scripts)))
-
-(defmethod encode-instruction :default [o] [])
 
 (defn encode [program]
   (-> program
@@ -116,7 +168,7 @@
       vec))
 
 #_(
-   (def src "task main() running 1/s { var a = 100; }")
+   (def src "task main() {}")
    (def program (sort-globals (plugin.compiler.core/compile-uzi-string src)))
    program
 

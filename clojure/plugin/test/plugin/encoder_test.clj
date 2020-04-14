@@ -21,6 +21,11 @@
         actual (encode "task main() running 1/s {}")]
     (is (= expected actual))))
 
+(deftest empty-script-without-delay
+  (let [expected [1 0 128 0]
+        actual (encode "task main() running {}")]
+    (is (= expected actual))))
+
 (deftest variables-have-size
   (doseq [[value size] {0 1,
                         16rFF 1,
@@ -37,4 +42,27 @@
 (deftest script-with-local-vars
   (let [expected [1 2 4 100 5 3 232 208 4 1 3 0]
         actual (encode "task main() running 1/s { var a = 100; }")]
+    (is (= expected actual))))
+
+(deftest script-with-local-vars-2
+  (let [expected [1 2 5 3 232 7 194 200 0 0 208 3 1 4 0]
+        actual (encode "task main() running 1/s { var a = -100; }")]
+    (is (= expected actual))))
+
+(deftest script-with-local-vars-3
+  (let [expected [1 3 5 3 232 11 194 200 0 0 63 0 0 0 208 3 2 4 5 0]
+        actual (encode "task main() running 1/s { var a = -100; var b = 0.5; }")]
+    (is (= expected actual))))
+
+(deftest empty-script-without-running
+  (let [expected [1 0 128 1 224]
+        actual (encode "task main() {}")]
+    (is (= expected actual))))
+
+(deftest pause-resume-start-and-stop-instructions
+  (let [expected [1 0 128 4 232 224 216 208]
+        actual (encode "task main() running {
+                          pause main; stop main;
+                          resume main; start main;
+                        }")]
     (is (= expected actual))))
