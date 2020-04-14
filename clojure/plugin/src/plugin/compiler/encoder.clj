@@ -1,5 +1,6 @@
 (ns plugin.compiler.encoder
-  (:require [plugin.utils.conversions :refer :all]))
+  (:require [plugin.utils.conversions :refer :all]
+            [plugin.compiler.emitter :as emit]))
 
 (defmulti encode-instruction :__class__)
 
@@ -23,15 +24,18 @@
                                 (:globals program))]
     (assoc program :sorted-globals (vec sorted-globals))))
 
-(def default-globals [0 1 -1])
+(def default-globals (map emit/constant [0 1 -1]))
 
 (defn all-globals [{globals :sorted-globals}]
   (concat default-globals
           (filter (complement (set default-globals))
-                  (map :value globals))))
+                  globals)))
+
+(defn index-of-constant [globals value]
+  (.indexOf globals (emit/constant value)))
 
 (defn encode-globals [globals]
-  (let [to-encode (filter (complement (set default-globals))
+  (let [to-encode (filter (complement (set (map :value default-globals)))
                           (map :value globals))
         groups (group-by variable-size to-encode)
         encode-global (fn [value size]
@@ -55,19 +59,37 @@
                               (partition-all 2r111111 (groups size))))
                     [1 2 3 4]))))
 
-
 (defn encode-script-header
   [{:keys [arguments delay locals running?]} globals]
   (let [has-delay? (> (:value delay) 0)
         has-arguments? (not (empty? arguments))
         has-locals? (not (empty? locals))]
-    (concat [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
+    (concat
+            ; First byte:
+  		      ; 1 bit : isTicking (1 true / 0 false)
+  		      ; 1 bit: hasDelay (1 true / 0 false)
+  		      ; 1 bit: hasArguments (1 true / 0 false)
+  		      ; 1 bit: hasLocals (1 true / 0 false)
+  		      ; 4 bits: reserved for future use
+            [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
                               (bit-shift-left (if has-delay? 1 0) 6)
                               (bit-shift-left (if has-arguments? 1 0) 5)
                               (bit-shift-left (if has-locals? 1 0) 4))
                       16rFF)]
+
+            ; If the script has a delay write its index on the global list
             (if has-delay?
-              [(.indexOf globals (:value delay))]
+              [(index-of-constant globals (:value delay))]
+              [])
+
+            ; TODO(Richo): Arguments!
+
+            ; If the script has locals write the local count followed by
+            ; each local index on the global list
+            (if has-locals?
+              (concat [(count locals)]
+                      (map #(index-of-constant globals (:value %))
+                           locals))
               []))))
 
 (defn encode-instructions [instructions]
@@ -94,7 +116,7 @@
       vec))
 
 #_(
-   (def src "task main() running 1/s {}")
+   (def src "task main() running 1/s { var a = 100; }")
    (def program (sort-globals (plugin.compiler.core/compile-uzi-string src)))
    program
 
@@ -106,6 +128,7 @@
 
    (all-globals program)
    (encode-globals (:sorted-globals program))
+   (index-of-constant (all-globals program) 1000)
    (encode-script-header (get (:scripts program) 0) (all-globals program))
    (encode-program program)
 

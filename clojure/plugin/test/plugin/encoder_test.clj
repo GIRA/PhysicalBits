@@ -33,3 +33,8 @@
                         0.5 4
                         -1 4}]
     (is (= size (en/variable-size value)))))
+
+(deftest script-with-local-vars
+  (let [expected [1 2 4 100 5 3 232 208 4 1 3 0]
+        actual (encode "task main() running 1/s { var a = 100; }")]
+    (is (= expected actual))))
