@@ -16,3 +16,7 @@
 (defn bytes->uint16 [[msb lsb]]
   (bit-or (bit-shift-left msb 8)
           lsb))
+
+
+(defn float->uint32 [float]
+  (Float/floatToRawIntBits float))
