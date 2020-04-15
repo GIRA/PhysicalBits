@@ -43,9 +43,18 @@
     (index-of-variable program (:name global))
     (index-of-constant program (:value global))))
 
+(defn index-of-local [script variable]
+  (.indexOf (map :name (concat (:arguments script)
+                               (:locals script)))
+            (:name variable)))
+
+(defn- globals-to-encode [globals]
+  (let [constants-to-exclude (set default-globals)]
+    (filter (complement constants-to-exclude)
+            globals)))
+
 (defn encode-globals [globals]
-  (let [to-encode (filter (complement (set (map :value default-globals)))
-                          (map :value globals))
+  (let [to-encode (map :value (globals-to-encode globals))
         groups (group-by variable-size to-encode)
         encode-global (fn [value size]
                         (let [actual-value (if (= 4 size)
@@ -109,7 +118,7 @@
                     {:instruction instr, :script script, :program program}
                     data))))
 
-(defmethod encode-instruction "UziPushInstruction"
+(defmethod encode-instruction "UziPushInstruction" ; TODO(Richo) Read-global
   [instr script program]
   (let [index (index-of-global program (:argument instr))]
     (if (> index 16rFF)
@@ -118,6 +127,27 @@
       (if (> index 16rF)
         [16rF8 index]
         [(bit-or 16r80 index)]))))
+
+(defmethod encode-instruction "UziPopInstruction" ; TODO(Richo): Write-global
+  [instr script program]
+  (let [index (index-of-global program (:argument instr))]
+    (if (> index 16rFF)
+      (throw-not-implemented instr script program
+                             {:global-index index})
+      (if (> index 16rF)
+        [16rF9 index]
+        [(bit-or 16r90 index)]))))
+
+(defmethod encode-instruction "UziReadLocalInstruction"
+  [instr script program]
+  (let [index (index-of-local script (:argument instr))]
+    [16rFF index]))
+
+(defmethod encode-instruction "UziWriteLocalInstruction"
+  [instr script program]
+  (let [index (index-of-local script (:argument instr))]
+    [16rFF (bit-or 16r80 index)]))
+
 
 (defmethod encode-instruction "UziPrimitiveCallInstruction"
   [instr script program]
@@ -160,13 +190,21 @@
   [instr script program]
   (encode-script-control 2r11010 instr script program))
 
+(defmethod encode-instruction "UziJMPInstruction"
+  [instr script program]
+  [16rF0 (-> instr :argument two's-complement)])
+
 (defmethod encode-instruction "UziJZInstruction"
   [instr script program]
   [16rF1 (-> instr :argument two's-complement)])
 
-(defmethod encode-instruction "UziJMPInstruction"
+(defmethod encode-instruction "UziJNZInstruction"
   [instr script program]
-  [16rF0 (-> instr :argument two's-complement)])
+  [16rF2 (-> instr :argument two's-complement)])
+
+(defmethod encode-instruction "UziJLTEInstruction"
+  [instr script program]
+  [16rF5 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction :default [o _ _]
   (println "Error: MISSING ENCODE FUNCTION")
@@ -196,11 +234,19 @@
       vec))
 
 #_(
-   (def src "task main() {}")
+   (def src "
+
+             var a;
+             task main() {
+               a = 3 + 4;
+               a = a + 1;
+               toggle(a);
+             }
+")
    (def program (sort-globals (plugin.compiler.core/compile-uzi-string src)))
    program
 
-
+   (def globals (:sorted-globals program))
 
 
 
@@ -208,6 +254,16 @@
 
    (all-globals program)
    (encode-globals (:sorted-globals program))
+
+   (let [
+        default-globals-set (set (map :value default-globals))
+          to-encode (filter (fn [global]
+                              (or (contains? global :name)
+                                  (not (contains? default-globals-set (:value global)))))
+                            globals)]
+     to-encode
+     #_(mapv variable-size to-encode))
+
    (index-of-constant (all-globals program) 1000)
    (encode-script-header (get (:scripts program) 0) (all-globals program))
    (encode-program program)

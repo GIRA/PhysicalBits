@@ -98,3 +98,68 @@
                     else { turnOn(D13); }
                   }")]
     (is (= expected actual))))
+
+(deftest script-with-conditionals-2
+  (let [expected [1 2 4 13 5 1 244 192 4 5 131 250 15 242 2 131 180]
+        actual (encode "
+                  task toggle() running 2/s {
+                    if isOn(D13) {}
+                    else { turnOn(D13); }
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-while-loop
+  (let [expected [1 1 4 13 128 7 131 250 16 241 3 131 180 240 250 224]
+        actual (encode "
+                  task loop() {
+                    while isOff(D13) { turnOn(D13); }
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-while-loop-2
+  (let [expected [1 1 4 13 128 6 131 250 16 242 253 131 181 224]
+        actual (encode "
+                  task loop() {
+                    while isOff(D13);
+                    turnOff(D13);
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-global-variable-read-write
+  (let [expected [1 3 12 0 3 4 128 11 132 133 166 147 131 129 166 147 131 162 224]
+        actual (encode "
+                  var a;
+                  task main() {
+                    a = 3 + 4;
+                    a = a + 1;
+                    toggle(a);
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-local-variable-read-write
+  (let [expected [1 2 8 3 4 144 1 0 11 131 132 166 255 128 255 0 129 166 255 128 255 0 162 224]
+        actual (encode "
+                  task main() {
+                    var a;
+                    a = 3 + 4;
+                    a = a + 1;
+                    toggle(a);
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-for-loop-with-constant-step
+  (let [expected [1 2 8 2 10 144 1 0 14 128 255 128 255 0 132 175 241 7 255 0 162 255 0 131 166 255 128 240 245 224]
+        actual (encode "
+                  task loop() {
+                    for i = 0 to 10 by 2 { toggle(i); }
+                  }")]
+    (is (= expected actual))))
+
+(deftest script-with-for-loop-with-variable-step
+  (let [expected [1 2 8 1 10 144 2 0 0 23 128 255 128 255 0 132 131 255 129 255 1 128 245 2 175 240 1 173 241 9 131 130 165 147 255 0 255 1 166 255 128 240 236 224]
+        actual (encode "
+                  var step = 1;
+                  task loop() {
+                    for i = 0 to 10 by step { step = step * -1; }
+                  }")]
+    (is (= expected actual))))
