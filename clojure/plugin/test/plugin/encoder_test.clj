@@ -26,7 +26,7 @@
         actual (encode "task main() running {}")]
     (is (= expected actual))))
 
-(deftest variables-have-size
+(deftest values-have-size
   (doseq [[value size] {0 1,
                         16rFF 1,
                         16r100 2,
@@ -37,7 +37,7 @@
                         16rFFFFFFFFFF 4,
                         0.5 4
                         -1 4}]
-    (is (= size (en/variable-size value)))))
+    (is (= size (en/value-size value)))))
 
 (deftest script-with-local-vars
   (let [expected [1 2 4 100 5 3 232 208 4 1 3 0]

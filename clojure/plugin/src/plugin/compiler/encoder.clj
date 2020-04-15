@@ -3,8 +3,8 @@
             [plugin.compiler.emitter :as emit]
             [plugin.compiler.primitives :as prims]))
 
-(defn variable-size
-  "Return the number of bytes necessary to encode this variable.
+(defn value-size
+  "Return the number of bytes necessary to encode this value.
 	If the value is negative or float then the size is 4 bytes. Also, the
 	max number of bytes is 4."
   [value]
@@ -15,7 +15,7 @@
         4)))
 
 (defn sort-globals [program]
-  (let [sorted-globals (sort-by (fn [{:keys [value]}] [value (variable-size value)])
+  (let [sorted-globals (sort-by (fn [{:keys [value]}] [value (value-size value)])
                                 (fn [[a-value a-size] [b-value b-size]]
                                   (if (= a-size b-size)
                                     (< a-value b-value)
@@ -23,9 +23,14 @@
                                 (:globals program))]
     (assoc program :globals (vec sorted-globals))))
 
-(def default-globals (map emit/constant [0 1 -1]))
+(def default-globals
+  "This values are *always* first in the global list, whether they
+   are used or not. The VM knows about this already so we don't need
+   to encode them."
+  (map emit/constant [0 1 -1]))
 
 (defn all-globals [program]
+  "Returns all the globals in the program in the correct order"
   (concat default-globals
           (filter (complement (set default-globals))
                   (:globals program))))
@@ -82,7 +87,7 @@
   "The globals are grouped by size before encoding. We use 6 bits to
    specify each group size, so we are limited to 63 variables per group."
   (let [to-encode (map :value (globals-to-encode program))
-        groups (group-by variable-size to-encode)]
+        groups (group-by value-size to-encode)]
     (concat [(count to-encode)]
             (mapcat (fn [size]
                       (mapcat #(encode-global-group size %)
@@ -274,7 +279,7 @@
                                   (not (contains? default-globals-set (:value global)))))
                             globals)]
      to-encode
-     #_(mapv variable-size to-encode))
+     #_(mapv value-size to-encode))
 
    (index-of-constant (all-globals program) 1000)
    (encode-script-header (get (:scripts program) 0) (all-globals program))
