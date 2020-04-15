@@ -89,3 +89,12 @@
   (let [expected [1 1 5 3 232 192 3 2 129 250 30]
         actual (encode "task main() running 1/s { delayM(1); }")]
     (is (= expected actual))))
+
+(deftest script-with-conditionals
+  (let [expected [1 2 4 13 5 1 244 192 4 8 131 250 15 241 3 131 181 240 2 131 180]
+        actual (encode "
+                  task toggle() running 2/s {
+                    if isOn(D13) { turnOff(D13); }
+                    else { turnOn(D13); }
+                  }")]
+    (is (= expected actual))))

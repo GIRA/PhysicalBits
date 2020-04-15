@@ -160,6 +160,14 @@
   [instr script program]
   (encode-script-control 2r11010 instr script program))
 
+(defmethod encode-instruction "UziJZInstruction"
+  [instr script program]
+  [16rF1 (-> instr :argument two's-complement)])
+
+(defmethod encode-instruction "UziJMPInstruction"
+  [instr script program]
+  [16rF0 (-> instr :argument two's-complement)])
+
 (defmethod encode-instruction :default [o _ _]
   (println "Error: MISSING ENCODE FUNCTION")
   (prn o)
