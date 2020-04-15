@@ -21,14 +21,14 @@
                                     (< a-value b-value)
                                     (< a-size b-size)))
                                 (:globals program))]
-    (assoc program :sorted-globals (vec sorted-globals))))
+    (assoc program :globals (vec sorted-globals))))
 
 (def default-globals (map emit/constant [0 1 -1]))
 
-(defn all-globals [{globals :sorted-globals}]
+(defn all-globals [program]
   (concat default-globals
           (filter (complement (set default-globals))
-                  globals)))
+                  (:globals program))))
 
 (defn index-of-constant [program value]
   (.indexOf (all-globals program)
@@ -48,32 +48,44 @@
                                (:locals script)))
             (:name variable)))
 
-(defn- globals-to-encode [globals]
+(defn- globals-to-encode [program]
+  "We need to exclude the default-globals from the encoding"
   (let [constants-to-exclude (set default-globals)]
     (filter (complement constants-to-exclude)
-            globals)))
+            (:globals program))))
 
-(defn encode-globals [globals]
-  (let [to-encode (map :value (globals-to-encode globals))
-        groups (group-by variable-size to-encode)
-        encode-global (fn [value size]
-                        (let [actual-value (if (= 4 size)
-                                             (float->uint32 value)
-                                             value)]
-                          (map (fn [n]
-                                 (bit-and (bit-shift-right actual-value
-                                                           (* 8 n))
-                                          16rFF))
-                               (range (dec size) -1 -1))))
-        encode-group-size (fn [size group]
-                            (bit-or (bit-shift-left (count group) 2)
-                                    (dec size)))]
+(defn- encode-global [value size]
+  "If the size equals 4 we have to encode it as a float"
+  (let [actual-value (if (= 4 size)
+                       (float->uint32 value)
+                       value)]
+    (map (fn [n]
+           (bit-and (bit-shift-right actual-value
+                                     (* 8 n))
+                    16rFF))
+         (range (dec size) -1 -1))))
+
+(defn- encode-global-group [size group]
+  "The first byte or each group says how many variables and the size.
+   - 6 bits: var count
+   - 2 bits: size
+     00 -> 1 byte
+     01 -> 2 bytes
+     10 -> 3 bytes
+     11 -> 4 bytes"
+  (concat [(bit-or (bit-shift-left (count group) 2)
+                   (dec size))]
+          (mapcat #(encode-global % size)
+                  group)))
+
+(defn encode-globals [program]
+  "The globals are grouped by size before encoding. We use 6 bits to
+   specify each group size, so we are limited to 63 variables per group."
+  (let [to-encode (map :value (globals-to-encode program))
+        groups (group-by variable-size to-encode)]
     (concat [(count to-encode)]
             (mapcat (fn [size]
-                      (mapcat (fn [partition]
-                                (concat [(encode-group-size size partition)]
-                                        (mapcat #(encode-global % size)
-                                                partition)))
+                      (mapcat #(encode-global-group size %)
                               (partition-all 2r111111 (groups size))))
                     [1 2 3 4]))))
 
@@ -220,12 +232,12 @@
   (concat (encode-script-header script program)
           (encode-instructions instructions script program)))
 
-(defn encode-program [{:keys [scripts sorted-globals] :as program}]
-  (concat [(count scripts)]
-          (encode-globals sorted-globals)
+(defn encode-program [program]
+  (concat [(count (:scripts program))]
+          (encode-globals program)
           (mapcat (fn [script]
                     (encode-script script program))
-                  scripts)))
+                  (:scripts program))))
 
 (defn encode [program]
   (-> program
@@ -246,14 +258,14 @@
    (def program (sort-globals (plugin.compiler.core/compile-uzi-string src)))
    program
 
-   (def globals (:sorted-globals program))
+   (def globals (:globals program))
 
 
 
 
 
    (all-globals program)
-   (encode-globals (:sorted-globals program))
+   (encode-globals (:globals program))
 
    (let [
         default-globals-set (set (map :value default-globals))
