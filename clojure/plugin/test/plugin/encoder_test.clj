@@ -163,3 +163,11 @@
                     for i = 0 to 10 by step { step = step * -1; }
                   }")]
     (is (= expected actual))))
+
+(deftest calling-a-procedure
+  (let [expected [2 2 4 13 5 3 232 0 2 131 162 192 4 2 192 186]
+        actual (encode "
+                  proc blink13() { toggle(D13); }
+                  task main() running 1/s { blink13(); }
+                  ")]
+    (is (= expected actual))))

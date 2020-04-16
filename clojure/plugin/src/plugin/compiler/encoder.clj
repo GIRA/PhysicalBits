@@ -178,6 +178,18 @@
           [16rFA (- code 32)]
           (throw-not-implemented instr script program {:primitive primitive}))))))
 
+(defmethod encode-instruction "UziScriptCallInstruction"
+  [instr script program]
+  (let [index (.indexOf (map :name (:scripts program))
+                        (:argument instr))]
+    (if (> index 16rFF)
+      (throw-not-implemented instr script program
+                             {:script-index index})
+      (if (> index 16rF)
+        [16rFC index]
+        [(bit-or 16rC0
+                 index)]))))
+
 (defn- encode-script-control [code instr script program]
   (let [index (.indexOf (map :name (:scripts program))
                         (:argument instr))]
