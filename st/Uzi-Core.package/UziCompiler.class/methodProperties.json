@@ -22,7 +22,7 @@
 		"visitCallNode:" : "Richo 8/28/2018 12:16",
 		"visitCollection:" : "Richo 9/23/2014 17:20",
 		"visitConditionalNode:" : "Richo 12/31/2016 13:33",
-		"visitForNode:" : "Richo 8/22/2018 18:20",
+		"visitForNode:" : "Richo 3/21/2020 11:01",
 		"visitForeverNode:" : "Richo 4/21/2018 18:38",
 		"visitImportNode:" : "Richo 11/5/2019 20:18",
 		"visitLogicalAndNode:" : "Richo 5/31/2017 18:41",
@@ -40,6 +40,6 @@
 		"visitScriptStartNode:" : "Richo 9/11/2017 08:06",
 		"visitScriptStopNode:" : "Richo 9/11/2017 08:02",
 		"visitTickingRateNode:" : "Richo 11/5/2019 20:19",
-		"visitVariableDeclarationNode:" : "Richo 8/22/2018 18:21",
+		"visitVariableDeclarationNode:" : "Richo 3/21/2020 11:02",
 		"visitVariableNode:" : "Richo 5/23/2018 11:28",
 		"visitYieldNode:" : "Richo 4/13/2018 12:00" } }

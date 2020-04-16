@@ -1,5 +1,6 @@
 {
 	"class" : {
+		"jsonExcludedInstVarNames" : "Richo 1/14/2020 16:47",
 		"name:ticking:delay:arguments:locals:instructions:" : "Richo 5/20/2017 14:40" },
 	"instance" : {
 		"accept:" : "Richo 10/8/2014 18:03",

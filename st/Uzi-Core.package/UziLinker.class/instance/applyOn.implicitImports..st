@@ -21,4 +21,5 @@ applyOn: program implicitImports: implicitImports
 		primitives: primitives)
 		token: program token.
 	ast := self resolvePrimitivesOn: ast.
+	ast originalAST: program.
 	^ ast

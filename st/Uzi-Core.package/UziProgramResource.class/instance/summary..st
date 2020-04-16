@@ -8,6 +8,7 @@ summary: req
 				at: #id put: program id;
 				at: #src put: program sourceCode;
 				at: #ast put: (UziJSON createJSONObject: program node);
+				at: #compiled put: (UziJSON createJSONObject: program);
 				yourself]).
 	res at: #running 
 		put: (self controller runningProgram
@@ -15,6 +16,7 @@ summary: req
 				at: #id put: program id;
 				at: #src put: program sourceCode;
 				at: #ast put: (UziJSON createJSONObject: program node);
+				at: #compiled put: (UziJSON createJSONObject: program);
 				at: #bytecodes put: (Uzi encode: program) asArray;
 				at: #validBreakpoints put: (program linesOfCode collect: [:each | each value]);
 				yourself]).

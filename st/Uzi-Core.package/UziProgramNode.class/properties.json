@@ -10,7 +10,8 @@
 		"globals",
 		"scripts",
 		"primitives",
-		"primitivesDict" ],
+		"primitivesDict",
+		"originalAST" ],
 	"name" : "UziProgramNode",
 	"pools" : [
 		 ],

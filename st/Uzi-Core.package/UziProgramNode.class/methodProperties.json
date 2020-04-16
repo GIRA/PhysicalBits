@@ -10,6 +10,8 @@
 		"initialize" : "Richo 10/25/2019 12:43",
 		"initializeWithImports:globals:scripts:primitives:" : "Richo 10/25/2019 11:28",
 		"isProgram" : "Richo 12/30/2016 15:03",
+		"originalAST" : "Richo 3/16/2020 15:06",
+		"originalAST:" : "Richo 3/16/2020 14:56",
 		"pins" : "Richo 9/8/2019 18:09",
 		"primitiveForSelector:" : "Richo 10/28/2019 15:45",
 		"primitives" : "Richo 10/25/2019 11:29",
