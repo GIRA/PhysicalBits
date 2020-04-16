@@ -31,8 +31,8 @@
       Uzi.on("update", function () {
 
             // HACK(Richo)
-            function sanitized(obj) {
-              if (obj instanceof Array) return obj.map(sanitized);
+            function sanitized(obj, removePrimName, removeImports) {
+              if (obj instanceof Array) return obj.map(each => sanitized(each, removePrimName, removeImports));
               if (typeof obj != "object") return obj;
               if (obj === null) return null;
               if (obj === undefined) return undefined;
@@ -50,17 +50,27 @@
               }
 
               if (obj.__class__ == "UziProgramNode") {
-                obj.primitives = [];
+                obj.primitives = undefined;
                 obj.primitivesDict = undefined;
+                obj.originalAST = undefined;
+                if (removeImports) {
+                  obj.imports = undefined;
+                }
               }
 
               if (obj.__class__ == "UziCallNode") {
+                if (!removePrimName) {
+                  obj["primitive-name"] = obj.primitiveName;
+                }
                 obj.primitiveName = undefined;
               }
 
               let value = {};
               for (let m in obj) {
-                value[m] = sanitized(obj[m]);
+                value[m] = sanitized(obj[m], removePrimName, removeImports);
+                if (value[m] === null) {
+                  value[m] = undefined;
+                }
               }
               return value;
             }
@@ -75,7 +85,12 @@
             }
 
             console.clear();
-            clj_print(sanitized(Uzi.state.program.current.ast));
+            console.log("ORIGINAL AST");
+            clj_print(sanitized(Uzi.state.program.current.ast.originalAST, true, false));
+            console.log("RESOLVED AST");
+            Uzi.state.program.current.ast.originalAST = undefined;
+            clj_print(sanitized(Uzi.state.program.current.ast, false, true));
+            console.log("COMPILED PROGRAM");
             clj_print(sanitized(Uzi.state.program.current.compiled));
       });
     },
