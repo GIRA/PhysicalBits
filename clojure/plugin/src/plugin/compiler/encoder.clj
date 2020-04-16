@@ -100,44 +100,39 @@
         has-arguments? (not (empty? arguments))
         has-locals? (not (empty? locals))]
     (concat
-            ; First byte:
-  		      ; 1 bit : isTicking (1 true / 0 false)
-  		      ; 1 bit: hasDelay (1 true / 0 false)
-  		      ; 1 bit: hasArguments (1 true / 0 false)
-  		      ; 1 bit: hasLocals (1 true / 0 false)
-  		      ; 4 bits: reserved for future use
-            [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
-                              (bit-shift-left (if has-delay? 1 0) 6)
-                              (bit-shift-left (if has-arguments? 1 0) 5)
-                              (bit-shift-left (if has-locals? 1 0) 4))
-                      16rFF)]
+     ; First byte:
+     ; 1 bit : isTicking (1 true / 0 false)
+     ; 1 bit: hasDelay (1 true / 0 false)
+     ; 1 bit: hasArguments (1 true / 0 false)
+     ; 1 bit: hasLocals (1 true / 0 false)
+     ; 4 bits: reserved for future use
+     [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
+                       (bit-shift-left (if has-delay? 1 0) 6)
+                       (bit-shift-left (if has-arguments? 1 0) 5)
+                       (bit-shift-left (if has-locals? 1 0) 4))
+               16rFF)]
 
-            ; If the script has a delay write its index on the global list
-            (if has-delay?
-              [(index-of-constant program (:value delay))]
-              [])
+     ; If the script has a delay write its index on the global list
+     (when has-delay?
+       [(index-of-constant program (:value delay))])
 
-            ; If the script has arguments write the argument count
-            (if has-arguments?
-              [(count arguments)]
-              [])
+     ; If the script has arguments write the argument count
+     (when has-arguments?
+       [(count arguments)])
 
-            ; If the script has locals write the local count followed by
-            ; each local index on the global list
-            (if has-locals?
-              (concat [(count locals)]
-                      (map #(index-of-constant program (:value %))
-                           locals))
-              []))))
+     ; If the script has locals write the local count followed by
+     ; each local index on the global list
+     (when has-locals?
+       (concat [(count locals)]
+               (map #(index-of-constant program (:value %))
+                    locals))))))
 
 (defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
 (defn- throw-not-implemented
   ([script data]
    (throw (ex-info "Not implemented yet!"
-                   (apply merge
-                     {:script script}
-                     data))))
+                   (apply merge {:script script} data))))
   ([instr script program & data]
    (throw (ex-info "Not implemented yet!"
                    (apply merge
@@ -244,18 +239,15 @@
   [instr script program]
   [16rF5 (-> instr :argument two's-complement)])
 
-(defmethod encode-instruction :default [o _ _]
-  (println "Error: MISSING ENCODE FUNCTION")
-  (prn o)
-  [])
+(defmethod encode-instruction :default [instr script program]
+  (throw-not-implemented instr script program))
 
 (defn- encode-instruction-count [script]
   (let [count (-> script :instructions count)]
     (if (> count 16r7FFF)
       (throw-not-implemented script {:instruction-count count})
       (if (> count 16r7F)
-        [(bit-or (bit-shift-right count 8)
-                 16r80)
+        [(bit-or (bit-shift-right count 8) 16r80)
          (bit-and count 16rFF)]
         [count]))))
 
