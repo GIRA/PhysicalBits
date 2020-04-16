@@ -132,11 +132,17 @@
 
 (defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
-(defn- throw-not-implemented [instr script program & data]
-  (throw (ex-info "Not implemented yet!"
-                  (apply merge
-                    {:instruction instr, :script script, :program program}
-                    data))))
+(defn- throw-not-implemented
+  ([script data]
+   (throw (ex-info "Not implemented yet!"
+                   (apply merge
+                     {:script script}
+                     data))))
+  ([instr script program & data]
+   (throw (ex-info "Not implemented yet!"
+                   (apply merge
+                     {:instruction instr, :script script, :program program}
+                     data)))))
 
 (defmethod encode-instruction "UziPushInstruction" ; TODO(Richo) Read-global
   [instr script program]
@@ -243,14 +249,24 @@
   (prn o)
   [])
 
-(defn encode-instructions [instructions script program]
-  (concat [(count instructions)]
-          (mapcat #(encode-instruction % script program) instructions)))
+(defn- encode-instruction-count [script]
+  (let [count (-> script :instructions count)]
+    (if (> count 16r7FFF)
+      (throw-not-implemented script {:instruction-count count})
+      (if (> count 16r7F)
+        [(bit-or (bit-shift-right count 8)
+                 16r80)
+         (bit-and count 16rFF)]
+        [count]))))
 
-(defn encode-script
-  [{:keys [instructions] :as script} program]
+(defn encode-instructions [script program]
+  (concat (encode-instruction-count script)
+          (mapcat #(encode-instruction % script program)
+                  (:instructions script))))
+
+(defn encode-script [script program]
   (concat (encode-script-header script program)
-          (encode-instructions instructions script program)))
+          (encode-instructions script program)))
 
 (defn encode-program [program]
   (concat [(count (:scripts program))]
@@ -266,39 +282,34 @@
       vec))
 
 #_(
-   (def src "
+   (def program (sort-globals (emit/program
+                               :globals [(emit/constant 0)
+                                         (emit/constant 16)]
+                               :scripts [(emit/script
+                                          :name "test"
+                                          :running? true
+                                          :instructions (mapcat (fn [_] [(emit/push-value 16)
+                                                                         (emit/prim-call "toggle")])
+                                                                (range 64)))])))
 
-             var a;
-             task main() {
-               a = 3 + 4;
-               a = a + 1;
-               toggle(a);
-             }
-")
-   (def program (sort-globals (plugin.compiler.core/compile-uzi-string src)))
-   program
-
-   (def globals (:globals program))
+   (encode program)
 
 
 
 
 
-   (all-globals program)
-   (encode-globals (:globals program))
 
-   (let [
-        default-globals-set (set (map :value default-globals))
-          to-encode (filter (fn [global]
-                              (or (contains? global :name)
-                                  (not (contains? default-globals-set (:value global)))))
-                            globals)]
-     to-encode
-     #_(mapv value-size to-encode))
 
-   (index-of-constant (all-globals program) 1000)
-   (encode-script-header (get (:scripts program) 0) (all-globals program))
-   (encode-program program)
+
+
+
+
+
+
+
+
+
+
 
 
 
