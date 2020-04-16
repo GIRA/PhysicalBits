@@ -1,7 +1,8 @@
 (ns plugin.encoder-test
   (:require [clojure.test :refer :all]
             [plugin.compiler.core :as cc]
-            [plugin.compiler.encoder :as en]))
+            [plugin.compiler.encoder :as en]
+            [plugin.compiler.emitter :as emit]))
 
 (defn compile [src]
   (cc/compile-uzi-string src))
@@ -186,4 +187,11 @@
                   func addition(a, b) { return a + b; }
                   task main() running 1/s { toggle(addition(3, 4)); }
                   ")]
+    (is (= expected actual))))
+
+
+(deftest program-with-more-than-63-globals-of-the-same-size
+  (let [program (emit/program :globals (map #(emit/variable % %) (range 64)))
+        expected [0 64 252 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 4 63]
+        actual (en/encode program)]
     (is (= expected actual))))
