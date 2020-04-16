@@ -117,7 +117,10 @@
               [(index-of-constant program (:value delay))]
               [])
 
-            ; TODO(Richo): Arguments!
+            ; If the script has arguments write the argument count
+            (if has-arguments?
+              [(count arguments)]
+              [])
 
             ; If the script has locals write the local count followed by
             ; each local index on the global list

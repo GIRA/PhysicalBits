@@ -171,3 +171,11 @@
                   task main() running 1/s { blink13(); }
                   ")]
     (is (= expected actual))))
+
+(deftest calling-a-procedure-with-arguments
+  (let [expected [2 2 4 13 5 3 232 32 1 2 255 0 162 192 4 3 131 192 186]
+        actual (encode "
+                  proc blink(pin) { toggle(pin); }
+                  task main() running 1/s { blink(D13); }
+                  ")]
+    (is (= expected actual))))
