@@ -179,3 +179,11 @@
                   task main() running 1/s { blink(D13); }
                   ")]
     (is (= expected actual))))
+
+(deftest calling-a-function
+  (let [expected [2 3 8 3 4 5 3 232 32 2 4 255 0 255 1 166 187 192 5 4 131 132 192 162]
+        actual (encode "
+                  func addition(a, b) { return a + b; }
+                  task main() running 1/s { toggle(addition(3, 4)); }
+                  ")]
+    (is (= expected actual))))
