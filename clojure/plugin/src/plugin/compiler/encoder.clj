@@ -243,6 +243,30 @@
   [instr script program]
   [16rF5 (-> instr :argument two's-complement)])
 
+(defmethod encode-instruction "UziTurnOnInstruction"
+  [instr script program]
+  (if (> (:argument instr) 16r1F)
+    (throw-not-implemented instr script program)
+    [(bit-or 16r00 (:argument instr))]))
+
+(defmethod encode-instruction "UziTurnOffInstruction"
+  [instr script program]
+  (if (> (:argument instr) 16r1F)
+    (throw-not-implemented instr script program)
+    [(bit-or 16r20 (:argument instr))]))
+
+(defmethod encode-instruction "UziWriteInstruction"
+  [instr script program]
+  (if (> (:argument instr) 16r1F)
+    (throw-not-implemented instr script program)
+    [(bit-or 16r40 (:argument instr))]))
+
+(defmethod encode-instruction "UziReadInstruction"
+  [instr script program]
+  (if (> (:argument instr) 16r1F)
+    (throw-not-implemented instr script program)
+    [(bit-or 16r60 (:argument instr))]))
+
 (defmethod encode-instruction :default [instr script program]
   (throw-not-implemented instr script program))
 
