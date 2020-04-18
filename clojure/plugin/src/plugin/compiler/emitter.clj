@@ -85,3 +85,19 @@
 (defn jlte [offset]
   {:__class__ "UziJLTEInstruction",
    :argument offset})
+
+(defn read-pin [pin-number]
+  {:__class__ "UziReadInstruction"
+   :argument pin-number})
+
+(defn write-pin [pin-number]
+  {:__class__ "UziWriteInstruction"
+   :argument pin-number})
+
+(defn turn-on-pin [pin-number]
+  {:__class__ "UziTurnOnInstruction"
+   :argument pin-number})
+
+(defn turn-off-pin [pin-number]
+  {:__class__ "UziTurnOffInstruction"
+   :argument pin-number})
