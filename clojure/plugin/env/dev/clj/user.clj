@@ -5,7 +5,8 @@
             [plugin.compiler.core :as cc]
             [plugin.parser.core :refer :all]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
-            [clojure.tools.namespace.repl :as repl])
+            [clojure.tools.namespace.repl :as repl]
+            [clojure.test :as ctest])
   (:use [clojure.repl]))
 
 (defn reload []
