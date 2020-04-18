@@ -15,10 +15,14 @@
         4)))
 
 (defn sort-globals [program]
-  (let [sorted-globals (sort-by (fn [{:keys [value]}] [value (value-size value)])
-                                (fn [[a-value a-size] [b-value b-size]]
+  (let [sorted-globals (sort-by (fn [global] (assoc global :size (value-size (:value global))))
+                                (fn [{a-name :name, a-value :value, a-size :size}
+                                     {b-name :name, b-value :value, b-size :size}]
                                   (if (= a-size b-size)
-                                    (< a-value b-value)
+                                    (if (= a-value b-value)
+                                      (compare (or a-name "")
+                                               (or b-name ""))
+                                      (< a-value b-value))
                                     (< a-size b-size)))
                                 (:globals program))]
     (assoc program :globals (vec sorted-globals))))
