@@ -1,3 +1,3 @@
 private
 indent
-	indent timesRepeat: [stream tab]
+	indent timesRepeat: [stream space; space; space; space]

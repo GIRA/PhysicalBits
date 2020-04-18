@@ -17,10 +17,11 @@ writeCLJ: program encoded: bytes testname: name
 	clj := String streamContents: [:stream || index |
 		index := 0.
 		program cljString linesDo: [:line |
-			index = 0 ifFalse: [stream crlf; tab; tab; tab; tab; tab; tab; tab; tab].
+			index = 0 ifFalse: [stream crlf.
+				8 timesRepeat: [stream space]].
 			stream nextPutAll: line.
 			index := index + 1]].
 	
-	out nextPutAll: (template format: { name . (String streamContents: [:s | bytes do: [:b | s print: b] separatedBy: [s space]]) . clj}).
+	out nextPutAll: (template format: { name capitalized . (String streamContents: [:s | bytes do: [:b | s print: b] separatedBy: [s space]]) . clj}).
 	out  crlf; crlf.
 		
