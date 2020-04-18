@@ -17,9 +17,8 @@
   (bit-or (bit-shift-left msb 8)
           lsb))
 
-
 (defn float->uint32 [float]
-  (Float/floatToRawIntBits float))
+  (Float/floatToRawIntBits (unchecked-float float)))
 
 (defn two's-complement [byte]
   (if (>= byte 0)
