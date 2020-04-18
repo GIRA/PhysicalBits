@@ -7,4 +7,10 @@ writeFile: fileName program: programOrString
 	program := programOrString isString
 		ifTrue: [Uzi compileString: programOrString]
 		ifFalse: [programOrString].
+	
+	UziCompileStatsReportGenerator current 
+		writeCLJ: program
+		encoded: (Uzi encode: program)
+		testname: fileName.
+	
 	self writeFile: fileName capitalized contents: (UziController new run: program)

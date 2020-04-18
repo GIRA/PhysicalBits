@@ -3,8 +3,9 @@
 		"outputDirectory" : "Richo 9/25/2019 17:49" },
 	"instance" : {
 		"register:test:class:" : "Richo 9/28/2019 14:59",
-		"setUp" : "Richo 9/25/2019 18:20",
-		"tearDown" : "Richo 9/25/2019 18:34",
+		"setUp" : "Richo 4/17/2020 20:35",
+		"tearDown" : "Richo 4/17/2020 20:35",
 		"writeActualDataOn:" : "Richo 9/25/2019 18:34",
 		"writeAggregateDataOn:" : "Richo 9/25/2019 18:52",
+		"writeCLJ:encoded:testname:" : "Richo 4/18/2020 10:36",
 		"writeColumnsOn:" : "Richo 9/25/2019 18:33" } }
