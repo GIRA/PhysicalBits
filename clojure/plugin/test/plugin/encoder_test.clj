@@ -1,6 +1,6 @@
 (ns plugin.encoder-test
   (:require [clojure.test :refer :all]
-            [plugin.compiler.core :as cc]
+            [plugin.compiler.compiler :as cc]
             [plugin.compiler.encoder :as en]
             [plugin.compiler.emitter :as emit]))
 

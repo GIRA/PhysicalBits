@@ -1,7 +1,7 @@
 (ns plugin.compiler-test
   (:require [clojure.test :refer :all]
             [plugin.compiler.ast-utils :as ast-utils]
-            [plugin.compiler.core :as cc])
+            [plugin.compiler.compiler :as cc])
   (:use [plugin.test-utils]))
 
 

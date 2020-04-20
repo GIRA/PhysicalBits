@@ -1,7 +1,7 @@
 (ns plugin.compiler.linker
   (:require [plugin.compiler.ast-utils :as ast-utils]
             [clojure.java.io :as io]
-            [plugin.parser.core :as parser]
+            [plugin.parser.parser :as parser]
             [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.

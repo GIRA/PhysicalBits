@@ -1,6 +1,6 @@
 (ns plugin.linker-test
   (:require [clojure.test :refer :all]
-            [plugin.compiler.core :as cc]
+            [plugin.compiler.compiler :as cc]
             [plugin.compiler.linker :as l])
   (:use [plugin.test-utils]))
 

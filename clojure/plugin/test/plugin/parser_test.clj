@@ -1,6 +1,6 @@
 (ns plugin.parser-test
   (:require [clojure.test :refer :all]
-            [plugin.parser.core :as parser :refer [parse]]
+            [plugin.parser.parser :as parser :refer [parse]]
             )
   (:use [plugin.test-utils]))
 

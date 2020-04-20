@@ -1,4 +1,4 @@
-(ns plugin.server.core
+(ns plugin.server.server
   (:require [clojure.core.async :as a]
             [compojure.core :as compojure :refer [GET POST]]
             [ring.middleware.params :refer [wrap-params]]
@@ -11,8 +11,8 @@
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [cheshire.core :as json]
-            [plugin.device.core :as device]
-            [plugin.compiler.core :as cc])
+            [plugin.device.controller :as device]
+            [plugin.compiler.compiler :as cc])
   (:gen-class))
 
 (def server (atom nil))

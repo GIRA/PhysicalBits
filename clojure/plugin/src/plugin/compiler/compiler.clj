@@ -1,8 +1,8 @@
-(ns plugin.compiler.core
+(ns plugin.compiler.compiler
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
             [clojure.walk :as w]
-            [plugin.parser.core :as parser]
+            [plugin.parser.parser :as parser]
             [plugin.device.boards :as boards]
             [plugin.compiler.ast-utils :as ast-utils]
             [plugin.compiler.emitter :as emit]

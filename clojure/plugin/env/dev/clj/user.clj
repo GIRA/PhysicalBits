@@ -1,9 +1,9 @@
 (ns user
   (:require [plugin.core :refer :all]
-            [plugin.device.core :as device :refer [state]]
-            [plugin.server.core :as server :refer [server]]
-            [plugin.compiler.core :as cc]
-            [plugin.parser.core :refer :all]
+            [plugin.device.controller :as device :refer [state]]
+            [plugin.server.server :as server :refer [server]]
+            [plugin.compiler.compiler :as cc]
+            [plugin.parser.parser :refer :all]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl]
             [clojure.test :as ctest])

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [clojure.walk :as w]
             [plugin.compiler.ast-utils :as ast-utils]
-            [plugin.compiler.core :as cc])
+            [plugin.compiler.compiler :as cc])
   (:use [plugin.test-utils]))
 
 (defn compile [src]

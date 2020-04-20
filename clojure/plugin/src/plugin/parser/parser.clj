@@ -1,4 +1,4 @@
-(ns plugin.parser.core
+(ns plugin.parser.parser
   (:require [instaparse.core :as insta])
   (:require [plugin.parser.ast-nodes :refer :all])
   (:require [plugin.parser.binary-operator :refer :all]))

@@ -1,4 +1,4 @@
-(ns plugin.device.core
+(ns plugin.device.controller
   (:refer-clojure :exclude [send])
   (:require [serial.core :as s]
             [serial.util :as su]
