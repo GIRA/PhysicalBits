@@ -15,9 +15,6 @@ void setup()
 {
 	monitor.initSerial(&serial);
 	monitor.loadInstalledProgram(&program);
-  for (int i = 10; i <= 13; i++) {
-    io.setValue(i, LOW);
-  }
 }
 
 void loop()

@@ -62,11 +62,9 @@ void Monitor::initSerial(UziSerial* s)
 	stream.init(serial);
 }
 
-GPIO* _io;
 
 void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
-  _io = io;
 	if (!serial->available()) return;
 	
 	if (state == DISCONNECTED)
@@ -113,24 +111,17 @@ void Monitor::acceptConnection()
 	state = CONNECTED; 
 	executeKeepAlive();
 	serial->write(expected);
-  
-  _io->setValue(10, HIGH);
 }
 
 void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 {
 	checkKeepAlive();
-	if (state == CONNECTED) 
+	if (state == CONNECTED)
 	{
-		_io->setValue(10, HIGH);
 		sendReport(io, program);
 		sendProfile();
 		sendVMState(program, vm);
 	}
-  else 
-  {    
-    _io->setValue(10, LOW);
-  }
 }
 
 void Monitor::sendError(uint8 errorCode)
