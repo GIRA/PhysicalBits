@@ -166,7 +166,7 @@
 
          <digits> = #'\\d+'
          integer = '-'? digits
-         float = ('NaN' | '-'?'Infinity' | integer '.' digits)
+         float = ('NaN' | '-'?'Infinity' | '-'? digits '.' digits)
          number = (float / integer)" ))
 
 (defn expand-binary-expression-nodes [ast]
@@ -178,4 +178,6 @@
         ))
     ast))
 
-(defn parse [str] (insta/transform transformations (expand-binary-expression-nodes (parse-program str))))
+(defn parse [str]
+  (insta/transform transformations
+                   (expand-binary-expression-nodes (parse-program str))))

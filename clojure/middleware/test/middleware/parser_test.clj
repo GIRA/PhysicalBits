@@ -10,6 +10,20 @@
   (testing "Sanity check."
     (is (= 1 1))))
 
+(deftest parsing-negative-numbers-larger-than-minus-1
+  (let [src "task foo() { return -0.5; }"
+        expected {:__class__ "UziProgramNode"
+                  :scripts [{:__class__ "UziTaskNode"
+                             :name "foo"
+                             :state "once"
+                             :body {:__class__ "UziBlockNode"
+                                    :statements [{:__class__ "UziReturnNode",
+                                                  :value     {:__class__ "UziNumberLiteralNode",
+                                                              :value     -0.5}}]}}]}
+        actual (parse src)]
+    (is (equivalent? expected actual))))
+
+
 (deftest empty-program
   (testing "An Empty Program"
     (let [src ""
