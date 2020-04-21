@@ -4738,3 +4738,689 @@
                                                     (emit/resume "test")])])
         actual (en/encode program)]
     (is (= expected actual))))
+
+; HACK(Richo): The following are variations of some of the previous tests, they
+; should NOT be converted to input programs for the VM tests.
+(deftest Test043ForLoop_uzi-src
+  (let [expected [1 2 8 7 11 144 1 0 13 131 255 128 255 0 132 175 241 7 255 0 180 255 0 129 166 255 128 240 245]
+        program (cc/compile-uzi-string "task for() running { for i = 7 to 11 { turnOn(i); }}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test044ReversedForLoop_uzi-src
+  (let [expected [1 2 8 7 11 144 1 0 13 132 255 128 255 0 131 173 241 7 255 0 180 255 0 130 166 255 128 240 245]
+        program (cc/compile-uzi-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); }}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test045ForLoopWithoutConstantStep_uzi-src
+  (let [expected [1 3 12 1 7 11 144 2 0 0 20 132 255 128 255 0 133 131 255 129 255 1 128 245 2 175 240 1 173 241 7 255 0 180 255 0 255 1 166 255 128 240 238]
+        program (cc/compile-uzi-string "
+        	var step = 1;
+
+        	task for() running {
+        		for i = 7 to 11 by step {
+        			turnOn(i);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test046ReverseForLoopWithoutConstantStep_uzi-src
+  (let [expected [1 3 8 7 11 7 191 128 0 0 144 2 0 0 20 132 255 128 255 0 131 133 255 129 255 1 128 245 2 175 240 1 173 241 7 255 0 180 255 0 255 1 166 255 128 240 238]
+        program (cc/compile-uzi-string "
+        	var step = -1;
+
+        	task for() running {
+        		for i = 11 to 7 by step {
+        			turnOn(i);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test047ForLoopShouldOnlyEvaluateStepOncePerIteration_uzi-src
+  (let [expected [3 3 4 13 11 193 32 0 0 191 128 0 0 0 6 133 130 165 149 133 187 0 6 132 130 165 148 132 187 144 2 0 0 21 128 255 128 255 0 193 192 255 129 255 1 128 245 2 175 240 1 173 241 8 131 255 0 161 255 0 255 1 166 255 128 240 237]
+        program (cc/compile-uzi-string "
+        	var step = -1;
+        	var stop = -10;
+
+        	func negatedStep() {
+        		step = step * -1;
+        		return step;
+        	}
+
+        	func negatedStop() {
+        		stop = stop * -1;
+        		return stop;
+        	}
+
+        	task for() running {
+        		for i = 0 to negatedStop() by negatedStep() {
+        			write(D13, i);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test048MutexShouldGuaranteeACriticalSection_uzi-src
+  (let [expected [5 8 12 0 11 13 9 3 232 7 208 15 191 128 0 0 191 0 0 0 62 128 0 0 0 12 131 128 170 136 188 170 190 241 248 129 147 188 152 0 4 128 147 130 152 192 6 2 133 162 144 1 0 20 192 186 128 255 128 255 0 129 175 241 10 132 255 0 161 134 183 255 0 138 166 255 128 240 242 193 186 144 1 0 20 192 186 129 255 128 255 0 128 173 241 10 132 255 0 161 135 183 255 0 137 166 255 128 240 242 193 186]
+        program (cc/compile-uzi-string "
+        	import m from 'Mutex.uzi';
+
+        	task blink() running 1/s { toggle(D13); }
+
+        	task test1() running {
+        		m.acquire();
+        		for a = 0 to 1 by 0.25 {
+        			write(D11, a);
+        			delayMs(1000);
+        		}
+        		m.release();
+        	}
+
+        	task test2() running {
+        		m.acquire();
+        		for a = 1 to 0 by -0.5 {
+        			write(D11, a);
+        			delayMs(2000);
+        		}
+        		m.release();
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer_uzi-src
+  (let [expected [4 7 16 0 0 11 13 5 3 232 11 191 128 0 0 191 128 0 0 32 1 27 188 137 171 241 8 137 130 170 241 3 188 153 182 240 244 131 128 171 242 252 130 153 182 255 0 148 129 147 131 128 171 242 252 0 23 188 136 171 241 8 136 130 170 241 3 188 152 182 240 244 131 129 171 242 252 130 152 182 128 147 132 187 192 7 2 134 162 128 7 133 180 193 192 186 133 162]
+        program (cc/compile-uzi-string "
+        	import c from 'Channel.uzi';
+
+        	task blink() running 1/s { toggle(D13); }
+
+        	task cp() running {
+        		turnOn(D11);
+        		c.send(c.receive());
+        		toggle(D11);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers_uzi-src
+  (let [expected [6 10 24 0 0 2 3 11 13 5 3 232 15 191 128 0 0 63 0 0 0 63 0 0 0 32 1 27 188 138 171 241 8 138 130 170 241 3 188 154 182 240 244 131 128 171 242 252 130 154 182 255 0 148 129 147 131 128 171 242 252 128 5 129 192 186 129 156 128 5 128 192 186 133 156 128 5 139 192 186 134 156 192 9 2 136 162 128 3 135 140 161]
+        program (cc/compile-uzi-string "
+        	import c from 'Channel.uzi';
+        	var counter = 0.5;
+
+        	task producer1() running {
+        		c.send(1);
+        		counter = 1;
+        	}
+
+        	task producer0() running {
+        		c.send(0);
+        		counter = 2;
+        	}
+
+        	task producer05() running {
+        		c.send(0.5);
+        		counter = 3;
+        	}
+
+        	task blink() running 1/s { toggle(D13); }
+
+        	task test() running { write(D11, counter); }")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer_uzi-src
+  (let [expected [4 7 16 0 0 11 13 5 3 232 11 191 128 0 0 191 128 0 0 32 1 27 188 137 171 241 8 137 130 170 241 3 188 153 182 240 244 131 128 171 242 252 130 153 182 255 0 148 129 147 131 128 171 242 252 0 23 188 136 171 241 8 136 130 170 241 3 188 152 182 240 244 131 129 171 242 252 130 152 182 128 147 132 187 144 1 1 11 255 0 192 186 129 255 0 168 255 128 133 255 0 161 240 245 192 7 3 134 193 161]
+        program (cc/compile-uzi-string "
+        	import c from 'Channel.uzi';
+
+        	task producer() running {
+        		var a = 1;
+        		forever {
+        			c.send(a);
+        			a = 1 - a;
+        			write(D11, a);
+        		}
+        	}
+
+        	task consumer() running 1/s {
+        		write(D13, c.receive());
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test052ChannelWithMultipleProducersAndOneConsumer_uzi-src
+  (let [expected [9 10 16 0 0 11 13 5 3 232 23 191 128 0 0 191 128 0 0 62 128 0 0 63 0 0 0 63 64 0 0 32 1 27 188 137 171 241 8 137 130 170 241 3 188 153 182 240 244 131 128 171 242 252 130 153 182 255 0 148 129 147 131 128 171 242 252 0 23 188 136 171 241 8 136 130 170 241 3 188 152 182 240 244 131 129 171 242 252 130 152 182 128 147 132 187 192 7 2 134 162 128 3 128 192 186 128 3 138 192 186 128 3 139 192 186 128 3 140 192 186 128 3 129 192 186 192 7 3 133 193 161]
+        program (cc/compile-uzi-string "
+        	import c from 'Channel.uzi';
+
+        	task blink() running 1/s { toggle(D13); }
+
+        	task producer1() running { c.send(0); }
+        	task producer2() running { c.send(0.25); }
+        	task producer3() running { c.send(0.5); }
+        	task producer4() running { c.send(0.75); }
+        	task producer5() running { c.send(1); }
+
+        	task consumer() running 1/s { write(D11, c.receive()); }")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test053ChannelWithMultipleConsumersAndOneProducer_uzi-src
+  (let [expected [7 10 24 0 0 10 11 12 13 5 3 232 15 191 128 0 0 191 128 0 0 62 128 0 0 32 1 27 188 139 171 241 8 139 130 170 241 3 188 155 182 240 244 131 128 171 242 252 130 155 182 255 0 148 129 147 131 128 171 242 252 0 23 188 138 171 241 8 138 130 170 241 3 188 154 182 240 244 131 129 171 242 252 130 154 182 128 147 132 187 128 3 136 193 161 128 3 133 193 161 128 3 134 193 161 128 3 135 193 161 144 1 0 16 128 255 128 255 0 129 175 241 10 255 0 192 186 137 183 255 0 140 166 255 128 240 242]
+        program (cc/compile-uzi-string "
+        	import c from 'Channel.uzi';
+
+        	task consumer1() running { write(D13, c.receive()); }
+        	task consumer2() running { write(D10, c.receive()); }
+        	task consumer3() running { write(D11, c.receive()); }
+        	task consumer4() running { write(D12, c.receive()); }
+
+
+        	task consumer() running {
+        		for a = 0 to 1 by 0.25 {
+        			c.send(a);
+        			delayMs(1000);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther_uzi-src
+  (let [expected [1 3 8 6 7 5 3 232 208 5 2 4 0 10 129 241 2 255 0 162 255 1 131 166 255 129 255 1 162]
+        program (cc/compile-uzi-string "
+        	\"Pin 7 should blink once per second.
+        	Pin 6 should blink once per second.\"
+        	task main() running 1/s {
+        		if 1 {
+        			var pin = 7;
+        			toggle(pin);
+        		}
+        		var pin;
+        		pin = pin + 6;
+        		toggle(pin);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther_uzi-src
+  (let [expected [1 3 8 6 7 5 3 232 208 5 2 4 3 6 129 241 2 255 0 162 255 1 162]
+        program (cc/compile-uzi-string "
+        	\"Pin 7 should blink once per second.
+        	Pin 6 should blink once per second.\"
+        	task main() running 1/s {
+        		if 1 {
+        			var pin = 7;
+        			toggle(pin);
+        		}
+        		var pin = 6;
+        		toggle(pin);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test056Round_uzi-src
+  (let [expected [1 7 12 10 11 12 5 3 232 15 62 128 0 0 63 0 0 0 63 64 0 0 192 6 12 131 135 250 2 161 132 136 250 2 161 133 137 250 2 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D10, round(0.25));
+        		write(D11, round(0.5));
+        		write(D12, round(0.75));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test057Ceil_uzi-src
+  (let [expected [1 7 12 10 11 12 5 3 232 15 62 128 0 0 63 0 0 0 63 64 0 0 192 6 12 131 135 250 3 161 132 136 250 3 161 133 137 250 3 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D10, ceil(0.25));
+        		write(D11, ceil(0.5));
+        		write(D12, ceil(0.75));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test058Floor_uzi-src
+  (let [expected [1 7 12 10 11 12 5 3 232 15 62 128 0 0 63 0 0 0 63 64 0 0 192 6 12 131 135 250 4 161 132 136 250 4 161 133 137 250 4 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D10, floor(0.25));
+        		write(D11, floor(0.5));
+        		write(D12, floor(0.75));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test059Sqrt_uzi-src
+  (let [expected [1 3 4 9 5 3 232 7 62 128 0 0 192 4 4 131 133 250 5 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D9, sqrt(0.25));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test060Abs_uzi-src
+  (let [expected [1 6 12 9 10 13 5 3 232 11 191 0 0 0 63 0 0 0 192 6 12 133 130 250 6 161 131 135 250 6 161 132 136 250 6 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D13, abs(-1));
+        		write(D9, abs(-0.5));
+        		write(D10, abs(0.5));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test061NaturalLogarithm_uzi-src
+  (let [expected [1 7 20 2 3 7 8 9 5 3 232 7 62 69 200 96 192 8 14 133 129 250 7 161 134 131 250 7 137 168 161 135 132 250 7 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, ln(1)); \"0\"
+        		write(D8, ln(2) - 0.1931471805599453); \"0.5\"
+        		write(D9, ln(3)); \"1.09\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test062Log10_uzi-src
+  (let [expected [1 7 20 3 7 8 9 10 5 3 232 7 60 187 108 53 192 8 14 132 129 250 8 161 133 131 250 8 137 166 161 134 135 250 8 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, log10(1)); \"0\"
+        		write(D8, log10(3) + 0.02287874528033756); \"0.5\"
+        		write(D9, log10(10)); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test063Exp_uzi-src
+  (let [expected [1 6 12 7 8 9 5 3 232 11 193 93 12 85 191 49 114 24 192 6 12 131 135 250 9 161 132 136 250 9 161 133 128 250 9 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, exp(-13.81551055796427)); \"0\"
+        		write(D8, exp(-0.693147180559945)); \"0.5\"
+        		write(D9, exp(0)); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test064Pow10_uzi-src
+  (let [expected [1 6 12 7 8 9 5 3 232 11 192 64 0 0 190 154 28 172 192 6 12 131 135 250 10 161 132 136 250 10 161 133 128 250 10 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, pow10(-3)); \"0.001\"
+        		write(D8, pow10(-0.301)); \"0.5000345349769785\"
+        		write(D9, pow10(0)); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test065IsCloseTo_uzi-src
+  (let [expected [1 9 20 2 10 11 12 13 5 3 232 15 63 128 0 84 64 0 16 98 127 128 0 0 192 8 24 129 137 250 28 241 3 135 180 240 2 135 181 134 128 128 250 28 161 133 131 138 250 28 161 132 139 139 250 28 161]
+        program (cc/compile-uzi-string "
+        	\"D13 -> ON
+        	D12 -> ON
+        	D11 -> OFF
+        	D10 -> ON\"
+        	task main() running 1/s {
+        		if isCloseTo(1, 1.00001) {
+        			turnOn(D13);
+        		} else {
+        			turnOff(D13);
+        		}
+
+        		write(D12, isCloseTo(0, 0));
+        		write(D11, isCloseTo(2, 2.001));
+        		write(D10, isCloseTo(Infinity, Infinity));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test066Asin_uzi-src
+  (let [expected [1 6 12 7 8 9 5 3 232 11 191 201 15 219 62 245 194 143 192 6 14 131 128 250 11 161 132 136 250 11 161 133 130 250 11 135 250 28 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, asin(0)); \"0\"
+        		write(D8, asin(0.48)); \"0.500654712404588\"
+        		write(D9, isCloseTo(asin(-1), -1.570796326794897)); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test067Acos_uzi-src
+  (let [expected [1 6 12 7 8 9 5 3 232 11 63 96 182 11 63 201 15 219 192 6 14 131 129 250 12 161 132 135 250 12 161 133 128 250 12 136 250 28 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, acos(1)); \"0\"
+        		write(D8, acos(0.8777777777)); \"0.4995926612045067\"
+        		write(D9, isCloseTo(acos(0), 1.570796326794897)); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test068Atan_uzi-src
+  (let [expected [1 6 12 7 8 9 5 3 232 11 63 11 224 223 63 202 61 113 192 6 12 131 128 250 13 161 132 135 250 13 161 133 136 250 13 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, atan(0)); \"0\"
+        		write(D8, atan(0.5464)); \"0.5000750944782615\"
+        		write(D9, atan(1.58)); \"1.006528137936965\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test069Power_uzi-src
+  (let [expected [1 6 16 2 7 8 9 5 3 232 7 63 53 4 243 192 7 15 132 128 129 250 14 161 133 136 131 250 14 161 134 129 128 250 14 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, 0**1); \"0\"
+        		write(D8, 0.7071067811865475**2); \"0.5\"
+        		write(D9, 1**0); \"1\"
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test070IsOn_uzi-src
+  (let [expected [1 2 4 13 5 3 232 192 4 8 131 250 15 241 3 131 181 240 2 131 180]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		if isOn(D13) {
+        			turnOff(D13);
+        		} else {
+        			turnOn(D13);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test071IsOff_uzi-src
+  (let [expected [1 2 4 13 5 3 232 192 4 8 131 250 16 241 3 131 180 240 2 131 181]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		if isOff(D13) {
+        			turnOn(D13);
+        		} else {
+        			turnOff(D13);
+        		}
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test072Mod_uzi-src
+  (let [expected [1 8 28 0 2 3 10 11 12 13 5 3 232 192 10 32 131 133 250 17 147 131 128 170 241 2 137 162 131 129 170 241 2 136 162 131 132 170 241 2 135 162 131 133 170 241 2 134 162 131 129 166 147]
+        program (cc/compile-uzi-string "
+        	var a = 0;
+        	task main() running 1/s {
+        		a = a % 3;
+        		if a == 0 { toggle(D13); }
+        		if a == 1 { toggle(D12); }
+        		if a == 2 { toggle(D11); }
+        		if a == 3 { toggle(D10); }
+        		a = a + 1;
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test073Constrain_uzi-src
+  (let [expected [1 9 20 5 7 8 9 10 5 3 232 15 193 32 0 0 192 64 0 0 63 0 0 0 192 8 22 132 137 138 131 250 18 138 170 161 133 139 138 131 250 18 161 134 135 138 131 250 18 131 170 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, constrain(-10, -3, 5) == -3);
+        		write(D8, constrain(0.5, -3, 5));
+        		write(D9, constrain(10, -3, 5) == 5);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test074RandomInt_uzi-src
+  (let [expected [1 5 8 0 13 5 3 232 6 1 134 160 7 199 195 80 0 208 5 1 0 23 135 134 250 19 255 128 255 0 131 171 255 0 135 173 189 255 0 134 175 189 241 3 132 180 240 2 132 181 255 0 147]
+        program (cc/compile-uzi-string "
+        	var old = 0;
+        	task main() running 1/s {
+        		var a = randomInt(-100000, 100000);
+        		if (a != old && a >= -100000 && a <= 100000) {
+        			turnOn(D13);
+        		} else {
+        			turnOff(D13);
+        		}
+        		old = a;
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test075Random_uzi-src
+  (let [expected [1 3 8 0 13 5 3 232 208 5 1 0 21 250 20 255 128 255 0 131 171 255 0 128 173 189 255 0 129 175 189 241 3 132 180 240 2 132 181 255 0 147]
+        program (cc/compile-uzi-string "
+        	var old = 0;
+        	task main() running 1/s {
+        		var a = random();
+        		if (a != old && a >= 0 && a <= 1) {
+        			turnOn(D13);
+        		} else {
+        			turnOff(D13);
+        		}
+        		old = a;
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test076IsEven_uzi-src
+  (let [expected [1 7 16 2 7 8 9 5 3 232 11 192 0 0 0 63 0 0 0 192 7 17 132 129 250 21 161 131 250 21 136 250 21 189 241 3 133 137 161 134 128 250 21 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isEven(1));
+        		if isEven(2) && isEven(-2) { write(D8, 0.5); }
+        		write(D9, isEven(0));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test077IsOdd_uzi-src
+  (let [expected [1 6 16 3 7 8 9 5 3 232 7 63 0 0 0 192 7 17 132 128 250 22 161 129 250 22 130 250 22 189 241 3 133 136 161 134 131 250 22 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isOdd(0));
+        		if isOdd(1) && isOdd(-1) { write(D8, 0.5); }
+        		write(D9, isOdd(3));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test078IsPrime_uzi-src
+  (let [expected [1 8 24 2 3 5 7 8 9 5 3 232 7 63 0 0 0 192 9 17 134 136 250 23 161 131 250 23 132 250 23 189 241 3 135 138 161 136 133 250 23 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isPrime(9));
+        		if isPrime(2) && isPrime(3) { write(D8, 0.5); }
+        		write(D9, isPrime(5));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test079IsWhole_uzi-src
+  (let [expected [1 8 12 7 8 9 5 3 232 6 1 134 160 15 193 32 0 0 63 0 0 0 65 24 0 0 192 6 17 131 138 250 24 161 128 250 24 135 250 24 189 241 3 132 137 161 133 136 250 24 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isWhole(9.5));
+        		if isWhole(0) && isWhole(100000) { write(D8, 0.5); }
+        		write(D9, isWhole(-10));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test080IsPositive_uzi-src
+  (let [expected [1 8 16 7 8 9 10 5 3 232 6 1 134 160 11 193 32 0 0 63 0 0 0 192 7 17 131 137 250 25 161 134 250 25 136 250 25 189 241 3 132 138 161 133 128 250 25 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isPositive(-10));
+        		if isPositive(10) && isPositive(100000) { write(D8, 0.5); }
+        		write(D9, isPositive(0));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test081IsNegative_uzi-src
+  (let [expected [1 7 12 7 8 9 5 3 232 15 193 32 0 0 191 11 155 103 63 0 0 0 192 6 17 131 128 250 26 161 135 250 26 136 250 26 189 241 3 132 137 161 133 130 250 26 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isNegative(0));
+        		if isNegative(-10) && isNegative(-0.54534) { write(D8, 0.5); }
+        		write(D9, isNegative(-1));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test082IsDivisibleBy_uzi-src
+  (let [expected [1 9 20 5 7 8 9 64 5 3 232 15 193 112 0 0 192 64 0 0 63 0 0 0 192 8 21 132 134 131 250 27 161 131 129 250 27 137 138 250 27 189 241 3 133 139 161 134 135 133 250 27 161]
+        program (cc/compile-uzi-string "
+        	task main() running 1/s {
+        		write(D7, isDivisibleBy(9, 5));
+        		if isDivisibleBy(5, 1) && isDivisibleBy(-15, -3) { write(D8, 0.5); }
+        		write(D9, isDivisibleBy(64, 8));
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test085Minutes_uzi-src
+  (let [expected [1 4 16 2 3 4 13 128 24 250 31 129 173 241 252 134 180 250 31 131 173 241 252 134 181 250 31 132 173 241 252 134 180 250 31 133 173 241 252 134 181]
+        program (cc/compile-uzi-string "
+        	task main() running {
+        		until minutes() >= 1;
+        		turnOn(D13);
+        		until minutes() >= 2;
+        		turnOff(D13);
+        		until minutes() >= 3;
+        		turnOn(D13);
+        		until minutes() >= 4;
+        		turnOff(D13);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test086Seconds_uzi-src
+  (let [expected [1 4 16 2 3 4 13 128 24 169 129 173 241 252 134 180 169 131 173 241 252 134 181 169 132 173 241 252 134 180 169 133 173 241 252 134 181]
+        program (cc/compile-uzi-string "
+        	task main() running {
+        		until seconds() >= 1;
+        		turnOn(D13);
+        		until seconds() >= 2;
+        		turnOff(D13);
+        		until seconds() >= 3;
+        		turnOn(D13);
+        		until seconds() >= 4;
+        		turnOff(D13);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test087Millis_uzi-src
+  (let [expected [1 5 4 13 17 3 232 7 208 11 184 15 160 128 24 184 132 173 241 252 131 180 184 133 173 241 252 131 181 184 134 173 241 252 131 180 184 135 173 241 252 131 181]
+        program (cc/compile-uzi-string "
+        	task main() running {
+        		until millis() >= 1000;
+        		turnOn(D13);
+        		until millis() >= 2000;
+        		turnOff(D13);
+        		until millis() >= 3000;
+        		turnOn(D13);
+        		until millis() >= 4000;
+        		turnOff(D13);
+        	}")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test088ScriptCallOverridingPrimitive_uzi-src
+  (let [expected [2 2 4 13 5 3 232 192 4 4 131 128 193 186 32 2 10 255 0 160 241 3 255 0 181 240 2 255 0 180 255 1 183]
+        program (cc/compile-uzi-string "
+        task blink() running 1/s { toggle(D13, 0); }
+
+        proc toggle(pin, delay)  {
+        	if read(pin) { turnOff(pin); }
+        	else { turnOn(pin); }
+        	delayMs(delay);
+        }")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test089DebuggerBreakpointHaltsAllScripts_uzi-src
+  (let [expected [2 3 8 11 13 5 3 232 192 5 2 131 162 128 8 132 180 133 183 132 181 133 183]
+        program (cc/compile-uzi-string "
+        task blink11() running 1/s {
+        	toggle(D11);
+        }
+
+        task blink13() running {
+        	turnOn(D13);
+        	delayMs(1000);
+        	turnOff(D13);
+        	delayMs(1000);
+        }")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test091ChangingTheProgramResetsTheVMState_uzi-src
+  (let [expected [1 2 4 13 5 3 232 128 8 131 180 132 183 131 181 132 183]
+        program (cc/compile-uzi-string "
+        task blink13() running {
+        	turnOn(D13);
+        	delayMs(1000);
+        	turnOff(D13);
+        	delayMs(1000);
+        }")
+        actual (en/encode program)]
+    (is (= expected actual))))
+
+(deftest Test094ProgramWithMultipleImports_uzi-src
+  (let [expected [12 25 92 0 0 0 0 0 0 0 0 0 5 6 7 8 9 10 11 13 18 19 45 100 100 200 5 3 232 7 63 0 0 0 32 3 6 255 0 155 255 1 154 255 2 249 24 64 23 5 139 138 248 24 250 32 153 0 2 137 187 32 3 6 255 0 147 255 1 148 255 2 149 32 1 7 133 181 132 180 131 255 0 161 32 1 7 132 181 133 180 131 255 0 161 32 3 6 255 0 150 255 1 151 255 2 152 32 1 7 136 181 135 180 134 255 0 161 32 1 7 135 181 136 180 134 255 0 161 128 17 248 21 248 20 248 25 192 186 209 140 142 143 195 186 141 248 18 248 16 198 186 254 9 192 17 64 194 128 170 241 7 129 196 186 129 199 186 240 53 194 248 23 172 241 7 129 196 186 129 199 186 240 42 194 248 22 172 241 7 248 27 196 186 248 27 199 186 240 31 250 20 248 27 174 241 14 194 248 22 174 241 9 248 27 196 186 248 27 200 186 248 26 183 240 243 240 13 194 248 22 174 241 9 248 27 199 186 248 27 197 186 248 26 183 240 243 192 26 2 248 19 162]
+        program (cc/compile-uzi-string "
+        import sonar from 'Sonar.uzi';
+        import leftMotor from 'DCMotor.uzi';
+        import rightMotor from 'DCMotor.uzi';
+
+        task setup() {
+        	sonar.init(trig: A5, echo: A4, maxDist: 200);
+        	start sonar.reading;
+        	leftMotor.init(en: D5, f: D7, r: D8);
+        	rightMotor.init(en: D6, f: D11, r: D9);
+        }
+
+        task move() running 100/s {
+        	if (sonar.distance_cm() == 0) {
+        		leftMotor.forward(speed: 1);
+        		rightMotor.forward(speed: 1);
+        	} else {
+        		if (sonar.distance_cm() > 100) {
+        			leftMotor.forward(speed: 1);
+        			rightMotor.forward(speed: 1);
+        		} else {
+        			if (sonar.distance_cm() > 45) {
+        				leftMotor.forward(speed: 0.5);
+        				rightMotor.forward(speed: 0.5);
+        			} else {
+        				if (random() < 0.5) {
+        					while (sonar.distance_cm() < 45) {
+        						leftMotor.forward(speed: 0.5);
+        						rightMotor.backward(speed: 0.5);
+        						delayMs(1000);
+        					}
+        				} else {
+        					while (sonar.distance_cm() < 45) {
+        						rightMotor.forward(speed: 0.5);
+        						leftMotor.backward(speed: 0.5);
+        						delayMs(1000);
+        					}
+        				}
+        			}
+        		}
+        	}
+        }
+
+        task blink13() running 1/s {
+        	toggle(D13);
+        }")
+        actual (en/encode program)]
+    (is (= expected actual))))
