@@ -8,9 +8,10 @@ writeFile: fileName program: programOrString
 		ifTrue: [Uzi compileString: programOrString]
 		ifFalse: [programOrString].
 	
-	UziCompileStatsReportGenerator current 
-		writeCLJ: program
-		encoded: (Uzi encode: program)
-		testname: fileName.
+	programOrString isString
+		ifTrue: [	UziCompileStatsReportGenerator current 
+			writeSrc: programOrString
+			encoded: (Uzi encode: program)
+			testname: fileName].
 	
 	self writeFile: fileName capitalized contents: (UziController new run: program)
