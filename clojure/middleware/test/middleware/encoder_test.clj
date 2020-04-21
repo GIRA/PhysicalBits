@@ -1,4 +1,5 @@
 (ns middleware.encoder-test
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]

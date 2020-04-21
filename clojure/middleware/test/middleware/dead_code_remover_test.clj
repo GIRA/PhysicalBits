@@ -1,4 +1,5 @@
 (ns middleware.dead-code-remover-test
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.walk :as w]
             [middleware.compiler.ast-utils :as ast-utils]

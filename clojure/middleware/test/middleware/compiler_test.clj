@@ -1,4 +1,5 @@
 (ns middleware.compiler-test
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [middleware.compiler.ast-utils :as ast-utils]
             [middleware.compiler.compiler :as cc])
