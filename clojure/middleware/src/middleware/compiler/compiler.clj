@@ -1,7 +1,6 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
   (:require [cheshire.core :refer [parse-string]]
-            [clojure.walk :as w]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
             [middleware.compiler.ast-utils :as ast-utils]
