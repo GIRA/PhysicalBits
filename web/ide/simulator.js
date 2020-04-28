@@ -25,6 +25,7 @@ function ctorSimulator() {
      start: startProgram,
      stop: stopProgram
      };
+     
 
   //simulator.pins.forEach((item) => console.log(item));
   let interval = null;
@@ -616,3 +617,8 @@ function ctorSimulator() {
   //setInterval(changeRandomPinValue, 1000);
   return simulator;
 };
+
+if(typeof module != "undefined")
+     {
+       module.exports = ctorSimulator;
+     }
