@@ -1,4 +1,4 @@
-
+var assert = require('assert');
 var simCtor = require('../ide/simulator');
 
 function initializeSimulator()
@@ -6,6 +6,6 @@ function initializeSimulator()
     return simCtor();
 }
 
-var sim = initializeSimulator();
-
-console.log(sim.startDate);
+it('sanity-check', function () {
+  assert.equal(0, 0);  
+});
