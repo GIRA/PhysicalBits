@@ -19,13 +19,17 @@ function ctorSimulator() {
 
 
      execute: execute,
+     loadProgram: loadProgram,
      loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
      getProgram: () => Uzi.state.program.current.compiled,
-     update: updateProgram,
+     update: updateProgram, // TODO(Richo): This seems unnecessary
      start: startProgram,
-     stop: stopProgram
-     };
-     
+     stop: stopProgram,
+
+     setPinValue: setPinValue,
+     getPinValue: getPinValue,
+   };
+
 
   //simulator.pins.forEach((item) => console.log(item));
   let interval = null;
@@ -209,6 +213,10 @@ function ctorSimulator() {
       case "UziPopInstruction":{
         let g = pop();
         setGlobalValue(instruction.argument.name,g);
+      } break;
+      case "UziStopScriptInstruction": {
+        // TODO(Richo): Implement this instruction!
+
       } break;
       /////////////////
       /*case 'turn_on':
