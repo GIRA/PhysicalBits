@@ -17,6 +17,11 @@ describe('Simulator Tests', function () {
     sim = initializeSimulator();
   });
 
+  afterEach(function () {
+    sim.stop();
+    sim = null;
+  });
+  
   it('set/get pin value', function () {
     sim.setPinValue(6, 1);
     assert.equal(1, sim.getPinValue(6));
