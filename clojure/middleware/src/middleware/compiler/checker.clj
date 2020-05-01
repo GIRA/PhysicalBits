@@ -7,7 +7,7 @@
 
 (defn- assert [bool description node errors]
   (when (not bool)
-    register-error! description node errors)
+    (register-error! description node errors))
   bool)
 
 (defmulti check-node (fn [node errors path] (:__class__ node)))
