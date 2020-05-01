@@ -15,7 +15,7 @@
 (defn- check [node errors path]
   (check-node node errors (conj path node))
   (doseq [child-node (ast-utils/children node)]
-    (check child-node)))
+    (check child-node errors path)))
 
 (defmethod check-node "UziProgramNode" [node errors path]
   (let [imports (:imports node)]
