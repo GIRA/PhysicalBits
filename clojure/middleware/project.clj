@@ -17,6 +17,12 @@
              :test [:project/test :user/test]
              :dev [:project/dev :user/dev]
 
+             ; NOTE(Richo): To use atom and proto-repl (place in profiles.clj)
+             ; :user/dev {:dependencies [[proto-repl "0.3.1"]]}
+
+             ; NOTE(Richo): To use sound notifications with test-refresh (place in profiles.clj)
+             ; :user/test {:resource-paths ["env/test/sounds"]}
+
              :project/test {:resource-paths ["env/test/resources"]}
 
              :project/dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
