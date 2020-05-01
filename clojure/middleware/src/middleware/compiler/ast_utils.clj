@@ -34,6 +34,30 @@
                    "UziVariableNode"}
                  type))))
 
+(defn statement? [{:keys [primitive-name] :as node}]
+  (let [type (node-type node)]
+    (if (= "UziCallNode" type) ; Special case for calls
+      (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
+        (not= 1 after)
+        true)
+      (contains? #{"UziAssignmentNode"
+                   "UziConditionalNode"
+                   "UziForNode"
+                   "UziForeverNode"
+                   "UziWhileNode"
+                   "UziDoWhileNode"
+                   "UziUntilNode"
+                   "UziDoUntilNode"
+                   "UziRepeatNode"
+                   "UziReturnNode"
+                   "UziScriptStartNode"
+                   "UziScriptStopNode"
+                   "UziScriptResumeNode"
+                   "UziScriptPauseNode"
+                   "UziVariableDeclarationNode"
+                   "UziYieldNode"}
+                 type))))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
     (if-not primitive-name
