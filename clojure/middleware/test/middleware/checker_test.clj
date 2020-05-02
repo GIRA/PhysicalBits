@@ -63,7 +63,8 @@
        result#)))
 
 (defn check [src]
-  (-> src pp/parse checker/check-tree))
+  (let [ast (if string? (pp/parse src) src)]
+    (checker/check-tree ast)))
 
 (def invalid? check)
 (def valid? check)
