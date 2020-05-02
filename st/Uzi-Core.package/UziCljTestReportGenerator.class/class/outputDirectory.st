@@ -1,0 +1,3 @@
+accessing
+outputDirectory
+	^ UziVMTestFilesGenerator outputDirectory

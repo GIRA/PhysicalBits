@@ -1,10 +1,10 @@
 {
 	"class" : {
-		 },
+		"resources" : "Richo 5/2/2020 16:23" },
 	"instance" : {
-		"assertInvalid:" : "Richo 8/10/2017 10:30",
-		"assertValid:" : "Richo 5/19/2018 15:22",
-		"check:" : "Richo 8/11/2017 19:18",
+		"assertInvalid:" : "Richo 5/2/2020 16:25",
+		"assertValid:" : "Richo 5/2/2020 16:25",
+		"check:" : "Richo 5/1/2020 11:36",
 		"setUp" : "Richo 12/20/2019 10:52",
 		"test001BlockOnlyContainsStatements" : "Richo 9/13/2017 10:35",
 		"test002AssignmentsAreNotExpressions" : "Richo 9/13/2017 10:35",
