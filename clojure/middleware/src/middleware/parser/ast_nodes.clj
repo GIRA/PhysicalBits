@@ -1,12 +1,7 @@
 (ns middleware.parser.ast-nodes)
 
-(defn- conj-if-not-nil
-  [map key value]
-  (conj map
-        (when value [key value])))
-
 (defn program-node
-  [imports globals scripts primitives]
+  [& {:keys [imports globals scripts primitives]}]
   {:__class__  "UziProgramNode"
    :imports    imports,
    :globals    globals
@@ -31,20 +26,31 @@
    :path                path,
    :initializationBlock block})
 
-(defn script-node
-  [type & {:keys [identifier arguments tick-rate state locals body]
-           :or   {arguments []
-                  tick-rate nil
-                  state     nil
-                  body      nil}}]
-  (conj-if-not-nil
-   (conj-if-not-nil
-    {:__class__   type,
-     :name        identifier,
-     :arguments   arguments,
-     :body        body}
-    :state state)
-   :tickingRate tick-rate))
+(defn task-node
+  [& {:keys [identifier arguments tick-rate state locals body]
+      :or   {arguments []}}]
+  {:__class__   "UziTaskNode",
+   :name        identifier,
+   :arguments   arguments,
+   :body        body,
+   :state       state,
+   :tickingRate tick-rate})
+
+(defn procedure-node
+  [& {:keys [identifier arguments locals body]
+      :or   {arguments []}}]
+  {:__class__   "UziProcedureNode",
+   :name        identifier,
+   :arguments   arguments,
+   :body        body})
+
+(defn function-node
+  [& {:keys [identifier arguments locals body]
+      :or   {arguments []}}]
+  {:__class__   "UziFunctionNode",
+   :name        identifier,
+   :arguments   arguments,
+   :body        body})
 
 (defn literal-number-node
   [value]

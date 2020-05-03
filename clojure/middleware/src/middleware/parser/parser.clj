@@ -16,28 +16,25 @@
    :identifier          str
    :program             (fn [& arg]
                           (program-node
-                            (filter-class "UziImportNode" arg)
-                            (filter-class "UziVariableDeclarationNode" arg)
-                            (filterv #(contains? scriptTypes (:__class__ %)) arg)
-                            (filter-class "UziPrimitiveDeclarationNode" arg))),
+                           :imports (filter-class "UziImportNode" arg)
+                           :globals (filter-class "UziVariableDeclarationNode" arg)
+                           :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg)
+                           :primitives (filter-class "UziPrimitiveDeclarationNode" arg))),
    :primitive           primitive-node
    :task                (fn [identifier params state & rest]
-                          (script-node "UziTaskNode"
-                                       :identifier identifier
-                                       :arguments params
-                                       :state (or (second state) "once")
-                                       :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
-                                       :body (first-class-or-default "UziBlockNode" rest nil)))
+                          (task-node :identifier identifier
+                                     :arguments params
+                                     :state (or (second state) "once")
+                                     :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
+                                     :body (first-class-or-default "UziBlockNode" rest nil)))
    :procedure           (fn [identifier params & rest]
-                          (script-node "UziProcedureNode"
-                                       :identifier identifier
-                                       :arguments params
-                                       :body (first-class-or-default "UziBlockNode" rest nil)))
+                          (procedure-node :identifier identifier
+                                          :arguments params
+                                          :body (first-class-or-default "UziBlockNode" rest nil)))
    :function            (fn [identifier params & rest]
-                          (script-node "UziFunctionNode"
-                                       :identifier identifier
-                                       :arguments params
-                                       :body (first-class-or-default "UziBlockNode" rest nil)))
+                          (function-node :identifier identifier
+                                         :arguments params
+                                         :body (first-class-or-default "UziBlockNode" rest nil)))
    ;TODO(Tera): the comments are ignored by the syntax definition for now.
    :comments            (fn [strings] (comment-node strings))
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
