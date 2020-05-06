@@ -154,16 +154,18 @@
                  :times     times
                  :body      block})
 
-(defn conditional-node
-  [condition true-branch false-branch]
-  {:__class__   "UziConditionalNode"
-   :condition   condition
-   :trueBranch  true-branch
-   :falseBranch false-branch})
-
 (defn block-node
   [statements]
   {:__class__ "UziBlockNode" :statements statements})
+
+(defn conditional-node
+  ([condition true-branch]
+   (conditional-node condition true-branch (block-node [])))
+  ([condition true-branch false-branch]
+   {:__class__   "UziConditionalNode"
+    :condition   condition
+    :trueBranch  true-branch
+    :falseBranch false-branch}))
 
 (defn binary-expression-node
   [left op right]

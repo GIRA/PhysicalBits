@@ -59,9 +59,7 @@
    :doUntil             (fn [block expr] (do-until-node block expr (block-node []) true))
    :forever             forever-node
    :repeat              repeat-node
-   :conditional         (fn
-                          ([expr block] (conditional-node expr block (block-node [])))
-                          ([expr block else-block] (conditional-node expr block else-block)))
+   :conditional         conditional-node
    :assignment          assignment-node
    :binaryExpr          (fn [left op right]
                           (case op
