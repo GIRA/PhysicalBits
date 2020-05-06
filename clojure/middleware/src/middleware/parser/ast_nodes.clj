@@ -19,6 +19,10 @@
   {:__class__ "UziCommentNode"
    :value     text})
 
+(defn block-node
+  [statements]
+  {:__class__ "UziBlockNode" :statements statements})
+
 (defn import-node
   [alias path block]
   {:__class__           "UziImportNode",
@@ -109,39 +113,47 @@
    :step      by,
    :body      block})
 
-(defn while-node
-  [pre condition post negated]
-  {:__class__ "UziWhileNode",
+; NOTE(Richo): Although we don't *really* need the four while, until, do-while, do-until
+; nodes (because they have the pre, post, and negated properties) I think it is useful
+; to have them separated into different nodes anyway. Mostly because we want to generate
+; code from the AST and if we don't have them separated we lose which structure was
+; originally intended by the user. We could infer it, of course, but it is simpler this way.
+(defn- conditional-loop-node
+  [type & {:keys [pre condition post negated]
+           :or {pre (block-node [])
+                post (block-node [])
+                negated false}}]
+  {:__class__ type,
    :pre       pre,
    :condition condition,
    :post      post,
    :negated   negated})
 
-;TODO(Tera): The Do While Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
-(defn do-while-node
-  [pre condition post negated]
-  {:__class__ "UziDoWhileNode",
-   :pre       pre,
-   :condition condition,
-   :post      post,
-   :negated   negated})
+(defn while-node [condition body]
+  (conditional-loop-node
+    "UziWhileNode"
+    :condition condition
+    :post body))
 
-(defn until-node
-  [pre condition post negated]
-  {:__class__ "UziUntilNode",
-   :pre       pre,
-   :condition condition,
-   :post      post,
-   :negated   negated})
+(defn until-node [condition body]
+  (conditional-loop-node
+    "UziUntilNode"
+    :condition condition
+    :post body
+    :negated true))
 
-;TODO(Tera): The Do Until Node is not really necessary, since the whileNode has the whole pre & post thing is enough to represent this idea
-(defn do-until-node
-  [pre condition post negated]
-  {:__class__ "UziDoUntilNode",
-   :pre       pre,
-   :condition condition,
-   :post      post,
-   :negated   negated})
+(defn do-while-node [condition body]
+  (conditional-loop-node
+    "UziDoWhileNode"
+    :pre body
+    :condition condition))
+
+(defn do-until-node [condition body]
+  (conditional-loop-node
+    "UziDoUntilNode"
+    :pre body
+    :condition condition
+    :negated true))
 
 (defn yield-node
   [] {:__class__ "UziYieldNode"})
@@ -154,10 +166,6 @@
   [times block] {:__class__ "UziRepeatNode"
                  :times     times
                  :body      block})
-
-(defn block-node
-  [statements]
-  {:__class__ "UziBlockNode" :statements statements})
 
 (defn conditional-node
   ([condition true-branch]
