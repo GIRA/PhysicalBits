@@ -1,10 +1,8 @@
 visiting
 visitImportNode: node
-	self halt.
-	self saveIntervalFor: node
-		during: [self 
-				write: 'import {1} from ''{2}'''
-				format: { node alias . node path }.
-			node initializationBlock
-				ifNil: [self write: ';']
-				ifNotNil: [:block | self write: ' '; visit: block]]
+	node initializationBlock
+		ifNil: [self write: '(ast/import-node "{1}" "{2}")' format: { node alias . node path }]
+		ifNotNil: [:block |
+			self writeLine: '(ast/import-node "{1}" "{2}"' format: { node alias . node path }.
+			self indent: 1
+				during: [self indent; visit: block; write: ')']]

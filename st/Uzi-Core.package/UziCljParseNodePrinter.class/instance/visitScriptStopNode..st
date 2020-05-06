@@ -1,8 +1,7 @@
 visiting
 visitScriptStopNode: node
-	self halt.
-	self saveIntervalFor: node during: [
-		self write: 'stop '.
-		node scripts 
-			do: [:each | self write: each]
-			separatedBy: [self write: ', ']]
+	self write: '(ast/stop-node ['.
+	node scripts
+		do: [:each | self write: '"{1}"' format: { each }]
+		separatedBy: [self write: ' '].
+	self write: ']'

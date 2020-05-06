@@ -1,10 +1,18 @@
 visiting
 writeFunction: node
-	self halt.
-	self indent; 
-		write: 'func {1}(' format: { node name }.
-	node arguments 
-		do: [:arg | self write: arg name]
-		separatedBy: [self write: ', '].
-	self write: ') ';
-		visit: node body
+	self writeLine: '(ast/function-node '.
+	self indent: 1
+		during: [
+			self indent;
+				writeLine: ':name "{1}"' format: { node name asString }.
+			node arguments
+				ifNotEmpty: [:args |
+					self indent; write: ':arguments ['.
+					self indent: 1
+						during: [args do: [:arg | self visit: arg]
+							separatedBy: [self writeLine: ''; indent]].
+					self writeLine: ']'].
+			self indent;
+				write: ':body ';
+				visit: node body;
+				write: ')']

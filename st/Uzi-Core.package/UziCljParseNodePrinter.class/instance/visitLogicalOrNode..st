@@ -1,10 +1,8 @@
 visiting
 visitLogicalOrNode: node
-	self halt.
-	self saveIntervalFor: node
-		during: [
-			self write: '(';
-				visit: node left;
-				write: ' || ';
-				visit: node right;
-				write: ')']
+	self writeLine: '(ast/logical-or-node'.
+	self indent: 1
+		during: [self 
+			indent; visit: node left; writeLine: '';
+			indent; visit: node right;
+			write: ')']

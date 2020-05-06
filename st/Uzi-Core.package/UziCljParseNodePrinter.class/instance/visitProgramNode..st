@@ -4,8 +4,12 @@ visitProgramNode: node
 	self indent: 1
 		during: [
 			node imports ifNotEmpty: [:imports |
-				imports do: [:each | self visit: each; writeLine: ''].
-				self writeLine: ''].
+				self indent; write: ':imports ['.
+					self indent: 1
+						during: [imports 
+							do: [:each | self visit: each]
+							separatedBy: [self writeLine: ''; indent]].
+					self writeLine: ']'].
 			
 			(node globals 
 				reject: [:global |  node imports 
@@ -14,6 +18,17 @@ visitProgramNode: node
 					self indent; write: ':globals ['.
 					self indent: 1
 						during: [globals 
+							do: [:each | self visit: each]
+							separatedBy: [self writeLine: ''; indent]].
+					self writeLine: ']'].
+			
+			(node primitives 
+				reject: [:prim | node imports 
+						anySatisfy: [:import | prim alias beginsWith: import alias , '.']])
+				ifNotEmpty: [:primitives |
+					self indent; write: ':primitives ['.
+					self indent: 1
+						during: [primitives 
 							do: [:each | self visit: each]
 							separatedBy: [self writeLine: ''; indent]].
 					self writeLine: ']'].

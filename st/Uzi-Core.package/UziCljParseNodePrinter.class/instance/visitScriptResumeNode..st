@@ -1,8 +1,7 @@
 visiting
 visitScriptResumeNode: node
-	self halt.
-	self saveIntervalFor: node during: [
-		self write: 'resume '.
-		node scripts 
-			do: [:each | self write: each]
-			separatedBy: [self write: ', ']]
+	self write: '(ast/resume-node ['.
+	node scripts
+		do: [:each | self write: '"{1}"' format: { each }]
+		separatedBy: [self write: ' '].
+	self write: ']'

@@ -1,9 +1,7 @@
 visiting
 visitPrimitiveDeclarationNode: node
-	self halt.
-	self saveIntervalFor: node during: [
-		self write: 'prim '.
-		node alias = node name
-			ifTrue: [self write: node name]
-			ifFalse: [self write: node alias; write: ' : '; write: node name].
-		self write: ', ']
+	(node alias isNil
+		or: [node alias = node name])
+		ifTrue: [self write: '(ast/primitive-node "{1}")' format: { node name }]
+		ifFalse: [self write: '(ast/primitive-node "{1}" "{2}")' 
+			format: { node alias . node name }]

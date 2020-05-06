@@ -1,8 +1,8 @@
 visiting
 visitReturnNode: node
-	self halt.
-	self saveIntervalFor: node
-		during: [
-			self write: 'return'.
-			node value ifNotNil: [:val | 
-				self write: ' '; visit: val]]
+	node value
+		ifNil: [self write: '(ast/return-node)']
+		ifNotNil: [:val |
+			self write: '(ast/return-node ';
+				visit: val;
+				write: ')']
