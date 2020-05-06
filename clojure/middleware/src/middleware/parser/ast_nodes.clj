@@ -24,11 +24,13 @@
   {:__class__ "UziBlockNode" :statements statements})
 
 (defn import-node
-  [alias path block]
-  {:__class__           "UziImportNode",
-   :alias               alias,
-   :path                path,
-   :initializationBlock block})
+  ([path] (import-node nil path))
+  ([alias path] (import-node alias path nil))
+  ([alias path block]
+   {:__class__           "UziImportNode",
+    :alias               alias,
+    :path                path,
+    :initializationBlock block}))
 
 (defn task-node
   [& {:keys [identifier arguments tick-rate state locals body]
