@@ -48,7 +48,7 @@
    :variableDeclaration (fn [variable & expr]
                           (variable-declaration-node (:name variable) (or (first expr) (literal-number-node 0))))
    :variable            variable-node
-   :return              (fn [& expr] (return-node (first expr)))
+   :return              return-node ;(fn [& expr] (return-node (first expr)))
    :subExpr             (fn [rest] rest)
    :for                 (fn
                           ([var from to block] (for-node (:name var) from to (literal-number-node 1) block))

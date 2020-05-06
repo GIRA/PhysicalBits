@@ -95,8 +95,8 @@
   {:__class__ "UziVariableNode", :name name})
 
 (defn return-node
-  [expr]
-  {:__class__ "UziReturnNode", :value expr})
+  ([] (return-node nil))
+  ([expr] {:__class__ "UziReturnNode", :value expr}))
 
 (defn call-node
   [selector args]
