@@ -67,11 +67,12 @@
   [var expr]
   {:__class__ "UziAssignmentNode" :left var :right expr})
 
-(defn association-node
-  [key value]
-  {:__class__ "Association",
-   :key       key
-   :value     value})
+(defn arg-node
+  ([value] (arg-node nil value))
+  ([name value]
+   {:__class__ "Association",
+    :key       name
+    :value     value}))
 
 (defn ticking-rate-node
   [times scale]

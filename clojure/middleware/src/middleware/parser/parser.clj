@@ -38,7 +38,7 @@
    ;TODO(Tera): the comments are ignored by the syntax definition for now.
    :comments            (fn [strings] (comment-node strings))
    :tickingRate         (fn [times unit] (ticking-rate-node (:value times) unit)),
-   :namedArg            (fn [a & b] (association-node (if b a nil) (or (first b) a)))
+   :namedArg            (fn [a & b] (arg-node (if b a nil) (or (first b) a)))
    :constant            literal-pin-node
    :number              (fn [number] (literal-number-node number))
    :call                (fn [selector & args] (call-node selector (vec args)))
@@ -66,7 +66,7 @@
                             "&&" (logical-and-node left right)
                             "||" (logical-or-node left right)
                             (binary-expression-node left op right)))
-   :not                 (fn [& arg] (call-node "!" (map #(association-node nil %) arg)))
+   :not                 (fn [& arg] (call-node "!" (map #(arg-node %) arg)))
    :yield               yield-node
    :import              (fn [& args]
                           (let [path (first (filter #(= (first %) :importPath) args))
