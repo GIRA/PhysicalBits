@@ -1,0 +1,16 @@
+{
+	"category" : "Uzi-Core-Utils",
+	"classinstvars" : [
+		 ],
+	"classvars" : [
+		 ],
+	"commentStamp" : "",
+	"instvars" : [
+		"stream",
+		"indent",
+		"intervals" ],
+	"name" : "UziCljParseNodePrinter",
+	"pools" : [
+		 ],
+	"super" : "UziParseNodeVisitor",
+	"type" : "normal" }

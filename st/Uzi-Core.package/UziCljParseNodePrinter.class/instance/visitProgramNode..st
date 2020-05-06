@@ -1,0 +1,28 @@
+visiting
+visitProgramNode: node
+	self writeLine: '(ast/program-node '.
+	self indent: 1
+		during: [
+			node imports ifNotEmpty: [:imports |
+				imports do: [:each | self visit: each; writeLine: ''].
+				self writeLine: ''].
+			
+			(node globals 
+				reject: [:global |  node imports 
+					anySatisfy: [:import | global name beginsWith: import alias , '.']])
+				ifNotEmpty: [:globals |
+					self indent; write: ':globals ['.
+					self indent: 1
+						during: [globals 
+							do: [:each | self visit: each]
+							separatedBy: [self writeLine: ''; indent]].
+					self writeLine: ']'].
+			
+			self indent; write: ':scripts ['.
+			self indent: 1
+				during: [(node scripts
+					reject: [:script |  node imports 
+						anySatisfy: [:import | script name beginsWith: import alias , '.']])
+					do: [:each | self visit: each]
+					separatedBy: [self writeLine: ''; writeLine: ''; indent]].
+			self writeLine: '])']
