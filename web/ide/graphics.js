@@ -1,7 +1,8 @@
 function ctorGraphics()
 {
   let graphics = {
-    drawCircles: drawCircles
+    drawCircles: drawCircles,
+    showGlobals: showGlobals
   };
   return graphics;
 }
@@ -12,7 +13,7 @@ function drawCircles(target,radius, simulator) {
   let index = 0;
   for( let i=0;i<simulator.pins.length;i++) {
     x+=radius*2 + 10;
-    let c =  document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    let c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     let t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     c.setAttribute("fill", "blue");
     c.setAttribute("cx", x );
@@ -39,9 +40,24 @@ function drawCircles(target,radius, simulator) {
   }
 }
 
-function writeGlobals()
+function showGlobals(simulator)
 {
-      let t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  var table = document.getElementById("globalsTable");
+  if(table.rows.length==0){
 
-
+      for(let global in simulator.globals){
+        var row = table.insertRow(0);
+        var cell1= row.insertCell(0);
+        var cell2= row.insertCell(1);
+        cell1.textContent = global;
+        cell2.textContent = simulator.globals[global];
+    }
+  } else{
+    let index = 0;
+    for(let global in simulator.globals){
+        table.rows[index].cells[1].textContent = simulator.globals[global];
+     }  
+  }
 }
+
+
