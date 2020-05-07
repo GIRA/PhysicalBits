@@ -87,10 +87,12 @@
    :scale     scale})
 
 (defn variable-declaration-node
-  [name expr]
-  {:__class__ "UziVariableDeclarationNode"
-   :name      name
-   :value     expr})
+  ([name]
+   (variable-declaration-node name (literal-number-node 0)))
+  ([name expr]
+   {:__class__ "UziVariableDeclarationNode"
+    :name      name
+    :value     expr}))
 
 (defn variable-node
   [name]
