@@ -177,8 +177,7 @@
                               (ast/block-node
                                   [(ast/call-node "turnOff"
                                           [(ast/arg-node (ast/literal-number-node 13))])])
-                              (ast/block-node [])))])]))])
-  )))
+                              (ast/block-node [])))])]))]))))
 
   (deftest Test004AssignmentValueShouldBeAnExpression
     (is (invalid? (ast/program-node
@@ -192,8 +191,7 @@
                   [(ast/assignment-node
                           (ast/variable-node "a")
                           (ast/call-node "turnOff"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])
-  ))
+                              [(ast/arg-node (ast/literal-number-node 13))]))]))])))
     (is (invalid? (ast/program-node
       :globals [(ast/variable-declaration-node
               "b"
@@ -211,8 +209,7 @@
                               (ast/block-node
                                   [(ast/literal-number-node 3)])
                               (ast/block-node
-                                  [(ast/literal-number-node 4)])))]))])
-  )))
+                                  [(ast/literal-number-node 4)])))]))]))))
 
   (deftest Test005ConditionalBranchesShouldBeBlocks
     (is (invalid? (ast/program-node
@@ -226,8 +223,7 @@
                               [(ast/arg-node (ast/literal-number-node 13))])
                           (ast/call-node "turnOff"
                               [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/block-node []))]))])
-  ))
+                          (ast/block-node []))]))])))
     (is (invalid? (ast/program-node
       :primitives primitives
       :scripts [(ast/task-node
@@ -239,8 +235,7 @@
                               [(ast/arg-node (ast/literal-number-node 13))])
                           (ast/block-node [])
                           (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])
-  )))
+                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
   (deftest Test006ConditionsShouldBeExpressions
     (is (invalid? "task foo() stopped { if turnOn(D13) { turnOff(D13); }}"))
@@ -262,8 +257,7 @@
                               [(ast/literal-number-node 1)
                                   (ast/call-node "read"
                                       [(ast/arg-node (ast/literal-number-node 13))])])
-                          (ast/block-node []))]))])
-  )))
+                          (ast/block-node []))]))]))))
 
   (deftest Test009ScriptStartReceiverIsAScriptRef
     (is (invalid? (ast/program-node
@@ -271,8 +265,7 @@
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
-                  [(ast/start-node ["an UziNumberLiteralNode"])]))])
-  )))
+                  [(ast/start-node ["an UziNumberLiteralNode"])]))]))))
 
   (deftest Test010ScriptStopReceiverIsAScriptRef
     (is (invalid? (ast/program-node
@@ -280,8 +273,7 @@
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
-                  [(ast/stop-node ["an UziNumberLiteralNode"])]))])
-  )))
+                  [(ast/stop-node ["an UziNumberLiteralNode"])]))]))))
 
   (deftest Test011ScriptReferenceShouldReferenceExistingScript
     (is (invalid? "task foo() stopped { stop main; }")))
@@ -325,8 +317,7 @@
                   [(ast/do-until-node
                           (ast/block-node
                               [(ast/variable-node "a")])
-                          (ast/block-node []))]))])
-  )))
+                          (ast/block-node []))]))]))))
 
   (deftest Test017PrimitiveCallArgumentsShouldBeExpressions
     (is (invalid? "var a; task foo() stopped { turnOn(a = 5); }"))
@@ -339,8 +330,7 @@
                   [(ast/call-node "turnOn"
                           [(ast/block-node
                               [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])])])]))])
-  )))
+                                      [(ast/arg-node (ast/literal-number-node 13))])])])]))]))))
 
   (deftest Test018RepeatTimesShouldBeAnExpression
     (is (invalid? "task foo() running {
@@ -359,8 +349,7 @@
                   [(ast/repeat-node
                           (ast/literal-number-node 5)
                           (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])
-  )))
+                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
   (deftest Test020ScriptPauseReceiverIsAScriptRef
     (is (invalid? (ast/program-node
@@ -368,8 +357,7 @@
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
-                  [(ast/pause-node ["an UziNumberLiteralNode"])]))])
-  )))
+                  [(ast/pause-node ["an UziNumberLiteralNode"])]))]))))
 
   (deftest Test021ScriptResumeReceiverIsAScriptRef
     (is (invalid? (ast/program-node
@@ -377,8 +365,7 @@
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
-                  [(ast/resume-node ["an UziNumberLiteralNode"])]))])
-  )))
+                  [(ast/resume-node ["an UziNumberLiteralNode"])]))]))))
 
   (deftest Test022FunctionArgumentShouldNotBeRegisteredAsGlobal
     (is (invalid? "
@@ -409,8 +396,7 @@
           (ast/task-node
               :name "foo"
               :state "nil"
-              :body (ast/block-node []))])
-  )))
+              :body (ast/block-node []))]))))
 
   (deftest Test025DuplicateGlobalsAreNotValid
     (is (invalid? (ast/program-node
@@ -423,8 +409,7 @@
       :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
-              :body (ast/block-node []))])
-  )))
+              :body (ast/block-node []))]))))
 
   (deftest Test026DuplicateLocalsAreNotValid
     (is (invalid? (ast/program-node
@@ -437,8 +422,7 @@
                           (ast/literal-number-node 0))
                       (ast/variable-declaration-node
                           "a"
-                          (ast/literal-number-node 0))]))])
-  )))
+                          (ast/literal-number-node 0))]))]))))
 
   (deftest Test027DuplicateArgsAreNotValid
     (is (invalid? (ast/program-node
@@ -451,8 +435,7 @@
                   (ast/variable-declaration-node
                       "a"
                       (ast/literal-number-node 0))]
-              :body (ast/block-node []))])
-  )))
+              :body (ast/block-node []))]))))
 
   (deftest Test028ForeverBodyShouldBeABlock
     (is (invalid? (ast/program-node
@@ -463,8 +446,7 @@
               :body (ast/block-node
                   [(ast/forever-node
                           (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])
-  )))
+                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
   (deftest Test029ForBodyShouldBeABlock
     (is (invalid? (ast/program-node
@@ -479,8 +461,7 @@
                           (ast/literal-number-node 10)
                           (ast/literal-number-node 1)
                           (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])
-  )))
+                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
   (deftest Test030ForCounterShouldBeAVariable
     (is (invalid? (ast/program-node
@@ -496,8 +477,7 @@
                           (ast/literal-number-node 1)
                           (ast/block-node
                               [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))])
-  )))
+                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
 
   (deftest Test031ForStartShouldBeAnExpression
     (is (invalid? (ast/program-node
@@ -514,8 +494,7 @@
                           (ast/literal-number-node 1)
                           (ast/block-node
                               [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))])
-  )))
+                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
 
   (deftest Test032ForStopShouldBeAnExpression
     (is (invalid? (ast/program-node
@@ -532,8 +511,7 @@
                           (ast/literal-number-node 1)
                           (ast/block-node
                               [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))])
-  )))
+                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
 
   (deftest Test033ForStepShouldBeAnExpression
     (is (invalid? (ast/program-node
@@ -550,8 +528,7 @@
                               [(ast/arg-node (ast/literal-number-node 13))])
                           (ast/block-node
                               [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))])
-  )))
+                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
 
   (deftest Test034AVariableShouldBeDeclaredBeforeItsFirstUse
     (is (invalid? (ast/program-node
@@ -567,8 +544,7 @@
                               (ast/arg-node (ast/literal-number-node 1))]))
                       (ast/variable-declaration-node
                           "a"
-                          (ast/literal-number-node 5))]))])
-  )))
+                          (ast/literal-number-node 5))]))]))))
 
   (deftest Test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside
     (is (invalid? (ast/program-node
@@ -590,8 +566,7 @@
                           (ast/variable-node "a")
                           (ast/call-node "+"
                               [(ast/arg-node (ast/variable-node "a"))
-                              (ast/arg-node (ast/literal-number-node 1))]))]))])
-  )))
+                              (ast/arg-node (ast/literal-number-node 1))]))]))]))))
 
   (deftest Test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside
     (is (invalid? (ast/program-node
@@ -616,8 +591,7 @@
                           (ast/variable-node "a")
                           (ast/call-node "+"
                               [(ast/arg-node (ast/variable-node "a"))
-                              (ast/arg-node (ast/literal-number-node 1))]))]))])
-  )))
+                              (ast/arg-node (ast/literal-number-node 1))]))]))]))))
 
   (deftest Test037VariablesDeclaredInsideABlockShouldNotCollideWithVariablesDeclaredOutsideAfterTheBlock
     (is (valid? "task foo() running {
@@ -636,8 +610,7 @@
               :body (ast/block-node
                   [(ast/variable-declaration-node
                           "a"
-                          (ast/literal-number-node 0))]))])
-  )))
+                          (ast/literal-number-node 0))]))]))))
 
   (deftest Test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
     (is (invalid? "task foo() 1/s {}"))
@@ -647,8 +620,7 @@
               :name "foo"
               :state "once"
               :tick-rate (ast/ticking-rate-node 1 "s")
-              :body (ast/block-node []))])
-  )))
+              :body (ast/block-node []))]))))
 
   (deftest Test040TickingRateValueShouldAlwaysBePositive
     (is (invalid? "task foo() running 0/s {}"))
@@ -658,8 +630,7 @@
               :name "foo"
               :state "running"
               :tick-rate (ast/ticking-rate-node -1 "s")
-              :body (ast/block-node []))])
-  )))
+              :body (ast/block-node []))]))))
 
   (deftest Test041GlobalDeclarationsOnlyAllowLiterals
     (is (invalid? "var a = 3+4; task foo() {}"))
@@ -679,8 +650,7 @@
               (ast/block-node
                   [(ast/start-node ["bar"])]))]
       :primitives primitives
-      :scripts [])
-  )))
+      :scripts []))))
 
   (deftest Test044AttemptingToInitializeANonExistingGlobalShouldFail
     (is (invalid? (ast/program-node
@@ -690,8 +660,7 @@
                           (ast/variable-node "d")
                           (ast/literal-number-node 10))]))]
       :primitives primitives
-      :scripts [])
-  )))
+      :scripts []))))
 
   (deftest Test045AttemptingToStartAnExistingTaskShouldWork
     (is (valid? (ast/program-node
@@ -699,12 +668,10 @@
               (ast/block-node
                   [(ast/start-node ["foo"])]))]
       :primitives primitives
-      :scripts [])
-  )))
+      :scripts []))))
 
   (deftest Test046ProgramWithPrimitiveDeclaration
     (is (valid? "prim add;"))
     (is (invalid? "prim unaPrimitivaQueNoExisteEnElSpec;")))
-
 
    )
