@@ -4,6 +4,7 @@
             [middleware.compiler.ast-utils :as ast-utils]
             [middleware.parser.parser :as pp]
             [middleware.parser.ast-nodes :as ast]
+            [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker])
   (:use [middleware.test-utils]))
 
@@ -64,8 +65,12 @@
        result#)))
 
 (defn check [src]
-  (let [ast (if string? (pp/parse src) src)]
-    (checker/check-tree ast)))
+  (let [ast (if (string? src)
+              (pp/parse src)
+              src)]
+    (-> ast
+        (linker/resolve-imports "../../uzi/tests")
+        checker/check-tree)))
 
 (def invalid? check)
 (def valid? check)
