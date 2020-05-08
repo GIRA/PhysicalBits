@@ -10,9 +10,10 @@
 		"setUp" : "Richo 11/5/2019 19:15",
 		"test001UziParseNodeVisitorShouldImplementAllVisitMethods" : "Richo 11/5/2019 20:42",
 		"test002UziAliasApplierShouldImplementAllVisitMethods" : "Richo 11/15/2019 18:51",
-		"test003UziCompilerShouldImplementAllVisitMethods" : "Richo 11/15/2019 18:51",
-		"test004UziOptimizingCompilerShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
-		"test005UziDeadCodeRemoverShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
-		"test006UziParseNodePrinterShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
-		"test007UziParseTreeComparerShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31",
-		"test008UziParseTreeValidatorShouldImplementAllVisitMethods" : "Richo 11/15/2019 19:31" } }
+		"test003UziCljParseNodePrinterShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test004UziCompilerShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test005UziOptimizingCompilerShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test006UziDeadCodeRemoverShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test007UziParseNodePrinterShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test008UziParseTreeComparerShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22",
+		"test009UziParseTreeValidatorShouldImplementAllVisitMethods" : "Richo 5/8/2020 12:22" } }
