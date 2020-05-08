@@ -25,9 +25,19 @@
           "Variable expected"
           node errors))
 
+(defn assert-variable-declaration [node errors]
+  (assert (ast-utils/variable-declaration? node)
+          "Variable declaration expected"
+          node errors))
+
 (defn assert-block [node errors]
   (assert (ast-utils/block? node)
           "Block expected"
+          node errors))
+
+(defn assert-script [node errors]
+  (assert (ast-utils/script? node)
+          "Script expected"
           node errors))
 
 (defmulti check-node (fn [node errors path] (:__class__ node)))
@@ -42,9 +52,41 @@
   (let [imports (:imports node)]
     (doseq [import imports]
       ; TODO(Richo): ?
-      )))
+      ))
+  (let [globals (atom #{})]
+    (doseq [global (:globals node)]
+      (assert-variable-declaration global errors)
+      (assert (not (contains? @globals (:name global)))
+              "Global variable already declared"
+              global errors)
+      (swap! globals conj (:name global))))
+  (let [scripts (atom #{})]
+    (doseq [script (:scripts node)]
+      (assert-script script errors)
+      (assert (not (contains? @scripts (:name script)))
+              "Script name already in use"
+              script errors)
+      (swap! scripts conj (:name script)))))
+
+(defn- check-script-args [node errors path]
+  (let [args (atom #{})]
+    (doseq [arg (:arguments node)]
+      (assert (not (contains? @args (:name arg)))
+              "Argument name already specified"
+              arg errors)
+      (swap! args conj (:name arg)))))
+
 
 (defmethod check-node "UziTaskNode" [node errors path]
+  (check-script-args node errors path))
+
+(defmethod check-node "UziProcedureNode" [node errors path]
+  (check-script-args node errors path))
+
+(defmethod check-node "UziFunctionNode" [node errors path]
+  (check-script-args node errors path))
+
+(defmethod check-node "UziTickingRateNode" [node errors path]
   )
 
 (defn- check-primitive-call [node errors path]
@@ -89,10 +131,17 @@
   (assert-block (:falseBranch node) errors))
 
 (defmethod check-node "UziVariableDeclarationNode" [node errors path]
-  )
+  (when-let [script (first (filter ast-utils/script? path))]
+    (when (not (some #(= % node) (:arguments script)))
+      (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
+        (assert (not (contains? local-names (:name node)))
+              "Variable already declared"
+              node errors)))))
 
 (defmethod check-node "UziVariableNode" [node errors path]
-  )
+  (assert (ast-utils/variable-named (:name node) path)
+          "Undefined variable found"
+          node errors))
 
 (defmethod check-node "UziImportNode" [node errors path]
   )
@@ -100,14 +149,9 @@
 (defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
   )
 
-(defmethod check-node "UziProcedureNode" [node errors path]
-  )
-
-(defmethod check-node "UziFunctionNode" [node errors path]
-  )
-
 (defmethod check-node "UziReturnNode" [node errors path]
   )
+
 
 (defn- check-conditional-loop [node errors path]
   (assert-block (:pre node) errors)
@@ -168,6 +212,7 @@
      (def parse middleware.parser.parser/parse)
      (def pprint clojure.pprint/pprint)
      (def ast (parse "var a; task foo() stopped { if a = 3 { turnOff(D13); }}"))
+     (def ast (ast-utils/assign-internal-ids ast))
      (def ast (middleware.compiler.linker/resolve-imports ast "../../uzi/tests")))
   (pprint (dissoc ast :primitives))
   (check-tree ast)

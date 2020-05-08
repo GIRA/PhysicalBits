@@ -64,8 +64,17 @@
 (defn variable? [node]
   (= "UziVariableNode" (node-type node)))
 
+(defn variable-declaration? [node]
+  (= "UziVariableDeclarationNode" (node-type node)))
+
 (defn task? [node]
   (= "UziTaskNode" (node-type node)))
+
+(defn script? [node]
+  (contains? #{"UziTaskNode"
+               "UziFunctionNode"
+               "UziProcedureNode"}
+             (node-type node)))
 
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
@@ -237,6 +246,11 @@
                              (take-while #(not (= % first))
                                          (children second))))
           (partition 2 1 path)))
+
+(defn locals-in-scope [path]
+  ; NOTE(Richo): We take advantage of the fact that globals can only be defined
+  ; in the root of the AST, which should always be the last item in the path.
+  (variables-in-scope (drop-last path)))
 
 (defn variable-named
   "Returns the variable declaration referenced by this name at this point in the ast"

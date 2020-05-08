@@ -70,6 +70,7 @@
               (pp/parse src)
               src)]
     (-> ast
+        ast-utils/assign-internal-ids
         (linker/resolve-imports "../../uzi/tests")
         checker/check-tree)))
 
@@ -370,6 +371,63 @@
                             :body (ast/block-node
                                    [(ast/resume-node [(ast/literal-number-node 42)])]))]))))
 
+(deftest variables-should-not-collide
+  (is (valid? "task foo(a) stopped { var b; turnOff(D13); }"))
+  (is (valid? "var a = 100; task foo() { var a = 10; turnOff(a); }"))
+  (is (valid? "task foo() {
+                 if 1 { var a = 100; }
+                 else { var a = 200; }
+               }"))
+  (is (invalid? "task foo(a, b, a) {}"))
+  (is (invalid? "proc foo(a, b, a) {}"))
+  (is (invalid? "func foo(a, b, a) {}"))
+  (is (invalid? "task foo(a) stopped { var a; turnOff(D13); }"))
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node
+                            "a"
+                            (ast/literal-number-node 0))
+                           (ast/variable-declaration-node
+                            "a"
+                            (ast/literal-number-node 0))]
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node []))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 0))
+                                    (ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 0))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :arguments [(ast/variable-declaration-node
+                                         "a"
+                                         (ast/literal-number-node 0))
+                                        (ast/variable-declaration-node
+                                         "a"
+                                         (ast/literal-number-node 0))]
+                            :body (ast/block-node []))]))))
+
+(deftest function-argument-should-not-be-registered-as-global
+  (is (invalid? "
+        task main() running 1 / s{
+          toggle(getPin(pin));
+        }
+
+        func getPin(pin){
+          return pin;
+        }")))
+
+(deftest script-names-should-not-collide
+  (is (invalid? "
+          func test1 () {}
+          proc test1() {}")))
+
 #_(
 
 
@@ -379,9 +437,6 @@
     		task main() running {
     			foo(1, 2, c: 3);
     		}")))
-
-  (deftest Test013ScriptArgumentsAndLocalsMustNotCollide
-    (is (invalid? "task foo(a) stopped { var a; turnOff(D13); }")))
 
 
   (deftest Test018RepeatTimesShouldBeAnExpression
@@ -403,71 +458,12 @@
                               [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
 
-  (deftest Test022FunctionArgumentShouldNotBeRegisteredAsGlobal
-    (is (invalid? "
-    		task main() running 1 / s{
-    			toggle(getPin(pin));
-    		}
-
-    		func getPin(pin){
-    			return pin;
-    		}")))
-
   (deftest Test023YieldShouldNotBeUsedAsExpression
     (is (invalid? "
     		func yield () {
     			return yield;
     		}")))
 
-  (deftest Test024DuplicateScriptNamesAreNotValid
-    (is (invalid? "
-    		func test1 () {}
-    		proc test1() {}"))
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node []))
-
-          (ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node []))]))))
-
-  (deftest Test025DuplicateGlobalsAreNotValid
-    (is (invalid? (ast/program-node
-      :globals [(ast/variable-declaration-node
-              "a"
-              (ast/literal-number-node 0))
-          (ast/variable-declaration-node
-              "a"
-              (ast/literal-number-node 0))]
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node []))]))))
-
-  (deftest Test026DuplicateLocalsAreNotValid
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/variable-declaration-node
-                          "a"
-                          (ast/literal-number-node 0))
-                      (ast/variable-declaration-node
-                          "a"
-                          (ast/literal-number-node 0))]))]))))
-
-  (deftest Test027DuplicateArgsAreNotValid
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :arguments [(ast/variable-declaration-node
-                      "a"
-                      (ast/literal-number-node 0))
-                  (ast/variable-declaration-node
-                      "a"
-                      (ast/literal-number-node 0))]
-              :body (ast/block-node []))]))))
 
   (deftest Test028ForeverBodyShouldBeABlock
     (is (invalid? (ast/program-node
