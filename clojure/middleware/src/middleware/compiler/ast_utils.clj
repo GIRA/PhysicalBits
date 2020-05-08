@@ -85,6 +85,10 @@
     "UziScriptPauseNode" "stopped"
     nil))
 
+(defn script-named [name path]
+  (first (clj-core/filter #(= name (:name %))
+                          (-> path last :scripts))))
+
 (defmulti ^:private children-keys :__class__)
 (defmethod children-keys "UziAssignmentNode" [_] [:left :right])
 (defmethod children-keys "UziBlockNode" [_] [:statements])

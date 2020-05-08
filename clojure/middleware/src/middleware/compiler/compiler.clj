@@ -132,8 +132,7 @@
                              (every? #(nil? (:key %)) arguments))
         sorted-args (if positional-args?
                       arguments
-                      (let [script (first (filter #(= selector (:name %))
-                                                  (-> ctx :path last :scripts)))]
+                      (let [script (ast-utils/script-named selector (:path ctx))]
                         (map (fn [{:keys [name]}]
                                (first (filter #(= name (:key %))
                                               arguments)))
