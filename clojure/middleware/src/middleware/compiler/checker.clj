@@ -33,9 +33,10 @@
 (defmulti check-node (fn [node errors path] (:__class__ node)))
 
 (defn- check [node errors path]
-  (check-node node errors (conj path node))
-  (doseq [child-node (ast-utils/children node)]
-    (check child-node errors path)))
+  (let [new-path (conj path node)]
+    (check-node node errors new-path)
+    (doseq [child-node (ast-utils/children node)]
+      (check child-node errors new-path))))
 
 (defmethod check-node "UziProgramNode" [node errors path]
   (let [imports (:imports node)]
