@@ -22,7 +22,7 @@ visitProgramNode: node
 							separatedBy: [self writeLine: ''; indent]].
 					self writeLine: ']'].
 			
-			(node primitives 
+			"(node primitives 
 				reject: [:prim | node imports 
 						anySatisfy: [:import | prim alias beginsWith: import alias , '.']])
 				ifNotEmpty: [:primitives |
@@ -31,7 +31,7 @@ visitProgramNode: node
 						during: [primitives 
 							do: [:each | self visit: each]
 							separatedBy: [self writeLine: ''; indent]].
-					self writeLine: ']'].
+					self writeLine: ']']."
 			
 			self indent; write: ':scripts ['.
 			self indent: 1
@@ -40,4 +40,4 @@ visitProgramNode: node
 						anySatisfy: [:import | script name beginsWith: import alias , '.']])
 					do: [:each | self visit: each]
 					separatedBy: [self writeLine: ''; writeLine: ''; indent]].
-			self writeLine: '])']
+			self write: '])']
