@@ -103,7 +103,7 @@
                                                                      [(ast/arg-node (ast/literal-number-node 13))])])])]))])))
   (is (invalid? "proc foo(a) { toggle(a); } task bar() stopped { foo(turnOn(D13)); }"))
 
-  ; NOTE(Richo): The following should fail but we are currently treating a script
+  ; TODO(Richo): The following should fail but we are currently treating a script
   ; call as both an expresion and argument. We should change it to check if the
   ; script being called is a procedure or a function.
   #_(is (invalid? "proc foo(a) { toggle(a); } task bar() stopped { foo(foo(D13)); }")))
@@ -152,7 +152,7 @@
   (is (invalid? (ast/program-node
                  :scripts [(ast/task-node
                             :name "foo"
-                            :state "nil"
+                            :state "running"
                             :body (ast/block-node
                                    [(ast/call-node "write"
                                                    [(ast/arg-node (ast/literal-number-node 13))
@@ -204,7 +204,7 @@
   (is (invalid? (ast/program-node
                  :scripts [(ast/task-node
                             :name "foo"
-                            :state "nil"
+                            :state "running"
                             :body (ast/block-node
                                    [(ast/conditional-node
                                      (ast/call-node "read"
@@ -215,7 +215,7 @@
   (is (invalid? (ast/program-node
                  :scripts [(ast/task-node
                             :name "foo"
-                            :state "nil"
+                            :state "running"
                             :body (ast/block-node
                                    [(ast/conditional-node
                                      (ast/call-node "read"
@@ -231,38 +231,147 @@
   (is (invalid? "task foo() stopped { until read(D13) { read(D13); }}"))
   (is (invalid? "task foo() stopped { do { read(D13); } until read(D13); }")))
 
+(deftest loop-condition-should-be-an-expression
+  (is (invalid? "task foo() stopped { while turnOn(D13) { turnOff(D13); }}"))
+  (is (invalid? "var a; task foo() stopped { while a = 3 { turnOff(D13); }}"))
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node
+                            "a"
+                            (ast/literal-number-node 0))]
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/do-until-node
+                                     (ast/block-node
+                                      [(ast/variable-node "a")])
+                                     (ast/block-node []))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/while-node
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])
+                                       (ast/call-node "turnOff"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])])
+                                     (ast/block-node []))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/until-node
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])
+                                       (ast/call-node "turnOff"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])])
+                                     (ast/block-node []))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/do-while-node
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])
+                                       (ast/call-node "turnOff"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])])
+                                     (ast/block-node []))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/do-until-node
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])
+                                       (ast/call-node "turnOff"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])])
+                                     (ast/block-node []))]))]))))
+
+(deftest loop-body-should-be-a-block
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/while-node
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/until-node
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/do-while-node
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/do-until-node
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
+
+(deftest script-control-nodes-should-refer-to-existing-scripts
+  (is (valid? "task foo() stopped { toggle(D13); }
+               task main() { start foo; }"))
+  (is (invalid? "task foo() stopped { stop main; }"))
+  (is (invalid? "
+         func foo() { return 42; }
+         task main() stopped { start foo; }"))
+  (is (invalid? "
+         func foo() { return 42; }
+         task main() stopped { stop foo; }"))
+  (is (invalid? "
+         proc foo() { turnOn(D13); }
+         task main() stopped { start foo; }"))
+  (is (invalid? "
+         proc foo() { turnOn(D13); }
+         task main() stopped { stop foo; }"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/start-node [(ast/literal-number-node 42)])]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/stop-node [(ast/literal-number-node 42)])]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/pause-node [(ast/literal-number-node 42)])]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/resume-node [(ast/literal-number-node 42)])]))]))))
+
 #_(
 
-
-  (deftest Test008LoopConditionOnlyAllowsOneExpression
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "nil"
-              :body (ast/block-node
-                  [(ast/until-node
-                          (ast/block-node
-                              [(ast/literal-number-node 1)
-                                  (ast/call-node "read"
-                                      [(ast/arg-node (ast/literal-number-node 13))])])
-                          (ast/block-node []))]))]))))
-
-  (deftest Test009ScriptStartReceiverIsAScriptRef
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/start-node ["an UziNumberLiteralNode"])]))]))))
-
-  (deftest Test010ScriptStopReceiverIsAScriptRef
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/stop-node ["an UziNumberLiteralNode"])]))]))))
-
-  (deftest Test011ScriptReferenceShouldReferenceExistingScript
-    (is (invalid? "task foo() stopped { stop main; }")))
 
   (deftest Test012ScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth
     (is (invalid? "
@@ -274,35 +383,6 @@
   (deftest Test013ScriptArgumentsAndLocalsMustNotCollide
     (is (invalid? "task foo(a) stopped { var a; turnOff(D13); }")))
 
-  (deftest Test014StartingAndStoppingCanOnlyBePerformedOnTasks
-    (is (invalid? "
-    		func foo() { return 42; }
-    		task main() stopped { start foo; }"))
-    (is (invalid? "
-    		func foo() { return 42; }
-    		task main() stopped { stop foo; }"))
-    (is (invalid? "
-    		proc foo() { turnOn(D13); }
-    		task main() stopped { start foo; }"))
-    (is (invalid? "
-    		proc foo() { turnOn(D13); }
-    		task main() stopped { stop foo; }")))
-
-  (deftest Test015LoopConditionShouldBeAnExpression
-    (is (invalid? "task foo() stopped { while turnOn(D13) { turnOff(D13); }}"))
-    (is (invalid? "var a; task foo() stopped { while a = 3 { turnOff(D13); }}"))
-    (is (invalid? (ast/program-node
-      :globals [(ast/variable-declaration-node
-              "a"
-              (ast/literal-number-node 0))]
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "nil"
-              :body (ast/block-node
-                  [(ast/do-until-node
-                          (ast/block-node
-                              [(ast/variable-node "a")])
-                          (ast/block-node []))]))]))))
 
   (deftest Test018RepeatTimesShouldBeAnExpression
     (is (invalid? "task foo() running {
@@ -322,19 +402,6 @@
                           (ast/call-node "turnOn"
                               [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
-  (deftest Test020ScriptPauseReceiverIsAScriptRef
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/pause-node ["an UziNumberLiteralNode"])]))]))))
-
-  (deftest Test021ScriptResumeReceiverIsAScriptRef
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/resume-node ["an UziNumberLiteralNode"])]))]))))
 
   (deftest Test022FunctionArgumentShouldNotBeRegisteredAsGlobal
     (is (invalid? "
@@ -363,7 +430,7 @@
 
           (ast/task-node
               :name "foo"
-              :state "nil"
+              :state "running"
               :body (ast/block-node []))]))))
 
   (deftest Test025DuplicateGlobalsAreNotValid

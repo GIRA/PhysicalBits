@@ -64,6 +64,9 @@
 (defn variable? [node]
   (= "UziVariableNode" (node-type node)))
 
+(defn task? [node]
+  (= "UziTaskNode" (node-type node)))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
     (if-not primitive-name
@@ -88,9 +91,12 @@
     "UziScriptPauseNode" "stopped"
     nil))
 
+(defn scripts [path]
+  (-> path last :scripts))
+
 (defn script-named [name path]
   (first (clj-core/filter #(= name (:name %))
-                          (-> path last :scripts))))
+                          (scripts path))))
 
 (defmulti ^:private children-keys :__class__)
 (defmethod children-keys "UziAssignmentNode" [_] [:left :right])

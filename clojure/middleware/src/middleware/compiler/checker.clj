@@ -103,21 +103,54 @@
 (defmethod check-node "UziProcedureNode" [node errors path]
   )
 
-(defmethod check-node "UziWhileNode" [node errors path]
+(defmethod check-node "UziFunctionNode" [node errors path]
   )
+
+(defmethod check-node "UziReturnNode" [node errors path]
+  )
+
+(defn- check-conditional-loop [node errors path]
+  (assert-block (:pre node) errors)
+  (assert-expression (:condition node) errors)
+  (assert-block (:post node) errors))
+
+(defmethod check-node "UziWhileNode" [node errors path]
+  (check-conditional-loop node errors path))
 
 (defmethod check-node "UziDoWhileNode" [node errors path]
-  )
+  (check-conditional-loop node errors path))
 
 (defmethod check-node "UziUntilNode" [node errors path]
-  )
+  (check-conditional-loop node errors path))
 
 (defmethod check-node "UziDoUntilNode" [node errors path]
-  )
+  (check-conditional-loop node errors path))
 
 (defmethod check-node "UziAssignmentNode" [node errors path]
   (assert-variable (:left node) errors)
   (assert-expression (:right node) errors))
+
+(defn- check-script-control [node errors path]
+  (let [valid-script-names (set (map :name (ast-utils/scripts path)))]
+    (doseq [script-name (:scripts node)]
+      (assert (contains? valid-script-names script-name)
+              (str "Invalid script: " script-name)
+              node errors)
+      (assert (ast-utils/task? (ast-utils/script-named script-name path))
+              "Task reference expected"
+              node errors))))
+
+(defmethod check-node "UziScriptStartNode" [node errors path]
+  (check-script-control node errors path))
+
+(defmethod check-node "UziScriptStopNode" [node errors path]
+  (check-script-control node errors path))
+
+(defmethod check-node "UziScriptResumeNode" [node errors path]
+  (check-script-control node errors path))
+
+(defmethod check-node "UziScriptPauseNode" [node errors path]
+  (check-script-control node errors path))
 
 (defmethod check-node "Association" [_ _ _]) ; TODO(Richo): Remove
 
