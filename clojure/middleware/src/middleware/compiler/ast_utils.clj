@@ -61,6 +61,9 @@
 (defn block? [node]
   (= "UziBlockNode" (node-type node)))
 
+(defn variable? [node]
+  (= "UziVariableNode" (node-type node)))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
     (if-not primitive-name

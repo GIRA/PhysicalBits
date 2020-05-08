@@ -24,6 +24,7 @@
     (when (seq *testing-contexts*) (println (testing-contexts-str)))
     (when-let [message (:message m)] (println message))
     (println "should be valid:" (pr-str (:program m)))
+    (println "--------------------------")
     (println "errors:" (pr-str (:errors m)))))
 
 (defmethod assert-expr 'invalid? [msg form]
@@ -164,77 +165,77 @@
                                                                                     [(ast/arg-node (ast/literal-number-node 13))])])
                                                                    (ast/block-node [])))])]))]))))
 
+(deftest assignment-value-should-be-an-expression
+  (is (valid? "var a = 0; task foo() { a = 3 + 4; }"))
+  (is (invalid? "var a = 0; task foo() { a = turnOff(D13); }"))
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node
+                            "b"
+                            (ast/literal-number-node 0))]
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/assignment-node
+                                     (ast/variable-node "b")
+                                     (ast/conditional-node
+                                      (ast/call-node "<"
+                                                     [(ast/arg-node (ast/literal-number-node 3))
+                                                      (ast/arg-node (ast/literal-number-node 4))])
+                                      (ast/block-node
+                                       [(ast/literal-number-node 3)])
+                                      (ast/block-node
+                                       [(ast/literal-number-node 4)])))]))]))))
+
+(deftest assignment-left-should-be-a-variable
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node
+                            "b"
+                            (ast/literal-number-node 0))]
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/assignment-node
+                                     (ast/literal-number-node 3)
+                                     (ast/literal-number-node 5))]))]))))
+
+
+(deftest conditional-branches-should-be-blocks
+  (is (valid? "task foo() { if 1 { turnOn(D13); } else { turnOff(D13); }}"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "nil"
+                            :body (ast/block-node
+                                   [(ast/conditional-node
+                                     (ast/call-node "read"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/call-node "turnOff"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/block-node []))]))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "nil"
+                            :body (ast/block-node
+                                   [(ast/conditional-node
+                                     (ast/call-node "read"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/block-node [])
+                                     (ast/call-node "turnOn"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
+
+(deftest loop-body-should-contain-only-statements
+  (is (valid? "task foo() { while read(D13) { toggle(D12); delayS(1); }}"))
+  (is (invalid? "task foo() stopped { while read(D13) { read(D13); }}"))
+  (is (invalid? "task foo() stopped { do { read(D13); } while read(D13); }"))
+  (is (invalid? "task foo() stopped { until read(D13) { read(D13); }}"))
+  (is (invalid? "task foo() stopped { do { read(D13); } until read(D13); }")))
+
 #_(
 
-  (deftest Test004AssignmentValueShouldBeAnExpression
-    (is (invalid? (ast/program-node
-      :globals [(ast/variable-declaration-node
-              "a"
-              (ast/literal-number-node 0))]
-      :primitives primitives
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/assignment-node
-                          (ast/variable-node "a")
-                          (ast/call-node "turnOff"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))])))
-    (is (invalid? (ast/program-node
-      :globals [(ast/variable-declaration-node
-              "b"
-              (ast/literal-number-node 0))]
-      :primitives primitives
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/assignment-node
-                          (ast/variable-node "b")
-                          (ast/conditional-node
-                              (ast/call-node "<"
-                                  [(ast/arg-node (ast/literal-number-node 3))
-                                  (ast/arg-node (ast/literal-number-node 4))])
-                              (ast/block-node
-                                  [(ast/literal-number-node 3)])
-                              (ast/block-node
-                                  [(ast/literal-number-node 4)])))]))]))))
-
-  (deftest Test005ConditionalBranchesShouldBeBlocks
-    (is (invalid? (ast/program-node
-      :primitives primitives
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "nil"
-              :body (ast/block-node
-                  [(ast/conditional-node
-                          (ast/call-node "read"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/call-node "turnOff"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/block-node []))]))])))
-    (is (invalid? (ast/program-node
-      :primitives primitives
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "nil"
-              :body (ast/block-node
-                  [(ast/conditional-node
-                          (ast/call-node "read"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/block-node [])
-                          (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
-
-  (deftest Test006ConditionsShouldBeExpressions
-    (is (invalid? "task foo() stopped { if turnOn(D13) { turnOff(D13); }}"))
-    (is (invalid? "var a; task foo() stopped { if a = 3 { turnOff(D13); }}")))
-
-  (deftest Test007LoopBodyShouldContainOnlyStatements
-    (is (invalid? "task foo() stopped { while read(D13) { read(D13); }}"))
-    (is (invalid? "task foo() stopped { do { read(D13); } while read(D13); }")))
 
   (deftest Test008LoopConditionOnlyAllowsOneExpression
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "nil"
@@ -248,7 +249,6 @@
 
   (deftest Test009ScriptStartReceiverIsAScriptRef
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
@@ -256,7 +256,6 @@
 
   (deftest Test010ScriptStopReceiverIsAScriptRef
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
@@ -296,7 +295,6 @@
       :globals [(ast/variable-declaration-node
               "a"
               (ast/literal-number-node 0))]
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "nil"
@@ -315,7 +313,6 @@
 
   (deftest Test019RepeatBodyShouldBeABlock
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -327,7 +324,6 @@
 
   (deftest Test020ScriptPauseReceiverIsAScriptRef
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
@@ -335,7 +331,6 @@
 
   (deftest Test021ScriptResumeReceiverIsAScriptRef
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
@@ -362,7 +357,6 @@
     		func test1 () {}
     		proc test1() {}"))
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node []))
@@ -380,14 +374,12 @@
           (ast/variable-declaration-node
               "a"
               (ast/literal-number-node 0))]
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node []))]))))
 
   (deftest Test026DuplicateLocalsAreNotValid
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :body (ast/block-node
@@ -400,7 +392,6 @@
 
   (deftest Test027DuplicateArgsAreNotValid
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :arguments [(ast/variable-declaration-node
@@ -413,7 +404,6 @@
 
   (deftest Test028ForeverBodyShouldBeABlock
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -424,7 +414,6 @@
 
   (deftest Test029ForBodyShouldBeABlock
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -439,7 +428,6 @@
 
   (deftest Test030ForCounterShouldBeAVariable
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -455,7 +443,6 @@
 
   (deftest Test031ForStartShouldBeAnExpression
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -472,7 +459,6 @@
 
   (deftest Test032ForStopShouldBeAnExpression
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -489,7 +475,6 @@
 
   (deftest Test033ForStepShouldBeAnExpression
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -506,7 +491,6 @@
 
   (deftest Test034AVariableShouldBeDeclaredBeforeItsFirstUse
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -522,7 +506,6 @@
 
   (deftest Test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -544,7 +527,6 @@
 
   (deftest Test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -575,7 +557,6 @@
 
   (deftest Test038LocalsAndArgsWithTheSameNameAreNotValid
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/procedure-node
               :name "foo"
               :arguments [(ast/variable-declaration-node
@@ -589,7 +570,6 @@
   (deftest Test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
     (is (invalid? "task foo() 1/s {}"))
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "once"
@@ -599,7 +579,6 @@
   (deftest Test040TickingRateValueShouldAlwaysBePositive
     (is (invalid? "task foo() running 0/s {}"))
     (is (invalid? (ast/program-node
-      :primitives primitives
       :scripts [(ast/task-node
               :name "foo"
               :state "running"
@@ -623,7 +602,6 @@
       :imports [(ast/import-node "t13" "test13.uzi"
               (ast/block-node
                   [(ast/start-node ["bar"])]))]
-      :primitives primitives
       :scripts []))))
 
   (deftest Test044AttemptingToInitializeANonExistingGlobalShouldFail
@@ -633,7 +611,6 @@
                   [(ast/assignment-node
                           (ast/variable-node "d")
                           (ast/literal-number-node 10))]))]
-      :primitives primitives
       :scripts []))))
 
   (deftest Test045AttemptingToStartAnExistingTaskShouldWork
@@ -641,7 +618,6 @@
       :imports [(ast/import-node "t13" "test13.uzi"
               (ast/block-node
                   [(ast/start-node ["foo"])]))]
-      :primitives primitives
       :scripts []))))
 
   (deftest Test046ProgramWithPrimitiveDeclaration

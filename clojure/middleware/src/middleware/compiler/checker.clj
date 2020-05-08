@@ -20,9 +20,14 @@
           "Expression expected"
           node errors))
 
+(defn assert-variable [node errors]
+  (assert (ast-utils/variable? node)
+          "Variable expected"
+          node errors))
+
 (defn assert-block [node errors]
   (assert (ast-utils/block? node)
-          "Expression expected"
+          "Block expected"
           node errors))
 
 (defmulti check-node (fn [node errors path] (:__class__ node)))
@@ -97,8 +102,21 @@
 (defmethod check-node "UziProcedureNode" [node errors path]
   )
 
-(defmethod check-node "UziAssignmentNode" [node errors path]
+(defmethod check-node "UziWhileNode" [node errors path]
   )
+
+(defmethod check-node "UziDoWhileNode" [node errors path]
+  )
+
+(defmethod check-node "UziUntilNode" [node errors path]
+  )
+
+(defmethod check-node "UziDoUntilNode" [node errors path]
+  )
+
+(defmethod check-node "UziAssignmentNode" [node errors path]
+  (assert-variable (:left node) errors)
+  (assert-expression (:right node) errors))
 
 (defmethod check-node "Association" [_ _ _]) ; TODO(Richo): Remove
 
