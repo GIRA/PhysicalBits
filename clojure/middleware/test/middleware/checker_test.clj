@@ -78,44 +78,93 @@
 (deftest block-should-only-contain-statements
   (is (valid? "task foo() {}"))
   (is (valid? "task foo() running { toggle(D13); }"))
-  (is (invalid? "task foo() stopped {4;}")))
+  (is (invalid? "task foo() stopped {4;}"))
+  (is (invalid? "var a; task foo() stopped {a;}"))
+  (is (invalid? "task foo() stopped { read(4); }"))
+  (is (invalid? "task foo() stopped { 3 > 4; }"))
+  (is (invalid? "task foo() stopped {D13;}"))
+  (is (invalid? "task foo() stopped {sin(5);}"))
+  (is (invalid? "task foo() stopped { if 3 > 4 {4;}}"))
+  (is (invalid? "task foo() stopped { if 3 > 4 {} else{4;}}"))
+  (is (invalid? "task foo() stopped { if 3 > 4 {3;} else {turnOn(3);}}"))
+  (is (invalid? "task foo() stopped { if 3 > 4 { turnOff(3);} else { 3;}}")))
+
+(deftest call-args-should-be-expressions
+  (is (valid? "task foo() { write(D9, read(A1)); }"))
+  (is (invalid? "task foo() stopped { turnOn(turnOn(D13)); }"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/call-node "turnOn"
+                                                   [(ast/block-node
+                                                     [(ast/call-node "turnOn"
+                                                                     [(ast/arg-node (ast/literal-number-node 13))])])])]))])))
+  (is (invalid? "proc foo(a) { toggle(a); } task bar() stopped { foo(turnOn(D13)); }"))
+
+  ; NOTE(Richo): The following should fail but we are currently treating a script
+  ; call as both an expresion and argument. We should change it to check if the
+  ; script being called is a procedure or a function.
+  #_(is (invalid? "proc foo(a) { toggle(a); } task bar() stopped { foo(foo(D13)); }")))
+
+(deftest conditions-should-be-expressions
+  (is (valid? "task foo() { if 1 { toggle(D13); }}"))
+  (is (invalid? "task foo() stopped { if turnOn(D13) { turnOff(D13); }}"))
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node "a")]
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/conditional-node
+                                     (ast/assignment-node
+                                      (ast/variable-node "a")
+                                      (ast/literal-number-node 4))
+                                     (ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node (ast/literal-pin-node "D" 13))]))]))])))
+
+  ; NOTE(Richo): The following test is not treating the condition as an assignment
+  ; because the parser doesn't allow assignments in that place.
+  (is (invalid? "var a; task foo() stopped { if a = 3 { turnOff(D13); }}")))
+
+(deftest assignments-are-not-expressions
+  (is (valid? "var a; proc foo() { a = 5; }"))
+  (is (invalid? (ast/program-node
+                 :globals [(ast/variable-declaration-node "a")]
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :body (ast/block-node
+                                   [(ast/call-node "write"
+                                                   [(ast/arg-node (ast/literal-pin-node "D" 13))
+                                                    (ast/arg-node (ast/assignment-node
+                                                                   (ast/variable-node "a")
+                                                                   (ast/literal-number-node 5)))])]))])))
+
+  ; NOTE(Richo): The following are not checking the assignment because the parser
+  ; doesn't allow assignment in these places. The parser is treating the '=' as
+  ; a call to a non existing script.
+  (is (invalid? "var a; proc foo() { write(D13, a = 5); }"))
+  (is (invalid? "var a; var b; proc foo() { b = (a = 5); }"))
+  (is (invalid? "var a; proc foo() { if (a = 5) { turnOff(D13); }}")))
+
+(deftest conditionals-are-not-expressions
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "nil"
+                            :body (ast/block-node
+                                   [(ast/call-node "write"
+                                                   [(ast/arg-node (ast/literal-number-node 13))
+                                                    (ast/arg-node (ast/conditional-node
+                                                                   (ast/call-node "greaterThan"
+                                                                                  [(ast/arg-node (ast/literal-number-node 3))
+                                                                                   (ast/arg-node (ast/literal-number-node 4))])
+                                                                   (ast/block-node
+                                                                    [(ast/call-node "turnOff"
+                                                                                    [(ast/arg-node (ast/literal-number-node 13))])])
+                                                                   (ast/block-node [])))])]))]))))
 
 #_(
-
-  (deftest Test001BlockOnlyContainsStatements
-    (is (invalid? "task foo() stopped {4;}"))
-    (is (invalid? "var a; task foo() stopped {a;}"))
-    (is (invalid? "task foo() stopped { read(4); }"))
-    (is (invalid? "task foo() stopped { 3 > 4; }"))
-    (is (invalid? "task foo() stopped {D13;}"))
-    (is (invalid? "task foo() stopped {sin(5);}"))
-    (is (invalid? "task foo() stopped { if 3 > 4 {4;}}"))
-    (is (invalid? "task foo() stopped { if 3 > 4 {} else{4;}}"))
-    (is (invalid? "task foo() stopped { if 3 > 4 {3;} else {turnOn(3);}}"))
-    (is (invalid? "task foo() stopped { if 3 > 4 { turnOff(3);} else { 3;}}")))
-
-  (deftest Test002AssignmentsAreNotExpressions
-    (is (invalid? "var a; proc foo() { write(D13, a = 5); }"))
-    (is (invalid? "var a; var b; proc foo() { b = (a = 5); }"))
-    (is (invalid? "var a; proc foo() { if (a = 5) { turnOff(D13); }}")))
-
-  (deftest Test003ConditionalsAreNotExpressions
-    (is (invalid? (ast/program-node
-      :primitives primitives
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "nil"
-              :body (ast/block-node
-                  [(ast/call-node "write"
-                          [(ast/arg-node (ast/literal-number-node 13))
-                          (ast/arg-node (ast/conditional-node
-                              (ast/call-node "greaterThan"
-                                  [(ast/arg-node (ast/literal-number-node 3))
-                                  (ast/arg-node (ast/literal-number-node 4))])
-                              (ast/block-node
-                                  [(ast/call-node "turnOff"
-                                          [(ast/arg-node (ast/literal-number-node 13))])])
-                              (ast/block-node [])))])]))]))))
 
   (deftest Test004AssignmentValueShouldBeAnExpression
     (is (invalid? (ast/program-node
@@ -256,19 +305,6 @@
                           (ast/block-node
                               [(ast/variable-node "a")])
                           (ast/block-node []))]))]))))
-
-  (deftest Test017PrimitiveCallArgumentsShouldBeExpressions
-    (is (invalid? "var a; task foo() stopped { turnOn(a = 5); }"))
-    (is (invalid? "task foo() stopped { turnOn(turnOn(D13)); }"))
-    (is (invalid? (ast/program-node
-      :primitives primitives
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :body (ast/block-node
-                  [(ast/call-node "turnOn"
-                          [(ast/block-node
-                              [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])])])]))]))))
 
   (deftest Test018RepeatTimesShouldBeAnExpression
     (is (invalid? "task foo() running {

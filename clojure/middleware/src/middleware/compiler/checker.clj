@@ -15,6 +15,16 @@
           "Statement expected"
           node errors))
 
+(defn assert-expression [node errors]
+  (assert (ast-utils/expression? node)
+          "Expression expected"
+          node errors))
+
+(defn assert-block [node errors]
+  (assert (ast-utils/block? node)
+          "Expression expected"
+          node errors))
+
 (defmulti check-node (fn [node errors path] (:__class__ node)))
 
 (defn- check [node errors path]
@@ -31,7 +41,20 @@
 (defmethod check-node "UziTaskNode" [node errors path]
   )
 
-(defmethod check-node "UziCallNode" [node errors path])
+(defn- check-primitive-call [node errors path]
+  )
+
+(defn- check-script-call [node errors path]
+  (assert (ast-utils/script-named (:selector node) path)
+          "Invalid script"
+          node errors))
+
+(defmethod check-node "UziCallNode" [node errors path]
+  (doseq [arg (map :value (:arguments node))]
+    (assert-expression arg errors))
+  (if (get node :primitive-name)
+    (check-primitive-call node errors path)
+    (check-script-call node errors path)))
 
 (defmethod check-node "UziBlockNode" [node errors path]
   (doseq [stmt (:statements node)]
@@ -54,6 +77,29 @@
           node
           errors))
 
+(defmethod check-node "UziConditionalNode" [node errors path]
+  (assert-expression (:condition node) errors)
+  (assert-block (:trueBranch node) errors)
+  (assert-block (:falseBranch node) errors))
+
+(defmethod check-node "UziVariableDeclarationNode" [node errors path]
+  )
+
+(defmethod check-node "UziVariableNode" [node errors path]
+  )
+
+(defmethod check-node "UziImportNode" [node errors path]
+  )
+
+(defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
+  )
+
+(defmethod check-node "UziProcedureNode" [node errors path]
+  )
+
+(defmethod check-node "UziAssignmentNode" [node errors path]
+  )
+
 (defmethod check-node "Association" [_ _ _]) ; TODO(Richo): Remove
 
 (defmethod check-node :default [node _ _]
@@ -69,8 +115,9 @@
    (do ; Definitions
      (def parse middleware.parser.parser/parse)
      (def pprint clojure.pprint/pprint)
-     (def ast (parse "task foo() stopped {F4;}")))
-  (pprint ast)
+     (def ast (parse "var a; task foo() stopped { if a = 3 { turnOff(D13); }}"))
+     (def ast (middleware.compiler.linker/resolve-imports ast "../../uzi/tests")))
+  (pprint (dissoc ast :primitives))
   (check-tree ast)
 
   )
