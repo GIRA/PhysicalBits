@@ -371,7 +371,7 @@
                             :body (ast/block-node
                                    [(ast/resume-node [(ast/literal-number-node 42)])]))]))))
 
-(deftest variables-should-not-collide
+(deftest variable-names-should-not-collide
   (is (valid? "task foo(a) stopped { var b; turnOff(D13); }"))
   (is (valid? "var a = 100; task foo() { var a = 10; turnOff(a); }"))
   (is (valid? "task foo() {
@@ -411,7 +411,17 @@
                                         (ast/variable-declaration-node
                                          "a"
                                          (ast/literal-number-node 0))]
-                            :body (ast/block-node []))]))))
+                            :body (ast/block-node []))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :arguments [(ast/variable-declaration-node
+                                         "a"
+                                         (ast/literal-number-node 0))]
+                            :body (ast/block-node
+                                   [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 0))]))]))))
 
 (deftest function-argument-should-not-be-registered-as-global
   (is (invalid? "
@@ -428,8 +438,73 @@
           func test1 () {}
           proc test1() {}")))
 
-#_(
+(deftest variables-should-be-declared-before-first-use
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node "+"
+                                                    [(ast/arg-node (ast/variable-node "a"))
+                                                     (ast/arg-node (ast/literal-number-node 1))]))
+                                    (ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 5))]))]))))
 
+(deftest variables-declared-inside-a-block-should-not-be-accessible-outside-of-it
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/conditional-node
+                                     (ast/call-node "greaterThan"
+                                                    [(ast/arg-node (ast/literal-number-node 3))
+                                                     (ast/arg-node (ast/literal-number-node 4))])
+                                     (ast/block-node
+                                      [(ast/variable-declaration-node
+                                        "a"
+                                        (ast/literal-number-node 5))])
+                                     (ast/block-node []))
+                                    (ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node "+"
+                                                    [(ast/arg-node (ast/variable-node "a"))
+                                                     (ast/arg-node (ast/literal-number-node 1))]))]))]))))
+
+(deftest variables-declared-inside-a-block-should-not-collide-with-variables-already-declared-outside
+  (is (valid? "task foo() running {
+                if 1 { var a = 1; }
+                var a = 2;
+              }"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 5))
+                                    (ast/conditional-node
+                                     (ast/call-node "greaterThan"
+                                                    [(ast/arg-node (ast/literal-number-node 3))
+                                                     (ast/arg-node (ast/literal-number-node 4))])
+                                     (ast/block-node
+                                      [(ast/variable-declaration-node
+                                        "a"
+                                        (ast/literal-number-node 5))])
+                                     (ast/block-node []))
+                                    (ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node "+"
+                                                    [(ast/arg-node (ast/variable-node "a"))
+                                                     (ast/arg-node (ast/literal-number-node 1))]))]))]))))
+
+
+#_(
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (deftest Test012ScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth
     (is (invalid? "
@@ -551,84 +626,6 @@
                           (ast/block-node
                               [(ast/call-node "turnOn"
                                       [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
-
-  (deftest Test034AVariableShouldBeDeclaredBeforeItsFirstUse
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/assignment-node
-                          (ast/variable-node "a")
-                          (ast/call-node "+"
-                              [(ast/arg-node (ast/variable-node "a"))
-                              (ast/arg-node (ast/literal-number-node 1))]))
-                      (ast/variable-declaration-node
-                          "a"
-                          (ast/literal-number-node 5))]))]))))
-
-  (deftest Test035VariablesDeclaredInsideABlockShouldNotBeAccessibleOutside
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/conditional-node
-                          (ast/call-node "greaterThan"
-                              [(ast/arg-node (ast/literal-number-node 3))
-                              (ast/arg-node (ast/literal-number-node 4))])
-                          (ast/block-node
-                              [(ast/variable-declaration-node
-                                      "a"
-                                      (ast/literal-number-node 5))])
-                          (ast/block-node []))
-                      (ast/assignment-node
-                          (ast/variable-node "a")
-                          (ast/call-node "+"
-                              [(ast/arg-node (ast/variable-node "a"))
-                              (ast/arg-node (ast/literal-number-node 1))]))]))]))))
-
-  (deftest Test036VariablesDeclaredInsideABlockShouldNotCollideWithVariablesAlreadyDeclaredOutside
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/variable-declaration-node
-                          "a"
-                          (ast/literal-number-node 5))
-                      (ast/conditional-node
-                          (ast/call-node "greaterThan"
-                              [(ast/arg-node (ast/literal-number-node 3))
-                              (ast/arg-node (ast/literal-number-node 4))])
-                          (ast/block-node
-                              [(ast/variable-declaration-node
-                                      "a"
-                                      (ast/literal-number-node 5))])
-                          (ast/block-node []))
-                      (ast/assignment-node
-                          (ast/variable-node "a")
-                          (ast/call-node "+"
-                              [(ast/arg-node (ast/variable-node "a"))
-                              (ast/arg-node (ast/literal-number-node 1))]))]))]))))
-
-  (deftest Test037VariablesDeclaredInsideABlockShouldNotCollideWithVariablesDeclaredOutsideAfterTheBlock
-    (is (valid? "task foo() running {
-    			if 1 { var a = 1; }
-    			var a = 2;
-    		}")))
-
-  (deftest Test038LocalsAndArgsWithTheSameNameAreNotValid
-    (is (invalid? (ast/program-node
-      :scripts [(ast/procedure-node
-              :name "foo"
-              :arguments [(ast/variable-declaration-node
-                      "a"
-                      (ast/literal-number-node 0))]
-              :body (ast/block-node
-                  [(ast/variable-declaration-node
-                          "a"
-                          (ast/literal-number-node 0))]))]))))
 
   (deftest Test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
     (is (invalid? "task foo() 1/s {}"))
