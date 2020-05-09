@@ -1,5 +1,7 @@
 (ns middleware.compiler.checker
-  (:require [middleware.compiler.ast-utils :as ast-utils]))
+  (:require [middleware.compiler.ast-utils :as ast-utils]
+            [middleware.compiler.primitives :as prims]
+            [clojure.data :as data]))
 
 (defn- register-error! [description node errors]
   (swap! errors conj {:node node
@@ -40,6 +42,11 @@
           "Script expected"
           node errors))
 
+(defn assert-literal [node errors]
+  (assert (ast-utils/compile-time-constant? node)
+          "Literal expected"
+          node errors))
+
 (defmulti check-node (fn [node errors path] (:__class__ node)))
 
 (defn- check [node errors path]
@@ -53,13 +60,17 @@
     (doseq [import imports]
       ; TODO(Richo): ?
       ))
+
   (let [globals (atom #{})]
     (doseq [global (:globals node)]
       (assert-variable-declaration global errors)
+      (when-let [value (:value global)]
+        (assert-literal value errors))
       (assert (not (contains? @globals (:name global)))
               "Global variable already declared"
               global errors)
       (swap! globals conj (:name global))))
+
   (let [scripts (atom #{})]
     (doseq [script (:scripts node)]
       (assert-script script errors)
@@ -78,7 +89,12 @@
 
 
 (defmethod check-node "UziTaskNode" [node errors path]
-  (check-script-args node errors path))
+  (check-script-args node errors path)
+  (when-let [ticking-rate (:tickingRate node)]
+    (assert (and (:state node)
+                 (not= "once" (:state node)))
+            "Ticking rate is not valid if task state is not specified"
+            ticking-rate errors)))
 
 (defmethod check-node "UziProcedureNode" [node errors path]
   (check-script-args node errors path))
@@ -87,15 +103,32 @@
   (check-script-args node errors path))
 
 (defmethod check-node "UziTickingRateNode" [node errors path]
-  )
+  (assert (> (:value node) 0)
+          "Ticking rate must be a positive value"
+          node errors))
 
 (defn- check-primitive-call [node errors path]
   )
 
+(defn- contains-all? [a b]
+  (nil? (first (data/diff (set b) (set a)))))
+
 (defn- check-script-call [node errors path]
-  (assert (ast-utils/script-named (:selector node) path)
-          "Invalid script"
-          node errors))
+  (let [script (ast-utils/script-named (:selector node) path)]
+    (assert script
+            "Invalid script"
+            node errors)
+    (let [call-args (map :key (:arguments node))
+          script-args (map :name (:arguments script))]
+      ; TODO(Richo): I don't understand why I check <=
+      (assert (<= (count call-args)
+                  (count script-args))
+              "Invalid number of arguments"
+              node errors)
+      (assert (or (contains-all? script-args call-args)
+                  (every? nil? call-args))
+              "Explicit argument names expected"
+              node errors))))
 
 (defmethod check-node "UziCallNode" [node errors path]
   (doseq [arg (map :value (:arguments node))]
@@ -161,7 +194,15 @@
   )
 
 (defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
-  )
+  (assert (string? (:alias node))
+          "Invalid alias"
+          node errors)
+  (assert (string? (:name node))
+          "Invalid name"
+          node errors)
+  (assert (prims/primitive (:name node))
+          "Primitive not found"
+          node errors))
 
 (defmethod check-node "UziReturnNode" [node errors path]
   (when-let [value (:value node)]
@@ -229,10 +270,17 @@
    (do ; Definitions
      (def parse middleware.parser.parser/parse)
      (def pprint clojure.pprint/pprint)
-     (def ast (parse "var a; task foo() stopped { if a = 3 { turnOff(D13); }}"))
+     (defn format [ast]
+       (ast-utils/transform (dissoc ast :primitives)
+                            :default (fn [n _] (dissoc n :internal-id))))
+     (def ast (parse "
+           func foo(a, b, c) { return a * b + c; }
+           task main() running {
+             foo(c: 1, b: 2, a: 3);
+           }"))
      (def ast (ast-utils/assign-internal-ids ast))
      (def ast (middleware.compiler.linker/resolve-imports ast "../../uzi/tests")))
-  (pprint (dissoc ast :primitives))
-  (check-tree ast)
+  (pprint (format ast))
+  (map :description (check-tree ast))
 
   )

@@ -623,45 +623,53 @@
                             :body (ast/block-node
                                    [(ast/return-node (ast/yield-node))]))]))))
 
+
+(deftest ticking-rate-is-only-allowed-if-state-is-specified
+  (is (invalid? "task foo() 1/s {}"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "once"
+                            :tick-rate (ast/ticking-rate-node 1 "s")
+                            :body (ast/block-node []))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :tick-rate (ast/ticking-rate-node 1 "s")
+                            :body (ast/block-node []))]))))
+
+(deftest ticking-rate-value-should-always-be-positive
+  (is (invalid? "task foo() running 0/s {}"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :tick-rate (ast/ticking-rate-node -1 "s")
+                            :body (ast/block-node []))]))))
+
+(deftest global-declarations-only-allow-literals
+  (is (invalid? "var a = 3+4; task foo() {}"))
+  (is (valid? "var a = 3; task foo() {}"))
+  (is (valid? "var a = A3; task foo() {}"))
+  (is (valid? "var a = D3; task foo() {}")))
+
+(deftest script-call-should-either-provide-named-or-anonymous-arguments-but-not-both
+  (is (valid? "func foo(a,b,c) { return a * b + c; }
+               task main() { foo(1, 2, 3); }"))
+  (is (valid? "func foo(a,b,c) { return a * b + c; }
+               task main() { foo(c: 1, a: 2, b: 3); }"))
+  (is (invalid? "
+        func foo(a, b, c) { return a * b + c; }
+        task main() running {
+          foo(1, 2, c: 3);
+        }")))
+
+(deftest program-with-primitive-declaration
+  (is (valid? "prim add;"))
+  (is (invalid? "prim unaPrimitivaQueNoExisteEnElSpec;")))
+
 #_(
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (deftest Test012ScriptCallShouldEitherProvideNamedOrAnonymousArgumentsButNotBoth
-    (is (invalid? "
-    		func foo(a, b, c) { return a * b + c; }
-    		task main() running {
-    			foo(1, 2, c: 3);
-    		}")))
-
-
-
-
-
-
-
-  (deftest Test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
-    (is (invalid? "task foo() 1/s {}"))
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "once"
-              :tick-rate (ast/ticking-rate-node 1 "s")
-              :body (ast/block-node []))]))))
-
-  (deftest Test040TickingRateValueShouldAlwaysBePositive
-    (is (invalid? "task foo() running 0/s {}"))
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :tick-rate (ast/ticking-rate-node -1 "s")
-              :body (ast/block-node []))]))))
-
-  (deftest Test041GlobalDeclarationsOnlyAllowLiterals
-    (is (invalid? "var a = 3+4; task foo() {}"))
-    (is (valid? "var a = 3; task foo() {}"))
-    (is (valid? "var a = A3; task foo() {}"))
-    (is (valid? "var a = D3; task foo() {}")))
 
   (deftest Test042ExpressionsAreNotAllowedInsideImportInitBlocks
     (is (invalid? "import a from 'A.uzi' { a = 3 + 4; }"))
@@ -691,9 +699,5 @@
               (ast/block-node
                   [(ast/start-node ["foo"])]))]
       :scripts []))))
-
-  (deftest Test046ProgramWithPrimitiveDeclaration
-    (is (valid? "prim add;"))
-    (is (invalid? "prim unaPrimitivaQueNoExisteEnElSpec;")))
 
    )
