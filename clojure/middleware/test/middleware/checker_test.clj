@@ -503,6 +503,126 @@
                                                      (ast/arg-node (ast/literal-number-node 1))]))]))]))))
 
 
+(deftest repeat-times-should-be-an-expression
+  (is (valid? "task foo() { repeat 4 * 2 { toggle(D13); }}"))
+  (is (valid? "var a = 100; task foo() { repeat a { toggle(D13); }}"))
+  (is (invalid? "task foo() running {
+                   repeat turnOn(13) {
+                     toggle(D13);
+                   }
+                 }")))
+
+(deftest repeat-body-should-be-a-block
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/repeat-node
+                                     (ast/literal-number-node 5)
+                                     (ast/call-node "turnOn"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
+
+(deftest forever-body-should-be-a-block
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/forever-node
+                                     (ast/call-node "turnOn"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
+
+(deftest for-body-should-be-a-block
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/for-node
+                                     "a"
+                                     (ast/literal-number-node 1)
+                                     (ast/literal-number-node 10)
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "turnOn"
+                                                    [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
+
+(deftest for-counter-should-be-a-variable
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(assoc (ast/for-node
+                                            "?"
+                                            (ast/literal-number-node 1)
+                                            (ast/literal-number-node 10)
+                                            (ast/literal-number-node 1)
+                                            (ast/block-node
+                                             [(ast/call-node "turnOn"
+                                                             [(ast/arg-node (ast/literal-number-node 13))])]))
+                                           :counter (ast/literal-number-node 42))]))]))))
+
+(deftest for-start-should-be-an-expression
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/for-node
+                                     "a"
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/literal-number-node 10)
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
+
+(deftest for-stop-should-be-an-expression
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/for-node
+                                     "a"
+                                     (ast/literal-number-node 1)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
+
+(deftest for-step-should-be-an-expression
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/for-node
+                                     "a"
+                                     (ast/literal-number-node 1)
+                                     (ast/literal-number-node 10)
+                                     (ast/call-node "toggle"
+                                                    [(ast/arg-node (ast/literal-number-node 13))])
+                                     (ast/block-node
+                                      [(ast/call-node "turnOn"
+                                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
+
+
+(deftest return-value-should-either-be-nil-or-an-expression
+  (is (valid? "proc a() { return; }"))
+  (is (valid? "func a() { return 1; }"))
+  (is (invalid? "proc a() { return toggle(D13); }"))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :state "running"
+                            :body (ast/block-node
+                                   [(ast/return-node (ast/yield-node))]))]))))
+
 #_(
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -514,118 +634,10 @@
     		}")))
 
 
-  (deftest Test018RepeatTimesShouldBeAnExpression
-    (is (invalid? "task foo() running {
-    			repeat turnOn(13) {
-    				toggle(D13);
-    			}
-    		}")))
-
-  (deftest Test019RepeatBodyShouldBeABlock
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/repeat-node
-                          (ast/literal-number-node 5)
-                          (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
 
 
-  (deftest Test023YieldShouldNotBeUsedAsExpression
-    (is (invalid? "
-    		func yield () {
-    			return yield;
-    		}")))
 
 
-  (deftest Test028ForeverBodyShouldBeABlock
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/forever-node
-                          (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
-
-  (deftest Test029ForBodyShouldBeABlock
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/for-node
-                          "a"
-                          (ast/literal-number-node 1)
-                          (ast/literal-number-node 10)
-                          (ast/literal-number-node 1)
-                          (ast/call-node "turnOn"
-                              [(ast/arg-node (ast/literal-number-node 13))]))]))]))))
-
-  (deftest Test030ForCounterShouldBeAVariable
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/for-node
-                          "an UziNumberLiteralNode"
-                          (ast/literal-number-node 1)
-                          (ast/literal-number-node 10)
-                          (ast/literal-number-node 1)
-                          (ast/block-node
-                              [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
-
-  (deftest Test031ForStartShouldBeAnExpression
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/for-node
-                          "a"
-                          (ast/call-node "toggle"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/literal-number-node 10)
-                          (ast/literal-number-node 1)
-                          (ast/block-node
-                              [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
-
-  (deftest Test032ForStopShouldBeAnExpression
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/for-node
-                          "a"
-                          (ast/literal-number-node 1)
-                          (ast/call-node "toggle"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/literal-number-node 1)
-                          (ast/block-node
-                              [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
-
-  (deftest Test033ForStepShouldBeAnExpression
-    (is (invalid? (ast/program-node
-      :scripts [(ast/task-node
-              :name "foo"
-              :state "running"
-              :body (ast/block-node
-                  [(ast/for-node
-                          "a"
-                          (ast/literal-number-node 1)
-                          (ast/literal-number-node 10)
-                          (ast/call-node "toggle"
-                              [(ast/arg-node (ast/literal-number-node 13))])
-                          (ast/block-node
-                              [(ast/call-node "turnOn"
-                                      [(ast/arg-node (ast/literal-number-node 13))])]))]))]))))
 
   (deftest Test039TickingRateIsOnlyAllowedIfTaskStateIsSpecified
     (is (invalid? "task foo() 1/s {}"))

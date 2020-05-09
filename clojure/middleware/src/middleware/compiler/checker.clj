@@ -143,6 +143,20 @@
           "Undefined variable found"
           node errors))
 
+(defmethod check-node "UziRepeatNode" [node errors path]
+  (assert-expression (:times node) errors)
+  (assert-block (:body node) errors))
+
+(defmethod check-node "UziForeverNode" [node errors path]
+  (assert-block (:body node) errors))
+
+(defmethod check-node "UziForNode" [node errors path]
+  (assert-variable-declaration (:counter node) errors)
+  (assert-expression (:start node) errors)
+  (assert-expression (:step node) errors)
+  (assert-expression (:stop node) errors)
+  (assert-block (:body node) errors))
+
 (defmethod check-node "UziImportNode" [node errors path]
   )
 
@@ -150,6 +164,10 @@
   )
 
 (defmethod check-node "UziReturnNode" [node errors path]
+  (when-let [value (:value node)]
+    (assert-expression value errors)))
+
+(defmethod check-node "UziYieldNode" [node errors path]
   )
 
 
