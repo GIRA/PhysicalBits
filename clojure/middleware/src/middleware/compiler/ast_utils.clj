@@ -76,6 +76,12 @@
                "UziProcedureNode"}
              (node-type node)))
 
+(defn import? [node]
+  (= "UziImportNode" (node-type node)))
+
+(defn assignment? [node]
+  (= "UziAssignmentNode" (node-type node)))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
     (if-not primitive-name

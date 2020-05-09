@@ -35,34 +35,36 @@
                               :primitive-name (core-primitives selector)))))))
 
 (defn apply-alias [ast alias]
-  (let [with-alias #(str alias "." %)
-         update (fn [key node _] (assoc node key (-> node key with-alias)))
-         update-name (partial update :name)
-         update-selector (partial update :selector)
-         update-alias (partial update :alias)
-         update-variable (fn [node path]
-                           (if (ast-utils/local? node path)
-                             node
-                             (update :name node path)))
-         update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
-    (ast-utils/transform
-     ast
+  (if-not alias
+    ast
+    (let [with-alias #(str alias "." %)
+           update (fn [key node _] (assoc node key (-> node key with-alias)))
+           update-name (partial update :name)
+           update-selector (partial update :selector)
+           update-alias (partial update :alias)
+           update-variable (fn [node path]
+                             (if (ast-utils/local? node path)
+                               node
+                               (update :name node path)))
+           update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
+      (ast-utils/transform
+       ast
 
-     "UziVariableDeclarationNode" update-variable
-     "UziVariableNode" update-variable
+       "UziVariableDeclarationNode" update-variable
+       "UziVariableNode" update-variable
 
-     "UziTaskNode" update-name
-     "UziFunctionNode" update-name
-     "UziProcedureNode" update-name
+       "UziTaskNode" update-name
+       "UziFunctionNode" update-name
+       "UziProcedureNode" update-name
 
-     "UziCallNode" update-selector
+       "UziCallNode" update-selector
 
-     "UziScriptStopNode" update-script-list
-     "UziScriptStartNode" update-script-list
-     "UziScriptPauseNode" update-script-list
-     "UziScriptResumeNode" update-script-list
+       "UziScriptStopNode" update-script-list
+       "UziScriptStartNode" update-script-list
+       "UziScriptPauseNode" update-script-list
+       "UziScriptResumeNode" update-script-list
 
-     "UziPrimitiveDeclarationNode" update-alias)))
+       "UziPrimitiveDeclarationNode" update-alias))))
 
 (defn apply-initialization-block [ast {:keys [statements] :as init-block}]
   (let [globals (into {}
@@ -110,20 +112,11 @@
                                               (implicit-imports imp)
                                               (conj visited-imports
                                                     {:alias alias :path path})))]
-        {:import (assoc imp :isResolved true)
-         :program (if alias
-                    (apply-alias imported-ast alias)
-                    imported-ast)})
+        {:import (assoc imp
+                        :isResolved true
+                        :program imported-ast)
+         :program (apply-alias imported-ast alias)})
       (throw (ex-info "File not found" {:import imp})))))
-
-(defn resolve-variable-scope [ast]
-  (let [assign-scope (fn [{:keys [name] :as node} path]
-                       (assoc node :local? (ast-utils/local? node path)))]
-    (ast-utils/transform
-     ast
-
-     "UziVariableNode" assign-scope
-     "UziVariableDeclarationNode" assign-scope)))
 
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)

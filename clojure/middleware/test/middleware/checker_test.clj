@@ -668,36 +668,27 @@
   (is (valid? "prim add;"))
   (is (invalid? "prim unaPrimitivaQueNoExisteEnElSpec;")))
 
-#_(
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(deftest only-compile-time-expressions-are-allowed-inside-import-init-blocks
+  (is (invalid? "import a from 'test_16.uzi' { a = 3 + 4; }"))
+  (is (valid? "import a from 'test_16.uzi' {}"))
+  (is (valid? "import a from 'test_16.uzi';"))
+  (is (valid? "import a from 'test_16.uzi' { a = 4; }")))
 
-  (deftest Test042ExpressionsAreNotAllowedInsideImportInitBlocks
-    (is (invalid? "import a from 'A.uzi' { a = 3 + 4; }"))
-    (is (valid? "import a from 'A.uzi' {}"))
-    (is (valid? "import a from 'A.uzi';"))
-    (is (valid? "import a from 'A.uzi' { a = 4; }")))
+(deftest attempting-to-initialize-a-non-existing-global-should-fail
+  (is (invalid? (ast/program-node
+                 :imports [(ast/import-node "t" "test_17.uzi"
+                                            (ast/block-node
+                                             [(ast/assignment-node
+                                               (ast/variable-node "d")
+                                               (ast/literal-number-node 10))]))]
+                 :scripts []))))
 
-  (deftest Test043AttemptingToStartANonExistingTaskShouldFail
-    (is (invalid? (ast/program-node
-      :imports [(ast/import-node "t13" "test13.uzi"
-              (ast/block-node
-                  [(ast/start-node ["bar"])]))]
-      :scripts []))))
-
-  (deftest Test044AttemptingToInitializeANonExistingGlobalShouldFail
-    (is (invalid? (ast/program-node
-      :imports [(ast/import-node "t13" "test13.uzi"
-              (ast/block-node
-                  [(ast/assignment-node
-                          (ast/variable-node "d")
-                          (ast/literal-number-node 10))]))]
-      :scripts []))))
-
-  (deftest Test045AttemptingToStartAnExistingTaskShouldWork
-    (is (valid? (ast/program-node
-      :imports [(ast/import-node "t13" "test13.uzi"
-              (ast/block-node
-                  [(ast/start-node ["foo"])]))]
-      :scripts []))))
-
-   )
+(deftest attempting-to-start-or-stop-a-non-existing-task-should-fail
+  (is (valid? "import t from 'test_17.uzi' { start foo; }"))
+  (is (valid? "import t from 'test_17.uzi' { stop foo; }"))
+  (is (valid? "import t from 'test_17.uzi' { resume foo; }"))
+  (is (valid? "import t from 'test_17.uzi' { pause foo; }"))
+  (is (invalid? "import t from 'test_17.uzi' { start bar; }"))
+  (is (invalid? "import t from 'test_17.uzi' { stop bar; }"))
+  (is (invalid? "import t from 'test_17.uzi' { resume bar; }"))
+  (is (invalid? "import t from 'test_17.uzi' { pause bar; }")))

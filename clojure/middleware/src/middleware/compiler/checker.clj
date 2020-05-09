@@ -172,9 +172,17 @@
               node errors)))))
 
 (defmethod check-node "UziVariableNode" [node errors path]
-  (assert (ast-utils/variable-named (:name node) path)
-          "Undefined variable found"
-          node errors))
+  (if-let [import (first (filter ast-utils/import? path))]
+    ; TODO(Richo): Special case when we're inside an import init block. Maybe I
+    ; should handle this in ast-utils/variable-named since the init blocks have
+    ; special scoping rules. I'll think about it and refactor later, if necessary.
+    (assert (contains? (set (map :name (-> import :program :globals)))
+                       (:name node))
+            "Undefined variable found"
+            node errors)
+    (assert (ast-utils/variable-named (:name node) path)
+            "Undefined variable found"
+            node errors)))
 
 (defmethod check-node "UziRepeatNode" [node errors path]
   (assert-expression (:times node) errors)
@@ -190,8 +198,16 @@
   (assert-expression (:stop node) errors)
   (assert-block (:body node) errors))
 
+
+
 (defmethod check-node "UziImportNode" [node errors path]
-  )
+  (when-let [init-block (:initializationBlock node)]
+    (assert-block init-block errors)
+    (doseq [stmt (:statements init-block)]
+      (assert-statement stmt errors)
+      (cond
+        (ast-utils/assignment? stmt) (assert-literal (:right stmt) errors)
+        ))))
 
 (defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
   (assert (string? (:alias node))
@@ -234,12 +250,22 @@
   (assert-expression (:right node) errors))
 
 (defn- check-script-control [node errors path]
-  (let [valid-script-names (set (map :name (ast-utils/scripts path)))]
+  ; TODO(Richo): Special case when we're inside an import init block. Maybe I
+  ; should handle this in ast-utils/scripts since the init blocks have special
+  ; scoping rules. I'll think about it and refactor later, if necessary.
+  (let [valid-script-names (if-let [import (first (filter ast-utils/import? path))]
+                             (set (map :name (-> import :program :scripts)))
+                             (set (map :name (ast-utils/scripts path))))
+        ; TODO(Richo): Yeah, this sucks... I'll make it work first and then clean up.
+        script-named (fn [script-name path]
+                       (if-let [import (first (filter ast-utils/import? path))]
+                         (first (filter #(= script-name (:name %)) (-> import :program :scripts)))
+                         (ast-utils/script-named script-name path)))]
     (doseq [script-name (:scripts node)]
       (assert (contains? valid-script-names script-name)
               (str "Invalid script: " script-name)
               node errors)
-      (assert (ast-utils/task? (ast-utils/script-named script-name path))
+      (assert (ast-utils/task? (script-named script-name path))
               "Task reference expected"
               node errors))))
 
@@ -273,14 +299,12 @@
      (defn format [ast]
        (ast-utils/transform (dissoc ast :primitives)
                             :default (fn [n _] (dissoc n :internal-id))))
-     (def ast (parse "
-           func foo(a, b, c) { return a * b + c; }
-           task main() running {
-             foo(c: 1, b: 2, a: 3);
-           }"))
+     (def ast (parse "import t from 'test_16.uzi' { a = 1; }
+                      task main() { t.a = 12; }"))
      (def ast (ast-utils/assign-internal-ids ast))
      (def ast (middleware.compiler.linker/resolve-imports ast "../../uzi/tests")))
   (pprint (format ast))
   (map :description (check-tree ast))
+  (pprint (middleware.compiler.compiler/compile-tree ast))
 
   )
