@@ -172,17 +172,9 @@
               node errors)))))
 
 (defmethod check-node "UziVariableNode" [node errors path]
-  (if-let [import (first (filter ast-utils/import? path))]
-    ; TODO(Richo): Special case when we're inside an import init block. Maybe I
-    ; should handle this in ast-utils/variable-named since the init blocks have
-    ; special scoping rules. I'll think about it and refactor later, if necessary.
-    (assert (contains? (set (map :name (-> import :program :globals)))
-                       (:name node))
-            "Undefined variable found"
-            node errors)
-    (assert (ast-utils/variable-named (:name node) path)
-            "Undefined variable found"
-            node errors)))
+  (assert (ast-utils/variable-named (:name node) path)
+          "Undefined variable found"
+          node errors))
 
 (defmethod check-node "UziRepeatNode" [node errors path]
   (assert-expression (:times node) errors)
@@ -250,22 +242,12 @@
   (assert-expression (:right node) errors))
 
 (defn- check-script-control [node errors path]
-  ; TODO(Richo): Special case when we're inside an import init block. Maybe I
-  ; should handle this in ast-utils/scripts since the init blocks have special
-  ; scoping rules. I'll think about it and refactor later, if necessary.
-  (let [valid-script-names (if-let [import (first (filter ast-utils/import? path))]
-                             (set (map :name (-> import :program :scripts)))
-                             (set (map :name (ast-utils/scripts path))))
-        ; TODO(Richo): Yeah, this sucks... I'll make it work first and then clean up.
-        script-named (fn [script-name path]
-                       (if-let [import (first (filter ast-utils/import? path))]
-                         (first (filter #(= script-name (:name %)) (-> import :program :scripts)))
-                         (ast-utils/script-named script-name path)))]
+  (let [valid-script-names (set (map :name (ast-utils/scripts path)))]
     (doseq [script-name (:scripts node)]
       (assert (contains? valid-script-names script-name)
               (str "Invalid script: " script-name)
               node errors)
-      (assert (ast-utils/task? (script-named script-name path))
+      (assert (ast-utils/task? (ast-utils/script-named script-name path))
               "Task reference expected"
               node errors))))
 

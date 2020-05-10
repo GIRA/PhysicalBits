@@ -107,7 +107,15 @@
     nil))
 
 (defn scripts [path]
-  (-> path last :scripts))
+  ; NOTE(Richo): If we're inside an import's initialization block we have special
+  ; scope rules. We need to look inside the imported program if the import has
+  ; been resolved, and fail if it wasn't. The only scripts we can access are
+  ; the imported program scripts.
+  (if-let [import (first (clj-core/filter import? path))]
+    (if (:isResolved import)
+      (-> import :program :scripts)
+      (throw (ex-info "Unresolved import" import)))
+    (-> path last :scripts)))
 
 (defn script-named [name path]
   (first (clj-core/filter #(= name (:name %))
@@ -247,11 +255,19 @@
 (defn variables-in-scope
   "Returns all the variable declarations up to this point in the ast"
   [path]
-  (mapcat (fn [[first second]]
+  ; NOTE(Richo): If we're inside an import's initialization block we have special
+  ; scope rules. We need to look inside the imported program if the import has
+  ; been resolved, and fail if it wasn't. The only variables we can access are
+  ; the imported program globals.
+  (if-let [import (first (clj-core/filter import? path))]
+    (if (:isResolved import)
+      (-> import :program :globals)
+      (throw (ex-info "Unresolved import" import)))
+    (mapcat (fn [[first second]]
             (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))
                              (take-while #(not (= % first))
                                          (children second))))
-          (partition 2 1 path)))
+          (partition 2 1 path))))
 
 (defn locals-in-scope [path]
   ; NOTE(Richo): We take advantage of the fact that globals can only be defined
