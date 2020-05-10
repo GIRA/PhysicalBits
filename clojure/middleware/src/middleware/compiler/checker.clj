@@ -1,3 +1,4 @@
+; TODO(Richo): Most of the work here could probably be written using clojure.spec
 (ns middleware.compiler.checker
   (:require [middleware.compiler.ast-utils :as ast-utils]
             [middleware.compiler.primitives :as prims]
@@ -47,6 +48,28 @@
           "Literal expected"
           node errors))
 
+(defn assert-import [node errors]
+  (assert (ast-utils/import? node)
+          "Literal expected"
+          node errors))
+
+(defn assert-primitive [node errors]
+  (assert (ast-utils/primitive-declaration? node)
+          "Primitive expected"
+          node errors))
+
+(defn assert-ticking-rate [node errors]
+  (assert (ast-utils/ticking-rate? node)
+          "Ticking rate expected"
+          node errors))
+
+(defn- assert-no-duplicates [coll key-fn msg errors]
+  (let [set (atom #{})]
+    (doseq [each coll]
+      (assert (not (contains? @set (key-fn each)))
+              msg each errors)
+      (swap! set conj (key-fn each)))))
+
 (defmulti check-node (fn [node errors path] (:__class__ node)))
 
 (defn- check [node errors path]
@@ -56,51 +79,50 @@
       (check child-node errors new-path))))
 
 (defmethod check-node "UziProgramNode" [node errors path]
-  (let [imports (:imports node)]
-    (doseq [import imports]
-      ; TODO(Richo): ?
-      ))
+  (doseq [import (:imports node)]
+    (assert-import import errors))
+  (assert-no-duplicates (:imports node)
+                        :alias
+                        "Library already imported"
+                        errors)
+  (doseq [global (:globals node)]
+    (assert-variable-declaration global errors)
+    (when-let [value (:value global)]
+      (assert-literal value errors)))
+  (assert-no-duplicates (:globals node)
+                        :name
+                        "Global variable already declared"
+                        errors)
+  (doseq [script (:scripts node)]
+    (assert-script script errors))
+  (assert-no-duplicates (:scripts node)
+                        :name
+                        "Script name already in use"
+                        errors)
+  (doseq [prim (:primitives node)]
+    (assert-primitive prim errors)))
 
-  (let [globals (atom #{})]
-    (doseq [global (:globals node)]
-      (assert-variable-declaration global errors)
-      (when-let [value (:value global)]
-        (assert-literal value errors))
-      (assert (not (contains? @globals (:name global)))
-              "Global variable already declared"
-              global errors)
-      (swap! globals conj (:name global))))
-
-  (let [scripts (atom #{})]
-    (doseq [script (:scripts node)]
-      (assert-script script errors)
-      (assert (not (contains? @scripts (:name script)))
-              "Script name already in use"
-              script errors)
-      (swap! scripts conj (:name script)))))
-
-(defn- check-script-args [node errors path]
-  (let [args (atom #{})]
-    (doseq [arg (:arguments node)]
-      (assert (not (contains? @args (:name arg)))
-              "Argument name already specified"
-              arg errors)
-      (swap! args conj (:name arg)))))
-
-
-(defmethod check-node "UziTaskNode" [node errors path]
-  (check-script-args node errors path)
+(defn- check-script [node errors path]
+  (assert-no-duplicates (:arguments node)
+                        :name
+                        "Argument name already specified"
+                        errors)
   (when-let [ticking-rate (:tickingRate node)]
+    (assert-ticking-rate ticking-rate errors)
     (assert (and (:state node)
                  (not= "once" (:state node)))
             "Ticking rate is not valid if task state is not specified"
-            ticking-rate errors)))
+            ticking-rate errors))
+  (assert-block (:body node) errors))
+
+(defmethod check-node "UziTaskNode" [node errors path]
+  (check-script node errors path))
 
 (defmethod check-node "UziProcedureNode" [node errors path]
-  (check-script-args node errors path))
+  (check-script node errors path))
 
 (defmethod check-node "UziFunctionNode" [node errors path]
-  (check-script-args node errors path))
+  (check-script node errors path))
 
 (defmethod check-node "UziTickingRateNode" [node errors path]
   (assert (> (:value node) 0)
@@ -108,7 +130,20 @@
           node errors))
 
 (defn- check-primitive-call [node errors path]
-  )
+  (let [prim (prims/primitive (:primitive-name node))]
+    (assert (some? prim)
+            (str "Invalid primitive '" (:selector node) "'")
+            node errors)
+    (when (some? prim)
+      (let [nargs-expected (first (:stack-transition prim))
+            nargs-provided (count (:arguments node))]
+        (assert (= nargs-expected nargs-provided)
+                (format "Calling '%s' with %d argument%s (expected: %d)"
+                        (:selector node)
+                        nargs-provided
+                        (if (= 1 nargs-provided) "" "s")
+                        nargs-expected)
+                node errors)))))
 
 (defn- contains-all? [a b]
   (nil? (first (data/diff (set b) (set a)))))
@@ -120,7 +155,8 @@
             node errors)
     (let [call-args (map :key (:arguments node))
           script-args (map :name (:arguments script))]
-      ; TODO(Richo): I don't understand why I check <=
+      ; NOTE(Richo): We can call the script with less arguments than required
+      ; because the compiler will just use the default values (for now, zero)
       (assert (<= (count call-args)
                   (count script-args))
               "Invalid number of arguments"
@@ -153,8 +189,8 @@
           "Invalid pin type"
           node
           errors)
-  (assert (pos-int? (:number node))
-          "Positive integer expected"
+  (assert (int? (:number node))
+          "Integer expected"
           node
           errors))
 
@@ -190,16 +226,13 @@
   (assert-expression (:stop node) errors)
   (assert-block (:body node) errors))
 
-
-
 (defmethod check-node "UziImportNode" [node errors path]
   (when-let [init-block (:initializationBlock node)]
     (assert-block init-block errors)
     (doseq [stmt (:statements init-block)]
       (assert-statement stmt errors)
-      (cond
-        (ast-utils/assignment? stmt) (assert-literal (:right stmt) errors)
-        ))))
+      (when (ast-utils/assignment? stmt)
+        (assert-literal (:right stmt) errors)))))
 
 (defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
   (assert (string? (:alias node))
@@ -215,10 +248,6 @@
 (defmethod check-node "UziReturnNode" [node errors path]
   (when-let [value (:value node)]
     (assert-expression value errors)))
-
-(defmethod check-node "UziYieldNode" [node errors path]
-  )
-
 
 (defn- check-conditional-loop [node errors path]
   (assert-block (:pre node) errors)
@@ -236,6 +265,16 @@
 
 (defmethod check-node "UziDoUntilNode" [node errors path]
   (check-conditional-loop node errors path))
+
+(defn- check-logical-operator [node errors path]
+  (assert-expression (:left node) errors)
+  (assert-expression (:right node) errors))
+
+(defmethod check-node "UziLogicalAndNode" [node errors path]
+  (check-logical-operator node errors path))
+
+(defmethod check-node "UziLogicalOrNode" [node errors path]
+  (check-logical-operator node errors path))
 
 (defmethod check-node "UziAssignmentNode" [node errors path]
   (assert-variable (:left node) errors)
@@ -263,10 +302,7 @@
 (defmethod check-node "UziScriptPauseNode" [node errors path]
   (check-script-control node errors path))
 
-(defmethod check-node "Association" [_ _ _]) ; TODO(Richo): Remove
-
-(defmethod check-node :default [node _ _]
-  (throw (ex-info "MISSING: " node)))
+(defmethod check-node :default [_ _ _])
 
 (defn check-tree [ast]
   (let [errors (atom [])

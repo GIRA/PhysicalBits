@@ -692,3 +692,32 @@
   (is (invalid? "import t from 'test_17.uzi' { stop bar; }"))
   (is (invalid? "import t from 'test_17.uzi' { resume bar; }"))
   (is (invalid? "import t from 'test_17.uzi' { pause bar; }")))
+
+(deftest import-alias-should-not-collide
+  (is (invalid? "import t from 'test_18.uzi';
+                 import t from 'test_18.uzi';"))
+  (is (invalid? "import t from 'test_17.uzi';
+                 import t from 'test_18.uzi';")))
+
+(deftest script-body-should-be-a-block
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/task-node
+                            :name "foo"
+                            :body (ast/literal-number-node 13))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/procedure-node
+                            :name "foo"
+                            :body (ast/literal-number-node 13))])))
+  (is (invalid? (ast/program-node
+                 :scripts [(ast/function-node
+                            :name "foo"
+                            :body (ast/literal-number-node 13))]))))
+
+(deftest primitive-calls-should-have-the-correct-number-of-args
+  (is (invalid? "task foo() { write(D13); }")))
+
+(deftest logical-operators-should-have-expression-operands
+  (is (valid? "task foo() { if 1 && 0 { toggle(D13); }}"))
+  (is (valid? "task foo() { if 1 || 0 { toggle(D13); }}"))
+  (is (invalid? "task foo() { if 1 && turnOn(13) { toggle(D13); }}"))
+  (is (invalid? "task foo() { if 1 || turnOn(13) { toggle(D13); }}")))
