@@ -21,18 +21,18 @@
                            :scripts (filterv #(contains? scriptTypes (:__class__ %)) arg)
                            :primitives (filter-class "UziPrimitiveDeclarationNode" arg))),
    :primitive           primitive-node
-   :task                (fn [identifier params state & rest]
-                          (task-node :identifier identifier
+   :task                (fn [name params state & rest]
+                          (task-node :name name
                                      :arguments params
                                      :state (or (second state) "once")
                                      :tick-rate (first-class-or-default "UziTickingRateNode" rest nil)
                                      :body (first-class-or-default "UziBlockNode" rest nil)))
-   :procedure           (fn [identifier params & rest]
-                          (procedure-node :identifier identifier
+   :procedure           (fn [name params & rest]
+                          (procedure-node :name name
                                           :arguments params
                                           :body (first-class-or-default "UziBlockNode" rest nil)))
-   :function            (fn [identifier params & rest]
-                          (function-node :identifier identifier
+   :function            (fn [name params & rest]
+                          (function-node :name name
                                          :arguments params
                                          :body (first-class-or-default "UziBlockNode" rest nil)))
    ;TODO(Tera): the comments are ignored by the syntax definition for now.

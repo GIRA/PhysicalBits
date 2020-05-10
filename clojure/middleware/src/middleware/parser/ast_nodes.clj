@@ -33,28 +33,28 @@
     :initializationBlock block}))
 
 (defn task-node
-  [& {:keys [identifier arguments tick-rate state locals body]
+  [& {:keys [name arguments tick-rate state locals body]
       :or   {arguments []}}]
   {:__class__   "UziTaskNode",
-   :name        identifier,
+   :name        name,
    :arguments   arguments,
    :body        body,
    :state       state,
    :tickingRate tick-rate})
 
 (defn procedure-node
-  [& {:keys [identifier arguments locals body]
+  [& {:keys [name arguments locals body]
       :or   {arguments []}}]
   {:__class__   "UziProcedureNode",
-   :name        identifier,
+   :name        name,
    :arguments   arguments,
    :body        body})
 
 (defn function-node
-  [& {:keys [identifier arguments locals body]
+  [& {:keys [name arguments locals body]
       :or   {arguments []}}]
   {:__class__   "UziFunctionNode",
-   :name        identifier,
+   :name        name,
    :arguments   arguments,
    :body        body})
 
