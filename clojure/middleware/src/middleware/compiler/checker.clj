@@ -309,20 +309,3 @@
         path (list)]
     (check ast errors path)
     @errors))
-
-#_(
-   (do ; Definitions
-     (def parse middleware.parser.parser/parse)
-     (def pprint clojure.pprint/pprint)
-     (defn format [ast]
-       (ast-utils/transform (dissoc ast :primitives)
-                            :default (fn [n _] (dissoc n :internal-id))))
-     (def ast (parse "import t from 'test_16.uzi' { a = 1; }
-                      task main() { t.a = 12; }"))
-     (def ast (ast-utils/assign-internal-ids ast))
-     (def ast (middleware.compiler.linker/resolve-imports ast "../../uzi/tests")))
-  (pprint (format ast))
-  (map :description (check-tree ast))
-  (pprint (middleware.compiler.compiler/compile-tree ast))
-
-  )
