@@ -6,6 +6,7 @@
             [middleware.compiler.ast-utils :as ast-utils]
             [middleware.compiler.emitter :as emit]
             [middleware.compiler.linker :as linker]
+            [middleware.compiler.checker :as checker]
             [middleware.compiler.dead-code-remover :as dcr]))
 
 (defmulti compile-node :__class__)
@@ -484,6 +485,16 @@
     (dcr/remove-dead-code ast)
     ast))
 
+(defn check [ast]
+  (let [errors (checker/check-tree ast)]
+    (if (empty? errors)
+      ast
+      (throw (ex-info (format "%d error%s found"
+                              (count errors)
+                              (if (= 1 (count errors)) "" "s"))
+                      {:program ast
+                       :errors errors})))))
+
 (defn compile-tree
   [ast & {:keys [board lib-dir remove-dead-code?]
           :or {board boards/UNO,
@@ -492,6 +503,7 @@
   (-> ast
       ast-utils/assign-internal-ids
       (linker/resolve-imports lib-dir)
+      check
       assign-unique-variable-names
       (assign-pin-values board)
       (remove-dead-code remove-dead-code?)
