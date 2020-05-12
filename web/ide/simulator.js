@@ -25,6 +25,7 @@ function ctorSimulator() {
      update: updateProgram, // TODO(Richo): This seems unnecessary
      start: startProgram,
      stop: stopProgram,
+     
 
      setPinValue: setPinValue,
      getPinValue: getPinValue,
@@ -52,10 +53,22 @@ function ctorSimulator() {
       if (simulator.currentScript.nextRun < millis()) {
           simulator.execute();
       }
-
     }
-
   }
+
+  /*function executeUntilBreakPoint(bkp){
+    if(simulator.currentScript.ticking){
+      if(simulator.currentScript.nextRun < millis()){
+        let safeguard = 0;
+        do{
+          safeguard++;
+          simulator.execute();
+          let next = simulator.currentScript.instructions[(simulator.pc++)];
+
+        }while(simulator.pc>= simulator.currentScript.instructions.length || next.breakpoint == bkp || safeguard > 50);
+      }
+    }
+  }*/ //HELP
 
   function stopProgram(){
     if (!interval) return;
@@ -398,12 +411,12 @@ function ctorSimulator() {
       case "minutes": {
         push(millis() / 1000 / 60);
       }break;
-      case "eq": {
+      case "equals": {
         let val2 = pop();
         let val1 = pop();
         push(val1 == val2);
       }break;
-      case "neq": {
+      case "notEquals": {
         let val2 = pop();
         let val1 = pop();
         push(val1 != val2);
@@ -413,17 +426,17 @@ function ctorSimulator() {
         let val1 = pop();
         push(val1 > val2);
       }break;
-      case "gteq": {
+      case "greaterThanOrEquals": {
         let val2 = pop();
         let val1 = pop();
         push(val1 >= val2);
       }break;
-      case "lt": {
+      case "lessThan": {
         let val2 = pop();
         let val1 = pop();
         push(val1 < val2);
       }break;
-      case "lteq": {
+      case "lessThanOrEquals": {
         let val2 = pop();
         let val1 = pop();
         push(val1 <= val2);

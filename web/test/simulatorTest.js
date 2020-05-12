@@ -40,7 +40,7 @@ describe('Simulator Tests', function () {
   });
 
   it('turn off pin', function() {
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":0},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":21,"name":"turnOff","stackTransition":{"__class__":"Association","key":1,"value":0}}},{"__class__":"UziStopScriptInstruction","argument":"test"}],"locals":[],"name":"test","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":0},{"__class__":"UziVariable","name":null,"value":6}]});
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":0},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6, "breakpoint": "pepe"}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":21,"name":"turnOff","stackTransition":{"__class__":"Association","key":1,"value":0}}},{"__class__":"UziStopScriptInstruction","argument":"test"}],"locals":[],"name":"test","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":0},{"__class__":"UziVariable","name":null,"value":6}]});
     sim.setPinValue(6, 1);
     loop(2);
     assert.equal(0, sim.getPinValue(6));
@@ -96,20 +96,55 @@ describe('Simulator Tests', function () {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":9}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":37,"name":"sqrt","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":9}]});
     loop(2);
     assert.equal(3, sim.stack[0]);
-  })
+  });
 
-  it('isOn / isOff', function() { //turned on D4
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":355810,"lastStart":10}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4}]});
+  it('isOn', function() { 
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":47,"name":"isOn","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":186702,"lastStart":28}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2},{"__class__":"UziVariable","name":null,"value":4}]});
     loop(2);
-    assert.equal(true, sim.getPinValue(4) > 0);
-    sim.setPinValue(4, 0);
-    assert.equal(true, sim.getPinValue(4) == 0);
-  })
-  /*it('eq', function(){ //TODO: Missing primitive Equals
+    assert.equal(true, sim.getPinValue(2) == 1);
+  });
+
+  it('isOff', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":47,"name":"isOn","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":6678,"lastStart":5689}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(2);
+    assert.equal(true, sim.getPinValue(2) == 0);
+  });
+
+  it('equals', function(){ 
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":10,"name":"equals","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":1068002,"lastStart":27}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":6}]});
     loop(3);
-    assert.equal(1,1);
-  })*/
+    assert.equal(true, sim.stack[0]);
+  });
 
+  it('notEquals', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":11,"name":"notEquals","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(3);
+    assert.equal(false, sim.stack[0]);
+  });
 
+  it('greaterThan', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":5}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":12,"name":"greaterThan","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":9343,"lastStart":8378}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":5},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(3);
+    assert.equal(true, sim.stack[0]);
+  });
+
+  it('greaterThanOrEquals', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":5}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":13,"name":"greaterThanOrEquals","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":5064,"lastStart":4096}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":5},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(3);
+    assert.equal(true, sim.stack[0]);
+  });
+
+  it('lessThan', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":5}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":14,"name":"lessThan","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":5},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(3);
+    assert.equal(true, sim.stack[0]);
+  });
+
+  it('lessThanOrEquals', function(){
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":15,"name":"lessThanOrEquals","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":9270,"lastStart":409}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":4}]});
+    loop(3);
+    assert.equal(true, sim.stack[0]);
+  });
+
+  
 });
