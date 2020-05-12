@@ -285,15 +285,25 @@
                             </div>
                           </div>
                         </div>
-                        <div class="row mt-4">
+                        <div class="row mt-1">
                           <div class="col">
                             <button id="restore-layout-button" type="button" class="btn btn-outline-secondary btn-sm">
-                              <i class="fas fa-th mr-1"></i>
                               <span lang="en">Restore default layout</span>
                             </button>
                           </div>
                         </div>
                       </div>
+		      <div class="container mt-3">
+			<h6 lang="en">Text mode:</h6>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="all-caps-checkbox">
+			      <label class="custom-control-label" for="all-caps-checkbox" lang="en">Display text in ALL-CAPS</label>
+                            </div>
+                          </div>
+                        </div>
+		      </div>
                     </div>
                     <div class="tab-pane fade" id="v-pills-language" role="tabpanel" aria-labelledby="v-pills-language-tab">
                       <div class="container">
@@ -318,16 +328,23 @@
                           <div class="col">
                             <div class="custom-control custom-radio custom-control-inline">
                               <input type="radio" class="custom-control-input" id="estonian-radio" name="language-radios" value="et">
-                              <label class="custom-control-label" for="estonian-radio">Estonian (et)</label>
+                              <label class="custom-control-label" for="estonian-radio">Eesti (et)</label>
                             </div>
                           </div>
                         </div>
-			<!-- <h6 lang="en">Text mode</h6> -->
                         <div class="row">
                           <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="all-caps-checkbox">
-			      <label class="custom-control-label" for="all-caps-checkbox" lang="en">Display text in ALL-CAPS</label>
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" id="swedish-radio" name="language-radios" value="se">
+                              <label class="custom-control-label" for="swedish-radio">Svenska (se)</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-radio custom-control-inline">
+                              <input type="radio" class="custom-control-input" id="uzi-radio" name="language-radios" value="uzi">
+                              <label class="custom-control-label" for="uzi-radio">Uzi syntax</label>
                             </div>
                           </div>
                         </div>
@@ -448,7 +465,7 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Blockly Joysticks Modal -->
     <div class="modal fade" id="blockly-joysticks-modal" tabindex="-1" role="dialog" aria-hidden="false">
       <div class="modal-dialog modal-lg" role="document">
@@ -528,8 +545,6 @@
 
     <!-- Blockly -->
     <script src="libs/google-blockly/blockly_compressed.js"></script>
-    <script src="libs/google-blockly/javascript_compressed.js"></script>
-    <script src="libs/google-blockly/blocks_compressed.js"></script>
     <script src="libs/google-blockly/msg/js/en.js"></script>
 
     <!-- FileSaver -->

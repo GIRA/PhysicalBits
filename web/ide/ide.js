@@ -27,72 +27,6 @@
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
         .then(initializeInternationalization);
-
-      Uzi.on("update", function () {
-
-            // HACK(Richo)
-            function sanitized(obj, removePrimName, removeImports) {
-              if (obj instanceof Array) return obj.map(each => sanitized(each, removePrimName, removeImports));
-              if (typeof obj != "object") return obj;
-              if (obj === null) return null;
-              if (obj === undefined) return undefined;
-
-              obj.id = undefined;
-
-              if (obj.__class__ == "UziPrimitive") {
-                obj.code = undefined;
-                obj.stackTransition = undefined;
-              }
-
-              if (obj.__class__ == "UziVariable"
-                  && obj.name == null) {
-                obj.name = undefined;
-              }
-
-              if (obj.__class__ == "UziProgramNode") {
-                obj.primitives = undefined;
-                obj.primitivesDict = undefined;
-                obj.originalAST = undefined;
-                if (removeImports) {
-                  obj.imports = undefined;
-                }
-              }
-
-              if (obj.__class__ == "UziCallNode") {
-                if (!removePrimName) {
-                  obj["primitive-name"] = obj.primitiveName;
-                }
-                obj.primitiveName = undefined;
-              }
-
-              let value = {};
-              for (let m in obj) {
-                value[m] = sanitized(obj[m], removePrimName, removeImports);
-                if (value[m] === null) {
-                  value[m] = undefined;
-                }
-              }
-              return value;
-            }
-
-            function clj_print(obj) {
-              let json = JSON.stringify(obj, null, 4);
-              json = json.replace(/"([^"]+)":/g, ":$1");
-              json = json.replace(/null/g, "nil");
-              json = json.replace(/([{[])\s+/g, "$1");
-              json = json.replace(/\s*(}|\])/g, "$1");
-              console.log(json);
-            }
-
-            console.clear();
-            console.log("ORIGINAL AST");
-            clj_print(sanitized(Uzi.state.program.current.ast.originalAST, true, false));
-            console.log("RESOLVED AST");
-            Uzi.state.program.current.ast.originalAST = undefined;
-            clj_print(sanitized(Uzi.state.program.current.ast, false, true));
-            console.log("COMPILED PROGRAM");
-            clj_print(sanitized(Uzi.state.program.current.compiled));
-      });
     },
   };
 
@@ -958,7 +892,7 @@
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
-	toggleAllCaps(); // initializeAllCaps would be nicer?
+	      toggleAllCaps(); // initializeAllCaps would be nicer?
       }
 
       if (ui.layout) {
@@ -1071,10 +1005,12 @@
     // if the checkbox has been checked
     if ($("#all-caps-checkbox").get(0).checked) {
       document.body.classList.add("allCapsMode");
+      $("button").addClass("allCapsMode");
     }
     // else tickbox has been unmarked
     else {
       document.body.classList.remove("allCapsMode");
+      $("button").removeClass("allCapsMode");
     }
 
     // re-set the localization to re-draw all blocks and translations
