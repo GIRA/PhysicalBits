@@ -67,6 +67,11 @@
          global-number
          (if report? 1 0)]))
 
+(defn set-pin-value [pin-name value]
+  (let [pin-number (get-pin-number pin-name)]
+    (send [MSG_OUT_SET_VALUE
+           pin-number
+           (Math/round (* value 255.0))])))
 
 (defn set-pin-report [pin-name report?]
   (when-let [pin-number (get-pin-number pin-name)]
