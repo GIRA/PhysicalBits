@@ -6,7 +6,9 @@
             [middleware.utils.async :refer :all]
             [middleware.device.protocol :refer :all]
             [middleware.device.boards :refer :all]
-            [middleware.utils.conversions :refer :all]))
+            [middleware.utils.conversions :refer :all]
+            [middleware.compiler.compiler :as cc]
+            [middleware.compiler.encoder :as en]))
 
 ; TODO(Richo): Replace with log/error
 (defn- error [msg] (println "ERROR:" msg))
@@ -19,8 +21,9 @@
                     :globals {}
                     :scripts []
                     :profiler nil
-                    :debugger nil})
-(def state (atom initial-state))
+                    :debugger nil
+                    :running-program nil})
+(def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
@@ -46,6 +49,17 @@
         (error (str "ERROR WHILE SENDING -> " (.getMessage e)))
         (disconnect))))
   bytes)
+
+(defn compile-uzi-string [src]
+  (let [program (cc/compile-uzi-string src)
+        bytecodes (en/encode program)]
+    (swap! state assoc :current-program program)
+    program))
+
+(defn run [program]
+  (swap! state assoc :running-program program)
+  (let [bytecodes (en/encode program)]
+    (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))))
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
 (defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
