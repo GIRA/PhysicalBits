@@ -193,4 +193,23 @@ describe('Simulator Tests', function () {
     loop(2);
     assert.equal(100, sim.stack[0]);
   });
+
+  it('sin', ()=> {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":17,"name":"sin","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],"locals":[],"name":"default","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":6},{"__class__":"UziVariable","name":null,"value":1}]});
+    loop(4);
+    assert.equal(Math.sin(1), sim.getPinValue(6));
+  });
+
+  it('cos', () => {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":0}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":18,"name":"cos","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":283514,"lastStart":19}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":0}]});
+    loop(2);
+    assert.equal(0, sim.getPinValue(4));
+  });
+
+  it('tan', () => {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":19,"name":"tan","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
+    loop(6);
+    assert.equal(Math.tan(7), sim.getPinValue(4));
+  });
+  
 });
