@@ -560,7 +560,7 @@ function ctorSimulator() {
         let a = pop();
         push(Math.exp(a));
       }break;
-      case "pow": {
+      case "pow10": {
         let a = pop();
         push(Math.pow(10,a));
       }break;
