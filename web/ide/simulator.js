@@ -627,6 +627,9 @@ function ctorSimulator() {
         }
         getRandomInt()
       }break;
+      case "isDivisibleBy": {
+        //TO DO
+      }break;
       case "isEven":{
           push(pop()%2==0);
       }break;

@@ -2,7 +2,8 @@ function ctorGraphics()
 {
   let graphics = {
     drawCircles: drawCircles,
-    showGlobals: showGlobals
+    createPins: createPins,
+    showStats: showStats,
   };
   return graphics;
 }
@@ -14,8 +15,7 @@ function drawCircles(target,radius, simulator) {
   for( let i=0;i<simulator.pins.length;i++) {
     x+=radius*2 + 10;
     let c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    let t = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    c.setAttribute("fill", "blue");
+    let t = document.createElementNS('http://www.w3.org/2000/svg', 'text'); 
     c.setAttribute("cx", x );
     c.setAttribute("cy", radius);
     c.setAttribute("r", radius);
@@ -30,33 +30,84 @@ function drawCircles(target,radius, simulator) {
     t.setAttribute("viewBox", "0 0 1000 300");
     target.appendChild(c);
     target.appendChild(t);
-    setInterval(() => {
-      if(simulator.pins[i]>=0.5) {
-          c.setAttribute("fill", "chartreuse");
-      } else {
-          c.setAttribute("fill", "black");
+    c.addEventListener("mousedown", function(){
+      if(simulator.pins[i]==0){
+        c.setAttribute("fill", "chartreuse");
+        simulator.pins[i]=1;
+      } else{
+        c.setAttribute("fill", "black");
+        simulator.pins[i]=0;
       }
+    });
+    setInterval(() => {
+       if(simulator.pins[i]>=0.5) {
+           c.setAttribute("fill", "chartreuse");
+       } else{
+          c.setAttribute("fill", "black");
+       }
     }, 1);
   }
 }
 
-function showGlobals(simulator)
-{
-  var table = document.getElementById("globalsTable");
-  if(table.rows.length==0){
+function showStats(sim){
+  setInterval(() => {
+    showGlobals(sim);
+    showStack(sim);
+    updatePins(sim)
+    }, 1);
+}
 
-      for(let global in simulator.globals){
-        var row = table.insertRow(0);
-        var cell1= row.insertCell(0);
-        var cell2= row.insertCell(1);
-        cell1.textContent = global;
-        cell2.textContent = simulator.globals[global];
-    }
-  } else{
-    let index = 0;
-    for(let global in simulator.globals){
-        table.rows[index].cells[1].textContent = simulator.globals[global];
-     }  
+function showGlobals(simulator){
+  removeTable("globalsTable");
+  createGlobalsTable(simulator);
+}
+
+function createGlobalsTable(simulator){
+  var table = document.getElementById("globalsTable");
+  for(let global in simulator.globals){
+    var row = table.insertRow(0);
+    var cell1= row.insertCell(0);
+    var cell2= row.insertCell(1);
+    cell1.textContent = global;
+    cell2.textContent = simulator.globals[global];
+  }
+}
+
+function removeTable(idTable){
+  var table = document.getElementById(idTable);
+  for(let i=table.rows.length;i>0;i--){
+     table.deleteRow(i -1);
+  } 
+}
+
+function createdTableStack(simulator){
+  var table = document.getElementById("stackTable");
+  for(let i=0;i<simulator.stack.length;i++){
+    var row = table.insertRow(0);
+    var cell= row.insertCell(0);
+    cell.textContent = simulator.stack[i];
+  }
+}
+
+function showStack(simulator){
+  removeTable("stackTable");
+  createdTableStack(simulator);
+}
+
+function createPins(simulator){
+  var table = document.getElementById("pinsTable");
+  for(let i=simulator.pins.length -1;i>=0;i--){
+      var row = table.insertRow(0);
+      var cell1= row.insertCell(0);
+      var cell2= row.insertCell(1);
+      cell1.textContent = 'Pin ' + i;
+      cell2.textContent = simulator.pins[i];
+  }
+}
+function updatePins(simulator){
+  var table = document.getElementById("pinsTable");
+  for(let i=simulator.pins.length -1;i>=0;i--){
+      table.rows[i].cells[1].textContent= simulator.pins[i];
   }
 }
 
