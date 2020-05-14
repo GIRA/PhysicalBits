@@ -25,10 +25,12 @@ function ctorSimulator() {
      update: updateProgram, // TODO(Richo): This seems unnecessary
      start: startProgram,
      stop: stopProgram,
-     
+     executeUntilBreakPoint: executeUntilBreakPoint,
 
      setPinValue: setPinValue,
      getPinValue: getPinValue,
+
+     millis: millis
    };
 
 
@@ -56,19 +58,28 @@ function ctorSimulator() {
     }
   }
 
-  /*function executeUntilBreakPoint(bkp){
+  function executeUntilBreakPoint(bkp){
+    // TODO(Richo): El safeguard podría ser un parámetro optativo
+    // TODO(Richo): Si sale por safeguard que levante una excepción así el caller se entera
     if(simulator.currentScript.ticking){
-      if(simulator.currentScript.nextRun < millis()){
+      if(true || simulator.currentScript.nextRun < millis()){
         let safeguard = 0;
-        do{
+        let next;
+        do {
           safeguard++;
-          simulator.execute();
-          let next = simulator.currentScript.instructions[(simulator.pc++)];
 
-        }while(simulator.pc>= simulator.currentScript.instructions.length || next.breakpoint == bkp || safeguard > 50);
+          next = simulator.currentScript.instructions[simulator.pc];
+          if (next.breakpoint == bkp) {
+            break;
+          } else {
+            executeInstruction(next);
+            simulator.pc++;
+          }
+
+        } while (simulator.pc < simulator.currentScript.instructions.length && safeguard < 50);
       }
     }
-  }*/ //HELP
+  }
 
   function stopProgram(){
     if (!interval) return;
@@ -195,6 +206,10 @@ function ctorSimulator() {
       throw "undefined found as instruction" ;
       simulator.pc=0;
     }
+    executeInstruction(instruction);
+  }
+
+  function executeInstruction(instruction) {
     let argument = instruction.argument;
 
     switch (instruction.__class__) {
@@ -646,7 +661,3 @@ if(typeof module != "undefined")
      {
        module.exports = ctorSimulator;
      }
-
-
-
-     

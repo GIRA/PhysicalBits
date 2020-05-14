@@ -98,7 +98,7 @@ describe('Simulator Tests', function () {
     assert.equal(3, sim.stack[0]);
   });
 
-  it('isOn', function() { 
+  it('isOn', function() {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":47,"name":"isOn","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":186702,"lastStart":28}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2},{"__class__":"UziVariable","name":null,"value":4}]});
     loop(2);
     assert.equal(true, sim.getPinValue(2) == 1);
@@ -110,7 +110,7 @@ describe('Simulator Tests', function () {
     assert.equal(true, sim.getPinValue(2) == 0);
   });
 
-  it('equals', function(){ 
+  it('equals', function(){
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":10,"name":"equals","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziJZInstruction","argument":2},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":1068002,"lastStart":27}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1},{"__class__":"UziVariable","name":null,"value":6}]});
     loop(3);
     assert.equal(true, sim.stack[0]);
@@ -211,5 +211,50 @@ describe('Simulator Tests', function () {
     loop(6);
     assert.equal(Math.tan(7), sim.getPinValue(4));
   });
-  
+
+  // TODO(Richo): Nico, ponele nombres correctos a los tests! Gracias :)
+  it("breakpoint_1", () => {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}, "breakpoint": "1"},
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}, "breakpoint": "pepe"},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":19,"name":"tan","stackTransition":{"__class__":"Association","key":1,"value":1}}},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],
+
+      "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
+
+    sim.executeUntilBreakPoint("pepe");
+
+    assert.equal(1, sim.pc);
+    assert.equal(4, sim.stack[sim.stack.length-1]);
+  });
+
+  it("breakpoint_2", () => {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}, "breakpoint": "1"},
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}, "breakpoint": "pepe"},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":19,"name":"tan","stackTransition":{"__class__":"Association","key":1,"value":1}}},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],
+
+      "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
+
+    sim.executeUntilBreakPoint("1");
+
+    assert.equal(0, sim.pc);
+    assert.equal(0, sim.stack.length);
+  });
+
+
+
+  it("breakpoint_3", () => {
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},
+      {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":19,"name":"tan","stackTransition":{"__class__":"Association","key":1,"value":1}}},
+      {"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],
+
+      "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
+
+    sim.executeUntilBreakPoint("1");
+  });
+
 });
