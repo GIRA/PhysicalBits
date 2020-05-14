@@ -1,6 +1,6 @@
 (ns user
   (:require [middleware.core :refer :all]
-            [middleware.device.controller :as device :refer [state]]
+            [middleware.device.controller :as dc :refer [state]]
             [middleware.server.server :as server :refer [server]]
             [middleware.compiler.compiler :as cc]
             [middleware.parser.parser :as pp]
@@ -10,7 +10,7 @@
   (:use [clojure.repl]))
 
 (defn reload []
-  (device/disconnect)
+  (dc/disconnect)
   (server/stop)
   (repl/refresh))
 
@@ -26,6 +26,6 @@
       (<!! (go-loop []
              (let [now (millis)]
                (when (< now end)
-                 (println (- now begin) ":" (device/get-pin-value "A0"))
+                 (println (- now begin) ":" (dc/get-pin-value "A0"))
                  (<! (timeout interval))
                  (recur)))))))))
