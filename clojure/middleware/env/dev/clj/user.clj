@@ -11,8 +11,13 @@
 
 (defn reload []
   (dc/disconnect)
+  (dc/stop-event-loop)
   (server/stop)
   (repl/refresh))
+
+(defn start []
+  (dc/start-event-loop)
+  (server/start))
 
 (defn millis [] (System/currentTimeMillis))
 
