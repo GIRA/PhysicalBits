@@ -25,6 +25,24 @@
                     :running-program nil})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
+(def events (a/chan))
+(def events-pub (a/pub events :type))
+(def event-loop? (atom false))
+
+; TODO(Richo): Check if this is not computationally expensive
+(defn start-event-loop []
+  (when (compare-and-set! event-loop? false true)
+    (go-loop [old-state @state]
+      (a/timeout 100)
+      (let [new-state @state]
+        (when (not= old-state new-state)
+          (>! events {:type :update, :state (dissoc new-state :port)}))
+        (when @event-loop?
+          (recur new-state))))))
+
+(defn stop-event-loop []
+  (reset! event-loop? false))
+
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
 
@@ -259,3 +277,48 @@
        (process-input in)
        (start-reporting)
        (send-pins-reporting)))))
+
+
+#_(
+
+   (def monitoring? true)
+   (go-loop [old-state @state]
+     (let [new-state @state]
+       (when (not= old-state new-state)
+         (a/>!! events {:type :update
+                        :state new-state
+                        :diff (clojure.data/diff old-state new-state)}))
+       (if monitoring? (recur new-state))))
+
+   (def listener (a/chan))
+   (def listening? true)
+   (def listening? false)
+   (go-loop [i 0]
+     (println i)
+     (println (:diff (<!! listener)))
+     (println "==")
+     (if listening? (recur (inc i))))
+
+
+   (a/sub events-pub :update listener)
+
+    (connect "/dev/tty.usbmodem14101")
+   (set-pin-report "D13" 1)
+   (run (compile-uzi-string "task blink13() running 1/s { toggle(D13); }"))
+   (disconnect)
+
+   (def monitoring? false)
+
+
+
+
+
+
+
+
+
+
+
+
+
+   )
