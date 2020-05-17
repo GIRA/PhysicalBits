@@ -29,6 +29,23 @@
           socket.onmessage = function(evt) { console.log(evt); };
           socket.onclose = function() { console.log('disconnected from server'); };
         };
+        return socket;
+      }
+
+      function uziEventLoop() {
+        let socket = new WebSocket("ws://" + location.host + "/uzi");
+        socket.onopen = function () {
+          socket.onmessage = function (evt) {
+            try {
+              let data = JSON.parse(evt.data);
+              console.log(data);
+            } catch (e) {
+              console.log(e);
+            }
+          };
+          socket.onclose = function() { console.log('disconnected from server'); };
+        }
+        return socket;
       }
     </script>
   </body>
