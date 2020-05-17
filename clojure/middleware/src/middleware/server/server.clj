@@ -62,6 +62,17 @@
                                        :lib-dir (params "libs"))]
     (json-response program)))
 
+(defn uzi-state-handler [socket req]
+  (let [in-chan (a/chan)
+        topic :update]
+    (a/sub device/events-pub topic in-chan)
+    (a/go-loop []
+      (if (ws/closed? socket)
+        (a/unsub device/events-pub topic in-chan)
+        (let [{device-state :state} (a/<! in-chan)]
+          (ws/put! socket (json/generate-string device-state)) 
+          (recur))))))
+
 (def handler
   (-> (compojure/routes (GET "/" [] (io/resource "public/index.html"))
                         (GET "/seconds" [] (wrap-websocket seconds-handler))
@@ -71,6 +82,8 @@
                         (POST "/disconnect" req (disconnect-handler req))
                         (GET "/available-ports" [] (json-response {:ports (device/available-ports)}))
                         (POST "/compile" {params :params} (compile-handler params))
+
+                        (GET "/uzi" [] (wrap-websocket uzi-state-handler))
                         (route/not-found "No such page."))
 
       (wrap-params)
