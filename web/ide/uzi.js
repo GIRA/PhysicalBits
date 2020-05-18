@@ -10,10 +10,11 @@ let Uzi = (function () {
   let Uzi = {
     state: null,
     serverAvailable: true,
+    socket: null,
 
     start: function (url) {
       baseUrl = url || "";
-      return updateLoop(true);
+      return updateLoop();
     },
 
     on: function (evt, callback) {
@@ -119,28 +120,26 @@ let Uzi = (function () {
     });
   }
 
-  function getUziState(wait) {
-    let url = baseUrl + "/uzi";
-    let data = { id: id, wait: wait };
-    let priority = 1;
-    return ajax.GET(url, data, priority);
-  }
-
-  function updateLoop(immediate) {
-    return new Promise(function (resolve, reject) {
-      getUziState(immediate ? 0 : 45)
-        .then(function (data) {
-          Uzi.serverAvailable = true;
-          update(fixInvalidJSONFloats(data));
-          resolve();
-          setTimeout(updateLoop, 100);
-        })
-        .catch(function (err) {
-          Uzi.serverAvailable = false;
-          serverDisconnect(err);
-          reject();
-          setTimeout(updateLoop, 100);
-        });
+  function updateLoop() {
+    return new Promise((resolve, reject) => {
+      let socket = new WebSocket("ws://" + location.host + "/uzi");
+      let msgReceived = false;
+      socket.onopen = function () {
+        socket.onmessage = function (evt) {
+          try {
+            let data = fixInvalidJSONFloats(JSON.parse(evt.data));
+            update(data);
+            if (!msgReceived) {
+              msgReceived = true;
+              resolve();
+            }
+          } catch (e) {
+            console.log(e);
+          }
+        };
+        socket.onclose = function() { console.log('disconnected from server'); };
+      }
+      Uzi.socket = socket;
     });
   }
 
