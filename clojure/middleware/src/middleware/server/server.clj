@@ -66,6 +66,7 @@
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
+    (ws/put! socket (json/generate-string @device/state))
     (a/sub device/events-pub topic in-chan)
     (a/go-loop []
       (if (ws/closed? socket)
