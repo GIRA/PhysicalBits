@@ -6,7 +6,8 @@
             [middleware.parser.parser :as pp]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl]
-            [clojure.test :as ctest])
+            [clojure.test :as ctest]
+            [clojure.java.browse :refer [browse-url]])
   (:use [clojure.repl]))
 
 (defn reload []
@@ -20,6 +21,9 @@
   (server/start))
 
 (defn millis [] (System/currentTimeMillis))
+
+(defn open-browser []
+  (browse-url "http://localhost:3000"))
 
 (defn print-a0
   ([] (print-a0 5000 10))
