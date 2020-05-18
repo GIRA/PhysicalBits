@@ -33,7 +33,7 @@
 (defn start-event-loop []
   (when (compare-and-set! event-loop? false true)
     (go-loop [old-state @state]
-      (a/timeout 100)
+      (<! (a/timeout 100))
       (let [new-state @state]
         (when (not= old-state new-state)
           (>! events {:type :update, :state (dissoc new-state :port)}))
