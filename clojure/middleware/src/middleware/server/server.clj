@@ -11,8 +11,7 @@
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [cheshire.core :as json]
-            [middleware.device.controller :as device]
-            [middleware.compiler.compiler :as cc])
+            [middleware.device.controller :as device])
   (:gen-class))
 
 (def server (atom nil))
@@ -58,8 +57,8 @@
   (json-response "OK"))
 
 (defn compile-handler [params]
-  (let [program (cc/compile-uzi-string (params "src")
-                                       :lib-dir (params "libs"))]
+  (let [program (device/compile-uzi-string (params "src")
+                                           :lib-dir (params "libs"))]
     (json-response program)))
 
 (defn uzi-state-handler [socket req]
@@ -70,7 +69,7 @@
       (if (ws/closed? socket)
         (a/unsub device/events-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket (json/generate-string device-state)) 
+          (ws/put! socket (json/generate-string device-state))
           (recur))))))
 
 (def handler
