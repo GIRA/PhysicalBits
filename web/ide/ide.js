@@ -32,7 +32,7 @@
 
   function loadDefaultLayoutConfig() {
     return ajax.GET("default-layout.json")
-      .then(function (json) { defaultLayoutConfig = JSON.parse(json); });
+      .then(function (data) { defaultLayoutConfig = data; });
   }
 
   function initializeDefaultLayout() {
