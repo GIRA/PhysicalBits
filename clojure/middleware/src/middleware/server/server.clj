@@ -3,6 +3,7 @@
             [compojure.core :as compojure :refer [GET POST]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.file :refer [wrap-file]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
             [compojure.route :as route]
@@ -87,6 +88,7 @@
 
       (wrap-params)
       (wrap-resource "public")
+      (wrap-file "../../web")
       (wrap-content-type)
       (wrap-not-modified)))
 
