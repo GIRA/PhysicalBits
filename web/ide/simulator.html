@@ -11,8 +11,17 @@
         display: inline-block;
         float: left;
       }
+      td{
+        height:25px;
+        width: 40px;
+      }
       circle{
         color: black;
+      }
+      h1{
+        font-family: Arial;
+        font-size:15px;
+        text-align: center;
       }
     </style>
   </head>
@@ -35,6 +44,7 @@
     });
     g.drawCircles(svg,20,sim);
     g.createPins(sim);
+    g.createStackTable();
   });
   </script>
   <script>
@@ -55,11 +65,10 @@
     <caption>Stack</caption>
   </table>
   
-
   <button onclick="sim.update();" id="update-button" type="button">Update</button>
   <button onclick="start()" id="start-button" type="button">Start</button>
   <button onclick="sim.stop()" id="stop-button" type="button">Stop</button>
   <button onclick="sim.execute()" id="next-button" type="button">Next Instruction</button>
- 
+  <h1 id="pc">PC</h1>
 </body>
 </html>

@@ -4,6 +4,7 @@ function ctorGraphics()
     drawCircles: drawCircles,
     createPins: createPins,
     showStats: showStats,
+    createStackTable: createStackTable
   };
   return graphics;
 }
@@ -32,10 +33,8 @@ function drawCircles(target,radius, simulator) {
     target.appendChild(t);
     c.addEventListener("mousedown", function(){
       if(simulator.pins[i]==0){
-        c.setAttribute("fill", "chartreuse");
         simulator.pins[i]=1;
       } else{
-        c.setAttribute("fill", "black");
         simulator.pins[i]=0;
       }
     });
@@ -52,8 +51,9 @@ function drawCircles(target,radius, simulator) {
 function showStats(sim){
   setInterval(() => {
     showGlobals(sim);
-    showStack(sim);
+    updateStack(sim);
     updatePins(sim)
+    showPc(sim)
     }, 1);
 }
 
@@ -80,18 +80,27 @@ function removeTable(idTable){
   } 
 }
 
-function createdTableStack(simulator){
+function updateStack(simulator){
   var table = document.getElementById("stackTable");
-  for(let i=0;i<simulator.stack.length;i++){
-    var row = table.insertRow(0);
-    var cell= row.insertCell(0);
-    cell.textContent = simulator.stack[i];
+  var stack = simulator.stack;
+  showStack(stack.slice().reverse());
+}
+
+function showStack(stack){
+  var table = document.getElementById("stackTable");
+  for(let i=4;i>=0;i--){
+    if(stack[i]!==undefined){
+      table.rows[i].cells[0].textContent= stack[i];
+    }
   }
 }
 
-function showStack(simulator){
-  removeTable("stackTable");
-  createdTableStack(simulator);
+function createStackTable(){
+  var table = document.getElementById("stackTable");
+  for(let i=0;i<5;i++){
+    var row = table.insertRow(0);
+    var cell= row.insertCell(0);
+  }
 }
 
 function createPins(simulator){
@@ -111,4 +120,8 @@ function updatePins(simulator){
   }
 }
 
+function showPc(simulator){
+  var s = document.getElementById("pc");
+  s.innerHTML="PC: "+simulator.pc;
+}
 
