@@ -116,7 +116,10 @@
                         :isResolved true
                         :program imported-ast)
          :program (apply-alias imported-ast alias)})
-      (throw (ex-info "File not found" {:import imp})))))
+      (throw (ex-info "File not found"
+                      {:import imp
+                       :file file
+                       :absolute-path (.getAbsolutePath file)})))))
 
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)
