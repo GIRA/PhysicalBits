@@ -6,6 +6,7 @@
             [ring.middleware.file :refer [wrap-file]]
             [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.not-modified :refer [wrap-not-modified]]
+            [ring.util.response :refer [redirect]]
             [compojure.route :as route]
             [aleph.http :as http]
             [clojure.java.io :as io]
@@ -74,7 +75,7 @@
           (recur))))))
 
 (def handler
-  (-> (compojure/routes (GET "/" [] (io/resource "public/index.html"))
+  (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
                         (GET "/seconds" [] (wrap-websocket seconds-handler))
                         (GET "/echo" [] (wrap-websocket echo-handler))
                         (GET "/analog-read" [] (wrap-websocket analog-read-handler))
