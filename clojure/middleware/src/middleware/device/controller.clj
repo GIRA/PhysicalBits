@@ -68,8 +68,8 @@
         (disconnect))))
   bytes)
 
-(defn compile-uzi-string [src]
-  (let [program (cc/compile-uzi-string src)
+(defn compile-uzi-string [src & args]
+  (let [program (apply cc/compile-uzi-string src args)
         bytecodes (en/encode program)]
     (swap! state assoc :current-program program)
     program))
