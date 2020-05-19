@@ -22,19 +22,19 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
-      let url = baseUrl + Uzi.state.actions.connect.href;
+      let url = baseUrl + "/uzi/connect";
       let data = { id: id, port: port };
       return POST(url, data);
     },
 
     disconnect: function () {
-      let url = baseUrl + Uzi.state.actions.disconnect.href;
+      let url = baseUrl + "/uzi/disconnect";
       let data = { id: id };
       return POST(url, data);
     },
 
 		compile: function (src, type, silent) {
-      let url = baseUrl + Uzi.state.actions.compile.href;
+      let url = baseUrl + "/uzi/compile";
       let data = {
         id: id,
         src: src,
@@ -45,7 +45,7 @@ let Uzi = (function () {
   	},
 
     run: function (src, type, silent) {
-      let url = baseUrl + Uzi.state.actions.run.href;
+      let url = baseUrl + "/uzi/run";
       let data = {
         id: id,
         src: src,
@@ -56,7 +56,7 @@ let Uzi = (function () {
   	},
 
     install: function (src, type) {
-      let url = baseUrl + Uzi.state.actions.install.href;
+      let url = baseUrl + "/uzi/install";
       let data = {
         id: id,
         src: src,
@@ -66,7 +66,7 @@ let Uzi = (function () {
     },
 
     setPinReport: function (pins, report) {
-      let url = baseUrl + Uzi.state.actions.pinReport.href;
+      let url = baseUrl + "/uzi/pin-report";
       let data = {
         id: id,
         pins: Array.from(pins).join(","),
@@ -76,7 +76,7 @@ let Uzi = (function () {
     },
 
     setGlobalReport: function (globals, report) {
-      let url = baseUrl + Uzi.state.actions.globalReport.href;
+      let url = baseUrl + "/uzi/global-report";
       let data = {
         id: id,
         globals: Array.from(globals).join(","),
