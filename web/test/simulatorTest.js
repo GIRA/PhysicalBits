@@ -1,9 +1,9 @@
 var assert = require('assert');
-var simCtor = require('../ide/simulator');
+var simulator = require('../ide/simulator');
 
 function initializeSimulator()
 {
-    return simCtor();
+    return simulator;
 }
 
 it('sanity-check', function () {
@@ -18,7 +18,7 @@ describe('Simulator Tests', function () {
   });
 
   afterEach(function () {
-    sim.stop();
+    sim.stopProgram();
     sim = null;
   });
 
@@ -213,7 +213,7 @@ describe('Simulator Tests', function () {
   });
 
   // TODO(Richo): Nico, ponele nombres correctos a los tests! Gracias :)
-  it("breakpoint_1", () => {
+  it("execute program until breakpoint", () => {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
       {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}, "breakpoint": "1"},
       {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}, "breakpoint": "pepe"},
@@ -228,7 +228,7 @@ describe('Simulator Tests', function () {
     assert.equal(4, sim.stack[sim.stack.length-1]);
   });
 
-  it("breakpoint_2", () => {
+  it("execute program until breakpoint 2 ", () => {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
       {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}, "breakpoint": "1"},
       {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":7}, "breakpoint": "pepe"},
@@ -256,5 +256,7 @@ describe('Simulator Tests', function () {
 
     sim.executeUntilBreakPoint("1");
   });
+
+  
 
 });

@@ -4,243 +4,234 @@
 //expand primitives switch
 //
 
-function ctorSimulator() {
-  let simulator = {
-     pins: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-     globals: {},
-     scripts: {},
-     startDate: new Date(),
+class Simulator {
+  constructor(){
+     this.pins =  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+     this.globals = {};
+     this.scripts = {};
+     this.startDate = new Date();
 
-     stack: [],
-     callStack:[],
-     pc:0,
-     locals:{},
-     currentScript:null,
+     this.stack = [];
+     this.callStack = [];
+     this.pc = 0;
+     this.locals = {};
+     this.currentScript = null;
 
-
-     execute: execute,
-     loadProgram: loadProgram,
-     loadCurrentProgram: () => loadProgram(Uzi.state.program.current.compiled),
-     getProgram: () => Uzi.state.program.current.compiled,
-     update: updateProgram, // TODO(Richo): This seems unnecessary
-     start: startProgram,
-     stop: stopProgram,
-     executeUntilBreakPoint: executeUntilBreakPoint,
-
-     setPinValue: setPinValue,
-     getPinValue: getPinValue,
-
-     millis: millis
+     this.interval = null;
    };
-
+   
 
   //simulator.pins.forEach((item) => console.log(item));
-  let interval = null;
+  
 
-  function getRandomInt(min, max){
+  getRandomInt(min, max){
     min = Math.trunc(min);
     max = Math.trunc(max); //TO DO
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  function updateProgram() {
-    simulator.loadCurrentProgram();
+  updateProgram() {
+    this.getProgram();
   }
-  function startProgram(){
-    if (interval) return;
-    interval = setInterval(()=>executeProgram(), 1);
+  startProgram(){
+    if (this.interval) return;
+    this.interval = setInterval(()=>this.executeProgram(), 1);
   }
 
-  function executeProgram(){
-    if (simulator.currentScript.ticking) {
-      if (simulator.currentScript.nextRun < millis()) {
-          simulator.execute();
+  executeProgram(){
+    if (this.currentScript.ticking) {
+      if (this.currentScript.nextRun < this.millis()) {
+          this.execute();
       }
     }
   }
 
-  function executeUntilBreakPoint(bkp){
+  executeUntilBreakPoint(bkp){
     // TODO(Richo): El safeguard podría ser un parámetro optativo
     // TODO(Richo): Si sale por safeguard que levante una excepción así el caller se entera
-    if(simulator.currentScript.ticking){
-      if(true || simulator.currentScript.nextRun < millis()){
+    if(this.currentScript.ticking){
+      if(true || this.currentScript.nextRun < this.millis()){
         let safeguard = 0;
         let next;
         do {
           safeguard++;
 
-          next = simulator.currentScript.instructions[simulator.pc];
+          next = this.currentScript.instructions[this.pc];
           if (next.breakpoint == bkp) {
             break;
           } else {
-            executeInstruction(next);
-            simulator.pc++;
+            this.executeInstruction(next);
+            this.pc++;
           }
 
-        } while (simulator.pc < simulator.currentScript.instructions.length && safeguard < 50);
+        } while (this.pc < this.currentScript.instructions.length && safeguard < 50);
       }
     }
   }
 
-  function stopProgram(){
-    if (!interval) return;
+  getProgram(){
+    return this.loadProgram(Uzi.state.program.current.compiled);
+  }
+
+  stopProgram(){
+    if (!this.interval) return;
     clearInterval(interval);
-    interval = null;
+    this.interval = null;
   }
 
-  function loadProgram(program) {
-    simulator.pc = 0;
-    simulator.pins=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    simulator.stack = [];
-    simulator.callStack=[];
-    simulator.locals={};
-    loadGlobals(program);
-    loadScripts(program);
-    simulator.startDate = new Date();
-    simulator.currentScript = program.scripts[0];
+  loadProgram(program) {
+    this.pc = 0;
+    this.pins=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.stack = [];
+    this.callStack=[];
+    this.locals={};
+    this.loadGlobals(program);
+    this.loadScripts(program);
+    this.startDate = new Date();
+    this.currentScript = program.scripts[0];     
   }
 
-   function loadGlobals(program){
-    simulator.globals ={};
+  loadGlobals(program){
+    this.globals ={};
     program.variables.forEach(
       (v)=>{if(v.name!=null){
-        simulator.globals[v.name] = v.value;
+        this.globals[v.name] = v.value;
       }}
     );
   }
 
-  function loadScripts(program){
-    simulator.scripts = {};
+  loadScripts(program){
+    this.scripts = {};
     program.scripts.forEach(
       (script)=>{
-        simulator.scripts[script.name] =script;
+        this.scripts[script.name] =script;
         script.nextRun = 0;
         //TODO: this should go into the coroutine start
-        script.lastStart=millis();
+        script.lastStart = this.millis();
       }
     );
   }
 
-  function writeConsole(pin) {
-    console.log(simulator.pins[pin]);
+  writeConsole(pin) {
+    console.log(this.pins[pin]);
   }
 
-  function changeRandomPinValue() {
+  changeRandomPinValue() {
     let r = getRandomInt(0,10);
-    simulator.pins[r] = Math.random();
-    console.log("Pin" + r + " = " + simulator.pins[r])
+    this.pins[r] = Math.random();
+    console.log("Pin" + r + " = " + this.pins[r])
   }
-  function doReturn(){
-      if(simulator.callStack.length==0){
+  doReturn(){
+      if(this.callStack.length==0){
         //TODO: Coroutine change
-          simulator.pc = 0;
-          simulator.currentScript.nextRun = simulator.currentScript.lastStart + simulator.currentScript.delay.value;
-          simulator.currentScript.lastStart=millis();
+          this.pc = 0;
+          this.currentScript.nextRun = this.currentScript.lastStart + this.currentScript.delay.value;
+          this.currentScript.lastStart = this.millis();
         }else{
-          let frame= simulator.callStack.pop();
-          simulator.currentScript=frame.returnScript;
-          simulator.locals=frame.returnLocals;
-          simulator.pc=frame.returnPC;
-          push(frame.returnValue);
+          let frame= this.callStack.pop();
+          this.currentScript=frame.returnScript;
+          this.locals=frame.returnLocals;
+          this.pc=frame.returnPC;
+          this.push(frame.returnValue);
         }
   }
-  function next() {
-    if(simulator.pc>= simulator.currentScript.instructions.length)
+  next() {
+    if(this.pc>= this.currentScript.instructions.length)
     {
-      doReturn();
-      return next();
+      this.doReturn();
+      return this.next();
     }
-    var result = simulator.currentScript.instructions[(simulator.pc++)];
+    var result = this.currentScript.instructions[(this.pc++)];
     return result;
   }
 
-  function getPinValue(pinIndex){
-    if (simulator.pins[pinIndex] > 1) {
+  getPinValue(pinIndex){
+    if (this.pins[pinIndex] > 1) {
       return 1;
     }
-    else if (simulator.pins[pinIndex] < 0){
+    else if (this.pins[pinIndex] < 0){
       return 0;
     }
     else
-      return simulator.pins[pinIndex];
+      return this.pins[pinIndex];
   }
-  function setPinValue(pin, value){
+  setPinValue(pin, value){
     if (value > 1)
       value = 1;
     if (value < 0) {
       value = 0;
     }
-    simulator.pins[pin] = value;
+    this.pins[pin] = value;
   }
 
-  function getGlobalValue(global)
+  getGlobalValue(global)
   {
-    return simulator.globals[global];
+    return this.globals[global];
   }
-  function setGlobalValue(global, value)
+  setGlobalValue(global, value)
   {
-    simulator.globals[global] = value;
+    this.globals[global] = value;
   }
-  function getLocalValue(local)
+  getLocalValue(local)
   {
-    return simulator.locals[local];
+    return this.locals[local];
   }
-  function setLocalValue(local, value)
+  setLocalValue(local, value)
   {
-    simulator.locals[local] = value;
+    this.locals[local] = value;
   }
-  function push(value)
+  push(value)
   {
-    simulator.stack.push(value);
+    this.stack.push(value);
   }
-  function pop(){
-    if(simulator.stack.length==0)
+  pop(){
+    if(this.stack.length==0)
     {
       throw "Stack Underflow";
     }
-    return simulator.stack.pop();
+    return this.stack.pop();
   }
 
-  function execute() {
-    let instruction = next();
+  execute() {
+    let instruction = this.next();
     if(instruction == undefined) {
       throw "undefined found as instruction" ;
-      simulator.pc=0;
+      this.pc=0;
     }
-    executeInstruction(instruction);
+    this.executeInstruction(instruction);
   }
 
-  function executeInstruction(instruction) {
+  executeInstruction(instruction) {
     let argument = instruction.argument;
 
     switch (instruction.__class__) {
       case "UziPushInstruction": {
         if(instruction.argument.name==null){
-          push(instruction.argument.value);
+          this.push(instruction.argument.value);
         }else{
-          push(getGlobalValue(instruction.argument.name));
+          this.push(this.getGlobalValue(instruction.argument.name));
         }
       } break;
       case "UziScriptCallInstruction":{
-        simulator.callStack.push({
-          returnScript:simulator.currentScript,
-          returnPC:simulator.pc,
-          returnLocals:simulator.locals,
+        this.callStack.push({
+          returnScript:this.currentScript,
+          returnPC:this.pc,
+          returnLocals:this.locals,
           returnValue:0
         });
-        simulator.currentScript = simulator.scripts[argument];
-        simulator.pc=0;
-        simulator.locals ={};
-        simulator.currentScript.arguments.slice().reverse().forEach((arg) => {
-            simulator.locals[arg.name] = pop();
+        this.currentScript = this.scripts[argument];
+        this.pc=0;
+        this.locals ={};
+        this.currentScript.arguments.slice().reverse().forEach((arg) => {
+            this.locals[arg.name] = this.pop();
         });
 
       }break;
       case "UziPrimitiveCallInstruction": {
-        executePrimitive(argument);
+        this.executePrimitive(argument);
       } break;
       case "UziPopInstruction":{
-        let g = pop();
-        setGlobalValue(instruction.argument.name,g);
+        let g = this.pop();
+        this.setGlobalValue(instruction.argument.name,g);
       } break;
       case "UziStopScriptInstruction": {
         // TODO(Richo): Implement this instruction!
@@ -248,13 +239,13 @@ function ctorSimulator() {
       } break;
       /////////////////
       /*case 'turn_on':
-        simulator.pins[instruction.argument] = 1;
+        this.pins[instruction.argument] = 1;
         break;
       case 'turn_off':
-        simulator.pins[instruction.argument] = 0;
+        this.pins[instruction.argument] = 0;
         break;*/
       case'write_pin':
-        simulator.pins[instruction.argument] = pop();
+        this.pins[instruction.argument] = this.pop();
         break;
       case'read_pin':
         if (instruction.argument < 0 ) {
@@ -262,13 +253,13 @@ function ctorSimulator() {
         } else if (instruction.argument > 1) {
           instruction.argument = 1;
         }
-        push(instruction.argument);
+        this.push(instruction.argument);
         break;
       case'read_global':
-        push(getGlobalValue(instruction.argument));
+        this.push(this.getGlobalValue(instruction.argument));
         break;
       case'write_global':
-        setGlobalValue(instruction.argument, pop());
+        this.setGlobalValue(instruction.argument, this.pop());
         break;
       case'script_start':
         throw "TO DO";
@@ -283,60 +274,60 @@ function ctorSimulator() {
         throw "TO DO";
         break;
       case'UziJMPInstruction':
-        simulator.pc += instruction.argument;
+        this.pc += instruction.argument;
         break;
       case'UziJZInstruction':
-        if (pop() == 0) {
-            simulator.pc += instruction.argument;
+        if (this.pop() == 0) {
+            this.pc += instruction.argument;
         }
         break;
       case'jnz':
-        if (pop() != 0) {
-          simulator.pc += instruction.argument;
+        if (this.pop() != 0) {
+          this.pc += instruction.argument;
         }
         break;
       case 'jne': {
-          let a = pop();
-          let b = pop();
+          let a = this.pop();
+          let b = this.pop();
           if (a != b) {
-            simulator.pc += instruction.argument;
+            this.pc += instruction.argument;
           }
         }
         break;
       case 'jlt': {
-          let a = pop();
-          let b = pop();
+          let a = this.pop();
+          let b = this.pop();
           if (a < b) {
-            simulator.pc += instruction.argument;
+            this.pc += instruction.argument;
           }
         }
         break;
       case 'jlte': {
-          let a = pop();
-          let b = pop();
+          let a = this.pop();
+          let b = this.pop();
           if (a <= b) {
-            simulator.pc += instruction.argument;
+            this.pc += instruction.argument;
           }
         }
         break;
       case 'jgt': {
-          let a = pop();
-          let b = pop();
+          let a = this.pop();
+          let b = this.pop();
           if (a > b) {
-            simulator.pc += instruction.argument;
+            this.pc += instruction.argument;
           }
         }
         break;
       case 'jgte': {
-          let a = pop();
-          let b = pop();
+          let a = this.pop();
+          let b = this.pop();
           if (a >= b) {
-            simulator.pc += instruction.argument;
+            this.pc += instruction.argument;
           }
         }
         break;
       case 'UziReadLocalInstruction': {
-        push(getLocalValue(argument.name));
+        this.push(this.getLocalValue(argument.name));
         }
         break;
       case 'write_local': {
@@ -344,15 +335,15 @@ function ctorSimulator() {
         }
         break;
       case 'prim_read_pin': {
-          /*let pin = pop();
+          /*let pin = this.pop();
           push(pin);*/
           throw "TO DO";
         }
         break;
       case 'prim_write_pin': {
-          /*let pin = pop();
-          let value = pop();
-          simulator.pins[pin] =value;*/
+          /*let pin = this.pop();
+          let value = this.pop();
+          this.pins[pin] =value;*/
           throw "TO DO";
         }
         break;
@@ -366,30 +357,30 @@ function ctorSimulator() {
     }
   }
 
-  function millis(){
+  millis(){
       let d = new Date();
-      return d - simulator.startDate;
+      return d - this.startDate;
   }
 
-  function doYield(){
+  doYield(){
 
   }
 
 
-  function executePrimitive(prim) {
+  executePrimitive(prim) {
     switch (prim.name) {
       case "read": {
-        let pin = pop();
-        push(getPinValue(pin));
+        let pin = this.pop();
+        this.push(this.getPinValue(pin));
       }break;
       case "write": {
-        let value = pop();
-        let pin = pop();
-        setPinValue(pin,value);
+        let value = this.pop();
+        let pin = this.pop();
+        this.setPinValue(pin,value);
       }break;
       case "toggle": {
-        let pin = pop();
-        setPinValue(pin, 1 - getPinValue(pin));
+        let pin = this.pop();
+        this.setPinValue(pin, 1 - this.getPinValue(pin));
       }break;
       case "getservodegrees": {
         //TO DO
@@ -401,244 +392,244 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "multiply": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 * val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 * val2);
       }break;
       case "add": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 + val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 + val2);
       }break;
       case "divide": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 / val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 / val2);
       }break;
       case "subtract": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 - val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 - val2);
       }break;
       case "seconds": {
-        push(millis() / 1000);
+        this.push(this.millis() / 1000);
       }break;
       case "minutes": {
-        push(millis() / 1000 / 60);
+        this.push(this.millis() / 1000 / 60);
       }break;
       case "equals": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 == val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 == val2);
       }break;
       case "notEquals": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 != val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 != val2);
       }break;
       case "greaterThan": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 > val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 > val2);
       }break;
       case "greaterThanOrEquals": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 >= val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 >= val2);
       }break;
       case "lessThan": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 < val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 < val2);
       }break;
       case "lessThanOrEquals": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 <= val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 <= val2);
       }break;
       case "negate": {
-        let val = pop();
-        push(val == 0 ? 1 : 0);
+        let val = this.pop();
+        this.push(val == 0 ? 1 : 0);
       }break;
       case "sin": {
-          let val = pop();
-          push(Math.sin(val));
+          let val = this.pop();
+          this.push(Math.sin(val));
       }break;
       case "cos": {
-        let val = pop();
-        push(Math.cos(val));
+        let val = this.pop();
+        this.push(Math.cos(val));
       }break;
       case "tan": {
-        let val = pop();
-        push(Math.tan(val));
+        let val = this.pop();
+        this.push(Math.tan(val));
       }break;
       case "turnOn": {
-        //simulator.pins[pop()] = 1;
-        setPinValue(pop(),1);
+        //this.pins[this.pop()] = 1;
+        this.setPinValue(this.pop(),1);
       } break;
       case "turnOff": {
-        //simulator.pins[pop()] = 0;
-        setPinValue(pop(),0);
+        //this.pins[this.pop()] = 0;
+        this.setPinValue(this.pop(),0);
       } break;
       case "yield": {
         //TO DO
       }break;
       case "delayMs": {
-        let time = pop();
-        simulator.currentScript.nextRun = millis() + time;
-        doYield();
+        let time = this.pop();
+        this.currentScript.nextRun = this.millis() + time;
+        this.doYield();
       }break;
       case "delayS": {
-        let time = pop();
+        let time = this.pop();
         time = time * 1000;
-        simulator.currentScript.nextRun = millis() + time;
+        this.currentScript.nextRun = this.millis() + time;
         doYield();
       }break;
       case "delayM": {
-        let time = pop();
+        let time = this.pop();
         time = time * 1000;
         time = time * 60;
-        simulator.currentScript.nextRun = millis() + time;
+        this.currentScript.nextRun = this.millis() + time;
         doYield();
       }break;
       case "millis": {
-        push(millis());
+        this.push(this.millis());
       }break;
       case "ret": {
-        doReturn();
+        this.doReturn();
       }break;
       case "pop": {
         pop();
       }break;
       case "retv": {
         let value = pop();
-        let frame = simulator.callStack.pop();
+        let frame = this.callStack.pop();
         frame.returnValue=value;
-        simulator.callStack.push(frame);
+        this.callStack.push(frame);
         doReturn();
       }break;
       case "coroutine": {
         //TO DO
       }break;
       case "logicaland": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 && val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 && val2);
       }break;
       case "logicalor": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 || val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 || val2);
       }break;
       case "bitwiseand": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 & val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 & val2);
       }break;
       case "bitwiseor": {
-        let val2 = pop();
-        let val1 = pop();
-        push(val1 | val2);
+        let val2 = this.pop();
+        let val1 = this.pop();
+        this.push(val1 | val2);
       }break;
       case "serialwrite": {
         //TO DO
       }break;
       case "round": {
-        let a = pop();
-        push(Math.round(a));
+        let a = this.pop();
+        this.push(Math.round(a));
       }break;
       case "ceil": {
-        let a = pop();
-        push(Math.ceil(a));
+        let a = this.pop();
+        this.push(Math.ceil(a));
       }break;
       case "floor": {
-        let a = pop();
-        push(Math.floor(a));
+        let a = this.pop();
+        this.push(Math.floor(a));
       }break;
       case "sqrt": {
-        let a = pop();
-        push(Math.sqrt(a));
+        let a = this.pop();
+        this.push(Math.sqrt(a));
       }break;
       case "abs": {
-        let a = pop();
-        push(Math.abs(a));
+        let a = this.pop();
+        this.push(Math.abs(a));
       }break;
       case "ln": {
-        let a = pop();
-        push(Math.log(a));
+        let a = this.pop();
+        this.push(Math.log(a));
       }break;
       case "log10": {
-        let a = pop();
-        push(Math.log10(a));
+        let a = this.pop();
+        this.push(Math.log10(a));
       }break;
       case "exp": {
-        let a = pop();
-        push(Math.exp(a));
+        let a = this.pop();
+        this.push(Math.exp(a));
       }break;
       case "pow10": {
-        let a = pop();
-        push(Math.pow(10,a));
+        let a = this.pop();
+        this.push(Math.pow(10,a));
       }break;
       case "asin": {
-        let a = pop();
-        push(Math.asin(a));
+        let a = this.pop();
+        this.push(Math.asin(a));
       }break;
       case "acos": {
-        let a = pop();
-        push(Math.acos(a));
+        let a = this.pop();
+        this.push(Math.acos(a));
       }break;
       case "atan": {
-        let a = pop();
-        push(Math.atan(a));
+        let a = this.pop();
+        this.push(Math.atan(a));
       }break;
       case "atan2": {
-        let x = pop();
-        let y = pop();
-        push(Math.atan2(y,x));
+        let x = this.pop();
+        let y = this.pop();
+        this.push(Math.atan2(y,x));
       }break;
       case "power": {
-        let b = pop();
-        let a = pop();
-        push(Math.pow(a,b));
+        let b = this.pop();
+        let a = this.pop();
+        this.push(Math.pow(a,b));
       }break;
       case "isOn": {
-        let pin = pop();
-        push(getPinValue(pin) > 0);
+        let pin = this.pop();
+        this.push(this.getPinValue(pin) > 0);
       }break;
       case "isOff": {
-        let pin = pop();
-        push(getPinValue(pin) == 0);
+        let pin = this.pop();
+        this.push(this.getPinValue(pin) == 0);
       }break;
       case "remainder": {
-        let b = pop();
-        let a = pop();
-        push(a % b);
+        let b = this.pop();
+        let a = this.pop();
+        this.push(a % b);
       }break;
       case "mod": {
-        let n = pop();
-        let a = pop();
-        push(a - (Math.floor(a/n)*n));
+        let n = this.pop();
+        let a = this.pop();
+        this.push(a - (Math.floor(a/n)*n));
       }break;
       case "constrain": {
-        let c = pop();
-        let b = pop();
-        let a = pop();
+        let c = this.pop();
+        let b = this.pop();
+        let a = this.pop();
         if (a < b) {
-          push(b);
+          this.push(b);
         } else if (a > c) {
-          push(c);
+          this.push(c);
         } else{
-          push(a);
+          this.push(a);
         }
       }break;
       case "randomint": {
-        let b = pop();
-        let a = pop();
+        let b = this.pop();
+        let a = this.pop();
         if (b > a ) {
-          push(getRandomInt(a,b));
+          this.push(getRandomInt(a,b));
         }
         else {
-          push(getRandomInt(b,a));
+          this.push(getRandomInt(b,a));
         }
         getRandomInt()
       }break;
@@ -646,7 +637,7 @@ function ctorSimulator() {
         //TO DO
       }break;
       case "isEven":{
-          push(pop()%2==0);
+          this.push(this.pop()%2==0);
       }break;
       default:
         throw "Missing primitive "+ prim.name;
@@ -654,10 +645,12 @@ function ctorSimulator() {
   }
 
   //setInterval(changeRandomPinValue, 1000);
-  return simulator;
+  
 };
+
+let simulator = new Simulator;
 
 if(typeof module != "undefined")
      {
-       module.exports = ctorSimulator;
+       module.exports = simulator;
      }
