@@ -63,6 +63,12 @@
   (let [program (device/compile src type silent)]
     (json-response program)))
 
+(defn run-handler [{:strs [src type silent]
+                    :or {type "uzi", silent true}}]
+  (let [program (device/compile src type silent)
+        bytes (device/run program)]
+    (json-response program)))
+
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
@@ -90,6 +96,7 @@
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
                         (POST "/uzi/compile" {params :params} (compile-handler params))
+                        (POST "/uzi/run" {params :params} (run-handler params))
 
                         (route/not-found "No such page."))
 
