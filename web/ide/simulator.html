@@ -34,13 +34,13 @@
   <script src="graphics.js" type="text/javascript" ></script>
   <script>
   var svg = document.getElementById("svg");
-  var sim = new Simulator;
+  var sim = ctorSimulator();
   var g = ctorGraphics();
 
   $(document).ready(function () {
     Uzi.start().then(() => {
       console.log("Uzi started successfully!");
-      sim.getProgram();
+      sim.loadCurrentProgram();
     });
     g.drawCircles(svg,20,sim);
     g.createPins(sim);
@@ -64,10 +64,10 @@
   <table id="stackTable">
     <caption>Stack</caption>
   </table>
-
-  <button onclick="sim.updateProgram();" id="update-button" type="button">Update</button>
-  <button onclick="sim.startProgram()" id="start-button" type="button">Start</button>
-  <button onclick="sim.stopProgram()" id="stop-button" type="button">Stop</button>
+  
+  <button onclick="sim.update();" id="update-button" type="button">Update</button>
+  <button onclick="start()" id="start-button" type="button">Start</button>
+  <button onclick="sim.stop()" id="stop-button" type="button">Stop</button>
   <button onclick="sim.execute()" id="next-button" type="button">Next Instruction</button>
   <h1 id="pc">PC</h1>
 </body>
