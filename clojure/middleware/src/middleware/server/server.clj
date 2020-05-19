@@ -77,15 +77,20 @@
 
 (def handler
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
+
+                        ; Testing
                         (GET "/seconds" [] (wrap-websocket seconds-handler))
                         (GET "/echo" [] (wrap-websocket echo-handler))
                         (GET "/analog-read" [] (wrap-websocket analog-read-handler))
-                        (POST "/connect" {params :params} (connect-handler params))
-                        (POST "/disconnect" req (disconnect-handler req))
-                        (GET "/available-ports" [] (json-response {:ports (device/available-ports)}))
-                        (POST "/compile" {params :params} (compile-handler params))
 
+
+                        ; Uzi api
                         (GET "/uzi" [] (wrap-websocket uzi-state-handler))
+                        (POST "/uzi/connect" {params :params} (connect-handler params))
+                        (POST "/uzi/disconnect" req (disconnect-handler req))
+                        (GET "/uzi/available-ports" [] (json-response {:ports (device/available-ports)}))
+                        (POST "/uzi/compile" {params :params} (compile-handler params))
+
                         (route/not-found "No such page."))
 
       (wrap-params)
