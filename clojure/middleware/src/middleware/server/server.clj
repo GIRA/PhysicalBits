@@ -58,9 +58,9 @@
   (device/disconnect)
   (json-response "OK"))
 
-(defn compile-handler [params]
-  (let [program (device/compile-uzi-string (params "src")
-                                           :lib-dir (params "libs"))]
+(defn compile-handler [{:strs [src type silent]
+                        :or {type "uzi", silent true}}]
+  (let [program (device/compile src type silent)]
     (json-response program)))
 
 (defn uzi-state-handler [socket req]

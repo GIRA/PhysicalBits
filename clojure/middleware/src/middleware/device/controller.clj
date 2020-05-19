@@ -68,8 +68,11 @@
         (disconnect))))
   bytes)
 
-(defn compile-uzi-string [src & args]
-  (let [program (apply cc/compile-uzi-string src args)
+(defn compile [src type silent & args]
+  (let [compile-fn (case type
+                     "json" cc/compile-json-string
+                     "uzi" cc/compile-uzi-string)
+        program (apply compile-fn src args)
         bytecodes (en/encode program)]
     (swap! state assoc-in [:program :current] program)
     program))
