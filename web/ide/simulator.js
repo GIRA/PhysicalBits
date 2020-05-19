@@ -74,7 +74,7 @@ class Simulator {
 
   stopProgram(){
     if (!this.interval) return;
-    clearInterval(interval);
+    clearInterval(this.interval);
     this.interval = null;
   }
 
