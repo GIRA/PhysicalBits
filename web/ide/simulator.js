@@ -45,15 +45,14 @@ class Simulator {
     }
   }
 
-  executeUntilBreakPoint(bkp){
-    // TODO(Richo): El safeguard podría ser un parámetro optativo
-    // TODO(Richo): Si sale por safeguard que levante una excepción así el caller se entera
+  executeUntilBreakPoint(bkp, safeguard){
+    // TODO(Richo): El safeguard podría ser un parámetro optativo --> done
+    // TODO(Richo): Si sale por safeguard que levante una excepción así el caller se entera --> Done
     if(this.currentScript.ticking){
       if(true || this.currentScript.nextRun < this.millis()){
-        let safeguard = 0;
         let next;
         do {
-          safeguard++;
+          safeguard--;
 
           next = this.currentScript.instructions[this.pc];
           if (next.breakpoint == bkp) {
@@ -63,7 +62,11 @@ class Simulator {
             this.pc++;
           }
 
-        } while (this.pc < this.currentScript.instructions.length && safeguard < 50);
+        } while (this.pc < this.currentScript.instructions.length && safeguard > 0);
+
+        if(safeguard <= 0){
+          throw 'Safeguard exception: the program ran out of cycles. Stopped running to avoid an infinite loop';
+        }
       }
     }
   }

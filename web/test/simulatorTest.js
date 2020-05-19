@@ -222,7 +222,7 @@ describe('Simulator Tests', function () {
 
       "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
 
-    sim.executeUntilBreakPoint("pepe");
+    sim.executeUntilBreakPoint("pepe", 10);
 
     assert.equal(1, sim.pc);
     assert.equal(4, sim.stack[sim.stack.length-1]);
@@ -237,7 +237,7 @@ describe('Simulator Tests', function () {
 
       "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
 
-    sim.executeUntilBreakPoint("1");
+    sim.executeUntilBreakPoint("1", 10);
 
     assert.equal(0, sim.pc);
     assert.equal(0, sim.stack.length);
@@ -254,7 +254,7 @@ describe('Simulator Tests', function () {
 
       "locals":[],"name":"default","ticking":true,"nextRun":90610,"lastStart":20}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":7}]});
 
-    sim.executeUntilBreakPoint("1");
+    sim.executeUntilBreakPoint("1", 10);
   });
 
   
