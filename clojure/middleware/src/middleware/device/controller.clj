@@ -22,7 +22,7 @@
                     :scripts []
                     :profiler nil
                     :debugger nil
-                    :running-program nil})
+                    :program {:current nil, :running nil}})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (def events (a/chan))
@@ -71,11 +71,11 @@
 (defn compile-uzi-string [src & args]
   (let [program (apply cc/compile-uzi-string src args)
         bytecodes (en/encode program)]
-    (swap! state assoc :current-program program)
+    (swap! state assoc-in [:program :current] program)
     program))
 
 (defn run [program]
-  (swap! state assoc :running-program program)
+  (swap! state assoc-in [:program :running] program)
   (let [bytecodes (en/encode program)]
     (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))))
 
