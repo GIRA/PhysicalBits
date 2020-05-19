@@ -12,7 +12,7 @@
             [clojure.java.io :as io]
             [manifold.stream :as ws]
             [manifold.deferred :as d]
-            [cheshire.core :as json]
+            [middleware.utils.json :as json]
             [middleware.device.controller :as device])
   (:gen-class))
 
@@ -47,7 +47,7 @@
 (defn json-response [data & [status]]
   {:status  (or status 200)
    :headers {"Content-Type" "application/hal+json; charset=utf-8"}
-   :body    (json/generate-string data)})
+   :body    (json/encode data)})
 
 (defn connect-handler [params]
   (device/connect (params "port"))
@@ -66,13 +66,13 @@
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
-    (ws/put! socket (json/generate-string @device/state))
+    (ws/put! socket (json/encode @device/state))
     (a/sub device/events-pub topic in-chan)
     (a/go-loop []
       (if (ws/closed? socket)
         (a/unsub device/events-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket (json/generate-string device-state))
+          (ws/put! socket (json/encode device-state))
           (recur))))))
 
 (def handler
@@ -86,9 +86,9 @@
 
                         ; Uzi api
                         (GET "/uzi" [] (wrap-websocket uzi-state-handler))
+                        (GET "/uzi/available-ports" [] (json-response {:ports (device/available-ports)}))
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
-                        (GET "/uzi/available-ports" [] (json-response {:ports (device/available-ports)}))
                         (POST "/uzi/compile" {params :params} (compile-handler params))
 
                         (route/not-found "No such page."))
