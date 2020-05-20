@@ -122,6 +122,6 @@ function updatePins(simulator){
 
 function showPc(simulator){
   var s = document.getElementById("pc");
-  s.innerHTML="PC: "+simulator.pc;
+  s.textContent="PC: "+simulator.pc;
 }
 

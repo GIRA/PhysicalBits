@@ -1,16 +1,25 @@
+body{
+  background-color:#272e38;
+}
 
 table,td{
-  border: 1px solid black; 
+  background-color: #394554;
+  border: 1px solid #516073; 
   border-collapse: collapse;
   font-family: Arial;
   text-align: center;
-  padding: 10px;
-  display: inline-block;
-  float: left;
+  padding: 20px;
+  color: #fcfcfc;
+ /* float: left;*/
 }
-td{
+table{
+  width: 215px;
+}
+td,th{
   height:25px;
-  width: 40px;
+  width: 80px;
+  background:#516073;
+  padding: 10px;
 }
 circle{
   color: #0e141b;
@@ -19,12 +28,12 @@ circle{
 h1{
   font-family: Arial;
   font-size:15px;
-  text-align: center;
+  text-align: left;
 }
 
 .button{
   background-color: #24a6df;
-  color:white;
+  color:#fcfcfc;
   border: none;
   padding: 10px;
   text-align: 16px;
@@ -34,12 +43,54 @@ h1{
   background-color: #1488bb;
   cursor: pointer;
 }
-div{
+.buttons{
   border:none;
   background-color: #394554;
-  padding: 10px;
+  padding: 20px;
   text-align: center;
 }
 svg{
   background-color: #e1ecf7;
+}
+.texts{
+  font-family: Arial, sans-serif;
+  color:#fcfcfc;
+  text-align: center;
+  border: 1px solid #516073; 
+  padding: 15px;
+}
+.pins{
+  float: left;
+  display: grid;
+  right: 150px;
+}
+.globals{
+  position: relative;
+  /*top:500px;
+  left: 100px;*/
+  float: left;
+  display: grid;
+}
+.stack{
+  float: center;
+  display: grid;
+}
+.left{
+  float: left;
+  width:215px;
+  display: grid;
+  background-color: #394554;
+}
+.right{
+  float: right;
+  width:215px;
+  display: grid;
+  background-color: #394554;
+}
+@media(max-width:1150px){
+  .right{
+    float:none;
+    margin-left: 0;
+    clear:both;
+  }
 }

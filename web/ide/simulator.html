@@ -4,14 +4,14 @@
     <link rel="stylesheet" type="text/css" href=simulator.css>
   </head>
 <body>
-  <div>
+  <div class="buttons">
     <button onclick="start()" id="start-button" type="button" class="button">Start</button>
     <button onclick="sim.updateProgram();" id="update-button" type="button" class="button">Update</button>
     <button onclick="sim.execute()" id="next-button" type="button" class="button">Next Instruction</button>
     <button onclick="sim.stopProgram()" id="stop-button" type="button" class="button">Stop</button>
   </div>
 
-  <svg width="1000" height="300" id="svg" x="200" y="200"> </svg>
+  <svg width="700" height="500" id="svg" x="200" y="100"> </svg>
   <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
   <script src="ajax.js" type="text/javascript"></script>
   <script src="uzi.js" type="text/javascript" ></script>
@@ -40,18 +40,23 @@
     }
   </script>
 
-  <table id="globalsTable">
-    <caption>Globals</caption>
-  </table>
+  <div class="left">
+    <table id="globalsTable"class="globals">
+      <caption>Globals</caption>
+    </table>
 
-  <table id="pinsTable">
-    <caption>Pins</caption>
-  </table>
+    <table id="pinsTable" class="pins">
+      <caption>Pins</caption>
+    </table>
+  </div>
 
-  <table id="stackTable">
-    <caption>Stack</caption>
-  </table>
+  <div class="right">
+    <table id="stackTable" class="stack">
+      <caption>Stack</caption>
+    </table>
+    <h1 id="pc" class="texts">PC</h1>
+  </div>
   
-  <h1 id="pc">PC</h1>
+  
 </body>
 </html>
