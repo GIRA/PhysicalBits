@@ -40,9 +40,9 @@ function drawCircles(target,radius, simulator) {
     });
     setInterval(() => {
        if(simulator.pins[i]>=0.5) {
-           c.setAttribute("fill", "chartreuse");
+           c.setAttribute("fill", "#a6e369");
        } else{
-          c.setAttribute("fill", "black");
+          c.setAttribute("fill", "#0e141b");
        }
     }, 1);
   }

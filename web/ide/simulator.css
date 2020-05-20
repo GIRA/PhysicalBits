@@ -1,0 +1,45 @@
+
+table,td{
+  border: 1px solid black; 
+  border-collapse: collapse;
+  font-family: Arial;
+  text-align: center;
+  padding: 10px;
+  display: inline-block;
+  float: left;
+}
+td{
+  height:25px;
+  width: 40px;
+}
+circle{
+  color: #0e141b;
+  cursor: pointer;
+}
+h1{
+  font-family: Arial;
+  font-size:15px;
+  text-align: center;
+}
+
+.button{
+  background-color: #24a6df;
+  color:white;
+  border: none;
+  padding: 10px;
+  text-align: 16px;
+  border-radius: 25px;
+}
+.button:hover{
+  background-color: #1488bb;
+  cursor: pointer;
+}
+div{
+  border:none;
+  background-color: #394554;
+  padding: 10px;
+  text-align: center;
+}
+svg{
+  background-color: #e1ecf7;
+}

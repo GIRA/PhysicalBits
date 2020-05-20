@@ -1,32 +1,17 @@
 <html>
   <head>
     <title>Simulator</title>
-    <style>
-      table,td{
-        border: 1px solid black; 
-        border-collapse: collapse;
-        font-family: Arial;
-        text-align: center;
-        padding: 10px;
-        display: inline-block;
-        float: left;
-      }
-      td{
-        height:25px;
-        width: 40px;
-      }
-      circle{
-        color: black;
-      }
-      h1{
-        font-family: Arial;
-        font-size:15px;
-        text-align: center;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href=simulator.css>
   </head>
 <body>
-  <svg width="1000" height="300" id="svg"> </svg>
+  <div>
+    <button onclick="start()" id="start-button" type="button" class="button">Start</button>
+    <button onclick="sim.updateProgram();" id="update-button" type="button" class="button">Update</button>
+    <button onclick="sim.execute()" id="next-button" type="button" class="button">Next Instruction</button>
+    <button onclick="sim.stopProgram()" id="stop-button" type="button" class="button">Stop</button>
+  </div>
+
+  <svg width="1000" height="300" id="svg" x="200" y="200"> </svg>
   <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
   <script src="ajax.js" type="text/javascript"></script>
   <script src="uzi.js" type="text/javascript" ></script>
@@ -54,6 +39,7 @@
       g.showStats(sim);
     }
   </script>
+
   <table id="globalsTable">
     <caption>Globals</caption>
   </table>
@@ -66,10 +52,6 @@
     <caption>Stack</caption>
   </table>
   
-  <button onclick="sim.updateProgram();" id="update-button" type="button">Update</button>
-  <button onclick="start()" id="start-button" type="button">Start</button>
-  <button onclick="sim.stopProgram()" id="stop-button" type="button">Stop</button>
-  <button onclick="sim.execute()" id="next-button" type="button">Next Instruction</button>
   <h1 id="pc">PC</h1>
 </body>
 </html>
