@@ -1,5 +1,5 @@
 (ns middleware.device.controller
-  (:refer-clojure :exclude [send])
+  (:refer-clojure :exclude [send compile])
   (:require [serial.core :as s]
             [serial.util :as su]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]

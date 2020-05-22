@@ -1,5 +1,6 @@
 ; TODO(Richo): Most of the work here could probably be written using clojure.spec
-(ns middleware.compiler.checker
+(ns middleware.compiler.checker  
+  (:refer-clojure :exclude [assert])
   (:require [middleware.compiler.ast-utils :as ast-utils]
             [middleware.compiler.primitives :as prims]
             [clojure.data :as data]))
