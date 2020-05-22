@@ -10,15 +10,22 @@
             [clojure.java.browse :refer [browse-url]])
   (:use [clojure.repl]))
 
-(defn reload []
+(defn stop []
   (dc/disconnect)
   (dc/stop-event-loop)
-  (server/stop)
-  (repl/refresh))
+  (server/stop))
 
 (defn start []
   (dc/start-event-loop)
   (server/start))
+
+(defn reload []
+  (stop)
+  (repl/refresh))
+
+(defn restart []
+  (stop)
+  (repl/refresh :after 'user/start))
 
 (defn millis [] (System/currentTimeMillis))
 
