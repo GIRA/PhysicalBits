@@ -43,3 +43,5 @@
     5 "READER_TIMEOUT"
     6 "DISCONNECT_ERROR"
     "UNKNOWN_ERROR"))
+
+(defn error? [code] (not= 0 code))

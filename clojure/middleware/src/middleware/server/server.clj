@@ -69,16 +69,30 @@
         bytes (device/run program)]
     (json-response program)))
 
+(defn- format-device-state [state]
+  (-> state
+      (dissoc :port :reporting :scripts :profiler)
+      (assoc :isConnected (device/connected? state)
+             :pins {:available []
+                    :elements (-> state :pins vals vec)}
+             :globals {:available []
+                       :elements (-> state :globals vals vec)}
+             :output [] ; TODO(Richo): We need to handle the output differently
+             :tasks (mapv (fn [s] {:scriptName (:name s)
+                                   :isRunning (:running? s)
+                                   :isError (:error? s)})
+                          (:scripts state)))))
+
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
-    (ws/put! socket (json/encode @device/state))
+    (ws/put! socket (json/encode (format-device-state @device/state)))
     (a/sub device/events-pub topic in-chan)
     (a/go-loop []
       (if (ws/closed? socket)
         (a/unsub device/events-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket (json/encode device-state))
+          (ws/put! socket (json/encode (format-device-state device-state)))
           (recur))))))
 
 (def handler

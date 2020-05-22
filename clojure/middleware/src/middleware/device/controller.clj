@@ -36,7 +36,7 @@
       (<! (a/timeout 100))
       (let [new-state @state]
         (when (not= old-state new-state)
-          (>! events {:type :update, :state (dissoc new-state :port)}))
+          (>! events {:type :update, :state new-state}))
         (when @event-loop?
           (recur new-state))))))
 
@@ -48,8 +48,10 @@
 
 (defn available-ports [] (su/get-port-names))
 
-(defn connected? []
-  (not (nil? (@state :port))))
+(defn connected?
+  ([] (connected? @state))
+  ([state]
+   (not (nil? (:port state)))))
 
 (defn disconnect []
   (when-let [port (@state :port)]
@@ -79,7 +81,7 @@
 
 (defn run [program]
   (swap! state assoc-in [:program :running] program)
-  (let [bytecodes (en/encode program)]
+  (let [bytecodes (en/encode (:compiled program))]
     (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))))
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
@@ -198,7 +200,9 @@
         error-code (bit-and 2r01111111 byte)
         error-msg (error-msg error-code)]
     {:index i
+     :name (-> @state :program :running :compiled :scripts (get i) :name)
      :running? running?
+     :error? (error? error-code)
      :error-code error-code
      :error-msg error-msg}))
 
