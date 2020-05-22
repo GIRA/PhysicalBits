@@ -4,6 +4,10 @@
             [middleware.compiler.linker :as l])
   (:use [middleware.test-utils]))
 
+(defn compile-uzi-string [src]
+  (:compiled (cc/compile-uzi-string src
+                                    :lib-dir "../../uzi/tests")))
+
 (defn link [ast]
   (-> ast
       (l/resolve-imports "../../uzi/tests")
@@ -960,5 +964,5 @@
                                {:__class__ "UziVariable" :value 0}
                                {:__class__ "UziVariable" :value 10}
                                {:__class__ "UziVariable" :value 100}}}
-        actual (cc/compile-uzi-string "import t from 'test_15.uzi';" :lib-dir "../../uzi/tests")]
+        actual (compile-uzi-string "import t from 'test_15.uzi';")]
     (is (equivalent? expected actual))))

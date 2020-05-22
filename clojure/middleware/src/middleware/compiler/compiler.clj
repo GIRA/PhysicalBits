@@ -496,18 +496,21 @@
                        :errors errors})))))
 
 (defn compile-tree
-  [ast & {:keys [board lib-dir remove-dead-code?]
-          :or {board boards/UNO,
-               lib-dir "../../uzi/libraries",
-               remove-dead-code? true}}]
-  (-> ast
-      ast-utils/assign-internal-ids
-      (linker/resolve-imports lib-dir)
-      check
-      assign-unique-variable-names
-      (assign-pin-values board)
-      (remove-dead-code remove-dead-code?)
-      (compile (create-context))))
+  [original-ast
+   & {:keys [board lib-dir remove-dead-code?]
+      :or {board boards/UNO,
+           lib-dir "../../uzi/libraries",
+           remove-dead-code? true}}]
+  (let [ast (-> original-ast
+                ast-utils/assign-internal-ids
+                (linker/resolve-imports lib-dir)
+                check
+                assign-unique-variable-names
+                (assign-pin-values board)
+                (remove-dead-code remove-dead-code?))
+        compiled (compile ast (create-context))]
+    {:ast ast
+     :compiled compiled}))
 
 (defn compile-json-string [str]
   (compile-tree (parse-string str true)))

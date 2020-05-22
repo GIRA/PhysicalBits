@@ -1,13 +1,12 @@
 (ns middleware.dead-code-remover-test
-  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.walk :as w]
             [middleware.compiler.ast-utils :as ast-utils]
             [middleware.compiler.compiler :as cc])
   (:use [middleware.test-utils]))
 
-(defn compile [src]
-  (cc/compile-uzi-string src))
+(defn compile-uzi-string [src]
+  (:compiled (cc/compile-uzi-string src)))
 
 (deftest stopped-task-with-no-refs-should-be-removed
   (let [expected {:__class__ "UziProgram",
@@ -45,7 +44,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 11}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   task alive1() running { toggle(D13); }
 	                task dead() stopped { toggle(D12); }
                   task alive2() { toggle(D11); }")]
@@ -87,7 +86,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
                 		task alive() running { toggle(D13); start dead; }
                 		task dead() stopped { toggle(D12); }
                 		task reallyDead() stopped { toggle(D11); }")]
@@ -129,7 +128,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
               		task alive() running { toggle(D13); stop dead; }
               		task dead() stopped { toggle(D12); }
               		task reallyDead() stopped { toggle(D11); }")]
@@ -171,7 +170,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
               		task alive() running { toggle(D13); pause dead; }
               		task dead() stopped { toggle(D12); }
               		task reallyDead() stopped { toggle(D11); }")]
@@ -213,7 +212,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
               		task alive() running { toggle(D13); resume dead; }
               		task dead() stopped { toggle(D12); }
               		task reallyDead() stopped { toggle(D11); }")]
@@ -255,7 +254,7 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   task dead() stopped { toggle(D12); }
               		task alive() running { toggle(D13); start dead; }
               		task reallyDead() stopped { toggle(D11); }")]
@@ -300,14 +299,14 @@
                                 :value 13},
                                {:__class__ "UziVariable",
                                 :value 12}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   task foo() running { toggle(D13); start bar; }
                   task bar() stopped { start foo; toggle(D12); }")]
     (is (= expected actual))))
 
 (deftest stopped-script-that-starts-itself-should-not-count
   (let [expected {:__class__ "UziProgram", :scripts [], :globals #{}}
-        actual (compile "task bar() stopped { start bar; toggle(D12); }")]
+        actual (compile-uzi-string "task bar() stopped { start bar; toggle(D12); }")]
     (is (= expected actual))))
 
 (deftest unused-globals-should-be-removed
@@ -329,7 +328,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   var a = 0;
                   task blink13() running 1/s { toggle(D13); }")]
     (is (= expected actual))))
@@ -353,7 +352,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   var a = 0;
                   task blink13() running 1/s { toggle(D13); }
                   task test() stopped { a = 100; }")]
@@ -380,7 +379,7 @@
                                 :value 1},
                                {:__class__ "UziVariable",
                                 :value 1000}}}
-        actual (compile "
+        actual (compile-uzi-string "
                 var a = 0;
                 var b = 1;
                 task blink13() running 1/s { toggle(b); }
@@ -409,7 +408,7 @@
                                 :value 1000},
                                {:__class__ "UziVariable",
                                 :value 13}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   var a = 0;
                   task blink13() running 1/s { var a = D13; toggle(a); }")]
     (is (= expected actual))))
@@ -479,7 +478,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 1}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   import m from 'DCMotor.uzi';
                   task loop() running { m.forward(1); }")]
     (is (= expected actual))))
@@ -557,7 +556,7 @@
                                 :value 0},
                                {:__class__ "UziVariable",
                                 :value 11}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   \"This is just an example of code that uses all the available syntax
                   in the language.\"
                   \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"
@@ -1009,7 +1008,7 @@
                                {:__class__ "UziVariable", :value 14},
                                {:__class__ "UziVariable", :value -2},
                                {:__class__ "UziVariable", :value -3.5}}}
-        actual (compile "
+        actual (compile-uzi-string "
                       \"This is just an example of code that uses all the available syntax
                       in the language.\"
                       \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"
@@ -1462,7 +1461,7 @@
                                {:__class__ "UziVariable", :value 14},
                                {:__class__ "UziVariable", :value -2},
                                {:__class__ "UziVariable", :value -3.5}}}
-        actual (compile "
+        actual (compile-uzi-string "
                   \"This is just an example of code that uses all the available syntax
                   in the language.\"
                   \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"

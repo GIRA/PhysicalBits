@@ -5,8 +5,8 @@
             [middleware.compiler.compiler :as cc])
   (:use [middleware.test-utils]))
 
-
-(def compile cc/compile-tree)
+(defn compile [ast]
+  (:compiled (cc/compile-tree ast)))
 
 (deftest empty-program-test
   (let [ast {:__class__ "UziProgramNode",

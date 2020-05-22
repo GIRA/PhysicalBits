@@ -6,7 +6,7 @@
             [middleware.compiler.emitter :as emit]))
 
 (defn compile [src]
-  (cc/compile-uzi-string src))
+  (:compiled (cc/compile-uzi-string src)))
 
 (defn encode [src]
   (-> src
