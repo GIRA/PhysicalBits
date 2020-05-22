@@ -44,7 +44,8 @@
   (visit-children node ctx))
 
 (defmethod visit-node "UziCallNode" [node ctx]
-  (when-not (get node :primitive-name)
+  (if (get node :primitive-name)
+    (swap! (:visited-primitives ctx) conj (:selector node))
     (visit (get-script-named (:selector node) ctx) ctx))
   (visit-children node ctx))
 
@@ -54,13 +55,18 @@
 (defn create-context []
   {:path (list),
    :visited-scripts (atom #{}),
-   :visited-globals (atom #{})})
+   :visited-globals (atom #{}),
+   :visited-primitives (atom #{})})
 
-(defn remove-dead-code [{:keys [scripts globals] :as ast}]
-  (let [{:keys [visited-globals visited-scripts] :as ctx} (create-context)]
+(defn remove-dead-code [ast]
+  (let [ctx (create-context)]
     (visit ast ctx)
     (assoc ast
-           :globals (filterv #(contains? @visited-globals (:name %))
-                             globals)
-           :scripts (filterv #(contains? @visited-scripts (:name %))
-                             scripts))))
+           :imports (mapv #(dissoc % :program)
+                          (:imports ast))
+           :globals (filterv #(contains? @(:visited-globals ctx) (:name %))
+                             (:globals ast))
+           :scripts (filterv #(contains? @(:visited-scripts ctx) (:name %))
+                             (:scripts ast))
+           :primitives (filterv #(contains? @(:visited-primitives ctx) (:alias %))
+                                (:primitives ast)))))
