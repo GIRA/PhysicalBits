@@ -15,6 +15,7 @@
 
 (def initial-state {:port-name nil
                     :port nil
+                    :connected? false
                     :reporting {:pins #{}
                                 :globals #{}}
                     :pins {}
@@ -22,6 +23,7 @@
                     :scripts []
                     :profiler nil
                     :debugger nil
+                    :memory {:arduino nil, :uzi: nil}
                     :program {:current nil, :running nil}})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
@@ -48,10 +50,8 @@
 
 (defn available-ports [] (su/get-port-names))
 
-(defn connected?
-  ([] (connected? @state))
-  ([state]
-   (not (nil? (:port state)))))
+(defn connected? []
+  (not (nil? (:port @state))))
 
 (defn disconnect []
   (when-let [port (@state :port)]
@@ -279,7 +279,8 @@
        (request-connection port in)
        (swap! state assoc
               :port port
-              :port-name port-name)
+              :port-name port-name
+              :connected? true)
        (keep-alive port)
        (process-input in)
        (start-reporting)
