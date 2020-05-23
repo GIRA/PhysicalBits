@@ -9,6 +9,7 @@
             [middleware.utils.conversions :refer :all]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
+            [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]))
 
 ; TODO(Richo): Replace with log/error
@@ -71,34 +72,6 @@
         (disconnect))))
   bytes)
 
-(defn compile [src type silent & args]
-  (let [compile-fn (case type
-                     "json" cc/compile-json-string
-                     "uzi" cc/compile-uzi-string)
-        program (update (apply compile-fn src args)
-                        :compiled
-                        program/sort-globals)
-        bytecodes (en/encode program)]
-    (swap! state assoc-in [:program :current] program)
-    program))
-
-(defn run [program]
-  (swap! state assoc-in [:program :running] program)
-  (let [bytecodes (en/encode (:compiled program))]
-    (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))))
-
-(defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
-(defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
-
-(defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
-(defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
-
-(defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
-(defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
-
-(defn send-continue []
-  (swap! state assoc :debugger nil)
-  (send [MSG_OUT_DEBUG_CONTINUE]))
 
 (defn- get-global-number [global-name]
   (program/index-of-variable (-> @state :program :running :compiled)
@@ -131,6 +104,44 @@
   (let [pins (-> @state :reporting :pins)]
     (doseq [pin-name pins]
       (set-pin-report pin-name true))))
+
+(defn compile [src type silent & args]
+  (let [compile-fn (case type
+                     "json" cc/compile-json-string
+                     "uzi" cc/compile-uzi-string)
+        program (update (apply compile-fn src args)
+                        :compiled
+                        program/sort-globals)
+        bytecodes (en/encode program)]
+    (swap! state assoc-in [:program :current] program)
+    program))
+
+(defn- update-reporting [program]
+  "All pins and globals referenced in the program must be enabled"
+  (doseq [global (filter :name (-> program :compiled :globals))]
+    (set-global-report (:name global) true))
+  (doseq [{:keys [type number]} (filter ast/pin-literal? (-> program :ast ast/all-children))]
+    (set-pin-report (str type number) true)))
+
+(defn run [program]
+  (swap! state assoc-in [:reporting :globals] #{})
+  (swap! state assoc-in [:program :running] program)
+  (let [bytecodes (en/encode (:compiled program))]
+    (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))
+    (update-reporting program)))
+
+(defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
+(defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
+
+(defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
+(defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
+
+(defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
+(defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
+
+(defn send-continue []
+  (swap! state assoc :debugger nil)
+  (send [MSG_OUT_DEBUG_CONTINUE]))
 
 (defn- request-connection [port in]
   (<!! (timeout 2000)) ; NOTE(Richo): Needed in Mac
