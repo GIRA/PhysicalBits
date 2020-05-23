@@ -3,6 +3,7 @@
   (:require [clojure.test :refer :all]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
+            [middleware.compiler.utils.program :refer [value-size]]
             [middleware.compiler.emitter :as emit]))
 
 (defn compile [src]
@@ -39,7 +40,7 @@
                         16rFFFFFFFFFF 4,
                         0.5 4
                         -1 4}]
-    (is (= size (en/value-size value)))))
+    (is (= size (value-size value)))))
 
 (deftest script-with-local-vars
   (let [expected [1 2 4 100 5 3 232 208 4 1 3 0]
