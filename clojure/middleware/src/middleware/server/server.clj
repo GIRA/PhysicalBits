@@ -73,11 +73,15 @@
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
-      (dissoc :connected? :port :reporting :scripts :profiler)
+      (dissoc :connected? :port :board :reporting :scripts :profiler)
 
       ; NOTE(Richo): And then we add the missing keys
       (assoc :isConnected (:connected? state)
-             :pins {:available []
+             :pins {:available (mapv (fn [pin-name]
+                                       {:name pin-name
+                                        :reporting (contains? (-> state :reporting :pins)
+                                                              pin-name)})
+                                     (-> state :board :pin-names))
                     :elements (-> state :pins vals vec)}
              :globals {:available []
                        :elements (-> state :globals vals vec)}
