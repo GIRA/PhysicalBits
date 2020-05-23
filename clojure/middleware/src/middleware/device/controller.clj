@@ -203,11 +203,12 @@
                     n3 (<? in)
                     n4 (<? in)
                     float-value (bytes->float [n1 n2 n3 n4])]
-                (swap! state update-in [:globals number]
-                       (fn [_] {:name (:name (nth globals number {:name "?"}))
-                                :number number
-                                :value float-value
-                                :raw-bytes [n1 n2 n3 n4]})))))))
+                (when-let [global-name (:name (nth globals number {}))]
+                  (swap! state update-in [:globals global-name]
+                         (fn [_] {:name global-name
+                                  :number number
+                                  :value float-value
+                                  :raw-bytes [n1 n2 n3 n4]}))))))))
 
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
