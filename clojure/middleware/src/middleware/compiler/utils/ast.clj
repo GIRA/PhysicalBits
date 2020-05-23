@@ -88,6 +88,9 @@
 (defn ticking-rate? [node]
   (= "UziTickingRateNode" (node-type node)))
 
+(defn pin-literal? [node]
+  (= "UziPinLiteralNode" (node-type node)))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
   (if (= "UziCallNode" (node-type node))
     (if-not primitive-name
