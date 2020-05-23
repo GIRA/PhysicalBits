@@ -69,7 +69,14 @@
         bytes (device/run program)]
     (json-response program)))
 
-(defn- format-device-state [state]
+
+(def ^:private events (a/chan))
+(def ^:private events-pub (a/pub events :type))
+
+; TODO(Richo): The event-loop could be started/stopped automatically
+(def ^:private event-loop? (atom false))
+
+(defn- format-server-state [state]
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
@@ -100,16 +107,32 @@
                                    :isError (:error? s)})
                           (:scripts state)))))
 
+(defn- get-server-state []
+  (format-server-state @device/state))
+
+(defn start-event-loop []
+  (when (compare-and-set! event-loop? false true)
+    (a/go-loop [old-state (get-server-state)]
+      (a/<! (a/timeout 100))
+      (let [new-state (get-server-state)]
+        (when (not= old-state new-state)
+          (a/>! events {:type :update, :state new-state}))
+        (when @event-loop?
+          (recur new-state))))))
+
+(defn stop-event-loop []
+  (reset! event-loop? false))
+
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
-    (ws/put! socket (json/encode (format-device-state @device/state)))
-    (a/sub device/events-pub topic in-chan)
+    (ws/put! socket (json/encode (get-server-state)))
+    (a/sub events-pub topic in-chan)
     (a/go-loop []
       (if (ws/closed? socket)
-        (a/unsub device/events-pub topic in-chan)
+        (a/unsub events-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket (json/encode (format-device-state device-state)))
+          (ws/put! socket (json/encode device-state))
           (recur))))))
 
 (def handler

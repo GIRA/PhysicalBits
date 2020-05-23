@@ -6,6 +6,6 @@
 (defn -main [& args]
   (time (do
           (println "Starting server...")
-          (dc/start-event-loop)
+          (server/start-event-loop)
           (server/start)
           (println "Server started."))))

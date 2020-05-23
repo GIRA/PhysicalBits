@@ -29,24 +29,6 @@
                     :program {:current nil, :running nil}})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
-(def events (a/chan))
-(def events-pub (a/pub events :type))
-(def event-loop? (atom false))
-
-; TODO(Richo): Check if this is not computationally expensive
-(defn start-event-loop []
-  (when (compare-and-set! event-loop? false true)
-    (go-loop [old-state @state]
-      (<! (a/timeout 100))
-      (let [new-state @state]
-        (when (not= old-state new-state)
-          (>! events {:type :update, :state new-state}))
-        (when @event-loop?
-          (recur new-state))))))
-
-(defn stop-event-loop []
-  (reset! event-loop? false))
-
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
 
