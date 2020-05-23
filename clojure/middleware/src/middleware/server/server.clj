@@ -83,7 +83,12 @@
                                                               pin-name)})
                                      (-> state :board :pin-names))
                     :elements (-> state :pins vals vec)}
-             :globals {:available []
+             :globals {:available (mapv (fn [{global-name :name}]
+                                          {:name global-name
+                                           :reporting (contains? (-> state :reporting :globals)
+                                                                 global-name)})
+                                        (filter :name
+                                                (-> state :program :running :compiled :globals)))
                        :elements (-> state :globals vals vec)}
              :output [] ; TODO(Richo): We need to handle the output differently
              :tasks (mapv (fn [s] {:scriptName (:name s)
