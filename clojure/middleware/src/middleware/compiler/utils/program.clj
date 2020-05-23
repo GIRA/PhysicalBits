@@ -13,6 +13,13 @@
                        [1 2 3 4]))
         4)))
 
+; TODO(Richo): The functions in this namespace rely on the program having its globals
+; sorted. That means that I need to remember to call this function before using any
+; of them. Of course, I should just change the compiler to emit the program with its
+; variables already sorted and avoid this problem. However, in order to do that I need
+; to fix a lot of tests first, and it's kind of a pain in the ass. So first, I will
+; make it work by calling this function in the correct places and then I'll refactor
+; the compiler.
 (defn sort-globals [program]
   (let [sorted-globals (sort-by (fn [global] (assoc global :size (value-size (:value global))))
                                 (fn [{a-name :name, a-value :value, a-size :size}
