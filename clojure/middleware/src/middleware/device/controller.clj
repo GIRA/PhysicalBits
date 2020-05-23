@@ -16,14 +16,14 @@
 (def initial-state {:port-name nil
                     :port nil
                     :connected? false
-                    :reporting {:pins #{}
-                                :globals #{}}
+                    :board UNO
+                    :reporting {:pins #{}, :globals #{}}
                     :pins {}
                     :globals {}
                     :scripts []
                     :profiler nil
                     :debugger nil
-                    :memory {:arduino nil, :uzi: nil}
+                    :memory {:arduino nil, :uzi nil}
                     :program {:current nil, :running nil}})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
@@ -269,8 +269,8 @@
 
 (defn connect
   ([] (connect (first (available-ports))))
-  ([port-name] (connect port-name 57600))
-  ([port-name baud-rate]
+  ([port-name & {:keys [board baud-rate]
+                 :or {board UNO, baud-rate 57600}}]
    (if (connected?)
      (error "The board is already connected")
      (let [port (s/open port-name :baud-rate baud-rate)
@@ -280,7 +280,8 @@
        (swap! state assoc
               :port port
               :port-name port-name
-              :connected? true)
+              :connected? true
+              :board board)
        (keep-alive port)
        (process-input in)
        (start-reporting)
