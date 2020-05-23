@@ -289,6 +289,15 @@
               (go (println "UNRECOGNIZED:" cmd)))))
       (recur))))
 
+(defn- clean-up-reports []
+  (go-loop []
+    (when (connected?)
+      (let [reporting (:reporting @state)]
+        (swap! state update :pins #(select-keys % (:pins reporting)))
+        (swap! state update :globals #(select-keys % (:globals reporting))))
+      (<! (timeout 1000))
+      (recur))))
+
 (defn connect
   ([] (connect (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
@@ -307,4 +316,5 @@
        (keep-alive port)
        (process-input in)
        (start-reporting)
-       (send-pins-reporting)))))
+       (send-pins-reporting)
+       (clean-up-reports)))))
