@@ -69,13 +69,6 @@
         bytes (device/run program)]
     (json-response program)))
 
-
-(def ^:private events (a/chan))
-(def ^:private events-pub (a/pub events :type))
-
-; TODO(Richo): The event-loop could be started/stopped automatically
-(def ^:private event-loop? (atom false))
-
 (defn- format-server-state [state]
   (-> state
 
@@ -110,27 +103,33 @@
 (defn- get-server-state []
   (format-server-state @device/state))
 
-(defn start-event-loop []
-  (when (compare-and-set! event-loop? false true)
+(def ^:private updates (a/chan))
+(def ^:private updates-pub (a/pub updates :type))
+
+; TODO(Richo): The update-loop could be started/stopped automatically
+(def ^:private update-loop? (atom false))
+
+(defn start-update-loop []
+  (when (compare-and-set! update-loop? false true)
     (a/go-loop [old-state nil]
-      (when @event-loop?
+      (when @update-loop?
         (let [new-state (get-server-state)]
           (when (not= old-state new-state)
-            (a/>! events {:type :update, :state new-state}))
+            (a/>! updates {:type :update, :state new-state}))
           (a/<! (a/timeout 100))
           (recur new-state))))))
 
-(defn stop-event-loop []
-  (reset! event-loop? false))
+(defn stop-update-loop []
+  (reset! update-loop? false))
 
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
     (ws/put! socket (json/encode (get-server-state)))
-    (a/sub events-pub topic in-chan)
+    (a/sub updates-pub topic in-chan)
     (a/go-loop []
       (if (ws/closed? socket)
-        (a/unsub events-pub topic in-chan)
+        (a/unsub updates-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
           (ws/put! socket (json/encode device-state))
           (recur))))))
@@ -162,10 +161,12 @@
 
 (defn start []
   (when (nil? @server)
+    (start-update-loop)
     (let [s (http/start-server handler {:port 3000})]
       (reset! server s))))
 
 (defn stop []
   (when-let [s @server]
+    (stop-update-loop)
     (reset! server nil)
     (.close s)))

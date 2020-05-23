@@ -12,11 +12,9 @@
 
 (defn stop []
   (dc/disconnect)
-  (server/stop-event-loop)
   (server/stop))
 
 (defn start []
-  (server/start-event-loop)
   (server/start))
 
 (defn reload []
