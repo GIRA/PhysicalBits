@@ -1,4 +1,4 @@
-(ns middleware.compiler.ast-utils
+(ns middleware.compiler.utils.ast
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj-core]
             [clojure.walk :as w]

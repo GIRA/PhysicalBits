@@ -1,5 +1,5 @@
 (ns middleware.compiler.dead-code-remover
-  (:require [middleware.compiler.ast-utils :as ast-utils]))
+  (:require [middleware.compiler.utils.ast :as ast-utils]))
 
 (defmulti ^:private visit-node :__class__)
 

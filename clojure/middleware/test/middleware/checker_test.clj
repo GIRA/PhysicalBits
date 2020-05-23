@@ -1,7 +1,7 @@
 (ns middleware.checker-test
   (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
-            [middleware.compiler.ast-utils :as ast-utils]
+            [middleware.compiler.utils.ast :as ast-utils]
             [middleware.parser.parser :as pp]
             [middleware.parser.ast-nodes :as ast]
             [middleware.compiler.linker :as linker]

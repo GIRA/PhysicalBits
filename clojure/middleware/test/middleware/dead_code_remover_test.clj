@@ -1,7 +1,7 @@
 (ns middleware.dead-code-remover-test
   (:require [clojure.test :refer :all]
             [clojure.walk :as w]
-            [middleware.compiler.ast-utils :as ast-utils]
+            [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.compiler :as cc])
   (:use [middleware.test-utils]))
 

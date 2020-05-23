@@ -3,7 +3,7 @@
   (:require [cheshire.core :refer [parse-string]]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
-            [middleware.compiler.ast-utils :as ast-utils]
+            [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.emitter :as emit]
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
@@ -76,6 +76,7 @@
    :globals (collect-globals node)
    :scripts (mapv #(compile % ctx)
                   (:scripts node))))
+
 
 (defn collect-locals [script-body]
   (vec (concat
