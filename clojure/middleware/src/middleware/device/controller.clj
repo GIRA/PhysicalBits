@@ -8,7 +8,8 @@
             [middleware.device.boards :refer :all]
             [middleware.utils.conversions :refer :all]
             [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]))
+            [middleware.compiler.encoder :as en]
+            [middleware.compiler.utils.program :as program]))
 
 ; TODO(Richo): Replace with log/error
 (defn- error [msg] (println "ERROR:" msg))
@@ -74,7 +75,9 @@
   (let [compile-fn (case type
                      "json" cc/compile-json-string
                      "uzi" cc/compile-uzi-string)
-        program (apply compile-fn src args)
+        program (update (apply compile-fn src args)
+                        :compiled
+                        program/sort-globals)
         bytecodes (en/encode program)]
     (swap! state assoc-in [:program :current] program)
     program))
@@ -174,7 +177,8 @@
 (defn- process-global-value [in]
   (go
    (let [timestamp (<! (read-timestamp in))
-         count (<? in)]
+         count (<? in)
+         globals (vec (program/all-globals (-> @state :program :running :compiled)))]
      (dotimes [_ count]
               (let [number (<? in)
                     n1 (<? in)
@@ -183,7 +187,7 @@
                     n4 (<? in)
                     float-value (bytes->float [n1 n2 n3 n4])]
                 (swap! state update-in [:globals number]
-                       (fn [_] {:name "?"
+                       (fn [_] {:name (:name (nth globals number {:name "?"}))
                                 :number number
                                 :value float-value
                                 :raw-bytes [n1 n2 n3 n4]})))))))
