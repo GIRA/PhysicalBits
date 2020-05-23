@@ -82,14 +82,18 @@
                                         :reporting (contains? (-> state :reporting :pins)
                                                               pin-name)})
                                      (-> state :board :pin-names))
-                    :elements (-> state :pins vals vec)}
+                    :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
+                                                            (:name pin)))
+                                       (-> state :pins vals))}
              :globals {:available (mapv (fn [{global-name :name}]
                                           {:name global-name
                                            :reporting (contains? (-> state :reporting :globals)
                                                                  global-name)})
                                         (filter :name
                                                 (-> state :program :running :compiled :globals)))
-                       :elements (-> state :globals vals vec)}
+                       :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
+                                                                  (:name global)))
+                                          (-> state :globals vals))}
              :output [] ; TODO(Richo): We need to handle the output differently
              :tasks (mapv (fn [s] {:scriptName (:name s)
                                    :isRunning (:running? s)
