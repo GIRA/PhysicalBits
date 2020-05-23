@@ -49,9 +49,13 @@
   (.indexOf (all-globals program)
             (emit/constant value)))
 
-(defn index-of-variable [program name]
-  (.indexOf (map :name (all-globals program))
-            name))
+(defn index-of-variable
+  ([program name]
+   (.indexOf (map :name (all-globals program))
+             name))
+  ([program name not-found]
+   (let [index (index-of-variable program name)]
+     (if (= -1 index) not-found index))))
 
 (defn index-of-global [program global]
   (if (contains? global :name) ; TODO(Richo): This sucks!
