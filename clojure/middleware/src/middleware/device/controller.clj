@@ -100,12 +100,18 @@
   (swap! state assoc :debugger nil)
   (send [MSG_OUT_DEBUG_CONTINUE]))
 
-(defn set-global-report [global-number report?]
-  (swap! state update-in [:reporting :globals]
-         (if report? conj disj) global-number)
-  (send [MSG_OUT_SET_GLOBAL_REPORT
-         global-number
-         (if report? 1 0)]))
+(defn- get-global-number [global-name]
+  (program/index-of-variable (-> @state :program :running :compiled)
+                             global-name
+                             nil))
+
+(defn set-global-report [global-name report?]
+  (when-let [global-number (get-global-number global-name)]
+    (swap! state update-in [:reporting :globals]
+           (if report? conj disj) global-name)
+    (send [MSG_OUT_SET_GLOBAL_REPORT
+           global-number
+           (if report? 1 0)])))
 
 (defn set-pin-value [pin-name value]
   (let [pin-number (get-pin-number pin-name)]
