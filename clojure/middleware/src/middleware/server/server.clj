@@ -112,12 +112,12 @@
 
 (defn start-event-loop []
   (when (compare-and-set! event-loop? false true)
-    (a/go-loop [old-state (get-server-state)]
-      (a/<! (a/timeout 100))
-      (let [new-state (get-server-state)]
-        (when (not= old-state new-state)
-          (a/>! events {:type :update, :state new-state}))
-        (when @event-loop?
+    (a/go-loop [old-state nil]
+      (when @event-loop?
+        (let [new-state (get-server-state)]
+          (when (not= old-state new-state)
+            (a/>! events {:type :update, :state new-state}))
+          (a/<! (a/timeout 100))
           (recur new-state))))))
 
 (defn stop-event-loop []
