@@ -511,7 +511,8 @@
                 (remove-dead-code remove-dead-code?))
         compiled (compile ast (create-context))]
     {:ast ast
-     :compiled compiled}))
+     :compiled compiled
+     :src "\"TODO(Richo)\""}))
 
 (defn compile-json-string [str & args]
   (apply compile-tree (json/decode str) args))
