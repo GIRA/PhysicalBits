@@ -26,3 +26,14 @@
     (bit-and 16rFF
              (inc (bit-xor (Math/abs byte)
                            16rFF)))))
+
+(defn non-fraction [value]
+  (if (ratio? value)
+    (float value)
+    value))
+
+(defn try-integer [value]
+  (let [int-val (unchecked-int value)]
+    (if (= 0 (compare int-val value))
+      int-val
+      value)))
