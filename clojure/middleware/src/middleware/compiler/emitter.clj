@@ -1,4 +1,5 @@
-(ns middleware.compiler.emitter)
+(ns middleware.compiler.emitter
+  (:require [middleware.utils.conversions :refer :all]))
 
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
@@ -6,17 +7,18 @@
    :globals globals
    :scripts scripts})
 
-(defn- non-fraction [value]
-  (if (ratio? value)
-    (float value)
-    value))
+(def ^:private simplify
+  "Tries to reduce the value to its equivalent integer or float (ratios not allowed)"
+  (comp try-integer non-fraction))
 
 (defn variable
   ([name] (variable name 0))
-  ([name value] {:__class__ "UziVariable" :name name :value (non-fraction (or value 0))}))
+  ([name value] {:__class__ "UziVariable"
+                 :name name
+                 :value (simplify (or value 0))}))
 
 (defn constant [value]
-  {:__class__ "UziVariable" :value (non-fraction value)})
+  {:__class__ "UziVariable" :value (simplify value)})
 
 (defn script
   [& {:keys [name arguments delay running? locals instructions]
