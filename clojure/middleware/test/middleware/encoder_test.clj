@@ -244,3 +244,13 @@
   (let [expected [1 1 7 56 81 183 24 192 3 0]
         actual (encode "task b() running 19999999/s {}")]
     (is (= expected actual))))
+
+(deftest script-with-default-constant-written-as-float
+  (let [expected [1 0 144 1 1 0]
+        actual (encode "task b() running { var a = 1.0; }")]
+    (is (= expected actual))))
+
+(deftest script-with-small-constant-written-as-float
+  (let [expected [1 1 4 10 144 1 3 0]
+        actual (encode "task b() running { var a = 10.0; }")]
+    (is (= expected actual))))
