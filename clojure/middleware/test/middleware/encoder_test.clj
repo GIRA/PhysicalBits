@@ -239,3 +239,8 @@
                   131 162 131 162 131 162 131 162 131 162 131 162 131 162]
         actual (en/encode program)]
     (is (= expected actual))))
+
+(deftest script-with-large-ticking-rate
+  (let [expected [1 1 7 56 81 183 24 192 3 0]
+        actual (encode "task b() running 19999999/s {}")]
+    (is (= expected actual))))

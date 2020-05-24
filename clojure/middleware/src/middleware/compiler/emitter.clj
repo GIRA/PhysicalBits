@@ -6,12 +6,17 @@
    :globals globals
    :scripts scripts})
 
+(defn- non-fraction [value]
+  (if (ratio? value)
+    (float value)
+    value))
+
 (defn variable
   ([name] (variable name 0))
-  ([name value] {:__class__ "UziVariable" :name name :value (or value 0)}))
+  ([name value] {:__class__ "UziVariable" :name name :value (non-fraction (or value 0))}))
 
 (defn constant [value]
-  {:__class__ "UziVariable" :value value})
+  {:__class__ "UziVariable" :value (non-fraction value)})
 
 (defn script
   [& {:keys [name arguments delay running? locals instructions]
