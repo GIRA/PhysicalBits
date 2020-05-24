@@ -18,3 +18,8 @@
   (-> obj
       fix-invalid-floats
       json/generate-string))
+
+(defn decode [str]
+  (-> str
+      (json/parse-string true)
+      fix-invalid-floats))

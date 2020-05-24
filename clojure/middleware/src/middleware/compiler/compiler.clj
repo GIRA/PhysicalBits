@@ -1,6 +1,6 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
-  (:require [cheshire.core :refer [parse-string]]
+  (:require [middleware.utils.json :as json]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
             [middleware.compiler.utils.ast :as ast-utils]
@@ -513,8 +513,8 @@
     {:ast ast
      :compiled compiled}))
 
-(defn compile-json-string [str]
-  (compile-tree (parse-string str true)))
+(defn compile-json-string [str & args]
+  (apply compile-tree (json/decode str) args))
 
 (defn compile-uzi-string [str & args]
   (apply compile-tree (parser/parse str) args))
