@@ -60,13 +60,13 @@
   (json-response "OK"))
 
 (defn compile-handler [{:strs [src type silent]
-                        :or {type "uzi", silent true}}]
-  (let [program (device/compile src type silent)]
+                        :or {type "uzi", silent "true"}}]
+  (let [program (device/compile src type (= silent "true"))]
     (json-response program)))
 
 (defn run-handler [{:strs [src type silent]
-                    :or {type "uzi", silent true}}]
-  (let [program (device/compile src type silent)
+                    :or {type "uzi", silent "true"}}]
+  (let [program (device/compile src type (= silent "true"))
         bytes (device/run program)]
     (json-response program)))
 
