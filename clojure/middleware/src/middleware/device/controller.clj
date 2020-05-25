@@ -94,7 +94,7 @@
         program (update (apply compile-fn src args)
                         :compiled
                         program/sort-globals)
-        bytecodes (en/encode program)]
+        bytecodes (en/encode (:compiled program))]
     (swap! state assoc-in [:program :current] program)
     program))
 
