@@ -1,12 +1,16 @@
-(ns middleware.output.logger)
+(ns middleware.output.logger
+  (:refer-clojure :exclude [newline]))
 
-(def entries (atom []))
+(def ^:private entries* (atom []))
 
 (defn read-entries! []
-  (first (reset-vals! entries [])))
+  (let [[entries _] (reset-vals! entries* [])]
+    (doseq [entry entries]
+      (println entry))
+    entries))
 
 (defn- append [msg-type format-str args]
-  (swap! entries
+  (swap! entries*
          conj {:type msg-type
                :text format-str
                :args (mapv str args)}))
