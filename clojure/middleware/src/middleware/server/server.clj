@@ -13,7 +13,8 @@
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
-            [middleware.device.controller :as device])
+            [middleware.device.controller :as device]
+            [middleware.output.logger :as logger])
   (:gen-class))
 
 (def server (atom nil))
@@ -69,7 +70,7 @@
         bytes (device/run program)]
     (json-response program)))
 
-(defn- format-server-state [state]
+(defn- format-server-state [state output]
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
@@ -94,14 +95,15 @@
                        :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
                                                                   (:name global)))
                                           (-> state :globals vals))}
-             :output [] ; TODO(Richo): We need to handle the output differently
+             :output output
              :tasks (mapv (fn [s] {:scriptName (:name s)
                                    :isRunning (:running? s)
                                    :isError (:error? s)})
                           (:scripts state)))))
 
 (defn- get-server-state []
-  (format-server-state @device/state))
+  (format-server-state @device/state
+                       (logger/read-entries!)))
 
 (def ^:private updates (a/chan))
 (def ^:private updates-pub (a/pub updates :type))
