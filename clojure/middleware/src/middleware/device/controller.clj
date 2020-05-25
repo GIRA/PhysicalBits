@@ -10,7 +10,8 @@
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
-            [middleware.compiler.utils.program :as program]))
+            [middleware.compiler.utils.program :as program]
+            [middleware.output.logger :as logger]))
 
 ; TODO(Richo): Replace with log/error
 (defn- error [msg] (println "ERROR:" msg))
@@ -43,7 +44,8 @@
     (try
       (s/close! port)
       (catch Throwable e
-        (error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))))
+        (error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
+    (logger/error "Connection lost!")))
 
 (defn send [bytes]
   (when-let [port (@state :port)]
@@ -87,7 +89,7 @@
     (doseq [pin-name pins]
       (set-pin-report pin-name true))))
 
-(defn compile [src type silent & args]
+(defn compile [src type silent? & args]
   (let [compile-fn (case type
                      "json" cc/compile-json-string
                      "uzi" cc/compile-uzi-string)
@@ -95,6 +97,11 @@
                         :compiled
                         program/sort-globals)
         bytecodes (en/encode (:compiled program))]
+    (when-not silent?
+      (logger/newline)
+      (logger/log "Program size (bytes): %1" (count bytecodes))
+      (logger/log (str bytecodes))
+      (logger/success "Compilation successful!"))
     (swap! state assoc-in [:program :current] program)
     program))
 
@@ -130,15 +137,17 @@
   (s/write port [MSG_OUT_CONNECTION_REQUEST
                  MAJOR_VERSION
                  MINOR_VERSION])
-  (println "Requesting connection...")
+  (logger/log "Requesting connection...")
   ;(<!! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
   (when-let [n1 (<?? in 1000)]
     (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
       (s/write port n2)
       ;(<!! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
       (if (= n2 (<?? in 1000))
-        (println "Connection accepted!")
-        (println "Connection rejected")))))
+        (logger/success "Connection accepted!")
+        (do
+
+          (logger/error "Connection rejected"))))))
 
 (defn- keep-alive [port]
   (go-loop []
@@ -194,29 +203,38 @@
 
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
-            uzi (<! (read-uint32 in))]
-        (swap! state update-in [:memory]
-               (fn [_] {:arduino arduino
-                        :uzi uzi})))))
+            uzi (<! (read-uint32 in))
+            [old _] (swap-vals! state update :memory
+                                (fn [_] {:arduino arduino, :uzi uzi}))]
+        (when-not (= arduino (-> old :memory :arduino))
+          (logger/log "Free Arduino RAM: %1 bytes" arduino))
+        (when-not (= uzi (-> old :memory :uzi))
+          (logger/log "Free Uzi RAM: %1 bytes" uzi)))))
 
 (defn- process-script-state [i byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
         error-code (bit-and 2r01111111 byte)
-        error-msg (error-msg error-code)]
-    {:index i
-     :name (-> @state :program :running :compiled :scripts (get i) :name)
-     :running? running?
-     :error? (error? error-code)
-     :error-code error-code
-     :error-msg error-msg}))
+        error-msg (error-msg error-code)
+        script-name (-> @state :program :running :compiled :scripts (get i) :name)]
+    [script-name
+     {:index i
+      :name script-name
+      :running? running?
+      :error? (error? error-code)
+      :error-code error-code
+      :error-msg error-msg}]))
 
 (defn- process-running-scripts [in]
-  (go
-   (let [count (<? in)
-         values (map-indexed process-script-state
-                             (<! (read-vec? count in)))]
-     (swap! state assoc
-            :scripts values))))
+  (go (let [count (<? in)
+            tuples (map-indexed process-script-state
+                                (<! (read-vec? count in)))
+            [old new] (swap-vals! state assoc :scripts (into {} tuples))]
+        (doseq [script (filter :error? (sort-by :i (-> new :scripts vals)))]
+          (when-not (= (-> old :scripts (get (:name script)) :error-code)
+                       (:error-code script))
+            (logger/warning "%1 detected on script \"%2\". The script has been stopped."
+                            (:error-msg script)
+                            (:name script)))))))
 
 (defn- process-profile [in]
   (go (let [n1 (<? in)
@@ -242,8 +260,9 @@
 (defn- process-error [in]
   (go (let [error-code (<? in)]
         (when (> error-code 0)
-          (error (error-msg error-code)
-                 " has been detected. The program has been stopped")
+          (logger/newline)
+          (logger/warning "%1 detected. The program has been stopped"
+                          (error-msg error-code))
           (disconnect)))))
 
 (defn- process-trace [in]
@@ -252,7 +271,7 @@
         (println "TRACE:" msg))))
 
 (defn- process-serial-tunnel [in]
-  (go (println "SERIAL:" (<? in))))
+  (go (logger/log "SERIAL: %1" (<? in))))
 
 (defn- process-input [in]
   (go-loop []
@@ -268,7 +287,7 @@
               MSG_IN_ERROR (process-error in)
               MSG_IN_TRACE (process-trace in)
               MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
-              (go (println "UNRECOGNIZED:" cmd)))))
+              (go (logger/warning "Uzi - Invalid response code: %1" cmd)))))
       (recur))))
 
 (defn- clean-up-reports []
@@ -280,23 +299,34 @@
       (<! (timeout 1000))
       (recur))))
 
+(defn- open-port [port-name baud-rate]
+  (logger/newline)
+  (logger/log "Connecting on serial...")
+  (logger/log "Opening port: %1" port-name)
+  (try
+    (s/open port-name :baud-rate baud-rate)
+    (catch Exception e
+      (logger/error "Opening port failed!")
+      (println e) ; TODO(Richo): Exceptions should be logged but not sent to the client
+      nil)))
+
 (defn connect
   ([] (connect (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
                  :or {board UNO, baud-rate 57600}}]
    (if (connected?)
      (error "The board is already connected")
-     (let [port (s/open port-name :baud-rate baud-rate)
-           in (a/chan 1000)]
-       (s/listen! port #(>!! in (.read %)))
-       (request-connection port in)
-       (swap! state assoc
-              :port port
-              :port-name port-name
-              :connected? true
-              :board board)
-       (keep-alive port)
-       (process-input in)
-       (start-reporting)
-       (send-pins-reporting)
-       (clean-up-reports)))))
+     (when-let [port (open-port port-name baud-rate)]
+       (let [in (a/chan 1000)]
+         (s/listen! port #(>!! in (.read %)))
+         (request-connection port in)
+         (swap! state assoc
+                :port port
+                :port-name port-name
+                :connected? true
+                :board board)
+         (keep-alive port)
+         (process-input in)
+         (start-reporting)
+         (send-pins-reporting)
+         (clean-up-reports))))))

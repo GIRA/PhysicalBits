@@ -99,7 +99,7 @@
              :tasks (mapv (fn [s] {:scriptName (:name s)
                                    :isRunning (:running? s)
                                    :isError (:error? s)})
-                          (:scripts state)))))
+                          (-> state :scripts vals)))))
 
 (defn- get-server-state []
   (format-server-state @device/state
