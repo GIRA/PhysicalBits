@@ -16,12 +16,11 @@ class Simulator {
      this.pc = 0;
      this.locals = {};
      this.currentScript = null;
+     this.currentProgram = null;
+     this.yieldFlag = false;
 
      this.interval = null;
    };
-   
-
-  //simulator.pins.forEach((item) => console.log(item));
   
 
   getRandomInt(min, max){
@@ -30,7 +29,7 @@ class Simulator {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
   updateProgram() {
-    this.getProgram();
+    this.loadProgram(Uzi.state.program.current.compiled);
   }
   startProgram(speed){
     if (this.interval) return;
@@ -38,16 +37,94 @@ class Simulator {
   }
 
   executeProgram(){
-    if (this.currentScript.ticking) {
-      if (this.currentScript.nextRun < this.millis()) {
-          this.execute();
+    let lastTickStart = this.millis();
+    this.currentProgram.scripts.forEach((script) => {
+    if (script.ticking) {
+      if (script.nextRun < lastTickStart) {
+          this.executeScript(script);
+      }
+    }
+    });
+  }
+
+  executeScript(script){
+    this.contextSwitch(script);
+    while(true){
+      if(this.pc <= this.getInstructionStop()){
+        let instruction = this.getInstructionAt(this.pc);
+        this.pc++;
+        this.executeInstruction(instruction);
+      }
+      //TODO(Nico): Handle stack error
+      if(this.yieldFlag){
+        this.yieldFlag = false;
+        break;
+      }
+      if(this.pc > this.getInstructionStop()){
+        this.pc = this.getInstructionStart();
+        this.doReturn();
+        break;
       }
     }
   }
 
+  contextSwitch(newScript){
+    if(this.currentScript != newScript){
+      if(this.currentScript){
+        let vmState= {
+          pc : this.pc,
+          locals : this.locals,
+          //TODO: callStack : this.callStack,
+          stack :this.stack
+        };
+       this.currentScript.vmState = JSON.stringify(vmState);
+      }
+      this.currentScript = newScript;
+      if(newScript.vmState)
+      {
+        let vmState = JSON.parse(newScript.vmState);
+        this.pc = vmState.pc;
+        this.locals = vmState.locals;
+        this.stack = vmState.stack;
+      }else{
+        this.pc = this.getInstructionStart();
+      }
+    }
+  }
+
+  getInstructionStop(){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      ac += this.currentProgram.scripts[i].instructions.length;
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        break;
+      }
+    }
+    return ac - 1;
+  }
+
+  getInstructionStart(){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        break;
+      }
+      ac += this.currentProgram.scripts[i].instructions.length;
+    }
+    return ac;
+  }
+
+  getInstructionAt(pc){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        return this.currentScript.instructions[pc - ac];
+      }
+      ac += this.currentProgram.scripts[i].instructions.length;
+    }
+  }
+
   executeUntilBreakPoint(bkp, safeguard){
-    // TODO(Richo): El safeguard podría ser un parámetro optativo --> done
-    // TODO(Richo): Si sale por safeguard que levante una excepción así el caller se entera --> Done
     if(this.currentScript.ticking){
       if(true || this.currentScript.nextRun < this.millis()){
         let next;
@@ -71,9 +148,7 @@ class Simulator {
     }
   }
 
-  getProgram(){
-    return this.loadProgram(Uzi.state.program.current.compiled);
-  }
+  
 
   stopProgram(){
     if (!this.interval) return;
@@ -90,7 +165,7 @@ class Simulator {
     this.loadGlobals(program);
     this.loadScripts(program);
     this.startDate = new Date();
-    this.currentScript = program.scripts[0];     
+    this.currentProgram = program;
   }
 
   loadGlobals(program){
@@ -126,7 +201,6 @@ class Simulator {
   doReturn(){
       if(this.callStack.length==0){
         //TODO: Coroutine change
-          this.pc = 0;
           this.currentScript.nextRun = this.currentScript.lastStart + this.currentScript.delay.value;
           this.currentScript.lastStart = this.millis();
         }else{
@@ -204,6 +278,10 @@ class Simulator {
   }
 
   executeInstruction(instruction) {
+    if(instruction == undefined)
+    {
+      debugger;
+    }
     let argument = instruction.argument;
 
     switch (instruction.__class__) {

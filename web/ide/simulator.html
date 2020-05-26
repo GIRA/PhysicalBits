@@ -26,7 +26,7 @@
   $(document).ready(function () {
     Uzi.start().then(() => {
       console.log("Uzi started successfully!");
-      sim.getProgram();
+      sim.updateProgram();
     });
     g.drawCircles(svg,20,sim);
     g.createPins(sim);
