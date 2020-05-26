@@ -38,6 +38,11 @@
       sim.startProgram(750);
       g.showStats(sim,svg);
     }
+    function updateSpeed(value){
+      g.displaySpeed(value);
+      sim.stopProgram();
+      sim.startProgram(value);
+    }
   </script>
 
   <div class="left">
@@ -48,6 +53,12 @@
     <table id="pinsTable" class="pins">
       <caption>Pins</caption>
     </table>
+
+    <div>
+      <h1  class="texts">Simulator Speed</h1>
+      <input type="range" min="1" max="1500" value="750" class="slider" id="speedSlider" oninput="updateSpeed(this.value)">
+      <h1 id="speed" class="texts">750</h1>
+    </div>
   </div>
 
   <div class="right">

@@ -5,6 +5,7 @@ function ctorGraphics()
     createPins: createPins,
     showStats: showStats,
     createStackTable: createStackTable,
+    displaySpeed: displaySpeed
   };
   return graphics;
 }
@@ -65,7 +66,7 @@ function showStats(sim,target){
     updateStack(sim);
     updatePins(sim);
     showPc(sim);
-  }, 1);
+    }, 1);
 }
 
 function showGlobals(simulator){
@@ -135,4 +136,9 @@ function updatePins(simulator){
 function showPc(simulator){
   var s = document.getElementById("pc");
   s.textContent="PC: "+simulator.pc;
+}
+
+function displaySpeed(value){
+  var sliderValue = document.getElementById("speed");
+  sliderValue.textContent = value;
 }
