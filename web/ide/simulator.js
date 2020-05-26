@@ -32,9 +32,9 @@ class Simulator {
   updateProgram() {
     this.getProgram();
   }
-  startProgram(){
+  startProgram(speed){
     if (this.interval) return;
-    this.interval = setInterval(()=>this.executeProgram(), 1);
+    this.interval = setInterval(()=>this.executeProgram(), speed);
   }
 
   executeProgram(){
