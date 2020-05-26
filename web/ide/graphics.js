@@ -4,7 +4,7 @@ function ctorGraphics()
     drawCircles: drawCircles,
     createPins: createPins,
     showStats: showStats,
-    createStackTable: createStackTable
+    createStackTable: createStackTable,
   };
   return graphics;
 }
@@ -39,22 +39,33 @@ function drawCircles(target,radius, simulator) {
       }
     });
     setInterval(() => {
-       if(simulator.pins[i]>=0.5) {
-           c.setAttribute("fill", "#a6e369");
-       } else{
+      if(simulator.pins[i]>=0.5) {
+          c.setAttribute("fill", "#a6e369");
+      } else{
           c.setAttribute("fill", "#0e141b");
-       }
+      }
     }, 1);
   }
 }
+function createBoard(target){
+  var arduino_board = document.createElementNS('http://www.w3.org/2000/svg','image');
+  arduino_board.setAttributeNS(null,'height','300');
+  arduino_board.setAttributeNS(null,'width','300');
+  arduino_board.setAttributeNS('http://www.w3.org/1999/xlink','href', 'Arduino_uno_board.png');
+  arduino_board.setAttributeNS(null,'x','350');
+  arduino_board.setAttributeNS(null,'y','70');
+  arduino_board.setAttributeNS(null, 'visibility', 'visible');
+  target.appendChild(arduino_board);
+}
 
-function showStats(sim){
+function showStats(sim,target){
+  createBoard(target)
   setInterval(() => {
     showGlobals(sim);
     updateStack(sim);
-    updatePins(sim)
-    showPc(sim)
-    }, 1);
+    updatePins(sim);
+    showPc(sim);
+  }, 1);
 }
 
 function showGlobals(simulator){
@@ -76,7 +87,7 @@ function createGlobalsTable(simulator){
 function removeTable(idTable){
   var table = document.getElementById(idTable);
   for(let i=table.rows.length;i>0;i--){
-     table.deleteRow(i -1);
+    table.deleteRow(i -1);
   } 
 }
 
@@ -106,17 +117,18 @@ function createStackTable(){
 function createPins(simulator){
   var table = document.getElementById("pinsTable");
   for(let i=simulator.pins.length -1;i>=0;i--){
-      var row = table.insertRow(0);
-      var cell1= row.insertCell(0);
-      var cell2= row.insertCell(1);
-      cell1.textContent = 'Pin ' + i;
-      cell2.textContent = simulator.pins[i];
+    var row = table.insertRow(0);
+    var cell1= row.insertCell(0);
+    var cell2= row.insertCell(1);
+    cell1.textContent = 'Pin ' + i;
+    cell2.textContent = simulator.pins[i];
   }
 }
+
 function updatePins(simulator){
   var table = document.getElementById("pinsTable");
   for(let i=simulator.pins.length -1;i>=0;i--){
-      table.rows[i].cells[1].textContent= simulator.pins[i];
+    table.rows[i].cells[1].textContent= simulator.pins[i];
   }
 }
 
@@ -124,4 +136,3 @@ function showPc(simulator){
   var s = document.getElementById("pc");
   s.textContent="PC: "+simulator.pc;
 }
-
