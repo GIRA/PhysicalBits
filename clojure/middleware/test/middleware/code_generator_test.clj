@@ -172,3 +172,65 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest functions-with-calls-and-globals
+  (testing "A program with two functions that modify a global"
+    (let [expected "var global = 0;\nfunc forIncrease(from, to, by)\n{\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [{:__class__ "UziVariableDeclarationNode",
+                          :name "global",
+                          :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+               :scripts [{:__class__ "UziFunctionNode",
+                          :name "forIncrease",
+                          :arguments [{:__class__ "UziVariableDeclarationNode",
+                                       :name "from",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}
+                                      {:__class__ "UziVariableDeclarationNode",
+                                       :name "to",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}
+                                      {:__class__ "UziVariableDeclarationNode",
+                                       :name "by",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziForNode",
+                                               :counter {:__class__ "UziVariableDeclarationNode",
+                                                         :name "i",
+                                                         :value {:__class__ "UziNumberLiteralNode", :value 0}},
+                                               :start {:__class__ "UziVariableNode", :name "from"},
+                                               :stop {:__class__ "UziVariableNode", :name "to"},
+                                               :step {:__class__ "UziVariableNode", :name "by"},
+                                               :body {:__class__ "UziBlockNode",
+                                                      :statements [{:__class__ "UziAssignmentNode",
+                                                                    :left {:__class__ "UziVariableNode", :name "global"},
+                                                                    :right {:__class__ "UziCallNode",
+                                                                            :selector "+",
+                                                                            :arguments [{:__class__ "Association",
+                                                                                         :key nil,
+                                                                                         :value {:__class__ "UziVariableNode",
+                                                                                                 :name "global"}}
+                                                                                        {:__class__ "Association",
+                                                                                         :key nil,
+                                                                                         :value {:__class__ "UziNumberLiteralNode",
+                                                                                                 :value 1}}]}}]}}
+                                              {:__class__ "UziReturnNode", :value {:__class__ "UziVariableNode", :name "global"}}]}}
+                         {:__class__ "UziFunctionNode",
+                          :name "run",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziVariableDeclarationNode",
+                                               :name "temp",
+                                               :value {:__class__ "UziCallNode",
+                                                       :selector "forIncrease",
+                                                       :arguments [{:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 1}}
+                                                                   {:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 10}}
+                                                                   {:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 0.5}}]}}]}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))
