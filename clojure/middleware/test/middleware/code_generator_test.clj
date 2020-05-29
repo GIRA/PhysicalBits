@@ -113,3 +113,34 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest procedure-with-argument
+  (testing "A procedure with a single argument"
+    (let [expected "proc blink(arg0)\n{\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziProcedureNode",
+                          :name "blink",
+                          :arguments [{:__class__ "UziVariableDeclarationNode",
+                                       :name "arg0",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziCallNode",
+                                               :selector "turnOn",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziVariableNode", :name "arg0"}}]}
+                                              {:__class__ "UziCallNode",
+                                               :selector "delayS",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziNumberLiteralNode", :value 1}}]}
+                                              {:__class__ "UziCallNode",
+                                               :selector "turnOff",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziVariableNode", :name "arg0"}}]}]}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))

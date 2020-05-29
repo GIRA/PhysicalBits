@@ -18,6 +18,10 @@
                                                    (if (= "once" (:state node)) "" (str " " (:state node)))
                                                    (if (nil? (:tickingRate node)) "" (print-node (:tickingRate node)))
                                                    (print-node (:body node))))
+(defmethod print-node "UziProcedureNode" [node] (format "proc %s(%s)\n%s"
+                                                        (:name node)
+                                                        (clojure.string/join ", " (map :name (:arguments node)))
+                                                        (print-node (:body node))))
 
 (defmethod print-node "UziTickingRateNode" [node] (format " %d/%s" (:value node) (:scale node)))
 
@@ -30,5 +34,5 @@
                                                    (clojure.string/join ", " (map print-node (:arguments node)))))
 (defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) " : "))
                                                 (print-node (:value node))))
-
+(defmethod print-node "UziVariableNode" [node] (:name node))
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
