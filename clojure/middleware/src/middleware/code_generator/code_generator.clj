@@ -13,5 +13,7 @@
 (defmethod print-node "UziVariableDeclarationNode" [node] (format "var %s = %s;", (:name node) (print-node (:value node))))
 (defmethod print-node "UziNumberLiteralNode" [node] (str (:value node)))
 (defmethod print-node "UziPinLiteralNode" [node] (str (:type node) (:number node)))
-(defmethod print-node "UziTaskNode" [node] (format "task %s()\n{\n}" (:name node)))
+(defmethod print-node "UziTaskNode" [node] (format "task %s()%s\n{\n}"
+                                                   (:name node)
+                                                   (if (= "once" (:state node)) "" (str " " (:state node)))))
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
