@@ -60,3 +60,36 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest empty-script-stopped
+  (testing "An empty and stopped script without any statements "
+    (let [expected "task bar() stopped\n{\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "bar",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode", :statements []},
+                          :state "stopped",
+                          :tickingRate nil}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))
+
+(deftest empty-script-ticking
+  (testing "An empty ticking script without any statements "
+    (let [expected "task baz() running 3/s\n{\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "baz",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode", :statements []},
+                          :state "running",
+                          :tickingRate {:__class__ "UziTickingRateNode", :value 3, :scale "s"}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))
+
