@@ -95,7 +95,7 @@
 
 (deftest blink13
   (testing "The classic blink example"
-    (let [expected "task blink() running 1/s\n{\ntoggle(D13);}"
+    (let [expected "task blink() running 1/s\n{\ntoggle(D13);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],

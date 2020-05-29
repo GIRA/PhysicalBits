@@ -21,9 +21,10 @@
 
 (defmethod print-node "UziTickingRateNode" [node] (format " %d/%s" (:value node) (:scale node)))
 
-(defmethod print-node "UziBlockNode" [node] (format "{\n%s}" 
-                                                    (clojure.string/join "\n"
-                                                                         (map (fn [expr] (str expr ";"))
+(defmethod print-node "UziBlockNode" [node] (format "{\n%s}"
+                                                    (clojure.string/join
+                                                                         ;TODO(Tera): this is actually a good place to add tabs and indent code
+                                                                         (map (fn [expr] (str expr ";\n"))
                                                                               (map print-node (:statements node))))))
 (defmethod print-node "UziCallNode" [node] (format "%s(%s)"
                                                    (:selector node)
