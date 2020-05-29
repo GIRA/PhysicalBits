@@ -54,4 +54,13 @@
 (defmethod print-node "UziVariableNode" [node] (:name node))
 (defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
 
+(defmethod print-node "UziForNode" [node]
+  (format "for %s = %s to %s by %s\n%s"
+          (:name (:counter node))
+          (print-node (:start node))
+          (print-node (:stop node))
+          (print-node (:step node))
+          (print-node (:body node))))
+
+
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
