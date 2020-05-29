@@ -7,8 +7,9 @@
 
 (defmethod print-node "UziProgramNode" [node]
   (str
-    (clojure.string/join "\n" (map print-node (:globals node)))
-    (clojure.string/join "\n" (map print-node (:scripts node)))))
+    (clojure.string/join "\n" (concat
+                                (map print-node (:globals node))
+                                (map print-node (:scripts node))))))
 
 (defmethod print-node "UziVariableDeclarationNode" [node] (format "var %s = %s;", (:name node) (print-node (:value node))))
 (defmethod print-node "UziNumberLiteralNode" [node] (str (:value node)))
