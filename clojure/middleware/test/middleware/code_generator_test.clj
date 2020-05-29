@@ -20,13 +20,28 @@
       (is (= expected actual)))
     ))
 
-(deftest uninitialized-global
+(deftest uninitialized-global-declaration
   (testing "An uninitialized Global variable should be printed on top of the program with it's default value"
     (let [expected "var a = 0;"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [{:__class__ "UziVariableDeclarationNode",
                           :name "a", :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+               :scripts [],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))
+    ))
+
+(deftest multiple-global-declaration
+  (testing "Several global variables declared should be printed in the correct order and the defined value"
+    (let [expected "var a = 5;\nvar b = 3;\nvar c = 0.5;\nvar d = D13;"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [{:__class__ "UziVariableDeclarationNode", :name "a", :value {:__class__ "UziNumberLiteralNode", :value 5}}
+                         {:__class__ "UziVariableDeclarationNode", :name "b", :value {:__class__ "UziNumberLiteralNode", :value 3}}
+                         {:__class__ "UziVariableDeclarationNode", :name "c", :value {:__class__ "UziNumberLiteralNode", :value 0.5}}
+                         {:__class__ "UziVariableDeclarationNode", :name "d",:value {:__class__ "UziPinLiteralNode", :type "D", :number 13}}],
                :scripts [],
                :primitives []}
           actual (print ast)]
