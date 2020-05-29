@@ -16,6 +16,19 @@
                :globals [],
                :scripts [],
                :primitives []}
-          actual (print-program ast)]
+          actual (print ast)]
+      (is (= expected actual)))
+    ))
+
+(deftest uninitialized-global
+  (testing "An uninitialized Global variable should be printed on top of the program with it's default value"
+    (let [expected "var a = 0;"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [{:__class__ "UziVariableDeclarationNode",
+                          :name "a", :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+               :scripts [],
+               :primitives []}
+          actual (print ast)]
       (is (= expected actual)))
     ))
