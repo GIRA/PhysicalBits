@@ -18,21 +18,37 @@
                                                    (if (= "once" (:state node)) "" (str " " (:state node)))
                                                    (if (nil? (:tickingRate node)) "" (print-node (:tickingRate node)))
                                                    (print-node (:body node))))
+(defmethod print-node "UziFunctionNode" [node] (format "func %s(%s)\n%s"
+                                                        (:name node)
+                                                        (clojure.string/join ", " (map :name (:arguments node)))
+                                                        (print-node (:body node))))
 (defmethod print-node "UziProcedureNode" [node] (format "proc %s(%s)\n%s"
                                                         (:name node)
                                                         (clojure.string/join ", " (map :name (:arguments node)))
                                                         (print-node (:body node))))
-
 (defmethod print-node "UziTickingRateNode" [node] (format " %d/%s" (:value node) (:scale node)))
 
 (defmethod print-node "UziBlockNode" [node] (format "{\n%s}"
                                                     (clojure.string/join
                                                                          (map (fn [expr] (str "\t" expr ";\n"))
                                                                               (map print-node (:statements node))))))
-(defmethod print-node "UziCallNode" [node] (format "%s(%s)"
-                                                   (:selector node)
-                                                   (clojure.string/join ", " (map print-node (:arguments node)))))
+
+(defn print-binary-expression [node]
+  (format "(%s %s %s)"
+          (print-node (first (:arguments node)))
+          (:selector node)
+          (print-node (second (:arguments node)))))
+
+(defmethod print-node "UziCallNode" [node]
+  (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" (:selector node)))
+    ;non-binary
+    (format "%s(%s)"
+            (:selector node)
+            (clojure.string/join ", " (map print-node (:arguments node))))
+    (print-binary-expression node)    )  )
 (defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) " : "))
                                                 (print-node (:value node))))
 (defmethod print-node "UziVariableNode" [node] (:name node))
+(defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
+
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
