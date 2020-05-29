@@ -47,3 +47,20 @@
           actual (print ast)]
       (is (= expected actual)))
     ))
+
+(deftest empty-script-running-once
+  (testing "An empty script without any statements nor tickrate"
+    (let [expected "task foo()\n{\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "foo",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode", :statements []},
+                          :state "once",
+                          :tickingRate nil}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))
+    ))
