@@ -28,10 +28,12 @@
                                                         (print-node (:body node))))
 (defmethod print-node "UziTickingRateNode" [node] (format " %d/%s" (:value node) (:scale node)))
 
+(defn add-indent-level [lines]
+  (clojure.string/join (map (fn [line] (str "\t" line "\n")) (clojure.string/split-lines lines))))
 (defmethod print-node "UziBlockNode" [node] (format "{\n%s}"
-                                                    (clojure.string/join
-                                                                         (map (fn [expr] (str "\t" expr ";\n"))
-                                                                              (map print-node (:statements node))))))
+                                                    (add-indent-level(clojure.string/join
+                                                                         (map (fn [expr] (str expr ";\n"))
+                                                                              (map print-node (:statements node)))))))
 
 (defn print-binary-expression [node]
   (format "(%s %s %s)"
