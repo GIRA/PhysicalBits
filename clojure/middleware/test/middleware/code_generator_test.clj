@@ -17,8 +17,7 @@
                :scripts [],
                :primitives []}
           actual (print ast)]
-      (is (= expected actual)))
-    ))
+      (is (= expected actual)))))
 
 (deftest uninitialized-global-declaration
   (testing "An uninitialized Global variable should be printed on top of the program with it's default value"
@@ -30,8 +29,7 @@
                :scripts [],
                :primitives []}
           actual (print ast)]
-      (is (= expected actual)))
-    ))
+      (is (= expected actual)))))
 
 (deftest multiple-global-declaration
   (testing "Several global variables declared should be printed in the correct order and the defined value"
@@ -45,8 +43,7 @@
                :scripts [],
                :primitives []}
           actual (print ast)]
-      (is (= expected actual)))
-    ))
+      (is (= expected actual)))))
 
 (deftest empty-script-running-once
   (testing "An empty script without any statements nor tickrate"
@@ -62,5 +59,4 @@
                           :tickingRate nil}],
                :primitives []}
           actual (print ast)]
-      (is (= expected actual)))
-    ))
+      (is (= expected actual)))))
