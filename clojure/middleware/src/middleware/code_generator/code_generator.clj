@@ -20,6 +20,15 @@
                                                    (print-node (:body node))))
 
 (defmethod print-node "UziTickingRateNode" [node] (format " %d/%s" (:value node) (:scale node)))
-(defmethod print-node "UziBlockNode" [node] (format "{%s\n}" ""))
+
+(defmethod print-node "UziBlockNode" [node] (format "{\n%s}" 
+                                                    (clojure.string/join "\n"
+                                                                         (map (fn [expr] (str expr ";"))
+                                                                              (map print-node (:statements node))))))
+(defmethod print-node "UziCallNode" [node] (format "%s(%s)"
+                                                   (:selector node)
+                                                   (clojure.string/join ", " (map print-node (:arguments node)))))
+(defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) " : "))
+                                                (print-node (:value node))))
 
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))

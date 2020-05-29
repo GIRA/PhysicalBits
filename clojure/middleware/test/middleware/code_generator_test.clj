@@ -93,3 +93,23 @@
           actual (print ast)]
       (is (= expected actual)))))
 
+(deftest blink13
+  (testing "The classic blink example"
+    (let [expected "task blink() running 1/s\n{\ntoggle(D13);}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "blink",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziCallNode",
+                                               :selector "toggle",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziPinLiteralNode", :type "D", :number 13}}]}]},
+                          :state "running",
+                          :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))
