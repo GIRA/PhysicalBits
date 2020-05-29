@@ -61,6 +61,10 @@
           (print-node (:stop node))
           (print-node (:step node))
           (print-node (:body node))))
+(defmethod print-node "UziAssignmentNode" [node]
+  (format "%s = %s"
+          (print-node (:left node))
+          (print-node (:right node))))
 
 
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
