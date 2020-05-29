@@ -17,5 +17,5 @@
                :scripts [],
                :primitives []}
           actual (print-program ast)]
-      (is (equivalent? expected actual)))
+      (is (= expected actual)))
     ))
