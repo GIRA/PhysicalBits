@@ -4,6 +4,7 @@
             [middleware.server.server :as server :refer [server]]
             [middleware.compiler.compiler :as cc]
             [middleware.parser.parser :as pp]
+            [middleware.code_generator.code_generator :as cg]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl]
             [clojure.test :as ctest]
