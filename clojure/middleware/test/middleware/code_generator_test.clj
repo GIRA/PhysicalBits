@@ -175,7 +175,7 @@
 
 (deftest functions-with-calls-and-globals
   (testing "A program with two functions that modify a global"
-    (let [expected "var global = 0;\nfunc forIncrease(from, to, by)\n{\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
+    (let [expected "var global = 0;\nfunc forIncrease(from, to, by)\n{\n\tfor i = from to to by by\n\t{\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\nfunc run()\n{\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [{:__class__ "UziVariableDeclarationNode",

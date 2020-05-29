@@ -8,10 +8,10 @@
 (defmethod print-node "UziProgramNode" [node]
   (str
     (clojure.string/join "\n" (concat
-                                (map print-node (:globals node))
+                                (map (fn [node] (str (print-node node) ";")) (:globals node))
                                 (map print-node (:scripts node))))))
 
-(defmethod print-node "UziVariableDeclarationNode" [node] (format "var %s = %s;", (:name node) (print-node (:value node))))
+(defmethod print-node "UziVariableDeclarationNode" [node] (format "var %s = %s", (:name node) (print-node (:value node))))
 (defmethod print-node "UziNumberLiteralNode" [node] (str (:value node)))
 (defmethod print-node "UziPinLiteralNode" [node] (str (:type node) (:number node)))
 (defmethod print-node "UziTaskNode" [node] (format "task %s()%s%s\n%s"
@@ -33,8 +33,11 @@
   (clojure.string/join (map (fn [line] (str "\t" line "\n")) (filter (fn [line] (and (not= "\n" line) (not= "" line)) )
                                                                      (clojure.string/split-lines lines)))))
 (defmethod print-node "UziBlockNode" [node] (format "{\n%s}"
-                                                    (add-indent-level(clojure.string/join
-                                                                         (map (fn [expr] (str expr ";\n"))
+                                                    (add-indent-level(clojure.string/join "\n"
+                                                                         (map (fn [expr]
+                                                                                (if (clojure.string/ends-with? expr "}")
+                                                                                  expr
+                                                                                  (str expr ";")))
                                                                               (map print-node (:statements node)))))))
 
 (defn print-binary-expression [node]
