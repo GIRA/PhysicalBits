@@ -144,3 +144,31 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest function-with-arguments
+  (testing "A Function with two arguments and a return"
+    (let [expected "func default(arg0, arg1)\n{\n\treturn (arg0 % arg1);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziFunctionNode",
+                          :name "default",
+                          :arguments [{:__class__ "UziVariableDeclarationNode",
+                                       :name "arg0",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}
+                                      {:__class__ "UziVariableDeclarationNode",
+                                       :name "arg1",
+                                       :value {:__class__ "UziNumberLiteralNode", :value 0}}],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziReturnNode",
+                                               :value {:__class__ "UziCallNode",
+                                                       :selector "%",
+                                                       :arguments [{:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziVariableNode", :name "arg0"}}
+                                                                   {:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziVariableNode", :name "arg1"}}]}}]}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))
