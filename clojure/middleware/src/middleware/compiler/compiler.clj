@@ -7,7 +7,8 @@
             [middleware.compiler.emitter :as emit]
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
-            [middleware.compiler.dead-code-remover :as dcr]))
+            [middleware.compiler.dead-code-remover :as dcr]
+            [middleware.code_generator.code_generator :as codegen]))
 
 (defmulti compile-node :__class__)
 
@@ -511,11 +512,15 @@
                 (remove-dead-code remove-dead-code?))
         compiled (compile ast (create-context))]
     {:ast ast
-     :compiled compiled
-     :src "\"TODO(Richo)\""}))
+     :compiled compiled}))
 
+; TODO(Richo): This function should not be in the compiler
 (defn compile-json-string [str & args]
-  (apply compile-tree (json/decode str) args))
+  (let [ast (json/decode str)]
+    (assoc (apply compile-tree ast args)
+           :src (codegen/print ast))))
 
+; TODO(Richo): This function should not be in the compiler
 (defn compile-uzi-string [str & args]
-  (apply compile-tree (parser/parse str) args))
+  (assoc (apply compile-tree (parser/parse str) args)
+         :src str))
