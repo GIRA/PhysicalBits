@@ -4,6 +4,10 @@
 (defmulti print-node :__class__)
 
 (defn print [node] (print-node node))
+(defn print-optative-block [block]
+  (if (= 0 (count (:statements block)))
+    ";"
+    (str "\n" (print-node block))))
 
 (defmethod print-node "UziProgramNode" [node]
   (str
@@ -35,7 +39,8 @@
 (defmethod print-node "UziBlockNode" [node] (format "{\n%s}"
                                                     (add-indent-level(clojure.string/join "\n"
                                                                          (map (fn [expr]
-                                                                                (if (clojure.string/ends-with? expr "}")
+                                                                                (if (or (clojure.string/ends-with? expr "}")
+                                                                                        (clojure.string/ends-with? expr ";"))
                                                                                   expr
                                                                                   (str expr ";")))
                                                                               (map print-node (:statements node)))))))
@@ -59,12 +64,34 @@
 (defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
 
 (defmethod print-node "UziForNode" [node]
-  (format "for %s = %s to %s by %s\n%s"
+  (format "for %s = %s to %s by %s%s"
           (:name (:counter node))
           (print-node (:start node))
           (print-node (:stop node))
           (print-node (:step node))
+          (print-optative-block (:body node))))
+(defmethod print-node "UziWhileNode" [node]
+  (format "while %s%s"
+          (print-node (:condition node))
+          (print-optative-block (:post node))))
+(defmethod print-node "UziUntilNode" [node]
+  (format "until %s%s"
+          (print-node (:condition node))
+          (print-optative-block (:post node))))
+(defmethod print-node "UziForeverNode" [node]
+  (format "forever%s"
+          (print-optative-block (:body node))))
+(defmethod print-node "UziRepeatNode" [node]
+  (format "repeat %s\n%s"
+          (print-node (:times node))
           (print-node (:body node))))
+(defmethod print-node "UziConditionalNode" [node]
+  (let [trueBranch (format "if %s\n%s"
+                           (print-node (:condition node))
+                           (print-node (:trueBranch node)))]
+    (if (= 0 (-> node :falseBranch :statements count))
+      trueBranch
+      (str trueBranch "\nelse\n" (print-node (:falseBranch node))))))
 (defmethod print-node "UziAssignmentNode" [node]
   (format "%s = %s"
           (print-node (:left node))
