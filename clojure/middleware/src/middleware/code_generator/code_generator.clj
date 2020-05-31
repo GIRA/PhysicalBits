@@ -50,19 +50,25 @@
                                                                                   (str expr ";")))
                                                                               (map print-node (:statements node)))))))
 
-(defn print-binary-expression [node]
-  (format "(%s %s %s)"
+(defn print-operator-expression [node]
+  (if (= 1 (-> node :arguments count))
+    ;unary
+    (format "(%s%s)"
+            (:selector node)
+            (print-node (first (:arguments node))))
+    ;binary
+    (format "(%s %s %s)"
           (print-node (first (:arguments node)))
           (:selector node)
-          (print-node (second (:arguments node)))))
+          (print-node (second (:arguments node))))))
 
 (defmethod print-node "UziCallNode" [node]
   (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" (:selector node)))
-    ;non-binary
+    ;non-operator
     (format "%s(%s)"
             (:selector node)
             (clojure.string/join ", " (map print-node (:arguments node))))
-    (print-binary-expression node)    )  )
+    (print-operator-expression node)    )  )
 (defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) ": "))
                                                 (print-node (:value node))))
 (defmethod print-node "UziVariableNode" [node] (:name node))
@@ -110,6 +116,11 @@
   (format "%s = %s"
           (print-node (:left node))
           (print-node (:right node))))
-
+(defmethod print-node "UziScriptStartNode" [node]
+  (format "start %s"
+          (clojure.string/join ", " (:scripts node))))
+(defmethod print-node "UziScriptStopNode" [node]
+  (format "stop %s"
+          (clojure.string/join ", " (:scripts node))))
 
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
