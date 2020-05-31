@@ -47,7 +47,7 @@
 
 (deftest empty-script-running-once
   (testing "An empty script without any statements nor tickrate"
-    (let [expected "task foo()\n{\n}"
+    (let [expected "task foo() {\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -63,7 +63,7 @@
 
 (deftest empty-script-stopped
   (testing "An empty and stopped script without any statements "
-    (let [expected "task bar() stopped\n{\n}"
+    (let [expected "task bar() stopped {\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -79,7 +79,7 @@
 
 (deftest empty-script-ticking
   (testing "An empty ticking script without any statements "
-    (let [expected "task baz() running 3/s\n{\n}"
+    (let [expected "task baz() running 3/s {\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -95,7 +95,7 @@
 
 (deftest blink13
   (testing "The classic blink example"
-    (let [expected "task blink() running 1/s\n{\n\ttoggle(D13);\n}"
+    (let [expected "task blink() running 1/s {\n\ttoggle(D13);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -116,7 +116,7 @@
 
 (deftest procedure-with-argument
   (testing "A procedure with a single argument"
-    (let [expected "proc blink(arg0)\n{\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
+    (let [expected "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -147,7 +147,7 @@
 
 (deftest function-with-arguments
   (testing "A Function with two arguments and a return"
-    (let [expected "func default(arg0, arg1)\n{\n\treturn (arg0 % arg1);\n}"
+    (let [expected "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -175,7 +175,7 @@
 
 (deftest functions-with-calls-and-globals
   (testing "A program with two functions that modify a global"
-    (let [expected "var global = 0;\nfunc forIncrease(from, to, by)\n{\n\tfor i = from to to by by\n\t{\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\nfunc run()\n{\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
+    (let [expected "var global = 0;\nfunc forIncrease(from, to, by) {\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [{:__class__ "UziVariableDeclarationNode",
@@ -238,7 +238,7 @@
 
 (deftest control-structures
   (testing "Several tasks with the main control structures on them"
-    (let [expected "task while_loop()\n{\n\twhile 1\n\t{\n\t\twhile 1;\n\t}\n}\ntask until_loop()\n{\n\tuntil 1\n\t{\n\t\tuntil 1;\n\t}\n}\ntask repeat_forever()\n{\n\tforever\n\t{\n\t\trepeat 5\n\t\t{\n\t\t}\n\t}\n}\ntask conditional()\n{\n\tif 1\n\t{\n\t\tif 0\n\t\t{\n\t\t\tdelayS(1000);\n\t\t}\n\t}\n\telse\n\t{\n\t\tdelayMs(1000);\n\t}\n}"
+    (let [expected "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {\n\t\t}\n\t}\n}\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
