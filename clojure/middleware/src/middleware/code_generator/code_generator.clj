@@ -80,7 +80,10 @@
 (defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) ": "))
                                                 (print-node (:value node))))
 (defmethod print-node "UziVariableNode" [node] (:name node))
-(defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
+(defmethod print-node "UziReturnNode" [node]
+  (if (nil? (:value node))
+    "return"
+    (format "return %s" (print-node (:value node)))))
 (defmethod print-node "UziYieldNode" [node] "yield")
 
 (defmethod print-node "UziForNode" [node]
@@ -130,5 +133,19 @@
 (defmethod print-node "UziScriptStopNode" [node]
   (format "stop %s"
           (clojure.string/join ", " (:scripts node))))
+(defmethod print-node "UziScriptPauseNode" [node]
+  (format "pause %s"
+          (clojure.string/join ", " (:scripts node))))
+(defmethod print-node "UziScriptResumeNode" [node]
+  (format "resume %s"
+          (clojure.string/join ", " (:scripts node))))
 
+(defmethod print-node "UziLogicalAndNode" [node]
+  (format "(%s && %s)"
+          (print-node (:left node))
+          (print-node (:right node))))
+(defmethod print-node "UziLogicalOrNode" [node]
+  (format "(%s || %s)"
+          (print-node (:left node))
+          (print-node (:right node))))
 (defmethod print-node :default [arg] (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)) )))
