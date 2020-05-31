@@ -507,3 +507,41 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest primitive-definition
+  (testing "Creating a few primitives"
+    (let [expected "prim add;\nprim ~= : notEquals;\ntask test() {\n\tvar a = add(3, 4);\n\tvar b = (3 ~= 4);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "test",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziVariableDeclarationNode",
+                                               :name "a",
+                                               :value {:__class__ "UziCallNode",
+                                                       :selector "add",
+                                                       :arguments [{:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 3}}
+                                                                   {:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 4}}]}}
+                                              {:__class__ "UziVariableDeclarationNode",
+                                               :name "b",
+                                               :value {:__class__ "UziCallNode",
+                                                       :selector "~=",
+                                                       :arguments [{:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 3}}
+                                                                   {:__class__ "Association",
+                                                                    :key nil,
+                                                                    :value {:__class__ "UziNumberLiteralNode", :value 4}}]}}]},
+                          :state "once",
+                          :tickingRate nil}],
+               :primitives [{:__class__ "UziPrimitiveDeclarationNode", :alias "add", :name "add"}
+                            {:__class__ "UziPrimitiveDeclarationNode", :alias "~=", :name "notEquals"}]}
+
+          actual (print ast)]
+      (is (= expected actual)))))

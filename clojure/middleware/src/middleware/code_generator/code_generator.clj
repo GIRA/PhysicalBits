@@ -12,9 +12,17 @@
 (defmethod print-node "UziProgramNode" [node]
   (str
     (clojure.string/join "\n" (concat
+                                (map print-node (:primitives node))
                                 (map print-node (:imports node))
                                 (map (fn [node] (str (print-node node) ";")) (:globals node))
                                 (map print-node (:scripts node))))))
+(defmethod print-node "UziPrimitiveDeclarationNode" [node]
+  (format "prim %s;"
+          (if (= (:alias node) (:name node))
+            (:alias node)
+            (format "%s : %s"
+                    (:alias node)
+                    (:name node)))))
 (defmethod print-node "UziImportNode" [node]
   (format "import %s from '%s'%s"
           (:alias node)
