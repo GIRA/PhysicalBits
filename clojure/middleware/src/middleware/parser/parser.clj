@@ -66,7 +66,7 @@
                             "&&" (logical-and-node left right)
                             "||" (logical-or-node left right)
                             (binary-expression-node left op right)))
-   :not                 (fn [& arg] (call-node "!" (map #(arg-node %) arg)))
+   :not                 (fn [& arg] (call-node "!" (vec (map #(arg-node %) arg))))
    :yield               yield-node
    :import              (fn [& args]
                           (let [path (first (filter #(= (first %) :importPath) args))
