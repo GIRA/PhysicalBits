@@ -347,3 +347,87 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest motor-usage
+  (testing "Two tasks that operate a servo and a DC. This has some imports"
+    (let [expected "import motor from 'DCMotor.uzi' {\n\tenablePin = D10;\n\tforwardPin = D9;\n\treversePin = D8;\n}\ntask servo() {\n\tforever {\n\t\tsetServoDegrees(D3, 90);\n\t\tdelayMs(1000);\n\t\tsetServoDegrees(D3, 0);\n\t\tdelayMs(1000);\n\t}\n}\ntask default1() running 20/m {\n\tmotor.forward(speed: 1);\n\tdelayMs(1000);\n\tmotor.brake();\n\tdelayMs(1000);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [{:__class__ "UziImportNode",
+                          :alias "motor",
+                          :path "DCMotor.uzi",
+                          :initializationBlock {:__class__ "UziBlockNode",
+                                                :statements [{:__class__ "UziAssignmentNode",
+                                                              :left {:__class__ "UziVariableNode", :name "enablePin"},
+                                                              :right {:__class__ "UziPinLiteralNode", :type "D", :number 10}}
+                                                             {:__class__ "UziAssignmentNode",
+                                                              :left {:__class__ "UziVariableNode", :name "forwardPin"},
+                                                              :right {:__class__ "UziPinLiteralNode", :type "D", :number 9}}
+                                                             {:__class__ "UziAssignmentNode",
+                                                              :left {:__class__ "UziVariableNode", :name "reversePin"},
+                                                              :right {:__class__ "UziPinLiteralNode", :type "D", :number 8}}]}}],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "servo",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziForeverNode",
+                                               :body {:__class__ "UziBlockNode",
+                                                      :statements [{:__class__ "UziCallNode",
+                                                                    :selector "setServoDegrees",
+                                                                    :arguments [{:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziPinLiteralNode",
+                                                                                         :type "D",
+                                                                                         :number 3}}
+                                                                                {:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziNumberLiteralNode", :value 90}}]}
+                                                                   {:__class__ "UziCallNode",
+                                                                    :selector "delayMs",
+                                                                    :arguments [{:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziNumberLiteralNode",
+                                                                                         :value 1000}}]}
+                                                                   {:__class__ "UziCallNode",
+                                                                    :selector "setServoDegrees",
+                                                                    :arguments [{:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziPinLiteralNode",
+                                                                                         :type "D",
+                                                                                         :number 3}}
+                                                                                {:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziNumberLiteralNode", :value 0}}]}
+                                                                   {:__class__ "UziCallNode",
+                                                                    :selector "delayMs",
+                                                                    :arguments [{:__class__ "Association",
+                                                                                 :key nil,
+                                                                                 :value {:__class__ "UziNumberLiteralNode",
+                                                                                         :value 1000}}]}]}}]},
+                          :state "once",
+                          :tickingRate nil}
+                         {:__class__ "UziTaskNode",
+                          :name "default1",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziCallNode",
+                                               :selector "motor.forward",
+                                               :arguments [{:__class__ "Association",
+                                                            :key "speed",
+                                                            :value {:__class__ "UziNumberLiteralNode", :value 1}}]}
+                                              {:__class__ "UziCallNode",
+                                               :selector "delayMs",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziNumberLiteralNode", :value 1000}}]}
+                                              {:__class__ "UziCallNode", :selector "motor.brake", :arguments []}
+                                              {:__class__ "UziCallNode",
+                                               :selector "delayMs",
+                                               :arguments [{:__class__ "Association",
+                                                            :key nil,
+                                                            :value {:__class__ "UziNumberLiteralNode", :value 1000}}]}]},
+                          :state "running",
+                          :tickingRate {:__class__ "UziTickingRateNode", :value 20, :scale "m"}}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))

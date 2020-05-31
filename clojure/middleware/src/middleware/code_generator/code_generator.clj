@@ -12,9 +12,14 @@
 (defmethod print-node "UziProgramNode" [node]
   (str
     (clojure.string/join "\n" (concat
+                                (map print-node (:imports node))
                                 (map (fn [node] (str (print-node node) ";")) (:globals node))
                                 (map print-node (:scripts node))))))
-
+(defmethod print-node "UziImportNode" [node]
+  (format "import %s from '%s'%s"
+          (:alias node)
+          (:path node)
+          (print-optative-block (:initializationBlock node))))
 (defmethod print-node "UziVariableDeclarationNode" [node] (format "var %s = %s", (:name node) (print-node (:value node))))
 (defmethod print-node "UziNumberLiteralNode" [node] (str (:value node)))
 (defmethod print-node "UziPinLiteralNode" [node] (str (:type node) (:number node)))
@@ -58,7 +63,7 @@
             (:selector node)
             (clojure.string/join ", " (map print-node (:arguments node))))
     (print-binary-expression node)    )  )
-(defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) " : "))
+(defmethod print-node "Association" [node] (str (if (nil? (:key node)) "" (str (:key node) ": "))
                                                 (print-node (:value node))))
 (defmethod print-node "UziVariableNode" [node] (:name node))
 (defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
