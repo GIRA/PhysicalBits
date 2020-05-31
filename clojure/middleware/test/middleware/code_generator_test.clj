@@ -314,3 +314,36 @@
                :primitives []}
           actual (print ast)]
       (is (= expected actual)))))
+
+(deftest control-structures-part-II
+  (testing "A task with a do while, do until and a yield"
+    (let [expected "task test() {\n\tdo {\n\t\tvar a = 3;\n\t} until(1);\n\tdo {\n\t\tvar a = 4;\n\t\tyield;\n\t} while(1);\n}"
+          ast {:__class__ "UziProgramNode",
+               :imports [],
+               :globals [],
+               :scripts [{:__class__ "UziTaskNode",
+                          :name "test",
+                          :arguments [],
+                          :body {:__class__ "UziBlockNode",
+                                 :statements [{:__class__ "UziDoUntilNode",
+                                               :pre {:__class__ "UziBlockNode",
+                                                     :statements [{:__class__ "UziVariableDeclarationNode",
+                                                                   :name "a",
+                                                                   :value {:__class__ "UziNumberLiteralNode", :value 3}}]},
+                                               :condition {:__class__ "UziNumberLiteralNode", :value 1},
+                                               :post {:__class__ "UziBlockNode", :statements []},
+                                               :negated true}
+                                              {:__class__ "UziDoWhileNode",
+                                               :pre {:__class__ "UziBlockNode",
+                                                     :statements [{:__class__ "UziVariableDeclarationNode",
+                                                                   :name "a",
+                                                                   :value {:__class__ "UziNumberLiteralNode", :value 4}}
+                                                                  {:__class__ "UziYieldNode"}]},
+                                               :condition {:__class__ "UziNumberLiteralNode", :value 1},
+                                               :post {:__class__ "UziBlockNode", :statements []},
+                                               :negated false}]},
+                          :state "once",
+                          :tickingRate nil}],
+               :primitives []}
+          actual (print ast)]
+      (is (= expected actual)))))

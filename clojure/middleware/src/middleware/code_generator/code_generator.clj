@@ -62,6 +62,7 @@
                                                 (print-node (:value node))))
 (defmethod print-node "UziVariableNode" [node] (:name node))
 (defmethod print-node "UziReturnNode" [node] (format "return %s" (print-node (:value node))))
+(defmethod print-node "UziYieldNode" [node] "yield")
 
 (defmethod print-node "UziForNode" [node]
   (format "for %s = %s to %s by %s%s"
@@ -74,10 +75,18 @@
   (format "while %s%s"
           (print-node (:condition node))
           (print-optative-block (:post node))))
+(defmethod print-node "UziDoWhileNode" [node]
+  (format "do %s while(%s)"
+          (print-node (:pre node))
+          (print-node (:condition node))))
 (defmethod print-node "UziUntilNode" [node]
   (format "until %s%s"
           (print-node (:condition node))
           (print-optative-block (:post node))))
+(defmethod print-node "UziDoUntilNode" [node]
+  (format "do %s until(%s)"
+          (print-node (:pre node))
+          (print-node (:condition node))))
 (defmethod print-node "UziForeverNode" [node]
   (format "forever%s"
           (print-optative-block (:body node))))
