@@ -87,12 +87,12 @@
 (defmethod print-node "UziYieldNode" [node] "yield")
 
 (defmethod print-node "UziForNode" [node]
-  (format "for %s = %s to %s by %s%s"
+  (format "for %s = %s to %s by %s %s"
           (:name (:counter node))
           (print-node (:start node))
           (print-node (:stop node))
           (print-node (:step node))
-          (print-optative-block (:body node))))
+          (print-node (:body node))))
 (defmethod print-node "UziWhileNode" [node]
   (format "while %s%s"
           (print-node (:condition node))
@@ -110,8 +110,8 @@
           (print-node (:pre node))
           (print-node (:condition node))))
 (defmethod print-node "UziForeverNode" [node]
-  (format "forever%s"
-          (print-optative-block (:body node))))
+  (format "forever %s"
+          (print-node (:body node))))
 (defmethod print-node "UziRepeatNode" [node]
   (format "repeat %s %s"
           (print-node (:times node))
