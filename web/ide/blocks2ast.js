@@ -110,7 +110,7 @@ let BlocksToAST = (function () {
 				__class__: "UziVariableDeclarationNode",
 				id: id,
 				name: name,
-				value: value
+				value: value || builder.number(id, 0)
 			};
 		},
 		for: function (id, counterName, start, stop, step, statements) {
