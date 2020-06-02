@@ -75,14 +75,16 @@
                          (str/split-lines lines)))))
 
 (defmethod print-node "UziBlockNode" [node]
-  (format "{\n%s}"
-          (add-indent-level (str/join "\n"
-                                      (map (fn [expr]
-                                             (if (or (str/ends-with? expr "}")
-                                                     (str/ends-with? expr ";"))
-                                               expr
-                                               (str expr ";")))
-                                           (map print-node (:statements node)))))))
+  (if (empty? (:statements node))
+    "{}"
+    (format "{\n%s}"
+            (add-indent-level (str/join "\n"
+                                        (map (fn [expr]
+                                               (if (or (str/ends-with? expr "}")
+                                                       (str/ends-with? expr ";"))
+                                                 expr
+                                                 (str expr ";")))
+                                             (map print-node (:statements node))))))))
 
 (defn print-operator-expression [node]
   (if (= 1 (-> node :arguments count))

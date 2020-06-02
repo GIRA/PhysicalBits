@@ -48,7 +48,7 @@
 
 (deftest empty-script-running-once
   (testing "An empty script without any statements nor tickrate"
-    (let [expected "task foo() {\n}"
+    (let [expected "task foo() {}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -64,7 +64,7 @@
 
 (deftest empty-script-stopped
   (testing "An empty and stopped script without any statements "
-    (let [expected "task bar() stopped {\n}"
+    (let [expected "task bar() stopped {}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -80,7 +80,7 @@
 
 (deftest empty-script-ticking
   (testing "An empty ticking script without any statements "
-    (let [expected "task baz() running 3/s {\n}"
+    (let [expected "task baz() running 3/s {}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
@@ -239,7 +239,7 @@
 
 (deftest control-structures
   (testing "Several tasks with the main control structures on them"
-    (let [expected "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {\n\t\t}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}"
+    (let [expected "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}"
           ast {:__class__ "UziProgramNode",
                :imports [],
                :globals [],
