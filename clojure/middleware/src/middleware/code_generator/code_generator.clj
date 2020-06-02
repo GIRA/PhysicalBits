@@ -11,12 +11,11 @@
     (str " " (print-node block))))
 
 (defmethod print-node "UziProgramNode" [node]
-  (str
-   (str/join "\n" (concat
-                   (map print-node (:imports node))
-                   (map (fn [node] (str (print-node node) ";")) (:globals node))
-                   (map print-node (:primitives node))
-                   (map print-node (:scripts node))))))
+  (str/join "\n" (concat
+                  (map print-node (:imports node))
+                  (map (fn [node] (str (print-node node) ";")) (:globals node))
+                  (map print-node (:primitives node))
+                  (map print-node (:scripts node)))))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [node]
   (format "prim %s;"
