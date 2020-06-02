@@ -19,7 +19,7 @@
              (interpose "\n\n"
                         (remove-empty
                          (interpose "\n" (map print-node (:imports node)))
-                         (interpose "\n" (map (fn [node] (str (print-node node) ";")) (:globals node)))
+                         (interpose "\n" (map print-node (:globals node)))
                          (interpose "\n" (map print-node (:primitives node)))
                          (interpose "\n\n" (map print-node (:scripts node))))))))
 
@@ -38,7 +38,7 @@
           (print-optative-block (:initializationBlock node))))
 
 (defmethod print-node "UziVariableDeclarationNode" [node]
-  (format "var %s = %s", (:name node) (print-node (:value node))))
+  (format "var %s = %s;", (:name node) (print-node (:value node))))
 
 (defmethod print-node "UziNumberLiteralNode" [node]
   (str (:value node)))
