@@ -1,7 +1,7 @@
 (ns middleware.code-generator-test
   (:refer-clojure :exclude [print])
   (:require [clojure.test :refer :all]
-            [middleware.code_generator.code_generator :refer :all ])
+            [middleware.code-generator.code-generator :refer :all ])
   (:use [middleware.test-utils]))
 
 

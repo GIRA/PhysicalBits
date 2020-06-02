@@ -8,7 +8,7 @@
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
             [middleware.compiler.dead-code-remover :as dcr]
-            [middleware.code_generator.code_generator :as codegen]))
+            [middleware.code-generator.code-generator :as codegen]))
 
 (defmulti compile-node :__class__)
 
