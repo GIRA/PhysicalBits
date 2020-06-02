@@ -191,14 +191,24 @@ let BlocksToAST = (function () {
 				body: builder.block(id, statements)
 			};
 		},
-		while: function (id, condition, statements, negated) {
+		while: function (id, condition, statements) {
 			return {
 				__class__: "UziWhileNode",
 				id: id,
 				pre: builder.block(id, []),
 				condition: condition,
 				post: builder.block(id, statements),
-				negated: negated
+				negated: false
+			};
+		},
+		until: function (id, condition, statements) {
+			return {
+				__class__: "UziUntilNode",
+				id: id,
+				pre: builder.block(id, []),
+				condition: condition,
+				post: builder.block(id, statements),
+				negated: true
 			};
 		},
 		assignment: function (id, name, value) {
@@ -575,7 +585,11 @@ let BlocksToAST = (function () {
 			let condition = generateCodeForValue(block, ctx, "condition");
 			let statements = [];
 			generateCodeForStatements(block, ctx, "statements", statements);
-			stream.push(builder.while(id, condition, statements, negated));
+			if (negated) {
+				stream.push(builder.until(id, condition, statements));
+			} else {
+				stream.push(builder.while(id, condition, statements));	
+			}
 		},
 		is_pin_variable: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -588,7 +602,11 @@ let BlocksToAST = (function () {
 			let id = XML.getId(block);
 			let negated = XML.getChildNode(block, "negate").innerText === "true";
 			let condition = generateCodeForValue(block, ctx, "condition");
-			stream.push(builder.while(id, condition, [], negated));
+			if (negated) {
+				stream.push(builder.until(id, condition, []));
+			} else {
+				stream.push(builder.while(id, condition, []));
+			}
 		},
 		number_modulo: function (block, ctx, stream) {
 			let id = XML.getId(block);
