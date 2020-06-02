@@ -1,4 +1,5 @@
 (ns middleware.code_generator.code_generator
+  (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]))
 
 (defmulti print-node :__class__)
