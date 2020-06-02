@@ -36,6 +36,26 @@ class Simulator {
     this.interval = setInterval(()=>this.executeProgram(), speed);
   }
 
+  execute() {
+    let instruction = this.next();
+    if(instruction == undefined) {
+      throw "undefined found as instruction" ;
+      this.pc=0;
+    }
+    this.executeInstruction(instruction);
+  }
+
+  next() {
+    if(this.pc >= this.currentScript.instructions.length) //TODO: fix this 
+    //Fix the ticks thing. The loop goes instruction per instruction but ir needs to go tick per tick now
+    {
+      this.doReturn();
+      return this.next();
+    }
+    var result = this.currentScript.instructions[(this.pc++)];
+    return result;
+  }
+
   executeProgram(){
     let lastTickStart = this.millis();
     this.currentProgram.scripts.forEach((script) => {
@@ -91,6 +111,30 @@ class Simulator {
       }
     }
   }
+  
+  executeUntilBreakPoint(bkp, safeguard){
+    if(this.currentScript.ticking){
+      if(true || this.currentScript.nextRun < this.millis()){
+        let next;
+        do {
+          safeguard--;
+
+          next = this.currentScript.instructions[this.pc];
+          if (next.breakpoint == bkp) {
+            break;
+          } else {
+            this.executeInstruction(next);
+            this.pc++;
+          }
+
+        } while (this.pc < this.currentScript.instructions.length && safeguard > 0);
+
+        if(safeguard <= 0){
+          throw 'Safeguard exception: the program ran out of cycles. Stopped running to avoid an infinite loop';
+        }
+      }
+    }
+  }
 
   getInstructionStop(){
     let ac = 0;
@@ -124,31 +168,6 @@ class Simulator {
     }
   }
 
-  executeUntilBreakPoint(bkp, safeguard){
-    if(this.currentScript.ticking){
-      if(true || this.currentScript.nextRun < this.millis()){
-        let next;
-        do {
-          safeguard--;
-
-          next = this.currentScript.instructions[this.pc];
-          if (next.breakpoint == bkp) {
-            break;
-          } else {
-            this.executeInstruction(next);
-            this.pc++;
-          }
-
-        } while (this.pc < this.currentScript.instructions.length && safeguard > 0);
-
-        if(safeguard <= 0){
-          throw 'Safeguard exception: the program ran out of cycles. Stopped running to avoid an infinite loop';
-        }
-      }
-    }
-  }
-
-  
 
   stopProgram(){
     if (!this.interval) return;
@@ -211,15 +230,7 @@ class Simulator {
           this.push(frame.returnValue);
         }
   }
-  next() {
-    if(this.pc>= this.currentScript.instructions.length)
-    {
-      this.doReturn();
-      return this.next();
-    }
-    var result = this.currentScript.instructions[(this.pc++)];
-    return result;
-  }
+  
 
   getPinValue(pinIndex){
     if (this.pins[pinIndex] > 1) {
@@ -266,15 +277,6 @@ class Simulator {
       throw "Stack Underflow";
     }
     return this.stack.pop();
-  }
-
-  execute() {
-    let instruction = this.next();
-    if(instruction == undefined) {
-      throw "undefined found as instruction" ;
-      this.pc=0;
-    }
-    this.executeInstruction(instruction);
   }
 
   executeInstruction(instruction) {
