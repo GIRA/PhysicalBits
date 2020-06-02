@@ -3,7 +3,7 @@
             [cheshire.core :as json]))
 
 
-(defn- fix-invalid-floats [obj]
+(defn- fix-outgoing-floats [obj]
   "Hack to be able to encode special floats that JSON doesn't support"
   (w/postwalk #(if-not (number? %)
                  %
@@ -16,10 +16,20 @@
 
 (defn encode [obj]
   (-> obj
-      fix-invalid-floats
+      fix-outgoing-floats
       json/generate-string))
+
+(defn- fix-incoming-floats [obj]
+  "Hack to be able to decode special floats that JSON doesn't support"
+  (w/postwalk #(if-not (map? %)
+                 %
+                 (condp = (keys %)
+                   [:___INF___] (* (:___INF___ %) ##Inf)
+                   [:___NAN___] ##NaN
+                   %))
+              obj))
 
 (defn decode [str]
   (-> str
       (json/parse-string true)
-      fix-invalid-floats))
+      fix-incoming-floats))
