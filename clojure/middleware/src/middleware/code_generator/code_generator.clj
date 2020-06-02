@@ -1,22 +1,22 @@
-(ns middleware.code_generator.code_generator)
-
+(ns middleware.code_generator.code_generator
+  (:require [clojure.string :as str]))
 
 (defmulti print-node :__class__)
 
 (defn print [node] (print-node node))
 
 (defn print-optative-block [block]
-  (if (= 0 (count (:statements block)))
+  (if (empty? (:statements block))
     ";"
     (str " " (print-node block))))
 
 (defmethod print-node "UziProgramNode" [node]
   (str
-    (clojure.string/join "\n" (concat
-                                (map print-node (:imports node))
-                                (map (fn [node] (str (print-node node) ";")) (:globals node))
-                                (map print-node (:primitives node))
-                                (map print-node (:scripts node))))))
+   (str/join "\n" (concat
+                   (map print-node (:imports node))
+                   (map (fn [node] (str (print-node node) ";")) (:globals node))
+                   (map print-node (:primitives node))
+                   (map print-node (:scripts node))))))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [node]
   (format "prim %s;"
@@ -51,32 +51,33 @@
 (defmethod print-node "UziFunctionNode" [node]
   (format "func %s(%s) %s"
           (:name node)
-          (clojure.string/join ", " (map :name (:arguments node)))
+          (str/join ", " (map :name (:arguments node)))
           (print-node (:body node))))
 
 (defmethod print-node "UziProcedureNode" [node]
   (format "proc %s(%s) %s"
           (:name node)
-          (clojure.string/join ", " (map :name (:arguments node)))
+          (str/join ", " (map :name (:arguments node)))
           (print-node (:body node))))
 
 (defmethod print-node "UziTickingRateNode" [node]
   (format " %d/%s" (:value node) (:scale node)))
 
 (defn add-indent-level [lines]
-  (clojure.string/join (map (fn [line] (str "\t" line "\n"))
-                            (filter (fn [line] (and (not= "\n" line) (not= "" line)))
-                                    (clojure.string/split-lines lines)))))
+  (str/join (map (fn [line] (str "\t" line "\n"))
+                 (filter (fn [line] (and (not= "\n" line)
+                                         (not= "" line)))
+                         (str/split-lines lines)))))
 
 (defmethod print-node "UziBlockNode" [node]
   (format "{\n%s}"
-          (add-indent-level (clojure.string/join "\n"
-                                                 (map (fn [expr]
-                                                        (if (or (clojure.string/ends-with? expr "}")
-                                                                (clojure.string/ends-with? expr ";"))
-                                                          expr
-                                                          (str expr ";")))
-                                                      (map print-node (:statements node)))))))
+          (add-indent-level (str/join "\n"
+                                      (map (fn [expr]
+                                             (if (or (str/ends-with? expr "}")
+                                                     (str/ends-with? expr ";"))
+                                               expr
+                                               (str expr ";")))
+                                           (map print-node (:statements node)))))))
 
 (defn print-operator-expression [node]
   (if (= 1 (-> node :arguments count))
@@ -91,11 +92,12 @@
             (print-node (second (:arguments node))))))
 
 (defmethod print-node "UziCallNode" [node]
-  (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" (:selector node)))
+  (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+"
+                        (:selector node)))
     ;non-operator
     (format "%s(%s)"
             (:selector node)
-            (clojure.string/join ", " (map print-node (:arguments node))))
+            (str/join ", " (map print-node (:arguments node))))
     (print-operator-expression node)))
 
 (defmethod print-node "Association" [node]
@@ -152,7 +154,7 @@
   (let [trueBranch (format "if %s %s"
                            (print-node (:condition node))
                            (print-node (:trueBranch node)))]
-    (if (= 0 (-> node :falseBranch :statements count))
+    (if (empty? (-> node :falseBranch :statements))
       trueBranch
       (str trueBranch " else " (print-node (:falseBranch node))))))
 
@@ -163,19 +165,19 @@
 
 (defmethod print-node "UziScriptStartNode" [node]
   (format "start %s"
-          (clojure.string/join ", " (:scripts node))))
+          (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptStopNode" [node]
   (format "stop %s"
-          (clojure.string/join ", " (:scripts node))))
+          (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptPauseNode" [node]
   (format "pause %s"
-          (clojure.string/join ", " (:scripts node))))
+          (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptResumeNode" [node]
   (format "resume %s"
-          (clojure.string/join ", " (:scripts node))))
+          (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziLogicalAndNode" [node]
   (format "(%s && %s)"
@@ -187,5 +189,5 @@
           (print-node (:left node))
           (print-node (:right node))))
 
-(defmethod print-node :default [arg]
-  (throw (Exception. (str "Not Implemented node reached: " (:__class__ arg)))))
+(defmethod print-node :default [node]
+  (throw (ex-info "Not Implemented node reached: " node)))
