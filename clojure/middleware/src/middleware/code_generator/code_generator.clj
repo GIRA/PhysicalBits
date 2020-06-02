@@ -11,12 +11,17 @@
     ";"
     (str " " (print-node block))))
 
+(defn- remove-empty [& colls]
+  (filter (complement empty?) colls))
+
 (defmethod print-node "UziProgramNode" [node]
-  (str/join "\n" (concat
-                  (map print-node (:imports node))
-                  (map (fn [node] (str (print-node node) ";")) (:globals node))
-                  (map print-node (:primitives node))
-                  (map print-node (:scripts node)))))
+  (str/join (flatten
+             (interpose "\n\n"
+                        (remove-empty
+                         (interpose "\n" (map print-node (:imports node)))
+                         (interpose "\n" (map (fn [node] (str (print-node node) ";")) (:globals node)))
+                         (interpose "\n" (map print-node (:primitives node)))
+                         (interpose "\n\n" (map print-node (:scripts node))))))))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [node]
   (format "prim %s;"
