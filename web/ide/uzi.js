@@ -98,6 +98,12 @@ let Uzi = (function () {
     console.log(err);
   }
 
+  function reconnect() {
+    updateLoop().catch(err => {
+      setTimeout(reconnect, 1000);
+    });
+  }
+
   function serverDisconnect(error) {
     observers["server-disconnect"].forEach(function (fn) {
       try {
@@ -106,6 +112,7 @@ let Uzi = (function () {
         console.log(err);
       }
     });
+    reconnect();
   }
 
   function update(data) {
@@ -122,24 +129,35 @@ let Uzi = (function () {
 
   function updateLoop() {
     return new Promise((resolve, reject) => {
-      let socket = new WebSocket("ws://" + location.host + "/uzi");
-      let msgReceived = false;
-      socket.onopen = function () {
-        socket.onmessage = function (evt) {
-          try {
-            let data = fixInvalidJSONFloats(JSON.parse(evt.data));
-            update(data);
-            if (!msgReceived) {
-              msgReceived = true;
-              resolve();
-            }
-          } catch (e) {
-            console.log(e);
-          }
+      try {
+        let socket = new WebSocket("ws://" + location.host + "/uzi");
+        let msgReceived = false;
+        socket.onerror = function (err) {
+          reject(err);
         };
-        socket.onclose = function() { console.log('disconnected from server'); };
+        socket.onopen = function () {
+          Uzi.serverAvailable = true;
+          socket.onmessage = function (evt) {
+            try {
+              let data = fixInvalidJSONFloats(JSON.parse(evt.data));
+              update(data);
+              if (!msgReceived) {
+                msgReceived = true;
+                resolve();
+              }
+            } catch (e) {
+              console.log(e);
+            }
+          };
+          socket.onclose = function(evt) {
+            Uzi.serverAvailable = false;
+            serverDisconnect(evt);
+          };
+        };
+        Uzi.socket = socket;
+      } catch (ex) {
+        reject(ex);
       }
-      Uzi.socket = socket;
     });
   }
 
