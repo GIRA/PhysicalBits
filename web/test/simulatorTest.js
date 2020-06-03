@@ -26,9 +26,9 @@ describe('Simulator Tests', function () {
   {
   if(typeof loops === 'number')
   {
-    for(let i = 0; i < loops; i++){
-      sim.execute();
-    }
+    //for(let i = 0; i < loops; i++){
+      sim.executeProgram();
+    //}
   }else {
     throw 'parameter of loop function is not a number';
   }
@@ -47,10 +47,9 @@ describe('Simulator Tests', function () {
   });
 
   it('turn on pin', function() {
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":336503,"lastStart":406}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":6}]})
-     sim.setPinValue(6,0);
-     loop(2);
-     assert.equal(1,sim.getPinValue(6));
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"S2","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":6}]})
+     sim.executeProgram();
+     assert.equal(1, sim.getPinValue(6));
   });
 
   it('toggle pin', function() {

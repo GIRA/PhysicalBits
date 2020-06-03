@@ -36,26 +36,6 @@ class Simulator {
     this.interval = setInterval(()=>this.executeProgram(), speed);
   }
 
-  execute() {
-    let instruction = this.next();
-    if(instruction == undefined) {
-      throw "undefined found as instruction" ;
-      this.pc=0;
-    }
-    this.executeInstruction(instruction);
-  }
-
-  next() {
-    if(this.pc >= this.currentScript.instructions.length) //TODO: fix this 
-    //Fix the ticks thing. The loop goes instruction per instruction but ir needs to go tick per tick now
-    {
-      this.doReturn();
-      return this.next();
-    }
-    var result = this.currentScript.instructions[(this.pc++)];
-    return result;
-  }
-
   executeProgram(){
     let lastTickStart = this.millis();
     this.currentProgram.scripts.forEach((script) => {
