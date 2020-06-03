@@ -4,11 +4,6 @@
             [middleware.code-generator.code-generator :refer :all ])
   (:use [middleware.test-utils]))
 
-
-(deftest sanity-check
-  (testing "Sanity check."
-    (is (= 1 1))))
-
 (deftest empty-program
   (testing "An Empty program should return an empty string"
     (let [expected ""
