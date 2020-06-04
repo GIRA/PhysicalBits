@@ -1,10 +1,11 @@
 (ns middleware.core
-  (:require [middleware.server.server :as server]
+  (:require [clojure.tools.logging :as log]
+            [middleware.server.server :as server]
             [middleware.device.controller :as dc])
   (:gen-class))
 
 (defn -main [& args]
   (time (do
-          (println "Starting server...")
+          (log/info "Starting server...")
           (server/start)
-          (println "Server started."))))
+          (log/info "Server started."))))

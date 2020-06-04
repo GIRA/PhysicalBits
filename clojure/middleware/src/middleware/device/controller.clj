@@ -1,6 +1,7 @@
 (ns middleware.device.controller
   (:refer-clojure :exclude [send compile])
-  (:require [serial.core :as s]
+  (:require [clojure.tools.logging :as log]
+            [serial.core :as s]
             [serial.util :as su]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [middleware.utils.async :refer :all]
@@ -12,9 +13,6 @@
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]))
-
-; TODO(Richo): Replace with log/error
-(defn- error [msg] (println "ERROR:" msg))
 
 (def initial-state {:port-name nil
                     :port nil
@@ -44,7 +42,7 @@
     (try
       (s/close! port)
       (catch Throwable e
-        (error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
+        (log/error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
     (logger/error "Connection lost!")))
 
 (defn send [bytes]
@@ -52,7 +50,7 @@
     (try
       (s/write port bytes)
       (catch Throwable e
-        (error (str "ERROR WHILE SENDING -> " (.getMessage e)))
+        (log/error (str "ERROR WHILE SENDING -> " (.getMessage e)))
         (disconnect))))
   bytes)
 
@@ -268,7 +266,7 @@
 (defn- process-trace [in]
   (go (let [count (<? in)
             msg (new String (byte-array (<! (read-vec? count in))) "UTF-8")]
-        (println "TRACE:" msg))))
+        (log/info "TRACE:" msg))))
 
 (defn- process-serial-tunnel [in]
   (go (logger/log "SERIAL: %1" (<? in))))
@@ -307,7 +305,7 @@
     (s/open port-name :baud-rate baud-rate)
     (catch Exception e
       (logger/error "Opening port failed!")
-      (println e) ; TODO(Richo): Exceptions should be logged but not sent to the client
+      (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
       nil)))
 
 (defn connect
@@ -315,7 +313,7 @@
   ([port-name & {:keys [board baud-rate]
                  :or {board UNO, baud-rate 57600}}]
    (if (connected?)
-     (error "The board is already connected")
+     (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
          (s/listen! port #(>!! in (.read %)))

@@ -8,7 +8,8 @@
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl]
             [clojure.test :as ctest]
-            [clojure.java.browse :refer [browse-url]])
+            [clojure.java.browse :refer [browse-url]]
+            [clojure.tools.logging :as log])
   (:use [clojure.repl]))
 
 (defn stop []

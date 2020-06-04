@@ -1,12 +1,13 @@
 (ns middleware.output.logger
-  (:refer-clojure :exclude [newline]))
+  (:refer-clojure :exclude [newline])
+  (:require [clojure.tools.logging :as log]))
 
 (def ^:private entries* (atom []))
 
 (defn read-entries! []
   (let [[entries _] (reset-vals! entries* [])]
     (doseq [entry entries]
-      (println entry))
+      (log/info entry))
     entries))
 
 (defn- append [msg-type format-str args]

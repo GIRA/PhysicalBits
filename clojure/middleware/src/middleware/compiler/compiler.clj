@@ -1,6 +1,7 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
-  (:require [middleware.utils.json :as json]
+  (:require [clojure.tools.logging :as log]
+            [middleware.utils.json :as json]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
             [middleware.compiler.utils.ast :as ast-utils]
@@ -433,7 +434,7 @@
               [(emit/prim-call "logicalOr")]))))
 
 (defmethod compile-node :default [node _]
-  (println "ERROR! Unknown node: " (ast-utils/node-type node))
+  (log/error "Unknown node: " (ast-utils/node-type node))
   :oops)
 
 (defn- create-context []
