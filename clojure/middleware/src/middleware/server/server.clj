@@ -66,8 +66,13 @@
 
 (defn run-handler [{:strs [src type silent]
                     :or {type "uzi", silent "true"}}]
-  (let [program (device/compile src type (= silent "true"))
-        bytes (device/run program)]
+  (let [program (device/compile src type (= silent "true"))]
+    (device/run program)
+    (json-response program)))
+
+(defn install-handler [{:strs [src type] :or {type "uzi"}}]
+  (let [program (device/compile src type false)]
+    (device/install program)
     (json-response program)))
 
 (defn- format-server-state [state output]
@@ -152,6 +157,7 @@
                         (POST "/uzi/disconnect" req (disconnect-handler req))
                         (POST "/uzi/compile" {params :params} (compile-handler params))
                         (POST "/uzi/run" {params :params} (run-handler params))
+                        (POST "/uzi/install" {params :params} (install-handler params))
 
                         (route/not-found "No such page."))
 
