@@ -1,5 +1,6 @@
 (ns middleware.server.server
   (:require [clojure.core.async :as a]
+            [clojure.string :as str]
             [compojure.core :as compojure :refer [GET POST]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.resource :refer [wrap-resource]]
@@ -74,6 +75,35 @@
   (let [program (device/compile src type false)]
     (device/install program)
     (json-response program)))
+
+(defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
+  (let [pins (filterv (complement empty?)
+                      (str/split pins #","))
+        report (mapv #(= % "true")
+                     (filter (complement empty?)
+                             (str/split report #",")))]
+    (when-not (= (count pins) (count report))
+      (json-response "Invalid request parameters" 400))
+    (doseq [pin-name pins
+            report? report]
+      (device/set-pin-report pin-name report?))
+    (json-response "OK")))
+
+(defn global-report-handler [{:strs [globals report] :or {globals "", report ""}}]
+  (let [globals (filterv (complement empty?)
+                         (str/split globals #","))
+        report (mapv #(= % "true")
+                     (filter (complement empty?)
+                             (str/split report #",")))]
+    (when-not (= (count globals) (count report))
+      (json-response "Invalid request parameters" 400))
+    (doseq [global-name globals
+            report? report]
+      (device/set-global-report global-name report?))
+    (json-response "OK")))
+
+(defn global-report-handler []
+  (throw (Exception. "NOT IMPLEMENTED YET")))
 
 (defn- format-server-state [state output]
   (-> state
@@ -158,6 +188,8 @@
                         (POST "/uzi/compile" {params :params} (compile-handler params))
                         (POST "/uzi/run" {params :params} (run-handler params))
                         (POST "/uzi/install" {params :params} (install-handler params))
+                        (POST "/uzi/pin-report" {params :params} (pin-report-handler params))
+                        (POST "/uzi/global-report" {params :params} (global-report-handler params))
 
                         (route/not-found "No such page."))
 
