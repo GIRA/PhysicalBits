@@ -492,7 +492,7 @@
   (let [errors (checker/check-tree ast)]
     (if (empty? errors)
       ast
-      (throw (ex-info (format "%d error%s found"
+      (throw (ex-info (format "%d error%s found!"
                               (count errors)
                               (if (= 1 (count errors)) "" "s"))
                       {:program ast
