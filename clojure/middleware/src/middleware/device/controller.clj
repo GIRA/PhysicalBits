@@ -128,6 +128,17 @@
     (send (concat [MSG_OUT_SET_PROGRAM] bytecodes))
     (update-reporting program)))
 
+(defn install [program]
+  ; TODO(Richo): Should I store the installed program?
+  (let [bytecodes (en/encode (:compiled program))
+        msb (bit-shift-right (bit-and (count bytecodes)
+                                      16rFF00)
+                             8)
+        lsb (bit-and (count bytecodes)
+                     16rFF)]
+    (send (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes))
+    (logger/success "Installed program successfully!")))
+
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
 (defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
 
