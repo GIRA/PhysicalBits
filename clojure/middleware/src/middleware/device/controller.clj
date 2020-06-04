@@ -88,20 +88,31 @@
       (set-pin-report pin-name true))))
 
 (defn compile [src type silent? & args]
-  (let [compile-fn (case type
-                     "json" cc/compile-json-string
-                     "uzi" cc/compile-uzi-string)
-        program (update (apply compile-fn src args)
-                        :compiled
-                        program/sort-globals)
-        bytecodes (en/encode (:compiled program))]
-    (when-not silent?
-      (logger/newline)
-      (logger/log "Program size (bytes): %1" (count bytecodes))
-      (logger/log (str bytecodes))
-      (logger/success "Compilation successful!"))
-    (swap! state assoc-in [:program :current] program)
-    program))
+  (try
+    (let [compile-fn (case type
+                       "json" cc/compile-json-string
+                       "uzi" cc/compile-uzi-string)
+          program (update (apply compile-fn src args)
+                          :compiled
+                          program/sort-globals)
+          bytecodes (en/encode (:compiled program))]
+      (when-not silent?
+        (logger/newline)
+        (logger/log "Program size (bytes): %1" (count bytecodes))
+        (logger/log (str bytecodes))
+        (logger/success "Compilation successful!"))
+      (swap! state assoc-in [:program :current] program)
+      program)
+    (catch Throwable ex
+      (when-not silent?
+        (logger/newline)
+        (logger/error (.getMessage ex))
+        ; TODO(Richo): Improve the error message for checker errors
+        (when-let [{errors :errors} (ex-data ex)]
+          (doseq [{:keys [description node]} errors]
+            (logger/error description)
+            (logger/error (str node)))))
+      (throw ex))))
 
 (defn- update-reporting [program]
   "All pins and globals referenced in the program must be enabled"
