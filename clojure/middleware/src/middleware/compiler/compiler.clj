@@ -488,18 +488,19 @@
     (dcr/remove-dead-code ast)
     ast))
 
-(defn check [ast]
+(defn check [ast src]
+  ; TODO(Richo): Use the src to improve the error messages
   (let [errors (checker/check-tree ast)]
     (if (empty? errors)
       ast
       (throw (ex-info (format "%d error%s found!"
                               (count errors)
                               (if (= 1 (count errors)) "" "s"))
-                      {:program ast
+                      {:src src
                        :errors errors})))))
 
 (defn compile-tree
-  [original-ast
+  [original-ast src
    & {:keys [board lib-dir remove-dead-code?]
       :or {board boards/UNO,
            lib-dir "../../uzi/libraries",
@@ -507,21 +508,21 @@
   (let [ast (-> original-ast
                 ast-utils/assign-internal-ids
                 (linker/resolve-imports lib-dir)
-                check
+                (check src)
                 assign-unique-variable-names
                 (assign-pin-values board)
                 (remove-dead-code remove-dead-code?))
         compiled (compile ast (create-context))]
     {:ast ast
+     :src src
      :compiled compiled}))
 
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-json-string [str & args]
-  (let [ast (json/decode str)]
-    (assoc (apply compile-tree ast args)
-           :src (codegen/print ast))))
+  (let [ast (json/decode str)
+        src (codegen/print ast)]
+    (apply compile-tree ast src args)))
 
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-uzi-string [str & args]
-  (assoc (apply compile-tree (parser/parse str) args)
-         :src str))
+  (apply compile-tree (parser/parse str) str args))
