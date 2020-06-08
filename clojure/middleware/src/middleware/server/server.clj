@@ -206,13 +206,14 @@
       (wrap-content-type)
       (wrap-not-modified)))
 
-(defn start [& {:keys [uzi-libraries web-resources]
+(defn start [& {:keys [uzi-libraries web-resources server-port]
                 :or {uzi-libraries "../../uzi/libraries"
-                     web-resources "../../web"}}]
+                     web-resources "../../web"
+                     server-port 3000}}]
   (when (nil? @server)
     (start-update-loop)
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
-                               {:port 3000})]
+                               {:port server-port})]
       (reset! server s))))
 
 (defn stop []
