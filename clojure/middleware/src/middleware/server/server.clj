@@ -115,10 +115,11 @@
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
-      (dissoc :connected? :port :board :reporting :scripts :profiler)
+      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler)
 
       ; NOTE(Richo): And then we add the missing keys
       (assoc :isConnected (:connected? state)
+             :portName (:port-name state)
              :pins {:available (mapv (fn [pin-name]
                                        {:name pin-name
                                         :reporting (contains? (-> state :reporting :pins)
