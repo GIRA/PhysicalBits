@@ -60,19 +60,25 @@
   (device/disconnect)
   (json-response "OK"))
 
-(defn compile-handler [{:strs [src type silent]
-                        :or {type "uzi", silent "true"}}]
-  (let [program (device/compile src type (= silent "true"))]
+(defn compile-handler
+  [uzi-libraries
+   {:strs [src type silent] :or {type "uzi", silent "true"}}]
+  (let [program (device/compile src type (= silent "true")
+                                :lib-dir uzi-libraries)]
     (json-response program)))
 
-(defn run-handler [{:strs [src type silent]
-                    :or {type "uzi", silent "true"}}]
-  (let [program (device/compile src type (= silent "true"))]
+(defn run-handler
+  [uzi-libraries
+   {:strs [src type silent] :or {type "uzi", silent "true"}}]
+  (let [program (device/compile src type (= silent "true")
+                                :lib-dir uzi-libraries)]
     (device/run program)
     (json-response program)))
 
-(defn install-handler [{:strs [src type] :or {type "uzi"}}]
-  (let [program (device/compile src type false)]
+(defn install-handler [uzi-libraries
+                       {:strs [src type] :or {type "uzi"}}]
+  (let [program (device/compile src type false
+                                :lib-dir uzi-libraries)]
     (device/install program)
     (json-response program)))
 
@@ -171,7 +177,7 @@
           (ws/put! socket (json/encode device-state))
           (recur))))))
 
-(def handler
+(defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
 
                         ; Testing
@@ -185,9 +191,9 @@
                         (GET "/uzi/available-ports" [] (json-response {:ports (device/available-ports)}))
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
-                        (POST "/uzi/compile" {params :params} (compile-handler params))
-                        (POST "/uzi/run" {params :params} (run-handler params))
-                        (POST "/uzi/install" {params :params} (install-handler params))
+                        (POST "/uzi/compile" {params :params} (compile-handler uzi-libraries params))
+                        (POST "/uzi/run" {params :params} (run-handler uzi-libraries params))
+                        (POST "/uzi/install" {params :params} (install-handler uzi-libraries params))
                         (POST "/uzi/pin-report" {params :params} (pin-report-handler params))
                         (POST "/uzi/global-report" {params :params} (global-report-handler params))
 
@@ -195,14 +201,17 @@
 
       (wrap-params)
       (wrap-resource "public")
-      (wrap-file "../../web")
+      (wrap-file web-resources)
       (wrap-content-type)
       (wrap-not-modified)))
 
-(defn start []
+(defn start [& {:keys [uzi-libraries web-resources]
+                :or {uzi-libraries "../../uzi/libraries"
+                     web-resources "../../web"}}]
   (when (nil? @server)
     (start-update-loop)
-    (let [s (http/start-server handler {:port 3000})]
+    (let [s (http/start-server (create-handler uzi-libraries web-resources)
+                               {:port 3000})]
       (reset! server s))))
 
 (defn stop []
