@@ -1023,6 +1023,8 @@
         connecting = false;
       } else if (availablePorts.length > 0) {
         attemptConnection(availablePorts);
+      } else {
+        connecting = false;
       }
     });
   }
