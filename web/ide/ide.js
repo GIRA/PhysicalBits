@@ -8,6 +8,8 @@
   let lastFileName;
   let outputHistory = [];
 
+  let userPorts = [];
+
   // HACK(Richo): To disable some controls while we're waiting for a connection
   let connecting = false;
 
@@ -863,6 +865,7 @@
         settings: JSON.parse(localStorage["uzi.settings"] || "null"),
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
         blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
+        ports: JSON.parse(localStorage["uzi.ports"] || "null"),
       };
       setUIState(ui);
     } catch (err) {
@@ -877,6 +880,7 @@
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
     localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
+    localStorage["uzi.ports"] = JSON.stringify(ui.ports);
   }
 
   function getUIState() {
@@ -887,6 +891,10 @@
       },
       layout: layout.toConfig(),
       blockly: UziBlock.getDataForStorage(),
+      ports: {
+        selectedPort: selectedPort,
+        userPorts: userPorts
+      }
     };
   }
 
@@ -904,6 +912,12 @@
 
       if (ui.blockly) {
         UziBlock.setDataFromStorage(ui.blockly);
+      }
+
+      if (ui.ports) {
+        selectedPort = ui.ports.selectedPort;
+        userPorts = ui.ports.userPorts;
+        updatePortDropdown();
       }
     } catch (err) {
       console.error(err);
@@ -962,8 +976,12 @@
       let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
       value = prompt("Port name:", defaultOption);
       if (!value) { value = selectedPort; }
+      else if (userPorts.indexOf(value) < 0) {
+        userPorts.push(value);
+      }
     }
     setSelectedPort(value);
+    saveToLocalStorage();
   }
 
   function setSelectedPort(val) {
@@ -981,6 +999,13 @@
     connecting = true;
     $("#connect-button").attr("disabled", "disabled");
     $("#port-dropdown").attr("disabled", "disabled");
+    if (selectedPort == "automatic") {
+      let availablePorts = Uzi.state.availablePorts;
+      if (availablePorts.length > 0) {
+        selectedPort = availablePorts[0];
+        if (selectedPort) { saveToLocalStorage(); }
+      }
+    }
     Uzi.connect(selectedPort).then(function () { connecting = false; });
   }
 
@@ -1104,7 +1129,6 @@
       $("#run-button").attr("disabled", "disabled");
       $("#install-button").attr("disabled", "disabled");
       updatePortDropdown();
-      setSelectedPort(selectedPort);
     }
   }
 
@@ -1115,15 +1139,17 @@
       if ($children[i].id == "port-dropdown-divider") break;
       $children[i].remove();
     }
-    let defaultPorts = ["COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9"];
-    let ports = Uzi.state.availablePorts || [];
-    if (ports.length == 0) { ports = defaultPorts; }
+    let availablePorts = Uzi.state.availablePorts || [];
+    let ports = availablePorts.concat(userPorts.filter(p => availablePorts.indexOf(p) < 0));
     ports.forEach(port => {
       $("<option>")
         .text(port)
         .attr("value", port)
         .insertBefore("#port-dropdown-divider");
     });
+
+    // Make sure we keep the selected port set
+    setSelectedPort(selectedPort);
   }
 
   function updateInspectorPanel() {
