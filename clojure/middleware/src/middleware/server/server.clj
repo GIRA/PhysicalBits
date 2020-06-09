@@ -15,8 +15,7 @@
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device]
-            [middleware.output.logger :as logger])
-  (:gen-class))
+            [middleware.output.logger :as logger]))
 
 (def server (atom nil))
 
