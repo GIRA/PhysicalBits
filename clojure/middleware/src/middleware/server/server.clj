@@ -111,7 +111,7 @@
 (defn global-report-handler []
   (throw (Exception. "NOT IMPLEMENTED YET")))
 
-(defn- format-server-state [state output]
+(defn- format-server-state [state available-ports output]
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
@@ -120,6 +120,7 @@
       ; NOTE(Richo): And then we add the missing keys
       (assoc :isConnected (:connected? state)
              :portName (:port-name state)
+             :availablePorts available-ports
              :pins {:available (mapv (fn [pin-name]
                                        {:name pin-name
                                         :reporting (contains? (-> state :reporting :pins)
@@ -145,6 +146,7 @@
 
 (defn- get-server-state []
   (format-server-state @device/state
+                       (device/available-ports)
                        (logger/read-entries!)))
 
 (def ^:private updates (a/chan))
