@@ -8,6 +8,9 @@
   let lastFileName;
   let outputHistory = [];
 
+  // HACK(Richo): To disable some controls while we're waiting for a connection
+  let connecting = false;
+
   let IDE = {
     init: function () {
       // NOTE(Richo): The following tasks need to be done in order:
@@ -975,8 +978,10 @@
   }
 
   function connect() {
+    connecting = true;
     $("#connect-button").attr("disabled", "disabled");
-    Uzi.connect(selectedPort);
+    $("#port-dropdown").attr("disabled", "disabled");
+    Uzi.connect(selectedPort).then(function () { connecting = false; });
   }
 
   function disconnect() {
@@ -1082,6 +1087,7 @@
   }
 
   function updateTopBar() {
+    if (connecting) return;
     if (Uzi.state.isConnected) {
       $("#connect-button").hide();
       $("#disconnect-button").show();
@@ -1098,6 +1104,7 @@
       $("#run-button").attr("disabled", "disabled");
       $("#install-button").attr("disabled", "disabled");
       updatePortDropdown();
+      setSelectedPort(selectedPort);
     }
   }
 
