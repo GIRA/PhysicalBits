@@ -3,6 +3,7 @@
             [clojure.tools.cli :as cli]
             [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.java.browse :refer [browse-url]]
             [middleware.server.server :as server]
             [middleware.device.controller :as dc])
   (:gen-class))
@@ -20,10 +21,13 @@
    ["-w" "--web PATH" "Web resources folder (default: web)"
     :default "web"
     :validate [#(.exists (io/file %)) "The directory doesn't exist"]]
-   ["-p" "--server-port PORT" "Server port number"
+   ["-s" "--server-port PORT" "Server port number"
     :default 3000
     :parse-fn #(Integer/parseInt %)
     :validate [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]
+   ["-a" "--arduino-port PORT" "Arduino port name"
+    :default nil]
+   ["-o" "--open-browser" "Open browser flag"]
    ["-h" "--help"]])
 
 (defn usage [options-summary]
@@ -47,11 +51,17 @@
       (exit 1 (error-msg errors)))
     (when (:help options)
       (exit 0 (usage summary)))
-    (let [{:keys [uzi web server-port]} options]
-      (time (do
-              (println project-name)
-              (println "Starting server...")
-              (server/start :uzi-libraries uzi
-                            :web-resources web
-                            :server-port server-port)
-              (println "Server started."))))))
+    (let [{:keys [uzi web server-port arduino-port open-browser]} options]
+      (println project-name)
+      (println "Starting server...")
+      (server/start :uzi-libraries uzi
+                    :web-resources web
+                    :server-port server-port)
+      (println "Server started on port" server-port)
+      (when open-browser
+        (let [url (str "http://localhost:" server-port)]
+          (println "Opening browser on" url)
+          (browse-url url)))
+      (println)
+      (when arduino-port
+        (dc/connect arduino-port)))))
