@@ -58,7 +58,7 @@ var TRANSLATIONS = [
   ["This motor is being used by the program!", "This motor is being used by the program!", "This motor is being used by the program!", "¡Este motor está siendo usado en el programa!", "Hetkel kasutatakse seda mootorit mujal programmis!", "Denna motor används just nu i programmet!"],
   ["This sonar is being used by the program!", "This sonar is being used by the program!", "This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi mujal programmis!", "Detta ekolod används just nu i programmet!"],
   ["Display in all-caps mode", "Display text in ALL-CAPS", "Display text in ALL-CAPS", "Mostrar todo el texto en mayúsculas", "Kuva kõik tekst TRÜKITÄHTEDES", "Visa all text som STORA BOKSTÄVER"],
-  ["No available ports found", "No available ports found", "No available ports found", "No se encontraron puertos disponibles", "No available ports found", "No available ports found"]
+  ["No available ports found", "No available ports found", "No available ports found", "No se encontraron puertos disponibles", "No available ports found", "No available ports found"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],
