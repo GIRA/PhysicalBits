@@ -1097,7 +1097,26 @@
       $("#port-dropdown").attr("disabled", null);
       $("#run-button").attr("disabled", "disabled");
       $("#install-button").attr("disabled", "disabled");
+      updatePortDropdown();
     }
+  }
+
+  function updatePortDropdown() {
+    let $ports = $("#port-dropdown");
+    let $children = $ports.children();
+    for (let i = 0; i < $children.length; i++) {
+      if ($children[i].id == "port-dropdown-divider") break;
+      $children[i].remove();
+    }
+    let defaultPorts = ["COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9"];
+    let ports = Uzi.state.availablePorts || [];
+    if (ports.length == 0) { ports = defaultPorts; }
+    ports.forEach(port => {
+      $("<option>")
+        .text(port)
+        .attr("value", port)
+        .insertBefore("#port-dropdown-divider");
+    });
   }
 
   function updateInspectorPanel() {
