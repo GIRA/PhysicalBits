@@ -157,21 +157,27 @@
   (send [MSG_OUT_DEBUG_CONTINUE]))
 
 (defn- request-connection [port in]
-  (<!! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-  (s/write port [MSG_OUT_CONNECTION_REQUEST
-                 MAJOR_VERSION
-                 MINOR_VERSION])
-  (logger/log "Requesting connection...")
-  ;(<!! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-  (when-let [n1 (<?? in 1000)]
-    (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
-      (s/write port n2)
-      ;(<!! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-      (if (= n2 (<?? in 1000))
-        (logger/success "Connection accepted!")
-        (do
-
-          (logger/error "Connection rejected"))))))
+  (go
+   (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
+   (s/write port [MSG_OUT_CONNECTION_REQUEST
+                  MAJOR_VERSION
+                  MINOR_VERSION])
+   (logger/log "Requesting connection...")
+   ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
+   (if-let [n1 (<? in 1000)]
+     (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
+       (s/write port n2)
+       ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
+       (if (= n2 (<? in 1000))
+         (do
+           (logger/success "Connection accepted!")
+           true)
+         (do
+           (logger/error "Connection rejected")
+           false)))
+     (do
+       (logger/error "Connection timeout")
+       false))))
 
 (defn- keep-alive [port]
   (go-loop []
@@ -343,14 +349,16 @@
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
          (s/listen! port #(>!! in (.read %)))
-         (request-connection port in)
-         (swap! state assoc
-                :port port
-                :port-name port-name
-                :connected? true
-                :board board)
-         (keep-alive port)
-         (process-input in)
-         (start-reporting)
-         (send-pins-reporting)
-         (clean-up-reports))))))
+         (if-not (<?? (request-connection port in) 5000)
+           (s/close! port)
+           (do ; Connection successful
+             (swap! state assoc
+                    :port port
+                    :port-name port-name
+                    :connected? true
+                    :board board)
+             (keep-alive port)
+             (process-input in)
+             (start-reporting)
+             (send-pins-reporting)
+             (clean-up-reports))))))))
