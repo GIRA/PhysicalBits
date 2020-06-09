@@ -38,7 +38,11 @@
 
 (defn disconnect []
   (when-let [port (@state :port)]
-    (reset! state initial-state)
+    (swap! state
+           #(-> initial-state
+                ; Keep the current program
+                (assoc-in [:program :current]
+                           (-> % :program :current))))
     (try
       (s/close! port)
       (catch Throwable e
