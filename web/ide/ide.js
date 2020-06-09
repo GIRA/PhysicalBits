@@ -104,6 +104,7 @@
     $("#options-button").on("click", openOptionsDialog);
     Uzi.on("update", updateTopBar);
     Uzi.on("update", updateConnection);
+    updatePortDropdown();
   }
 
   function initializeInspectorPanel() {
@@ -1001,12 +1002,29 @@
     $("#port-dropdown").attr("disabled", "disabled");
     if (selectedPort == "automatic") {
       let availablePorts = Uzi.state.availablePorts;
-      if (availablePorts.length > 0) {
-        selectedPort = availablePorts[0];
-        if (selectedPort) { saveToLocalStorage(); }
+      if (availablePorts.length == 0) {
+        appendToOutput({text: "No available ports found", type: "error"});
+        connecting = false;
+        updateTopBar();
+      } else {
+        attemptConnection(availablePorts);
       }
+    } else {
+      Uzi.connect(selectedPort).then(function () { connecting = false; });
     }
-    Uzi.connect(selectedPort).then(function () { connecting = false; });
+  }
+
+  function attemptConnection(availablePorts) {
+    let port = availablePorts.shift();
+    Uzi.connect(port).then(data => {
+      if (data["port-name"] == port) {
+        selectedPort = port;
+        if (selectedPort) { saveToLocalStorage(); }
+        connecting = false;
+      } else if (availablePorts.length > 0) {
+        attemptConnection(availablePorts);
+      }
+    });
   }
 
   function disconnect() {
