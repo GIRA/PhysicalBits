@@ -12,18 +12,45 @@
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
-            [middleware.output.logger :as logger]))
+            [middleware.output.logger :as logger])
+  (:import (java.net Socket)))
 
 (defprotocol UziPort
   (close! [this])
-  (write! [this bytes])
+  (write! [this data])
   (listen! [this listener-fn]))
 
 (extend-type serial.core.Port
   UziPort
   (close! [port] (s/close! port))
-  (write! [port bytes] (s/write port bytes))
-  (listen! [port listener-fn] (s/listen! port listener-fn)))
+  (write! [port data] (s/write port data))
+  (listen! [port listener-fn] (s/listen! port #(listener-fn (.read %)))))
+
+(extend-type java.net.Socket
+  UziPort
+  (close! [socket] (.close socket))
+  (write! [socket data]
+          (let [out (.getOutputStream socket)
+                bytes (if (number? data) [data] data)]
+            #_((println)
+               (println "WRITE" (count bytes))
+               (println bytes))
+
+            (.write out (byte-array bytes))))
+  (listen! [socket listener-fn]
+           (let [buffer-size 1000
+                 buffer (byte-array buffer-size)
+                 in (.getInputStream socket)]
+             (go-loop []
+               (when-not (.isClosed socket)
+                 (let [bytes-read (.read in buffer 0 buffer-size)]
+                   #_((println)
+                      (println "READ:" bytes-read))
+
+                   (dotimes [i bytes-read]
+                            #_(println (bit-and (int (nth buffer i)) 16rFF))
+                            (listener-fn (bit-and (int (nth buffer i)) 16rFF))))
+                 (recur))))))
 
 (def initial-state {:port-name nil
                     :port nil
@@ -345,7 +372,9 @@
   (logger/log "Connecting on serial...")
   (logger/log "Opening port: %1" port-name)
   (try
-    (s/open port-name :baud-rate baud-rate)
+    (if (= port-name "127.0.0.1:4242")
+      (Socket. "127.0.0.1" 4242)
+      (s/open port-name :baud-rate baud-rate))
     (catch Exception e
       (logger/error "Opening port failed!")
       (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
@@ -359,8 +388,8 @@
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
-         (listen! port #(>!! in (.read %)))
-         (if-not (<?? (request-connection port in) 5000)
+         (listen! port #(>!! in %))
+         (if-not (<?? (request-connection port in) 15000)
            (close! port)
            (do ; Connection successful
              (swap! state assoc
