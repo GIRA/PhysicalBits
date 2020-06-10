@@ -14,6 +14,17 @@
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]))
 
+(defprotocol UziPort
+  (close! [this])
+  (write! [this bytes])
+  (listen! [this listener-fn]))
+
+(extend-type serial.core.Port
+  UziPort
+  (close! [port] (s/close! port))
+  (write! [port bytes] (s/write port bytes))
+  (listen! [port listener-fn] (s/listen! port listener-fn)))
+
 (def initial-state {:port-name nil
                     :port nil
                     :connected? false
@@ -44,7 +55,7 @@
                 (assoc-in [:program :current]
                            (-> % :program :current))))
     (try
-      (s/close! port)
+      (close! port)
       (catch Throwable e
         (log/error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
     (logger/error "Connection lost!")))
@@ -52,7 +63,7 @@
 (defn send [bytes]
   (when-let [port (@state :port)]
     (try
-      (s/write port bytes)
+      (write! port bytes)
       (catch Throwable e
         (log/error (str "ERROR WHILE SENDING -> " (.getMessage e)))
         (disconnect))))
@@ -159,14 +170,14 @@
 (defn- request-connection [port in]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (s/write port [MSG_OUT_CONNECTION_REQUEST
+   (write! port [MSG_OUT_CONNECTION_REQUEST
                   MAJOR_VERSION
                   MINOR_VERSION])
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
    (if-let [n1 (<? in 1000)]
      (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
-       (s/write port n2)
+       (write! port n2)
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
        (if (= n2 (<? in 1000))
          (do
@@ -348,9 +359,9 @@
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
-         (s/listen! port #(>!! in (.read %)))
+         (listen! port #(>!! in (.read %)))
          (if-not (<?? (request-connection port in) 5000)
-           (s/close! port)
+           (close! port)
            (do ; Connection successful
              (swap! state assoc
                     :port port
