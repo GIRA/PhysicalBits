@@ -32,10 +32,6 @@
   (write! [socket data]
           (let [out (.getOutputStream socket)
                 bytes (if (number? data) [data] data)]
-            #_((println)
-               (println "WRITE" (count bytes))
-               (println bytes))
-
             (.write out (byte-array bytes))))
   (listen! [socket listener-fn]
            (let [buffer-size 1000
@@ -44,11 +40,7 @@
              (go-loop []
                (when-not (.isClosed socket)
                  (let [bytes-read (.read in buffer 0 buffer-size)]
-                   #_((println)
-                      (println "READ:" bytes-read))
-
                    (dotimes [i bytes-read]
-                            #_(println (bit-and (int (nth buffer i)) 16rFF))
                             (listener-fn (bit-and (int (nth buffer i)) 16rFF))))
                  (recur))))))
 
