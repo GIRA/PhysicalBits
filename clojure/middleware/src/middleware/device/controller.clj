@@ -83,6 +83,7 @@
                            (-> % :program :current))))
     (try
       (close! port)
+      (<!! (timeout 1000)) ; TODO(Richo): Wait a second to stabilize port (?)
       (catch Throwable e
         (log/error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
     (logger/error "Connection lost!")))
