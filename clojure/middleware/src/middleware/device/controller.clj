@@ -3,6 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [serial.core :as s]
             [serial.util :as su]
+            [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [middleware.utils.async :refer :all]
             [middleware.device.protocol :refer :all]
@@ -360,14 +361,33 @@
       (<! (timeout 1000))
       (recur))))
 
-(defn- open-port [port-name baud-rate]
-  (logger/newline)
-  (logger/log "Connecting on serial...")
-  (logger/log "Opening port: %1" port-name)
+(defn- extract-socket-data [port-name]
   (try
-    (if (= port-name "127.0.0.1:4242")
-      (Socket. "127.0.0.1" 4242)
-      (s/open port-name :baud-rate baud-rate))
+    (when-let [match (re-matches #"((\d+)\.(\d+)\.(\d+)\.(\d+)|localhost)\:(\d+)"
+                                 (str/trim port-name))]
+      (let [address (nth match 1)
+            port (Integer/parseInt (nth match 6))]
+        (assert (< 0 port 0x10000))
+        (when-not (= address "localhost")
+          (assert (every? #(<= 0 % 255)
+                          (map #(Integer/parseInt %)
+                               (->> match (drop 2) (take 4))))))
+        [address port]))
+    (catch Throwable ex
+      false)))
+
+(defn- open-port [port-name baud-rate]
+  (try
+    (logger/newline)
+    (if-let [[address port] (extract-socket-data port-name)]
+      (do
+        (logger/log "Connecting on socket...")
+        (logger/log "Opening port: %1" port-name)
+        (Socket. address port))
+      (do
+        (logger/log "Connecting on serial...")
+        (logger/log "Opening port: %1" port-name)
+        (s/open port-name :baud-rate baud-rate)))
     (catch Exception e
       (logger/error "Opening port failed!")
       (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
