@@ -1010,7 +1010,7 @@
         attemptConnection(availablePorts);
       }
     } else {
-      Uzi.connect(selectedPort).then(function () { connecting = false; });
+      Uzi.connect(selectedPort).finally(function () { connecting = false; });
     }
   }
 
@@ -1026,12 +1026,13 @@
       } else {
         connecting = false;
       }
-    });
+    }).catch(() => { connecting = false; });
   }
 
   function disconnect() {
+    connecting = true;
     $("#disconnect-button").attr("disabled", "disabled");
-    Uzi.disconnect();
+    Uzi.disconnect().finally(() => { connecting = false; });
   }
 
   function verify() {
