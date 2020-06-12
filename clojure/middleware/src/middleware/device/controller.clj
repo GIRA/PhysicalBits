@@ -277,14 +277,17 @@
   (let [running? (> (bit-and 2r10000000 byte) 0)
         error-code (bit-and 2r01111111 byte)
         error-msg (error-msg error-code)
-        script-name (-> @state :program :running :compiled :scripts (get i) :name)]
+        program (-> @state :program :running)
+        script-name (-> program :compiled :scripts (get i) :name)
+        task? (-> program :ast :scripts (get i) ast/task?)]
     [script-name
      {:index i
       :name script-name
       :running? running?
       :error? (error? error-code)
       :error-code error-code
-      :error-msg error-msg}]))
+      :error-msg error-msg
+      :task? task?}]))
 
 (defn- process-running-scripts [in]
   (go (let [count (<? in)
