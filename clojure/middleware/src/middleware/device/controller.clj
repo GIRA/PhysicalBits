@@ -294,7 +294,7 @@
             tuples (map-indexed process-script-state
                                 (<! (read-vec? count in)))
             [old new] (swap-vals! state assoc :scripts (into {} tuples))]
-        (doseq [script (filter :error? (sort-by :i (-> new :scripts vals)))]
+        (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
           (when-not (= (-> old :scripts (get (:name script)) :error-code)
                        (:error-code script))
             (logger/warning "%1 detected on script \"%2\". The script has been stopped."
