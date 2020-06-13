@@ -170,11 +170,14 @@
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
+    (ws/on-closed socket 
+                  (fn []
+                    (a/unsub updates-pub topic in-chan)
+                    (a/close! in-chan)))
     (ws/put! socket (json/encode (get-server-state)))
     (a/sub updates-pub topic in-chan)
     (a/go-loop []
-      (if (ws/closed? socket)
-        (a/unsub updates-pub topic in-chan)
+      (when-not (ws/closed? socket)
         (let [{device-state :state} (a/<! in-chan)]
           (ws/put! socket device-state)
           (recur))))))
