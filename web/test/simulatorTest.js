@@ -145,43 +145,43 @@ describe('Simulator Tests', function () {
   it('abs', () => {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":-8}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":38,"name":"abs","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":2,"name":"toggle","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":117651,"lastStart":14}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":-8}]});
     loop(2);
-    assert.equal(8, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(8));
   });
 
   it('round', () =>{
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":3.4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":34,"name":"round","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":91673,"lastStart":13}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":3.4}]});
     loop(2);
-    assert.equal(3, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(3));
   });
 
   it('ceil', () =>{
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":3.4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":35,"name":"ceil","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":58431,"lastStart":14}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":3.4}]});
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":3.4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":35,"name":"ceil","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPopInstruction","argument":{"__class__":"UziVariable","name":"temp","value":0}}],"locals":[],"name":"S2","ticking":true,"nextRun":375194,"lastStart":710}],"variables":[{"__class__":"UziVariable","name":"temp","value":0},{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":3.4}]});
     loop(2);
-    assert.equal(4, sim.stack[0]);
+    assert.equal(4, sim.globals["temp"]); // 3.4 rounded up
   });
 
   it('floor', () =>{
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":3.7}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":36,"name":"floor","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":127376,"lastStart":15}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":3.7}]});
     loop(2);
-    assert.equal(3, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(3));
   });
 
   it('ln', ()=> {
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":39,"name":"ln","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":133258,"lastStart":14}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1}]});
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":39,"name":"ln","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPopInstruction","argument":{"__class__":"UziVariable","name":"temp","value":0}}],"locals":[],"name":"S2","ticking":true,"nextRun":7000,"lastStart":287}],"variables":[{"__class__":"UziVariable","name":"temp","value":0},{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":1}]});
     loop(2);
-    assert.equal(0, sim.stack[0]);
+    assert.equal(0, sim.globals["temp"]); // ln(1);
   });
 
   it('log10', ()=> {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":10}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":40,"name":"log10","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":50380,"lastStart":13}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":10}]});
     loop(2);
-    assert.equal(1, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(1));
   });
 
   it('exp', ()=> {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":41,"name":"exp","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":35,"name":"ceil","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":219916,"lastStart":17}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2}]});
     loop(3);
-    assert.equal(8, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(8));
   });
 
   it('pow10', ()=> { 
@@ -198,9 +198,9 @@ describe('Simulator Tests', function () {
   });
 
   it('cos', () => {
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":0}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":18,"name":"cos","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":283514,"lastStart":19}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":4},{"__class__":"UziVariable","name":null,"value":0}]});
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":0}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":18,"name":"cos","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPopInstruction","argument":{"__class__":"UziVariable","name":"temp","value":0}}],"locals":[],"name":"S2","ticking":true,"nextRun":6140,"lastStart":411}],"variables":[{"__class__":"UziVariable","name":"temp","value":0},{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":0}]});
     loop(2);
-    assert.equal(0, sim.getPinValue(4));
+    assert.equal(1, sim.globals["temp"]);
   });
 
   it('tan', () => {
