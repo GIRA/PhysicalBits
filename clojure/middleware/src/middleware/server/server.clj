@@ -160,7 +160,7 @@
       (when @update-loop?
         (let [new-state (get-server-state)]
           (when (not= old-state new-state)
-            (a/>! updates {:type :update, :state new-state}))
+            (a/>! updates {:type :update, :state (json/encode new-state)}))
           (a/<! (a/timeout 100))
           (recur new-state))))))
 
@@ -176,7 +176,7 @@
       (if (ws/closed? socket)
         (a/unsub updates-pub topic in-chan)
         (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket (json/encode device-state))
+          (ws/put! socket device-state)
           (recur))))))
 
 (defn- create-handler [uzi-libraries web-resources]
