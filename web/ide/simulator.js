@@ -20,9 +20,10 @@ class Simulator {
      this.yieldFlag = false;
 
      this.interval = null;
-     
+     this.millisMock = null;
+     this.lastTickStart = null;
    };
-  
+   
   getRandomInt(min, max){
     min = Math.trunc(min);
     max = Math.trunc(max); //TO DO
@@ -37,10 +38,10 @@ class Simulator {
   }
 
   executeProgram(){
-    let lastTickStart = this.millis();
+    this.lastTickStart = this.millis();
     this.currentProgram.scripts.forEach((script) => {
     if (script.ticking) {
-      if (script.nextRun <= lastTickStart) {
+      if (script.nextRun <= this.lastTickStart) {
           this.executeScript(script);
       }
     }
@@ -88,6 +89,7 @@ class Simulator {
         this.stack = vmState.stack;
       }else{
         this.pc = this.getInstructionStart();
+        this.currentScript.lastStart = this.lastTickStart;
       }
     }
   }
@@ -427,17 +429,19 @@ class Simulator {
       this.executeProgram();
     }
   }
-  getMillis(){
-    return this.millis();
-  }
-
+  
   setMillis(millis){
-    this.millis() + millis;
+    this.millisMock = millis;
   }
 
   millis(){
+    if(this.millisMock == undefined){
       let d = new Date();
       return d - this.startDate;
+    }else{
+      return this.millisMock;
+    }
+      
   }
 
   doYield(){
@@ -726,9 +730,7 @@ class Simulator {
   
 };
 
-let simulator = new Simulator;
-
 if(typeof module != "undefined")
      {
-       module.exports = simulator;
+      module.exports = Simulator;
      }

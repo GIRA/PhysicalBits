@@ -3,7 +3,7 @@ var simulator = require('../ide/simulator');
 /*"mocha --inspect-brk test/simulatorTest.js"*/
 function initializeSimulator()
 {
-    return simulator;
+    return new simulator();
 }
 
 it('sanity-check', function () {
@@ -47,24 +47,28 @@ describe('Simulator Tests', function () {
   });
 
   it('toggle pin', function() {
+
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":2,"name":"toggle","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":61384,"lastStart":12}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":6}]});
      sim.setPinValue(6,0);
+     sim.setMillis(0);
      loop(2);
      assert.equal(1, sim.getPinValue(6));
+     sim.setMillis(1000);
      loop(2);
      assert.equal(0, sim.getPinValue(6));
   });
 
   it('multiplication', function(){ // 2 * 3
+    debugger;
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":3}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":5,"name":"multiply","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":10744,"lastStart":18}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2},{"__class__":"UziVariable","name":null,"value":3}]});
     loop(3);
-    assert.equal(6, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(6));
   });
 
   it('division', function(){ /* 12 / 4 */
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":12}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":7,"name":"divide","stackTransition":{"__class__":"Association","key":2,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":12},{"__class__":"UziVariable","name":null,"value":4}]});
     loop(3);
-    assert.equal(3, sim.stack[0]);
+    assert.equal(1, sim.getPinValue(3));
   });
 
   it('addition', function(){ // 3 + 4
@@ -181,10 +185,11 @@ describe('Simulator Tests', function () {
     assert.equal(8, sim.stack[0]);
   });
 
-  it('pow10', ()=> { //hola richo el jueves te pregunto sobre esto
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":42,"name":"pow10","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"default","ticking":true,"nextRun":0,"lastStart":2104}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2}]});
+  it('pow10', ()=> { 
+    debugger;
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":2}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":42,"name":"pow10","stackTransition":{"__class__":"Association","key":1,"value":1}}},{"__class__":"UziPopInstruction","argument":{"__class__":"UziVariable","name":"temp","value":0}}],"locals":[],"name":"S2","ticking":true,"nextRun":0,"lastStart":61863}],"variables":[{"__class__":"UziVariable","name":"temp","value":0},{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":2}]});
     loop(2);
-    assert.equal(100, sim.stack[0]);
+    assert.equal(100, sim.globals["temp"]);
   });
 
   it('sin', ()=> {
