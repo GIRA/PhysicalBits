@@ -11,7 +11,7 @@
     "mocha": "^7.1.2"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --inspect-brk test/simulatorTest.js"
   },
   "author": "",
   "license": "MIT"

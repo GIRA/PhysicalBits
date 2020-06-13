@@ -1,6 +1,6 @@
 var assert = require('assert');
 var simulator = require('../ide/simulator');
-
+/*"mocha --inspect-brk test/simulatorTest.js"*/
 function initializeSimulator()
 {
     return simulator;
@@ -22,16 +22,9 @@ describe('Simulator Tests', function () {
     sim = null;
   });
 
-  function loop(loops)
+  function loop()
   {
-  if(typeof loops === 'number')
-  {
-    //for(let i = 0; i < loops; i++){
-      sim.executeProgram();
-    //}
-  }else {
-    throw 'parameter of loop function is not a number';
-  }
+    sim.executeProgram();
   }
 
   it('set/get pin value', function () {
@@ -40,6 +33,7 @@ describe('Simulator Tests', function () {
   });
 
   it('turn off pin', function() {
+    
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":0},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6, "breakpoint": "pepe"}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":21,"name":"turnOff","stackTransition":{"__class__":"Association","key":1,"value":0}}},{"__class__":"UziStopScriptInstruction","argument":"test"}],"locals":[],"name":"test","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":0},{"__class__":"UziVariable","name":null,"value":6}]});
     sim.setPinValue(6, 1);
     loop(2);
@@ -47,9 +41,9 @@ describe('Simulator Tests', function () {
   });
 
   it('turn on pin', function() {
-    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":6}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":20,"name":"turnOn","stackTransition":{"__class__":"Association","key":1,"value":0}}}],"locals":[],"name":"S2","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":6}]})
-     sim.executeProgram();
-     assert.equal(1, sim.getPinValue(6));
+    sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":5}},{"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":1}},{"__class__":"UziPrimitiveCallInstruction","argument":{"__class__":"UziPrimitive","code":1,"name":"write","stackTransition":{"__class__":"Association","key":2,"value":0}}}],"locals":[],"name":"S2","ticking":true}],"variables":[{"__class__":"UziVariable","name":null,"value":1000},{"__class__":"UziVariable","name":null,"value":5},{"__class__":"UziVariable","name":null,"value":1}]})
+    sim.executeProgram();
+    assert.equal(1, sim.getPinValue(5));
   });
 
   it('toggle pin', function() {
@@ -211,7 +205,6 @@ describe('Simulator Tests', function () {
     assert.equal(Math.tan(7), sim.getPinValue(4));
   });
 
-  // TODO(Richo): Nico, ponele nombres correctos a los tests! Gracias :)
   it("execute program until breakpoint", () => {
     sim.loadProgram({"__class__":"UziProgram","scripts":[{"__class__":"UziScript","arguments":[],"delay":{"__class__":"UziVariable","name":null,"value":1000},"instructions":[
       {"__class__":"UziPushInstruction","argument":{"__class__":"UziVariable","name":null,"value":4}, "breakpoint": "1"},

@@ -20,9 +20,9 @@ class Simulator {
      this.yieldFlag = false;
 
      this.interval = null;
+     
    };
   
-
   getRandomInt(min, max){
     min = Math.trunc(min);
     max = Math.trunc(max); //TO DO
@@ -40,7 +40,7 @@ class Simulator {
     let lastTickStart = this.millis();
     this.currentProgram.scripts.forEach((script) => {
     if (script.ticking) {
-      if (script.nextRun < lastTickStart) {
+      if (script.nextRun <= lastTickStart) {
           this.executeScript(script);
       }
     }
@@ -418,6 +418,21 @@ class Simulator {
       default:
         throw "Missing instruction "+ instruction.__class__;
     }
+  }
+
+  incrementMillisAndExecute(increment){
+    let millis = this.millis();
+    for(let i = 0; i < increment; i++){
+      this.setMillis(this.millis + i);
+      this.executeProgram();
+    }
+  }
+  getMillis(){
+    return this.millis();
+  }
+
+  setMillis(millis){
+    this.millis() + millis;
   }
 
   millis(){
