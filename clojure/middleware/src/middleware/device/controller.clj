@@ -328,7 +328,8 @@
           (logger/newline)
           (logger/warning "%1 detected. The program has been stopped"
                           (error-msg error-code))
-          (disconnect)))))
+          (if (= error-code 6)
+            (disconnect))))))
 
 (defn- process-trace [in]
   (go (let [count (<? in)
