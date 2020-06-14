@@ -107,19 +107,16 @@
       (device/set-global-report global-name report?))
     (json-response "OK")))
 
-(defn global-report-handler []
-  (throw (Exception. "NOT IMPLEMENTED YET")))
-
-(defn- format-server-state [state available-ports output]
+(defn- format-server-state [state output]
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
-      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler)
+      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler :available-ports)
 
       ; NOTE(Richo): And then we add the missing keys
       (assoc :isConnected (:connected? state)
              :portName (:port-name state)
-             :availablePorts available-ports
+             :availablePorts (:available-ports state)
              :pins {:available (mapv (fn [pin-name]
                                        {:name pin-name
                                         :reporting (contains? (-> state :reporting :pins)
@@ -144,9 +141,7 @@
                           (filter :task? (-> state :scripts vals))))))
 
 (defn- get-server-state []
-  (format-server-state @device/state
-                       (device/available-ports)
-                       (logger/read-entries!)))
+  (format-server-state @device/state (logger/read-entries!)))
 
 (def ^:private updates (a/chan))
 (def ^:private updates-pub (a/pub updates :type))
@@ -170,7 +165,7 @@
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]
-    (ws/on-closed socket 
+    (ws/on-closed socket
                   (fn []
                     (a/unsub updates-pub topic in-chan)
                     (a/close! in-chan)))
