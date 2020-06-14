@@ -13,6 +13,7 @@
   (:use [clojure.repl]))
 
 (defn stop []
+  (dc/stop-port-scan)
   (dc/disconnect)
   (server/stop))
 
@@ -21,11 +22,7 @@
 
 (defn reload []
   (stop)
-  (repl/refresh))
-
-(defn restart []
-  (stop)
-  (repl/refresh :after 'user/start))
+  (repl/refresh :after 'dc/start-port-scan))
 
 (defn millis [] (System/currentTimeMillis))
 
