@@ -56,13 +56,15 @@
                     :profiler nil
                     :debugger nil
                     :memory {:arduino nil, :uzi nil}
-                    :program {:current nil, :running nil}})
+                    :program {:current nil, :running nil}
+                    :available-ports []})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
 
-(defn available-ports [] (su/get-port-names))
+(defn available-ports []
+  (vec (sort (su/get-port-names))))
 
 (defn connected? []
   (not (nil? (:port @state))))
@@ -419,3 +421,19 @@
              (start-reporting)
              (send-pins-reporting)
              (clean-up-reports))))))))
+
+(defonce ^:private port-scanning? (atom false))
+
+(defn stop-port-scan []
+  (reset! port-scanning? false))
+
+(defn start-port-scan []
+  (when (compare-and-set! port-scanning? false true)
+    (go-loop []
+      (when @port-scanning?
+        (when-not (connected?)
+          (swap! state assoc :available-ports (available-ports)))
+        (<! (timeout 1000))
+        (recur)))))
+
+(start-port-scan)
