@@ -22,6 +22,8 @@ class Simulator {
      this.interval = null;
      this.millisMock = null;
      this.lastTickStart = null;
+
+     this.expectedBkp = null;
    };
    
   getRandomInt(min, max){
@@ -53,6 +55,12 @@ class Simulator {
     while(true){
       if(this.pc <= this.getInstructionStop()){
         let instruction = this.getInstructionAt(this.pc);
+        if(instruction.breakpoint && instruction.breakpoint == this.expectedBkp){
+          
+          throw {
+            instruction: instruction
+          };
+        }
         this.pc++;
         this.executeInstruction(instruction);
       }
@@ -94,26 +102,15 @@ class Simulator {
     }
   }
   
-  executeUntilBreakPoint(bkp, safeguard){
-    if(this.currentScript.ticking){
-      if(true || this.currentScript.nextRun < this.millis()){
-        let next;
-        do {
-          safeguard--;
-
-          next = this.currentScript.instructions[this.pc];
-          if (next.breakpoint == bkp) {
-            break;
-          } else {
-            this.executeInstruction(next);
-            this.pc++;
-          }
-
-        } while (this.pc < this.currentScript.instructions.length && safeguard > 0);
-
-        if(safeguard <= 0){
-          throw 'Safeguard exception: the program ran out of cycles. Stopped running to avoid an infinite loop';
-        }
+  executeUntilBreakPoint(bkp, safeguard){ //TODO: it may not worki with yield in the middle of the scripts. Also delete safeguard?
+    this.expectedBkp = bkp;
+    try {
+      this.executeProgram();
+    } catch (error) {
+      if(error.instruction.breakpoint == bkp){
+        return;
+      }else{
+        throw error;
       }
     }
   }
@@ -260,7 +257,7 @@ class Simulator {
     }
     return this.stack.pop();
   }
-
+  
   executeInstruction(instruction) {
     if(instruction == undefined)
     {
