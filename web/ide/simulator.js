@@ -25,15 +25,53 @@ class Simulator {
 
      this.expectedBkp = null;
    };
-   
-  getRandomInt(min, max){
-    min = Math.trunc(min);
-    max = Math.trunc(max); //TO DO
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+
   updateProgram() {
     this.loadProgram(Uzi.state.program.current.compiled);
   }
+
+  loadProgram(program) {
+    this.pc = 0;
+    this.pins=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.stack = [];
+    this.callStack=[];
+    this.locals={};
+    this.loadGlobals(program);
+    this.loadScripts(program);
+    this.startDate = new Date();
+    this.currentProgram = program;
+  }
+
+  loadGlobals(program){
+    this.globals ={};
+    program.variables.forEach(
+      (v)=>{if(v.name!=null){
+        this.globals[v.name] = v.value;
+      }}
+    );
+  }
+
+  loadScripts(program){
+    this.scripts = {};
+    program.scripts.forEach(
+      (script)=>{
+        this.scripts[script.name] =script;
+        script.nextRun = 0;
+        //TODO: this should go into the coroutine start
+        script.lastStart = this.millis();
+      }
+    );
+  }
+
+  millis(){
+    if(this.millisMock == undefined){
+      let d = new Date();
+      return d - this.startDate;
+    }else{
+      return this.millisMock;
+    } 
+  }
+
   startProgram(speed){
     if (this.interval) return;
     this.interval = setInterval(()=>this.executeProgram(), speed);
@@ -101,163 +139,7 @@ class Simulator {
       }
     }
   }
-  
-  executeUntilBreakPoint(bkp, safeguard){ //TODO: it may not worki with yield in the middle of the scripts. Also delete safeguard?
-    this.expectedBkp = bkp;
-    try {
-      this.executeProgram();
-    } catch (error) {
-      if(error.instruction.breakpoint == bkp){
-        return;
-      }else{
-        throw error;
-      }
-    }
-  }
 
-  getInstructionStop(){
-    let ac = 0;
-    for(let i = 0; i < this.currentProgram.scripts.length; i++){
-      ac += this.currentProgram.scripts[i].instructions.length;
-      if(this.currentProgram.scripts[i] === this.currentScript){
-        break;
-      }
-    }
-    return ac - 1;
-  }
-
-  getInstructionStart(){
-    let ac = 0;
-    for(let i = 0; i < this.currentProgram.scripts.length; i++){
-      if(this.currentProgram.scripts[i] === this.currentScript){
-        break;
-      }
-      ac += this.currentProgram.scripts[i].instructions.length;
-    }
-    return ac;
-  }
-
-  getInstructionAt(pc){
-    let ac = 0;
-    for(let i = 0; i < this.currentProgram.scripts.length; i++){
-      if(this.currentProgram.scripts[i] === this.currentScript){
-        return this.currentScript.instructions[pc - ac];
-      }
-      ac += this.currentProgram.scripts[i].instructions.length;
-    }
-  }
-
-
-  stopProgram(){
-    if (!this.interval) return;
-    clearInterval(this.interval);
-    this.interval = null;
-  }
-
-  loadProgram(program) {
-    this.pc = 0;
-    this.pins=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    this.stack = [];
-    this.callStack=[];
-    this.locals={};
-    this.loadGlobals(program);
-    this.loadScripts(program);
-    this.startDate = new Date();
-    this.currentProgram = program;
-  }
-
-  loadGlobals(program){
-    this.globals ={};
-    program.variables.forEach(
-      (v)=>{if(v.name!=null){
-        this.globals[v.name] = v.value;
-      }}
-    );
-  }
-
-  loadScripts(program){
-    this.scripts = {};
-    program.scripts.forEach(
-      (script)=>{
-        this.scripts[script.name] =script;
-        script.nextRun = 0;
-        //TODO: this should go into the coroutine start
-        script.lastStart = this.millis();
-      }
-    );
-  }
-
-  writeConsole(pin) {
-    console.log(this.pins[pin]);
-  }
-
-  changeRandomPinValue() {
-    let r = getRandomInt(0,10);
-    this.pins[r] = Math.random();
-    console.log("Pin" + r + " = " + this.pins[r])
-  }
-  doReturn(){
-      if(this.callStack.length==0){
-        //TODO: Coroutine change
-          this.currentScript.nextRun = this.currentScript.lastStart + this.currentScript.delay.value;
-          this.currentScript.lastStart = this.millis();
-        }else{
-          let frame= this.callStack.pop();
-          this.currentScript=frame.returnScript;
-          this.locals=frame.returnLocals;
-          this.pc=frame.returnPC;
-          this.push(frame.returnValue);
-        }
-  }
-  
-
-  getPinValue(pinIndex){
-    if (this.pins[pinIndex] > 1) {
-      return 1;
-    }
-    else if (this.pins[pinIndex] < 0){
-      return 0;
-    }
-    else
-      return this.pins[pinIndex];
-  }
-  setPinValue(pin, value){
-    if (value > 1)
-      value = 1;
-    if (value < 0) {
-      value = 0;
-    }
-    this.pins[pin] = value;
-  }
-
-  getGlobalValue(global)
-  {
-    return this.globals[global];
-  }
-  setGlobalValue(global, value)
-  {
-    this.globals[global] = value;
-  }
-  getLocalValue(local)
-  {
-    return this.locals[local];
-  }
-  setLocalValue(local, value)
-  {
-    this.locals[local] = value;
-  }
-  push(value)
-  {
-    this.stack.push(value);
-  }
-  pop(){
-    if(this.stack.length==0)
-    {
-      throw "Stack Underflow";
-    }
-    return this.stack.pop();
-  }
-  
   executeInstruction(instruction) {
     if(instruction == undefined)
     {
@@ -299,13 +181,6 @@ class Simulator {
         // TODO(Richo): Implement this instruction!
 
       } break;
-      /////////////////
-      /*case 'turn_on':
-        this.pins[instruction.argument] = 1;
-        break;
-      case 'turn_off':
-        this.pins[instruction.argument] = 0;
-        break;*/
       case'write_pin':
         this.pins[instruction.argument] = this.pop();
         break;
@@ -419,32 +294,19 @@ class Simulator {
     }
   }
 
-  incrementMillisAndExecute(increment){
-    let millis = this.millis();
-    for(let i = 0; i < increment; i++){
-      this.setMillis(this.millis + i);
-      this.executeProgram();
-    }
-  }
-  
-  setMillis(millis){
-    this.millisMock = millis;
-  }
-
-  millis(){
-    if(this.millisMock == undefined){
-      let d = new Date();
-      return d - this.startDate;
-    }else{
-      return this.millisMock;
-    }
-      
-  }
-
-  doYield(){
-
-  }
-
+  doReturn(){
+    if(this.callStack.length==0){
+      //TODO: Coroutine change
+        this.currentScript.nextRun = this.currentScript.lastStart + this.currentScript.delay.value;
+        this.currentScript.lastStart = this.millis();
+      }else{
+        let frame= this.callStack.pop();
+        this.currentScript=frame.returnScript;
+        this.locals=frame.returnLocals;
+        this.pc=frame.returnPC;
+        this.push(frame.returnValue);
+      }
+}
 
   executePrimitive(prim) {
     switch (prim.name) {
@@ -722,8 +584,126 @@ class Simulator {
         throw "Missing primitive "+ prim.name;
     }
   }
+  
+  executeUntilBreakPoint(bkp, safeguard){ //TODO: it may not work with yield in the middle of the scripts. Also delete safeguard?
+    this.expectedBkp = bkp;
+    try {
+      this.executeProgram();
+    } catch (error) {
+      if(error.instruction.breakpoint == bkp){
+        return;
+      }else{
+        throw error;
+      }
+    }
+  }
 
-  //setInterval(changeRandomPinValue, 1000);
+  getInstructionStop(){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      ac += this.currentProgram.scripts[i].instructions.length;
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        break;
+      }
+    }
+    return ac - 1;
+  }
+
+  getInstructionStart(){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        break;
+      }
+      ac += this.currentProgram.scripts[i].instructions.length;
+    }
+    return ac;
+  }
+
+  getInstructionAt(pc){
+    let ac = 0;
+    for(let i = 0; i < this.currentProgram.scripts.length; i++){
+      if(this.currentProgram.scripts[i] === this.currentScript){
+        return this.currentScript.instructions[pc - ac];
+      }
+      ac += this.currentProgram.scripts[i].instructions.length;
+    }
+  }
+
+  stopProgram(){
+    if (!this.interval) return;
+    clearInterval(this.interval);
+    this.interval = null;
+  }
+  
+  getRandomInt(min, max){
+    min = Math.trunc(min);
+    max = Math.trunc(max); //TO DO
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  getPinValue(pinIndex){
+    if (this.pins[pinIndex] > 1) {
+      return 1;
+    }
+    else if (this.pins[pinIndex] < 0){
+      return 0;
+    }
+    else
+      return this.pins[pinIndex];
+  }
+  setPinValue(pin, value){
+    if (value > 1)
+      value = 1;
+    if (value < 0) {
+      value = 0;
+    }
+    this.pins[pin] = value;
+  }
+
+  getGlobalValue(global)
+  {
+    return this.globals[global];
+  }
+  setGlobalValue(global, value)
+  {
+    this.globals[global] = value;
+  }
+  getLocalValue(local)
+  {
+    return this.locals[local];
+  }
+  setLocalValue(local, value)
+  {
+    this.locals[local] = value;
+  }
+  push(value)
+  {
+    this.stack.push(value);
+  }
+  pop(){
+    if(this.stack.length==0)
+    {
+      throw "Stack Underflow";
+    }
+    return this.stack.pop();
+  }
+
+  incrementMillisAndExecute(increment){
+    let millis = this.millis();
+    for(let i = 0; i < increment; i++){
+      this.setMillis(this.millis + i);
+      this.executeProgram();
+    }
+  }
+  
+  setMillis(millis){
+    this.millisMock = millis;
+  }
+
+  doYield(){
+
+  }
   
 };
 
