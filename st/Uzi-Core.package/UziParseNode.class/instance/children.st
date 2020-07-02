@@ -1,3 +1,0 @@
-enumerating
-children
-	self subclassResponsibility

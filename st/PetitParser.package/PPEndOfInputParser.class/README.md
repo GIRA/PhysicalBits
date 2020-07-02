@@ -1,1 +1,0 @@
-A parser that succeeds only at the end of the input stream.

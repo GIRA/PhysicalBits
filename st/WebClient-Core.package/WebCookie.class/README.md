@@ -1,1 +1,0 @@
-WebCookie represents an http cookie for use by WebClient.

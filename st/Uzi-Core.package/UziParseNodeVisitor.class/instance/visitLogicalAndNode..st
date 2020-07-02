@@ -1,3 +1,0 @@
-visiting
-visitLogicalAndNode: node
-	self subclassResponsibility

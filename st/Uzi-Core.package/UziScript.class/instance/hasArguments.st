@@ -1,3 +1,0 @@
-testing
-hasArguments
-	^ arguments notEmpty 

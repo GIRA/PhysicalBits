@@ -1,3 +1,0 @@
-running programs
-installRunningProgram
-	controller installRunningProgram

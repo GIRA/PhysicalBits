@@ -1,3 +1,0 @@
-visiting
-visitForeverNode: node
-	self subclassResponsibility

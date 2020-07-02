@@ -1,3 +1,0 @@
-visiting
-visitReturnNode: node
-	self subclassResponsibility

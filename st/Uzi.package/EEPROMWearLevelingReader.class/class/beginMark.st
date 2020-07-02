@@ -1,3 +1,0 @@
-constants
-beginMark 
-	^ EEPROMWearLevelingWriter beginMark 

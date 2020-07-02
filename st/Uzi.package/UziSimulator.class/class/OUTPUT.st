@@ -1,3 +1,0 @@
-constants
-OUTPUT
-	^ 1

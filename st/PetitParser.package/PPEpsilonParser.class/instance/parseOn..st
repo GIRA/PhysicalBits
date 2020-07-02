@@ -1,3 +1,0 @@
-parsing
-parseOn: aStream
-	^ nil

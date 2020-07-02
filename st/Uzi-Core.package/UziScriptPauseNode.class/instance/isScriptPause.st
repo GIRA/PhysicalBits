@@ -1,3 +1,0 @@
-visiting
-isScriptPause
-	^ true

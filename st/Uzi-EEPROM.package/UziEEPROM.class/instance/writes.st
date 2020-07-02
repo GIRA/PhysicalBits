@@ -1,3 +1,0 @@
-usage stats
-writes
-	^ writes

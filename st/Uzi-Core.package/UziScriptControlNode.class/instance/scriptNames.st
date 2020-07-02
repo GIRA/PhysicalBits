@@ -1,3 +1,0 @@
-accessing
-scriptNames
-	^ self scripts

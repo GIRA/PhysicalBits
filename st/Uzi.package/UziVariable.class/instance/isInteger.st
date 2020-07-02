@@ -1,3 +1,0 @@
-testing
-isInteger 
-	^ value isInteger 

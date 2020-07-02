@@ -1,3 +1,0 @@
-accessing
-scriptName
-	^ innerScript name

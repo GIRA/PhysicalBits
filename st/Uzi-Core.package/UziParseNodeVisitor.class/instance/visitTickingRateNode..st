@@ -1,3 +1,0 @@
-visiting
-visitTickingRateNode: node
-	self subclassResponsibility

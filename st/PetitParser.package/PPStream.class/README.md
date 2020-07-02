@@ -1,1 +1,0 @@
-A positional stream implementation used for parsing. It overrides some methods for optimization reasons.

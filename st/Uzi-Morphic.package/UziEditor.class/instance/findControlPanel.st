@@ -1,3 +1,0 @@
-accessing
-findControlPanel
-	^ UziControlPanelMorph findInWorld

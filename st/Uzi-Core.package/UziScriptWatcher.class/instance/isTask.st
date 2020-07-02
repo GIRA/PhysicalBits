@@ -1,3 +1,0 @@
-accessing
-isTask
-	^ script isTask

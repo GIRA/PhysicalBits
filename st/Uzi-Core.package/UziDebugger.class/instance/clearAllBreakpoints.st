@@ -1,4 +1,0 @@
-accesing-breakpoints
-clearAllBreakpoints
-	userBreakpoints removeAll.
-	debuggerBreakpoints removeAll

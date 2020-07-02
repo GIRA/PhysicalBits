@@ -1,3 +1,0 @@
-visiting
-visitScriptPauseNode: node
-	self subclassResponsibility

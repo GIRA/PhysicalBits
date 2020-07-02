@@ -1,3 +1,0 @@
-server
-isServerStarted
-	^ server notNil

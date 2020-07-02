@@ -1,3 +1,0 @@
-accessing
-isConnected
-	^ controller isConnected

@@ -1,3 +1,0 @@
-json encoding
-jsonExcludedInstVarNames
-	^ #('node')

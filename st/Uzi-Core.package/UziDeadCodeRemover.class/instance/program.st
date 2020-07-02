@@ -1,3 +1,0 @@
-accessing
-program
-	^ path last

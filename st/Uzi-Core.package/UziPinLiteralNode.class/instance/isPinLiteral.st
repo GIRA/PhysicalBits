@@ -1,3 +1,0 @@
-testing
-isPinLiteral
-	^ true

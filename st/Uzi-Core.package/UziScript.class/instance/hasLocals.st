@@ -1,3 +1,0 @@
-testing
-hasLocals
-	^ locals notEmpty 

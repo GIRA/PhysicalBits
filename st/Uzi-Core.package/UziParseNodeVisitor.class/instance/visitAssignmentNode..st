@@ -1,3 +1,0 @@
-visiting
-visitAssignmentNode: node
-	self subclassResponsibility

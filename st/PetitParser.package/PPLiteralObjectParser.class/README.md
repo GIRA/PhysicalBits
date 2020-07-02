@@ -1,1 +1,0 @@
-A parser that accepts a single literal object, such as a character. This is the same as the predicate parser 'PPPredicateParser expect: literal' but slightly more efficient.

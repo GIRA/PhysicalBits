@@ -1,3 +1,0 @@
-sending
-sendContinue
-	controller sendContinue

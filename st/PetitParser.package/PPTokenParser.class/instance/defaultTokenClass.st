@@ -1,3 +1,0 @@
-private
-defaultTokenClass
-	^ PPToken

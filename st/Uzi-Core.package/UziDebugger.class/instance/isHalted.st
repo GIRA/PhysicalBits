@@ -1,3 +1,0 @@
-testing
-isHalted
-	^ pc notNil

@@ -1,1 +1,0 @@
-A common base class for WebRequest and WebResponse.

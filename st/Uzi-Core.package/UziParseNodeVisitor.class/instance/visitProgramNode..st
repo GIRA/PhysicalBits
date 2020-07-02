@@ -1,3 +1,0 @@
-visiting
-visitProgramNode: node
-	self subclassResponsibility

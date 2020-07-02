@@ -1,3 +1,0 @@
-testing
-isTickingRate
-	^ false

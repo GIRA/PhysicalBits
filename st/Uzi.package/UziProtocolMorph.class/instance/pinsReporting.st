@@ -1,3 +1,0 @@
-accessing
-pinsReporting
-	^ protocol pinsReporting

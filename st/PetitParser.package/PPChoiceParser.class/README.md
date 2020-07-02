@@ -1,1 +1,0 @@
-A parser that uses the first parser that succeeds.

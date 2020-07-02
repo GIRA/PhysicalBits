@@ -1,1 +1,0 @@
-Exception signaled when authentication is required.
