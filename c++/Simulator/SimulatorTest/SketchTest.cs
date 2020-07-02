@@ -18,7 +18,7 @@ namespace SimulatorTest
 
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
-        private const byte MINOR_VERSION = 6;
+        private const byte MINOR_VERSION = 7;
         private const byte KEEP_ALIVE = 7;
 
         public TestContext TestContext { get; set; }
