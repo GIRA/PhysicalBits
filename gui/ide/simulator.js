@@ -44,23 +44,22 @@ class Simulator {
 
   loadGlobals(program){
     this.globals ={};
-    program.variables.forEach(
-      (v)=>{if(v.name!=null){
+    program.globals.forEach((v) => {
+      if(v.name!=null){
         this.globals[v.name] = v.value;
-      }}
-    );
+      }
+    });
   }
 
   loadScripts(program){
     this.scripts = {};
-    program.scripts.forEach(
-      (script)=>{
-        this.scripts[script.name] =script;
-        script.nextRun = 0;
-        //TODO: this should go into the coroutine start
-        script.lastStart = this.millis();
-      }
-    );
+    program.scripts.forEach((script)=>{
+      this.scripts[script.name] = script;
+      script.nextRun = 0;
+      script.ticking = script["running?"];
+      //TODO: this should go into the coroutine start
+      script.lastStart = this.millis();
+    });
   }
 
   millis(){
@@ -69,7 +68,7 @@ class Simulator {
       return d - this.startDate;
     }else{
       return this.millisMock;
-    } 
+    }
   }
 
   startProgram(speed){
@@ -94,7 +93,7 @@ class Simulator {
       if(this.pc <= this.getInstructionStop()){
         let instruction = this.getInstructionAt(this.pc);
         if(instruction.breakpoint && instruction.breakpoint == this.expectedBkp){
-          
+
           throw {
             instruction: instruction
           };
@@ -584,7 +583,7 @@ class Simulator {
         throw "Missing primitive "+ prim.name;
     }
   }
-  
+
   executeUntilBreakPoint(bkp, safeguard){ //TODO: it may not work with yield in the middle of the scripts. Also delete safeguard?
     this.expectedBkp = bkp;
     try {
@@ -635,7 +634,7 @@ class Simulator {
     clearInterval(this.interval);
     this.interval = null;
   }
-  
+
   getRandomInt(min, max){
     min = Math.trunc(min);
     max = Math.trunc(max); //TO DO
@@ -696,7 +695,7 @@ class Simulator {
       this.executeProgram();
     }
   }
-  
+
   setMillis(millis){
     this.millisMock = millis;
   }
@@ -704,7 +703,7 @@ class Simulator {
   doYield(){
 
   }
-  
+
 };
 
 if(typeof module != "undefined")
