@@ -45,6 +45,8 @@ You can find the latest release [here](https://github.com/GIRA/UziScript/release
 
 ## Usage
 
+IMPORTANT: This whole section is outdated since v0.3.
+
 After unzipping the package you'll find two folders: "UziFirmware" and "Tools". 
 
 For every board you want to use with UziScript you'll first need to upload the firmware. This is a very simple procedure, since the UziScript firmware is just an Arduino sketch you can use the Arduino IDE as you would with any other sketch. For more detailed instructions on how to upload sketches, see [here](https://www.arduino.cc/en/Guide/Environment).
