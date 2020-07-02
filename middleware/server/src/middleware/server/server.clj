@@ -207,7 +207,7 @@
 
 (defn start [& {:keys [uzi-libraries web-resources server-port]
                 :or {uzi-libraries "../../uzi/libraries"
-                     web-resources "../../web"
+                     web-resources "../../gui"
                      server-port 3000}}]
   (when (nil? @server)
     (start-update-loop)
