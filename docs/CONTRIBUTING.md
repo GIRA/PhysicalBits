@@ -1,5 +1,7 @@
 ## Contributing
 
+IMPORTANT: This whole document is outdated since v0.3.
+
 First of all, thank you for your interest in the project. Depending on what you're trying to do you'll need some basic knowledge of C/C++, Smalltalk, and HTML/Javascript. Below you'll find instructions on how to get started.
 
 ### Folder structure
