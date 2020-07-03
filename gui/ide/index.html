@@ -564,6 +564,8 @@
     <script src="uzi.js" type="text/javascript" ></script>
     <script>
     $(document).ready(function () {
+      i18n.init(TRANSLATIONS);
+
       Uzi.start(location.host ? "" : "localhost:3000").then(IDE.init);
 
       // HACK(Richo): To show some messages while waiting for the server to start

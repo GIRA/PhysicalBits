@@ -764,8 +764,6 @@
     let defaultLanguage    = "es";
     let preferredLanguage  = undefined;
 
-    i18n.init(TRANSLATIONS);
-
     for (let i = 0; i < navigatorLanguages.length; i++) {
       let languageCode = navigatorLanguages[i];
       if (i18n.availableLocales.includes(languageCode)) {
