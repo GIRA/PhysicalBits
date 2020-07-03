@@ -154,7 +154,10 @@
       <tbody>
         <tr>
           <td class="align-middle text-center">
-            <i class="fas fa-circle-notch fa-spin fa-5x"></i>
+            <div>
+              <p><i class="fas fa-circle-notch fa-spin fa-5x"></i></p>
+              <h4 id="spinner-label"></h4>
+            </div>
           </td>
         </tr>
       </tbody>
@@ -562,6 +565,10 @@
     <script>
     $(document).ready(function () {
       Uzi.start(location.host ? "" : "localhost:3000").then(IDE.init);
+
+      // HACK(Richo): To show some messages while waiting for the server to start
+      setTimeout(() => $("#spinner-label").text(i18n.translate("Starting server...")), 1500);
+      setTimeout(() => $("#spinner-label").text(i18n.translate("Connecting to server...")), 1500+4000);
     });
     </script>
   </body>
