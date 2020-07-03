@@ -567,8 +567,9 @@
       Uzi.start(location.host ? "" : "localhost:3000").then(IDE.init);
 
       // HACK(Richo): To show some messages while waiting for the server to start
-      setTimeout(() => $("#spinner-label").text(i18n.translate("Starting server...")), 1500);
-      setTimeout(() => $("#spinner-label").text(i18n.translate("Connecting to server...")), 1500+4000);
+      setTimeout(() => $("#spinner-label").text(i18n.translate("Loading...")), 500);
+      setTimeout(() => $("#spinner-label").text(i18n.translate("Starting server...")), 500+2000);
+      setTimeout(() => $("#spinner-label").text(i18n.translate("Connecting to server...")), 2500+5000);
     });
     </script>
   </body>
