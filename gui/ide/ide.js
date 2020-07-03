@@ -926,6 +926,7 @@
   }
 
   function newProject() {
+    // TODO(Richo): Implement our own confirm dialog
 		if (confirm("You will lose all your unsaved changes. Are you sure?")) {
 			UziBlock.getWorkspace().clear();
 		}
@@ -955,6 +956,7 @@
   }
 
   function saveProject() {
+    // TODO(Richo): Implement our own prompt dialog
     lastFileName = prompt("File name:", lastFileName || "program.phb");
     if (lastFileName === null) return;
     if (!lastFileName.endsWith(".phb")) {
@@ -975,6 +977,7 @@
     let value = $("#port-dropdown").val();
     if (value == "other") {
       let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
+      // TODO(Richo): Implement our own prompt dialog
       value = prompt("Port name:", defaultOption);
       if (!value) { value = selectedPort; }
       else if (userPorts.indexOf(value) < 0) {
