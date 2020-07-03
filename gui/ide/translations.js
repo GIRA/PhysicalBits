@@ -3,6 +3,10 @@ var TRANSLATIONS = [
   // spec
   ["label", "uzi", "en", "es", "et", "se"],
 
+  ["Loading...", "Loading...", "Loading...", "Cargando...", "Loading...", "Loading..."],
+  ["Starting server...", "Starting server...", "Starting server...", "Iniciando el servidor...", "Starting server...", "Starting server..."],
+  ["Connecting to server...", "Connecting to server...", "Connecting to server...", "Conectándose al servidor...", "Connecting to server...", "Connecting to server..."],
+
   ["New...", "New...", "New...", "Nuevo...", "Uus...", "Ny..."],
   ["Open...", "Open...", "Open...", "Abrir...", "Ava...", "Öppna..."],
   ["Save...", "Save...", "Save...", "Guardar...", "Salvesta...", "Spara..."],
