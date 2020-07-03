@@ -1,6 +1,23 @@
 const { app, BrowserWindow } = require('electron')
 const { spawn } = require('child_process');
 
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  app.quit();
+  return;
+}
+
+let win;
+
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+  // Someone tried to run a second instance, we should focus our window.
+  if (win) {
+    if (win.isMinimized()) win.restore();
+    win.focus();
+  }
+});
+
 // TODO(Richo): Allow to configure paths
 const server = spawn('java', ['-jar', '../server/target/uberjar/middleware-0.3.0-SNAPSHOT-standalone.jar',
                               '-w', '../../gui',
@@ -8,7 +25,7 @@ const server = spawn('java', ['-jar', '../server/target/uberjar/middleware-0.3.0
 
 function createWindow () {
   // Create the browser window.
-  const win = new BrowserWindow({
+  win = new BrowserWindow({
     show: false,
     autoHideMenuBar: true
   });
@@ -21,9 +38,6 @@ function createWindow () {
   win.show();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(createWindow);
 
 // Quit when all windows are closed, except on macOS. There, it's common
