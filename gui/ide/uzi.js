@@ -1,19 +1,25 @@
 let Uzi = (function () {
 
   let id = Math.floor(Math.random() * (2**64));
-  let baseUrl = "";
+  let host = "";
+  let apiURL = "";
+  let wsURL = "";
   let observers = {
     "update" : [],
     "server-disconnect" : []
   };
+
+
 
   let Uzi = {
     state: null,
     serverAvailable: true,
     socket: null,
 
-    start: function (url) {
-      baseUrl = url || "";
+    start: function (preferredHost) {
+      host = preferredHost || "";
+      apiURL = host ? "http://" + host : "";
+      wsURL = "ws://" + (host || location.host);
       return updateLoop();
     },
 
@@ -22,19 +28,19 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
-      let url = baseUrl + "/uzi/connect";
+      let url = apiURL + "/uzi/connect";
       let data = { id: id, port: port };
       return POST(url, data);
     },
 
     disconnect: function () {
-      let url = baseUrl + "/uzi/disconnect";
+      let url = apiURL + "/uzi/disconnect";
       let data = { id: id };
       return POST(url, data);
     },
 
 		compile: function (src, type, silent) {
-      let url = baseUrl + "/uzi/compile";
+      let url = apiURL + "/uzi/compile";
       let data = {
         id: id,
         src: src,
@@ -45,7 +51,7 @@ let Uzi = (function () {
   	},
 
     run: function (src, type, silent) {
-      let url = baseUrl + "/uzi/run";
+      let url = apiURL + "/uzi/run";
       let data = {
         id: id,
         src: src,
@@ -56,7 +62,7 @@ let Uzi = (function () {
   	},
 
     install: function (src, type) {
-      let url = baseUrl + "/uzi/install";
+      let url = apiURL + "/uzi/install";
       let data = {
         id: id,
         src: src,
@@ -66,7 +72,7 @@ let Uzi = (function () {
     },
 
     setPinReport: function (pins, report) {
-      let url = baseUrl + "/uzi/pin-report";
+      let url = apiURL + "/uzi/pin-report";
       let data = {
         id: id,
         pins: Array.from(pins).join(","),
@@ -76,7 +82,7 @@ let Uzi = (function () {
     },
 
     setGlobalReport: function (globals, report) {
-      let url = baseUrl + "/uzi/global-report";
+      let url = apiURL + "/uzi/global-report";
       let data = {
         id: id,
         globals: Array.from(globals).join(","),
@@ -130,7 +136,7 @@ let Uzi = (function () {
   function updateLoop() {
     return new Promise((resolve, reject) => {
       try {
-        let socket = new WebSocket("ws://" + location.host + "/uzi");
+        let socket = new WebSocket(wsURL + "/uzi");
         let msgReceived = false;
         socket.onerror = function (err) {
           reject(err);
