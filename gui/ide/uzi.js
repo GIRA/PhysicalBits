@@ -20,7 +20,19 @@ let Uzi = (function () {
       host = preferredHost || "";
       apiURL = host ? "http://" + host : "";
       wsURL = "ws://" + (host || location.host);
-      return updateLoop();
+
+      return new Promise((resolve, reject) => {
+        let i = 0;
+        let begin = +new Date();
+        function connect() {
+          console.log("ATTEMPT: " + (++i));
+          console.log("Elapsed time: " + ((+new Date()) - begin));
+          updateLoop().then(resolve).catch(err => {
+            setTimeout(connect, 500);
+          });
+        }
+        connect();
+      });
     },
 
     on: function (evt, callback) {
