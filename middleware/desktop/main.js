@@ -1,12 +1,10 @@
 const { app, BrowserWindow } = require('electron')
 const { spawn } = require('child_process');
+const fs = require('fs');
 
-const gotTheLock = app.requestSingleInstanceLock();
+if (!app.requestSingleInstanceLock()) { return app.quit(); }
 
-if (!gotTheLock) {
-  app.quit();
-  return;
-}
+const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
 
 let win;
 
@@ -18,10 +16,7 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
   }
 });
 
-// TODO(Richo): Allow to configure paths
-const server = spawn('java', ['-jar', '../server/target/uberjar/middleware-0.3.0-SNAPSHOT-standalone.jar',
-                              '-w', '../../gui',
-                              '-u', '../../uzi/libraries']);
+const server = spawn('java', ['-jar', config.jar, '-w', config.web, '-u', config.uzi]);
 
 function createWindow () {
   // Create the browser window.
@@ -31,10 +26,12 @@ function createWindow () {
   });
 
   // TODO(Richo): Allow to config path
-  win.loadFile('../../gui/ide/index.html');
+  win.loadFile(config.index);
   win.maximize();
 
-  win.webContents.openDevTools();
+  if (config.devTools) {
+    win.webContents.openDevTools();
+  }
   win.show();
 }
 

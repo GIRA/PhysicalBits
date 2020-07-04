@@ -1,0 +1,7 @@
+{
+  "jar": "../server/target/uberjar/middleware-0.3.0-SNAPSHOT-standalone.jar",
+  "web": "../../gui",
+  "uzi": "../../uzi/libraries",
+  "index": "../../gui/ide/index.html",
+  "devTools": true
+}
