@@ -2,7 +2,7 @@
 let i18n = (function () {
     let spec = [],
         locales = {},
-	availableLocales = [],
+	      availableLocales = [],
         current = "en",
         untranslatable = [];
 
@@ -30,6 +30,36 @@ let i18n = (function () {
                 locale[row[0]] = row[j];
             }
         }
+
+        chooseCurrentLocale();
+    }
+
+    function chooseCurrentLocale() {
+      let preferredLanguage  = "en"; // Default
+
+      let userLanguage = localStorage["i18n.userLanguage"];
+      if (userLanguage) {
+        preferredLanguage = userLanguage;
+      } else {
+        let navigatorLanguages = getNavigatorLanguages();
+        for (let i = 0; i < navigatorLanguages.length; i++) {
+          let languageCode = navigatorLanguages[i];
+          if (availableLocales.includes(languageCode)) {
+            preferredLanguage = languageCode;
+            break;
+          }
+        }
+      }
+
+      currentLocale(preferredLanguage);
+    }
+
+    function getNavigatorLanguages() {
+      if (navigator.languages && navigator.languages.length) {
+        return navigator.languages;
+      } else {
+        return [navigator.userLanguage || navigator.language || navigator.browserLanguage];
+      }
     }
 
     function on (evt, callback) {
@@ -60,7 +90,7 @@ let i18n = (function () {
     function currentLocale (newLocale) {
         if (newLocale === undefined) return current;
 
-        current = newLocale;
+        current = localStorage["i18n.userLanguage"] = newLocale;
         trigger("change");
         updateUI();
     }
