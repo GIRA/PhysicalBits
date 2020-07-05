@@ -1,5 +1,5 @@
 {
   "startServer": true,
-  "index": "release/middleware/gui/ide/index.html",
+  "index": "../../gui/ide/index.html",
   "devTools": false
 }

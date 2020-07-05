@@ -31,10 +31,10 @@ if (config.startServer) {
   */
   if (process.platform === 'win32') {
     server = spawn('cmd.exe', ['/c', 'start.bat'], {
-      cwd: app.getAppPath() + '/release'
+      cwd: app.getAppPath()
     });
   } else {
-    server = spawn(app.getAppPath() + '/release/start.sh');
+    server = spawn(app.getAppPath() + '/start.sh');
   }
 }
 
