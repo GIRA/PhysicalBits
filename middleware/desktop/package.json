@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "dependencies": {},
+  "dependencies": {
+    "electron-log": "^4.2.2",
+    "tree-kill": "^1.2.2"
+  },
   "devDependencies": {
-    "electron": "^9.0.5",
-    "electron-packager": "^15.0.0",
-    "node-static": "^0.7.11"
+    "electron": "^9.0.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
