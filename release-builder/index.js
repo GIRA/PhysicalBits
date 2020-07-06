@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const ncp = require('ncp').ncp;
 const { exec } = require('child_process');
+const archiver = require('archiver');
 
 
 function nop() { /* Do nothing */ }
@@ -35,7 +36,8 @@ function webRelease() {
     .then(() => copyGUI(outFolder))
     .then(() => copyUziLibraries(outFolder))
     .then(() => copyServerJAR(outFolder))
-    .then(() => createStartScripts(outFolder, true));
+    .then(() => createStartScripts(outFolder, true))
+    .then(() => createZip(outFolder));
 }
 
 function desktopRelease() {
@@ -47,13 +49,15 @@ function desktopRelease() {
         console.log("\nBuilding " + folder);
         let packageFolder = outFolder + "/" + folder;
         let appFolder = packageFolder + "/resources/app";
+        let finalFolder = releasesFolder + "/" + folder.replace(appName, appName + "." + version);
         return copyFirmware(packageFolder)
           .then(() => copyGUI(appFolder))
           .then(() => copyUziLibraries(appFolder))
           .then(() => copyServerJAR(appFolder))
           .then(() => createStartScripts(appFolder, false))
           .then(() => createConfigJSON(appFolder))
-          .then(() => fs.rename(packageFolder, releasesFolder + "/" + folder.replace(appName, appName + "." + version)));
+          .then(() => fs.rename(packageFolder, finalFolder))
+          .then(() => createZip(finalFolder));
       })))
     .then(() => fs.rmdir(outFolder));
 }
@@ -123,6 +127,11 @@ function createConfigJSON(path) {
   return fs.writeFile(path + "/config.json", JSON.stringify(config));
 }
 
+function createZip(path) {
+  console.log("Creating zip file");
+  return zipDirectory(path).catch(log);
+}
+
 function copyDir(source, destination) {
   return new Promise((resolve, reject) => {
     fs.mkdir(destination, { recursive: true }).catch(nop).then(() => {
@@ -148,5 +157,20 @@ function executeCmd(cmd, cwd) {
     p.stderr.on("data", (data) => { console.log(data.toString().trim()); });
     p.on('exit', (code) => { console.log("--- Process (PID: " + p.pid + ") exited with code " + code) });
     console.log("--- Started process (PID: " + p.pid + ") $ " + cwd + " > " + cmd);
+  });
+}
+
+function zipDirectory(path) {
+  return new Promise((resolve, reject) => {
+
+    var output = require('fs').createWriteStream(path + ".zip");
+    var archive = archiver('zip', { zlib: { level: 9 }});
+
+    output.on("close", resolve);
+    archive.on("error", reject);
+    archive.pipe(output);
+
+    archive.directory(path, false);
+    archive.finalize();
   });
 }
