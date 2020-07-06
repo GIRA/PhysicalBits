@@ -14,6 +14,7 @@ Promise.each = function(arr, fn) {
   }, Promise.resolve());
 }
 
+const appName = "PhysicalBITS";
 const releasesFolder = "out";
 const version = process.argv[2];
 if (!version) {
@@ -27,7 +28,7 @@ createServerJAR()
 
 
 function webRelease() {
-  let outFolder = releasesFolder + "/UziScript." + version + "-web";
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-web";
   console.log("\nBuilding " + outFolder);
   return createOutFolder(outFolder)
     .then(() => copyFirmware(outFolder))
@@ -38,26 +39,27 @@ function webRelease() {
 }
 
 function desktopRelease() {
-  let outFolder = releasesFolder + "/UziScript." + version + "-desktop";
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-desktop";
   return createElectronPackages()
     .then(() => copyElectronPackages(outFolder))
     .then(() => fs.readdir(outFolder)
-      .then(folders => Promise.resolve(folders.map(folder => outFolder + "/" + folder)))
       .then(folders => Promise.each(folders, folder => {
         console.log("\nBuilding " + folder);
-
-        let appFolder = folder + "/resources/app";
-        return copyFirmware(folder)
+        let packageFolder = outFolder + "/" + folder;
+        let appFolder = packageFolder + "/resources/app";
+        return copyFirmware(packageFolder)
           .then(() => copyGUI(appFolder))
           .then(() => copyUziLibraries(appFolder))
           .then(() => copyServerJAR(appFolder))
           .then(() => createStartScripts(appFolder, false))
-          .then(() => createConfigJSON(appFolder));
-      })));
+          .then(() => createConfigJSON(appFolder))
+          .then(() => fs.rename(packageFolder, releasesFolder + "/" + folder.replace(appName, appName + "." + version)));
+      })))
+    .then(() => fs.rmdir(outFolder));
 }
 
 function createElectronPackages() {
-  let cmd = "electron-packager . PhysicalBITS --platform=win32 --arch=all --out=out --overwrite";
+  let cmd = "electron-packager . " + appName + " --platform=win32 --arch=all --out=out --overwrite";
   console.log("\nCreating electron packages");
   return executeCmd(cmd, "../middleware/desktop").catch(log);
 }
