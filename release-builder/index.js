@@ -2,6 +2,7 @@ const fs = require('fs').promises;
 const ncp = require('ncp').ncp;
 const { exec } = require('child_process');
 const archiver = require('archiver');
+const rimraf = require('rimraf');
 
 function nop() { /* Do nothing */ }
 function log() { console.log(arguments); }
@@ -22,7 +23,8 @@ if (!version) {
   return;
 }
 
-createServerJAR()
+removeDir(releasesFolder)
+  .then(createServerJAR)
   .then(webRelease)
   .then(desktopRelease);
 
@@ -66,11 +68,13 @@ function desktopRelease() {
 }
 
 function createElectronPackages() {
-  let platforms = ["win32", "darwin"];
-  return Promise.each(platforms, platform => {
-    console.log("\nCreating " + platform + " electron packages");
-    let cmd = "electron-packager . " + appName + " --platform=" + platform + " --arch=all --out=out --overwrite";
-    return executeCmd(cmd, "../middleware/desktop").catch(log);
+  return removeDir("../middleware/desktop/out").then(() => {
+    let platforms = ["win32", "darwin"];
+    return Promise.each(platforms, platform => {
+      console.log("\nCreating " + platform + " electron packages");
+      let cmd = "electron-packager . " + appName + " --platform=" + platform + " --arch=all --out=out --overwrite";
+      return executeCmd(cmd, "../middleware/desktop").catch(log);
+    });
   });
 }
 
@@ -178,5 +182,11 @@ function zipDirectory(path) {
 
     archive.directory(path, false);
     archive.finalize();
+  });
+}
+
+function removeDir(path) {
+  return new Promise((resolve, reject) => {
+    rimraf(path, resolve);
   });
 }
