@@ -61,9 +61,12 @@ function desktopRelease() {
 }
 
 function createElectronPackages() {
-  let cmd = "electron-packager . " + appName + " --platform=win32 --arch=all --out=out --overwrite";
-  console.log("\nCreating electron packages");
-  return executeCmd(cmd, "../middleware/desktop").catch(log);
+  let platforms = ["win32", "darwin"];
+  return Promise.each(platforms, platform => {
+    console.log("\nCreating " + platform + " electron packages");
+    let cmd = "electron-packager . " + appName + " --platform=" + platform + " --arch=all --out=out --overwrite";
+    return executeCmd(cmd, "../middleware/desktop").catch(log);
+  });
 }
 
 function copyElectronPackages(path) {
