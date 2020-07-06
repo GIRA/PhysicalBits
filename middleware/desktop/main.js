@@ -10,8 +10,7 @@ log.transports.console.level = true;
 
 if (!app.requestSingleInstanceLock()) { return app.quit(); }
 
-//const config = JSON.parse(fs.readFileSync('config.json', 'utf-8'));
-const config = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'config.json'), 'utf-8'));
+const config = JSON.parse(fs.readFileSync(path.resolve(app.getAppPath(), 'config.json'), 'utf-8'));
 log.info(config);
 let win;
 
@@ -25,16 +24,10 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
 
 let server;
 if (config.startServer) {
-  /*
-  server = spawn(path.resolve(__dirname, 'jdk-12.0.1', 'bin', 'java'),
-                  ['-jar', config.jar, '-w', config.web, '-u', config.uzi]);
-  */
   if (process.platform === 'win32') {
-    server = spawn('cmd.exe', ['/c', 'start.bat'], {
-      cwd: app.getAppPath()
-    });
+    server = spawn('cmd.exe', ['/c', 'start.bat'], { cwd: app.getAppPath() });
   } else {
-    server = spawn(app.getAppPath() + '/start.sh');
+    server = spawn('./start.sh', { cwd: app.getAppPath() });
   }
 }
 
@@ -52,7 +45,6 @@ function killServer() {
 }
 
 function createWindow () {
-  // Create the browser window.
   win = new BrowserWindow({
     show: false,
     autoHideMenuBar: true
@@ -69,7 +61,7 @@ function createWindow () {
       }
   });
 
-  win.loadFile(config.index);
+  win.loadFile(path.resolve(app.getAppPath(), config.index));
   win.maximize();
 
   if (config.devTools) {

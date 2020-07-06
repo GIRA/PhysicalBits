@@ -46,7 +46,12 @@ function desktopRelease() {
       .then(folders => Promise.each(folders, folder => {
         console.log("\nBuilding " + folder);
         let packageFolder = tempFolder + "/" + folder;
-        let appFolder = packageFolder + "/resources/app";
+        let appFolder;
+        if (folder.includes("win32")) {
+          appFolder = packageFolder + "/resources/app";
+        } else {
+          appFolder = packageFolder + "/" + appName + ".app/Contents/Resources/app/";
+        }
         let finalFolder = releasesFolder + "/" + folder.replace(appName, appName + "." + version);
         return copyFirmware(packageFolder)
           .then(() => copyGUI(appFolder))
