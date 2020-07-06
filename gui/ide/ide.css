@@ -1,4 +1,4 @@
-  #spinner-container {
+  #loading-container {
     position: absolute;
     left: 0;
     top: 0;
@@ -7,7 +7,7 @@
     z-index: 999999;
   }
 
-  #spinner-container img {
+  #loading-container img {
     -webkit-filter: drop-shadow(0 0 0.2rem white);
     filter: drop-shadow(0 0 0.2rem white);
   }

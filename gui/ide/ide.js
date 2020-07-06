@@ -31,7 +31,7 @@
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
-        .then(hideSpinner);
+        .then(hideLoadingScreen);
     },
   };
 
@@ -751,8 +751,8 @@
     setInterval(autorun, 150);
   }
 
-  function hideSpinner() {
-    $("#spinner-container").hide();
+  function hideLoadingScreen() {
+    $("#loading-container").hide();
   }
 
   function initializeBrokenLayoutErrorModal() {
