@@ -39,10 +39,11 @@ function webRelease() {
 
 function desktopRelease() {
   let outFolder = releasesFolder + "/UziScript." + version + "-desktop";
-  return createElectronPackage()
+  return createElectronPackages()
     .then(() => copyElectronPackages(outFolder))
     .then(() => fs.readdir(outFolder)
-      .then(folders => Promise.each(folders.map(folder => outFolder + "/" + folder), folder => {
+      .then(folders => Promise.resolve(folders.map(folder => outFolder + "/" + folder)))
+      .then(folders => Promise.each(folders, folder => {
         console.log("\nBuilding " + folder);
 
         let appFolder = folder + "/resources/app";
@@ -55,9 +56,9 @@ function desktopRelease() {
       })));
 }
 
-function createElectronPackage() {
+function createElectronPackages() {
   let cmd = "electron-packager . PhysicalBITS --platform=win32 --arch=all --out=out --overwrite";
-  console.log("\nCreating electron package");
+  console.log("\nCreating electron packages");
   return executeCmd(cmd, "../middleware/desktop").catch(log);
 }
 
