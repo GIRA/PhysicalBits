@@ -2,10 +2,18 @@ const fs = require('fs').promises;
 const ncp = require('ncp').ncp;
 const { exec } = require('child_process');
 
+
 function nop() { /* Do nothing */ }
 function log() { console.log(arguments); }
 
-//const releasesFolder = "../releases";
+Promise.each = function(arr, fn) {
+  if(!Array.isArray(arr)) return Promise.reject(new Error("Non array passed to each"));
+  if(arr.length === 0) return Promise.resolve();
+  return arr.reduce(function(prev, cur) {
+    return prev.then(() => fn(cur))
+  }, Promise.resolve());
+}
+
 const releasesFolder = "out";
 const version = process.argv[2];
 if (!version) {
@@ -13,91 +21,104 @@ if (!version) {
   return;
 }
 
-let outFolder;
-
 createServerJAR()
   .then(webRelease)
   .then(desktopRelease);
 
 
 function webRelease() {
-  outFolder = releasesFolder + "/UziScript." + version + "-web";
+  let outFolder = releasesFolder + "/UziScript." + version + "-web";
   console.log("\nBuilding " + outFolder);
-  return createOutFolder()
-    .then(copyFirmware)
-    .then(copyGUI)
-    .then(copyUziLibraries)
-    .then(copyServerJAR)
-    .then(createStartScripts);
+  return createOutFolder(outFolder)
+    .then(() => copyFirmware(outFolder))
+    .then(() => copyGUI(outFolder))
+    .then(() => copyUziLibraries(outFolder))
+    .then(() => copyServerJAR(outFolder))
+    .then(() => createStartScripts(outFolder, true));
 }
 
 function desktopRelease() {
-  outFolder = releasesFolder + "/UziScript." + version + "-desktop";
-  console.log("\nBuilding " + outFolder);
-  return createOutFolder()
-    .then(createElectronPackage)
-    .then(copyElectronPackages)
-    /*.then(copyFirmware)
-    .then(copyGUI)
-    .then(copyUziLibraries)
-    .then(copyServerJAR)
-    .then(createStartScripts);*/
+  let outFolder = releasesFolder + "/UziScript." + version + "-desktop";
+  return createElectronPackage()
+    .then(() => copyElectronPackages(outFolder))
+    .then(() => fs.readdir(outFolder)
+      .then(folders => Promise.each(folders.map(folder => outFolder + "/" + folder), folder => {
+        console.log("\nBuilding " + folder);
+
+        let appFolder = folder + "/resources/app";
+        return copyFirmware(folder)
+          .then(() => copyGUI(appFolder))
+          .then(() => copyUziLibraries(appFolder))
+          .then(() => copyServerJAR(appFolder))
+          .then(() => createStartScripts(appFolder, false))
+          .then(() => createConfigJSON(appFolder));
+      })));
 }
-
-
 
 function createElectronPackage() {
   let cmd = "electron-packager . PhysicalBITS --platform=win32 --arch=all --out=out --overwrite";
-  console.log("Creating electron package");
+  console.log("\nCreating electron package");
   return executeCmd(cmd, "../middleware/desktop").catch(log);
 }
 
-function copyElectronPackages() {
+function copyElectronPackages(path) {
   console.log("Copying electron packages");
-  return copyDir("../middleware/desktop/out", outFolder).catch(log);
+  return copyDir("../middleware/desktop/out", path).catch(log);
 }
 
 function createServerJAR() {
-  console.log("Creating server JAR");
+  return Promise.resolve(); // TODO(Richo)
+  console.log("\nCreating server JAR");
   return executeCmd("lein uberjar", "../middleware/server").catch(log);
 }
 
-function createOutFolder() {
+function createOutFolder(path) {
   console.log("Creating out folder");
-  return fs.mkdir(outFolder).catch(nop);
+  return fs.mkdir(path).catch(nop);
 }
 
-function copyFirmware() {
+function copyFirmware(path) {
   console.log("Copying firmware");
-  return copyDir("../firmware/UziFirmware", outFolder + "/firmware/UziFirmware").catch(log);
+  return copyDir("../firmware/UziFirmware", path + "/firmware/UziFirmware").catch(log);
 }
 
-function copyGUI() {
+function copyGUI(path) {
   console.log("Copying GUI files");
-  return copyDir("../gui/ide", outFolder + "/middleware/gui/ide").catch(log);
+  return copyDir("../gui/ide", path + "/middleware/gui/ide").catch(log);
 }
 
-function copyUziLibraries() {
+function copyUziLibraries(path) {
   console.log("Copying uzi libraries");
-  return copyDir("../uzi/libraries", outFolder + "/middleware/uzi").catch(log);
+  return copyDir("../uzi/libraries", path + "/middleware/uzi").catch(log);
 }
 
-function copyServerJAR() {
+function copyServerJAR(path) {
   console.log("Copying server jar");
   // TODO(Richo): Find jar automatically...
   return fs.copyFile("../middleware/server/target/uberjar/middleware-0.3.0-SNAPSHOT-standalone.jar",
-              outFolder + "/middleware/server.jar").catch(log);
+                    path + "/middleware/server.jar").catch(log);
 }
 
-function createStartScripts() {
+function createStartScripts(path, openBrowser) {
   console.log("Creating start scripts");
-  const cmd = "java -jar middleware/server.jar -o -w middleware/gui -u middleware/uzi";
+  let cmd = "java -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
+  if (openBrowser) { cmd += " -o"; }
   return Promise.all([
-    fs.writeFile(outFolder + "/start.bat", cmd),
-    fs.writeFile(outFolder + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
-      return fs.chmod(outFolder + "/start.sh", 0o777);
+    fs.writeFile(path + "/start.bat", cmd),
+    fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
+      return fs.chmod(path + "/start.sh", 0o777);
     })
   ]);
+}
+
+function createConfigJSON(path) {
+  console.log("Creating config.json");
+  let config = {
+    "startServer": true,
+    "index": "middleware/gui/ide/index.html",
+    "devTools": false
+  };
+  return fs.writeFile(path + "/config.json", JSON.stringify(config));
 }
 
 function copyDir(source, destination) {
