@@ -3,7 +3,6 @@ const ncp = require('ncp').ncp;
 const { exec } = require('child_process');
 const archiver = require('archiver');
 
-
 function nop() { /* Do nothing */ }
 function log() { console.log(arguments); }
 
@@ -27,10 +26,9 @@ createServerJAR()
   .then(webRelease)
   .then(desktopRelease);
 
-
 function webRelease() {
   let outFolder = releasesFolder + "/" + appName + "." + version + "-web";
-  console.log("\nBuilding " + outFolder);
+  console.log("\nBuilding " + appName + "-web");
   return createOutFolder(outFolder)
     .then(() => copyFirmware(outFolder))
     .then(() => copyGUI(outFolder))
@@ -41,13 +39,13 @@ function webRelease() {
 }
 
 function desktopRelease() {
-  let outFolder = releasesFolder + "/" + appName + "." + version + "-desktop";
+  let tempFolder = releasesFolder + "/" + appName + "." + version + "-desktop";
   return createElectronPackages()
-    .then(() => copyElectronPackages(outFolder))
-    .then(() => fs.readdir(outFolder)
+    .then(() => copyElectronPackages(tempFolder))
+    .then(() => fs.readdir(tempFolder)
       .then(folders => Promise.each(folders, folder => {
         console.log("\nBuilding " + folder);
-        let packageFolder = outFolder + "/" + folder;
+        let packageFolder = tempFolder + "/" + folder;
         let appFolder = packageFolder + "/resources/app";
         let finalFolder = releasesFolder + "/" + folder.replace(appName, appName + "." + version);
         return copyFirmware(packageFolder)
@@ -59,7 +57,7 @@ function desktopRelease() {
           .then(() => fs.rename(packageFolder, finalFolder))
           .then(() => createZip(finalFolder));
       })))
-    .then(() => fs.rmdir(outFolder));
+    .then(() => fs.rmdir(tempFolder));
 }
 
 function createElectronPackages() {
