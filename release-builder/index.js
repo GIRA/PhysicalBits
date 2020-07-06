@@ -110,9 +110,12 @@ function copyUziLibraries(path) {
 
 function copyServerJAR(path) {
   console.log("Copying server jar");
-  // TODO(Richo): Find jar automatically...
-  return fs.copyFile("../middleware/server/target/uberjar/middleware-0.3.0-SNAPSHOT-standalone.jar",
-                    path + "/middleware/server.jar").catch(log);
+  let uberjarFolder = "../middleware/server/target/uberjar";
+  return fs.readdir(uberjarFolder).then(files => {
+    let jar = files.find(file => file.endsWith("-standalone.jar"));
+    if (jar == undefined) { throw "NO UBERJAR FOUND!!"; }
+    return fs.copyFile(uberjarFolder + "/" + jar, path + "/middleware/server.jar").catch(log);
+  });
 }
 
 function createStartScripts(path, openBrowser) {
