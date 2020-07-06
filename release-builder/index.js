@@ -34,14 +34,27 @@ function webRelease() {
 function desktopRelease() {
   outFolder = releasesFolder + "/UziScript." + version + "-desktop";
   console.log("\nBuilding " + outFolder);
-  console.log("TODO");
-  return;
   return createOutFolder()
-    .then(copyFirmware)
+    .then(createElectronPackage)
+    .then(copyElectronPackages)
+    /*.then(copyFirmware)
     .then(copyGUI)
     .then(copyUziLibraries)
     .then(copyServerJAR)
-    .then(createStartScripts);
+    .then(createStartScripts);*/
+}
+
+
+
+function createElectronPackage() {
+  let cmd = "electron-packager . PhysicalBITS --platform=win32 --arch=all --out=out --overwrite";
+  console.log("Creating electron package");
+  return executeCmd(cmd, "../middleware/desktop").catch(log);
+}
+
+function copyElectronPackages() {
+  console.log("Copying electron packages");
+  return copyDir("../middleware/desktop/out", outFolder).catch(log);
 }
 
 function createServerJAR() {
