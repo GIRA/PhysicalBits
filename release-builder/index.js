@@ -81,7 +81,7 @@ function createStartScripts() {
   const cmd = "java -jar middleware/server.jar -o -w middleware/gui -u middleware/uzi";
   return Promise.all([
     fs.writeFile(outFolder + "/start.bat", cmd),
-    fs.writeFile(outFolder + "/start.sh", "#!/bin/bash" + "\r\n" + cmd).then(() => {
+    fs.writeFile(outFolder + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
       return fs.chmod(outFolder + "/start.sh", 0o777);
     })
   ]);
