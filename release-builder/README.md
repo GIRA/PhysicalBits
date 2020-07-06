@@ -1,0 +1,19 @@
+## Quick start
+
+This project allows you to build all Physical BITS releases by running:
+
+    $ node . v0.0.0
+
+After running, check the `/out` folder for the generated files.
+
+### Dependencies
+
+Before you run make sure to install the npm dependencies:
+
+    $ npm install
+
+You will also need the following:
+
+* (Leiningen)[https://leiningen.org/] to be able to build the server jar. This also needs Java installed.
+* (electron-packager)[https://github.com/electron/electron-packager] to build the desktop versions. This needs to be installed globally (`npm install electron-packager -g`).
+* (Wine)[https://wiki.winehq.org/MacOS] in macOS to be able to build windows packages (`brew cask isntall xquartz` and then `brew cask install --no-quarantine wine-stable`).
