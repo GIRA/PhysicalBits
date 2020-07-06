@@ -67,7 +67,6 @@ function copyElectronPackages(path) {
 }
 
 function createServerJAR() {
-  return Promise.resolve(); // TODO(Richo)
   console.log("\nCreating server JAR");
   return executeCmd("lein uberjar", "../middleware/server").catch(log);
 }
