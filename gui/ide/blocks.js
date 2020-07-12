@@ -2524,7 +2524,22 @@ let UziBlock = (function () {
     return Blockly.Xml.domToText(toXML());
   }
 
-  function fromXML(xml) {
+  function updatePositions(xml) {
+    for (let i = 0; i < xml.childElementCount; i++) {
+      let node = xml.children[i];
+      let block = workspace.getTopBlocks().find(b => b.id == node.getAttribute("id"));
+      if (block) {
+        let position = block.getRelativeToSurfaceXY();
+        node.setAttribute("x", position.x);
+        node.setAttribute("y", position.y);
+      }
+    }
+  }
+
+  function fromXML(xml, keepPositions) {
+    if (keepPositions) {
+      updatePositions(xml);
+    }
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
   }
