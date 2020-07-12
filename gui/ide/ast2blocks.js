@@ -1,5 +1,5 @@
 var ASTToBlocks = (function () {
-	
+
 	var dispatchTable = {
 		UziProgramNode: function (json, ctx) {
 			var node = create("xml");
@@ -50,7 +50,7 @@ var ASTToBlocks = (function () {
 				argNode.setAttribute("name", arg.name);
 				mut.appendChild(argNode);
 			});
-			node.appendChild(mut);			
+			node.appendChild(mut);
 			appendField(node, "NAME", json.name);
 			appendStatements(node, "STACK", json.body, ctx);
 			return node;
@@ -95,7 +95,7 @@ var ASTToBlocks = (function () {
 		UziNumberLiteralNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
-			if (json.value == Math.PI) {			
+			if (json.value == Math.PI) {
 				node.setAttribute("type", "math_constant");
 				appendField(node, "CONSTANT", "PI");
 			} else if (json.value == Math.E) {
@@ -115,7 +115,7 @@ var ASTToBlocks = (function () {
 				appendField(node, "CONSTANT", "GOLDEN_RATIO");
 			} else {
 				node.setAttribute("type", "math_number");
-				appendField(node, "NUM", json.value);	
+				appendField(node, "NUM", json.value);
 			}
 			return node;
 		},
@@ -157,8 +157,8 @@ var ASTToBlocks = (function () {
 		UziConditionalNode: function (json, ctx) {
 			var node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", 
-				json.falseBranch.statements.length > 0 ? 
+			node.setAttribute("type",
+				json.falseBranch.statements.length > 0 ?
 				"conditional_full" : "conditional_simple");
 			appendValue(node, "condition", generateXMLFor(json.condition, ctx));
 			appendStatements(node, "trueBranch", json.trueBranch, ctx);
@@ -213,7 +213,7 @@ var ASTToBlocks = (function () {
 			var node = create("block");
 			node.setAttribute("id", json.id);
 			// HACK(Richo): Check if the assignment represents a variable increment
-			if (json.right.__class__ === "UziCallNode" 
+			if (json.right.__class__ === "UziCallNode"
 				&& json.right.selector === "+"
 				&& json.right.arguments[0].value.__class__ === "UziVariableNode"
 				&& json.right.arguments[0].value.name == json.left.name) {
@@ -268,7 +268,7 @@ var ASTToBlocks = (function () {
 			return node;
 		}
 	};
-	
+
 	function initPrimitive(node, json, ctx) {
 		var selector = json.selector;
 		var args = json.arguments.map(function (each) { return each.value; });
@@ -512,14 +512,14 @@ var ASTToBlocks = (function () {
 			throw "Selector not found: " + selector;
 		}
 	}
-	
+
 	function appendValue(node, name, value) {
 		var child = create("value");
 		child.setAttribute("name", name);
 		child.appendChild(value);
 		node.appendChild(child);
 	}
-	
+
 	function appendStatements(node, name, body, ctx) {
 		var statements = body.statements.map(function(stmt) {
 			return generateXMLFor(stmt, ctx);
@@ -540,18 +540,18 @@ var ASTToBlocks = (function () {
 			}
 		}
 	}
-	
+
 	function appendField(node, name, content) {
 		var field = create("field");
 		field.setAttribute("name", name);
 		field.textContent = content;
 		node.appendChild(field);
 	}
-	
+
 	function create(name) {
 		return document.createElement(name);
 	}
-	
+
 	function generateXMLFor(json, ctx) {
 		var type = json.__class__;
 		var func = dispatchTable[type];
@@ -568,7 +568,7 @@ var ASTToBlocks = (function () {
 			ctx.path.pop();
 		}
 	}
-	
+
 	return {
 		generate: function (json) {
 			var ctx = {

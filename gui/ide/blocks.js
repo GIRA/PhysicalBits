@@ -1017,7 +1017,7 @@ let UziBlock = (function () {
       init: function() {
         let msg = i18n.translate("arithmetic function %left %operator %right");
         let inputFields = {
-          "left": () => this.appendValueInput("left").setCheck("Number"), 
+          "left": () => this.appendValueInput("left").setCheck("Number"),
           "operator": () => this.appendDummyInput().appendField(
                   new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
                                              [i18n.translate("arithmetic operator *"),"MULTIPLY"],
@@ -2509,7 +2509,7 @@ let UziBlock = (function () {
   }
 
   function refreshWorkspace() {
-    fromXML(toXML());
+    fromXMLText(toXMLText());
   }
 
   function refreshToolbox() {
@@ -2517,12 +2517,20 @@ let UziBlock = (function () {
   }
 
   function toXML() {
-    return Blockly.Xml.domToText(Blockly.Xml.workspaceToDom(workspace));
+    return Blockly.Xml.workspaceToDom(workspace);
+  }
+
+  function toXMLText() {
+    return Blockly.Xml.domToText(toXML());
   }
 
   function fromXML(xml) {
     workspace.clear();
-    Blockly.Xml.domToWorkspace(Blockly.Xml.textToDom(xml), workspace);
+    Blockly.Xml.domToWorkspace(xml, workspace);
+  }
+
+  function fromXMLText(xml) {
+    fromXML(Blockly.Xml.textToDom(xml));
   }
 
   function getUsedVariables() {
@@ -2553,8 +2561,12 @@ let UziBlock = (function () {
     on: on,
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
-    toXML: toXML,
+    //toXMLText: toXMLText,
+    //fromXMLText: fromXMLText,
+
     fromXML: fromXML,
+    toXML: toXML,
+
     getGeneratedCode: getGeneratedCode,
 
     getWorkspace: function () { return workspace; },
@@ -2648,7 +2660,7 @@ let UziBlock = (function () {
     getDataForStorage: function () {
       return {
         version: version,
-        blocks: toXML(),
+        blocks: toXMLText(),
         motors: motors,
         sonars: sonars,
         joysticks: joysticks,
@@ -2659,7 +2671,7 @@ let UziBlock = (function () {
       // Check compatibility
       if (d.version != version) { return; }
 
-      fromXML(d.blocks);
+      fromXMLText(d.blocks);
       motors = d.motors || [];
       sonars = d.sonars || [];
       joysticks = d.joysticks || [];
