@@ -86,6 +86,12 @@
             saveToLocalStorage();
             scheduleAutorun(false);
           });
+
+          Uzi.on("update", function (state, previousState) {
+            if (state.program.current.src == previousState.program.current.src) return;
+            let xml = ASTToBlocks.generate(state.program.current.ast);
+            UziBlock.fromXML(xml, true);
+          });
       })
       .then(restoreFromLocalStorage);
   }
