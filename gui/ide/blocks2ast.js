@@ -588,7 +588,7 @@ let BlocksToAST = (function () {
 			if (negated) {
 				stream.push(builder.until(id, condition, statements));
 			} else {
-				stream.push(builder.while(id, condition, statements));	
+				stream.push(builder.while(id, condition, statements));
 			}
 		},
 		is_pin_variable: function (block, ctx, stream) {
@@ -662,6 +662,7 @@ let BlocksToAST = (function () {
 			let id = XML.getId(block);
 			stream.push(builder.primitiveCall(id, "random", []));
 		},
+		// TODO(Richo): Remove
 		procedures_defnoreturn: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = "_" + asIdentifier(XML.getChildNode(block, "NAME").innerText);
@@ -678,9 +679,11 @@ let BlocksToAST = (function () {
 			generateCodeForStatements(block, ctx, "STACK", statements);
 			stream.push(builder.procedure(id, name, args, statements));
 		},
+		// TODO(Richo): Remove
 		comment_statement: function (block, ctx, stream) {
 			return undefined;
 		},
+		// TODO(Richo): Remove
 		procedures_callnoreturn: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let mutation = XML.getLastChild(block, function (child) {
@@ -699,6 +702,7 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.scriptCall(id, scriptName, args));
 		},
+		// TODO(Richo): Remove
 		procedures_callreturn: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let mutation = XML.getLastChild(block, function (child) {
@@ -717,6 +721,7 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.scriptCall(id, scriptName, args));
 		},
+		// TODO(Richo): Remove
 		procedures_ifreturn: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let condition = generateCodeForValue(block, ctx, "CONDITION");
@@ -726,6 +731,7 @@ let BlocksToAST = (function () {
 				[builder.return(id, value || null)],
 				[]));
 		},
+		// TODO(Richo): Remove
 		procedures_defreturn: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = "_" + asIdentifier(XML.getChildNode(block, "NAME").innerText);
@@ -745,6 +751,7 @@ let BlocksToAST = (function () {
 			statements.push(builder.return(id, returnExpr));
 			stream.push(builder.function(id, name, args, statements));
 		},
+		// TODO(Richo): Remove
 		comment_expression: function (block, ctx, stream) {
 			return generateCodeForValue(block, ctx, "NAME");
 		},
