@@ -130,9 +130,9 @@
     (let [compile-fn (case type
                        "json" cc/compile-json-string
                        "uzi" cc/compile-uzi-string)
-          program (update (apply compile-fn src args)
-                          :compiled
-                          program/sort-globals)
+          program (-> (apply compile-fn src args)
+                      (update :compiled program/sort-globals)
+                      (assoc :type type))
           bytecodes (en/encode (:compiled program))]
       (when-not silent?
         (logger/newline)
