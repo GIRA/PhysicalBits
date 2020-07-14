@@ -18,7 +18,7 @@
                  :value (simplify (or value 0))}))
 
 (defn constant [value]
-  {:__class__ "UziVariable" :value (simplify value)})
+  {:__class__ "UziVariable" :value (simplify (or value 0))})
 
 (defn script
   [& {:keys [name arguments delay running? locals instructions]
