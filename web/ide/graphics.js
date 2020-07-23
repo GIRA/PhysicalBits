@@ -51,32 +51,32 @@ function drawCircles(target,radius, simulator) {
 
 function createBezier(target){
   var path = document.createElementNS('http://www.w3.org/2000/svg','path');
-  var circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  var circle2 = document.createElementNS('http://www.w3.org/2000/svg','circle');
-  circle.setAttribute("cx", 55 );
-  circle.setAttribute("cy",300);
-  circle.setAttribute("r", 25);
-  circle2.setAttribute("cx", 55 );
-  circle2.setAttribute("cy", 300);
-  circle2.setAttribute("r", 25);
+  var circle = connector(55,300,25);
+  var circle2 = connector(55,300,25);
+
   path.id="path";
-  circle.id="handle";
-  circle2.id="handle";
-  circle.setAttribute("class", "handle");
-  circle2.setAttribute("class", "handle");
   path.setAttribute("class", "path");
 
   handle=circle;
   handle2=circle2;
   path1 = path;
 
-  drag(circle);
-  drag(circle2);
   updatePath();
-  
+
   target.appendChild(circle);
   target.appendChild(circle2);
   target.appendChild(path);
+}
+
+function connector(x,y,r){
+  var circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+  circle.setAttribute("cx", x );
+  circle.setAttribute("cy", y);
+  circle.setAttribute("r", r);
+  circle.id="handle";
+  circle.setAttribute("class", "handle");
+  drag(circle);
+  return circle;
 }
 
 var handle;
