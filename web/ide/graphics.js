@@ -70,16 +70,10 @@ function createBezier(target){
   handle2=circle2;
   path1 = path;
 
-  circle.addEventListener("mousedown", function(event){
-    dragElement(circle);
-    updatePath();
-  });
+  drag(circle);
+  drag(circle2);
+  updatePath();
   
-  circle2.addEventListener("mousedown", function(event){
-    dragElement(circle2);
-    updatePath();
-  });
-
   target.appendChild(circle);
   target.appendChild(circle2);
   target.appendChild(path);
@@ -126,9 +120,7 @@ function createBoard(target){
   arduino_board.setAttribute('x','500');
   arduino_board.setAttribute('y','0');
   arduino_board.setAttribute('class','handle');
-  arduino_board.addEventListener("mousedown", function(event){
-    dragElement(arduino_board);
-  });
+  drag(arduino_board);
   target.appendChild(arduino_board);
 }
 
@@ -141,9 +133,7 @@ function createLed(target){
   led.setAttributeNS(null,'y','70');
   led.setAttributeNS(null, 'visibility', 'visible');
   led.setAttribute('class','handle');
-  led.addEventListener("mousedown", function(event){
-    dragElement(led);
-  });
+  drag(led);
   target.appendChild(led);
 }
 
@@ -235,6 +225,11 @@ function displaySpeed(value){
   sliderValue.textContent = value;
 }
 
+function drag(objectToMove){
+  objectToMove.addEventListener("mousedown", function(event){
+    dragElement(objectToMove);
+  });
+}
 
 function dragElement(elmnt){
 
