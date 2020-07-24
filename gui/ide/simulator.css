@@ -110,6 +110,15 @@ svg{
   display: grid;
   background-color: #394554;
 }
+.handle {
+  fill: pink;
+  cursor: move;
+}
+.path {
+  fill: none;
+  stroke: dodgerblue;
+  stroke-width: 6;
+}
 @media(max-width:1150px){
   .right{
     float:none;
