@@ -4,6 +4,7 @@
   let codeEditor;
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime;
+  let dirtyBlocks, dirtyCode;
   let lastFileName;
   let outputHistory = [];
 
@@ -89,8 +90,12 @@
           let currentProgram = getGeneratedCodeAsJSON();
           if (currentProgram !== lastProgram) {
             lastProgram = currentProgram;
-            scheduleAutorun(false);
+
+            dirtyBlocks = true;
+            dirtyCode = false;
             console.log("BLOCKS CHANGE!");
+
+            scheduleAutorun(false);
           }
         });
 
@@ -746,7 +751,10 @@
     codeEditor.on("blur", function () { focus = false; });
     codeEditor.on("change", function () {
       if (focus) {
+        dirtyCode = true;
+        dirtyBlocks = false;
         console.log("CODE CHANGE!");
+        scheduleAutorun(false);
       }
     });
 
@@ -1102,7 +1110,7 @@
 		let currentTime = +new Date();
 		autorunNextTime = currentTime + 150;
     if (forced) {
-      // TODO(Richo): ????
+      dirtyBlocks = dirtyCode = true;
     }
 	}
 
@@ -1122,13 +1130,26 @@
 		if (currentTime < autorunNextTime) return;
     autorunNextTime = undefined;
 
-		let currentProgram = getGeneratedCodeAsJSON();
+    if (!dirtyBlocks && !dirtyCode) return;
+
+    let program = null;
+    let type = null;
+
+    if (dirtyBlocks) {
+	    program = getGeneratedCodeAsJSON();
+      type = "json";
+    } else if (dirtyCode) {
+      program = codeEditor.getValue();
+      type = "uzi";
+    }
+
+    dirtyBlocks = dirtyCode = false;
 
     let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
     if (Uzi.state.isConnected && interactiveEnabled) {
-      Uzi.run(currentProgram, "json", true).then(success).catch(error);
+      Uzi.run(program, type, true).then(success).catch(error);
     } else {
-      Uzi.compile(currentProgram, "json", true).then(success).catch(error);
+      Uzi.compile(program, type, true).then(success).catch(error);
     }
 	}
 
