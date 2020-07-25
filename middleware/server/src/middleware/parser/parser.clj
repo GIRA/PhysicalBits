@@ -128,7 +128,7 @@
          identifier = #'[a-zA-Z_][_\\w]*(\\.[a-zA-Z_][_\\w]*)*'
          variable = identifier
 
-         task=<'task'> ws identifier paramsList ws? taskState ws? tickingRate? ws? block
+         task=<'task'> ws identifier ws? paramsList ws? taskState ws? tickingRate? ws? block
 
          paramsList = <'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'>
          argument =  identifier
@@ -147,8 +147,8 @@
          not = <'!'> ws? nonBinaryExpr
          <literal> = (constant | number)
          constant = ('D'|'A') integer
-         call = scriptReference argList
-         <argList> = <'('> ws? (namedArg (ws? <','> ws? namedArg)*)?<')'>
+         call = scriptReference ws? argList
+         <argList> = <'('> ws? (namedArg (ws? <','> ws? namedArg)*)? ws? <')'>
          namedArg = ( identifier ws? <':'> ws?)? expr
          subExpr = <'('> ws? expr ws? <')'>
          <separatedExpr> =  (ws? subExpr | ws expr)

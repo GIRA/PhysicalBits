@@ -1099,3 +1099,75 @@
                                   :name      "foo_bar_baz"}]}
           actual (parse src)]
       (is (equivalent? expected actual)))))
+
+(deftest spaces-1
+  (let [src "task default() running 1/s {\n\ttoggle(D13 );\n}"
+        expected {:__class__  "UziProgramNode",
+                  :imports    [],
+                  :globals    [],
+                  :scripts    [{:__class__   "UziTaskNode",
+                                :name        "default",
+                                :arguments   [],
+                                :state       "running",
+                                :tickingRate {:__class__ "UziTickingRateNode",
+                                              :value     1,
+                                              :scale     "s"},
+                                :body        {:__class__  "UziBlockNode",
+                                              :statements [{:__class__ "UziCallNode",
+                                                            :selector  "toggle",
+                                                            :arguments [{:__class__ "Association",
+                                                                         :key       nil,
+                                                                         :value     {:__class__ "UziPinLiteralNode",
+                                                                                     :type      "D",
+                                                                                     :number    13}}]}]}}],
+                  :primitives []}
+        actual (parse src)]
+    (is (equivalent? expected actual))))
+
+(deftest spaces-2
+  (let [src "task default() running 1/s {\n\ttoggle (D13);\n}"
+        expected {:__class__  "UziProgramNode",
+                  :imports    [],
+                  :globals    [],
+                  :scripts    [{:__class__   "UziTaskNode",
+                                :name        "default",
+                                :arguments   [],
+                                :state       "running",
+                                :tickingRate {:__class__ "UziTickingRateNode",
+                                              :value     1,
+                                              :scale     "s"},
+                                :body        {:__class__  "UziBlockNode",
+                                              :statements [{:__class__ "UziCallNode",
+                                                            :selector  "toggle",
+                                                            :arguments [{:__class__ "Association",
+                                                                         :key       nil,
+                                                                         :value     {:__class__ "UziPinLiteralNode",
+                                                                                     :type      "D",
+                                                                                     :number    13}}]}]}}],
+                  :primitives []}
+        actual (parse src)]
+    (is (equivalent? expected actual))))
+
+(deftest spaces-3
+  (let [src "task default () running 1/s {\n\ttoggle(D13);\n}"
+        expected {:__class__  "UziProgramNode",
+                  :imports    [],
+                  :globals    [],
+                  :scripts    [{:__class__   "UziTaskNode",
+                                :name        "default",
+                                :arguments   [],
+                                :state       "running",
+                                :tickingRate {:__class__ "UziTickingRateNode",
+                                              :value     1,
+                                              :scale     "s"},
+                                :body        {:__class__  "UziBlockNode",
+                                              :statements [{:__class__ "UziCallNode",
+                                                            :selector  "toggle",
+                                                            :arguments [{:__class__ "Association",
+                                                                         :key       nil,
+                                                                         :value     {:__class__ "UziPinLiteralNode",
+                                                                                     :type      "D",
+                                                                                     :number    13}}]}]}}],
+                  :primitives []}
+        actual (parse src)]
+    (is (equivalent? expected actual))))
