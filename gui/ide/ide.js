@@ -740,7 +740,16 @@
 		codeEditor = ace.edit("code-editor");
 		codeEditor.setTheme("ace/theme/ambiance");
 		codeEditor.getSession().setMode("ace/mode/uzi");
-    codeEditor.setReadOnly(true); // TODO(Richo): Only for now...
+
+    let focus = false;
+    codeEditor.on("focus", function () { focus = true; });
+    codeEditor.on("blur", function () { focus = false; });
+    codeEditor.on("change", function () {
+      if (focus) {
+        console.log("CODE CHANGE!");
+      }
+    });
+
     Uzi.on("update", function () {
       let src = Uzi.state.program.current.src;
       if (src == undefined) return;
