@@ -19,6 +19,7 @@
       // NOTE(Richo): The following tasks need to be done in order:
       loadDefaultLayoutConfig()
         .then(initializeDefaultLayout)
+        .then(initializeCodePanel)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
         .then(initializeBlocklySonarsModal)
@@ -27,7 +28,6 @@
         .then(initializeAutorun)
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
-        .then(initializeCodePanel)
         .then(initializeOutputPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
@@ -751,6 +751,8 @@
     codeEditor.on("focus", function () { focus = true; });
     codeEditor.on("blur", function () { focus = false; });
     codeEditor.on("change", function () {
+      saveToLocalStorage();
+      
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
@@ -882,6 +884,7 @@
         settings: JSON.parse(localStorage["uzi.settings"] || "null"),
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
         blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
+        code: localStorage["uzi.code"],
         ports: JSON.parse(localStorage["uzi.ports"] || "null"),
       };
       setUIState(ui);
@@ -897,6 +900,7 @@
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
     localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
+    localStorage["uzi.code"] = ui.code;
     localStorage["uzi.ports"] = JSON.stringify(ui.ports);
   }
 
@@ -908,6 +912,7 @@
       },
       layout: layout.toConfig(),
       blockly: UziBlock.getDataForStorage(),
+      code: getTextualCode(),
       ports: {
         selectedPort: selectedPort,
         userPorts: userPorts
@@ -929,6 +934,10 @@
 
       if (ui.blockly) {
         UziBlock.setDataFromStorage(ui.blockly);
+      }
+
+      if (ui.code) {
+        codeEditor.setValue(ui.code);
       }
 
       if (ui.ports) {
