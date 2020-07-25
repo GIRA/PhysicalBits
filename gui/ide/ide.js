@@ -759,8 +759,13 @@
       }
     });
 
-    Uzi.on("update", function () {
-      let src = Uzi.state.program.current.src;
+    Uzi.on("update", function (state, previousState) {
+      if (focus) return; // Don't change the code while the user is editing!
+      if (state.program.current.type == "uzi") return; // Ignore textual programs
+      if (codeEditor.getValue() !== "" &&
+          state.program.current.src == previousState.program.current.src) return;
+
+      let src = state.program.current.src;
       if (src == undefined) return;
       if (codeEditor.getValue() !== src) {
         codeEditor.setValue(src, 1);
