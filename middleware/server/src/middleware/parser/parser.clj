@@ -88,81 +88,81 @@
   (insta/parser
 
     "program = ws? import*  variableDeclaration*  ((primitive | script) ws?)* ws?
-         import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ) ws?
-         importPath = <'\\''> #'[^\\']+' <'\\''>
-         <script> = (task | function | procedure)
-         block = <'{'>  statementList  <'}'>
+     import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ) ws?
+     importPath = <'\\''> #'[^\\']+' <'\\''>
+     <script> = (task | function | procedure)
+     block = <'{'>  statementList  <'}'>
 
-         primitive = <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
+     primitive = <'prim'> ws ((binarySelector | identifier) ws <':'> ws)? identifier endl
 
-         <statementList> = ws? statement*
-         <statement> =  (variableDeclaration / assignment / return / conditional
-                      / startTask / stopTask / pauseTask / resumeTask
-                      / while / doWhile / until / doUntil / repeat / forever / for
-                      / yield / expressionStatement) ws?
+     <statementList> = ws? statement*
+     <statement> =  (variableDeclaration / assignment / return / conditional
+                  / startTask / stopTask / pauseTask / resumeTask
+                  / while / doWhile / until / doUntil / repeat / forever / for
+                  / yield / expressionStatement) ws?
 
-         variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr ws?)? endl ws?
-         assignment = variable ws? <'='> ws? expr endl
-         return = <'return'> separatedExpr? endl
-         conditional = <'if'> separatedExpr ws? block (ws? <'else'> ws? block)?
-         while = <'while'> separatedExpr ws? ( block ws? | endl )
-         doWhile = <'do'> ws? block ws? <'while'> separatedExpr endl
-         until = <'until'> separatedExpr ws? (block ws? | endl )
-         doUntil = <'do'> ws? block ws? <'until'> separatedExpr endl
-         repeat = <'repeat'> separatedExpr ws? block
-         forever = <'forever'> ws? block
-         for = <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block
-         yield = <'yield'> endl
-         <expressionStatement> = expr endl
+     variableDeclaration = <'var'> ws variable (ws? <'='> ws? expr ws?)? endl ws?
+     assignment = variable ws? <'='> ws? expr endl
+     return = <'return'> separatedExpr? endl
+     conditional = <'if'> separatedExpr ws? block (ws? <'else'> ws? block)?
+     while = <'while'> separatedExpr ws? ( block ws? | endl )
+     doWhile = <'do'> ws? block ws? <'while'> separatedExpr endl
+     until = <'until'> separatedExpr ws? (block ws? | endl )
+     doUntil = <'do'> ws? block ws? <'until'> separatedExpr endl
+     repeat = <'repeat'> separatedExpr ws? block
+     forever = <'forever'> ws? block
+     for = <'for'> ws variable ws? <'='> ws? expr ws <'to'> separatedExpr ws? (ws <'by'> separatedExpr ws?)? block
+     yield = <'yield'> endl
+     <expressionStatement> = expr endl
 
-         startTask = <'start'> ws scriptList endl
-         stopTask = <'stop'> ws scriptList endl
-         pauseTask = <'pause'> ws scriptList endl
-         resumeTask = <'resume'> ws scriptList endl
+     startTask = <'start'> ws scriptList endl
+     stopTask = <'stop'> ws scriptList endl
+     pauseTask = <'pause'> ws scriptList endl
+     resumeTask = <'resume'> ws scriptList endl
 
 
 
-         <scriptList> = scriptReference (ws? <','> ws? scriptReference)*
-         <scriptReference> = identifier
+     <scriptList> = scriptReference (ws? <','> ws? scriptReference)*
+     <scriptReference> = identifier
 
-         identifier = #'[a-zA-Z_][_\\w]*(\\.[a-zA-Z_][_\\w]*)*'
-         variable = identifier
+     identifier = #'[a-zA-Z_][_\\w]*(\\.[a-zA-Z_][_\\w]*)*'
+     variable = identifier
 
-         task=<'task'> ws identifier ws? paramsList ws? taskState ws? tickingRate? ws? block
+     task=<'task'> ws identifier ws? paramsList ws? taskState ws? tickingRate? ws? block
 
-         paramsList = <'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'>
-         argument =  identifier
-         taskState =  ('running'|'stopped')?
-         tickingRate =  number ws? <'/'> ws? ( 's' | 'm' | 'h' | 'd')
+     paramsList = <'('> (ws? argument (ws? <','> ws? argument)*)? ws? <')'>
+     argument =  identifier
+     taskState =  ('running'|'stopped')?
+     tickingRate =  number ws? <'/'> ws? ( 's' | 'm' | 'h' | 'd')
 
-         function = <'func'> ws identifier ws? paramsList ws? block
-         procedure = <'proc'> ws identifier ws? paramsList ws? block
+     function = <'func'> ws identifier ws? paramsList ws? block
+     procedure = <'proc'> ws identifier ws? paramsList ws? block
 
-         comments = (<'\"'> #'[^\"]*' <'\"'>)
+     comments = (<'\"'> #'[^\"]*' <'\"'>)
 
-         <expr> =( nonBinaryExpr / binaryExpr)
-         <nonBinaryExpr> = (unary | call | subExpr | valueExpression )
-         <valueExpression> = ( literal / variable )
-         <unary> = not
-         not = <'!'> ws? nonBinaryExpr
-         <literal> = (constant | number)
-         constant = ('D'|'A') integer
-         call = scriptReference ws? argList
-         <argList> = <'('> ws? (namedArg (ws? <','> ws? namedArg)*)? ws? <')'>
-         namedArg = ( identifier ws? <':'> ws?)? expr
-         subExpr = <'('> ws? expr ws? <')'>
-         <separatedExpr> =  (ws? subExpr | ws expr)
+     <expr> =( nonBinaryExpr / binaryExpr)
+     <nonBinaryExpr> = (unary | call | subExpr | valueExpression )
+     <valueExpression> = ( literal / variable )
+     <unary> = not
+     not = <'!'> ws? nonBinaryExpr
+     <literal> = (constant | number)
+     constant = ('D'|'A') integer
+     call = scriptReference ws? argList
+     <argList> = <'('> ws? (namedArg (ws? <','> ws? namedArg)*)? ws? <')'>
+     namedArg = ( identifier ws? <':'> ws?)? expr
+     subExpr = <'('> ws? expr ws? <')'>
+     <separatedExpr> =  (ws? subExpr | ws expr)
 
-         <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
-         binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+
-         <endl> =ws? <';'>
-         <name> =#'[a-zA-Z_][_\\w]*'
-         <ws> = (<#'\\s+'> | <comments>)+
+     <binarySelector> = #'[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]+'
+     binaryExpr = nonBinaryExpr ws? (binarySelector ws? nonBinaryExpr ws?)+
+     <endl> =ws? <';'>
+     <name> =#'[a-zA-Z_][_\\w]*'
+     <ws> = (<#'\\s+'> | <comments>)+
 
-         <digits> = #'\\d+'
-         integer = '-'? digits
-         float = ('NaN' | '-'?'Infinity' | '-'? digits '.' digits)
-         number = (float / integer)" ))
+     <digits> = #'\\d+'
+     integer = '-'? digits
+     float = ('NaN' | '-'?'Infinity' | '-'? digits '.' digits)
+     number = (float / integer)" ))
 
 (defn expand-binary-expression-nodes [ast]
   (clojure.walk/postwalk
