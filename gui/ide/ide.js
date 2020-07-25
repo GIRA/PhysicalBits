@@ -4,7 +4,6 @@
   let codeEditor;
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime;
-  let lastProgram;
   let lastFileName;
   let outputHistory = [];
 
@@ -82,19 +81,27 @@
   function initializeBlocksPanel() {
     return UziBlock.init()
       .then(function () {
-          UziBlock.on("change", function () {
-            saveToLocalStorage();
-            scheduleAutorun(false);
-          });
+        let lastProgram = undefined;
 
-          // TODO(Richo)
-          Uzi.on("update", function (state, previousState) {
-            if (state.program.current.type == "json") return; // Ignore blockly programs
-            if (state.program.current.src == previousState.program.current.src) return;
-            let xml = ASTToBlocks.generate(state.program.current.ast);
-            UziBlock.fromXML(xml, true);
-            console.log("UPDATE!");
-          });
+        UziBlock.on("change", function () {
+          saveToLocalStorage();
+
+          let currentProgram = getGeneratedCodeAsJSON();
+          if (currentProgram !== lastProgram) {
+            lastProgram = currentProgram;
+            scheduleAutorun(false);
+            console.log("BLOCKS CHANGE!");
+          }
+        });
+
+        // TODO(Richo)
+        Uzi.on("update", function (state, previousState) {
+          if (state.program.current.type == "json") return; // Ignore blockly programs
+          if (state.program.current.src == previousState.program.current.src) return;
+          let xml = ASTToBlocks.generate(state.program.current.ast);
+          UziBlock.fromXML(xml, true);
+          console.log("UPDATE!");
+        });
       })
       .then(restoreFromLocalStorage);
   }
@@ -1085,7 +1092,9 @@
 	function scheduleAutorun(forced) {
 		let currentTime = +new Date();
 		autorunNextTime = currentTime + 150;
-    if (forced) { lastProgram = null; }
+    if (forced) {
+      // TODO(Richo): ????
+    }
 	}
 
   function success() {
@@ -1105,8 +1114,6 @@
     autorunNextTime = undefined;
 
 		let currentProgram = getGeneratedCodeAsJSON();
-		if (currentProgram === lastProgram) return;
-    lastProgram = currentProgram;
 
     let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
     if (Uzi.state.isConnected && interactiveEnabled) {
