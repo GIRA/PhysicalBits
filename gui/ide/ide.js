@@ -5,6 +5,7 @@
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime;
   let dirtyBlocks, dirtyCode;
+  let lastProgram = { code: "", type: "uzi" };
   let lastFileName;
   let outputHistory = [];
 
@@ -87,7 +88,7 @@
         UziBlock.on("change", function () {
           saveToLocalStorage();
 
-          let currentProgram = getGeneratedCodeAsJSON();
+          let currentProgram = getBlocklyCode();
           if (currentProgram !== lastProgram) {
             lastProgram = currentProgram;
 
@@ -1048,16 +1049,22 @@
     Uzi.disconnect().finally(() => { connecting = false; });
   }
 
+  function evalProgramFn(fn) {
+    let program = lastProgram.code;
+    let type = lastProgram.type;
+    fn(program, type).then(success).catch(error);
+  }
+
   function verify() {
-    Uzi.compile(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
+    evalProgramFn(Uzi.compile);
   }
 
   function run() {
-		Uzi.run(getGeneratedCodeAsJSON(), "json").then(success).catch(error);
+    evalProgramFn(Uzi.run);
   }
 
   function install() {
-    Uzi.install(getGeneratedCodeAsJSON(), "json");
+    evalProgramFn(Uzi.install);
   }
 
   function toggleInteractive() {
@@ -1136,14 +1143,15 @@
     let type = null;
 
     if (dirtyBlocks) {
-	    program = getGeneratedCodeAsJSON();
+	    program = getBlocklyCode();
       type = "json";
     } else if (dirtyCode) {
-      program = codeEditor.getValue();
+      program = getTextualCode();
       type = "uzi";
     }
 
     dirtyBlocks = dirtyCode = false;
+    lastProgram = { code: program, type: type };
 
     let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
     if (Uzi.state.isConnected && interactiveEnabled) {
@@ -1153,9 +1161,13 @@
     }
 	}
 
-  function getGeneratedCodeAsJSON() {
+  function getBlocklyCode() {
     let code = UziBlock.getGeneratedCode();
     return JSON.stringify(code);
+  }
+
+  function getTextualCode() {
+    return codeEditor.getValue();
   }
 
   function updateTopBar() {
