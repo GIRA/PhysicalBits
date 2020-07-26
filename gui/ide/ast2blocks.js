@@ -492,10 +492,48 @@ var ASTToBlocks = (function () {
 		}
 	}
 
+	function createShadow(type) {
+		var node = create("shadow");
+		node.setAttribute("type", type);
+		if (type == "pin") {
+			appendField(node, "pinNumber", "D13");
+		} else if (type == "number") {
+			appendField(node, "value", "1");
+		} else if (type == "boolean") {
+			appendField(node, "value", "true");
+		}
+		return node;
+	}
+
+	function createShadowFor(blockType, valueName) {
+		let type = null;
+		if (valueName == "pinNumber") {
+			type = "pin";
+		} else if (valueName == "condition"
+			|| blockType == "logical_operation"
+			|| blockType == "logical_not") {
+			type = "boolean";
+		} else {
+			type = "number";
+		}
+		return type ? createShadow(type) : null;
+	}
+
 	function appendValue(node, name, value) {
 		var child = create("value");
 		child.setAttribute("name", name);
-		child.appendChild(value);
+		let shadow = createShadowFor(node.getAttribute("type"), name);
+		if (shadow) {
+			child.appendChild(shadow);
+			if (shadow.getAttribute("type") == value.getAttribute("type")) {
+				shadow.childNodes.forEach(child => shadow.removeChild(child));
+				value.childNodes.forEach(child => shadow.appendChild(child.cloneNode(true)));
+			} else {
+				child.appendChild(value);
+			}
+		} else {
+			child.appendChild(value);
+		}
 		node.appendChild(child);
 	}
 
