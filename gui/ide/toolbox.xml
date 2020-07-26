@@ -79,6 +79,13 @@
     <block type="pin">
       <field name="pinNumber">D13</field>
     </block>
+    <block type="pin_cast">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">13</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category name="Motors" colour="#a55b5b">
     <category name="Servo">
@@ -371,6 +378,13 @@
         </shadow>
       </value>
     </block>
+    <block type="boolean_cast">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category name="Math" colour="#5C68A6">
     <block type="number">
@@ -495,6 +509,13 @@
       </value>
     </block>
     <block type="number_random_float"></block>
+    <block type="number_cast">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category name="Variables" colour="#A65C81" custom="VARIABLES">
     <button text="Configure variables..." callbackKey="configureVariables"></button>
