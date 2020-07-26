@@ -258,4 +258,7 @@ var TRANSLATIONS = [
   ["perform %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
   ["perform trigonometric %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
   ["perform rounding %operation on %number", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
+  ["pin cast %1", "pin ( %1 )", "pin %1", "pin %1", "pin %1", "pin %1"],
+  ["number cast %1", "number ( %1 )", "number %1", "número %1", "number %1", "number %1"],
+  ["boolean cast %1", "bool ( %1 )", "bool %1", "bool %1", "bool %1", "bool %1"],
 ];
