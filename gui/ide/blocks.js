@@ -41,6 +41,7 @@ let UziBlock = (function () {
     initButtonBlocks();
     initJoystickBlocks();
     initSpecialBlocks();
+    initCastingBlocks();
 
     i18n.on("change", refreshWorkspace);
 
@@ -2137,6 +2138,56 @@ let UziBlock = (function () {
 
         this.setOutput(true, null);
         this.setColour(265);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+  }
+
+  function initCastingBlocks() {
+    Blockly.Blocks['pin_cast'] = {
+      init: function() {
+        let msg = i18n.translate("pin cast %1");
+        let inputFields = {
+          "1": () => this.appendValueInput("value").setCheck(null)
+        };
+
+        initBlock(this, msg, inputFields);
+
+        this.setOutput(true, "Pin");
+        this.setColour(0);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['number_cast'] = {
+      init: function() {
+        let msg = i18n.translate("number cast %1");
+        let inputFields = {
+          "1": () => this.appendValueInput("value").setCheck(null)
+        };
+
+        initBlock(this, msg, inputFields);
+
+        this.setOutput(true, "Number");
+        this.setColour(230);
+        this.setTooltip("");
+        this.setHelpUrl("");
+      }
+    };
+
+    Blockly.Blocks['boolean_cast'] = {
+      init: function() {
+        let msg = i18n.translate("boolean cast %1");
+        let inputFields = {
+          "1": () => this.appendValueInput("value").setCheck(null)
+        };
+
+        initBlock(this, msg, inputFields);
+
+        this.setOutput(true, "Boolean");
+        this.setColour(210);
         this.setTooltip("");
         this.setHelpUrl("");
       }
