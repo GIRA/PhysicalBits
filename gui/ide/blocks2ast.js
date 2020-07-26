@@ -1039,6 +1039,21 @@ let BlocksToAST = (function () {
 			ctx.addButtonsImport();
 			stream.push(builder.primitiveCall(id, selector, [pin, duration]));
 		},
+		pin_cast: function (block, ctx, stream) {
+			let child = XML.getChildNode(block, "value");
+			if (child === undefined) return undefined;
+			generateCodeFor(XML.getLastChild(child), ctx, stream);
+		},
+		number_cast: function (block, ctx, stream) {
+			let child = XML.getChildNode(block, "value");
+			if (child === undefined) return undefined;
+			generateCodeFor(XML.getLastChild(child), ctx, stream);
+		},
+		boolean_cast: function (block, ctx, stream) {
+			let child = XML.getChildNode(block, "value");
+			if (child === undefined) return undefined;
+			generateCodeFor(XML.getLastChild(child), ctx, stream);
+		},
 	};
 
 	function asIdentifier(str) {
