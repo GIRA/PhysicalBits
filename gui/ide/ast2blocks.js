@@ -1,15 +1,15 @@
-var ASTToBlocks = (function () {
+let ASTToBlocks = (function () {
 
-	var dispatchTable = {
+	let dispatchTable = {
 		UziProgramNode: function (json, ctx) {
-			var node = create("xml");
+			let node = create("xml");
 			json.scripts.forEach(function (script) {
 				node.appendChild(generateXMLFor(script, ctx));
 			});
 			return node;
 		},
 		UziTaskNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", json.state === "once" ? "task" : "timer");
 			appendField(node, "taskName", json.name);
@@ -24,7 +24,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziProcedureNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			let types = ["proc_definition_0args", "proc_definition_1args",
 									"proc_definition_2args", "proc_definition_3args"];
@@ -32,7 +32,7 @@ var ASTToBlocks = (function () {
 				debugger;
 			}
 			node.setAttribute("type", types[json.arguments.length]);
-			var script = ctx.scriptNamed(json.name);
+			let script = ctx.scriptNamed(json.name);
 			script.arguments.forEach(function (arg, i) {
 				appendField(node, "arg" + i, arg.name);
 			});
@@ -41,7 +41,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziFunctionNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			let types = ["func_definition_0args", "func_definition_1args",
 									"func_definition_2args", "func_definition_3args"];
@@ -49,7 +49,7 @@ var ASTToBlocks = (function () {
 				debugger;
 			}
 			node.setAttribute("type", types[json.arguments.length]);
-			var script = ctx.scriptNamed(json.name);
+			let script = ctx.scriptNamed(json.name);
 			script.arguments.forEach(function (arg, i) {
 				appendField(node, "arg" + i, arg.name);
 			});
@@ -58,7 +58,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziCallNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			if (ctx.isTask(json.selector)) {
 				node.setAttribute("type", "run_task");
@@ -89,7 +89,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziNumberLiteralNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			if (json.value == Math.PI) {
 				node.setAttribute("type", "math_constant");
@@ -116,42 +116,42 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziPinLiteralNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "pin");
 			appendField(node, "pinNumber", json.type + json.number);
 			return node;
 		},
 		UziScriptStartNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "start_task");
 			appendField(node, "taskName", json.scripts[0]);
 			return node;
 		},
 		UziScriptStopNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "stop_task");
 			appendField(node, "taskName", json.scripts[0]);
 			return node;
 		},
 		UziScriptResumeNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "resume_task");
 			appendField(node, "taskName", json.scripts[0]);
 			return node;
 		},
 		UziScriptPauseNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "pause_task");
 			appendField(node, "taskName", json.scripts[0]);
 			return node;
 		},
 		UziConditionalNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type",
 				json.falseBranch.statements.length > 0 ?
@@ -162,14 +162,14 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziForeverNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "forever");
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
 		UziRepeatNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat_times");
 			appendValue(node, "times", generateXMLFor(json.times, ctx));
@@ -177,7 +177,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziWhileNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat");
 			appendField(node, "negate", json.negated);
@@ -186,7 +186,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziUntilNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat");
 			appendField(node, "negate", json.negated);
@@ -195,7 +195,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziForNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "for");
 			appendField(node, "variable", json.counter.name);
@@ -206,7 +206,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziAssignmentNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			// HACK(Richo): Check if the assignment represents a variable increment
 			if (json.right.__class__ === "UziCallNode"
@@ -224,14 +224,14 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziVariableNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "variable");
 			appendField(node, "variableName", json.name);
 			return node;
 		},
 		UziLogicalOrNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "logic_operation");
 			appendField(node, "operator", "or");
@@ -240,7 +240,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziLogicalAndNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "logic_operation");
 			appendField(node, "operator", "and");
@@ -249,7 +249,7 @@ var ASTToBlocks = (function () {
 			return node;
 		},
 		UziReturnNode: function (json, ctx) {
-			var node = create("block");
+			let node = create("block");
 			node.setAttribute("id", json.id);
 			if (json.value) {
 				node.setAttribute("type", "return_value");
@@ -262,8 +262,8 @@ var ASTToBlocks = (function () {
 	};
 
 	function initPrimitive(node, json, ctx) {
-		var selector = json.selector;
-		var args = json.arguments.map(function (each) { return each.value; });
+		let selector = json.selector;
+		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector === "toggle") {
 			node.setAttribute("type", "toggle_variable");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
@@ -493,7 +493,7 @@ var ASTToBlocks = (function () {
 	}
 
 	function createShadow(type) {
-		var node = create("shadow");
+		let node = create("shadow");
 		node.setAttribute("type", type);
 		if (type == "pin") {
 			appendField(node, "pinNumber", "D13");
@@ -520,7 +520,7 @@ var ASTToBlocks = (function () {
 	}
 
 	function appendValue(node, name, value) {
-		var child = create("value");
+		let child = create("value");
 		child.setAttribute("name", name);
 		let shadow = createShadowFor(node.getAttribute("type"), name);
 		if (shadow) {
@@ -538,19 +538,19 @@ var ASTToBlocks = (function () {
 	}
 
 	function appendStatements(node, name, body, ctx) {
-		var statements = body.statements.map(function(stmt) {
+		let statements = body.statements.map(function(stmt) {
 			return generateXMLFor(stmt, ctx);
 		});
-		var len = statements.length;
+		let len = statements.length;
 		if (len <= 0) return;
-		var child = create("statement");
+		let child = create("statement");
 		child.setAttribute("name", name);
 		child.appendChild(statements[0]);
 		node.appendChild(child);
 		if (len > 1) {
-			var cur = statements[0];
-			for (var i = 1; i < len; i++) {
-				var next = create("next");
+			let cur = statements[0];
+			for (let i = 1; i < len; i++) {
+				let next = create("next");
 				next.appendChild(statements[i]);
 				cur.appendChild(next);
 				cur = statements[i];
@@ -559,7 +559,7 @@ var ASTToBlocks = (function () {
 	}
 
 	function appendField(node, name, content) {
-		var field = create("field");
+		let field = create("field");
 		field.setAttribute("name", name);
 		field.textContent = content;
 		node.appendChild(field);
@@ -570,8 +570,8 @@ var ASTToBlocks = (function () {
 	}
 
 	function generateXMLFor(json, ctx) {
-		var type = json.__class__;
-		var func = dispatchTable[type];
+		let type = json.__class__;
+		let func = dispatchTable[type];
 		if (func == undefined) {
 			console.log(json);
 			debugger;
@@ -588,7 +588,7 @@ var ASTToBlocks = (function () {
 
 	return {
 		generate: function (json) {
-			var ctx = {
+			let ctx = {
 				path: [],
 				scriptNamed: function (name) {
 					return ctx.path[0].scripts.find(function (each) {
@@ -596,15 +596,15 @@ var ASTToBlocks = (function () {
 					});
 				},
 				isTask: function (name) {
-					var script = ctx.scriptNamed(name);
+					let script = ctx.scriptNamed(name);
 					return script !== undefined && script.__class__ === "UziTaskNode";
 				},
 				isProcedure: function (name) {
-					var script = ctx.scriptNamed(name);
+					let script = ctx.scriptNamed(name);
 					return script !== undefined && script.__class__ === "UziProcedureNode";
 				},
 				isFunction: function (name) {
-					var script = ctx.scriptNamed(name);
+					let script = ctx.scriptNamed(name);
 					return script !== undefined && script.__class__ === "UziFunctionNode";
 				}
 			};
