@@ -498,37 +498,6 @@ let UziBlock = (function () {
       }
     };
 
-    Blockly.Blocks['comment_statement'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField("\"")
-            .appendField(new Blockly.FieldTextInput(i18n.translate("This is a comment")), "comment")
-            .appendField("\"");
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(20);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['comment_expression'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField("\"")
-            .appendField(new Blockly.FieldTextInput(i18n.translate("This is a comment")), "comment")
-            .appendField("\"");
-        this.appendValueInput("NAME")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_CENTRE);
-        //this.setInputsInline(true);
-        this.setOutput(true, null);
-        this.setColour(20);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
     Blockly.Blocks['elapsed_time'] = {
       init: function() {
         let msg = i18n.translate("elapsed time since bootup in %timeUnit");
