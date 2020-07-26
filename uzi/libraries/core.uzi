@@ -83,3 +83,11 @@ func map(value, fromLow, fromHigh, toLow, toHigh) {
 func isBetween(value, min, max) {
   return value >= min && value <= max;
 }
+
+"The following NOP functions were added for consistency between the casting
+blocks and the 'Uzi syntax' mode. Normally, they shouldn't be used as they
+increase code size with no reason (at least until I implement inlining)."
+"TODO(Richo): Implement inlining"
+func pin(value) { return value; }
+func number(value) { return value; }
+func bool(value) { return value; }
