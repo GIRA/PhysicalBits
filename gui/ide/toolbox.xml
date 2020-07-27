@@ -81,7 +81,7 @@
     </block>
     <block type="pin_cast">
       <value name="value">
-        <shadow type="boolean">
+        <shadow type="number">
           <field name="value">13</field>
         </shadow>
       </value>
