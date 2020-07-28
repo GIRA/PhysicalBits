@@ -11,7 +11,6 @@ let UziBlock = (function () {
   };
 
   const types = {
-    ANY: null,
     PIN: "pin",
     NUMBER: "number",
     BOOLEAN: "boolean"
@@ -269,7 +268,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: null,
+          types: [types.NUMBER, types.BOOLEAN, types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -706,7 +705,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: null,
+          types: [types.NUMBER, types.PIN, types.BOOLEAN],
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -989,7 +988,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: null,
+          types: [types.BOOLEAN, types.PIN, types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
