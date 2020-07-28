@@ -507,6 +507,12 @@ let ASTToBlocks = (function () {
 		return node;
 	}
 
+	function createCast(type) {
+		let node = create("block");
+		node.setAttribute("type", type + "_cast");
+		return node;
+	}
+
 	function createShadowFor(blockType, valueName) {
 		let input = Object.values(UziBlock.spec[blockType].inputs)
 											.find(each => each.name == valueName);
@@ -517,9 +523,29 @@ let ASTToBlocks = (function () {
 		return createShadow(preferredType);
 	}
 
+	function createCastFor(blockType, valueName, value) {
+		let input = Object.values(UziBlock.spec[blockType].inputs)
+											.find(each => each.name == valueName);
+		if (!input) return value;
+		if (!input.types) return value;
+
+		let valueType = UziBlock.spec[value.getAttribute("type")].type;
+		let types = new Set(input.types);
+		if (types.has(valueType)) return value;
+
+
+		let preferredType = input.types[0];
+		let cast = createCast(preferredType);
+		appendValue(cast, "value", value);
+		return cast;
+	}
+
 	function appendValue(node, name, value) {
 		let child = create("value");
 		child.setAttribute("name", name);
+
+		value = createCastFor(node.getAttribute("type"), name, value);
+
 		let shadow = createShadowFor(node.getAttribute("type"), name);
 		if (shadow) {
 			child.appendChild(shadow);
