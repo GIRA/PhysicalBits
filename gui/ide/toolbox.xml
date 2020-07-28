@@ -26,14 +26,14 @@
     </block>
   </category>
   <category name="GPIO" colour="#a55b5b">
-    <block type="toggle_variable">
+    <block type="toggle_pin">
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D13</field>
         </shadow>
       </value>
     </block>
-    <block type="turn_pin_variable">
+    <block type="turn_onoff_pin">
       <field name="pinState">on</field>
       <value name="pinNumber">
         <shadow type="pin">
@@ -41,7 +41,7 @@
         </shadow>
       </value>
     </block>
-    <block type="is_pin_variable">
+    <block type="is_onoff_pin">
       <field name="pinState">on</field>
       <value name="pinNumber">
         <shadow type="pin">
@@ -49,7 +49,7 @@
         </shadow>
       </value>
     </block>
-    <block type="write_pin_variable">
+    <block type="write_pin">
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D13</field>
@@ -61,7 +61,7 @@
         </shadow>
       </value>
     </block>
-    <block type="read_pin_variable">
+    <block type="read_pin">
       <value name="pinNumber">
         <shadow type="pin">
           <field name="pinNumber">D13</field>

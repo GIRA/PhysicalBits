@@ -128,7 +128,7 @@ let UziBlock = (function () {
     },
 
     // GPIO
-    toggle_variable: {
+    toggle_pin: {
       text: "toggle pin %1",
       type: null,
       inputs: {
@@ -140,7 +140,7 @@ let UziBlock = (function () {
       connections: { up: true, down: true, left: false },
       color: 0
     },
-    turn_pin_variable: {
+    turn_onoff_pin: {
       text: "set state %1 on pin %2",
       type: null,
       inputs: {
@@ -158,7 +158,7 @@ let UziBlock = (function () {
       connections: { up: true, down: true, left: false },
       color: 0
     },
-    is_pin_variable: {
+    is_onoff_pin: {
       text: "is %1 pin %2",
       type: types.BOOLEAN,
       inputs: {
@@ -176,7 +176,7 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true },
       color: 0
     },
-    read_pin_variable: {
+    read_pin: {
       text: "read pin %1",
       type: types.NUMBER,
       inputs: {
@@ -188,7 +188,7 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true },
       color: 0
     },
-    write_pin_variable: {
+    write_pin: {
       text: "set pin %1 to value %2",
       type: null,
       inputs: {
@@ -2009,7 +2009,7 @@ let UziBlock = (function () {
       }
     }
   }
-  
+
   function getNotes() {
     return [["B0", "31"], ["C1", "33"], ["C#1", "35"], ["D1", "37"],
            ["D#1", "39"], ["E1", "41"], ["F1", "44"], ["F#1", "46"],

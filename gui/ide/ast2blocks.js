@@ -265,30 +265,30 @@ let ASTToBlocks = (function () {
 		let selector = json.selector;
 		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector === "toggle") {
-			node.setAttribute("type", "toggle_variable");
+			node.setAttribute("type", "toggle_pin");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "turnOn") {
-			node.setAttribute("type", "turn_pin_variable");
+			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "on");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "turnOff") {
-			node.setAttribute("type", "turn_pin_variable");
+			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "off");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "isOn") {
-			node.setAttribute("type", "is_pin_variable");
+			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "on");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "isOff") {
-			node.setAttribute("type", "is_pin_variable");
+			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "off");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "write") {
-			node.setAttribute("type", "write_pin_variable");
+			node.setAttribute("type", "write_pin");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 			appendValue(node, "pinValue", generateXMLFor(args[1], ctx));
 		} else if (selector === "read") {
-			node.setAttribute("type", "read_pin_variable");
+			node.setAttribute("type", "read_pin");
 			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 		} else if (selector === "setServoDegrees") {
 			node.setAttribute("type", "set_servo_degrees");

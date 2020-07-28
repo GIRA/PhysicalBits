@@ -278,7 +278,7 @@ let BlocksToAST = (function () {
 			let value = parseFloat(XML.getChildNode(block, "value").innerText);
 			stream.push(builder.number(id, value));
 		},
-		turn_pin_variable: function (block, ctx, stream) {
+		turn_onoff_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinState = XML.getChildNode(block, "pinState").innerText;
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
@@ -372,7 +372,7 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.primitiveCall(id, selector, []));
 		},
-		toggle_variable: function (block, ctx, stream) {
+		toggle_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			stream.push(builder.primitiveCall(id, "toggle", [pinNumber]));
@@ -540,7 +540,7 @@ let BlocksToAST = (function () {
 				builder.tickingRate(id, runningTimes, tickingScale),
 				statements));
 		},
-		write_pin_variable: function (block, ctx, stream) {
+		write_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			let pinValue = generateCodeForValue(block, ctx, "pinValue");
@@ -563,7 +563,7 @@ let BlocksToAST = (function () {
 			}
 			stream.push(builder.primitiveCall(id, "setPinMode", [pinNumber, actualMode]));
 		},
-		read_pin_variable: function (block, ctx, stream) {
+		read_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
 			stream.push(builder.primitiveCall(id, "read", [pinNumber]));
@@ -591,7 +591,7 @@ let BlocksToAST = (function () {
 				stream.push(builder.while(id, condition, statements));
 			}
 		},
-		is_pin_variable: function (block, ctx, stream) {
+		is_onoff_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinState = XML.getChildNode(block, "pinState").innerText;
 			let pinNumber = generateCodeForValue(block, ctx, "pinNumber");
