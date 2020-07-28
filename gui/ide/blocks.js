@@ -10,16 +10,1598 @@ let UziBlock = (function () {
     "change" : [],
   };
 
+  const types = {
+    ANY: null,
+    PIN: "pin",
+    NUMBER: "number",
+    BOOLEAN: "boolean"
+  };
+
+  const spec = {
+    // Tasks
+    task: {
+      text: "task named %1 statements %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 175
+    },
+    timer: {
+      text: "timer named %1 running %2 times per %3 with initial state %4 statements %5",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName")
+        },
+        "2": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes")
+        },
+        "3": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("ticking scale second"),"s"],
+                                                                           [i18n.translate("ticking scale minute"),"m"],
+                                                                           [i18n.translate("ticking scale hour"),"h"]]), "tickingScale")
+        },
+        "4": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
+                                                                           [i18n.translate("stopped"),"stopped"]]), "initialState")
+        },
+        "5": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 175
+    },
+    start_task: {
+      text: "start task %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 175
+    },
+    pause_task: {
+      text: "pause task %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 175
+    },
+    stop_task: {
+      text: "stop task %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 175
+    },
+    run_task: {
+      text: "run task %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 175
+    },
+    resume_task: {
+      text: "resume task %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 175
+    },
+
+    // GPIO
+    toggle_variable: {
+      text: "toggle pin %1",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    turn_pin_variable: {
+      text: "set state %1 on pin %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn state on"), "on"],
+                                                                           [i18n.translate("turn state off"), "off"]]),
+                                                                           "pinState")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    is_pin_variable: {
+      text: "is %1 pin %2",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
+                                                                           [i18n.translate("pin state off"), "off"]]),
+                                                                          "pinState")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    read_pin_variable: {
+      text: "read pin %1",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    write_pin_variable: {
+      text: "set pin %1 to value %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "2": {
+          types: [types.NUMBER, types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("pinValue")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    set_pin_mode: {
+      text: "set pin %1 mode to %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
+                                                                                  [i18n.translate("OUTPUT"),"OUTPUT"],
+                                                                                  [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), "mode")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    pin: {
+      text: "pin %pin",
+      type: types.PIN,
+      inputs: {
+        "pin": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                         .appendField(new Blockly.FieldDropdown([["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"],
+                                                                                 ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"],
+                                                                                 ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"],
+                                                                                 ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"],
+                                                                                 ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]),
+                                                                                "pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    pin_cast: {
+      text: "pin cast %1",
+      type: types.PIN,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+    // Motors - Servo
+    set_servo_degrees: {
+      text: "set degrees of servo on pin %1 to %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("servoValue")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    get_servo_degrees: {
+      text: "get degrees of servo on pin %1",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+    // Motors - DC
+    move_dcmotor: {
+      text: "move dcmotor %name in %direction at speed %speed",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        },
+        "direction": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
+                                                                           [i18n.translate("backward"),"bwd"]]), "direction")
+        },
+        "speed": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("speed")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    stop_dcmotor: {
+      text: "stop dcmotor %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    change_speed_dcmotor: {
+      text: "set dcmotor %name speed to %speed",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        },
+        "speed": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("speed")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    get_speed_dcmotor: {
+      text: "get dcmotor %name speed",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+    // Sensors - Sonar
+    get_sonar_distance: {
+      text: "read distance from sonar %name in units %unit",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName")
+        },
+        "unit": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
+                                                                           [i18n.translate("distance_cm"), "cm"],
+                                                                           [i18n.translate("distance_m"), "m"]]), "unit")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+    // Sensors - Buttons
+    button_check_state: {
+      text: "is button %state on pin %pin",
+      type: types.BOOLEAN,
+      inputs: {
+        "state": {
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
+                                                                           [i18n.translate("button released"),"release"]]), "state")
+        },
+        "pin": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    button_wait_for_action: {
+      text: "wait for button %action on pin %pin",
+      type: null,
+      inputs: {
+        "action": {
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                           [i18n.translate("button waitForRelease"),"release"]]), "action")
+        },
+        "pin": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    /*
+     TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
+     but too ugly when its inputs are external. I don't know how to make it smaller...
+     */
+    button_wait_for_long_action: {
+      text: "wait button %action on pin %pin for %time %timeUnit",
+      type: null,
+      inputs: {
+        "action": {
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                           [i18n.translate("button waitForRelease"),"release"]]), "action")
+        },
+        "pin": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "time": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("time")
+        },
+        "timeUnit": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                                  [i18n.translate("seconds"),"s"],
+                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    /*
+     TODO(Richo): This block is useful to react to long presses. It will wait
+     for a long press and then return the time passed in milliseconds. The name
+     is confusing, though. And the usage is complicated as well. Maybe I should
+     simplify it to simply "wait for button hold x seconds" or something like that...
+     */
+    button_ms_holding: {
+      text: "elapsed milliseconds while pressing %pin",
+      type: types.NUMBER,
+      inputs: {
+        "pin": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+
+    // Sensors - Joystick
+    get_joystick_x: {
+      text: "read joystick x position from %name",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    get_joystick_y: {
+      text: "read joystick y position from %name",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    get_joystick_angle: {
+      text: "read joystick angle from %name",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+    get_joystick_magnitude: {
+      text: "read joystick magnitude from %name",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          types: null,
+          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 0
+    },
+
+    // Sound
+    start_tone: {
+      text: "play tone %1 on pin %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("tone")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    play_tone: {
+      text: "play tone %1 on pin %2 for %3 %4",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("tone")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("time")
+        },
+        "4": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                                  [i18n.translate("seconds"),"s"],
+                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    start_note: {
+      text: "play note %1 on pin %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown(getNotes), "note")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    play_note: {
+      text: "play note %1 on pin %2 for %3 %4",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown(getNotes), "note")
+        },
+        "2": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("time")
+        },
+        "4": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                                  [i18n.translate("seconds"),"s"],
+                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    stop_tone: {
+      text: "silence pin %1",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+    stop_tone_wait: {
+      text: "silence pin %1 and wait %2 %3",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.PIN],
+          builder: (input, block) => block.appendValueInput("pinNumber")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("time")
+        },
+        "3": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                                  [i18n.translate("seconds"),"s"],
+                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 0
+    },
+
+    // Control
+    boolean: {
+      text: "boolean %value",
+      type: types.BOOLEAN,
+      inputs: {
+        "value": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
+                                                                                  [i18n.translate("false"), "false"]]), "value")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+    boolean_cast: {
+      text: "boolean cast %1",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+    conditional_simple: {
+      text: "if %1 then %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("condition")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("trueBranch")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    conditional_full: {
+      text: "if %1 then %2 else %3",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("condition")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("trueBranch")
+        },
+        "3": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("falseBranch")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    forever: {
+      text: "repeat forever \n %1",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    repeat: {
+      text: "repeat %1 mode %2 condition %3 statements",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                                                                  [i18n.translate("until"),"true"]]),
+                                                                                 "negate")
+        },
+        "2": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("condition")
+        },
+        "3": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    repeat_times: {
+      text: "repeat %1 times \n %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("times")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    for: {
+      text: "count with %1 from %2 to %3 by %4 %5",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("start")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("stop")
+        },
+        "4": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("step")
+        },
+        "5": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    delay: {
+      text: "delay %1 %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("time")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
+                                                                                  [i18n.translate("delay in seconds"),"s"],
+                                                                                  [i18n.translate("delay in minutes"),"m"]]), "unit")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    wait: {
+      text: "wait %1 %2",
+      type: null,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                                                           [i18n.translate("until"),"true"]]), "negate")
+        },
+        "2": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("condition")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 210
+    },
+    elapsed_time: {
+      text: "elapsed time since bootup in %timeUnit",
+      type: types.NUMBER,
+      inputs: {
+        "timeUnit": {
+          types: null,
+          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+                                                                                 [i18n.translate("seconds"),"s"],
+                                                                                 [i18n.translate("minutes"),"m"]]), "unit")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+    logical_compare: {
+      text: "logical comparison %1 left %2 operator %3 right",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("left")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("logical operator ="), "=="],
+                                                                                  [i18n.translate("logical operator ≠"), "!="],
+                                                                                  [i18n.translate("logical operator <"), "<"],
+                                                                                  [i18n.translate("logical operator ≤"), "<="],
+                                                                                  [i18n.translate("logical operator >"), ">"],
+                                                                                  [i18n.translate("logical operator ≥"), ">="]]), "operator")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("right")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+    logical_operation: {
+      text: "logical operation %1 left %2 operator %3 right",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("left")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("logical and"),"and"],
+                                                                                  [i18n.translate("logical or"),"or"]]), "operator")
+        },
+        "3": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("right")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+    logical_not: {
+      text: "logical not %1",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.BOOLEAN],
+          builder: (input, block) => block.appendValueInput("value")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 210
+    },
+
+    // Math
+    number: {
+      text: "number %1",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldNumber(0), "value")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_cast: {
+      text: "number cast %1",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_property: {
+      text: "number property %1 value %2 property",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("value")
+        },
+        "2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
+                                                                                  [i18n.translate("is odd"),"odd"],
+                                                                                  [i18n.translate("is prime"),"prime"],
+                                                                                  [i18n.translate("is whole"),"whole"],
+                                                                                  [i18n.translate("is positive"),"positive"],
+                                                                                  [i18n.translate("is negative"),"negative"]]), "property")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_divisibility: {
+      text: "number %1 is divisible by number %2",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("left")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("right")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_operation: {
+      text: "perform %operation on %number",
+      type: types.NUMBER,
+      inputs: {
+        "number": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("number")
+        },
+        "operation": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
+                                                                                  [i18n.translate("absolute"),"abs"],
+                                                                                  [i18n.translate("-"),"negate"],
+                                                                                  [i18n.translate("ln"),"ln"],
+                                                                                  [i18n.translate("log10"),"log10"],
+                                                                                  [i18n.translate("e^"),"exp"],
+                                                                                  [i18n.translate("10^"),"pow10"]]), "operator")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_trig: {
+      text: "perform trigonometric %operation on %number",
+      type: types.NUMBER,
+      inputs: {
+        "number": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("number")
+        },
+        "operation": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
+                                                                                  [i18n.translate("cos"),"cos"],
+                                                                                  [i18n.translate("tan"),"tan"],
+                                                                                  [i18n.translate("asin"),"asin"],
+                                                                                  [i18n.translate("acos"),"acos"],
+                                                                                  [i18n.translate("atan"),"atan"]]), "operator")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    math_constant: {
+      text: "math %constant",
+      type: types.NUMBER,
+      inputs: {
+        "constant": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("constant π"),"PI"],
+                                                                                  [i18n.translate("constant ℯ"),"E"],
+                                                                                  [i18n.translate("constant φ"),"GOLDEN_RATIO"],
+                                                                                  [i18n.translate("constant √2"),"SQRT2"],
+                                                                                  [i18n.translate("constant √½"),"SQRT1_2"],
+                                                                                  [i18n.translate("constant ∞"),"INFINITY"]]), "constant")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    math_arithmetic: {
+      text: "arithmetic function %left %operator %right",
+      type: types.NUMBER,
+      inputs: {
+        "left": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("left")
+        },
+        "operator": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
+                                                                                  [i18n.translate("arithmetic operator *"),"MULTIPLY"],
+                                                                                  [i18n.translate("arithmetic operator -"),"MINUS"],
+                                                                                  [i18n.translate("arithmetic operator +"),"ADD"],
+                                                                                  [i18n.translate("arithmetic operator ^"),"POWER"]]), "operator"),
+        },
+        "right": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("right")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_round: {
+      text: "perform rounding %operation on %number",
+      type: types.NUMBER,
+      inputs: {
+        "number": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("number")
+        },
+        "operation": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
+                                                                                  [i18n.translate("round up"),"ceil"],
+                                                                                  [i18n.translate("round down"),"floor"]]), "operator")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_modulo: {
+      text: "remainder of %1 ÷ %2",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("dividend")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("divisor")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225
+    },
+    number_constrain: {
+      text: "constrain %1 low %2 high %3",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("value")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("low")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("high")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225,
+      postload: (block) => block.setInputsInline(true)
+    },
+    number_between: {
+      text: "is %1 between %2 and %3",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("value")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("low")
+        },
+        "3": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("high")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225,
+      postload: (block) => block.setInputsInline(true)
+    },
+    number_random_int: {
+      text: "random integer from %1 to %2",
+      type: types.NUMBER,
+      inputs: {
+        "1": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("from")
+        },
+        "2": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("to")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 225,
+      postload: (block) => block.setInputsInline(true)
+    },
+    number_random_float: {
+      text: "random fraction",
+      type: types.NUMBER,
+      inputs: {},
+      connections: { up: false, down: false, left: true },
+      color: 225,
+    },
+
+    // Variables
+    variable: {
+      text: "variable %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 330,
+    },
+    declare_local_variable: {
+      text: "declare local variable %name with %value",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+        },
+        "value": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 330
+    },
+    set_variable: {
+      text: "set variable %name to value %value",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+        },
+        "value": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 330
+    },
+    increment_variable: {
+      text: "increment variable %name value by %value",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+        },
+        "value": {
+          types: [types.NUMBER],
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 330
+    },
+
+    // Procedures
+    proc_definition_0args: {
+      text: "procedure named %name %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 285
+    },
+    proc_definition_1args: {
+      text: "procedure named %name with argument %arg0 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 285
+    },
+    proc_definition_2args: {
+      text: "procedure named %name with arguments %arg0 %arg1 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 285
+    },
+    proc_definition_3args: {
+      text: "procedure named %name with arguments %arg0 %arg1 %arg2 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+        },
+        "arg2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), "arg2")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 285
+    },
+    return: {
+      text: "procedure exit e.g. return with no value",
+      type: null,
+      inputs: {},
+      connections: { up: true, down: false, left: false },
+      color: 285
+    },
+    proc_call_0args: {
+      text: "execute procedure %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName")
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: 285
+    },
+    proc_call_1args: {
+      text: "execute procedure %name with %arg0",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 285
+    },
+    proc_call_2args: {
+      text: "execute procedure %name with %arg0 and %arg1",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg1")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg1")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 285
+    },
+    proc_call_3args: {
+      text: "execute procedure %name with %arg0, %arg1 and %arg2",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg1")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg1")
+        },
+        "arg2": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg2")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg2")
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: 285
+    },
+
+    // Functions
+    func_definition_0args: {
+      text: "function named %name %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 265
+    },
+    func_definition_1args: {
+      text: "function named %name with argument %arg0 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 265
+    },
+    func_definition_2args: {
+      text: "function named %name with arguments %arg0 %arg1 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 265
+    },
+    func_definition_3args: {
+      text: "function named %name with arguments %arg0 %arg1 %arg2 %stmts",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+        },
+        "arg2": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), "arg2")
+        },
+        "stmts": {
+          types: null,
+          builder: (input, block) => block.appendStatementInput("statements")
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: 265
+    },
+    return_value: {
+      text: "function return with value %value",
+      type: null,
+      inputs: {
+        "value": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("value")
+        }
+      },
+      connections: { up: true, down: false, left: false },
+      color: 265
+    },
+    func_call_0args: {
+      text: "evaluate function %name",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName")
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: 265
+    },
+    func_call_1args: {
+      text: "evaluate function %name with argument %arg0",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 265
+    },
+    func_call_2args: {
+      text: "evaluate function %name with arguments %arg0 %arg1",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg1")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg1")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 265
+    },
+    func_call_3args: {
+      text: "evaluate function %name with arguments %arg0 %arg1 %arg2",
+      type: null,
+      inputs: {
+        "name": {
+          types: null,
+          builder: (input, block) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName")
+        },
+        "arg0": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg0")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg0")
+        },
+        "arg1": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg1")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg1")
+        },
+        "arg2": {
+          types: null,
+          builder: (input, block) => block.appendValueInput("arg2")
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField("arg2")
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: 265
+    },
+  }
+
   function init() {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
 
-    initCommonBlocks();
-    initSoundBlocks();
-    initButtonBlocks();
-    initJoystickBlocks();
-    initSpecialBlocks();
-    initCastingBlocks();
+    initFromSpec();
 
     i18n.on("change", refreshWorkspace);
 
@@ -308,1837 +1890,53 @@ let UziBlock = (function () {
 
   function trim(str) { return str.trim(); }
 
-  function initCommonBlocks() {
-
-    Blockly.Blocks['toggle_variable'] = {
-      init: function() {
-        let msg = i18n.translate("toggle pin %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['wait'] = {
-      init: function() {
-        let msg = i18n.translate("wait %1 %2");
-        let inputFields = {
-          "1": (input) => input.appendField(
-            new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                       [i18n.translate("until"),"true"]]), "negate"),
-          "2": () => this.appendValueInput("condition")
-                    .setCheck("Boolean")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['turn_pin_variable'] = {
-      init: function() {
-        let msg = i18n.translate("set state %1 on pin %2");
-        let inputFields = {
-          "1": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn state on"), "on"],
-                                                                [i18n.translate("turn state off"), "off"]]),
-                                                               "pinState"),
-          "2": () => this.appendValueInput("pinNumber").setCheck("Pin")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['is_pin_variable'] = {
-      init: function() {
-        let msg = i18n.translate("is %1 pin %2");
-        let inputFields = {
-          "1": input => input.appendField(
-            new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
-                                       [i18n.translate("pin state off"), "off"]]),
-                                      "pinState"),
-          "2": () => this.appendValueInput("pinNumber").setCheck("Pin")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Boolean");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['read_pin_variable'] = {
-      init: function() {
-        let msg = i18n.translate("read pin %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber").setCheck("Pin")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['write_pin_variable'] = {
-      init: function() {
-        let msg = i18n.translate("set pin %1 to value %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                         .setCheck("Pin")
-                         .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("pinValue")
-                         .setCheck(["Number", "Boolean"])
-                         .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['set_pin_mode'] = {
-      init: function() {
-        let msg = i18n.translate("set pin %1 mode to %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": input => input
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
-                                                            [i18n.translate("OUTPUT"),"OUTPUT"],
-                                                            [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), "mode")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['forever'] = {
-      init: function() {
-        let msg = i18n.translate("repeat forever \n %1");
-        let inputFields = {
-          "1": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['delay'] = {
-      init: function() {
-        let msg = i18n.translate("delay %1 %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("time")
-                    .setCheck("Number"),
-          "2": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
-                                                            [i18n.translate("delay in seconds"),"s"],
-                                                            [i18n.translate("delay in minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['elapsed_time'] = {
-      init: function() {
-        let msg = i18n.translate("elapsed time since bootup in %timeUnit");
-        let inputFields = {
-          "timeUnit": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                                            [i18n.translate("seconds"),"s"],
-                                                                            [i18n.translate("minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['set_servo_degrees'] = {
-      init: function() {
-        let msg = i18n.translate("set degrees of servo on pin %1 to %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                        .setCheck("Pin")
-                        .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("servoValue")
-                        .setCheck("Number")
-                        .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-
-    Blockly.Blocks['get_servo_degrees'] = {
-      init: function() {
-        let msg = i18n.translate("get degrees of servo on pin %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                        .setCheck("Pin")
-                        .setAlign(Blockly.ALIGN_RIGHT),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['repeat'] = {
-      init: function() {
-        let msg = i18n.translate("repeat %1 mode %2 condition %3 statements");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                        .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                                [i18n.translate("until"),"true"]]), "negate"),
-          "2": () => this.appendValueInput("condition").setCheck("Boolean"),
-          "3": () => this.appendStatementInput("statements").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['repeat_times'] = {
-      init: function() {
-        let msg = i18n.translate("repeat %1 times \n %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("times").setCheck("Number"),
-          "2": () => this.appendStatementInput("statements").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['for'] = {
-      init: function() {
-        let msg = i18n.translate("count with %1 from %2 to %3 by %4 %5");
-          let inputFields = {
-              "1": () => this.appendDummyInput()
-                        .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown),
-                                     "variableName"),
-              "2": () => this.appendValueInput("start")
-                        .setCheck("Number"),
-              "3": () => this.appendValueInput("stop")
-                        .setCheck("Number"),
-              "4": () => this.appendValueInput("step")
-                        .setCheck("Number"),
-              "5": () => this.appendStatementInput("statements").setCheck(null)
-          };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['timer'] = {
-      init: function() {
-        let msg = i18n.translate("timer named %1 running %2 times per %3 with initial state %4 statements %5");
-        let inputFields = {
-          "1": (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
-          "2": (input) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes"),
-          "3": (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("ticking scale second"),"s"],
-                                                                       [i18n.translate("ticking scale minute"),"m"],
-                                                                       [i18n.translate("ticking scale hour"),"h"]]), "tickingScale"),
-          "4": (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
-                                                                       [i18n.translate("stopped"),"stopped"]]), "initialState"),
-          "5": () => this.appendStatementInput("statements")
-                        .setCheck(null)
-                        .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(175);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['task'] = {
-      init: function() {
-        let msg = i18n.translate("task named %1 statements %2");
-        let inputFields = {
-          "1": (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName"),
-          "2": () => this.appendStatementInput("statements")
-                        .setCheck(null)
-                        .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(175);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['conditional_simple'] = {
-      init: function() {
-        let msg = i18n.translate("if %1 then %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("condition")
-                    .setCheck("Boolean")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendStatementInput("trueBranch")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['conditional_full'] = {
-      init: function() {
-        let msg = i18n.translate("if %1 then %2 else %3");
-        let inputFields = {
-          "1": () => this.appendValueInput("condition")
-                    .setCheck("Boolean")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendStatementInput("trueBranch")
-                    .setCheck(null),
-          "3": () => this.appendStatementInput("falseBranch")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['pin'] = {
-      init: function() {
-        let msg = i18n.translate("pin %pin");
-        let inputFields = {
-          "pin": () => this.appendDummyInput()
-                           .appendField(new Blockly.FieldDropdown(
-                             [["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"],
-                              ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"],
-                              ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"],
-                              ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"],
-                              ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]), "pinNumber")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Pin");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['boolean'] = {
-      init: function() {
-        let msg = i18n.translate("boolean %value");
-        let inputFields = {
-          "value": () => this.appendDummyInput().appendField(
-              new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
-                                         [i18n.translate("false"), "false"]]), "value")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Boolean");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['logical_compare'] = {
-      init: function() {
-        let msg = i18n.translate("logical comparison %1 left %2 operator %3 right");
-        let inputFields = {
-          "1": () => this.appendValueInput("left")
-                    .setCheck("Number"),
-          "2": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown(
-                                   [[i18n.translate("logical operator ="), "=="],
-                                    [i18n.translate("logical operator ≠"), "!="],
-                                    [i18n.translate("logical operator <"), "<"],
-                                    [i18n.translate("logical operator ≤"), "<="],
-                                    [i18n.translate("logical operator >"), ">"],
-                                    [i18n.translate("logical operator ≥"), ">="]]), "operator"),
-          "3": () => this.appendValueInput("right")
-                    .setCheck("Number")
-  };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Boolean");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['logical_operation'] = {
-      init: function() {
-        let msg = i18n.translate("logical operation %1 left %2 operator %3 right");
-        let inputFields = {
-          "1": () => this.appendValueInput("left")
-                    .setCheck("Boolean"),
-          "2": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown(
-                                   [[i18n.translate("logical and"),"and"],
-                                    [i18n.translate("logical or"),"or"]]), "operator"),
-          "3": () => this.appendValueInput("right")
-                    .setCheck("Boolean")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Boolean");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['logical_not'] = {
-      init: function() {
-        let msg = i18n.translate("logical not %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("value")
-                    .setCheck("Boolean")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Boolean");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_property'] = {
-      init: function() {
-        let msg = i18n.translate("number property %1 value %2 property");
-        let inputFields = {
-          "1": () => this.appendValueInput("value")
-                    .setCheck("Number"),
-          "2": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
-                                                            [i18n.translate("is odd"),"odd"],
-                                                            [i18n.translate("is prime"),"prime"],
-                                                            [i18n.translate("is whole"),"whole"],
-                                                            [i18n.translate("is positive"),"positive"],
-                                                            [i18n.translate("is negative"),"negative"]]), "property")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Boolean");
-        this.setColour(225);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_divisibility'] = {
-      init: function() {
-        let msg = i18n.translate("number %1 is divisible by number %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("left")
-                    .setCheck("Number"),
-          "2": () => this.appendValueInput("right")
-                    .setCheck("Number"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Boolean");
-        this.setColour(225);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number'] = {
-      init: function() {
-        let msg = i18n.translate("number %1");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldNumber(0), "value")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_operation'] = {
-      init: function() {
-        let msg = i18n.translate("perform %operation on %number");
-        let inputFields = {
-          "number": () => this.appendValueInput("number")
-                                 .setCheck("Number"),
-          "operation": () => this.appendDummyInput().appendField(
-                 new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
-                                            [i18n.translate("absolute"),"abs"],
-                                            [i18n.translate("-"),"negate"],
-                                            [i18n.translate("ln"),"ln"],
-                                            [i18n.translate("log10"),"log10"],
-                                            [i18n.translate("e^"),"exp"],
-                                            [i18n.translate("10^"),"pow10"]]), "operator")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_trig'] = {
-      init: function() {
-        let msg = i18n.translate("perform trigonometric %operation on %number");
-        let inputFields = {
-          "number": () => this.appendValueInput("number")
-                              .setCheck("Number"),
-          "operation": () => this.appendDummyInput().appendField(
-                   new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
-                                              [i18n.translate("cos"),"cos"],
-                                              [i18n.translate("tan"),"tan"],
-                                              [i18n.translate("asin"),"asin"],
-                                              [i18n.translate("acos"),"acos"],
-                                              [i18n.translate("atan"),"atan"]]), "operator")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-
-    Blockly.Blocks['math_constant'] = {
-      init: function() {
-        let msg = i18n.translate("math %constant");
-        let inputFields = {
-          "constant": () => this.appendDummyInput().appendField(
-                  new Blockly.FieldDropdown([[i18n.translate("constant π"),"PI"],
-                                             [i18n.translate("constant ℯ"),"E"],
-                                             [i18n.translate("constant φ"),"GOLDEN_RATIO"],
-                                             [i18n.translate("constant √2"),"SQRT2"],
-                                             [i18n.translate("constant √½"),"SQRT1_2"],
-                                             [i18n.translate("constant ∞"),"INFINITY"]]), "constant")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-
-    Blockly.Blocks['math_arithmetic'] = {
-      init: function() {
-        let msg = i18n.translate("arithmetic function %left %operator %right");
-        let inputFields = {
-          "left": () => this.appendValueInput("left").setCheck("Number"),
-          "operator": () => this.appendDummyInput().appendField(
-                  new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
-                                             [i18n.translate("arithmetic operator *"),"MULTIPLY"],
-                                             [i18n.translate("arithmetic operator -"),"MINUS"],
-                                             [i18n.translate("arithmetic operator +"),"ADD"],
-                                             [i18n.translate("arithmetic operator ^"),"POWER"]]), "operator"),
-          "right": () => this.appendValueInput("right").setCheck("Number")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-
-    Blockly.Blocks['number_round'] = {
-      init: function() {
-        let msg = i18n.translate("perform rounding %operation on %number");
-        let inputFields = {
-          "number": () => this.appendValueInput("number")
-            .setCheck("Number"),
-          "operation": () => this.appendDummyInput().appendField(
-                  new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
-                                             [i18n.translate("round up"),"ceil"],
-                                             [i18n.translate("round down"),"floor"]]), "operator")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_modulo'] = {
-      init: function() {
-        let msg = i18n.translate("remainder of %1 ÷ %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("dividend")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("divisor")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_constrain'] = {
-      init: function() {
-        let msg = i18n.translate("constrain %1 low %2 high %3");
-        let inputFields = {
-            "1": () => this.appendValueInput("value")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT),
-            "2": () => this.appendValueInput("low")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT),
-            "3": () => this.appendValueInput("high")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_between'] = {
-      init: function() {
-        let msg = i18n.translate("is %1 between %2 and %3");
-        let inputFields = {
-            "1": () => this.appendValueInput("value")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT),
-            "2": () => this.appendValueInput("low")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT),
-            "3": () => this.appendValueInput("high")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setInputsInline(true);
-        this.setOutput(true, "Boolean");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_random_int'] = {
-      init: function() {
-        let msg = i18n.translate("random integer from %1 to %2");
-        let inputFields = {
-            "1": () => this.appendValueInput("from")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT),
-            "2": () => this.appendValueInput("to")
-                      .setCheck("Number")
-                      .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_random_float'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("random fraction"));
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initSoundBlocks() {
-
-    Blockly.Blocks['start_tone'] = {
-      init: function() {
-        let msg = i18n.translate("play tone %1 on pin %2");
-        let inputFields = {
-          "1": () => this.appendValueInput("tone")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['play_tone'] = {
-      init: function() {
-        let msg = i18n.translate("play tone %1 on pin %2 for %3 %4");
-        let inputFields = {
-          "1": () => this.appendValueInput("tone")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "3": () => this.appendValueInput("time")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "4": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                                [i18n.translate("seconds"),"s"],
-                                                                [i18n.translate("minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(false);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    function getNotes() {
-      return [["B0", "31"], ["C1", "33"], ["C#1", "35"], ["D1", "37"],
-             ["D#1", "39"], ["E1", "41"], ["F1", "44"], ["F#1", "46"],
-             ["G1", "49"], ["G#1", "52"], ["A1", "55"], ["A#1", "58"],
-             ["B1", "62"], ["C2", "65"], ["C#2", "69"], ["D2", "73"],
-             ["D#2", "78"], ["E2", "82"], ["F2", "87"], ["F#2", "93"],
-             ["G2", "98"], ["G#2", "104"], ["A2", "110"], ["A#2", "117"],
-             ["B2", "123"], ["C3", "131"], ["C#3", "139"], ["D3", "147"],
-             ["D#3", "156"], ["E3", "165"], ["F3", "175"], ["F#3", "185"],
-             ["G3", "196"], ["G#3", "208"], ["A3", "220"], ["A#3", "233"],
-             ["B3", "247"], ["C4", "262"], ["C#4", "277"], ["D4", "294"],
-             ["D#4", "311"], ["E4", "330"], ["F4", "349"], ["F#4", "370"],
-             ["G4", "392"], ["G#4", "415"], ["A4", "440"], ["A#4", "466"],
-             ["B4", "494"], ["C5", "523"], ["C#5", "554"], ["D5", "587"],
-             ["D#5", "622"], ["E5", "659"], ["F5", "698"], ["F#5", "740"],
-             ["G5", "784"], ["G#5", "831"], ["A5", "880"], ["A#5", "932"],
-             ["B5", "988"], ["C6", "1047"], ["C#6", "1109"], ["D6", "1175"],
-             ["D#6", "1245"], ["E6", "1319"], ["F6", "1397"], ["F#6", "1480"],
-             ["G6", "1568"], ["G#6", "1661"], ["A6", "1760"], ["A#6", "1865"],
-             ["B6", "1976"], ["C7", "2093"], ["C#7", "2217"], ["D7", "2349"],
-             ["D#7", "2489"], ["E7", "2637"], ["F7", "2794"], ["F#7", "2960"],
-             ["G7", "3136"], ["G#7", "3322"], ["A7", "3520"], ["A#7", "3729"],
-             ["B7", "3951"], ["C8", "4186"], ["C#8", "4435"], ["D8", "4699"],
-             ["D#8", "4978"]].map(each => [i18n.translate(each["0"]), each["1"]]);
-    }
-
-    Blockly.Blocks['start_note'] = {
-      init: function() {
-        let msg = i18n.translate("play note %1 on pin %2");
-        let inputFields = {
-          "1": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                      .appendField(new Blockly.FieldDropdown(getNotes), "note"),
-          "2": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['play_note'] = {
-      init: function() {
-        let msg = i18n.translate("play note %1 on pin %2 for %3 %4");
-        let inputFields = {
-          "1": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                      .appendField(new Blockly.FieldDropdown(getNotes), "note"),
-          "2": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "3": () => this.appendValueInput("time")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "4": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                                [i18n.translate("seconds"),"s"],
-                                                                [i18n.translate("minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(false);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['stop_tone'] = {
-      init: function() {
-        let msg = i18n.translate("silence pin %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['stop_tone_wait'] = {
-      init: function() {
-        let msg = i18n.translate("silence pin %1 and wait %2 %3");
-        let inputFields = {
-          "1": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "2": () => this.appendValueInput("time")
-                    .setCheck("Number")
-                    .setAlign(Blockly.ALIGN_RIGHT),
-          "3": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                        .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                                [i18n.translate("seconds"),"s"],
-                                                                [i18n.translate("minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initButtonBlocks() {
-    Blockly.Blocks['button_check_state'] = {
-      init: function() {
-        let msg = i18n.translate("is button %state on pin %pin");
-        let inputFields = {
-          "state": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
-                                                                         [i18n.translate("button released"),"release"]]), "state"),
-          "pin": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Boolean");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['button_wait_for_action'] = {
-      init: function() {
-        let msg = i18n.translate("wait for button %action on pin %pin");
-        let inputFields = {
-          "action": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
-                                                                          [i18n.translate("button waitForRelease"),"release"]]), "action"),
-          "pin": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['button_wait_for_long_action'] = {
-      init: function() {
-        /*
-         TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
-         but too ugly when its inputs are external. I don't know how to make it smaller...
-         */
-        let msg = i18n.translate("wait button %action on pin %pin for %time %timeUnit");
-        let inputFields = {
-          "action": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button hold"),"press"],
-                                                                          [i18n.translate("button hold and release"),"release"]]), "action"),
-          "pin": () => this.appendValueInput("pinNumber")
-                           .setCheck("Pin")
-                           .setAlign(Blockly.ALIGN_RIGHT),
-          "time": () => this.appendValueInput("time")
-                           .setCheck("Number")
-                           .setAlign(Blockly.ALIGN_RIGHT),
-          "timeUnit": input => input.setAlign(Blockly.ALIGN_RIGHT)
-                  .appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
-                                                          [i18n.translate("seconds"),"s"],
-                                                          [i18n.translate("minutes"),"m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['button_ms_holding'] = {
-      init: function() {
-        /*
-         TODO(Richo): This block is useful to react to long presses. It will wait
-         for a long press and then return the time passed in milliseconds. The name
-         is confusing, though. And the usage is complicated as well. Maybe I should
-         simplify it to simply "wait for button hold x seconds" or something like that...
-         */
-        let msg = i18n.translate("elapsed milliseconds while pressing %pin");
-        let inputFields = {
-          "pin": () => this.appendValueInput("pinNumber")
-                    .setCheck("Pin")
-                    .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initJoystickBlocks() {
-    Blockly.Blocks['get_joystick_x'] = {
-      init: function() {
-        let msg = i18n.translate("read joystick x position from %name");
-        let inputFields = {
-          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['get_joystick_y'] = {
-      init: function() {
-        let msg = i18n.translate("read joystick y position from %name");
-        let inputFields = {
-          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['get_joystick_angle'] = {
-      init: function() {
-        let msg = i18n.translate("read joystick angle from %name");
-        let inputFields = {
-          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['get_joystick_magnitude'] = {
-      init: function() {
-        let msg = i18n.translate("read joystick magnitude from %name");
-        let inputFields = {
-          "name": input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initSpecialBlocks() {
-    initTaskBlocks();
-    initDCMotorBlocks();
-    initSonarBlocks();
-    initVariableBlocks();
-    initProcedureBlocks();
-    initFunctionBlocks();
-  }
-
-  function initTaskBlocks() {
-
-    let blocks = [
-      ["start_task", "start task %name"],
-      ["stop_task", "stop task %name"],
-      ["run_task", "run task %name"],
-      ["resume_task", "resume task %name"],
-      ["pause_task", "pause task %name"],
-    ];
-
-    blocks.forEach(function (block) {
-      let block_id = block[0];
-      let block_msg = block[1];
-      Blockly.Blocks[block_id] = {
-        init: function() {
-          let msg = i18n.translate(block_msg);
-                let inputFields = {
-                  "name": (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
-          };
-
-          initBlock(this, msg, inputFields);
-
-          this.setPreviousStatement(true, null);
-          this.setNextStatement(true, null);
-          this.setColour(175);
-          this.setTooltip("");
-          this.setHelpUrl("");
+  function initFromSpec() {
+    let typeMap = {};
+    typeMap[types.PIN] = "Pin";
+    typeMap[types.NUMBER] = "Number";
+    typeMap[types.BOOLEAN] = "Boolean";
+
+    for (let key in spec) {
+      let blockSpec = spec[key];
+      Blockly.Blocks[key] = {
+        init: function () {
+          try {
+            let msg = i18n.translate(blockSpec.text);
+            let inputFields = {};
+            for (let inputKey in blockSpec.inputs) {
+              let inputSpec = blockSpec.inputs[inputKey];
+              inputFields[inputKey] = (input, block) => {
+                let inputResult = inputSpec.builder(input, block);
+                if (inputSpec.types) {
+                  inputResult.setCheck(inputSpec.types.map(t => typeMap[t]));
+                }
+                return inputResult;
+              }
+            }
+
+            // TODO(Richo): If unused remove!
+            if (blockSpec.preload) {
+              blockSpec.preload(this);
+            }
+
+            initBlock(this, msg, inputFields);
+            this.setPreviousStatement(blockSpec.connections.up, null);
+            this.setNextStatement(blockSpec.connections.down, null);
+            this.setOutput(blockSpec.connections.left, typeMap[blockSpec.type]);
+            this.setColour(blockSpec.color);
+            this.setTooltip(blockSpec.tooltip || "");
+            this.setHelpUrl(blockSpec.helpUrl || "");
+
+            // TODO(Richo): If unused remove!
+            if (blockSpec.postload) {
+              blockSpec.postload(this);
+            }
+          } catch (err) {
+            debugger;
+          }
         }
-      };
-    });
-  }
-
-  function initDCMotorBlocks() {
-
-    Blockly.Blocks['move_dcmotor'] = {
-      init: function() {
-        let msg = i18n.translate("move dcmotor %name in %direction at speed %speed");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
-          "direction": input => input.appendField(
-            new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
-                                       [i18n.translate("backward"),"bwd"]]), "direction"),
-          "speed": () => this.appendValueInput("speed").setCheck("Number")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
       }
-    };
-
-    Blockly.Blocks['stop_dcmotor'] = {
-      init: function() {
-        let msg = i18n.translate("stop dcmotor %name");
-        let inputFields = {
-          "name": (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['change_speed_dcmotor'] = {
-      init: function() {
-        let msg = i18n.translate("set dcmotor %name speed to %speed");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
-          "speed": () => this.appendValueInput("speed").setCheck("Number")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['get_speed_dcmotor'] = {
-      init: function() {
-        let msg = i18n.translate("get dcmotor %name speed");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName"),
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initSonarBlocks() {
-
-    Blockly.Blocks['get_sonar_distance'] = {
-      init: function() {
-        let msg = i18n.translate("read distance from sonar %name in units %unit");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName"),
-          "unit": input => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
-                                                                [i18n.translate("distance_cm"), "cm"],
-                                                                [i18n.translate("distance_m"), "m"]]), "unit")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        //this.setInputsInline(true);
-        this.setOutput(true, "Number");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initVariableBlocks() {
-
-    Blockly.Blocks['set_variable'] = {
-      init: function() {
-        let msg = i18n.translate("set variable %name to value %value");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
-          "value": () => this.appendValueInput("value").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['increment_variable'] = {
-      init: function() {
-        let msg = i18n.translate("increment variable %name value by %value");
-        let inputFields = {
-          "name": input => input.appendField(
-            new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName"),
-          "value": () => this.appendValueInput("value").setCheck("Number")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-
-    Blockly.Blocks['variable'] = {
-      init: function() {
-        let msg = i18n.translate("variable %name");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                            .appendField(new Blockly.FieldDropdown(
-                                    currentVariablesForDropdown), "variableName")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['declare_local_variable'] = {
-      init: function() {
-        let msg = i18n.translate("declare local variable %name with %value");
-        let inputFields = {
-          "name": input => input.appendField(new Blockly.FieldTextInput("temp"), "variableName"),
-          "value": () => this.appendValueInput("value").setCheck(null)
-        };
-        initBlock(this, msg, inputFields);
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(330);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initProcedureBlocks() {
-
-    Blockly.Blocks['proc_definition_0args'] = {
-      init: function() {
-        let msg = i18n.translate("procedure named %1 %2");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "procName"),
-          "2": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_definition_1args'] = {
-      init: function() {
-        let msg = i18n.translate("procedure named %1 with argument %2 %3");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "procName"),
-          "2": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_definition_2args'] = {
-      init: function() {
-        let msg = i18n.translate("procedure named %1 with arguments %2 %3 %4");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "procName"),
-          "2": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "4": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_definition_3args'] = {
-      init: function() {
-        let msg = i18n.translate("procedure named %1 with arguments %2 %3 %4 %5");
-        let inputFields = {
-          "1": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "procName"),
-          "2": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "3": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "4": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg2"), "arg2"),
-          "5": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['return'] = {
-      init: function() {
-        this.appendDummyInput()
-            .appendField(i18n.translate("procedure exit e.g. return with no value"));
-        this.setPreviousStatement(true, null);
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_call_0args'] = {
-      init: function() {
-        let msg = i18n.translate("execute procedure %name");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                 .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_call_1args'] = {
-      init: function() {
-        let msg = i18n.translate("execute procedure %name with %arg1");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                   .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName"),
-          "arg1": () => this.appendValueInput("arg0")
-                            .setCheck(null)
-                            .setAlign(Blockly.ALIGN_RIGHT)
-                            .appendField("arg0")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_call_2args'] = {
-      init: function() {
-        let msg = i18n.translate("execute procedure %name with %arg1 and %arg2");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName"),
-          "arg1": () => this.appendValueInput("arg0")
-                            .setCheck(null)
-                            .setAlign(Blockly.ALIGN_RIGHT)
-                            .appendField("arg0"),
-          "arg2": () => this.appendValueInput("arg1")
-                            .setCheck(null)
-                            .setAlign(Blockly.ALIGN_RIGHT)
-                            .appendField("arg1")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['proc_call_3args'] = {
-      init: function() {
-        let msg = i18n.translate("execute procedure %name with %arg1, %arg2 and %arg3");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName"),
-          "arg1": () => this.appendValueInput("arg0")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0"),
-        "arg2": () => this.appendValueInput("arg1")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1"),
-        "arg3": () => this.appendValueInput("arg2")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg2")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setNextStatement(true, null);
-        this.setColour(285);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-  }
-
-  function initFunctionBlocks() {
-
-    Blockly.Blocks['func_definition_0args'] = {
-      init: function() {
-        let msg = i18n.translate("function named %name %statements");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "statements": () => this.appendStatementInput("statements")
-            .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_definition_1args'] = {
-      init: function() {
-        let msg = i18n.translate("function named %name with argument %arg1 %statements");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "arg1": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "statements": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_definition_2args'] = {
-      init: function() {
-        let msg = i18n.translate("function named %name with arguments %arg1 %arg2 %statements");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "arg1": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "arg2": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "statements": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_definition_3args'] = {
-      init: function() {
-        let msg = i18n.translate("function named %name with arguments %arg1 %arg2 %arg3 %statements");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-                    .appendField(new Blockly.FieldTextInput("default"), "funcName"),
-          "arg1": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg0"), "arg0"),
-          "arg2": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg1"), "arg1"),
-          "arg3": () => this.appendDummyInput()
-                    .setAlign(Blockly.ALIGN_RIGHT)
-                    .appendField(new Blockly.FieldTextInput("arg2"), "arg2"),
-          "statements": () => this.appendStatementInput("statements")
-                    .setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['return_value'] = {
-      init: function() {
-        let msg = i18n.translate("function return with value %value");
-        let inputFields = {
-          "value": () => this.appendValueInput("value")
-                             .setCheck(null)
-                             .setAlign(Blockly.ALIGN_RIGHT)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setPreviousStatement(true, null);
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_call_0args'] = {
-      init: function() {
-        let msg = i18n.translate("evaluate function %name");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, null);
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_call_1args'] = {
-      init: function() {
-        let msg = i18n.translate("evaluate function %name with argument %arg1");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName"),
-          "arg1": () => this.appendValueInput("arg0")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, null);
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_call_2args'] = {
-      init: function() {
-        let msg = i18n.translate("evaluate function %name with arguments %arg1 %arg2");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName"),
-          "arg1": () => this.appendValueInput("arg0")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0"),
-          "arg2": () => this.appendValueInput("arg1")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, null);
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['func_call_3args'] = {
-      init: function() {
-        let msg = i18n.translate("evaluate function %name with arguments %arg1 %arg2 %arg3");
-        let inputFields = {
-          "name": () => this.appendDummyInput()
-            .appendField(i18n.translate("evaluate"))
-            .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName"),
-          "arg1": () => this.appendValueInput("arg0")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg0"),
-          "arg2": () => this.appendValueInput("arg1")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg1"),
-          "arg3": () => this.appendValueInput("arg2")
-            .setCheck(null)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendField("arg2")
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, null);
-        this.setColour(265);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-  }
-
-  function initCastingBlocks() {
-    Blockly.Blocks['pin_cast'] = {
-      init: function() {
-        let msg = i18n.translate("pin cast %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("value").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Pin");
-        this.setColour(0);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['number_cast'] = {
-      init: function() {
-        let msg = i18n.translate("number cast %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("value").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Number");
-        this.setColour(230);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
-
-    Blockly.Blocks['boolean_cast'] = {
-      init: function() {
-        let msg = i18n.translate("boolean cast %1");
-        let inputFields = {
-          "1": () => this.appendValueInput("value").setCheck(null)
-        };
-
-        initBlock(this, msg, inputFields);
-
-        this.setOutput(true, "Boolean");
-        this.setColour(210);
-        this.setTooltip("");
-        this.setHelpUrl("");
-      }
-    };
+    }
   }
 
   function initBlock (block, msg, inputFields) {
@@ -2169,7 +1967,7 @@ let UziBlock = (function () {
 
         let tempInputName = "___" + fieldRefName + "___";
         let tempInput = block.appendDummyInput(tempInputName);
-        let input = inputFields[fieldRefName](tempInput);
+        let input = inputFields[fieldRefName](tempInput, block);
         if (tempInput == input) {
           placeholders.add(input);
         } else {
@@ -2210,6 +2008,32 @@ let UziBlock = (function () {
         current = input;
       }
     }
+  }
+  
+  function getNotes() {
+    return [["B0", "31"], ["C1", "33"], ["C#1", "35"], ["D1", "37"],
+           ["D#1", "39"], ["E1", "41"], ["F1", "44"], ["F#1", "46"],
+           ["G1", "49"], ["G#1", "52"], ["A1", "55"], ["A#1", "58"],
+           ["B1", "62"], ["C2", "65"], ["C#2", "69"], ["D2", "73"],
+           ["D#2", "78"], ["E2", "82"], ["F2", "87"], ["F#2", "93"],
+           ["G2", "98"], ["G#2", "104"], ["A2", "110"], ["A#2", "117"],
+           ["B2", "123"], ["C3", "131"], ["C#3", "139"], ["D3", "147"],
+           ["D#3", "156"], ["E3", "165"], ["F3", "175"], ["F#3", "185"],
+           ["G3", "196"], ["G#3", "208"], ["A3", "220"], ["A#3", "233"],
+           ["B3", "247"], ["C4", "262"], ["C#4", "277"], ["D4", "294"],
+           ["D#4", "311"], ["E4", "330"], ["F4", "349"], ["F#4", "370"],
+           ["G4", "392"], ["G#4", "415"], ["A4", "440"], ["A#4", "466"],
+           ["B4", "494"], ["C5", "523"], ["C#5", "554"], ["D5", "587"],
+           ["D#5", "622"], ["E5", "659"], ["F5", "698"], ["F#5", "740"],
+           ["G5", "784"], ["G#5", "831"], ["A5", "880"], ["A#5", "932"],
+           ["B5", "988"], ["C6", "1047"], ["C#6", "1109"], ["D6", "1175"],
+           ["D#6", "1245"], ["E6", "1319"], ["F6", "1397"], ["F#6", "1480"],
+           ["G6", "1568"], ["G#6", "1661"], ["A6", "1760"], ["A#6", "1865"],
+           ["B6", "1976"], ["C7", "2093"], ["C#7", "2217"], ["D7", "2349"],
+           ["D#7", "2489"], ["E7", "2637"], ["F7", "2794"], ["F#7", "2960"],
+           ["G7", "3136"], ["G#7", "3322"], ["A7", "3520"], ["A#7", "3729"],
+           ["B7", "3951"], ["C8", "4186"], ["C#8", "4435"], ["D8", "4699"],
+           ["D#8", "4978"]].map(each => [i18n.translate(each["0"]), each["1"]]);
   }
 
   function getCurrentScriptNames() {
