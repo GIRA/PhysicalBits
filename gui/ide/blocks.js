@@ -1,6 +1,6 @@
 let UziBlock = (function () {
 
-  let version = 1;
+  let version = 2;
   let blocklyArea, blocklyDiv, workspace;
   let motors = [];
   let sonars = [];
