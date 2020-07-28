@@ -495,28 +495,26 @@ let ASTToBlocks = (function () {
 	function createShadow(type) {
 		let node = create("shadow");
 		node.setAttribute("type", type);
-		if (type == "pin") {
+		if (type == UziBlock.types.PIN) {
 			appendField(node, "pinNumber", "D13");
-		} else if (type == "number") {
+		} else if (type == UziBlock.types.NUMBER) {
 			appendField(node, "value", "1");
-		} else if (type == "boolean") {
+		} else if (type == UziBlock.types.BOOLEAN) {
 			appendField(node, "value", "true");
+		} else {
+			return null; // Invalid type
 		}
 		return node;
 	}
 
 	function createShadowFor(blockType, valueName) {
-		let type = null;
-		if (valueName == "pinNumber") {
-			type = "pin";
-		} else if (valueName == "condition"
-			|| blockType == "logical_operation"
-			|| blockType == "logical_not") {
-			type = "boolean";
-		} else {
-			type = "number";
-		}
-		return type ? createShadow(type) : null;
+		let input = Object.values(UziBlock.spec[blockType].inputs)
+											.find(each => each.name == valueName);
+		if (!input) return null;
+		if (!input.types) return null;
+
+		let preferredType = input.types[0];
+		return createShadow(preferredType);
 	}
 
 	function appendValue(node, name, value) {
