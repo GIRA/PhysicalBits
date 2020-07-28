@@ -1269,7 +1269,7 @@ let UziBlock = (function () {
         "name": {
           name: "variableName",
           types: null,
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("temp"), name),
         },
         "value": {
           name: "value",
