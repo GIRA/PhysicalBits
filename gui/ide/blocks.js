@@ -24,12 +24,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
         "2": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -40,27 +42,32 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldTextInput("default"), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
         "2": {
+          name: "runningTimes",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), "runningTimes")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldNumber(1000, 0, 999999), name),
         },
         "3": {
+          name: "tickingScale",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("ticking scale second"),"s"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("ticking scale second"),"s"],
                                                                            [i18n.translate("ticking scale minute"),"m"],
-                                                                           [i18n.translate("ticking scale hour"),"h"]]), "tickingScale")
+                                                                           [i18n.translate("ticking scale hour"),"h"]]), name),
         },
         "4": {
+          name: "initialState",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
-                                                                           [i18n.translate("stopped"),"stopped"]]), "initialState")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("running"),"started"],
+                                                                           [i18n.translate("stopped"),"stopped"]]), name),
         },
         "5": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -71,8 +78,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -83,8 +91,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -95,8 +104,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -107,8 +117,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -119,8 +130,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "taskName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), "taskName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -133,8 +145,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -145,14 +158,16 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinState",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn state on"), "on"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn state on"), "on"],
                                                                            [i18n.translate("turn state off"), "off"]]),
-                                                                           "pinState")
+                                                                           name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -163,14 +178,16 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "pinState",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
                                                                            [i18n.translate("pin state off"), "off"]]),
-                                                                          "pinState")
+                                                                          name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -181,8 +198,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -193,12 +211,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "pinValue",
           types: [types.NUMBER, types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("pinValue")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -209,14 +229,16 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "mode",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("INPUT"),"INPUT"],
                                                                                   [i18n.translate("OUTPUT"),"OUTPUT"],
-                                                                                  [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), "mode")
+                                                                                  [i18n.translate("INPUT PULLUP"),"INPUT_PULLUP"]]), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -227,14 +249,15 @@ let UziBlock = (function () {
       type: types.PIN,
       inputs: {
         "pin": {
+          name: "pinNumber",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                          .appendField(new Blockly.FieldDropdown([["D0","D0"], ["D1","D1"], ["D2","D2"], ["D3","D3"],
                                                                                  ["D4","D4"], ["D5","D5"], ["D6","D6"], ["D7","D7"],
                                                                                  ["D8","D8"], ["D9","D9"], ["D10","D10"], ["D11","D11"],
                                                                                  ["D12","D12"], ["D13","D13"], ["A0","A0"], ["A1","A1"],
                                                                                  ["A2","A2"], ["A3","A3"], ["A4","A4"], ["A5","A5"]]),
-                                                                                "pinNumber")
+                                                                                name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -245,8 +268,9 @@ let UziBlock = (function () {
       type: types.PIN,
       inputs: {
         "1": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -259,12 +283,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "servoValue",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("servoValue")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -275,8 +301,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -289,17 +316,20 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "motorName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), name),
         },
         "direction": {
+          name: "direction",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
-                                                                           [i18n.translate("backward"),"bwd"]]), "direction")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("forward"),"fwd"],
+                                                                           [i18n.translate("backward"),"bwd"]]), name),
         },
         "speed": {
+          name: "speed",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("speed")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -310,8 +340,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "motorName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -322,12 +353,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "motorName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), name),
         },
         "speed": {
+          name: "speed",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("speed")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -338,8 +371,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "motorName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), "motorName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentMotorsForDropdown), name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -352,14 +386,16 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "sonarName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentSonarsForDropdown), "sonarName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentSonarsForDropdown), name),
         },
         "unit": {
+          name: "unit",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("distance_mm"), "mm"],
                                                                            [i18n.translate("distance_cm"), "cm"],
-                                                                           [i18n.translate("distance_m"), "m"]]), "unit")
+                                                                           [i18n.translate("distance_m"), "m"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -372,12 +408,14 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "state": {
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
-                                                                           [i18n.translate("button released"),"release"]]), "state")
+          name: "state",
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
+                                                                           [i18n.translate("button released"),"release"]]), name),
         },
         "pin": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -388,12 +426,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "action": {
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
-                                                                           [i18n.translate("button waitForRelease"),"release"]]), "action")
+          name: "action",
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                           [i18n.translate("button waitForRelease"),"release"]]), name),
         },
         "pin": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -408,22 +448,26 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "action": {
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
-                                                                           [i18n.translate("button waitForRelease"),"release"]]), "action")
+          name: "action",
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
+                                                                           [i18n.translate("button waitForRelease"),"release"]]), name),
         },
         "pin": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "time": {
+          name: "time",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("time")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "timeUnit": {
+          name: "unit",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                                   [i18n.translate("seconds"),"s"],
-                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+                                                                                  [i18n.translate("minutes"),"m"]]), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -440,8 +484,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "pin": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -455,8 +500,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "joystickName",
           types: null,
-          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -467,8 +513,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "joystickName",
           types: null,
-          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -479,8 +526,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "joystickName",
           types: null,
-          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -491,8 +539,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "name": {
+          name: "joystickName",
           types: null,
-          builder: input => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), "joystickName"),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentJoysticksForDropdown), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -505,12 +554,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "tone",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("tone")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -521,22 +572,26 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "tone",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("tone")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "time",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("time")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "4": {
+          name: "unit",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                                   [i18n.translate("seconds"),"s"],
-                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+                                                                                  [i18n.translate("minutes"),"m"]]), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -547,12 +602,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "note",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown(getNotes), "note")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(getNotes), name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -563,22 +620,26 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "note",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown(getNotes), "note")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(getNotes), name),
         },
         "2": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "time",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("time")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "4": {
+          name: "unit",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                                   [i18n.translate("seconds"),"s"],
-                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+                                                                                  [i18n.translate("minutes"),"m"]]), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -589,8 +650,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -601,18 +663,21 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "pinNumber",
           types: [types.PIN],
-          builder: (input, block) => block.appendValueInput("pinNumber")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "time",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("time")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "unit",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                                   [i18n.translate("seconds"),"s"],
-                                                                                  [i18n.translate("minutes"),"m"]]), "unit")
+                                                                                  [i18n.translate("minutes"),"m"]]), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -625,10 +690,11 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "value": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("true"), "true"],
-                                                                                  [i18n.translate("false"), "false"]]), "value")
+                                                                                  [i18n.translate("false"), "false"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -639,8 +705,9 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -651,12 +718,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "condition",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("condition")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "trueBranch",
           types: null,
-          builder: (input, block) => block.appendStatementInput("trueBranch")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -667,16 +736,19 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "condition",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("condition")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "trueBranch",
           types: null,
-          builder: (input, block) => block.appendStatementInput("trueBranch")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
         "3": {
+          name: "falseBranch",
           types: null,
-          builder: (input, block) => block.appendStatementInput("falseBranch")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -687,8 +759,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -699,19 +772,22 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "negate",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
                                                                                   [i18n.translate("until"),"true"]]),
-                                                                                 "negate")
+                                                                                 name),
         },
         "2": {
+          name: "condition",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("condition")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -722,12 +798,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "times",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("times")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -738,25 +816,30 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "variableName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
         },
         "2": {
+          name: "start",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("start")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "stop",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("stop")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "4": {
+          name: "step",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("step")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "5": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -767,15 +850,17 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "time",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("time")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "unit",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
                                                                                   [i18n.translate("delay in seconds"),"s"],
-                                                                                  [i18n.translate("delay in minutes"),"m"]]), "unit")
+                                                                                  [i18n.translate("delay in minutes"),"m"]]), name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -786,13 +871,15 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
+          name: "negate",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
-                                                                           [i18n.translate("until"),"true"]]), "negate")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
+                                                                           [i18n.translate("until"),"true"]]), name),
         },
         "2": {
+          name: "condition",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("condition")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -803,10 +890,11 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "timeUnit": {
+          name: "unit",
           types: null,
-          builder: (input, block) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
                                                                                  [i18n.translate("seconds"),"s"],
-                                                                                 [i18n.translate("minutes"),"m"]]), "unit")
+                                                                                 [i18n.translate("minutes"),"m"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -817,22 +905,25 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "left",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("left")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("logical operator ="), "=="],
                                                                                   [i18n.translate("logical operator ≠"), "!="],
                                                                                   [i18n.translate("logical operator <"), "<"],
                                                                                   [i18n.translate("logical operator ≤"), "<="],
                                                                                   [i18n.translate("logical operator >"), ">"],
-                                                                                  [i18n.translate("logical operator ≥"), ">="]]), "operator")
+                                                                                  [i18n.translate("logical operator ≥"), ">="]]), name),
         },
         "3": {
+          name: "right",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("right")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -843,18 +934,21 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "left",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("left")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("logical and"),"and"],
-                                                                                  [i18n.translate("logical or"),"or"]]), "operator")
+                                                                                  [i18n.translate("logical or"),"or"]]), name),
         },
         "3": {
+          name: "right",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("right")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -865,8 +959,9 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "value",
           types: [types.BOOLEAN],
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -879,9 +974,10 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldNumber(0), "value")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldNumber(0), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -892,8 +988,9 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -904,18 +1001,20 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "value",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "property",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
                                                                                   [i18n.translate("is odd"),"odd"],
                                                                                   [i18n.translate("is prime"),"prime"],
                                                                                   [i18n.translate("is whole"),"whole"],
                                                                                   [i18n.translate("is positive"),"positive"],
-                                                                                  [i18n.translate("is negative"),"negative"]]), "property")
+                                                                                  [i18n.translate("is negative"),"negative"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -926,12 +1025,14 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "left",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("left")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "right",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("right")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -942,19 +1043,21 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "number": {
+          name: "number",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("number")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "operation": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("square root"),"sqrt"],
                                                                                   [i18n.translate("absolute"),"abs"],
                                                                                   [i18n.translate("-"),"negate"],
                                                                                   [i18n.translate("ln"),"ln"],
                                                                                   [i18n.translate("log10"),"log10"],
                                                                                   [i18n.translate("e^"),"exp"],
-                                                                                  [i18n.translate("10^"),"pow10"]]), "operator")
+                                                                                  [i18n.translate("10^"),"pow10"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -965,18 +1068,20 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "number": {
+          name: "number",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("number")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "operation": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("sin"),"sin"],
                                                                                   [i18n.translate("cos"),"cos"],
                                                                                   [i18n.translate("tan"),"tan"],
                                                                                   [i18n.translate("asin"),"asin"],
                                                                                   [i18n.translate("acos"),"acos"],
-                                                                                  [i18n.translate("atan"),"atan"]]), "operator")
+                                                                                  [i18n.translate("atan"),"atan"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -987,14 +1092,15 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "constant": {
+          name: "constant",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("constant π"),"PI"],
                                                                                   [i18n.translate("constant ℯ"),"E"],
                                                                                   [i18n.translate("constant φ"),"GOLDEN_RATIO"],
                                                                                   [i18n.translate("constant √2"),"SQRT2"],
                                                                                   [i18n.translate("constant √½"),"SQRT1_2"],
-                                                                                  [i18n.translate("constant ∞"),"INFINITY"]]), "constant")
+                                                                                  [i18n.translate("constant ∞"),"INFINITY"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1005,21 +1111,24 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "left": {
+          name: "left",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("left")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "operator": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
                                                                                   [i18n.translate("arithmetic operator *"),"MULTIPLY"],
                                                                                   [i18n.translate("arithmetic operator -"),"MINUS"],
                                                                                   [i18n.translate("arithmetic operator +"),"ADD"],
-                                                                                  [i18n.translate("arithmetic operator ^"),"POWER"]]), "operator"),
+                                                                                  [i18n.translate("arithmetic operator ^"),"POWER"]]), name),
         },
         "right": {
+          name: "right",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("right")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1030,15 +1139,17 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "number": {
+          name: "number",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("number")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "operation": {
+          name: "operator",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
                                                                                   [i18n.translate("round up"),"ceil"],
-                                                                                  [i18n.translate("round down"),"floor"]]), "operator")
+                                                                                  [i18n.translate("round down"),"floor"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1049,12 +1160,14 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "dividend",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("dividend")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "divisor",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("divisor")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1065,16 +1178,19 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "value",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "low",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("low")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "high",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("high")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1086,16 +1202,19 @@ let UziBlock = (function () {
       type: types.BOOLEAN,
       inputs: {
         "1": {
+          name: "value",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "low",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("low")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "3": {
+          name: "high",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("high")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1107,12 +1226,14 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {
         "1": {
+          name: "from",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("from")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
         "2": {
+          name: "to",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("to")
+          builder: (block, input, name) => block.appendValueInput(name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1133,8 +1254,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "variableName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1145,12 +1267,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "variableName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
         },
         "value": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1161,12 +1285,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "variableName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
         },
         "value": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1177,12 +1303,14 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "variableName",
           types: null,
-          builder: (input) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), "variableName")
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentVariablesForDropdown), name),
         },
         "value": {
+          name: "value",
           types: [types.NUMBER],
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1195,13 +1323,15 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1212,19 +1342,22 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1235,25 +1368,29 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1264,31 +1401,36 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
         },
         "arg2": {
+          name: "arg2",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg2"), "arg2")
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1306,9 +1448,10 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), name),
         },
       },
       connections: { up: true, down: true, left: false },
@@ -1319,15 +1462,17 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1338,21 +1483,24 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg1")
+          builder: (block, input, name) => block.appendValueInput("arg1")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg1")
+                                          .appendField(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1363,27 +1511,31 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "procName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), "procName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg1")
+          builder: (block, input, name) => block.appendValueInput("arg1")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg1")
+                                          .appendField(name),
         },
         "arg2": {
+          name: "arg2",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg2")
+          builder: (block, input, name) => block.appendValueInput("arg2")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg2")
+                                          .appendField(name),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1396,13 +1548,15 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1413,19 +1567,22 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1436,25 +1593,29 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1465,31 +1626,36 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldTextInput("default"), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg0"), "arg0")
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg1"), "arg1")
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
         },
         "arg2": {
+          name: "arg2",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
+          builder: (block, input, name) => block.appendDummyInput()
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldTextInput("arg2"), "arg2")
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
         },
         "stmts": {
+          name: "statements",
           types: null,
-          builder: (input, block) => block.appendStatementInput("statements")
+          builder: (block, input, name) => block.appendStatementInput(name),
         },
       },
       connections: { up: false, down: false, left: false },
@@ -1500,8 +1666,9 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "value": {
+          name: "value",
           types: null,
-          builder: (input, block) => block.appendValueInput("value")
+          builder: (block, input, name) => block.appendValueInput(name),
         }
       },
       connections: { up: true, down: false, left: false },
@@ -1512,9 +1679,10 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), name),
         },
       },
       connections: { up: false, down: false, left: true },
@@ -1525,15 +1693,17 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1544,21 +1714,24 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg1")
+          builder: (block, input, name) => block.appendValueInput("arg1")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg1")
+                                          .appendField(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1569,27 +1742,31 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
+          name: "funcName",
           types: null,
-          builder: (input, block) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), "funcName")
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), name),
         },
         "arg0": {
+          name: "arg0",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg0")
+          builder: (block, input, name) => block.appendValueInput("arg0")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg0")
+                                          .appendField(name),
         },
         "arg1": {
+          name: "arg1",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg1")
+          builder: (block, input, name) => block.appendValueInput("arg1")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg1")
+                                          .appendField(name),
         },
         "arg2": {
+          name: "arg2",
           types: null,
-          builder: (input, block) => block.appendValueInput("arg2")
+          builder: (block, input, name) => block.appendValueInput("arg2")
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField("arg2")
+                                          .appendField(name),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1905,8 +2082,8 @@ let UziBlock = (function () {
             let inputFields = {};
             for (let inputKey in blockSpec.inputs) {
               let inputSpec = blockSpec.inputs[inputKey];
-              inputFields[inputKey] = (input, block) => {
-                let inputResult = inputSpec.builder(input, block);
+              inputFields[inputKey] = (block, input) => {
+                let inputResult = inputSpec.builder(block, input, inputSpec.name);
                 if (inputSpec.types) {
                   inputResult.setCheck(inputSpec.types.map(t => typeMap[t]));
                 }
@@ -1967,7 +2144,7 @@ let UziBlock = (function () {
 
         let tempInputName = "___" + fieldRefName + "___";
         let tempInput = block.appendDummyInput(tempInputName);
-        let input = inputFields[fieldRefName](tempInput, block);
+        let input = inputFields[fieldRefName](block, tempInput);
         if (tempInput == input) {
           placeholders.add(input);
         } else {
@@ -2394,8 +2571,9 @@ let UziBlock = (function () {
     on: on,
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
-    //toXMLText: toXMLText,
-    //fromXMLText: fromXMLText,
+
+    types: types,
+    spec: spec,
 
     fromXML: fromXML,
     toXML: toXML,
