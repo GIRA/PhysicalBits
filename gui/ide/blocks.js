@@ -2235,7 +2235,7 @@ let UziBlock = (function () {
 
   function getCurrentTaskNames() {
     let interestingBlocks = ["task", "timer"];
-    return workspace.getAllBlocks()
+    return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
       .map(b => b.getFieldValue("taskName"));
   }
@@ -2244,7 +2244,7 @@ let UziBlock = (function () {
     let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
                              "proc_definition_2args", "proc_definition_3args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
-    return workspace.getAllBlocks()
+    return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
       .map(b => b.getFieldValue("procName"));
   }
@@ -2253,7 +2253,7 @@ let UziBlock = (function () {
     let interestingBlocks = ["func_definition_0args", "func_definition_1args",
                              "func_definition_2args", "func_definition_3args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
-    return workspace.getAllBlocks()
+    return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
       .map(b => b.getFieldValue("funcName"));
   }
