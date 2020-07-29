@@ -2582,6 +2582,25 @@ let UziBlock = (function () {
     }
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
+
+    /*
+    HACK(Richo): After the workspace is loaded I run this code to make sure all the
+    proc/func calls have their argument labels set correctly.
+    I need to do this because Blockly.FieldLabel is not serialized, so the arg names
+    are not stored in the XML. And if the blocks are not initialized in the correct
+    order some call blocks can't find their definition block at init time.
+    Newer versions of Blockly have a Blockly.FieldLabelSerializable class that should
+    solve our problem but, unfortunately, upgrading Blockly is harder than it looks
+    because it breaks our code in a couple of places (particularly initBlock), so
+    for now this is valid workaround.
+    */
+    workspace.getAllBlocks().filter(b => b.type.includes("_call_"))
+      .forEach(b => {
+        b.inputList.filter(i => i.name.startsWith("arg"))
+          .forEach(i => {
+            i.fieldRow.forEach(f => f.setValue(getArgumentName(b, i.name)));
+          });
+      });
   }
 
   function fromXMLText(xml) {
