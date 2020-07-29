@@ -94,7 +94,7 @@
 
             dirtyBlocks = true;
             dirtyCode = false;
-            console.log("BLOCKS CHANGE!");
+            //console.log("BLOCKS CHANGE!");
 
             scheduleAutorun(false);
           }
@@ -106,7 +106,7 @@
           if (state.program.current.src == previousState.program.current.src) return;
           let xml = ASTToBlocks.generate(state.program.current.ast);
           UziBlock.fromXML(xml, true);
-          console.log("UPDATE!");
+          //console.log("UPDATE!");
         });
       })
       .then(restoreFromLocalStorage);
@@ -752,11 +752,11 @@
     codeEditor.on("blur", function () { focus = false; });
     codeEditor.on("change", function () {
       saveToLocalStorage();
-      
+
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
-        console.log("CODE CHANGE!");
+        //console.log("CODE CHANGE!");
         scheduleAutorun(false);
       }
     });
