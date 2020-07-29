@@ -1471,7 +1471,7 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(1), name), name)),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1492,14 +1492,14 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(2), name), name)),
         },
         "arg1": {
           name: "arg1",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(2), name), name)),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1520,21 +1520,21 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
         },
         "arg1": {
           name: "arg1",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
         },
         "arg2": {
           name: "arg2",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -1702,7 +1702,7 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(1), name), name)),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1723,14 +1723,14 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(2), name), name)),
         },
         "arg1": {
           name: "arg1",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(2), name), name)),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -1751,21 +1751,21 @@ let UziBlock = (function () {
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
         },
         "arg1": {
           name: "arg1",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
         },
         "arg2": {
           name: "arg2",
           types: null,
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
-                                          .appendField(new Blockly.FieldLabel(getArgumentName(block, name), name)),
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -2212,8 +2212,7 @@ let UziBlock = (function () {
            ["D#8", "4978"]].map(each => [i18n.translate(each["0"]), each["1"]]);
   }
 
-  function getArgumentName(block, name) {
-    let scriptName = block.getFieldValue("procName") || block.getFieldValue("funcName");
+  function getArgumentName(scriptName, name) {
     let definitionBlock = workspace.getTopBlocks()
                                    .find(b => b.getFieldValue("procName") == scriptName ||
                                               b.getFieldValue("funcName") == scriptName);
@@ -2249,6 +2248,11 @@ let UziBlock = (function () {
       .map(b => b.getFieldValue("procName"));
   }
 
+  function getLastProcedureName(nargs) {
+    let names = getCurrentProcedureNames(nargs);
+    return names.length > 0 ? names[names.length - 1] : "default";
+  }
+
   function getCurrentFunctionNames(nargs) {
     let interestingBlocks = ["func_definition_0args", "func_definition_1args",
                              "func_definition_2args", "func_definition_3args"];
@@ -2256,6 +2260,11 @@ let UziBlock = (function () {
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
       .map(b => b.getFieldValue("funcName"));
+  }
+
+  function getLastFunctionName(nargs) {
+    let names = getCurrentFunctionNames(nargs);
+    return names.length > 0 ? names[names.length - 1] : "default";
   }
 
   function getDefaultTaskName() {
@@ -2336,7 +2345,8 @@ let UziBlock = (function () {
       if (block != undefined && definitionBlocks.includes(block.type)) {
         let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
         workspace.getAllBlocks()
-          .filter(b => callBlock == b.type)
+          .filter(b => callBlock == b.type &&
+                      block.getFieldValue("procName") == b.getFieldValue("procName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
           .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue)));
@@ -2373,7 +2383,8 @@ let UziBlock = (function () {
       if (block != undefined && definitionBlocks.includes(block.type)) {
         let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
         workspace.getAllBlocks()
-          .filter(b => callBlock == b.type)
+          .filter(b => callBlock == b.type &&
+                      block.getFieldValue("funcName") == b.getFieldValue("funcName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
           .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue)));
@@ -2598,7 +2609,9 @@ let UziBlock = (function () {
       .forEach(b => {
         b.inputList.filter(i => i.name.startsWith("arg"))
           .forEach(i => {
-            i.fieldRow.forEach(f => f.setValue(getArgumentName(b, i.name)));
+            let scriptName = b.getFieldValue("procName") || b.getFieldValue("funcName");
+            let inputName = i.name;
+            i.fieldRow.forEach(f => f.setValue(getArgumentName(scriptName, inputName)));
           });
       });
   }
