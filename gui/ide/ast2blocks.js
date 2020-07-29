@@ -530,9 +530,10 @@ let ASTToBlocks = (function () {
 		if (!input.types) return value;
 
 		let valueType = UziBlock.spec[value.getAttribute("type")].type;
+		if (!valueType) return value;
+
 		let types = new Set(input.types);
 		if (types.has(valueType)) return value;
-
 
 		let preferredType = input.types[0];
 		let cast = createCast(preferredType);
