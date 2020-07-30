@@ -2575,54 +2575,7 @@ let UziBlock = (function () {
     return Blockly.Xml.domToText(toXML());
   }
 
-  function keepExistingBlocksPositions(xml) {
-    let interestingBlocks = new Set([
-      "task", "timer",
-      "proc_definition_0args", "proc_definition_1args",
-      "proc_definition_2args", "proc_definition_3args",
-      "func_definition_0args", "func_definition_1args",
-      "func_definition_2args", "func_definition_3args",
-    ]);
-    let topBlocks = new Map();
-    workspace.getTopBlocks()
-      .filter(block => interestingBlocks.has(block.type))
-      .forEach(block => {
-        // TODO(Richo): This sucks...
-        let scriptName = block.getFieldValue("taskName") ||
-                         block.getFieldValue("procName") ||
-                         block.getFieldValue("funcName");
-
-        if (scriptName) {
-          topBlocks.set(scriptName, block);
-        }
-      });
-
-    for (let i = 0; i < xml.childElementCount; i++) {
-      let node = xml.children[i];
-      let type = node.getAttribute("type");
-      if (!interestingBlocks.has(type)) continue;
-
-      // TODO(Richo): This sucks...
-      let field = node.children["taskName"] ||
-                  node.children["procName"] ||
-                  node.children["funcName"];
-      if (!field) continue;
-
-      let scriptName = field.innerText;
-
-      let block = topBlocks.get(scriptName);
-      if (block) {
-        let position = block.getRelativeToSurfaceXY();
-        node.setAttribute("x", position.x);
-        node.setAttribute("y", position.y);
-      }
-    }
-  }
-
-  function fromXML(xml, keepPositions) {
-    if (keepPositions) {
-      keepExistingBlocksPositions(xml);
-    }
+  function fromXML(xml, cleanUp) {
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
 
@@ -2646,6 +2599,10 @@ let UziBlock = (function () {
             i.fieldRow.forEach(f => f.setValue(getArgumentName(scriptName, inputName)));
           });
       });
+
+      if (cleanUp) {
+        workspace.cleanUp();
+      }
   }
 
   function fromXMLText(xml) {
