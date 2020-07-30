@@ -16,6 +16,20 @@ let UziBlock = (function () {
     BOOLEAN: "boolean"
   };
 
+  function allTypes(preferredType) {
+    let result = [];
+    if (preferredType) {
+      result.push(preferredType);
+    }
+    for (let key in types) {
+      let type = types[key];
+      if (type != preferredType) {
+        result.push(type);
+      }
+    }
+    return result;
+  }
+
   const spec = {
     // Tasks
     task: {
@@ -268,7 +282,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: [types.NUMBER, types.BOOLEAN, types.PIN],
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -705,7 +719,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: [types.NUMBER, types.PIN, types.BOOLEAN],
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -988,7 +1002,7 @@ let UziBlock = (function () {
       inputs: {
         "1": {
           name: "value",
-          types: [types.BOOLEAN, types.PIN, types.NUMBER],
+          types: allTypes(types.BOOLEAN),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -1468,7 +1482,7 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(1), name), name)),
@@ -1489,14 +1503,14 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(2), name), name)),
         },
         "arg1": {
           name: "arg1",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(2), name), name)),
@@ -1517,21 +1531,21 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
         },
         "arg1": {
           name: "arg1",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
         },
         "arg2": {
           name: "arg2",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
@@ -1666,7 +1680,7 @@ let UziBlock = (function () {
       inputs: {
         "value": {
           name: "value",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -1699,7 +1713,7 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(1), name), name)),
@@ -1720,14 +1734,14 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(2), name), name)),
         },
         "arg1": {
           name: "arg1",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(2), name), name)),
@@ -1748,21 +1762,21 @@ let UziBlock = (function () {
         },
         "arg0": {
           name: "arg0",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
         },
         "arg1": {
           name: "arg1",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
         },
         "arg2": {
           name: "arg2",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
