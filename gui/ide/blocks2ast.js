@@ -250,6 +250,11 @@ let BlocksToAST = (function () {
 												"func_definition_0args", "func_definition_1args",
 												"func_definition_2args", "func_definition_3args"];
 	let dispatchTable =  {
+		// TODO(Richo)
+		here_be_dragons: function (block, ctx, stream) {
+			let node = JSON.parse(block.children[0].textContent);
+			stream.push(node);
+		},
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let taskName = asIdentifier(XML.getChildNode(block, "taskName").innerText);

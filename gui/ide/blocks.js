@@ -31,6 +31,14 @@ let UziBlock = (function () {
   }
 
   const spec = {
+    // TODO(Richo)
+    here_be_dragons: {
+      text: "HERE BE DRAGONS",
+      type: null,
+      connections: { up: true, down: true, left: false },
+      color: 45
+    },
+
     // Tasks
     task: {
       text: "task named %1 statements %2",

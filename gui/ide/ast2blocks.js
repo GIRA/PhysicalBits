@@ -562,9 +562,29 @@ let ASTToBlocks = (function () {
 		node.appendChild(child);
 	}
 
+	function createHereBeDragonsBlock(stmt, ctx) {
+		let node = create("block");
+		node.setAttribute("type", "here_be_dragons");
+		// TODO(Richo): Get actual code
+		let code = JSON.stringify(stmt, null, 2);
+		//<comment pinned="false" h="80" w="160">JSON.stringify(stmt, null, 2)</comment>
+		let comment = create("comment");
+		comment.setAttribute("pinned", "false");
+		comment.setAttribute("h", "160");
+		comment.setAttribute("w", "320");
+		comment.textContent = code;
+
+		node.appendChild(comment);
+		return node;
+	}
+
 	function appendStatements(node, name, body, ctx) {
 		let statements = body.statements.map(function(stmt) {
-			return generateXMLFor(stmt, ctx);
+			try {
+				return generateXMLFor(stmt, ctx);
+			} catch (err) {
+				return createHereBeDragonsBlock(stmt, ctx);
+			}
 		});
 		let len = statements.length;
 		if (len <= 0) return;
