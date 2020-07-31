@@ -10,6 +10,20 @@ let UziBlock = (function () {
     "change" : [],
   };
 
+
+  const colors = {
+    TASKS: 175,
+    GPIO: 0,
+    MOTORS: 15,
+    SENSORS: 30,
+    SOUND: 45,
+    CONTROL: 145,
+    MATH: 210,
+    VARIABLES: 330,
+    PROCEDURES: 285,
+    FUNCTIONS: 265,
+  }
+
   const types = {
     PIN: "pin",
     NUMBER: "number",
@@ -36,7 +50,7 @@ let UziBlock = (function () {
       text: "HERE BE DRAGONS",
       type: null,
       connections: { up: true, down: true, left: false },
-      color: 45
+      color: "#9E8E7F"
     },
 
     // Tasks
@@ -56,7 +70,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 175
+      color: colors.TASKS
     },
     timer: {
       text: "timer named %1 running %2 times per %3 with initial state %4 statements %5",
@@ -92,7 +106,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 175
+      color: colors.TASKS
     },
     start_task: {
       text: "start task %name",
@@ -105,7 +119,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 175
+      color: colors.TASKS
     },
     pause_task: {
       text: "pause task %name",
@@ -118,7 +132,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 175
+      color: colors.TASKS
     },
     stop_task: {
       text: "stop task %name",
@@ -131,7 +145,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 175
+      color: colors.TASKS
     },
     run_task: {
       text: "run task %name",
@@ -144,7 +158,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 175
+      color: colors.TASKS
     },
     resume_task: {
       text: "resume task %name",
@@ -157,7 +171,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 175
+      color: colors.TASKS
     },
 
     // GPIO
@@ -172,7 +186,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.GPIO
     },
     turn_onoff_pin: {
       text: "set state %1 on pin %2",
@@ -192,7 +206,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.GPIO
     },
     is_onoff_pin: {
       text: "is %1 pin %2",
@@ -212,7 +226,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.GPIO
     },
     read_pin: {
       text: "read pin %1",
@@ -225,7 +239,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.GPIO
     },
     write_pin: {
       text: "set pin %1 to value %2",
@@ -243,7 +257,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.GPIO
     },
     set_pin_mode: {
       text: "set pin %1 mode to %2",
@@ -263,7 +277,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.GPIO
     },
     pin: {
       text: "pin %pin",
@@ -282,7 +296,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.GPIO
     },
     pin_cast: {
       text: "pin cast %1",
@@ -295,7 +309,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.GPIO
     },
 
     // Motors - Servo
@@ -315,7 +329,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.MOTORS
     },
     get_servo_degrees: {
       text: "get degrees of servo on pin %1",
@@ -328,7 +342,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.MOTORS
     },
 
     // Motors - DC
@@ -354,7 +368,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.MOTORS
     },
     stop_dcmotor: {
       text: "stop dcmotor %name",
@@ -367,7 +381,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.MOTORS
     },
     change_speed_dcmotor: {
       text: "set dcmotor %name speed to %speed",
@@ -385,7 +399,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.MOTORS
     },
     get_speed_dcmotor: {
       text: "get dcmotor %name speed",
@@ -398,7 +412,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.MOTORS
     },
 
     // Sensors - Sonar
@@ -420,7 +434,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
 
     // Sensors - Buttons
@@ -440,7 +454,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
     button_wait_for_action: {
       text: "wait for button %action on pin %pin",
@@ -458,7 +472,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SENSORS
     },
     /*
      TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
@@ -492,7 +506,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SENSORS
     },
     /*
      TODO(Richo): This block is useful to react to long presses. It will wait
@@ -511,7 +525,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
 
 
@@ -527,7 +541,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
     get_joystick_y: {
       text: "read joystick y position from %name",
@@ -540,7 +554,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
     get_joystick_angle: {
       text: "read joystick angle from %name",
@@ -553,7 +567,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
     get_joystick_magnitude: {
       text: "read joystick magnitude from %name",
@@ -566,7 +580,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 0
+      color: colors.SENSORS
     },
 
     // Sound
@@ -586,7 +600,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
     play_tone: {
       text: "play tone %1 on pin %2 for %3 %4",
@@ -616,7 +630,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
     start_note: {
       text: "play note %1 on pin %2",
@@ -634,7 +648,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
     play_note: {
       text: "play note %1 on pin %2 for %3 %4",
@@ -664,7 +678,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
     stop_tone: {
       text: "silence pin %1",
@@ -677,7 +691,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
     stop_tone_wait: {
       text: "silence pin %1 and wait %2 %3",
@@ -702,7 +716,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 0
+      color: colors.SOUND
     },
 
     // Control
@@ -719,7 +733,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
     boolean_cast: {
       text: "boolean cast %1",
@@ -732,7 +746,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
     conditional_simple: {
       text: "if %1 then %2",
@@ -750,7 +764,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     conditional_full: {
       text: "if %1 then %2 else %3",
@@ -773,7 +787,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     forever: {
       text: "repeat forever \n %1",
@@ -786,7 +800,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     repeat: {
       text: "repeat %1 mode %2 condition %3 statements",
@@ -812,7 +826,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     repeat_times: {
       text: "repeat %1 times \n %2",
@@ -830,7 +844,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     for: {
       text: "count with %1 from %2 to %3 by %4 %5",
@@ -864,7 +878,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     delay: {
       text: "delay %1 %2",
@@ -885,7 +899,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     wait: {
       text: "wait %1 %2",
@@ -904,7 +918,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 210
+      color: colors.CONTROL
     },
     elapsed_time: {
       text: "elapsed time since bootup in %timeUnit",
@@ -919,7 +933,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
     logical_compare: {
       text: "logical comparison %1 left %2 operator %3 right",
@@ -948,7 +962,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
     logical_operation: {
       text: "logical operation %1 left %2 operator %3 right",
@@ -973,7 +987,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
     logical_not: {
       text: "logical not %1",
@@ -986,7 +1000,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 210
+      color: colors.CONTROL
     },
 
     // Math
@@ -1002,7 +1016,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_cast: {
       text: "number cast %1",
@@ -1015,7 +1029,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_property: {
       text: "number property %1 value %2 property",
@@ -1039,7 +1053,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_divisibility: {
       text: "number %1 is divisible by number %2",
@@ -1057,7 +1071,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_operation: {
       text: "perform %operation on %number",
@@ -1082,7 +1096,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_trig: {
       text: "perform trigonometric %operation on %number",
@@ -1106,7 +1120,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     math_constant: {
       text: "math %constant",
@@ -1125,7 +1139,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     math_arithmetic: {
       text: "arithmetic function %left %operator %right",
@@ -1153,7 +1167,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_round: {
       text: "perform rounding %operation on %number",
@@ -1174,7 +1188,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_modulo: {
       text: "remainder of %1 ÷ %2",
@@ -1192,7 +1206,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 225
+      color: colors.MATH
     },
     number_constrain: {
       text: "constrain %1 low %2 high %3",
@@ -1215,7 +1229,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 225,
+      color: colors.MATH,
       postload: (block) => block.setInputsInline(true)
     },
     number_between: {
@@ -1239,7 +1253,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 225,
+      color: colors.MATH,
       postload: (block) => block.setInputsInline(true)
     },
     number_random_int: {
@@ -1258,7 +1272,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 225,
+      color: colors.MATH,
       postload: (block) => block.setInputsInline(true)
     },
     number_random_float: {
@@ -1266,7 +1280,7 @@ let UziBlock = (function () {
       type: types.NUMBER,
       inputs: {},
       connections: { up: false, down: false, left: true },
-      color: 225,
+      color: colors.MATH,
     },
 
     // Variables
@@ -1281,7 +1295,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 330,
+      color: colors.VARIABLES,
     },
     declare_local_variable: {
       text: "declare local variable %name with %value",
@@ -1299,7 +1313,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 330
+      color: colors.VARIABLES
     },
     set_variable: {
       text: "set variable %name to value %value",
@@ -1317,7 +1331,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 330
+      color: colors.VARIABLES
     },
     increment_variable: {
       text: "increment variable %name value by %value",
@@ -1335,7 +1349,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 330
+      color: colors.VARIABLES
     },
 
     // Procedures
@@ -1356,7 +1370,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_definition_1args: {
       text: "procedure named %name with argument %arg0 %stmts",
@@ -1382,7 +1396,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_definition_2args: {
       text: "procedure named %name with arguments %arg0 %arg1 %stmts",
@@ -1415,7 +1429,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_definition_3args: {
       text: "procedure named %name with arguments %arg0 %arg1 %arg2 %stmts",
@@ -1455,14 +1469,14 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     return: {
       text: "procedure exit e.g. return with no value",
       type: null,
       inputs: {},
       connections: { up: true, down: false, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_call_0args: {
       text: "execute procedure %name",
@@ -1476,7 +1490,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_call_1args: {
       text: "execute procedure %name with %arg0",
@@ -1497,7 +1511,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_call_2args: {
       text: "execute procedure %name with %arg0 and %arg1",
@@ -1525,7 +1539,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
     proc_call_3args: {
       text: "execute procedure %name with %arg0, %arg1 and %arg2",
@@ -1560,7 +1574,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: 285
+      color: colors.PROCEDURES
     },
 
     // Functions
@@ -1581,7 +1595,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_definition_1args: {
       text: "function named %name with argument %arg0 %stmts",
@@ -1607,7 +1621,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_definition_2args: {
       text: "function named %name with arguments %arg0 %arg1 %stmts",
@@ -1640,7 +1654,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_definition_3args: {
       text: "function named %name with arguments %arg0 %arg1 %arg2 %stmts",
@@ -1680,7 +1694,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: 265
+      color: colors.FUNCTIONS
     },
     return_value: {
       text: "function return with value %value",
@@ -1693,7 +1707,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: false, left: false },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_call_0args: {
       text: "evaluate function %name",
@@ -1707,7 +1721,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_call_1args: {
       text: "evaluate function %name with argument %arg0",
@@ -1728,7 +1742,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_call_2args: {
       text: "evaluate function %name with arguments %arg0 %arg1",
@@ -1756,7 +1770,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 265
+      color: colors.FUNCTIONS
     },
     func_call_3args: {
       text: "evaluate function %name with arguments %arg0 %arg1 %arg2",
@@ -1791,11 +1805,13 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: 265
+      color: colors.FUNCTIONS
     },
   }
 
   function init() {
+    Blockly.HSV_SATURATION = 0.6;
+
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
 
