@@ -156,7 +156,7 @@
   "All pins and globals referenced in the program must be enabled"
   (doseq [global (filter :name (-> program :compiled :globals))]
     (set-global-report (:name global) true))
-  (doseq [{:keys [type number]} (filter ast/pin-literal? (-> program :ast ast/all-children))]
+  (doseq [{:keys [type number]} (filter ast/pin-literal? (-> program :final-ast ast/all-children))]
     (set-pin-report (str type number) true)))
 
 (defn run [program]
@@ -281,7 +281,7 @@
         error-msg (error-msg error-code)
         program (-> @state :program :running)
         script-name (-> program :compiled :scripts (get i) :name)
-        task? (-> program :ast :scripts (get i) ast/task?)]
+        task? (-> program :final-ast :scripts (get i) ast/task?)]
     [script-name
      {:index i
       :name script-name
