@@ -513,7 +513,8 @@
                 (assign-pin-values board)
                 (remove-dead-code remove-dead-code?))
         compiled (compile ast (create-context))]
-    {:ast ast
+    {:original-ast original-ast
+     :final-ast ast
      :src src
      :compiled compiled}))
 
