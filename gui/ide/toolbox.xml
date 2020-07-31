@@ -1,6 +1,5 @@
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
   <category name="Tasks" colour="#5ba5a5" custom="TASKS">
-    <block type="here_be_dragons"></block>
     <block type="task">
       <field name="taskName">default</field>
     </block>
