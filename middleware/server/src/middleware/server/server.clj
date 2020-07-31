@@ -135,6 +135,10 @@
                                                                   (:name global)))
                                           (-> state :globals vals))}
              :output output
+             :program {:current (let [program (-> state :program :current)]
+                                  (-> program
+                                      (select-keys [:type :src :compiled])
+                                      (assoc :ast (:original-ast program))))}
              :tasks (mapv (fn [s] {:scriptName (:name s)
                                    :isRunning (:running? s)
                                    :isError (:error? s)})
