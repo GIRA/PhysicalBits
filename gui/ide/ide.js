@@ -102,9 +102,9 @@
 
         // TODO(Richo)
         Uzi.on("update", function (state, previousState) {
-          if (state.program.current.type == "json") return; // Ignore blockly programs
-          if (state.program.current.src == previousState.program.current.src) return;
-          let xml = ASTToBlocks.generate(state.program.current.ast);
+          if (state.program.type == "json") return; // Ignore blockly programs
+          if (state.program.src == previousState.program.src) return;
+          let xml = ASTToBlocks.generate(state.program.ast);
           UziBlock.fromXML(xml, true);
           //console.log("UPDATE!");
         });
@@ -172,7 +172,7 @@
     }
 
     function getUsedMotors() {
-      let program = Uzi.state.program.current;
+      let program = Uzi.state.program;
       if (program == null) return new Set();
       // HACK(Richo): We are actually returning all the aliases, not just motors
       return new Set(program.ast.imports.map(imp => imp.alias));
@@ -329,7 +329,7 @@
     }
 
     function getUsedSonars() {
-      let program = Uzi.state.program.current;
+      let program = Uzi.state.program;
       if (program == null) return new Set();
       // HACK(Richo): We are actually returning all the aliases, not just sonars
       return new Set(program.ast.imports.map(imp => imp.alias));
@@ -486,7 +486,7 @@
     }
 
     function getUsedJoysticks() {
-      let program = Uzi.state.program.current;
+      let program = Uzi.state.program;
       if (program == null) return new Set();
       // HACK(Richo): We are actually returning all the aliases, not just joysticks
       return new Set(program.ast.imports.map(imp => imp.alias));
@@ -763,11 +763,11 @@
 
     Uzi.on("update", function (state, previousState) {
       if (focus) return; // Don't change the code while the user is editing!
-      if (state.program.current.type == "uzi") return; // Ignore textual programs
+      if (state.program.type == "uzi") return; // Ignore textual programs
       if (codeEditor.getValue() !== "" &&
-          state.program.current.src == previousState.program.current.src) return;
+          state.program.src == previousState.program.src) return;
 
-      let src = state.program.current.src;
+      let src = state.program.src;
       if (src == undefined) return;
       if (codeEditor.getValue() !== src) {
         codeEditor.setValue(src, 1);

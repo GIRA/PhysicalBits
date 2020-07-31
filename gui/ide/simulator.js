@@ -1,4 +1,4 @@
-// Uzi.state.program.current.compiled
+// Uzi.state.program.compiled
 
 //buttons execute, stop, next instruction
 //expand primitives switch
@@ -27,7 +27,7 @@ class Simulator {
    };
 
   updateProgram() {
-    this.loadProgram(Uzi.state.program.current.compiled);
+    this.loadProgram(Uzi.state.program.compiled);
   }
 
   loadProgram(program) {
