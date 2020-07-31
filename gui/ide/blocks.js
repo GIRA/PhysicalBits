@@ -1308,7 +1308,7 @@ let UziBlock = (function () {
         },
         "value": {
           name: "value",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
@@ -1326,7 +1326,7 @@ let UziBlock = (function () {
         },
         "value": {
           name: "value",
-          types: null,
+          types: allTypes(types.NUMBER),
           builder: (block, input, name) => block.appendValueInput(name),
         }
       },
