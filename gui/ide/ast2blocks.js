@@ -225,7 +225,7 @@ let ASTToBlocks = (function () {
 		UziLogicalOrNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "logic_operation");
+			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "or");
 			appendValue(node, "left", generateXMLFor(json.left, ctx));
 			appendValue(node, "right", generateXMLFor(json.right, ctx));
@@ -234,7 +234,7 @@ let ASTToBlocks = (function () {
 		UziLogicalAndNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "logic_operation");
+			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "and");
 			appendValue(node, "left", generateXMLFor(json.left, ctx));
 			appendValue(node, "right", generateXMLFor(json.right, ctx));
