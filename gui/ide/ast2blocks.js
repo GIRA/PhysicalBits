@@ -64,7 +64,7 @@ let ASTToBlocks = (function () {
 				node.setAttribute("type", "run_task");
 				appendField(node, "taskName", json.selector);
 			} else if (ctx.isProcedure(json.selector) || ctx.isFunction(json.selector)) {
-				if (ctx.path[ctx.path.length-2].__class__ == "UziBlockNode") {
+				if (ctx.isInStatementPosition(json)) {
 					initProcedureCall(node, json, ctx);
 				} else {
 					initFunctionCall(node, json, ctx);
@@ -574,7 +574,7 @@ let ASTToBlocks = (function () {
 			we just generate a regular proc/func call. To know which one to generate we look
 			at the ctx.path for a block node immediately before the current node.
 			*/
-			if (ctx.path[ctx.path.length-2].__class__ == "UziBlockNode") {
+			if (ctx.isInStatementPosition(json)) {
 				initProcedureCall(node, json, ctx);
 			} else {
 				initFunctionCall(node, json, ctx);
@@ -744,6 +744,12 @@ let ASTToBlocks = (function () {
 				isFunction: function (name) {
 					let script = ctx.scriptNamed(name);
 					return script !== undefined && script.__class__ === "UziFunctionNode";
+				},
+				isInStatementPosition: function (json) {
+					// NOTE(Richo): Returns true if the previous node in the path is a block
+					let index = ctx.path.indexOf(json);
+					if (index < 1 || index >= ctx.path.length) return false;
+					return ctx.path[index - 1].__class__ == "UziBlockNode";
 				}
 			};
 			return generateXMLFor(json, ctx);
