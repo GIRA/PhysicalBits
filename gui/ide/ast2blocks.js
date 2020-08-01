@@ -566,9 +566,11 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "boolean_cast");
 			appendValue(node, "value", generateXMLFor(args[0], ctx));
 		} else {
-			console.log(json);
-			// TODO(Richo): Make generic call block?
-			throw "Selector not found: " + selector;
+			if (ctx.path[ctx.path.length-2].__class__ == "UziBlockNode") {
+				initProcedureCall(node, json, ctx);
+			} else {
+				initFunctionCall(node, json, ctx);
+			}
 		}
 	}
 
