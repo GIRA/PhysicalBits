@@ -491,11 +491,71 @@ let ASTToBlocks = (function () {
 			if (args[1].__class__ == "UziNumberLiteralNode") {
 				appendField(node, "mode", validModes[args[1].value] || "INPUT");
 			} else {
-				debugger;
+				throw "Invalid argument";
 			}
+		} else if (selector === "getServoDegrees") {
+			node.setAttribute("type", "get_servo_degrees");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+		} else if (selector === "servoWrite") {
+			// servoWrite(D3, 0.5) -> setServoDegrees(D3, 0.5 * 180);
+			node.setAttribute("type", "set_servo_degrees");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+
+			let value = create("block");
+			value.setAttribute("type", "math_arithmetic");
+			appendField(value, "operator", "MULTIPLY");
+			appendValue(value, "left", generateXMLFor(args[1], ctx));
+			let multiplier = create("block");
+			multiplier.setAttribute("type", "number");
+			appendField(multiplier, "value", 180);
+			appendValue(value, "right", multiplier);
+
+			appendValue(node, "servoValue", value);
+		} else if (selector === "&") {
+			node.setAttribute("type", "logical_operation");
+			appendField(node, "operator", "and");
+			appendValue(node, "left", generateXMLFor(args[0], ctx));
+			appendValue(node, "right", generateXMLFor(args[1], ctx));
+		} else if (selector === "|") {
+			node.setAttribute("type", "logical_operation");
+			appendField(node, "operator", "or");
+			appendValue(node, "left", generateXMLFor(args[0], ctx));
+			appendValue(node, "right", generateXMLFor(args[1], ctx));
+		} else if (selector === "startTone") {
+			node.setAttribute("type", "start_tone");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "tone", generateXMLFor(args[1], ctx));
+		} else if (selector === "stopTone") {
+			node.setAttribute("type", "stop_tone");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+		} else if (selector === "playTone") {
+			node.setAttribute("type", "play_tone");
+			appendField(node, "unit", "ms");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "tone", generateXMLFor(args[1], ctx));
+			appendValue(node, "time", generateXMLFor(args[2], ctx));
+		} else if (selector === "stopToneAndWait") {
+			node.setAttribute("type", "stop_tone_wait");
+			appendField(node, "unit", "ms");
+			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "time", generateXMLFor(args[1], ctx));
+		} else if (selector === "isBetween") {
+			node.setAttribute("type", "number_between");
+			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "low", generateXMLFor(args[1], ctx));
+			appendValue(node, "high", generateXMLFor(args[2], ctx));
+		} else if (selector === "pin") {
+			node.setAttribute("type", "pin_cast");
+			appendValue(node, "value", generateXMLFor(args[0], ctx));
+		} else if (selector === "number") {
+			node.setAttribute("type", "number_cast");
+			appendValue(node, "value", generateXMLFor(args[0], ctx));
+		} else if (selector === "bool") {
+			node.setAttribute("type", "boolean_cast");
+			appendValue(node, "value", generateXMLFor(args[0], ctx));
 		} else {
 			console.log(json);
-			debugger;
+			// TODO(Richo): Make generic call block?
 			throw "Selector not found: " + selector;
 		}
 	}
