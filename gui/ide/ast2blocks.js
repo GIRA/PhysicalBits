@@ -649,9 +649,12 @@ let ASTToBlocks = (function () {
 	function appendStatements(node, name, body, ctx) {
 		let statements = body.statements.map(function(stmt) {
 			try {
+				ctx.path.push(body);
 				return generateXMLFor(stmt, ctx);
 			} catch (err) {
 				return createHereBeDragonsBlock(stmt, ctx);
+			} finally {
+				ctx.path.pop();
 			}
 		});
 		let len = statements.length;
