@@ -64,27 +64,11 @@ let ASTToBlocks = (function () {
 				node.setAttribute("type", "run_task");
 				appendField(node, "taskName", json.selector);
 			} else if (ctx.isProcedure(json.selector)) {
-				let types = ["proc_call_0args", "proc_call_1args",
-										"proc_call_2args", "proc_call_3args"];
-				if (json.arguments.length > 3) { debugger; }
-				node.setAttribute("type", types[json.arguments.length]);
-				appendField(node, "procName", json.selector);
-				let script = ctx.scriptNamed(json.selector);
-				json.arguments.forEach(function (arg, index) {
-					appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
-				});
+				initProcedureCall(node, json, ctx);
 			} else if (ctx.isFunction(json.selector)) {
-				let types = ["func_call_0args", "func_call_1args",
-										"func_call_2args", "func_call_3args"];
-				if (json.arguments.length > 3) { debugger; }
-				node.setAttribute("type", types[json.arguments.length]);
-				appendField(node, "funcName", json.selector);
-				let script = ctx.scriptNamed(json.selector);
-				json.arguments.forEach(function (arg, index) {
-					appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
-				});
+				initFunctionCall(node, json, ctx);
 			} else {
-				initPrimitive(node, json, ctx);
+				initPrimitiveCall(node, json, ctx);
 			}
 			return node;
 		},
@@ -269,7 +253,35 @@ let ASTToBlocks = (function () {
 		}
 	};
 
-	function initPrimitive(node, json, ctx) {
+	function initProcedureCall(node, json, ctx) {
+		let types = ["proc_call_0args", "proc_call_1args",
+								"proc_call_2args", "proc_call_3args"];
+		if (json.arguments.length > 3) {
+			throw "Max number of arguments for call blocks is 3";
+		}
+		node.setAttribute("type", types[json.arguments.length]);
+		appendField(node, "procName", json.selector);
+		let script = ctx.scriptNamed(json.selector);
+		json.arguments.forEach(function (arg, index) {
+			appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
+		});
+	}
+
+	function initFunctionCall(node, json, ctx) {
+		let types = ["func_call_0args", "func_call_1args",
+								"func_call_2args", "func_call_3args"];
+		if (json.arguments.length > 3) {
+			throw "Max number of arguments for call blocks is 3";
+		}
+		node.setAttribute("type", types[json.arguments.length]);
+		appendField(node, "funcName", json.selector);
+		let script = ctx.scriptNamed(json.selector);
+		json.arguments.forEach(function (arg, index) {
+			appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
+		});
+	}
+
+	function initPrimitiveCall(node, json, ctx) {
 		let selector = json.selector;
 		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector === "toggle") {
