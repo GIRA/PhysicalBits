@@ -2318,39 +2318,39 @@ let UziBlock = (function () {
 
   function currentTasksForDropdown() {
     let tasks = getCurrentTaskNames();
-    if (tasks.length == 0) return [["", ""]];
+    if (tasks.length == 0) return [[null, null]];
     return tasks.map(function (name) { return [ name, name ]; });
   }
 
   function currentProceduresForDropdown(nargs) {
     let procs = getCurrentProcedureNames(nargs);
-    if (procs.length == 0) return [["", ""]];
+    if (procs.length == 0) return [[null, null]];
     return procs.map(function (name) { return [ name, name ]; });
   }
 
   function currentFunctionsForDropdown(nargs) {
     let funcs = getCurrentFunctionNames(nargs);
-    if (funcs.length == 0) return [["", ""]];
+    if (funcs.length == 0) return [[null, null]];
     return funcs.map(function (name) { return [ name, name ]; });
   }
 
   function currentMotorsForDropdown() {
-    if (motors.length == 0) return [["", ""]];
+    if (motors.length == 0) return [[null, null]];
     return motors.map(function(each) { return [ each.name, each.name ]; });
   }
 
   function currentSonarsForDropdown() {
-    if (sonars.length == 0) return [["", ""]];
+    if (sonars.length == 0) return [[null, null]];
     return sonars.map(function(each) { return [ each.name, each.name ]; });
   }
 
   function currentJoysticksForDropdown() {
-    if (joysticks.length == 0) return [["", ""]];
+    if (joysticks.length == 0) return [[null, null]];
     return joysticks.map(function(each) { return [ each.name, each.name ]; });
   }
 
   function currentVariablesForDropdown() {
-    if (variables.length == 0) return [["", ""]];
+    if (variables.length == 0) return [[null, null]];
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
