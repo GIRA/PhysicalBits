@@ -230,6 +230,14 @@ let ASTToBlocks = (function () {
 			appendField(node, "variableName", json.name);
 			return node;
 		},
+		UziVariableDeclarationNode: function (json, ctx) {
+			let node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "declare_local_variable");
+			appendField(node, "variableName", json.name);
+			appendValue(node, "value", generateXMLFor(json.value, ctx));
+			return node;
+		},
 		UziLogicalOrNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
