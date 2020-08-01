@@ -63,10 +63,12 @@ let ASTToBlocks = (function () {
 			if (ctx.isTask(json.selector)) {
 				node.setAttribute("type", "run_task");
 				appendField(node, "taskName", json.selector);
-			} else if (ctx.isProcedure(json.selector)) {
-				initProcedureCall(node, json, ctx);
-			} else if (ctx.isFunction(json.selector)) {
-				initFunctionCall(node, json, ctx);
+			} else if (ctx.isProcedure(json.selector) || ctx.isFunction(json.selector)) {
+				if (ctx.path[ctx.path.length-2].__class__ == "UziBlockNode") {
+					initProcedureCall(node, json, ctx);
+				} else {
+					initFunctionCall(node, json, ctx);
+				}
 			} else {
 				initPrimitiveCall(node, json, ctx);
 			}
