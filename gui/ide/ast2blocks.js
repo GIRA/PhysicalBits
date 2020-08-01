@@ -497,13 +497,14 @@ let ASTToBlocks = (function () {
 		} else if (selector === "random") {
 			node.setAttribute("type", "number_random_float");
 		} else if (selector === "setPinMode") {
-			node.setAttribute("type", "set_pin_mode");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 			let validModes = ["INPUT", "OUTPUT", "INPUT_PULLUP"];
-			if (args[1].__class__ == "UziNumberLiteralNode") {
+			if (args[1].__class__ == "UziNumberLiteralNode" &&
+					args[1].value >= 0 && args[1].value < validModes.length) {
+				node.setAttribute("type", "set_pin_mode");
+				appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
 				appendField(node, "mode", validModes[args[1].value] || "INPUT");
 			} else {
-				throw "Invalid argument";
+				initProcedureCall(node, json, ctx);
 			}
 		} else if (selector === "getServoDegrees") {
 			node.setAttribute("type", "get_servo_degrees");
