@@ -567,6 +567,11 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "boolean_cast");
 			appendValue(node, "value", generateXMLFor(args[0], ctx));
 		} else {
+			/*
+			NOTE(Richo): Fallback code. If we don't have a specific block for the selector
+			we just generate a regular proc/func call. To know which one to generate we look
+			at the ctx.path for a block node immediately before the current node.
+			*/
 			if (ctx.path[ctx.path.length-2].__class__ == "UziBlockNode") {
 				initProcedureCall(node, json, ctx);
 			} else {
