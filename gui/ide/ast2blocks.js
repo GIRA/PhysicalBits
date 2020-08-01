@@ -184,7 +184,7 @@ let ASTToBlocks = (function () {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "for");
-			appendField(node, "variable", json.counter.name);
+			appendField(node, "variableName", json.counter.name);
 			appendValue(node, "start", generateXMLFor(json.start, ctx));
 			appendValue(node, "stop", generateXMLFor(json.stop, ctx));
 			appendValue(node, "step", generateXMLFor(json.step, ctx));
