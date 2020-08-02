@@ -1,5 +1,6 @@
 (ns middleware.parser.parser
-  (:require [instaparse.core :as insta])
+  (:require [instaparse.core :as insta]
+            [instaparse.failure :as fail])
   (:require [middleware.parser.ast-nodes :refer :all])
   (:require [middleware.parser.binary-operator :refer :all]))
 
@@ -173,6 +174,14 @@
         ))
     ast))
 
+(defn- throw-if-failure [parse-result]
+  (if-let [failure (insta/get-failure parse-result)]
+    (throw (Exception. (with-out-str (fail/pprint-failure failure))))
+    parse-result))
+
 (defn parse [str]
-  (insta/transform transformations
-                   (expand-binary-expression-nodes (parse-program str))))
+  (->> str
+       parse-program
+       expand-binary-expression-nodes
+       (insta/transform transformations)
+       throw-if-failure))
