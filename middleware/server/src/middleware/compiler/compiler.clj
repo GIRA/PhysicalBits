@@ -433,9 +433,9 @@
               compiled-right
               [(emit/prim-call "logicalOr")]))))
 
-(defmethod compile-node :default [node _]
-  (log/error "Unknown node: " (ast-utils/node-type node))
-  :oops)
+(defmethod compile-node :default [node ctx]
+  #_(log/error "Unknown node: " (ast-utils/node-type node))
+  (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
 (defn- create-context []
   {:path (list)})
