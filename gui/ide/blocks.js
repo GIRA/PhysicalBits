@@ -55,7 +55,7 @@ let UziBlock = (function () {
 
     // Tasks
     task: {
-      text: "task named %1 statements %2",
+      text: "task %1 () { \n %2 }",
       type: null,
       inputs: {
         "1": {
@@ -73,7 +73,7 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     timer: {
-      text: "timer named %1 running %2 times per %3 with initial state %4 statements %5",
+      text: "task %1 () %4 %2 / %3 { \n %5 }",
       type: null,
       inputs: {
         "1": {
@@ -89,9 +89,9 @@ let UziBlock = (function () {
         "3": {
           name: "tickingScale",
           types: null,
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("ticking scale second"),"s"],
-                                                                           [i18n.translate("ticking scale minute"),"m"],
-                                                                           [i18n.translate("ticking scale hour"),"h"]]), name),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("s"),"s"],
+                                                                           [i18n.translate("m"),"m"],
+                                                                           [i18n.translate("h"),"h"]]), name),
         },
         "4": {
           name: "initialState",
@@ -109,7 +109,7 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     start_task: {
-      text: "start task %name",
+      text: "start %name ;",
       type: null,
       inputs: {
         "name": {
@@ -122,7 +122,7 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     pause_task: {
-      text: "pause task %name",
+      text: "pause %name ;",
       type: null,
       inputs: {
         "name": {
@@ -135,7 +135,7 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     stop_task: {
-      text: "stop task %name",
+      text: "stop %name ;",
       type: null,
       inputs: {
         "name": {
@@ -148,10 +148,10 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     run_task: {
-      text: "run task %name",
+      text: "%taskName () ;",
       type: null,
       inputs: {
-        "name": {
+        "taskName": {
           name: "taskName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
@@ -161,7 +161,7 @@ let UziBlock = (function () {
       color: colors.TASKS
     },
     resume_task: {
-      text: "resume task %name",
+      text: "resume %name ;",
       type: null,
       inputs: {
         "name": {
@@ -176,7 +176,7 @@ let UziBlock = (function () {
 
     // GPIO
     toggle_pin: {
-      text: "toggle pin %1",
+      text: "toggle( %1 ) ;",
       type: null,
       inputs: {
         "1": {
@@ -189,14 +189,14 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     turn_onoff_pin: {
-      text: "set state %1 on pin %2",
+      text: "turn %1 ( %2 ) ;",
       type: null,
       inputs: {
         "1": {
           name: "pinState",
           types: null,
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("turn state on"), "on"],
-                                                                           [i18n.translate("turn state off"), "off"]]),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("On"), "on"],
+                                                                           [i18n.translate("Off"), "off"]]),
                                                                            name),
         },
         "2": {
@@ -209,14 +209,14 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     is_onoff_pin: {
-      text: "is %1 pin %2",
+      text: "%1 ( %2 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
           name: "pinState",
           types: null,
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("pin state on"), "on"],
-                                                                           [i18n.translate("pin state off"), "off"]]),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("isOn"), "on"],
+                                                                           [i18n.translate("isOff"), "off"]]),
                                                                           name),
         },
         "2": {
@@ -229,7 +229,7 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     read_pin: {
-      text: "read pin %1",
+      text: "read( %1 )",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -242,7 +242,7 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     write_pin: {
-      text: "set pin %1 to value %2",
+      text: "write( %1 , %2 );",
       type: null,
       inputs: {
         "1": {
@@ -260,7 +260,7 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     set_pin_mode: {
-      text: "set pin %1 mode to %2",
+      text: "setPinMode( %1 , %2 );",
       type: null,
       inputs: {
         "1": {
@@ -280,7 +280,7 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     pin: {
-      text: "pin %pin",
+      text: "%pin",
       type: types.PIN,
       inputs: {
         "pin": {
@@ -299,7 +299,7 @@ let UziBlock = (function () {
       color: colors.GPIO
     },
     pin_cast: {
-      text: "pin cast %1",
+      text: "pin ( %1 )",
       type: types.PIN,
       inputs: {
         "1": {
@@ -314,7 +314,7 @@ let UziBlock = (function () {
 
     // Motors - Servo
     set_servo_degrees: {
-      text: "set degrees of servo on pin %1 to %2",
+      text: "setServoDegrees( %1 , %2 ) ;",
       type: null,
       inputs: {
         "1": {
@@ -332,7 +332,7 @@ let UziBlock = (function () {
       color: colors.MOTORS
     },
     get_servo_degrees: {
-      text: "get degrees of servo on pin %1",
+      text: "getServoDegrees( %1 ) ;",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -347,7 +347,7 @@ let UziBlock = (function () {
 
     // Motors - DC
     move_dcmotor: {
-      text: "move dcmotor %name in %direction at speed %speed",
+      text: "%name . %direction (speed: %speed ) ;",
       type: null,
       inputs: {
         "name": {
@@ -371,7 +371,7 @@ let UziBlock = (function () {
       color: colors.MOTORS
     },
     stop_dcmotor: {
-      text: "stop dcmotor %name",
+      text: "%name . brake() ;",
       type: null,
       inputs: {
         "name": {
@@ -384,7 +384,7 @@ let UziBlock = (function () {
       color: colors.MOTORS
     },
     change_speed_dcmotor: {
-      text: "set dcmotor %name speed to %speed",
+      text: "%name . setSpeed (speed: %speed ) ;",
       type: null,
       inputs: {
         "name": {
@@ -402,7 +402,7 @@ let UziBlock = (function () {
       color: colors.MOTORS
     },
     get_speed_dcmotor: {
-      text: "get dcmotor %name speed",
+      text: "%name .getSpeed( )",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -417,7 +417,7 @@ let UziBlock = (function () {
 
     // Sensors - Sonar
     get_sonar_distance: {
-      text: "read distance from sonar %name in units %unit",
+      text: "%name . %unit ()",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -439,13 +439,13 @@ let UziBlock = (function () {
 
     // Sensors - Buttons
     button_check_state: {
-      text: "is button %state on pin %pin",
+      text: "buttons. %state ( %pin )",
       type: types.BOOLEAN,
       inputs: {
         "state": {
           name: "state",
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button pressed"),"press"],
-                                                                           [i18n.translate("button released"),"release"]]), name),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("isPressed"),"press"],
+                                                                           [i18n.translate("isReleased"),"release"]]), name),
         },
         "pin": {
           name: "pinNumber",
@@ -457,13 +457,13 @@ let UziBlock = (function () {
       color: colors.SENSORS
     },
     button_wait_for_action: {
-      text: "wait for button %action on pin %pin",
+      text: "buttons. %action ( %pin ) ;",
       type: null,
       inputs: {
         "action": {
           name: "action",
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
-                                                                           [i18n.translate("button waitForRelease"),"release"]]), name),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("waitForPress"),"press"],
+                                                                           [i18n.translate("waitForRelease"),"release"]]), name),
         },
         "pin": {
           name: "pinNumber",
@@ -479,13 +479,13 @@ let UziBlock = (function () {
      but too ugly when its inputs are external. I don't know how to make it smaller...
      */
     button_wait_for_long_action: {
-      text: "wait button %action on pin %pin for %time %timeUnit",
+      text: "buttons . %action ( %pin, %time %timeUnit );",
       type: null,
       inputs: {
         "action": {
           name: "action",
-          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("button waitForPress"),"press"],
-                                                                           [i18n.translate("button waitForRelease"),"release"]]), name),
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("waitForPress"),"press"],
+                                                                           [i18n.translate("waitForRelease"),"release"]]), name),
         },
         "pin": {
           name: "pinNumber",
@@ -515,7 +515,7 @@ let UziBlock = (function () {
      simplify it to simply "wait for button hold x seconds" or something like that...
      */
     button_ms_holding: {
-      text: "elapsed milliseconds while pressing %pin",
+      text: "buttons . millisecondsHolding ( %pin )",
       type: types.NUMBER,
       inputs: {
         "pin": {
@@ -531,7 +531,7 @@ let UziBlock = (function () {
 
     // Sensors - Joystick
     get_joystick_x: {
-      text: "read joystick x position from %name",
+      text: "%name .x",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -544,7 +544,7 @@ let UziBlock = (function () {
       color: colors.SENSORS
     },
     get_joystick_y: {
-      text: "read joystick y position from %name",
+      text: "%name .y",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -557,7 +557,7 @@ let UziBlock = (function () {
       color: colors.SENSORS
     },
     get_joystick_angle: {
-      text: "read joystick angle from %name",
+      text: "%name .getAngle()",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -570,7 +570,7 @@ let UziBlock = (function () {
       color: colors.SENSORS
     },
     get_joystick_magnitude: {
-      text: "read joystick magnitude from %name",
+      text: "%name .getMagnitude()",
       type: types.NUMBER,
       inputs: {
         "name": {
@@ -585,15 +585,15 @@ let UziBlock = (function () {
 
     // Sound
     start_tone: {
-      text: "play tone %1 on pin %2",
+      text: "startTone( %tone , %pinNumber ) ;",
       type: null,
       inputs: {
-        "1": {
+        "tone": {
           name: "tone",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -603,25 +603,25 @@ let UziBlock = (function () {
       color: colors.SOUND
     },
     play_tone: {
-      text: "play tone %1 on pin %2 for %3 %4",
+      text: "playTone( %tone , %pinNumber , %time %unit ) ;",
       type: null,
       inputs: {
-        "1": {
+        "tone": {
           name: "tone",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "3": {
+        "time": {
           name: "time",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "4": {
+        "unit": {
           name: "unit",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
@@ -633,15 +633,15 @@ let UziBlock = (function () {
       color: colors.SOUND
     },
     start_note: {
-      text: "play note %1 on pin %2",
+      text: "startTone( %note , %pinNumber ) ;",
       type: null,
       inputs: {
-        "1": {
+        "note": {
           name: "note",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(getNotes), name),
         },
-        "2": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -651,25 +651,25 @@ let UziBlock = (function () {
       color: colors.SOUND
     },
     play_note: {
-      text: "play note %1 on pin %2 for %3 %4",
+      text: "playTone( %note , %pinNumber , %time %unit ) ;",
       type: null,
       inputs: {
-        "1": {
+        "note": {
           name: "note",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(getNotes), name),
         },
-        "2": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "3": {
+        "time": {
           name: "time",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "4": {
+        "unit": {
           name: "unit",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
@@ -681,10 +681,10 @@ let UziBlock = (function () {
       color: colors.SOUND
     },
     stop_tone: {
-      text: "silence pin %1",
+      text: "stopTone( %pinNumber ) ;",
       type: null,
       inputs: {
-        "1": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -694,20 +694,20 @@ let UziBlock = (function () {
       color: colors.SOUND
     },
     stop_tone_wait: {
-      text: "silence pin %1 and wait %2 %3",
+      text: "stopToneAndWait( %pinNumber , %time %unit ) ;",
       type: null,
       inputs: {
-        "1": {
+        "pinNumber": {
           name: "pinNumber",
           types: [types.PIN],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "time": {
           name: "time",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "3": {
+        "unit": {
           name: "unit",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("milliseconds"),"ms"],
@@ -721,10 +721,10 @@ let UziBlock = (function () {
 
     // Control
     boolean: {
-      text: "boolean %value",
+      text: "%boolean",
       type: types.BOOLEAN,
       inputs: {
-        "value": {
+        "boolean": {
           name: "value",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -736,7 +736,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     boolean_cast: {
-      text: "boolean cast %1",
+      text: "bool ( %1 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -749,7 +749,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     conditional_simple: {
-      text: "if %1 then %2",
+      text: "if %1 { \n %2 }",
       type: null,
       inputs: {
         "1": {
@@ -767,7 +767,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     conditional_full: {
-      text: "if %1 then %2 else %3",
+      text: "if %1 { \n %2 } else { \n %3 }",
       type: null,
       inputs: {
         "1": {
@@ -790,7 +790,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     forever: {
-      text: "repeat forever \n %1",
+      text: "forever { \n %1 }",
       type: null,
       inputs: {
         "1": {
@@ -803,10 +803,10 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     repeat: {
-      text: "repeat %1 mode %2 condition %3 statements",
+      text: "%negate %condition { \n %statements }",
       type: null,
       inputs: {
-        "1": {
+        "negate": {
           name: "negate",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -814,12 +814,12 @@ let UziBlock = (function () {
                                                                                   [i18n.translate("until"),"true"]]),
                                                                                  name),
         },
-        "2": {
+        "condition": {
           name: "condition",
           types: [types.BOOLEAN],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "3": {
+        "statements": {
           name: "statements",
           types: null,
           builder: (block, input, name) => block.appendStatementInput(name),
@@ -829,15 +829,15 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     repeat_times: {
-      text: "repeat %1 times \n %2",
+      text: "repeat %times { \n %statements }",
       type: null,
       inputs: {
-        "1": {
+        "times": {
           name: "times",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "statements": {
           name: "statements",
           types: null,
           builder: (block, input, name) => block.appendStatementInput(name),
@@ -847,7 +847,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     for: {
-      text: "count with %1 from %2 to %3 by %4 %5",
+      text: "for %1 = %2 to %3 by %4 { \n %5 }",
       type: null,
       inputs: {
         "1": {
@@ -881,37 +881,37 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     delay: {
-      text: "delay %1 %2",
+      text: "%delay ( %time ) ;",
       type: null,
       inputs: {
-        "1": {
+        "time": {
           name: "time",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "delay": {
           name: "unit",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("delay in milliseconds"),"ms"],
-                                                                                  [i18n.translate("delay in seconds"),"s"],
-                                                                                  [i18n.translate("delay in minutes"),"m"]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("delayMs"),"ms"],
+                                                                                  [i18n.translate("delayS"),"s"],
+                                                                                  [i18n.translate("delayM"),"m"]]), name),
         }
       },
       connections: { up: true, down: true, left: false },
       color: colors.CONTROL
     },
     wait: {
-      text: "wait %1 %2",
+      text: "%negate %condition ;",
       type: null,
       inputs: {
-        "1": {
+        "negate": {
           name: "negate",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[i18n.translate("while"),"false"],
                                                                            [i18n.translate("until"),"true"]]), name),
         },
-        "2": {
+        "condition": {
           name: "condition",
           types: [types.BOOLEAN],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -921,7 +921,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     elapsed_time: {
-      text: "elapsed time since bootup in %timeUnit",
+      text: "%timeUnit",
       type: types.NUMBER,
       inputs: {
         "timeUnit": {
@@ -936,26 +936,26 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     logical_compare: {
-      text: "logical comparison %1 left %2 operator %3 right",
+      text: "( %left %logical_compare_op %right )",
       type: types.BOOLEAN,
       inputs: {
-        "1": {
+        "left": {
           name: "left",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "logical_compare_op": {
           name: "operator",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("logical operator ="), "=="],
-                                                                                  [i18n.translate("logical operator ≠"), "!="],
-                                                                                  [i18n.translate("logical operator <"), "<"],
-                                                                                  [i18n.translate("logical operator ≤"), "<="],
-                                                                                  [i18n.translate("logical operator >"), ">"],
-                                                                                  [i18n.translate("logical operator ≥"), ">="]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("=="), "=="],
+                                                                                  [i18n.translate("!="), "!="],
+                                                                                  [i18n.translate("<"), "<"],
+                                                                                  [i18n.translate("<="), "<="],
+                                                                                  [i18n.translate(">"), ">"],
+                                                                                  [i18n.translate(">="), ">="]]), name),
         },
-        "3": {
+        "right": {
           name: "right",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -965,22 +965,22 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     logical_operation: {
-      text: "logical operation %1 left %2 operator %3 right",
+      text: "( %left %logical_operation_op %right )",
       type: types.BOOLEAN,
       inputs: {
-        "1": {
+        "left": {
           name: "left",
           types: [types.BOOLEAN],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "logical_operation_op": {
           name: "operator",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("logical and"),"and"],
-                                                                                  [i18n.translate("logical or"),"or"]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("&&"),"and"],
+                                                                                  [i18n.translate("||"),"or"]]), name),
         },
-        "3": {
+        "right": {
           name: "right",
           types: [types.BOOLEAN],
           builder: (block, input, name) => block.appendValueInput(name),
@@ -990,7 +990,7 @@ let UziBlock = (function () {
       color: colors.CONTROL
     },
     logical_not: {
-      text: "logical not %1",
+      text: "! %1",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -1005,10 +1005,10 @@ let UziBlock = (function () {
 
     // Math
     number: {
-      text: "number %1",
+      text: "%number",
       type: types.NUMBER,
       inputs: {
-        "1": {
+        "number": {
           name: "value",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1019,7 +1019,7 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_cast: {
-      text: "number cast %1",
+      text: "number ( %1 )",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -1032,31 +1032,31 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_property: {
-      text: "number property %1 value %2 property",
+      text: "%numProp ( %value )",
       type: types.BOOLEAN,
       inputs: {
-        "1": {
+        "value": {
           name: "value",
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "2": {
+        "numProp": {
           name: "property",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("is even"),"even"],
-                                                                                  [i18n.translate("is odd"),"odd"],
-                                                                                  [i18n.translate("is prime"),"prime"],
-                                                                                  [i18n.translate("is whole"),"whole"],
-                                                                                  [i18n.translate("is positive"),"positive"],
-                                                                                  [i18n.translate("is negative"),"negative"]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("isEven"),"even"],
+                                                                                  [i18n.translate("isOdd"),"odd"],
+                                                                                  [i18n.translate("isPrime"),"prime"],
+                                                                                  [i18n.translate("isWhole"),"whole"],
+                                                                                  [i18n.translate("isPositive"),"positive"],
+                                                                                  [i18n.translate("isNegative"),"negative"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH
     },
     number_divisibility: {
-      text: "number %1 is divisible by number %2",
+      text: "isDivisibleBy( %1 , %2 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -1074,7 +1074,7 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_operation: {
-      text: "perform %operation on %number",
+      text: "%operation %number \n",
       type: types.NUMBER,
       inputs: {
         "number": {
@@ -1099,7 +1099,7 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_trig: {
-      text: "perform trigonometric %operation on %number",
+      text: "%trigOperation %number \n",
       type: types.NUMBER,
       inputs: {
         "number": {
@@ -1107,7 +1107,7 @@ let UziBlock = (function () {
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "operation": {
+        "trigOperation": {
           name: "operator",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1123,26 +1123,26 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     math_constant: {
-      text: "math %constant",
+      text: "%constant",
       type: types.NUMBER,
       inputs: {
         "constant": {
           name: "constant",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("constant π"),"PI"],
-                                                                                  [i18n.translate("constant ℯ"),"E"],
-                                                                                  [i18n.translate("constant φ"),"GOLDEN_RATIO"],
-                                                                                  [i18n.translate("constant √2"),"SQRT2"],
-                                                                                  [i18n.translate("constant √½"),"SQRT1_2"],
-                                                                                  [i18n.translate("constant ∞"),"INFINITY"]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("3.141592653589793"),"PI"],
+                                                                                  [i18n.translate("2.718281828459045"),"E"],
+                                                                                  [i18n.translate("1.61803398875"),"GOLDEN_RATIO"],
+                                                                                  [i18n.translate("1.4142135623730951"),"SQRT2"],
+                                                                                  [i18n.translate("0.7071067811865476"),"SQRT1_2"],
+                                                                                  [i18n.translate("Infinity"),"INFINITY"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH
     },
     math_arithmetic: {
-      text: "arithmetic function %left %operator %right",
+      text: "( %left %arithmeticOperator %right )",
       type: types.NUMBER,
       inputs: {
         "left": {
@@ -1150,15 +1150,15 @@ let UziBlock = (function () {
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "operator": {
+        "arithmeticOperator": {
           name: "operator",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("arithmetic operator /"),"DIVIDE"],
-                                                                                  [i18n.translate("arithmetic operator *"),"MULTIPLY"],
-                                                                                  [i18n.translate("arithmetic operator -"),"MINUS"],
-                                                                                  [i18n.translate("arithmetic operator +"),"ADD"],
-                                                                                  [i18n.translate("arithmetic operator ^"),"POWER"]]), name),
+                                          .appendField(new Blockly.FieldDropdown([[i18n.translate("/"),"DIVIDE"],
+                                                                                  [i18n.translate("*"),"MULTIPLY"],
+                                                                                  [i18n.translate("-"),"MINUS"],
+                                                                                  [i18n.translate("+"),"ADD"],
+                                                                                  [i18n.translate("**"),"POWER"]]), name),
         },
         "right": {
           name: "right",
@@ -1170,7 +1170,7 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_round: {
-      text: "perform rounding %operation on %number",
+      text: "%roundingOperation %number \n",
       type: types.NUMBER,
       inputs: {
         "number": {
@@ -1178,20 +1178,20 @@ let UziBlock = (function () {
           types: [types.NUMBER],
           builder: (block, input, name) => block.appendValueInput(name),
         },
-        "operation": {
+        "roundingOperation": {
           name: "operator",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown([[i18n.translate("round"),"round"],
-                                                                                  [i18n.translate("round up"),"ceil"],
-                                                                                  [i18n.translate("round down"),"floor"]]), name),
+                                                                                  [i18n.translate("ceil"),"ceil"],
+                                                                                  [i18n.translate("floor"),"floor"]]), name),
         }
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH
     },
     number_modulo: {
-      text: "remainder of %1 ÷ %2",
+      text: "%1 % %2 \n",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -1209,7 +1209,7 @@ let UziBlock = (function () {
       color: colors.MATH
     },
     number_constrain: {
-      text: "constrain %1 low %2 high %3",
+      text: "constrain ( %1 , %2 , %3 )",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -1233,7 +1233,7 @@ let UziBlock = (function () {
       postload: (block) => block.setInputsInline(true)
     },
     number_between: {
-      text: "is %1 between %2 and %3",
+      text: "isBetween ( %1 , %2 , %3 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -1257,7 +1257,7 @@ let UziBlock = (function () {
       postload: (block) => block.setInputsInline(true)
     },
     number_random_int: {
-      text: "random integer from %1 to %2",
+      text: "randomInt( %1, %2 )",
       type: types.NUMBER,
       inputs: {
         "1": {
@@ -1276,7 +1276,7 @@ let UziBlock = (function () {
       postload: (block) => block.setInputsInline(true)
     },
     number_random_float: {
-      text: "random fraction",
+      text: "random()",
       type: types.NUMBER,
       inputs: {},
       connections: { up: false, down: false, left: true },
@@ -1285,7 +1285,7 @@ let UziBlock = (function () {
 
     // Variables
     variable: {
-      text: "variable %name",
+      text: "%name",
       type: null,
       inputs: {
         "name": {
@@ -1298,7 +1298,7 @@ let UziBlock = (function () {
       color: colors.VARIABLES,
     },
     declare_local_variable: {
-      text: "declare local variable %name with %value",
+      text: "var %name = %value ;",
       type: null,
       inputs: {
         "name": {
@@ -1316,7 +1316,7 @@ let UziBlock = (function () {
       color: colors.VARIABLES
     },
     set_variable: {
-      text: "set variable %name to value %value",
+      text: "%name = %value ;",
       type: null,
       inputs: {
         "name": {
@@ -1334,7 +1334,7 @@ let UziBlock = (function () {
       color: colors.VARIABLES
     },
     increment_variable: {
-      text: "increment variable %name value by %value",
+      text: "%name += %value ;",
       type: null,
       inputs: {
         "name": {
@@ -1354,7 +1354,7 @@ let UziBlock = (function () {
 
     // Procedures
     proc_definition_0args: {
-      text: "procedure named %name %stmts",
+      text: "proc %name () { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1373,7 +1373,7 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_definition_1args: {
-      text: "procedure named %name with argument %arg0 %stmts",
+      text: "proc %name ( %arg0 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1399,7 +1399,7 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_definition_2args: {
-      text: "procedure named %name with arguments %arg0 %arg1 %stmts",
+      text: "proc %name ( %arg0 , %arg1 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1432,7 +1432,7 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_definition_3args: {
-      text: "procedure named %name with arguments %arg0 %arg1 %arg2 %stmts",
+      text: "proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1472,17 +1472,17 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     return: {
-      text: "procedure exit e.g. return with no value",
+      text: "exit ;",
       type: null,
       inputs: {},
       connections: { up: true, down: false, left: false },
       color: colors.PROCEDURES
     },
     proc_call_0args: {
-      text: "execute procedure %name",
+      text: "%procName () ;",
       type: null,
       inputs: {
-        "name": {
+        "procName": {
           name: "procName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1493,10 +1493,10 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_call_1args: {
-      text: "execute procedure %name with %arg0",
+      text: "%procName ( %arg0 ) ;",
       type: null,
       inputs: {
-        "name": {
+        "procName": {
           name: "procName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1514,10 +1514,10 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_call_2args: {
-      text: "execute procedure %name with %arg0 and %arg1",
+      text: "%procName ( %arg0 , %arg1 ) ;",
       type: null,
       inputs: {
-        "name": {
+        "procName": {
           name: "procName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1542,10 +1542,10 @@ let UziBlock = (function () {
       color: colors.PROCEDURES
     },
     proc_call_3args: {
-      text: "execute procedure %name with %arg0, %arg1 and %arg2",
+      text: "%procName ( %arg0 , %arg1 , %arg2 ) ;",
       type: null,
       inputs: {
-        "name": {
+        "procName": {
           name: "procName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1579,7 +1579,7 @@ let UziBlock = (function () {
 
     // Functions
     func_definition_0args: {
-      text: "function named %name %stmts",
+      text: "func %name () { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1598,7 +1598,7 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_definition_1args: {
-      text: "function named %name with argument %arg0 %stmts",
+      text: "func %name ( %arg0 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1624,7 +1624,7 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_definition_2args: {
-      text: "function named %name with arguments %arg0 %arg1 %stmts",
+      text: "func %name ( %arg0 , %arg1 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1657,7 +1657,7 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_definition_3args: {
-      text: "function named %name with arguments %arg0 %arg1 %arg2 %stmts",
+      text: "func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
@@ -1697,7 +1697,7 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     return_value: {
-      text: "function return with value %value",
+      text: "return %value ;",
       type: null,
       inputs: {
         "value": {
@@ -1710,10 +1710,10 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_call_0args: {
-      text: "evaluate function %name",
+      text: "%funcName ()",
       type: null,
       inputs: {
-        "name": {
+        "funcName": {
           name: "funcName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1724,10 +1724,10 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_call_1args: {
-      text: "evaluate function %name with argument %arg0",
+      text: "%funcName ( %arg0 )",
       type: null,
       inputs: {
-        "name": {
+        "funcName": {
           name: "funcName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1745,10 +1745,10 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_call_2args: {
-      text: "evaluate function %name with arguments %arg0 %arg1",
+      text: "%funcName ( %arg0 , %arg1 )",
       type: null,
       inputs: {
-        "name": {
+        "funcName": {
           name: "funcName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
@@ -1773,10 +1773,10 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS
     },
     func_call_3args: {
-      text: "evaluate function %name with arguments %arg0 %arg1 %arg2",
+      text: "%funcName ( %arg0 , %arg1 , %arg2 )",
       type: null,
       inputs: {
-        "name": {
+        "funcName": {
           name: "funcName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
