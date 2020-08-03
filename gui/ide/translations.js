@@ -19,7 +19,6 @@ var TRANSLATIONS = [
   ["Pins", "Pins", "Pins", "Pines", "Viigud", "Ben"],
   ["* no values reporting *", "* no values reporting *", "* no values reporting *", "* no hay datos *", "* väärtusi ei edastata *", "* ingen värden rapporteras *"],
   ["Globals", "Globals", "Globals", "Variables globales", "Globaalsed muutujad", "Globala variabler"],
-  ["Tasks", "Tasks", "Tasks", "Tareas", "Tööd", "Jobb"],
   ["ERROR: Broken layout", "ERROR: Broken layout", "ERROR: Broken layout", "ERROR: Diseño arruinado", "VIGA: Katkine asetus", "FEL: bruten layout"],
   ["It seems you've broken the page layout.", "It seems you've broken the page layout.", "It seems you've broken the page layout.", "Parece que se rompió el diseño de la aplicación.", "Paistab, et sa oled asetuse lõhkunud.", "Det verkar som något gått fel med layouten"],
   ["But don't worry! Click the button below to restore it to its former glory.", "But don't worry! Click the button below to restore it to its former glory.", "But don't worry! Click the button below to restore it to its former glory.", "¡Pero no te preocupes! Hacé clic en el botón siguiente para restaurarlo.", "Aga ära pabista! Vajuta nupule, et taastada õige seis.", "Men oroa dig inte! Klicka på knappen nedan för att återställa den till sin tidigare härlighet."],
