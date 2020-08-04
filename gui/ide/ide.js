@@ -1090,13 +1090,8 @@
   }
 
   function updateUziSyntax() {
-    UziBlock.uziSyntax.enabled = $("#uzi-syntax-checkbox").get(0).checked;
-
-    // TODO(Richo): There should be a better way to update the blocks...
-    // re-set the localization to re-draw all blocks and translations
-    // this is done to fix the padding around the text
-    let currentLocale = i18n.currentLocale();
-    i18n.currentLocale(currentLocale);
+    let checked = $("#uzi-syntax-checkbox").get(0).checked;
+    UziBlock.setUziSyntax(checked);
 
     saveToLocalStorage();
   }
@@ -1113,12 +1108,7 @@
       $("button").removeClass("allCapsMode");
     }
 
-    // TODO(Richo): There should be a better way to update the blocks...
-    // re-set the localization to re-draw all blocks and translations
-    // this is done to fix the padding around the text
-    let currentLocale = i18n.currentLocale();
-    i18n.currentLocale(currentLocale);
-
+    UziBlock.refreshAll();
     saveToLocalStorage();
   }
 

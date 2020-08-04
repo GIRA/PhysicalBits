@@ -10,7 +10,7 @@ let UziBlock = (function () {
     "change" : [],
   };
 
-  let uziSyntax = { enabled: false };
+  let uziSyntax = false;
 
   const colors = {
     TASKS: 175,
@@ -2116,7 +2116,7 @@ let UziBlock = (function () {
       Blockly.Blocks[key] = {
         init: function () {
           try {
-            let msg = uziSyntax.enabled ? blockSpec.text : i18n.translate(blockSpec.text);
+            let msg = uziSyntax ? blockSpec.text : i18n.translate(blockSpec.text);
             let inputFields = {};
             for (let inputKey in blockSpec.inputs) {
               let inputSpec = blockSpec.inputs[inputKey];
@@ -2606,6 +2606,11 @@ let UziBlock = (function () {
     workspace.toolbox_.refreshSelection();
   }
 
+  function refreshAll() {
+    refreshWorkspace();
+    refreshToolbox();
+  }
+
   function toXML() {
     return Blockly.Xml.workspaceToDom(workspace);
   }
@@ -2674,13 +2679,17 @@ let UziBlock = (function () {
   return {
     init: init,
     on: on,
+    refreshAll: refreshAll,
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
 
     types: types,
     spec: spec,
 
-    uziSyntax: uziSyntax,
+    setUziSyntax: function (value) {
+      uziSyntax = value;
+      refreshAll();
+    },
 
     fromXML: fromXML,
     toXML: toXML,
