@@ -816,8 +816,8 @@
 
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", initializeDefaultLayout);
-    $("#uzi-syntax-checkbox").on("change", toggleUziSyntax);
-    $("#all-caps-checkbox").on("change", toggleAllCaps);
+    $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
+    $("#all-caps-checkbox").on("change", updateAllCaps);
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
@@ -927,8 +927,8 @@
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
-	      toggleAllCaps(); // initializeAllCaps would be nicer?
-        toggleUziSyntax();
+	      updateAllCaps();
+        updateUziSyntax();
       }
 
       if (ui.layout) {
@@ -1089,7 +1089,7 @@
     saveToLocalStorage();
   }
 
-  function toggleUziSyntax() {
+  function updateUziSyntax() {
     UziBlock.uziSyntax.enabled = $("#uzi-syntax-checkbox").get(0).checked;
 
     // TODO(Richo): There should be a better way to update the blocks...
@@ -1101,7 +1101,7 @@
     saveToLocalStorage();
   }
 
-  function toggleAllCaps() {
+  function updateAllCaps() {
     // if the checkbox has been checked
     if ($("#all-caps-checkbox").get(0).checked) {
       document.body.classList.add("allCapsMode");
