@@ -816,7 +816,7 @@
 
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", initializeDefaultLayout);
-
+    $("#uzi-syntax-checkbox").on("change", toggleUziSyntax);
     $("#all-caps-checkbox").on("change", toggleAllCaps);
 
     $('input[name="language-radios"]:radio').change(function () {
@@ -909,6 +909,7 @@
       settings: {
         interactive: $("#interactive-checkbox").get(0).checked,
         allcaps:     $("#all-caps-checkbox").get(0).checked,
+        uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
       blockly: UziBlock.getDataForStorage(),
@@ -925,7 +926,9 @@
       if (ui.settings) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
+        $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
 	      toggleAllCaps(); // initializeAllCaps would be nicer?
+        toggleUziSyntax();
       }
 
       if (ui.layout) {
@@ -1086,6 +1089,18 @@
     saveToLocalStorage();
   }
 
+  function toggleUziSyntax() {
+    UziBlock.uziSyntax.enabled = $("#uzi-syntax-checkbox").get(0).checked;
+
+    // TODO(Richo): There should be a better way to update the blocks...
+    // re-set the localization to re-draw all blocks and translations
+    // this is done to fix the padding around the text
+    let currentLocale = i18n.currentLocale();
+    i18n.currentLocale(currentLocale);
+
+    saveToLocalStorage();
+  }
+
   function toggleAllCaps() {
     // if the checkbox has been checked
     if ($("#all-caps-checkbox").get(0).checked) {
@@ -1098,6 +1113,7 @@
       $("button").removeClass("allCapsMode");
     }
 
+    // TODO(Richo): There should be a better way to update the blocks...
     // re-set the localization to re-draw all blocks and translations
     // this is done to fix the padding around the text
     let currentLocale = i18n.currentLocale();
