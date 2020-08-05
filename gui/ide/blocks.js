@@ -1371,7 +1371,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     proc_definition_1args: {
       text: "proc %name ( %arg0 ) { \n %stmts }",
@@ -1397,7 +1400,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     proc_definition_2args: {
       text: "proc %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1430,7 +1436,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     proc_definition_3args: {
       text: "proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1470,7 +1479,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     return: {
       text: "exit ;",
@@ -1596,7 +1608,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     func_definition_1args: {
       text: "func %name ( %arg0 ) { \n %stmts }",
@@ -1622,7 +1637,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     func_definition_2args: {
       text: "func %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1655,7 +1673,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     func_definition_3args: {
       text: "func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1695,7 +1716,10 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      }
     },
     return_value: {
       text: "return %value ;",
