@@ -2414,7 +2414,9 @@ let UziBlock = (function () {
                       block.getFieldValue("procName") == b.getFieldValue("procName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
-          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue + ":")));
+          .forEach(i => i.fieldRow
+            .filter(f => f.class_ == evt.name)
+            .forEach(f => f.setValue(evt.newValue + ":")));
       }
     }
   }
@@ -2452,7 +2454,9 @@ let UziBlock = (function () {
                       block.getFieldValue("funcName") == b.getFieldValue("funcName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
-          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue + ":")));
+          .forEach(i => i.fieldRow
+            .filter(f => f.class_ == evt.name)
+            .forEach(f => f.setValue(evt.newValue + ":")));
       }
     }
   }
@@ -2666,7 +2670,9 @@ let UziBlock = (function () {
           .forEach(i => {
             let scriptName = b.getFieldValue("procName") || b.getFieldValue("funcName");
             let inputName = i.name;
-            i.fieldRow.forEach(f => f.setValue(getArgumentName(scriptName, inputName)));
+            i.fieldRow
+              .filter(f => f.class_ == inputName)
+              .forEach(f => f.setValue(getArgumentName(scriptName, inputName)));
           });
       });
 
