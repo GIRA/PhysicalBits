@@ -1503,7 +1503,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      postload: (block) => block.setInputsInline(true)
     },
     proc_call_1args: {
       text: "%procName ( %arg0 ) ;",
@@ -1746,7 +1747,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      postload: (block) => block.setInputsInline(true)
     },
     func_call_1args: {
       text: "%funcName ( %arg0 )",
