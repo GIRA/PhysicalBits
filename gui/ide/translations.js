@@ -166,7 +166,7 @@ var TRANSLATIONS = [
   /* "function return with value %value" */ ["return %value ;", "return %value", "devolver %value", "tagasta %value", "svara %value"],
   /* "evaluate function %name" */ ["%funcName ()", "evaluate function %funcName", "evaluar %funcName", "arvuta %funcName", "beräkna %funcName"],
   /* "evaluate function %name with argument %arg0" */ ["%funcName ( %arg0 )", "evaluate function %funcName %arg0", "evaluar %funcName %arg0", "arvuta %funcName argumendiga %arg0", "beräkna %funcName med argumentet %arg0"],
-  /* "evaluate function %name with arguments %arg0 %arg1" */ ["%funcName ( %arg0 , %arg1 )", "evaluate function %funcName %arg0 %arg1", "evaluar %funcName %arg0 %arg1", "arvuta %funcName argumentidega %arg0 %arg", "beräkna %funcName med argumenten %arg0 %arg1"],
+  /* "evaluate function %name with arguments %arg0 %arg1" */ ["%funcName ( %arg0 , %arg1 )", "evaluate function %funcName %arg0 %arg1", "evaluar %funcName %arg0 %arg1", "arvuta %funcName argumentidega %arg0 %arg1", "beräkna %funcName med argumenten %arg0 %arg1"],
   /* "evaluate function %name with arguments %arg0 %arg1 %arg2" */ ["%funcName ( %arg0 , %arg1 , %arg2 )", "evaluate function %funcName %arg0 %arg1 %arg2", "evaluar %funcName %arg0 %arg1 %arg2", "arvuta %funcName argumentidega %arg0 %arg1 %arg2", "beräkna %funcName med argumenten %arg0 %arg1 %arg2"],
 
   /* "is even" */ ["isEven", "is even", "es par", "on paarisarv", "är ett jämnt tal"],
