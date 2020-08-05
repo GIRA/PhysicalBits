@@ -2284,9 +2284,9 @@ let UziBlock = (function () {
 
     if (definitionBlock) {
       let fieldValue = definitionBlock.getFieldValue(name);
-      return fieldValue;
+      return fieldValue + ":";
     } else {
-      return name;
+      return name + ":";
     }
   }
 
@@ -2414,7 +2414,7 @@ let UziBlock = (function () {
                       block.getFieldValue("procName") == b.getFieldValue("procName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
-          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue)));
+          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue + ":")));
       }
     }
   }
@@ -2452,7 +2452,7 @@ let UziBlock = (function () {
                       block.getFieldValue("funcName") == b.getFieldValue("funcName"))
           .map(b => b.getInput(evt.name))
           .filter(i => i != undefined)
-          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue)));
+          .forEach(i => i.fieldRow.forEach(f => f.setValue(evt.newValue + ":")));
       }
     }
   }
