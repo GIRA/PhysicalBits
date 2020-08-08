@@ -2682,6 +2682,7 @@ let UziBlock = (function () {
 
       if (cleanUp) {
         workspace.cleanUp();
+        workspace.scrollCenter();
       }
   }
 
