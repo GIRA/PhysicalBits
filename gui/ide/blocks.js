@@ -14,13 +14,13 @@ let UziBlock = (function () {
 
   const colors = {
     TASKS: 175,
-    GPIO: 0,
-    MOTORS: 15,
-    SENSORS: 30,
-    SOUND: 45,
-    CONTROL: 145,
+    GPIO: 345,
+    MOTORS: 0,
+    SENSORS: 15,
+    SOUND: 30,
+    CONTROL: 140,
     MATH: 210,
-    VARIABLES: 330,
+    VARIABLES: 305,
     PROCEDURES: 285,
     FUNCTIONS: 265,
   }
