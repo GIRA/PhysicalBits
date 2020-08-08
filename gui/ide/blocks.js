@@ -2148,8 +2148,6 @@ let UziBlock = (function () {
     });
   }
 
-  function trim(str) { return str.trim(); }
-
   /**
   NOTE(Richo): This function should be used instead of i18n.translate in all block
   definitions. It will translate the text only if the uziSyntax flag is not set.
@@ -2230,7 +2228,7 @@ let UziBlock = (function () {
     let placeholders = new Set();
     while((fieldRefMatch = inputFieldRefPattern.exec(msg)) != null) {
         fieldRefName = fieldRefMatch[0].substring(1);
-        msgUntilFieldRef = trim(msg.substring(previousRefMatchIndex, fieldRefMatch.index));
+        msgUntilFieldRef = msg.substring(previousRefMatchIndex, fieldRefMatch.index).trim();
         previousRefMatchIndex = inputFieldRefPattern.lastIndex;
 
         let tempInputName = "___" + fieldRefName + "___";
@@ -2248,7 +2246,7 @@ let UziBlock = (function () {
     // append loose text if there exists any after the last input
     // field reference
     if (msg.length > previousRefMatchIndex) {
-        let msgAfterLastFieldRef = trim(msg.substring(previousRefMatchIndex));
+        let msgAfterLastFieldRef = msg.substring(previousRefMatchIndex).trim();
         let input = block.appendDummyInput();
         input.appendField(msgAfterLastFieldRef);
     }
