@@ -1933,23 +1933,13 @@ let UziBlock = (function () {
 
         // Handle task control blocks. Make sure they refer to the last existing task by default.
         {
+          let interestingBlocks = ["start_task", "stop_task", "resume_task", "pause_task", "run_task"];
           let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(function (block) {
-              switch (block.getAttribute("type")) {
-                case "start_task":
-                case "stop_task":
-                case "resume_task":
-                case "pause_task":
-                case "run_task":
-                  return true;
-                default:
-                  return false;
-              }
-            });
+            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
 
           let fields = blocks.map(function (block) {
             return Array.from(block.getElementsByTagName("field"))
-              .filter(function (field) { return field.getAttribute("name") == "taskName"; });
+              .filter((field) => field.getAttribute("name") == "taskName");
           }).flat();
 
           let tasks = getCurrentTaskNames();
