@@ -1906,222 +1906,245 @@ let UziBlock = (function () {
         trigger("change");
       });
 
-      workspace.registerToolboxCategoryCallback("TASKS", function () {
-        let node = XML.getChildNode(toolbox, "Tasks", "originalName");
-
-        // Handle task declaring blocks. Make sure a new name is set by default to avoid collisions
-        {
-          let interestingBlocks = ["task", "timer"];
-          let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
-
-          let fields = blocks.map(function (block) {
-            return Array.from(block.getElementsByTagName("field"))
-              .filter(field => field.getAttribute("name") == "taskName");
-          }).flat();
-
-          let tasks = getCurrentScriptNames();
-          let defaultName = "default";
-          let i = 1;
-          while (tasks.includes(defaultName)) {
-            defaultName = "default" + i;
-            i++;
-          }
-
-          fields.forEach(field => field.innerText = defaultName);
-        }
-
-        // Handle task control blocks. Make sure they refer to the last existing task by default.
-        {
-          let interestingBlocks = ["start_task", "stop_task", "resume_task", "pause_task", "run_task"];
-          let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
-
-          let fields = blocks.map(function (block) {
-            return Array.from(block.getElementsByTagName("field"))
-              .filter((field) => field.getAttribute("name") == "taskName");
-          }).flat();
-
-          let tasks = getCurrentTaskNames();
-          let defaultName = tasks.length > 0 ? tasks[tasks.length-1] : "default";
-          fields.forEach(field => field.innerText = defaultName);
-        }
-
-        return Array.from(node.children);
-      });
-
-      workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
-        let nodes = Array.from(node.children);
-        if (motors.length == 0) {
-          nodes.splice(1); // Leave the button only
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "motorName") {
-              field.innerText = motors[motors.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-
-      workspace.registerToolboxCategoryCallback("SONAR", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
-        let nodes = Array.from(node.children);
-        if (sonars.length == 0) {
-          nodes.splice(1); // Leave the button only
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "sonarName") {
-              field.innerText = sonars[sonars.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-
-      workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
-        let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
-        let nodes = Array.from(node.children);
-        if (joysticks.length == 0) {
-          nodes.splice(1); // Leave the button only
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 0; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "joystickName") {
-              field.innerText = joysticks[joysticks.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-
-      workspace.registerToolboxCategoryCallback("VARIABLES", function () {
-        let node = XML.getChildNode(toolbox, "Variables", "originalName");
-        let nodes = Array.from(node.children);
-        if (variables.length == 0) {
-          nodes.splice(2); // Leave the button and declare_local_variable
-        } else {
-          let fields = node.getElementsByTagName("field");
-          for (let i = 1; i < fields.length; i++) {
-            let field = fields[i];
-            if (field.getAttribute("name") === "variableName") {
-              field.innerText = variables[variables.length-1].name;
-            }
-          }
-        }
-        return nodes;
-      });
-
-
-      workspace.registerToolboxCategoryCallback("PROCEDURES", function () {
-        let node = XML.getChildNode(toolbox, "Procedures", "originalName");
-        let nodes = Array.from(node.children);
-
-        // Handle proc declaring blocks. Make sure a new name is set by default to avoid collisions
-        {
-          let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
-                                   "proc_definition_2args", "proc_definition_3args"];
-          let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
-
-          let fields = blocks.map(function (block) {
-            return Array.from(block.getElementsByTagName("field"))
-              .filter(field => field.getAttribute("name") == "procName");
-          }).flat();
-
-          let defaultName = "default";
-          let i = 1;
-          let procs = getCurrentScriptNames();
-          while (procs.includes(defaultName)) {
-            defaultName = "default" + i;
-            i++;
-          }
-
-          fields.forEach(field => field.innerText = defaultName);
-        }
-
-        // Handle procedure call blocks. Make sure they refer to the last existing proc by default.
-        {
-          let interestingBlocks = ["proc_call_0args", "proc_call_1args", "proc_call_2args", "proc_call_3args"];
-          interestingBlocks.forEach(function (type, nargs) {
-            let procs = getCurrentProcedureNames(nargs);
-            if (procs.length == 0) {
-              let index = nodes.findIndex(n => n.getAttribute("type") == type);
-              if (index > -1) { nodes.splice(index, 1); }
-            } else {
-              let defaultName = procs.length > 0 ? procs[procs.length-1] : "default";
-              Array.from(node.getElementsByTagName("block"))
-                .filter(block => block.getAttribute("type") == type)
-                .map(block => Array.from(block.getElementsByTagName("field"))
-                    .filter(field => field.getAttribute("name") == "procName"))
-                .flat()
-                .forEach(field => field.innerText = defaultName);
-              }
-          });
-        }
-
-        return nodes;
-      });
-
-
-      workspace.registerToolboxCategoryCallback("FUNCTIONS", function () {
-        let node = XML.getChildNode(toolbox, "Functions", "originalName");
-        let nodes = Array.from(node.children);
-
-        // Handle func declaring blocks. Make sure a new name is set by default to avoid collisions
-        {
-          let interestingBlocks = ["func_definition_0args", "func_definition_1args",
-                                   "func_definition_2args", "func_definition_3args"];
-          let blocks = Array.from(node.getElementsByTagName("block"))
-            .filter(block => interestingBlocks.includes(block.getAttribute("type")));
-
-          let fields = blocks.map(function (block) {
-            return Array.from(block.getElementsByTagName("field"))
-              .filter(field => field.getAttribute("name") == "funcName");
-          }).flat();
-
-          let defaultName = "default";
-          let i = 1;
-          let funcs = getCurrentScriptNames();
-          while (funcs.includes(defaultName)) {
-            defaultName = "default" + i;
-            i++;
-          }
-
-          fields.forEach(field => field.innerText = defaultName);
-        }
-
-        // Handle function call blocks. Make sure they refer to the last existing func by default.
-        {
-          let interestingBlocks = ["func_call_0args", "func_call_1args", "func_call_2args", "func_call_3args"];
-          interestingBlocks.forEach(function (type, nargs) {
-            let funcs = getCurrentFunctionNames(nargs);
-            if (funcs.length == 0) {
-              let index = nodes.findIndex(n => n.getAttribute("type") == type);
-              if (index > -1) { nodes.splice(index, 1); }
-            } else {
-              let defaultName = funcs.length > 0 ? funcs[funcs.length-1] : "default";
-              Array.from(node.getElementsByTagName("block"))
-                .filter(block => block.getAttribute("type") == type)
-                .map(block => Array.from(block.getElementsByTagName("field"))
-                    .filter(field => field.getAttribute("name") == "funcName"))
-                .flat()
-                .forEach(field => field.innerText = defaultName);
-              }
-          });
-        }
-
-        return nodes;
-      });
+      initTasksToolboxCategory(toolbox, workspace);
+      initDCMotorsToolboxCategory(toolbox, workspace);
+      initSonarToolboxCategory(toolbox, workspace);
+      initJoystickToolboxCategory(toolbox, workspace);
+      initVariablesToolboxCategory(toolbox, workspace);
+      initProceduresToolboxCategory(toolbox, workspace);
+      initFunctionsToolboxCategory(toolbox, workspace);
 
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
+    });
+  }
+
+  function initTasksToolboxCategory(toolbox, workspace) {
+    let taskDeclaringBlocks = new Set(["task", "timer"]);
+    let taskControlBlocks = new Set(["start_task", "stop_task", "resume_task", "pause_task", "run_task"]);
+
+    workspace.registerToolboxCategoryCallback("TASKS", function () {
+      let node = XML.getChildNode(toolbox, "Tasks", "originalName");
+
+      // Handle task declaring blocks. Make sure a new name is set by default to avoid collisions
+      {
+        let blocks = Array.from(node.getElementsByTagName("block"))
+          .filter(block => taskDeclaringBlocks.has(block.getAttribute("type")));
+
+        let fields = blocks.map(function (block) {
+          return Array.from(block.getElementsByTagName("field"))
+            .filter(field => field.getAttribute("name") == "taskName");
+        }).flat();
+
+        let tasks = getCurrentScriptNames();
+        let defaultName = "default";
+        let i = 1;
+        while (tasks.includes(defaultName)) {
+          defaultName = "default" + i;
+          i++;
+        }
+
+        fields.forEach(field => field.innerText = defaultName);
+      }
+
+      // Handle task control blocks. Make sure they refer to the last existing task by default.
+      {
+        let blocks = Array.from(node.getElementsByTagName("block"))
+          .filter(block => taskControlBlocks.has(block.getAttribute("type")));
+
+        let fields = blocks.map(function (block) {
+          return Array.from(block.getElementsByTagName("field"))
+            .filter((field) => field.getAttribute("name") == "taskName");
+        }).flat();
+
+        let tasks = getCurrentTaskNames();
+        let defaultName = tasks.length > 0 ? tasks[tasks.length-1] : "default";
+        fields.forEach(field => field.innerText = defaultName);
+      }
+
+      return Array.from(node.children);
+    });
+  }
+
+  function initDCMotorsToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
+      let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
+      let nodes = Array.from(node.children);
+      if (motors.length == 0) {
+        nodes.splice(1); // Leave the button only
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "motorName") {
+            field.innerText = motors[motors.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initSonarToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("SONAR", function () {
+      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
+      let nodes = Array.from(node.children);
+      if (sonars.length == 0) {
+        nodes.splice(1); // Leave the button only
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "sonarName") {
+            field.innerText = sonars[sonars.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initJoystickToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
+      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+      let nodes = Array.from(node.children);
+      if (joysticks.length == 0) {
+        nodes.splice(1); // Leave the button only
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "joystickName") {
+            field.innerText = joysticks[joysticks.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initVariablesToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("VARIABLES", function () {
+      let node = XML.getChildNode(toolbox, "Variables", "originalName");
+      let nodes = Array.from(node.children);
+      if (variables.length == 0) {
+        nodes.splice(2); // Leave the button and declare_local_variable
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 1; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "variableName") {
+            field.innerText = variables[variables.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initProceduresToolboxCategory(toolbox, workspace) {
+    let procDeclaringBlocks = new Set(["proc_definition_0args", "proc_definition_1args",
+                                       "proc_definition_2args", "proc_definition_3args"]);
+    let procCallingBlocks = ["proc_call_0args", "proc_call_1args", "proc_call_2args", "proc_call_3args"];
+
+    workspace.registerToolboxCategoryCallback("PROCEDURES", function () {
+      let node = XML.getChildNode(toolbox, "Procedures", "originalName");
+      let nodes = Array.from(node.children);
+
+      // Handle proc declaring blocks. Make sure a new name is set by default to avoid collisions
+      {
+        let blocks = Array.from(node.getElementsByTagName("block"))
+          .filter(block => procDeclaringBlocks.has(block.getAttribute("type")));
+
+        let fields = blocks.map(function (block) {
+          return Array.from(block.getElementsByTagName("field"))
+            .filter(field => field.getAttribute("name") == "procName");
+        }).flat();
+
+        let defaultName = "default";
+        let i = 1;
+        let procs = getCurrentScriptNames();
+        while (procs.includes(defaultName)) {
+          defaultName = "default" + i;
+          i++;
+        }
+
+        fields.forEach(field => field.innerText = defaultName);
+      }
+
+      // Handle procedure call blocks. Make sure they refer to the last existing proc by default.
+      {
+        procCallingBlocks.forEach(function (type, nargs) {
+          let procs = getCurrentProcedureNames(nargs);
+          if (procs.length == 0) {
+            let index = nodes.findIndex(n => n.getAttribute("type") == type);
+            if (index > -1) { nodes.splice(index, 1); }
+          } else {
+            let defaultName = procs.length > 0 ? procs[procs.length-1] : "default";
+            Array.from(node.getElementsByTagName("block"))
+              .filter(block => block.getAttribute("type") == type)
+              .map(block => Array.from(block.getElementsByTagName("field"))
+                  .filter(field => field.getAttribute("name") == "procName"))
+              .flat()
+              .forEach(field => field.innerText = defaultName);
+            }
+        });
+      }
+
+      return nodes;
+    });
+  }
+
+  function initFunctionsToolboxCategory(toolbox, workspace) {
+    let funcDeclaringBlocks = new Set(["func_definition_0args", "func_definition_1args",
+                                       "func_definition_2args", "func_definition_3args"]);
+    let funcCallingBlocks = ["func_call_0args", "func_call_1args", "func_call_2args", "func_call_3args"];
+
+    workspace.registerToolboxCategoryCallback("FUNCTIONS", function () {
+      let node = XML.getChildNode(toolbox, "Functions", "originalName");
+      let nodes = Array.from(node.children);
+
+      // Handle func declaring blocks. Make sure a new name is set by default to avoid collisions
+      {
+        let blocks = Array.from(node.getElementsByTagName("block"))
+          .filter(block => funcDeclaringBlocks.has(block.getAttribute("type")));
+
+        let fields = blocks.map(function (block) {
+          return Array.from(block.getElementsByTagName("field"))
+            .filter(field => field.getAttribute("name") == "funcName");
+        }).flat();
+
+        let defaultName = "default";
+        let i = 1;
+        let funcs = getCurrentScriptNames();
+        while (funcs.includes(defaultName)) {
+          defaultName = "default" + i;
+          i++;
+        }
+
+        fields.forEach(field => field.innerText = defaultName);
+      }
+
+      // Handle function call blocks. Make sure they refer to the last existing func by default.
+      {
+        funcCallingBlocks.forEach(function (type, nargs) {
+          let funcs = getCurrentFunctionNames(nargs);
+          if (funcs.length == 0) {
+            let index = nodes.findIndex(n => n.getAttribute("type") == type);
+            if (index > -1) { nodes.splice(index, 1); }
+          } else {
+            let defaultName = funcs.length > 0 ? funcs[funcs.length-1] : "default";
+            Array.from(node.getElementsByTagName("block"))
+              .filter(block => block.getAttribute("type") == type)
+              .map(block => Array.from(block.getElementsByTagName("field"))
+                  .filter(field => field.getAttribute("name") == "funcName"))
+              .flat()
+              .forEach(field => field.innerText = defaultName);
+            }
+        });
+      }
+
+      return nodes;
     });
   }
 
