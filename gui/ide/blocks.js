@@ -10,7 +10,15 @@ let UziBlock = (function () {
     "change" : [],
   };
 
-  let uziSyntax = false;
+  let uziSyntax = false;  
+
+  /**
+  NOTE(Richo): This function should be used instead of i18n.translate in all block
+  definitions. It will translate the text only if the uziSyntax flag is not set.
+  **/
+  function blocklyTranslate(text) {
+    return uziSyntax ? text : i18n.translate(text);
+  }
 
   const colors = {
     TASKS: 175,
@@ -2146,14 +2154,6 @@ let UziBlock = (function () {
 
       return nodes;
     });
-  }
-
-  /**
-  NOTE(Richo): This function should be used instead of i18n.translate in all block
-  definitions. It will translate the text only if the uziSyntax flag is not set.
-  **/
-  function blocklyTranslate(text) {
-    return uziSyntax ? text : i18n.translate(text);
   }
 
   function initFromSpec() {
