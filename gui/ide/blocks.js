@@ -1855,8 +1855,14 @@ let UziBlock = (function () {
       let categories = toolbox.getElementsByTagName("category");
       for (let i = 0; i < categories.length; i++) {
         let category = categories[i];
-        category.setAttribute("originalName", category.getAttribute("name"));
-        category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
+        let name = category.getAttribute("name");
+        category.setAttribute("originalName", name);
+        category.setAttribute("name", i18n.translate(name));
+
+        let color = colors[name.toUpperCase()];
+        if (color != undefined) {
+          category.setAttribute("colour", color);
+        }
       }
       let buttons = toolbox.getElementsByTagName("button");
       for (let i = 0; i < buttons.length; i++) {
