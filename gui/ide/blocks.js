@@ -10,7 +10,7 @@ let UziBlock = (function () {
     "change" : [],
   };
 
-  let uziSyntax = false;  
+  let uziSyntax = false;
 
   /**
   NOTE(Richo): This function should be used instead of i18n.translate in all block
@@ -1907,10 +1907,11 @@ let UziBlock = (function () {
       workspace.addChangeListener(function (evt) {
         if (evt.type == Blockly.Events.UI) return; // Ignore these events
 
-        handleTaskBlocks(evt);
-        handleProcedureBlocks(evt);
-        handleFunctionBlocks(evt);
-        handleVariableDeclarationBlocks(evt);
+        handleTaskBlocksEvents(evt);
+        handleProcedureBlocksEvents(evt);
+        handleFunctionBlocksEvents(evt);
+        handleVariableDeclarationBlocksEvents(evt);
+        
         trigger("change");
       });
 
@@ -2406,7 +2407,7 @@ let UziBlock = (function () {
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
-  function handleProcedureBlocks(evt) {
+  function handleProcedureBlocksEvents(evt) {
     let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
                             "proc_definition_2args", "proc_definition_3args"];
     let callBlocks = ["proc_call_0args", "proc_call_1args",
@@ -2446,7 +2447,7 @@ let UziBlock = (function () {
     }
   }
 
-  function handleFunctionBlocks(evt) {
+  function handleFunctionBlocksEvents(evt) {
     let definitionBlocks = ["func_definition_0args", "func_definition_1args",
                             "func_definition_2args", "func_definition_3args"];
     let callBlocks = ["func_call_0args", "func_call_1args",
@@ -2486,7 +2487,7 @@ let UziBlock = (function () {
     }
   }
 
-  function handleTaskBlocks(evt) {
+  function handleTaskBlocksEvents(evt) {
     // NOTE(Richo): If a task is renamed we want to update all referencing blocks.
     let interestingBlocks = ["task", "timer"];
     if (evt.type == Blockly.Events.CHANGE
@@ -2503,7 +2504,7 @@ let UziBlock = (function () {
     }
   }
 
-  function handleVariableDeclarationBlocks(evt) {
+  function handleVariableDeclarationBlocksEvents(evt) {
     /*
      * NOTE(Richo): Some blocks automatically add variables when created. Here we
      * handle the creation event of such blocks.
