@@ -1129,6 +1129,10 @@ let BlocksToAST = (function () {
 	}
 
 	return {
+		/*
+		TODO(Richo): Refactor arguments, maybe merge the motors/sonars/joystick/variables stuff
+		into one object called "metadada" or something?
+		*/
 		generate: function (xml, motors, sonars, joysticks, variables) {
 			let setup = [];
 			let scripts = [];

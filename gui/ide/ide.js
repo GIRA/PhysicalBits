@@ -191,7 +191,7 @@
     }
 
     function appendMotorRow(i, motor, usedMotors) {
-
+      // TODO(Richo): Refactor!
       function createTextInput(motorName, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
@@ -349,7 +349,7 @@
     }
 
     function appendSonarRow(i, sonar, usedSonars) {
-
+      // TODO(Richo): Refactor!
       function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
@@ -507,7 +507,7 @@
     }
 
     function appendJoystickRow(i, joystick, usedJoysticks) {
-
+      // TODO(Richo): Refactor!
       function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
@@ -671,6 +671,7 @@
         input.get(0).value = controlValue;
         return input;
       }
+      // TODO(Richo): Refactor!
       function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
@@ -1260,6 +1261,7 @@
   }
 
   function updateGlobalsPanel() {
+    // TODO(Richo): Old variables no longer present in the program are kept in the panel!
     updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global");
   }
 
