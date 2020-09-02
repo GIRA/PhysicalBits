@@ -2524,7 +2524,7 @@ let UziBlock = (function () {
         if (field != undefined) {
           let variableName = field.innerText;
           if (!variables.some(function (g) { return g.name == variableName})) {
-            variables.push({ name: variableName });
+            variables.push({ name: variableName, value: 0 });
           }
         }
       }
@@ -2546,7 +2546,7 @@ let UziBlock = (function () {
             if (field != undefined) {
               let variableName = field.innerText;
               if (!variables.some(function (g) { return g.name == variableName})) {
-                variables.push({ name: variableName });
+                variables.push({ name: variableName, value: 0 });
               }
             }
           });
@@ -2597,7 +2597,7 @@ let UziBlock = (function () {
     // Create new variable, if it doesn't exist yet
     if (!variables.some(v => v.name == newName)) {
       let nextIndex = variables.length == 0 ? 0 : Math.max.apply(null, variables.map(function (v) { return v.index; })) + 1;
-      let newVar = {index: nextIndex, name: newName};
+      let newVar = {index: nextIndex, name: newName, value: 0};
       variables.push(newVar);
     }
 
@@ -2677,7 +2677,7 @@ let UziBlock = (function () {
 
   function getGeneratedCode(){
     let xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars, joysticks);
+    return BlocksToAST.generate(xml, motors, sonars, joysticks, variables);
   }
 
   function refreshWorkspace() {

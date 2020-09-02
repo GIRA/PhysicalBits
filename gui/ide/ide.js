@@ -284,6 +284,7 @@
       UziBlock.setMotors(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
+      scheduleAutorun(true);
     });
 
     $("#blockly-motors-modal-container").on("submit", function (e) {
@@ -441,6 +442,7 @@
       UziBlock.setSonars(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
+      scheduleAutorun(true);
     });
 
     $("#blockly-sonars-modal-container").on("submit", function (e) {
@@ -597,6 +599,7 @@
       UziBlock.setJoysticks(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
+      scheduleAutorun(true);
     });
 
     $("#blockly-joysticks-modal-container").on("submit", function (e) {
@@ -655,6 +658,19 @@
 
     function appendVariableRow(i, variable, usedVariables) {
 
+      function createNumberInput(controlValue, controlName, validationFn) {
+        let input = $("<input>")
+          .attr("type", "number")
+          .addClass("form-control")
+          .addClass("text-center")
+          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
+          .attr("name", controlName);
+        if (validationFn != undefined) {
+          input.on("keyup", validationFn);
+        }
+        input.get(0).value = controlValue;
+        return input;
+      }
       function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
           .attr("type", "text")
@@ -697,6 +713,7 @@
       let tr = $("<tr>")
         .append($("<input>").attr("type", "hidden").attr("name", "variables[" + i + "][index]").attr("value", i))
         .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]", validateForm)))
+        .append($("<td>").append(createNumberInput(variable.value || "0", "variables[" + i + "][value]")));
       tr.append($("<td>").append(createRemoveButton(tr)));
       $("#blockly-variables-modal-container-tbody").append(tr);
     }
@@ -734,6 +751,7 @@
       UziBlock.setVariables(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
+      scheduleAutorun(true);
     });
 
     $("#blockly-variables-modal-container").on("submit", function (e) {
