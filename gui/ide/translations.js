@@ -225,6 +225,7 @@ var TRANSLATIONS = [
   /* "round down" */ ["floor", "round down", "redondear hacia abajo", "ümarda alla", "avrunda nedåt"],
   /* "Configure variables..." */ ["Configure variables...", "Configure variables...", "Configurar variables...", "Seadista muutujaid...", "Konfigurera variabler..."],
   /* "Variable name" */ ["Variable name", "Variable name", "Nombre de variable", "Muutuja nimi", "Variabelns namn"],
+  /* "Initial value (if global)" */ ["Initial value (if global)", "Initial value (if global)", "Valor inicial (en caso de global)", "Initial value (if global)", "Initial value (if global)"],
   /* "Sound" */ ["Sound", "Sound", "Sonido", "Heli", "Ljud"],
   /* "Buttons" */ ["Buttons", "Buttons", "Botones", "Lülitid", "Knappar"],
   /* "button pressed" */ ["isPressed", "pressed", "presionado", "vajutatud", "nedtryckt"],
