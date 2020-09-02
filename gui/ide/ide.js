@@ -1308,6 +1308,10 @@
     if (values.available
         .filter(val => val.reporting)
         .some(val => getElement(val).get(0) == undefined)) {
+      // We have new values to add
+      initializePanel();
+    } else if ($container.children().length > values.available.length) {
+      // We have old values to remove
       initializePanel();
     }
 
