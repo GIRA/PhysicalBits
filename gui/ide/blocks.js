@@ -2720,10 +2720,10 @@ let UziBlock = (function () {
       .filter(b => b.type.includes("_call_"))
       .forEach(updateArgumentFields);
 
-      if (cleanUp) {
-        workspace.cleanUp();
-        workspace.scrollCenter();
-      }
+    if (cleanUp) {
+      workspace.cleanUp();
+      workspace.scrollCenter();
+    }
   }
 
   function fromXMLText(xml) {
