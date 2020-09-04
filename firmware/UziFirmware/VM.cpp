@@ -434,6 +434,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_TOGGLE_PIN:
 		{
+			// TODO(Richo): What happens if we pop a value that exceeds the uint8 range (or is negative)?
 			uint8 pin = (uint8)stack.pop();
 			io->setMode(pin, OUTPUT);
 			io->setValue(pin, 1 - io->getValue(pin));
