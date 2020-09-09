@@ -1,13 +1,21 @@
 (ns compiler.core
-  (:require [compiler.cc :as cc]))
+    (:require [compiler.parser.parser :as pp]))
 
-(println "Hello world!")
+(enable-console-print!)
 
-;; ADDED
-(defn average [a b]
-  (/ (+ a b) 2.0))
+(println "This text is printed from src/compiler/core.cljs. Go ahead and edit it and see reloading in action.")
 
-(defn avg [& args]
-  (/ (apply + args) 2.0))
+;; define your app data so that it doesn't get over-written on reload
 
-(def compile cc/compile)
+(defonce app-state (atom {:text "Hello world!"}))
+
+
+(defn on-js-reload []
+  ;; optionally touch your app-state to force rerendering depending on
+  ;; your application
+  ;; (swap! app-state update-in [:__figwheel_counter] inc)
+)
+
+
+(defn ^:export parse [src]
+  (pp/parse src))
