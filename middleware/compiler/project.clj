@@ -35,8 +35,8 @@
                            :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/out/index.js"
                            :output-dir "resources/public/js/compiled/out"
-                           :bundle-cmd {:none ["npx" "webpack" "--mode=development"]
-                                        :default ["npx" "webpack"]}
+                           :bundle-cmd {:none ["npx.cmd" "webpack" "--mode=development"]
+                                        :default ["npx.cmd" "webpack"]}
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
