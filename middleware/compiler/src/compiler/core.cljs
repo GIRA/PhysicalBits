@@ -18,4 +18,4 @@
 
 
 (defn ^:export parse [src]
-  (pp/parse src))
+  (clj->js (pp/parse src)))
