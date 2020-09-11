@@ -1,3 +1,4 @@
+(def mac? (= "Mac OS X" (System/getProperty "os.name")))
 (defproject compiler "0.1.0-SNAPSHOT"
   :description "FIXME: write this!"
   :url "http://example.com/FIXME"
@@ -35,8 +36,8 @@
                            :asset-path "js/compiled/out"
                            :output-to "resources/public/js/compiled/out/index.js"
                            :output-dir "resources/public/js/compiled/out"
-                           :bundle-cmd {:none ["npx.cmd" "webpack" "--mode=development"]
-                                        :default ["npx.cmd" "webpack"]}
+                           :bundle-cmd {:none [~(if mac? "npx" "npx.cmd") "webpack" "--mode=development"]
+                                        :default [~(if mac? "npx" "npx.cmd") "webpack"]}
                            :source-map-timestamp true
                            ;; To console.log CLJS data-structures make sure you enable devtools in Chrome
                            ;; https://github.com/binaryage/cljs-devtools
