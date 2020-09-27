@@ -1,9 +1,10 @@
 (ns middleware.test-utils
   (:require [clojure.test :refer :all]
             [clojure.data :as data]
-            [ultra.test :as ultra-test]))
+            ;[ultra.test :as ultra-test]
+            ))
 
-(defmethod assert-expr 'equivalent? [msg form]
+#_(defmethod assert-expr 'equivalent? [msg form]
   (let [args (rest form)
         pred (first form)]
     `(let [values# (list ~@args)
