@@ -24,10 +24,16 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
 
 let server;
 if (config.startServer) {
+  /*
+  NOTE(Richo): VERY IMPORTANT! The stdio 'ignore' option prevents the child process from 
+  blocking if the main process doesn't read from it.
+  See https://nodejs.org/api/child_process.html#child_process_child_process
+  */
+  let options = { cwd: app.getAppPath(), stdio: 'ignore' };
   if (process.platform === 'win32') {
-    server = spawn('cmd.exe', ['/c', 'start.bat'], { cwd: app.getAppPath() });
+    server = spawn('cmd.exe', ['/c', 'start.bat'], options);
   } else {
-    server = spawn('./start.sh', { cwd: app.getAppPath() });
+    server = spawn('./start.sh', options);
   }
 }
 
