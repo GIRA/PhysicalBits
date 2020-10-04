@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/tools.logging "1.1.0"]
+                 [ch.qos.logback/logback-classic "1.1.3"]
                  [org.clojure/tools.cli "1.0.194"]
                  [clj-serial "2.0.5"]
                  [compojure "1.6.1"]
