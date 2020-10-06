@@ -1,6 +1,6 @@
 let UziBlock = (function () {
 
-  let version = 2;
+  let version = 3;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
   let userInteraction = false;
