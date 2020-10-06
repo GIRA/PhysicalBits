@@ -2584,18 +2584,75 @@ let UziBlock = (function () {
   }
 
   function handleTaskBlocksEvents(evt) {
-    // NOTE(Richo): If a task is renamed we want to update all referencing blocks.
-    let interestingBlocks = ["task", "timer"];
+    let definitionBlocks = ["task", "timer"];
+    let callBlocks = ["start_task", "stop_task",
+                      "resume_task", "pause_task",
+                      "run_task"];
+
+    /*
+    NOTE(Richo): I a task is being created by user action make sure to assign
+    a unique name to avoid collisions as much as possible.
+    */
+    if (userInteraction && evt.type == Blockly.Events.CREATE
+        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
+      let block = workspace.getBlockById(evt.blockId);
+      let name = block.getField("taskName").getValue();
+      if (workspace.getTopBlocks()
+          .some(b => b != block && b.type == block.type &&
+                    b.getField("taskName").getValue() == name)) {
+        let finalName = name;
+        let i = 1;
+        let names = getCurrentScriptNames();
+        while (names.includes(finalName)) {
+          finalName = name + i;
+          i++;
+        }
+        block.getField("taskName").setValue(finalName);
+      }
+    }
+
+    /*
+    NOTE(Richo): If a task is renamed we want to update all calling blocks.
+    And if a calling block is changed to refer to another task we need to update
+    its argument names.
+    */
     if (evt.type == Blockly.Events.CHANGE
        && evt.element == "field"
        && evt.name == "taskName") {
       let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && interestingBlocks.includes(block.type)) {
+      if (block != undefined && definitionBlocks.includes(block.type)) {
+        // A definition block has changed, we need to update calling blocks
+        // But only if the block is the oldest of its twins!
+        let twinBlocks = workspace.getTopBlocks()
+          .filter(b => b.type == block.type)
+          .filter(b => {
+            let field = b.getField("taskName");
+            return field && field.getValue() == evt.oldValue;
+          });
+        let time = timestamps.get(block.id);
+        if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
+          workspace.getAllBlocks()
+            .filter(b => callBlocks.includes(b.type))
+            .map(b => b.getField("taskName"))
+            .filter(f => f != undefined && f.getValue() == evt.oldValue)
+            .forEach(f => f.setValue(evt.newValue));
+        }
+      } else if (block != undefined && callBlocks.includes(block.type)) {
+        // A calling block has changed, we need to update its argument names
+        updateArgumentFields(block);
+      }
+    }
+
+    // NOTE(Richo): If an argument is renamed we want to update all the calling blocks.
+    if (evt.type == Blockly.Events.CHANGE
+       && evt.element == "field"
+       && evt.name && evt.name.startsWith("arg")) {
+      let block = workspace.getBlockById(evt.blockId);
+      if (block != undefined && definitionBlocks.includes(block.type)) {
         workspace.getAllBlocks()
-          .filter(b => !interestingBlocks.includes(b.type))
-          .map(b => b.getField("taskName"))
-          .filter(f => f != undefined && f.getValue() == evt.oldValue)
-          .forEach(f => f.setValue(evt.newValue));
+          .filter(b => callBlocks.includes(block.type) &&
+                      block.getFieldValue("taskName") == b.getFieldValue("taskName"))
+          .forEach(updateArgumentFields);
       }
     }
   }
