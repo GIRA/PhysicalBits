@@ -2479,9 +2479,8 @@ let UziBlock = (function () {
           });
         let time = timestamps.get(block.id);
         if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
-          let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
           workspace.getAllBlocks()
-            .filter(b => callBlock == b.type)
+            .filter(b => callBlocks.includes(b.type))
             .map(b => b.getField("procName"))
             .filter(f => f != undefined && f.getValue() == evt.oldValue)
             .forEach(f => f.setValue(evt.newValue));
@@ -2498,9 +2497,8 @@ let UziBlock = (function () {
        && evt.name && evt.name.startsWith("arg")) {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
         workspace.getAllBlocks()
-          .filter(b => callBlock == b.type &&
+          .filter(b => callBlocks.includes(b.type) &&
                       block.getFieldValue("procName") == b.getFieldValue("procName"))
           .forEach(updateArgumentFields);
       }
@@ -2555,9 +2553,8 @@ let UziBlock = (function () {
           });
         let time = timestamps.get(block.id);
         if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
-          let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
           workspace.getAllBlocks()
-            .filter(b => callBlock == b.type)
+            .filter(b => callBlocks.includes(b.type))
             .map(b => b.getField("funcName"))
             .filter(f => f != undefined && f.getValue() == evt.oldValue)
             .forEach(f => f.setValue(evt.newValue));
@@ -2574,9 +2571,8 @@ let UziBlock = (function () {
        && evt.name && evt.name.startsWith("arg")) {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
         workspace.getAllBlocks()
-          .filter(b => callBlock == b.type &&
+          .filter(b => callBlocks.includes(b.type) &&
                       block.getFieldValue("funcName") == b.getFieldValue("funcName"))
           .forEach(updateArgumentFields);
       }
