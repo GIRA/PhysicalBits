@@ -2329,8 +2329,7 @@ let UziBlock = (function () {
 
   function getArgumentName(scriptName, name) {
     let definitionBlock = workspace.getTopBlocks()
-                                   .find(b => b.getFieldValue("scriptName") == scriptName ||
-                                              b.getFieldValue("scriptName") == scriptName);
+                                   .find(b => b.getFieldValue("scriptName") == scriptName);
 
     if (definitionBlock) {
       let fieldValue = definitionBlock.getFieldValue(name);
@@ -2808,7 +2807,7 @@ let UziBlock = (function () {
   function updateArgumentFields(callBlock) {
     callBlock.inputList.filter(i => i.name.startsWith("arg"))
       .forEach(i => {
-        let scriptName = callBlock.getFieldValue("scriptName") || callBlock.getFieldValue("scriptName");
+        let scriptName = callBlock.getFieldValue("scriptName");
         let inputName = i.name;
         i.fieldRow
           .filter(f => f.class_ == inputName)
