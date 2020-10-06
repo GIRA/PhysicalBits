@@ -1,28 +1,28 @@
 <xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
   <category name="Tasks" custom="TASKS">
     <block type="task">
-      <field name="taskName">default</field>
+      <field name="scriptName">default</field>
     </block>
     <block type="timer">
-      <field name="taskName">default</field>
+      <field name="scriptName">default</field>
       <field name="runningTimes">1</field>
       <field name="tickingScale">s</field>
       <field name="initialState">started</field>
     </block>
     <block type="start_task">
-      <field name="taskName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="stop_task">
-      <field name="taskName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="resume_task">
-      <field name="taskName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="pause_task">
-      <field name="taskName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="run_task">
-      <field name="taskName"></field>
+      <field name="scriptName"></field>
     </block>
   </category>
   <category name="GPIO">
@@ -548,29 +548,29 @@
   </category>
   <category name="Procedures" custom="PROCEDURES">
     <block type="proc_definition_0args">
-      <field name="procName">default</field>
+      <field name="scriptName">default</field>
     </block>
     <block type="proc_definition_1args">
-      <field name="procName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
     </block>
     <block type="proc_definition_2args">
-      <field name="procName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
       <field name="arg1">arg1</field>
     </block>
     <block type="proc_definition_3args">
-      <field name="procName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
       <field name="arg1">arg1</field>
       <field name="arg2">arg2</field>
     </block>
     <block type="return"></block>
     <block type="proc_call_0args">
-      <field name="procName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="proc_call_1args">
-      <field name="procName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
@@ -578,7 +578,7 @@
       </value>
     </block>
     <block type="proc_call_2args">
-      <field name="procName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
@@ -591,7 +591,7 @@
       </value>
     </block>
     <block type="proc_call_3args">
-      <field name="procName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
@@ -611,19 +611,19 @@
   </category>
   <category name="Functions" custom="FUNCTIONS">
     <block type="func_definition_0args">
-      <field name="funcName">default</field>
+      <field name="scriptName">default</field>
     </block>
     <block type="func_definition_1args">
-      <field name="funcName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
     </block>
     <block type="func_definition_2args">
-      <field name="funcName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
       <field name="arg1">arg1</field>
     </block>
     <block type="func_definition_3args">
-      <field name="funcName">default</field>
+      <field name="scriptName">default</field>
       <field name="arg0">arg0</field>
       <field name="arg1">arg1</field>
       <field name="arg2">arg2</field>
@@ -636,10 +636,10 @@
       </value>
     </block>
     <block type="func_call_0args">
-      <field name="funcName"></field>
+      <field name="scriptName"></field>
     </block>
     <block type="func_call_1args">
-      <field name="funcName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
@@ -647,7 +647,7 @@
       </value>
     </block>
     <block type="func_call_2args">
-      <field name="funcName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>
@@ -660,7 +660,7 @@
       </value>
     </block>
     <block type="func_call_3args">
-      <field name="funcName"></field>
+      <field name="scriptName"></field>
       <value name="arg0">
         <shadow type="number">
           <field name="value">0</field>

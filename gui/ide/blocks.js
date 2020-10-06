@@ -70,7 +70,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
@@ -88,7 +88,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
@@ -124,7 +124,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -137,7 +137,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -150,7 +150,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -163,7 +163,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "taskName": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -176,7 +176,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -1369,7 +1369,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1391,7 +1391,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1420,7 +1420,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1456,7 +1456,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1506,7 +1506,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), name),
@@ -1521,7 +1521,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), name),
@@ -1542,7 +1542,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), name),
@@ -1570,7 +1570,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), name),
@@ -1607,7 +1607,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1629,7 +1629,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1658,7 +1658,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1694,7 +1694,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1750,7 +1750,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), name),
@@ -1765,7 +1765,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), name),
@@ -1786,7 +1786,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), name),
@@ -1814,7 +1814,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), name),
@@ -1966,7 +1966,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "taskName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let tasks = getCurrentScriptNames();
@@ -1987,7 +1987,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter((field) => field.getAttribute("name") == "taskName");
+            .filter((field) => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let tasks = getCurrentTaskNames();
@@ -2091,7 +2091,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "procName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let defaultName = "default";
@@ -2117,7 +2117,7 @@ let UziBlock = (function () {
             Array.from(node.getElementsByTagName("block"))
               .filter(block => block.getAttribute("type") == type)
               .map(block => Array.from(block.getElementsByTagName("field"))
-                  .filter(field => field.getAttribute("name") == "procName"))
+                  .filter(field => field.getAttribute("name") == "scriptName"))
               .flat()
               .forEach(field => field.innerText = defaultName);
             }
@@ -2144,7 +2144,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "funcName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let defaultName = "default";
@@ -2170,7 +2170,7 @@ let UziBlock = (function () {
             Array.from(node.getElementsByTagName("block"))
               .filter(block => block.getAttribute("type") == type)
               .map(block => Array.from(block.getElementsByTagName("field"))
-                  .filter(field => field.getAttribute("name") == "funcName"))
+                  .filter(field => field.getAttribute("name") == "scriptName"))
               .flat()
               .forEach(field => field.innerText = defaultName);
             }
@@ -2329,8 +2329,8 @@ let UziBlock = (function () {
 
   function getArgumentName(scriptName, name) {
     let definitionBlock = workspace.getTopBlocks()
-                                   .find(b => b.getFieldValue("procName") == scriptName ||
-                                              b.getFieldValue("funcName") == scriptName);
+                                   .find(b => b.getFieldValue("scriptName") == scriptName ||
+                                              b.getFieldValue("scriptName") == scriptName);
 
     if (definitionBlock) {
       let fieldValue = definitionBlock.getFieldValue(name);
@@ -2351,7 +2351,7 @@ let UziBlock = (function () {
     let interestingBlocks = ["task", "timer"];
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("taskName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getCurrentProcedureNames(nargs) {
@@ -2360,7 +2360,7 @@ let UziBlock = (function () {
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("procName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getLastProcedureName(nargs) {
@@ -2374,7 +2374,7 @@ let UziBlock = (function () {
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("funcName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getLastFunctionName(nargs) {
@@ -2444,10 +2444,10 @@ let UziBlock = (function () {
     if (userInteraction && evt.type == Blockly.Events.CREATE
         && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
       let block = workspace.getBlockById(evt.blockId);
-      let name = block.getField("procName").getValue();
+      let name = block.getField("scriptName").getValue();
       if (workspace.getTopBlocks()
           .some(b => b != block && b.type == block.type &&
-                    b.getField("procName").getValue() == name)) {
+                    b.getField("scriptName").getValue() == name)) {
         let finalName = name;
         let i = 1;
         let names = getCurrentScriptNames();
@@ -2455,7 +2455,7 @@ let UziBlock = (function () {
           finalName = name + i;
           i++;
         }
-        block.getField("procName").setValue(finalName);
+        block.getField("scriptName").setValue(finalName);
       }
     }
 
@@ -2466,7 +2466,7 @@ let UziBlock = (function () {
     */
     if (evt.type == Blockly.Events.CHANGE
        && evt.element == "field"
-       && evt.name == "procName") {
+       && evt.name == "scriptName") {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
         // A definition block has changed, we need to update calling blocks
@@ -2474,14 +2474,14 @@ let UziBlock = (function () {
         let twinBlocks = workspace.getTopBlocks()
           .filter(b => b.type == block.type)
           .filter(b => {
-            let field = b.getField("procName");
+            let field = b.getField("scriptName");
             return field && field.getValue() == evt.oldValue;
           });
         let time = timestamps.get(block.id);
         if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
           workspace.getAllBlocks()
             .filter(b => callBlocks.includes(b.type))
-            .map(b => b.getField("procName"))
+            .map(b => b.getField("scriptName"))
             .filter(f => f != undefined && f.getValue() == evt.oldValue)
             .forEach(f => f.setValue(evt.newValue));
         }
@@ -2499,7 +2499,7 @@ let UziBlock = (function () {
       if (block != undefined && definitionBlocks.includes(block.type)) {
         workspace.getAllBlocks()
           .filter(b => callBlocks.includes(b.type) &&
-                      block.getFieldValue("procName") == b.getFieldValue("procName"))
+                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
           .forEach(updateArgumentFields);
       }
     }
@@ -2518,10 +2518,10 @@ let UziBlock = (function () {
     if (userInteraction && evt.type == Blockly.Events.CREATE
         && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
       let block = workspace.getBlockById(evt.blockId);
-      let name = block.getField("funcName").getValue();
+      let name = block.getField("scriptName").getValue();
       if (workspace.getTopBlocks()
           .some(b => b != block && b.type == block.type &&
-                    b.getField("funcName").getValue() == name)) {
+                    b.getField("scriptName").getValue() == name)) {
         let finalName = name;
         let i = 1;
         let names = getCurrentScriptNames();
@@ -2529,7 +2529,7 @@ let UziBlock = (function () {
           finalName = name + i;
           i++;
         }
-        block.getField("funcName").setValue(finalName);
+        block.getField("scriptName").setValue(finalName);
       }
     }
 
@@ -2540,7 +2540,7 @@ let UziBlock = (function () {
     */
     if (evt.type == Blockly.Events.CHANGE
        && evt.element == "field"
-       && evt.name == "funcName") {
+       && evt.name == "scriptName") {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
         // A definition block has changed, we need to update calling blocks
@@ -2548,14 +2548,14 @@ let UziBlock = (function () {
         let twinBlocks = workspace.getTopBlocks()
           .filter(b => b.type == block.type)
           .filter(b => {
-            let field = b.getField("funcName");
+            let field = b.getField("scriptName");
             return field && field.getValue() == evt.oldValue;
           });
         let time = timestamps.get(block.id);
         if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
           workspace.getAllBlocks()
             .filter(b => callBlocks.includes(b.type))
-            .map(b => b.getField("funcName"))
+            .map(b => b.getField("scriptName"))
             .filter(f => f != undefined && f.getValue() == evt.oldValue)
             .forEach(f => f.setValue(evt.newValue));
         }
@@ -2573,7 +2573,7 @@ let UziBlock = (function () {
       if (block != undefined && definitionBlocks.includes(block.type)) {
         workspace.getAllBlocks()
           .filter(b => callBlocks.includes(b.type) &&
-                      block.getFieldValue("funcName") == b.getFieldValue("funcName"))
+                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
           .forEach(updateArgumentFields);
       }
     }
@@ -2592,10 +2592,10 @@ let UziBlock = (function () {
     if (userInteraction && evt.type == Blockly.Events.CREATE
         && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
       let block = workspace.getBlockById(evt.blockId);
-      let name = block.getField("taskName").getValue();
+      let name = block.getField("scriptName").getValue();
       if (workspace.getTopBlocks()
           .some(b => b != block && b.type == block.type &&
-                    b.getField("taskName").getValue() == name)) {
+                    b.getField("scriptName").getValue() == name)) {
         let finalName = name;
         let i = 1;
         let names = getCurrentScriptNames();
@@ -2603,7 +2603,7 @@ let UziBlock = (function () {
           finalName = name + i;
           i++;
         }
-        block.getField("taskName").setValue(finalName);
+        block.getField("scriptName").setValue(finalName);
       }
     }
 
@@ -2614,7 +2614,7 @@ let UziBlock = (function () {
     */
     if (evt.type == Blockly.Events.CHANGE
        && evt.element == "field"
-       && evt.name == "taskName") {
+       && evt.name == "scriptName") {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
         // A definition block has changed, we need to update calling blocks
@@ -2622,14 +2622,14 @@ let UziBlock = (function () {
         let twinBlocks = workspace.getTopBlocks()
           .filter(b => b.type == block.type)
           .filter(b => {
-            let field = b.getField("taskName");
+            let field = b.getField("scriptName");
             return field && field.getValue() == evt.oldValue;
           });
         let time = timestamps.get(block.id);
         if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
           workspace.getAllBlocks()
             .filter(b => callBlocks.includes(b.type))
-            .map(b => b.getField("taskName"))
+            .map(b => b.getField("scriptName"))
             .filter(f => f != undefined && f.getValue() == evt.oldValue)
             .forEach(f => f.setValue(evt.newValue));
         }
@@ -2647,7 +2647,7 @@ let UziBlock = (function () {
       if (block != undefined && definitionBlocks.includes(block.type)) {
         workspace.getAllBlocks()
           .filter(b => callBlocks.includes(block.type) &&
-                      block.getFieldValue("taskName") == b.getFieldValue("taskName"))
+                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
           .forEach(updateArgumentFields);
       }
     }
@@ -2808,7 +2808,7 @@ let UziBlock = (function () {
   function updateArgumentFields(callBlock) {
     callBlock.inputList.filter(i => i.name.startsWith("arg"))
       .forEach(i => {
-        let scriptName = callBlock.getFieldValue("procName") || callBlock.getFieldValue("funcName");
+        let scriptName = callBlock.getFieldValue("scriptName") || callBlock.getFieldValue("scriptName");
         let inputName = i.name;
         i.fieldRow
           .filter(f => f.class_ == inputName)
