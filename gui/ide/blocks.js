@@ -1244,7 +1244,7 @@ let UziBlock = (function () {
       postload: (block) => block.setInputsInline(true)
     },
     number_between: {
-      text: "isBetween ( %1 , %2 , %3 )",
+      text: "isBetween ( value: %1 , min: %2 , max: %3 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -2380,7 +2380,7 @@ let UziBlock = (function () {
     let names = getCurrentFunctionNames(nargs);
     return names.length > 0 ? names[names.length - 1] : "default";
   }
-  
+
   function currentTasksForDropdown() {
     let tasks = getCurrentTaskNames();
     if (tasks.length == 0) return [[null, null]];

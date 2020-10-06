@@ -132,7 +132,7 @@ var TRANSLATIONS = [
   /* "number %1" */ ["%number", "%number", "%number", "arv %number", "%number"],
   /* "number cast %1" */ ["number ( %1 )", "number %1", "número %1", "number %1", "number %1"],
   /* "number property %1 value %2 property" */ ["%numProp ( %value )", "%value %numProp", "%value %numProp", "%value %numProp", "%value %numProp"],
-  /* "number %1 is divisible by number %2" */ ["isDivisibleBy( %1 , %2 )", "%1 is divisible by %2 \n", "%1 es divisible por %2 \n", "%1 jaguneb arvuga %2 \n", "%1 är delbart med %2 \n"],
+  /* "number %1 is divisible by number %2" */ ["isDivisibleBy( %1 , %2 )", "%1 is divisible by %2 \n", "%1 es divisible por %2 \n", "kas %1 jaguneb arvuga %2 \n", "är %1 delbart med %2 \n"],
   /* "perform %operation on %number" */ ["%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n", "%operation %number \n"],
   /* "perform trigonometric %operation on %number" */ ["%trigOperation %number \n", "%trigOperation %number \n", "%trigOperation %number \n", "%trigOperation %number \n", "%trigOperation %number \n"],
   /* "math %constant" */ ["%constant", "%constant", "%constant", "%constant", "%constant"],
@@ -140,8 +140,9 @@ var TRANSLATIONS = [
   /* "perform rounding %operation on %number" */ ["%roundingOperation %number \n", "%roundingOperation %number \n", "%roundingOperation %number \n", "%roundingOperation %number \n", "%roundingOperation %number \n"],
   /* "remainder of %1 ÷ %2" */ ["%1 % %2 \n", "remainder of %1 ÷ %2 \n", "resto de %1 ÷ %2 \n", "%1 ÷ %2 jääk", "resten av %1 ÷ %2 \n"],
   /* "constrain %1 low %2 high %3" */ ["constrain ( %1 , %2 , %3 )", "constrain %1 low %2 high %3", "mantener %1 entre %2 y %3", "piira %1 olema %2 ja %3 vahel", "begränsa %1 att vara mellan %2 och %3"],
-  /* "is %1 between %2 and %3" */ ["isBetween ( %1 , %2 , %3 )", "is %1 between %2 and %3", "está %1 entre %2 y %3", "is %1 between %2 and %3", "is %1 between %2 and %3"],
-  /* "random integer from %1 to %2" */ ["randomInt( %1, %2 )", "random integer from %1 to %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
+  /* "is %1 between %2 and %3" */ ["isBetween ( value: %1 , min: %2 , max: %3 )", "is %1 between %2 and %3", "está %1 entre %2 y %3", "kas %1 on %2 ja %3 vahel", "är värdet %1 mellan %2 och %3"],
+
+  /* "random integer from %1 to %2" */ ["randomInt( %1, %2 )", "random integer between %1 and %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
   /* "random fraction" */ ["random()", "random fraction", "fracción al azar", "suvaline murdarv 0.0 ja 1.0 vahel", "slumpmässig bråkdel mellan 0.0 och 1.0"],
 
   /* "variable %name" */ ["%name", "%name", "%name", "muutuja %name", "%name"],
