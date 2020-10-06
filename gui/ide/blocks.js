@@ -2380,18 +2380,7 @@ let UziBlock = (function () {
     let names = getCurrentFunctionNames(nargs);
     return names.length > 0 ? names[names.length - 1] : "default";
   }
-
-  function getDefaultTaskName() {
-    let names = getCurrentTaskNames();
-    let def = "default";
-    let i = 1;
-    while (names.includes(def)) {
-      def = "default" + i;
-      i++;
-    }
-    return def;
-  }
-
+  
   function currentTasksForDropdown() {
     let tasks = getCurrentTaskNames();
     if (tasks.length == 0) return [[null, null]];
