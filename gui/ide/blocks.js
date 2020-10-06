@@ -1931,9 +1931,11 @@ let UziBlock = (function () {
           evt.ids.forEach(id => timestamps.delete(id));
         }
 
+
         handleTaskBlocksEvents(evt);
         handleProcedureBlocksEvents(evt);
         handleFunctionBlocksEvents(evt);
+
         handleVariableDeclarationBlocksEvents(evt);
 
         trigger("change");
@@ -2419,14 +2421,9 @@ let UziBlock = (function () {
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
-  function handleProcedureBlocksEvents(evt) {
-    let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
-                            "proc_definition_2args", "proc_definition_3args"];
-    let callBlocks = ["proc_call_0args", "proc_call_1args",
-                      "proc_call_2args", "proc_call_3args"];
-
+  function handleScriptBlocksEvents(evt, definitionBlocks, callBlocks) {
     /*
-    NOTE(Richo): I a procedure is being created by user action make sure to assign
+    NOTE(Richo): I a script is being created by user action make sure to assign
     a unique name to avoid collisions as much as possible.
     */
     if (userInteraction && evt.type == Blockly.Events.CREATE
@@ -2448,82 +2445,8 @@ let UziBlock = (function () {
     }
 
     /*
-    NOTE(Richo): If a procedure is renamed we want to update all calling blocks.
-    And if a calling block is changed to refer to another procedure we need to update
-    its argument names.
-    */
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name == "scriptName") {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        // A definition block has changed, we need to update calling blocks
-        // But only if the block is the oldest of its twins!
-        let twinBlocks = workspace.getTopBlocks()
-          .filter(b => b.type == block.type)
-          .filter(b => {
-            let field = b.getField("scriptName");
-            return field && field.getValue() == evt.oldValue;
-          });
-        let time = timestamps.get(block.id);
-        if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
-          workspace.getAllBlocks()
-            .filter(b => callBlocks.includes(b.type))
-            .map(b => b.getField("scriptName"))
-            .filter(f => f != undefined && f.getValue() == evt.oldValue)
-            .forEach(f => f.setValue(evt.newValue));
-        }
-      } else if (block != undefined && callBlocks.includes(block.type)) {
-        // A calling block has changed, we need to update its argument names
-        updateArgumentFields(block);
-      }
-    }
-
-    // NOTE(Richo): If an argument is renamed we want to update all the calling blocks.
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name && evt.name.startsWith("arg")) {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        workspace.getAllBlocks()
-          .filter(b => callBlocks.includes(b.type) &&
-                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
-          .forEach(updateArgumentFields);
-      }
-    }
-  }
-
-  function handleFunctionBlocksEvents(evt) {
-    let definitionBlocks = ["func_definition_0args", "func_definition_1args",
-                            "func_definition_2args", "func_definition_3args"];
-    let callBlocks = ["func_call_0args", "func_call_1args",
-                      "func_call_2args", "func_call_3args"];
-
-    /*
-    NOTE(Richo): I a function is being created by user action make sure to assign
-    a unique name to avoid collisions as much as possible.
-    */
-    if (userInteraction && evt.type == Blockly.Events.CREATE
-        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
-      let block = workspace.getBlockById(evt.blockId);
-      let name = block.getField("scriptName").getValue();
-      if (workspace.getTopBlocks()
-          .some(b => b != block && b.type == block.type &&
-                    b.getField("scriptName").getValue() == name)) {
-        let finalName = name;
-        let i = 1;
-        let names = getCurrentScriptNames();
-        while (names.includes(finalName)) {
-          finalName = name + i;
-          i++;
-        }
-        block.getField("scriptName").setValue(finalName);
-      }
-    }
-
-    /*
-    NOTE(Richo): If a function is renamed we want to update all calling blocks.
-    And if a calling block is changed to refer to another function we need to update
+    NOTE(Richo): If a script is renamed we want to update all calling blocks.
+    And if a calling block is changed to refer to another task we need to update
     its argument names.
     */
     if (evt.type == Blockly.Events.CHANGE
@@ -2572,73 +2495,23 @@ let UziBlock = (function () {
     let callBlocks = ["start_task", "stop_task",
                       "resume_task", "pause_task",
                       "run_task"];
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
+  }
 
-    /*
-    NOTE(Richo): I a task is being created by user action make sure to assign
-    a unique name to avoid collisions as much as possible.
-    */
-    if (userInteraction && evt.type == Blockly.Events.CREATE
-        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
-      let block = workspace.getBlockById(evt.blockId);
-      let name = block.getField("scriptName").getValue();
-      if (workspace.getTopBlocks()
-          .some(b => b != block && b.type == block.type &&
-                    b.getField("scriptName").getValue() == name)) {
-        let finalName = name;
-        let i = 1;
-        let names = getCurrentScriptNames();
-        while (names.includes(finalName)) {
-          finalName = name + i;
-          i++;
-        }
-        block.getField("scriptName").setValue(finalName);
-      }
-    }
+  function handleProcedureBlocksEvents(evt) {
+    let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
+                            "proc_definition_2args", "proc_definition_3args"];
+    let callBlocks = ["proc_call_0args", "proc_call_1args",
+                      "proc_call_2args", "proc_call_3args"];
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
+  }
 
-    /*
-    NOTE(Richo): If a task is renamed we want to update all calling blocks.
-    And if a calling block is changed to refer to another task we need to update
-    its argument names.
-    */
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name == "scriptName") {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        // A definition block has changed, we need to update calling blocks
-        // But only if the block is the oldest of its twins!
-        let twinBlocks = workspace.getTopBlocks()
-          .filter(b => b.type == block.type)
-          .filter(b => {
-            let field = b.getField("scriptName");
-            return field && field.getValue() == evt.oldValue;
-          });
-        let time = timestamps.get(block.id);
-        if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
-          workspace.getAllBlocks()
-            .filter(b => callBlocks.includes(b.type))
-            .map(b => b.getField("scriptName"))
-            .filter(f => f != undefined && f.getValue() == evt.oldValue)
-            .forEach(f => f.setValue(evt.newValue));
-        }
-      } else if (block != undefined && callBlocks.includes(block.type)) {
-        // A calling block has changed, we need to update its argument names
-        updateArgumentFields(block);
-      }
-    }
-
-    // NOTE(Richo): If an argument is renamed we want to update all the calling blocks.
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name && evt.name.startsWith("arg")) {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        workspace.getAllBlocks()
-          .filter(b => callBlocks.includes(block.type) &&
-                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
-          .forEach(updateArgumentFields);
-      }
-    }
+  function handleFunctionBlocksEvents(evt) {
+    let definitionBlocks = ["func_definition_0args", "func_definition_1args",
+                            "func_definition_2args", "func_definition_3args"];
+    let callBlocks = ["func_call_0args", "func_call_1args",
+                      "func_call_2args", "func_call_3args"];
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
   function handleVariableDeclarationBlocksEvents(evt) {
