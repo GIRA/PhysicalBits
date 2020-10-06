@@ -3,6 +3,7 @@ let UziBlock = (function () {
   let version = 2;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
+  let userInteraction = false;
   let motors = [];
   let sonars = [];
   let joysticks = [];
@@ -1906,7 +1907,10 @@ let UziBlock = (function () {
       });
 
       workspace.addChangeListener(function (evt) {
-        if (evt.type == Blockly.Events.UI) return; // Ignore these events
+        if (evt.type == Blockly.Events.UI) {
+          userInteraction = true;
+          return; // Ignore these events
+        }
 
         /*
         NOTE(Richo): Whenever a block is created or deleted we update the timestamps map.
@@ -2434,6 +2438,28 @@ let UziBlock = (function () {
                       "proc_call_2args", "proc_call_3args"];
 
     /*
+    NOTE(Richo): I a procedure is being created by user action make sure to assign
+    a unique name to avoid collisions as much as possible.
+    */
+    if (userInteraction && evt.type == Blockly.Events.CREATE
+        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
+      let block = workspace.getBlockById(evt.blockId);
+      let name = block.getField("procName").getValue();
+      if (workspace.getTopBlocks()
+          .some(b => b != block && b.type == block.type &&
+                    b.getField("procName").getValue() == name)) {
+        let finalName = name;
+        let i = 1;
+        let names = getCurrentScriptNames();
+        while (names.includes(finalName)) {
+          finalName = name + i;
+          i++;
+        }
+        block.getField("procName").setValue(finalName);
+      }
+    }
+
+    /*
     NOTE(Richo): If a procedure is renamed we want to update all calling blocks.
     And if a calling block is changed to refer to another procedure we need to update
     its argument names.
@@ -2486,6 +2512,28 @@ let UziBlock = (function () {
                             "func_definition_2args", "func_definition_3args"];
     let callBlocks = ["func_call_0args", "func_call_1args",
                       "func_call_2args", "func_call_3args"];
+
+    /*
+    NOTE(Richo): I a function is being created by user action make sure to assign
+    a unique name to avoid collisions as much as possible.
+    */
+    if (userInteraction && evt.type == Blockly.Events.CREATE
+        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
+      let block = workspace.getBlockById(evt.blockId);
+      let name = block.getField("funcName").getValue();
+      if (workspace.getTopBlocks()
+          .some(b => b != block && b.type == block.type &&
+                    b.getField("funcName").getValue() == name)) {
+        let finalName = name;
+        let i = 1;
+        let names = getCurrentScriptNames();
+        while (names.includes(finalName)) {
+          finalName = name + i;
+          i++;
+        }
+        block.getField("funcName").setValue(finalName);
+      }
+    }
 
     /*
     NOTE(Richo): If a function is renamed we want to update all calling blocks.
@@ -2742,6 +2790,7 @@ let UziBlock = (function () {
   }
 
   function fromXML(xml, cleanUp) {
+    userInteraction = false;
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
 
