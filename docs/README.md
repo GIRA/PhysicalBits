@@ -8,20 +8,55 @@ We also plan to support other platforms such as [ESP8266](https://en.wikipedia.o
 
 ## Table of contents
 
+* [Download](#download)
+* [Key Features](#key-features)
 * [Motivation](#motivation)
-* [Proposed Solution](#proposed-solution)
-  * [Key Features](#key-features)
-* [Download and Installation](#download-and-installation)
 * [Usage](#usage)
   * [Text editor](#text-editor)
   * [Visual editor](#visual-editor)
   * [Monitor](#monitor)
-* [Contributing](#contributing)
 * [Description of the language](#description-of-the-language)
 * [Implementation](#implementation)
   * [Firmware](#firmware)
   * [Task scheduler](#task-scheduler)
   * [Compiler](#compiler)
+  
+  
+## Download
+
+You can find the latest release [here](https://github.com/GIRA/PhysicalBits/releases).
+
+## Key Features
+
+Physical Bits is not a programming environment as any other you may know. It was designed with a set of features in mind that set it apart from other similar tools.
+
+### Block-based and text-based programming
+
+Physical Bits includes a block-based programming language suitable for beginners but it also supports text-based programming for more advanced users. To ease the transition the environment automatically generates the textual code from the blocks (and viceversa).
+
+### Liveness
+
+While the board is connected to the computer Physical Bits allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the robot, which allows to see the effects of the change almost immediately.
+
+### Autonomy
+
+Physical Bits programs are stored and executed autonomously in the robot without requiring a connection to the computer.
+
+### Concurrency
+
+Most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. Physical Bits allows the definition of concurrent tasks that will be executed independently from each other.
+
+### Debugging
+
+Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. UziScript's debugger provides mechanisms for error handling and step-by-step code execution.
+
+### Portability
+
+Although we currently only support Arduino, we plan to port the VM to other hardware platforms.
+
+### Open source
+
+All the code in this project is open source (see [LICENSE](/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
 
 ## Motivation
 
@@ -36,24 +71,6 @@ Additionally, some studies reveal that learning the syntax is not even the main 
 In order to solve this problem, some studies propose to design educational programming environments in a way that makes the relationship between the source code and its effects more explicit. In this regard, most virtual introductory programming environments provide a feature often described as liveness: allowing to change a program while it is running. In a live programming environment, the users change the program and receive immediate feedback on the effect of the change, without requiring any manual compilation steps and minimizing the time wasted waiting for the code to begin executing. Live programming shortens the feedback loop and encourages experimentation and programming by "Trial & error". Some environments also support monitoring the internal state of the program by showing the value of the variables as well as highlighting the currently executing blocks. Although these features are present in most virtual introductory programming environments, they are rarely seen in environments designed to program physical devices such as robots. And the environments that support live programming usually do so in detriment of the autonomy of the robot, requiring a computer connected at all times in order to run the programs and send the commands to the robot as they are executed. Due to the latency of the communication, these environments are limited to projects that do not require precise timing and cannot be used in many robotics competitions.
 
 This project is our attempt to solve this problems and provide a better programming experience for educational robotics.
-
-## Proposed Solution
-
-We propose the implementation of a concurrent programming language supported by a virtual machine running on the Arduino. We call this language UziScript and we expect it to become a suitable compilation target for visual programming environments such as [Physical Etoys](http://tecnodacta.com.ar/gira/projects/physical-etoys), [Scratch for Arduino](http://s4a.cat), and [Ardublock](http://blog.ardublock.com/), among others.
-
-### Key Features
-
-* __Block-based and text-based programming__: UziScript includes a block-based programming language suitable for beginners but it also supports text-based programming for more advanced users. To ease the transition UziScript automatically generates the textual code from the blocks (and viceversa).
-* __Concurrency__: Most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. UziScript allows the definition of concurrent tasks that will be executed independently from each other.
-* __Autonomy__: UziScript programs are stored and executed autonomously in the Arduino without requiring a connection to the computer.
-* __Interactive programming__: If the board is connected to the computer UziScript allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the Arduino, which allows to see the effects of the change almost immediately.
-* __Debugging__: Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. UziScript's debugger provides mechanisms for error handling and step-by-step code execution.
-* __Portability__: Although we currently only support Arduino, we plan to port the VM to other hardware platforms.
-* __Open source__: All the code in this project is open source (see [LICENSE](/LICENSE)).
-
-## Download and Installation
-
-You can find the latest release [here](https://github.com/GIRA/UziScript/releases).
 
 ## Usage
 
@@ -98,10 +115,6 @@ This tool allows you to monitor the value over time of any pin on your board or 
 <p align="center">
   <img width="100%" src="./img/uzi_monitor.png?raw=true">
 </p>
-
-## Contributing
-
-If you're interested in contributing to this project see [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
 
 ## Description of the language
 
