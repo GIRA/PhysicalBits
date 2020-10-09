@@ -1,7 +1,11 @@
-UziScript
+Physical Bits
 =========
 
-UziScript is a concurrent programming language and virtual machine for educational robotics. The current implementation only supports Arduino as hardware platform but we plan to support other boards in the future.
+Physical Bits (formerly known as UziScript) is a programming environment for educational robotics that supports live and autonomous programming using both a blocks-based and text-based programming language.
+
+The current implementation supports Arduino as hardware platform. We have tested the firmware using several different boards, including: Arduino UNO, Micro, Nano, MEGA 2560, and Yun. We have also received reports of it working successfully on other compatible boards such as DuinoBot, Educabot, and TotemDUINO.
+
+We plan to support other platforms such as ESP8266 and ESP32 in the future.
 
 ## Documentation
 
