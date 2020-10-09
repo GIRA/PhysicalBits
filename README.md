@@ -1,11 +1,10 @@
-Physical Bits
-=========
+# Physical Bits
 
-Physical Bits (formerly known as UziScript) is a programming environment for educational robotics that supports live and autonomous programming using both a blocks-based and text-based programming language.
+[Physical Bits](https://gira.github.io/PhysicalBits/) (formerly known as UziScript) is a web-based programming environment for educational robotics that supports live coding and autonomy using a hybrid blocks/text programming language.
 
-The current implementation supports Arduino as hardware platform. We have tested the firmware using several different boards, including: Arduino UNO, Micro, Nano, MEGA 2560, and Yun. We have also received reports of it working successfully on other compatible boards such as DuinoBot, Educabot, and TotemDUINO.
+The current implementation supports Arduino as hardware platform. We have tested the firmware using several different boards, including: [Arduino UNO](https://store.arduino.cc/usa/arduino-uno-rev3), [Micro](https://store.arduino.cc/usa/arduino-micro), [Nano](https://store.arduino.cc/usa/arduino-nano), [MEGA 2560](https://store.arduino.cc/usa/mega-2560-r3), and [Yun](https://store.arduino.cc/usa/arduino-yun-rev-2). We have also received reports of it working successfully on other compatible boards such as [DuinoBot](https://www.robotgroup.com.ar/), [Educabot](https://educabot.com/), and [TotemDUINO](https://totemmaker.net/product/totemduino-arduino/).
 
-We plan to support other platforms such as ESP8266 and ESP32 in the future.
+We also plan to support other platforms such as [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and [ESP32](https://en.wikipedia.org/wiki/ESP32) in the future.
 
 ## Documentation
 
