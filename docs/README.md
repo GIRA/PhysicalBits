@@ -10,6 +10,13 @@ We also plan to support other platforms such as [ESP8266](https://en.wikipedia.o
 
 * [Download](#download)
 * [Key Features](#key-features)
+  * [Block-based and text-based programming](#block-based-and-text-based-programming)
+  * [Liveness](#liveness)
+  * [Autonomy](#autonomy)
+  * [Concurrency](#concurrency)
+  * [Debugging](#debugging)
+  * [Portability](#portability)
+  * [Open source](#open-source)
 * [Motivation](#motivation)
 * [Implementation](#implementation)
   * [Architecture](#architecture)
@@ -47,6 +54,7 @@ Most educational robotics projects require the implementation of a device that p
 
 ### Debugging
 
+*COMING SOON*
 Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. UziScript's debugger provides mechanisms for error handling and step-by-step code execution.
 
 ### Portability
