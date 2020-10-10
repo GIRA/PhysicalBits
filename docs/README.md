@@ -8,7 +8,7 @@ We also plan to support other platforms such as [ESP8266](https://en.wikipedia.o
 
 ## Download
 
-You can find the latest release [here](https://github.com/GIRA/PhysicalBits/releases).
+You can find the latest release [here](./DOWNLOAD.md).
 
 ## Videos
 
