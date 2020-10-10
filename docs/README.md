@@ -118,22 +118,9 @@ Apart from allowing the student to work on his programs using either the blocks 
 
 The text-based programming language (we call it UziScript) was designed to look syntactically like C, which is familiar to most programmers. We added a few special keywords, though.
 
-The `task` keyword has been added to represent behavior that can be executed periodically at a configurable rate. For example, the following code will declare a task that will toggle the LED on pin 13 every second.
+The `task` keyword has been added to represent behavior that can be executed periodically at a configurable rate. For example, the following code will declare a task that will toggle the LED on pin 13 every second. UziScript does not require any type declarations, so to distinguish a function from a procedure two new keywords are introduced: `func` and `proc`.
 
-```qml
-task blink() running 1/s { toggle(D13); }
-```
-
-UziScript does not require any type declarations, so to distinguish a function from a procedure two new keywords are introduced: `func` and `proc`.
-
-```qml
-func isOn(pin) { return read(pin) > 0.5; }
-
-proc toggle(pin) {
-  if isOn(pin) { turnOff(pin); }
-  else { turnOn(pin); }
-}
-```
+![code](./img/code.png)
 
 A program can have any number of tasks, and each task can be defined with a different interval as well as a different starting state, which can be either `running` or `stopped`. If no starting state is specified the task will run just once and then it will stop. This is especially useful to initialize variables and can be used as a substitute to the Arduino `setup()` function.
 
