@@ -1,10 +1,10 @@
-## Contributing
+# Contributing
 
 IMPORTANT: This whole document is outdated since v0.3.
 
 First of all, thank you for your interest in the project. Depending on what you're trying to do you'll need some basic knowledge of C/C++, Smalltalk, and HTML/Javascript. Below you'll find instructions on how to get started.
 
-### Folder structure
+## Folder structure
 
 Just to give you a general idea of how the code is organized.
 
@@ -17,16 +17,16 @@ Just to give you a general idea of how the code is organized.
     ├── uzi/
     │   ├── libraries/           # UziScript libraries
     │   ├── tests/               # Tests files
-    │   └── uzi.xml              # Notepad++ syntax highlighter 
+    │   └── uzi.xml              # Notepad++ syntax highlighter
     ├── web/                     # Web tools
     ├── LICENSE
     └── README.md
 
-### Getting started
+## Getting started
 
 The first step is to clone this repository and make sure you also recursively clone the submodules (this is *very* important).
 
-#### Firmware
+### Firmware
 
 For the firmware, since it is a simple Arduino sketch, you only need the Arduino IDE. However, to make development easier we also use Visual Studio 2017 with a very simple Arduino simulator we developed for this project. The simulator is extremely limited so it's not exactly the same as compiling for the Arduino but it makes things a lot easier especially when it comes to debugging and unit testing.
 The source code for the UziScript firmware can be found here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino).
@@ -36,12 +36,12 @@ If you also want to use the Visual Studio IDE you can find the solution here: [/
   <img width="100%" src="./img/uzi_simulator.png?raw=true">
 </p>
 
-#### Compilation tools
+### Compilation tools
 
 All the compilation tools are written in [Squeak Smalltalk](http://squeak.org/). To load them into your image, open up a Workspace and evaluate the following script. Make sure you have [filetree](https://github.com/dalehenrich/filetree) installed, otherwise the script will fail. It will ask you the path to the root of the current repository and it will then load all the necessary packages.
 ```smalltalk
-git := FileDirectory on: (UIManager default 
-	request: 'Path to git repository?' 
+git := FileDirectory on: (UIManager default
+	request: 'Path to git repository?'
 	initialAnswer: (gitPath ifNil: [FileDirectory default pathName])).
 uzi := MCFileTreeRepository directory: git / 'st'.
 rest := MCFileTreeRepository directory: git / 'st' / 'REST' / 'st'.
@@ -50,7 +50,7 @@ MCRepositoryGroup default addRepository: rest.
 load := [:ass || repo pckgName versionName version |
 	repo := ass key.
 	pckgName := ass value.
-	versionName := repo allVersionNames 
+	versionName := repo allVersionNames
 		detect: [:name | name beginsWith: pckgName].
 	version := repo versionNamed: versionName.
 	version load].
@@ -70,13 +70,13 @@ Once the script has finished installing everything, you can open the control pan
 UziControlPanelMorph new openInHand.
 ```
 
-#### Web tools
+### Web tools
 
 All the web tools are written in plain html and javascript. You'll find the source code in here: [/web](/web).
 
-#### Dependencies
+### Dependencies
 
-UziParser is built using [PetitParser](http://scg.unibe.ch/research/helvetia/petitparser) by Lukas Renggli. 
+UziParser is built using [PetitParser](http://scg.unibe.ch/research/helvetia/petitparser) by Lukas Renggli.
 UziServer uses the [REST package](https://github.com/RichoM/REST), which in turn uses [WebClient](http://www.squeaksource.com/WebClient/) by Andreas Raab. The above script should take care of loading everything but if you find any problem, please let me know.
 
 In the case of the web tools, I decided to locally host all the dependencies (bootstrap, jquery, blockly, etc.). This way the tools can be used without an internet connection.
