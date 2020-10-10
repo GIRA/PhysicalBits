@@ -1,3 +1,5 @@
 remote_theme: rundocs/jekyll-rtd-theme
 readme_index:
   with_frontmatter: true
+exclude:
+  - ISA.md
