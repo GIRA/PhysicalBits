@@ -1,5 +1,5 @@
 ---
-sort: 3
+sort: 4
 ---
 
 # Implementation
@@ -66,7 +66,7 @@ The compilation process transforms the user programs into bytecode suitable for 
 
 ![compiler](./img/compiler.png)
 
-You can find a detailed description of the instruction set [here](./ISA.md).
+You can find a detailed description of the instruction set [here](https://github.com/GIRA/PhysicalBits/blob/master/docs/ISA.md).
 
 ## Firmware
 
