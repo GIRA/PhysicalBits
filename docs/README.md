@@ -55,7 +55,7 @@ Although we currently only support Arduino, we plan to port the VM to other hard
 
 ### Open source
 
-All the code in this project is open source (see [LICENSE](/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING.md](/docs/CONTRIBUTING.md).
+All the code in this project is open source (see [LICENSE](/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING](./docs/CONTRIBUTING).
 
 ## Motivation
 
@@ -148,7 +148,7 @@ The compilation process transforms UziScript programs into bytecode suitable for
 
 ![compiler](./img/compiler.png)
 
-You can find a detailed description of the instruction set [here](/docs/ISA.md).
+You can find a detailed description of the instruction set [here](./ISA.md).
 
 ### Firmware
 
