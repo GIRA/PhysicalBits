@@ -55,7 +55,7 @@ Although we currently only support Arduino, we plan to port the VM to other hard
 
 ### Open source
 
-All the code in this project is open source (see [LICENSE](/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING](./docs/CONTRIBUTING).
+All the code in this project is open source (see [LICENSE](https://github.com/GIRA/PhysicalBits/blob/master/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING](./CONTRIBUTING.md).
 
 ## Motivation
 
