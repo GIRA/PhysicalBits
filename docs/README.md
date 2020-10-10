@@ -16,7 +16,7 @@ If you want to see Physical Bits in action you can watch this [demo](https://you
 
 <p align="center">  
   <a href="https://youtu.be/VMX5ltAYxYY">
-    <img width="50%" src="http://img.youtube.com/vi/VMX5ltAYxYY/0.jpg">  
+    <img width="75%" src="http://img.youtube.com/vi/VMX5ltAYxYY/0.jpg">  
   </a>
 </p>
 
@@ -24,10 +24,12 @@ You can also watch some old videos in the following [playlist](https://www.youtu
 
 <p align="center">  
   <a href="https://www.youtube.com/playlist?list=PL1aXD47455XPWv4rTXQBuHvamCoNUGeke">
-    <img width="50%" src="http://img.youtube.com/vi/2gO58-qDmf8/0.jpg">  
+    <img width="75%" src="http://img.youtube.com/vi/2gO58-qDmf8/0.jpg">  
   </a>
 </p>
 
 ## Contributing
 
-If you want to contribute to the project please visit the [CONTRIBUTING page](./CONTRIBUTING.md). We are very happy to accept pull requests. Also, if you find a bug or have a suggestion please file an [issue](https://github.com/GIRA/PhysicalBits/issues).
+If you want to contribute to the project please visit the [CONTRIBUTING page](./CONTRIBUTING.md). We are very happy to accept pull requests.
+
+Also, if you find a bug or have a suggestion please file an [issue](https://github.com/GIRA/PhysicalBits/issues).

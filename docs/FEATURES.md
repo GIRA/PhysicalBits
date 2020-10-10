@@ -1,3 +1,7 @@
+---
+sort: 1
+---
+
 # Key Features
 
 Physical Bits is not a programming environment as any other you may know. It was designed with a set of features in mind that set it apart from other similar tools.
@@ -30,4 +34,4 @@ Although we currently only support Arduino, we plan to port the VM to other hard
 
 ## Open source
 
-All the code in this project is open source (see [LICENSE](https://github.com/GIRA/PhysicalBits/blob/master/LICENSE)). If you're interested in contributing to this project see [CONTRIBUTING](./CONTRIBUTING.md).
+All the code in this project is open source (see [LICENSE](https://github.com/GIRA/PhysicalBits/blob/master/LICENSE)).

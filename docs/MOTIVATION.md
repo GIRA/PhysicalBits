@@ -1,3 +1,7 @@
+---
+sort: 2
+---
+
 # Motivation
 
 Most educational programming environments share the same blocks-based programming style. This is not surprising, studies show that visual programming environments help to learn programming by removing the possibility of syntax errors and simplifying the programming language, which allows students to focus on understanding the underlying concepts. However, a common problem we found when teaching using visual programming environments is the eventual transition to text-based languages. Most block-based programming environments don't aid the learner in this transition, instead they are more concerned with hiding the complicated syntax rules.
