@@ -16,7 +16,7 @@ If you want to see Physical Bits in action you can watch this [demo](https://you
 
 <p align="center">  
   <a href="https://youtu.be/VMX5ltAYxYY">
-    <img width="50%" src="http://img.youtube.com/vi/VMX5ltAYxYY/0.jpg">  
+    <img src="http://img.youtube.com/vi/VMX5ltAYxYY/0.jpg">  
   </a>
 </p>
 
