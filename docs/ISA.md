@@ -1,3 +1,6 @@
+---
+sort: 4
+---
 # Instruction Set
 *Disclaimer: This is a work in progress. The content of this page could change at any moment and may not reflect the actual implementation.*
 
