@@ -119,13 +119,13 @@ The text-based programming language (we call it UziScript) was designed to look 
 
 The `task` keyword has been added to represent behavior that can be executed periodically at a configurable rate. For example, the following code will declare a task that will toggle the LED on pin 13 every second.
 
-```
+```qml
 task blink() running 1/s { toggle(D13); }
 ```
 
 UziScript does not require any type declarations, so to distinguish a function from a procedure two new keywords are introduced: `func` and `proc`.
 
-```
+```qml
 func isOn(pin) { return read(pin) > 0.5; }
 
 proc toggle(pin) {
