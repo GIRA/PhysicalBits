@@ -16,6 +16,8 @@ Physical Bits includes a block-based programming language suitable for beginners
 
 While the board is connected to the computer Physical Bits allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the robot, which allows to see the effects of the change almost immediately.
 
+![liveness](./img/liveness.gif)
+
 ## Autonomy
 
 Physical Bits programs are stored and executed autonomously in the robot without requiring a connection to the computer.
