@@ -30,6 +30,8 @@ Once you're happy with your program you can store it permanently and unplug your
 
 Most educational robotics projects require the implementation of a device that performs two or more simultaneous tasks. Physical Bits allows the definition of concurrent tasks that will be executed independently from each other.
 
+![concurrency](./img/concurrency.gif)
+
 ## Debugging
 
 *COMING SOON*
@@ -43,6 +45,8 @@ Although the current implementation only supports Arduino as hardware platform, 
 We have tested the firmware using several different boards, including: [Arduino UNO](https://store.arduino.cc/usa/arduino-uno-rev3), [Micro](https://store.arduino.cc/usa/arduino-micro), [Nano](https://store.arduino.cc/usa/arduino-nano), [MEGA 2560](https://store.arduino.cc/usa/mega-2560-r3), and [Yun](https://store.arduino.cc/usa/arduino-yun-rev-2). We have also received reports of it working successfully on other compatible boards such as [DuinoBot](https://www.robotgroup.com.ar/), [Educabot](https://educabot.com/), and [TotemDUINO](https://totemmaker.net/product/totemduino-arduino/).
 
 We also plan to support other platforms such as [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and [ESP32](https://en.wikipedia.org/wiki/ESP32) in the future.
+
+![arduino](./img/arduino.jpg)
 
 ## Open source
 
