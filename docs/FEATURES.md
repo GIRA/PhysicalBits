@@ -10,6 +10,8 @@ Physical Bits is not a programming environment as any other you may know. It was
 
 Physical Bits includes a block-based programming language suitable for beginners but it also supports text-based programming for more advanced users. To ease the transition the environment automatically generates the textual code from the blocks (and viceversa).
 
+![blocks-code](./img/blocks-code.gif)
+
 ## Liveness
 
 While the board is connected to the computer Physical Bits allows to inspect and monitor the program state while it runs. Furthermore, every change made to the program can be automatically compiled and transmitted to the robot, which allows to see the effects of the change almost immediately.
