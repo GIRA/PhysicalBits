@@ -18,6 +18,8 @@ While the board is connected to the computer Physical Bits allows to inspect and
 
 ![liveness](./img/liveness.gif)
 
+![liveness2](./img/liveness2.gif)
+
 ## Autonomy
 
 Once you're happy with your program you can store it permanently and unplug your board from the computer. The program will now run autonomously, without requiring a connection to the computer.
