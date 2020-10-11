@@ -20,7 +20,9 @@ While the board is connected to the computer Physical Bits allows to inspect and
 
 ## Autonomy
 
-Physical Bits programs are stored and executed autonomously in the robot without requiring a connection to the computer.
+Once you're happy with your program you can store it permanently and unplug your board from the computer. The program will now run autonomously, without requiring a connection to the computer.
+
+![autonomy](./img/autonomy.gif)
 
 ## Concurrency
 
@@ -34,7 +36,11 @@ Without debugging tools the process of fixing programming errors can be frustrat
 
 ## Portability
 
-Although we currently only support Arduino, we plan to port the VM to other hardware platforms.
+Although the current implementation only supports Arduino as hardware platform, the firmware is designed with portability in mind.
+
+We have tested the firmware using several different boards, including: [Arduino UNO](https://store.arduino.cc/usa/arduino-uno-rev3), [Micro](https://store.arduino.cc/usa/arduino-micro), [Nano](https://store.arduino.cc/usa/arduino-nano), [MEGA 2560](https://store.arduino.cc/usa/mega-2560-r3), and [Yun](https://store.arduino.cc/usa/arduino-yun-rev-2). We have also received reports of it working successfully on other compatible boards such as [DuinoBot](https://www.robotgroup.com.ar/), [Educabot](https://educabot.com/), and [TotemDUINO](https://totemmaker.net/product/totemduino-arduino/).
+
+We also plan to support other platforms such as [ESP8266](https://en.wikipedia.org/wiki/ESP8266) and [ESP32](https://en.wikipedia.org/wiki/ESP32) in the future.
 
 ## Open source
 
