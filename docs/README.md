@@ -20,4 +20,4 @@ Happy programming :)
 
 Physical Bits was developed by the [GIRA team](./ABOUT.md).
 
-![uai](./img/uai_2.png)
+![uai](./img/uai.png)
