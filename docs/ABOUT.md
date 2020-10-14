@@ -1,5 +1,5 @@
 ---
-sort: 8
+sort: 3
 ---
 # About us
 

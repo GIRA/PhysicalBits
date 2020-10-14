@@ -1,5 +1,5 @@
 ---
-sort: 3
+sort: 5
 ---
 # Download and Installation
 
