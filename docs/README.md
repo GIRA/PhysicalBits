@@ -1,21 +1,23 @@
-# Physical Bits
+![logo](.img/logo.png)
 
-[Physical Bits](https://gira.github.io/PhysicalBits/) (formerly known as UziScript) is a web-based programming environment for educational robotics that supports live coding and autonomy using a hybrid blocks/text programming language.
+[Physical Bits](https://gira.github.io/PhysicalBits/) (formerly known as UziScript) is the *only* __web-based__ programming environment for __educational robotics__ that supports __live coding__ and __autonomy__ using a __hybrid blocks/text__ programming language.
 
-## Supported boards
+![workshop_1](.img/workshop_1.png)
 
-To find out if Physical Bits works with your board, see [here](./BOARDS.md).
+Want to __learn programming with robots__? You’ve come to the right place! Physical Bits is the *best* tool for that. It is free and open source. Easy to use, simple, and *fun for people of all ages*.
 
-## Download
+![workshop_robots](.img/workshop_robots.png)
 
-You can find the latest release [here](./DOWNLOAD.md).
+Do you want to know what makes Physical Bits special? See our list of [key features](./FEATURES.md) or simply [download it and try it out](./DOWNLOAD.md) for yourself.
 
-## Videos
+You can use Physical Bits to build engaging projects using different types of robots. Want to know if your robot kit works with Physical Bits? See the [supported boards](./BOARDS.md) for more info.
 
-Watch Physical Bits in action [here](./VIDEOS.md).
+Happy programming :)
 
-## Contributing
+![workshop_2](.img/workshop_2.png)
 
-If you want to contribute to the project please visit the [CONTRIBUTING page](./CONTRIBUTING.md). We are very happy to accept pull requests.
+---
 
-Also, if you find a bug or have a suggestion please file an [issue](https://github.com/GIRA/PhysicalBits/issues).
+Physical Bits was developed by the [GIRA team](https://tecnodacta.com.ar/gira).
+
+![uai](.img/uai_2.png)
