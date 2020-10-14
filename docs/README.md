@@ -18,6 +18,6 @@ Happy programming :)
 
 ---
 
-Physical Bits was developed by the [GIRA team](https://tecnodacta.com.ar/gira).
+Physical Bits was developed by the [GIRA team](./ABOUT.md).
 
 ![uai](./img/uai_2.png)
