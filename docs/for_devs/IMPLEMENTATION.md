@@ -13,7 +13,7 @@ Physical Bits is composed of three distinct components:
 2. The middleware: A set of tools that allow to compile programs and communicate with the robot.
 3. The firmware: A program running on the robot responsible for executing the user programs as well as communicating with the middleware.
 
-![architecture](./img/architecture.png)
+![architecture](../img/architecture.png)
 
 This architecture has several benefits. On the one hand it is flexible. The IDE, being a web app, could be used from any device with a web browser, such as a laptop or a mobile phone. It could be installed as a native app or accessed through a web browser. Both the middleware and the firmware are portable: although the only implementation of the latter currently supports Arduino boards, the code could be ported to other types of robots with minimal changes to the middleware and IDE. It is fast: compiling, verifying, and uploading programs using the Physical Bits IDE takes a fraction of the time required to compile an Arduino sketch, mostly because of the small size of the programs. And finally, the communication to the robot can be done wirelessly either using bluetooth or a network socket (although the current implementation has only been tested using a USB cable).
 
@@ -26,7 +26,7 @@ The IDE presents a graphical user interface for the different tools provided by 
 4. An output console that notifies the user of any messages
 5. (COMING SOON) A debugger that helps the user fix programming errors by allowing to pause and execute the program step-by-step.
 
-![ide](./img/physical-bits.png)
+![ide](../img/physical-bits.png)
 
 ### Blocks-based language
 
@@ -34,7 +34,7 @@ For the blocks-based programming language we decided to take advantage of the [B
 The language was designed to provide both a gentle introduction to programming and a smooth transition to text-based languages.
 Apart from allowing the student to work on his programs using either the blocks or the code editor (or both at the same time), we also added an option to display the text of the blocks using code instead of natural language (as suggested [here](https://developers.google.com/blockly/guides/app-integration/best-practices#9_exit_strategy)). When this option is enabled the student is effectively writing code, but the environment allows him to do it by dragging and dropping blocks.
 
-![blocks](./img/blocks.png)
+![blocks](../img/blocks.png)
 
 ### Text-based language
 
@@ -42,7 +42,7 @@ The text-based programming language (we call it UziScript) was designed to look 
 
 The `task` keyword has been added to represent behavior that can be executed periodically at a configurable rate. For example, the following code will declare a task that will toggle the LED on pin 13 every second. UziScript does not require any type declarations, so to distinguish a function from a procedure two new keywords are introduced: `func` and `proc`.
 
-![code](./img/code.png)
+![code](../img/code.png)
 
 A program can have any number of tasks, and each task can be defined with a different interval as well as a different starting state, which can be either `running` or `stopped`. If no starting state is specified the task will run just once and then it will stop. This is especially useful to initialize variables and can be used as a substitute to the Arduino `setup()` function.
 
@@ -50,9 +50,9 @@ The execution of each task at the correct time is performed automatically by the
 
 Primitive instructions like `delay()` are provided to allow the user to block the executing task for a given amount of time without affecting the rest. Arduino related primitives are also included but in some cases their names and behavior were modified to offer a simplified interface with the hardware. For example, the Arduino `digitalRead()` and `analogRead()` functions are merged into a single primitive function called `read()`, which accepts a pin number and returns a floating-point value that is always in the [0,1] range. If the pin is digital the resulting value can either be 0 or 1 but if the pin is analog the function will normalize its value between 0 and 1. An equivalent implementation of the `write()` procedure is also provided. We believe these small design details make the language more accessible to beginners by providing a concise (and consistent) interface to the hardware.
 
-UziScript also supports external libraries that can extend the primitive functionality of the language. You can find examples [here](/uzi/libraries).
+UziScript also supports external libraries that can extend the primitive functionality of the language. You can find examples [here](uzi/libraries).
 
-The UziScript grammar, written as a PEG, can be found [here](/docs/uzi.pegjs). However, this grammar is not guaranteed to be up to date with the actual implementation.
+The UziScript grammar, written as a PEG, can be found [here](https://github.com/GIRA/PhysicalBits/tree/master/docs/uzi.pegjs). However, this grammar is not guaranteed to be up to date with the actual implementation.
 
 ## Middleware
 
@@ -64,7 +64,7 @@ In order for the IDE to interact with these tools the middleware exposes a REST 
 
 The compilation process transforms the user programs into bytecode suitable for the virtual machine to execute. Below is an example of a simple program and its different representations.
 
-![compiler](./img/compiler.png)
+![compiler](../img/compiler.png)
 
 You can find a detailed description of the instruction set [here](https://github.com/GIRA/PhysicalBits/blob/master/docs/ISA.md).
 
@@ -74,7 +74,7 @@ In order to support both live and autonomous programming, Physical Bits relies o
 
 The firmware is just a regular Arduino sketch written in C++ that can be uploaded using the Arduino IDE.
 
-![firmware](./img/firmware.png)
+![firmware](../img/firmware.png)
 
 Internally, the firmware implements a stack-based high-level language virtual machine that uses a decode and dispatch bytecode interpreter to execute user programs. This implementation was chosen mainly because of its simplicity. Since the purpose of this language is educational, performance is not currently considered a high priority.
 
@@ -92,6 +92,6 @@ The scheduling strategy is simple, the virtual machine will cycle through the ta
 
 Below is a simplified example of one of the possible ways the scheduler could interleave the execution of the instructions between two tasks.
 
-![scheduler](./img/scheduler.png)
+![scheduler](../img/scheduler.png)
 
 This strategy has the advantage of being simple (which is important, considering this is an educational project) and it guarantees that all of the tasks will have a chance to run. However, it does not provide any real-time guarantees. In the future, we might improve the implementation by incorporating a real-time scheduler.

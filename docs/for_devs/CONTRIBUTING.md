@@ -35,7 +35,7 @@ For the firmware, since it is a simple Arduino sketch, you only need the Arduino
 The source code for the UziScript firmware can be found here: [/c++/UziFirmware/UziFirmware.ino](/c++/UziFirmware/UziFirmware.ino).
 If you also want to use the Visual Studio IDE you can find the solution here: [/c++/Simulator/Simulator.sln](/c++/Simulator/). I've been using Visual Studio 2017 without problems.
 
-![simulator](./img/simulator.png)
+![simulator](../img/simulator.png)
 
 ### Compilation tools
 

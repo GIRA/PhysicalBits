@@ -8,9 +8,9 @@ Want to __learn programming with robots__? You’ve come to the right place! Phy
 
 ![workshop_robots](./img/workshop_robots.png)
 
-Do you want to know what makes Physical Bits special? See our list of [key features](./FEATURES.md) or simply [download it and try it out](./DOWNLOAD.md) for yourself.
+Do you want to know what makes Physical Bits special? See our list of [key features](./getting_started/FEATURES.md) or simply [download it and try it out](./getting_started/DOWNLOAD.md) for yourself.
 
-You can use Physical Bits to build engaging projects using different types of robots. Want to know if your robot kit works with Physical Bits? See the [supported boards](./BOARDS.md) for more info.
+You can use Physical Bits to build engaging projects using different types of robots. Want to know if your robot kit works with Physical Bits? See the [supported boards](./getting_started/BOARDS.md) for more info.
 
 Happy programming :)
 
@@ -18,6 +18,6 @@ Happy programming :)
 
 ---
 
-Physical Bits was developed by the [GIRA team](./ABOUT.md).
+Physical Bits was developed by the [GIRA team](./about/README.md).
 
 ![uai](./img/uai.png)
