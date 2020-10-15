@@ -13,21 +13,23 @@ Do you want to know what makes Physical Bits special? See our list of [key featu
 
 You can use Physical Bits to build engaging projects using different types of robots. Want to know if your robot kit works with Physical Bits? See the [supported boards](./getting_started/BOARDS.md) for more info.
 
-Happy programming :)
-
 ## Examples
 
 Here we have a simple line follower robot that uses just one sensor to detect the black line.
 
 ![line_follower](./img/line_follower.gif)
 
-This robot uses an ultrasonic sensor to try to keep a constant distance from my hand.
+This next robot uses an ultrasonic sensor to try to keep a constant distance from my hand.
 
 ![keep_distance](./img/keep_distance.gif)
 
-And this robot will wander around the room trying to avoid the obstacles it finds on its way.
+And this robot will wander around the room trying to avoid any obstacle it finds on its way.
 
 ![avoid_obstacles](./img/avoid_obstacles.gif)
+
+These are just some of the many projects you can build using Physical Bits.
+
+Happy programming :)
 
 ---
 
