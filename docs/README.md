@@ -2,7 +2,7 @@
 
 [Physical Bits](https://gira.github.io/PhysicalBits/) (formerly known as UziScript) is the *only* __web-based__ programming environment for __educational robotics__ that supports __live coding__ and __autonomy__ using a __hybrid blocks/text__ programming language.
 
-![line_follower](./img/line_follower.png)
+![line_follower](./img/line_follower.gif)
 
 Want to __learn programming with robots__? You’ve come to the right place! Physical Bits is the *best* tool for that. It is free and open source. Easy to use, simple, and *fun for people of all ages*.
 
