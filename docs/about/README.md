@@ -3,4 +3,4 @@ sort: 3
 ---
 # About us
 
-ACAACA
+ACAACA descripción del equipo, fotito, y medio de contacto
