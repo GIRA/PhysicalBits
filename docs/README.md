@@ -15,8 +15,18 @@ You can use Physical Bits to build engaging projects using different types of ro
 
 Happy programming :)
 
+## Examples
+
+Here we have a simple line follower robot that uses just one sensor to detect the black line.
+
 ![line_follower](./img/line_follower.gif)
+
+This robot uses an ultrasonic sensor to try to keep a constant distance from my hand.
+
 ![keep_distance](./img/keep_distance.gif)
+
+And this robot will wander around the room trying to avoid the obstacles it finds on its way.
+
 ![avoid_obstacles](./img/avoid_obstacles.gif)
 
 ---
