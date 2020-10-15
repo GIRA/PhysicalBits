@@ -16,6 +16,7 @@ You can use Physical Bits to build engaging projects using different types of ro
 Happy programming :)
 
 ![line_follower](./img/line_follower.gif)
+![keep_distance](./img/keep_distance.gif)
 ![avoid_obstacles](./img/avoid_obstacles.gif)
 
 ---
