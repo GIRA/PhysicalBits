@@ -32,9 +32,7 @@ We have tested the firmware using the following boards.
 
 ![arduino-yun](../img/arduino-yun.jpg)
 
-## Other compatible boards
-
-We have also received reports of the firmware working successfully on the following boards.
+## Other compatible kits
 
 ### [DuinoBot](https://www.robotgroup.com.ar/)
 
@@ -47,3 +45,7 @@ We have also received reports of the firmware working successfully on the follow
 ### [TotemDUINO](https://totemmaker.net/product/totemduino-arduino/)
 
 ![totemduino](../img/totemduino.jpg)
+
+### [ELEGOO Smart Robot Car Kit](https://www.amazon.com/stores/page/4C6FA58A-7EC1-4279-8518-30AD21BD19B3)
+
+![elegoo_car](../img/elegoo_car.png)
