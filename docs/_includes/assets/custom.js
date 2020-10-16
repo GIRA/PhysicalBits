@@ -14,8 +14,8 @@ var btn = $("<div>")
 		.append($("<span>")
 			.addClass("text-uppercase")
 			.text("Download")));
-
+      
 var ul = $(".toctree :first-child").first();
-if (ul.get(0).className.search("current") == -1) {
+if (ul.find(".current").get(0) == undefined) {
 	ul.replaceWith(btn);
 }
