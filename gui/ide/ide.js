@@ -3,7 +3,7 @@
   let layout, defaultLayoutConfig;
   let codeEditor;
   let selectedPort = "automatic";
-  let autorunInterval, autorunNextTime;
+  let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
   let lastProgram = { code: "", type: "uzi" };
   let lastFileName;
@@ -94,9 +94,8 @@
 
             dirtyBlocks = true;
             dirtyCode = false;
-            //console.log("BLOCKS CHANGE!");
 
-            scheduleAutorun(false);
+            scheduleAutorun(false, "BLOCKS CHANGE!");
           }
         });
 
@@ -284,7 +283,7 @@
       UziBlock.setMotors(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
-      scheduleAutorun(true);
+      scheduleAutorun(true, "MOTOR UPDATE!");
     });
 
     $("#blockly-motors-modal-container").on("submit", function (e) {
@@ -442,7 +441,7 @@
       UziBlock.setSonars(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
-      scheduleAutorun(true);
+      scheduleAutorun(true, "SONAR UPDATE!");
     });
 
     $("#blockly-sonars-modal-container").on("submit", function (e) {
@@ -599,7 +598,7 @@
       UziBlock.setJoysticks(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
-      scheduleAutorun(true);
+      scheduleAutorun(true, "JOYSTICK UPDATE!");
     });
 
     $("#blockly-joysticks-modal-container").on("submit", function (e) {
@@ -752,7 +751,7 @@
       UziBlock.setVariables(data);
       UziBlock.refreshToolbox();
       saveToLocalStorage();
-      scheduleAutorun(true);
+      scheduleAutorun(true, "VARIABLE UPDATE!");
     });
 
     $("#blockly-variables-modal-container").on("submit", function (e) {
@@ -775,8 +774,8 @@
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
-        //console.log("CODE CHANGE!");
-        scheduleAutorun(false);
+
+        scheduleAutorun(false, "CODE CHANGE!");
       }
     });
 
@@ -808,7 +807,13 @@
   }
 
   function initializeAutorun() {
-    setInterval(autorun, 150);
+    const interval = 10;
+    function loop() {
+      autorun().finally(() => {
+        setTimeout(loop, interval);
+      });
+    }
+    setTimeout(loop, interval);
   }
 
   function hideLoadingScreen() {
@@ -1104,7 +1109,8 @@
   }
 
   function toggleInteractive() {
-    scheduleAutorun($("#interactive-checkbox").get(0).checked);
+    scheduleAutorun($("#interactive-checkbox").get(0).checked,
+                    "TOGGLE INTERACTIVE!");
     saveToLocalStorage();
   }
 
@@ -1148,13 +1154,16 @@
   function updateConnection (newState, previousState) {
     if (previousState == null
         || (!previousState.isConnected && newState.isConnected)) {
-      scheduleAutorun(true);
+      scheduleAutorun(true, "UPDATE CONNECTION!");
     }
   }
 
-	function scheduleAutorun(forced) {
+	function scheduleAutorun(forced, origin) {
+    if (origin) {
+      console.log(origin + " (forced: " + forced + ")");
+    }
 		let currentTime = +new Date();
-		autorunNextTime = currentTime + 150;
+		autorunNextTime = currentTime + 250;
     if (forced) {
       dirtyBlocks = dirtyCode = true;
     }
@@ -1169,14 +1178,14 @@
   }
 
 	function autorun() {
-    if (Uzi.state == undefined) return;
-		if (autorunNextTime === undefined) return;
+    if (Uzi.state == undefined) return Promise.resolve();
+		if (autorunNextTime === undefined) return Promise.resolve();
 
 		let currentTime = +new Date();
-		if (currentTime < autorunNextTime) return;
+		if (currentTime < autorunNextTime) return Promise.resolve();
     autorunNextTime = undefined;
 
-    if (!dirtyBlocks && !dirtyCode) return;
+    if (!dirtyBlocks && !dirtyCode) return Promise.resolve();
 
     let program = null;
     let type = null;
@@ -1192,12 +1201,21 @@
     dirtyBlocks = dirtyCode = false;
     lastProgram = { code: program, type: type };
 
-    let interactiveEnabled = $("#interactive-checkbox").get(0).checked;
-    if (Uzi.state.isConnected && interactiveEnabled) {
-      Uzi.run(program, type, true).then(success).catch(error);
-    } else {
-      Uzi.compile(program, type, true).then(success).catch(error);
-    }
+    let connected = Uzi.state.isConnected;
+    let interactive = $("#interactive-checkbox").get(0).checked;
+    let action = connected && interactive ? Uzi.run : Uzi.compile;
+    let actionName = action.name.toUpperCase();
+
+    let id = autorunCounter++;
+    let beginTime = currentTime;
+    console.log(">>> BEGIN " + actionName + ": " + id);
+    return action(program, type, true)
+      .then(success)
+      .catch(error)
+      .finally(() => {
+        let duration = +new Date() - beginTime;
+        console.log(">>> END " + actionName + ": " + id + " (" + duration + " ms)");
+      });
 	}
 
   function getBlocklyCode() {
