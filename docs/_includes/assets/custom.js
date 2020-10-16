@@ -4,7 +4,7 @@ are probably much better ways of doing this but I didn't want to spend much time
 looking for a proper solution. This decision will probably come back to bite me.
 */
 
-// Display the link to the DOWNLOAD page as a button.
+/* Display the link to the DOWNLOAD page as a button. */
 var btn = $("<div>")
 	.css("margin", "10px 15px")
 	.append($("<a>")
@@ -28,9 +28,9 @@ if (ul.find(".current").get(0) == undefined) {
 	ul.replaceWith(btn);
 }
 
-// Increase the font size of the title
+/* Increase the font size of the title */
 $(".title a").removeClass("h4").addClass("h2");
 $(".title a i").css("font-size", "inherit");
 
-// Hide the search bar
+/* Hide the search bar */
 $(".search").css("display", "none");
