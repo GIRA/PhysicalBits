@@ -1,4 +1,4 @@
-# Download and Installation
+# Download
 
 ## Latest release
 
