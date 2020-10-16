@@ -1,3 +1,8 @@
+/*
+HACK(Richo): I added this custom script to display the link to the DOWNLOAD page as a button.
+There are probably much better ways of doing this but I didn't want to spend much time looking
+for a proper solution. I know this decision will probably come back to bite me.
+*/
 var btn = $("<div>")
 	.css("margin", "10px 15px")
 	.append($("<a>")
@@ -14,7 +19,7 @@ var btn = $("<div>")
 		.append($("<span>")
 			.addClass("text-uppercase")
 			.text("Download")));
-      
+
 var ul = $(".toctree :first-child").first();
 if (ul.find(".current").get(0) == undefined) {
 	ul.replaceWith(btn);
