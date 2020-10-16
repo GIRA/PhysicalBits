@@ -9,6 +9,4 @@ If you want to check if Physical Bits supports your robotics kit, see [Supported
 
 To understand what makes Physical Bits special, see [Key features](./FEATURES.md).
 
-To see Physical Bits in action, watch some of our [Videos](./VIDEOS.md).
-
-And to download the latest version, see [Download and Installation](./DOWNLOAD.md).
+And to see Physical Bits in action, watch some of our [Videos](./VIDEOS.md).
