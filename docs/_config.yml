@@ -3,3 +3,6 @@ readme_index:
   with_frontmatter: true
 exclude:
   - for_devs/ISA.md
+script: |
+  alert("it");
+  alert("works!");
