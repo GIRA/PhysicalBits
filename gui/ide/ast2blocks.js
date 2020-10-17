@@ -35,7 +35,6 @@ let ASTToBlocks = (function () {
 				}
 			}
 			if (json.path == "DCMotor.uzi") {
-				//{index: "2", name: "rightMotor2", enable: "D6", fwd: "D11", bwd: "D9"}
 				let name = json.alias;
 				let enable = getVariableDefaultValue("enablePin");
 				let fwd = getVariableDefaultValue("forwardPin");
@@ -46,7 +45,20 @@ let ASTToBlocks = (function () {
 					fwd: fwd,
 					bwd: bwd
 				});
-				return undefined;
+			} else if (json.path == "Sonar.uzi") {
+				let name = json.alias;
+				let trig = getVariableDefaultValue("trigPin");
+				let echo = getVariableDefaultValue("echoPin");
+				let maxDist = getVariableDefaultValue("maxDistance");
+				ctx.addSonar({
+					name: name,
+					trig: trig,
+					echo: echo,
+					maxDist: maxDist
+				});
+			} else {
+				// TODO(Richo): Create an import block
+				return createHereBeDragonsBlock(json, ctx);
 			}
 		},
 		UziTaskNode: function (json, ctx) {
@@ -336,6 +348,8 @@ let ASTToBlocks = (function () {
 
 		if (ctx.motors.some(m => m.name == alias)) {
 			initMotorCall(node, alias, selector, json, ctx);
+		} else if (ctx.sonars.some(s => s.name == alias)) {
+			initSonarCall(node, alias, selector, json, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -360,6 +374,25 @@ let ASTToBlocks = (function () {
 		} else if (selector == "brake") {
 			node.setAttribute("type", "stop_dcmotor");
 			appendField(node, "motorName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initSonarCall(node, alias, selector, json, ctx) {
+		if (selector == "distance_mm") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "mm");
+		} else if (selector == "distance_cm") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "cm");
+		} else if (selector == "distance_m") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "m");
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -816,10 +849,15 @@ let ASTToBlocks = (function () {
 			let ctx = {
 				path: [],
 				motors: [],
+				sonars: [],
 
 				addMotor: function (motor) {
 					motor.index = ctx.motors.length;
 					ctx.motors.push(motor);
+				},
+				addSonar: function (sonar) {
+					sonar.index = ctx.sonars.length;
+					ctx.sonars.push(sonar);
 				},
 
 				scriptNamed: function (name) {
@@ -853,7 +891,7 @@ let ASTToBlocks = (function () {
         version: UziBlock.version,
         blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
         motors: ctx.motors,
-        sonars: old.sonars,
+        sonars: ctx.sonars,
         joysticks: old.joysticks,
         variables: old.variables,
       };
