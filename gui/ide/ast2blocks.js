@@ -3,10 +3,51 @@ let ASTToBlocks = (function () {
 	let dispatchTable = {
 		UziProgramNode: function (json, ctx) {
 			let node = create("xml");
+			json.imports.forEach(function (imp) {
+				let xmlImport = generateXMLFor(imp, ctx);
+				if (xmlImport) {
+					node.appendChild(xmlImport);
+				}
+			});
 			json.scripts.forEach(function (script) {
 				node.appendChild(generateXMLFor(script, ctx));
 			});
 			return node;
+		},
+		UziImportNode: function (json, ctx) {
+			function getVariableDefaultValue(varName) {
+				let assignment = json.initializationBlock.statements.find(stmt =>
+					stmt.__class__ == "UziAssignmentNode" &&
+					stmt.left.__class__ == "UziVariableNode" &&
+					stmt.left.name == varName);
+				if (!assignment) return "0";
+
+				return getLiteralValue(assignment.right);
+			}
+			function getLiteralValue(node) {
+				if (!node) return "0";
+				if (node.__class__ == "UziPinLiteralNode") {
+					return node.type + node.number;
+				} else if (node.__class__ == "UziNumberLiteralNode"){
+					return node.value.toString();
+				} else {
+					return "0";
+				}
+			}
+			if (json.path == "DCMotor.uzi") {
+				//{index: "2", name: "rightMotor2", enable: "D6", fwd: "D11", bwd: "D9"}
+				let name = json.alias;
+				let enable = getVariableDefaultValue("enablePin");
+				let fwd = getVariableDefaultValue("forwardPin");
+				let bwd = getVariableDefaultValue("reversePin");
+				ctx.addMotor({
+					name: name,
+					enable: enable,
+					fwd: fwd,
+					bwd: bwd
+				});
+				return undefined;
+			}
 		},
 		UziTaskNode: function (json, ctx) {
 			let node = create("block");
@@ -728,6 +769,13 @@ let ASTToBlocks = (function () {
 		generate: function (json) {
 			let ctx = {
 				path: [],
+				motors: [],
+
+				addMotor: function (motor) {
+					motor.index = ctx.motors.length;
+					ctx.motors.push(motor);
+				},
+
 				scriptNamed: function (name) {
 					return ctx.path[0].scripts.find(function (each) {
 						return each.name === name;
