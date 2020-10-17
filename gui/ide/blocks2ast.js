@@ -1157,7 +1157,8 @@ let BlocksToAST = (function () {
 					{
 						let currentElement = ctx.path[ctx.path.length - 1];
 						while (currentElement != null) {
-							if (currentElement.getAttribute("type") == "declare_local_variable") {
+							if (currentElement.getAttribute("type") == "declare_local_variable"
+									&& !isDisabled(currentElement)) {
 								let field = XML.getChildNode(currentElement, "variableName");
 								if (field != undefined && field.innerText == name) {
 									return true; // We found our variable declaration!
