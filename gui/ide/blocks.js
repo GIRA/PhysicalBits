@@ -2679,7 +2679,13 @@ let UziBlock = (function () {
 
   function getGeneratedCode(){
     let xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars, joysticks, variables);
+    let metadata = {
+      motors: motors,
+      sonars: sonars,
+      joysticks: joysticks,
+      variables: variables,
+    };
+    return BlocksToAST.generate(xml, metadata);
   }
 
   function refreshWorkspace() {

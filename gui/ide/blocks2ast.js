@@ -1129,11 +1129,7 @@ let BlocksToAST = (function () {
 	}
 
 	return {
-		/*
-		TODO(Richo): Refactor arguments, maybe merge the motors/sonars/joystick/variables stuff
-		into one object called "metadada" or something?
-		*/
-		generate: function (xml, motors, sonars, joysticks, variables) {
+		generate: function (xml, metadata) {
 			let setup = [];
 			let scripts = [];
 			let ctx = {
@@ -1203,7 +1199,7 @@ let BlocksToAST = (function () {
 
 				addDCMotorImport: function (alias) {
 					ctx.addImport(alias, "DCMotor.uzi", function () {
-						let motor = motors.find(function (m) { return m.name === alias; });
+						let motor = metadata.motors.find(function (m) { return m.name === alias; });
 						if (motor == undefined) return null;
 
 						function pin(pin) {
@@ -1221,7 +1217,7 @@ let BlocksToAST = (function () {
 				},
 				addSonarImport: function (alias) {
 					ctx.addImport(alias, "Sonar.uzi", function () {
-						let sonar = sonars.find(function (m) { return m.name === alias; });
+						let sonar = metadata.sonars.find(function (m) { return m.name === alias; });
 						if (sonar == undefined) return null;
 
 						function pin(pin) {
@@ -1240,7 +1236,7 @@ let BlocksToAST = (function () {
 				},
 				addJoystickImport: function (alias) {
 					ctx.addImport(alias, "Joystick.uzi", function () {
-						let joystick = joysticks.find(function (m) { return m.name === alias; });
+						let joystick = metadata.joysticks.find(function (m) { return m.name === alias; });
 						if (joystick == undefined) return null;
 
 						function pin(pin) {
@@ -1291,7 +1287,7 @@ let BlocksToAST = (function () {
 			}
 			return builder.program(null,
 				Array.from(ctx.imports, entry => entry[1]),
-				ctx.globals.map(varName => variables.find(v => v.name == varName)),
+				ctx.globals.map(varName => metadata.variables.find(v => v.name == varName)),
 				scripts);
 		}
 	}
