@@ -2870,7 +2870,7 @@ let UziBlock = (function () {
 
       variables = data;
     },
-    getDataForStorage: function () {
+    getProgram: function () {
       return {
         version: version,
         blocks: toXMLText(),
@@ -2880,7 +2880,7 @@ let UziBlock = (function () {
         variables: variables,
       };
     },
-    setDataFromStorage: function (d) {
+    setProgram: function (d) {
       // Check compatibility
       if (d.version != version) { return; }
 

@@ -943,7 +943,7 @@
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
       },
       layout: layout.toConfig(),
-      blockly: UziBlock.getDataForStorage(),
+      blockly: UziBlock.getProgram(),
       code: getTextualCode(),
       ports: {
         selectedPort: selectedPort,
@@ -967,7 +967,7 @@
       }
 
       if (ui.blockly) {
-        UziBlock.setDataFromStorage(ui.blockly);
+        UziBlock.setProgram(ui.blockly);
       }
 
       if (ui.code) {
