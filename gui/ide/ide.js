@@ -85,17 +85,24 @@
       .then(function () {
         let lastProgram = undefined;
 
-        UziBlock.on("change", function () {
+        UziBlock.on("change", function (userInteraction) {
           saveToLocalStorage();
 
-          let currentProgram = getBlocklyCode();
-          if (currentProgram !== lastProgram) {
-            lastProgram = currentProgram;
+          /*
+          NOTE(Richo): Only trigger autorun if the blocks were manually changed by
+          the user. This prevents a double compilation when changing the program
+          from the code editor.
+          */
+          if (userInteraction) {
+            let currentProgram = getBlocklyCode();
+            if (currentProgram !== lastProgram) {
+              lastProgram = currentProgram;
 
-            dirtyBlocks = true;
-            dirtyCode = false;
+              dirtyBlocks = true;
+              dirtyCode = false;
 
-            scheduleAutorun(false, "BLOCKS CHANGE!");
+              scheduleAutorun(false, "BLOCKS CHANGE!");
+            }
           }
         });
 

@@ -1938,7 +1938,7 @@ let UziBlock = (function () {
 
         handleVariableDeclarationBlocksEvents(evt);
 
-        trigger("change");
+        trigger("change", userInteraction);
       });
 
       initTasksToolboxCategory(toolbox, workspace);
@@ -2649,10 +2649,10 @@ let UziBlock = (function () {
     observers[evt].push(callback);
   }
 
-  function trigger(evt) {
+  function trigger(evt, args) {
     observers[evt].forEach(function (fn) {
       try {
-        fn();
+        fn(args);
       } catch (err) {
         console.log(err);
       }
