@@ -110,9 +110,9 @@
         Uzi.on("update", function (state, previousState) {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
-          let xml = ASTToBlocks.generate(state.program.ast);
-          UziBlock.fromXML(xml, true);
-          //console.log("UPDATE!");
+          let blocklyProgram = ASTToBlocks.generate(state.program.ast);
+          UziBlock.setProgram(blocklyProgram);
+          // TODO(Richo): Clean up blocks
         });
       })
       .then(restoreFromLocalStorage);

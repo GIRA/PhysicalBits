@@ -2769,6 +2769,7 @@ let UziBlock = (function () {
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
 
+    version: version,
     types: types,
     spec: spec,
 

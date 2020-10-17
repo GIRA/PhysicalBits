@@ -752,7 +752,17 @@ let ASTToBlocks = (function () {
 					return ctx.path[index - 1].__class__ == "UziBlockNode";
 				}
 			};
-			return generateXMLFor(json, ctx);
+
+			// TODO(Richo)
+			let old = UziBlock.getProgram();
+			return {
+        version: UziBlock.version,
+        blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
+        motors: old.motors,
+        sonars: old.sonars,
+        joysticks: old.joysticks,
+        variables: old.variables,
+      };
 		}
 	}
 })();
