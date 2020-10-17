@@ -110,6 +110,8 @@ let ASTToBlocks = (function () {
 				} else {
 					initFunctionCall(node, json, ctx);
 				}
+			} else if (json.selector.includes(".")){
+				initExternalCall(node, json, ctx);
 			} else {
 				initPrimitiveCall(node, json, ctx);
 			}
@@ -322,6 +324,45 @@ let ASTToBlocks = (function () {
 		json.arguments.forEach(function (arg, index) {
 			appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
 		});
+	}
+
+	function initExternalCall(node, json, ctx) {
+		let parts = json.selector.split(".");
+		if (parts.length > 2) {
+			debugger; // TODO(Richo): WTF?
+		}
+		let alias = parts[0];
+		let selector = parts[1];
+
+		if (ctx.motors.some(m => m.name == alias)) {
+			initMotorCall(node, alias, selector, json, ctx);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initMotorCall(node, alias, selector, json, ctx) {
+		let args = json.arguments.map(function (each) { return each.value; });
+		if (selector == "forward" || selector == "backward") {
+			node.setAttribute("type", "move_dcmotor");
+			appendField(node, "motorName", alias);
+			appendField(node, "direction", selector == "forward" ? "fwd" : "bwd");
+			appendValue(node, "speed", generateXMLFor(args[0], ctx));
+		} else if (selector == "setSpeed") {
+			node.setAttribute("type", "change_speed_dcmotor");
+			appendField(node, "motorName", alias);
+			appendValue(node, "speed", generateXMLFor(args[0], ctx));
+		} else if (selector == "getSpeed") {
+			node.setAttribute("type", "get_speed_dcmotor");
+			appendField(node, "motorName", alias);
+		} else if (selector == "brake") {
+			node.setAttribute("type", "stop_dcmotor");
+			appendField(node, "motorName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
 	}
 
 	function initPrimitiveCall(node, json, ctx) {
@@ -760,6 +801,10 @@ let ASTToBlocks = (function () {
 			ctx.path.push(json);
 			return func(json, ctx);
 		}
+		catch (err) {
+			debugger; // ACAACA!
+			throw err;
+		}
 		finally {
 			ctx.path.pop();
 		}
@@ -806,7 +851,7 @@ let ASTToBlocks = (function () {
 			return {
         version: UziBlock.version,
         blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
-        motors: old.motors,
+        motors: ctx.motors,
         sonars: old.sonars,
         joysticks: old.joysticks,
         variables: old.variables,
