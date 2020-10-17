@@ -343,16 +343,17 @@ let ASTToBlocks = (function () {
 	}
 
 	function initMotorCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
 		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector == "forward" || selector == "backward") {
 			node.setAttribute("type", "move_dcmotor");
 			appendField(node, "motorName", alias);
 			appendField(node, "direction", selector == "forward" ? "fwd" : "bwd");
-			appendValue(node, "speed", generateXMLFor(args[0], ctx));
+			appendValue(node, "speed", generateXMLFor(args[0] || defaultArg, ctx));
 		} else if (selector == "setSpeed") {
 			node.setAttribute("type", "change_speed_dcmotor");
 			appendField(node, "motorName", alias);
-			appendValue(node, "speed", generateXMLFor(args[0], ctx));
+			appendValue(node, "speed", generateXMLFor(args[0] || defaultArg, ctx));
 		} else if (selector == "getSpeed") {
 			node.setAttribute("type", "get_speed_dcmotor");
 			appendField(node, "motorName", alias);
