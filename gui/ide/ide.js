@@ -1005,7 +1005,8 @@
     input.onchange = function () {
       let file = input.files[0];
       input.value = null;
-      if (file === undefined) return;
+      if (file == undefined) return;
+      lastFileName = file.name;
 
       let reader = new FileReader();
       reader.onload = function(e) {
@@ -1025,8 +1026,8 @@
 
   function saveProject() {
     MessageBox.prompt("Save project", "File name:", lastFileName || "program.phb").then(fileName => {
+      if (fileName == undefined) return;
       lastFileName = fileName;
-      if (lastFileName === null) return;
       if (!lastFileName.endsWith(".phb")) {
         lastFileName += ".phb";
       }
