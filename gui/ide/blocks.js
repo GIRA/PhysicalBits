@@ -2701,6 +2701,11 @@ let UziBlock = (function () {
     refreshToolbox();
   }
 
+  function cleanUp() {
+    workspace.cleanUp();
+    workspace.scrollCenter();
+  }
+
   function toXML() {
     return Blockly.Xml.workspaceToDom(workspace);
   }
@@ -2709,7 +2714,7 @@ let UziBlock = (function () {
     return Blockly.Xml.domToText(toXML());
   }
 
-  function fromXML(xml, cleanUp) {
+  function fromXML(xml) {
     userInteraction = false;
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
@@ -2728,11 +2733,6 @@ let UziBlock = (function () {
     workspace.getAllBlocks()
       .filter(b => b.type.includes("_call_"))
       .forEach(updateArgumentFields);
-
-    if (cleanUp) {
-      workspace.cleanUp();
-      workspace.scrollCenter();
-    }
   }
 
   function fromXMLText(xml) {
@@ -2778,8 +2778,7 @@ let UziBlock = (function () {
       refreshAll();
     },
 
-    fromXML: fromXML,
-    toXML: toXML,
+    cleanUp: cleanUp,
 
     getGeneratedCode: getGeneratedCode,
 

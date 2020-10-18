@@ -112,7 +112,7 @@
           if (state.program.src == previousState.program.src) return;
           let blocklyProgram = ASTToBlocks.generate(state.program.ast);
           UziBlock.setProgram(blocklyProgram);
-          // TODO(Richo): Clean up blocks
+          UziBlock.cleanUp();
         });
       })
       .then(restoreFromLocalStorage);
