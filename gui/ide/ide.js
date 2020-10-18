@@ -993,10 +993,11 @@
   }
 
   function newProject() {
-    // TODO(Richo): Implement our own confirm dialog
-		if (confirm("You will lose all your unsaved changes. Are you sure?")) {
-			UziBlock.getWorkspace().clear();
-		}
+    MessageBox.confirm("Beware!", "You will lose all your unsaved changes. Are you sure?").then(ok => {
+      if (ok) {
+    		UziBlock.getWorkspace().clear();
+      }
+    });
   }
 
   function openProject() {
@@ -1023,36 +1024,40 @@
   }
 
   function saveProject() {
-    // TODO(Richo): Implement our own prompt dialog
-    lastFileName = prompt("File name:", lastFileName || "program.phb");
-    if (lastFileName === null) return;
-    if (!lastFileName.endsWith(".phb")) {
-      lastFileName += ".phb";
-    }
-    try {
-      let ui = getUIState();
-      let json = JSON.stringify(ui);
-      let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-      saveAs(blob, lastFileName);
-    } catch (err) {
-      console.log(err);
-      appendToOutput({text: "Error attempting to write the project file", type: "error"});
-    }
+    MessageBox.prompt("Save project", "File name:", lastFileName || "program.phb").then(fileName => {
+      lastFileName = fileName;
+      if (lastFileName === null) return;
+      if (!lastFileName.endsWith(".phb")) {
+        lastFileName += ".phb";
+      }
+      try {
+        let ui = getUIState();
+        let json = JSON.stringify(ui);
+        let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, lastFileName);
+      } catch (err) {
+        console.log(err);
+        appendToOutput({text: "Error attempting to write the project file", type: "error"});
+      }
+    });
   }
 
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
       let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
-      // TODO(Richo): Implement our own prompt dialog
-      value = prompt("Port name:", defaultOption);
-      if (!value) { value = selectedPort; }
-      else if (userPorts.indexOf(value) < 0) {
-        userPorts.push(value);
-      }
+      MessageBox.prompt("Choose port", "Port name:", defaultOption).then(value => {
+        if (!value) { value = selectedPort; }
+        else if (userPorts.indexOf(value) < 0) {
+          userPorts.push(value);
+        }
+        setSelectedPort(value);
+        saveToLocalStorage();
+      });
+    } else {
+      setSelectedPort(value);
+      saveToLocalStorage();
     }
-    setSelectedPort(value);
-    saveToLocalStorage();
   }
 
   function setSelectedPort(val) {
