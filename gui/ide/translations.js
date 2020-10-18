@@ -54,6 +54,12 @@ var TRANSLATIONS = [
   ["This sonar is being used by the program!", "This sonar is being used by the program!", "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi mujal programmis!", "Detta ekolod används just nu i programmet!"],
   ["Display text in ALL-CAPS", "Display text in ALL-CAPS", "Mostrar todo el texto en MAYÚSCULAS", "Kuva kõik tekst TRÜKITÄHTEDES", "Visa all text som STORA BOKSTÄVER"],
   ["No available ports found", "No available ports found", "No se encontraron puertos disponibles", "No available ports found", "No available ports found"],
+  ["Beware!", "Beware!", "¡Cuidado!", "Beware!", "Beware!"],
+  ["You will lose all your unsaved changes. Are you sure?", "You will lose all your unsaved changes. Are you sure?", "Vas a perder todos los cambios que no hayas guardado. ¿Estás seguro?", "You will lose all your unsaved changes. Are you sure?", "You will lose all your unsaved changes. Are you sure?"],
+  ["Save project", "Save project", "Guardar proyecto", "Save project", "Save project"],
+  ["File name:", "File name:", "Nombre de archivo:", "File name:", "File name:"],
+  ["Choose port", "Choose port", "Elegir puerto", "Choose port", "Choose port"],
+  ["Port name:", "Port name:", "Nombre del puerto:", "Port name:", "Port name:"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],

@@ -993,7 +993,8 @@
   }
 
   function newProject() {
-    MessageBox.confirm("Beware!", "You will lose all your unsaved changes. Are you sure?").then(ok => {
+    MessageBox.confirm(i18n.translate("Beware!"),
+                       i18n.translate("You will lose all your unsaved changes. Are you sure?")).then(ok => {
       if (ok) {
     		UziBlock.getWorkspace().clear();
       }
@@ -1025,7 +1026,9 @@
   }
 
   function saveProject() {
-    MessageBox.prompt("Save project", "File name:", lastFileName || "program.phb").then(fileName => {
+    MessageBox.prompt(i18n.translate("Save project"),
+                      i18n.translate("File name:"),
+                      lastFileName || "program.phb").then(fileName => {
       if (fileName == undefined) return;
       lastFileName = fileName;
       if (!lastFileName.endsWith(".phb")) {
@@ -1047,7 +1050,9 @@
     let value = $("#port-dropdown").val();
     if (value == "other") {
       let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
-      MessageBox.prompt("Choose port", "Port name:", defaultOption).then(value => {
+      MessageBox.prompt(i18n.translate("Choose port"),
+                        i18n.translate("Port name:"),
+                        defaultOption).then(value => {
         if (!value) { value = selectedPort; }
         else if (userPorts.indexOf(value) < 0) {
           userPorts.push(value);
