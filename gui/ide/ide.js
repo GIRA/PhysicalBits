@@ -867,7 +867,6 @@
   }
 
   function updateOptionsPanel() {
-    //$("#inspector-panel-checkbox").prop("checked", $("#inspector-panel").is(":visible"));
     $('input[name="layout-panels"]').each(function () {
       let panelId = $(this).val();
       $(this).prop("checked", $(panelId).is(":visible"));
