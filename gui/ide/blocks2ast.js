@@ -247,6 +247,7 @@ let BlocksToAST = (function () {
 	};
 
 	let topLevelBlocks = ["task", "timer",
+												"import",
 												"proc_definition_0args", "proc_definition_1args",
 												"proc_definition_2args", "proc_definition_3args",
 												"func_definition_0args", "func_definition_1args",
@@ -256,6 +257,15 @@ let BlocksToAST = (function () {
 		here_be_dragons: function (block, ctx, stream) {
 			let node = JSON.parse(block.children[0].textContent);
 			stream.push(node);
+		},
+		import: function (block, ctx, stream) {
+			let alias = XML.getChildNode(block, "alias").innerText;
+			let path = XML.getChildNode(block, "path").innerText;
+
+			// NOTE(Richo): Instead of creating the block here we just add the import to the ctx
+			ctx.addImport(alias, path, function () {
+				return JSON.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
+			});
 		},
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -1273,7 +1283,7 @@ let BlocksToAST = (function () {
 			};
 			Array.from(xml.childNodes).filter(isTopLevel).forEach(function (block) {
 				try {
-					generateCodeFor(block, ctx, scripts)
+					generateCodeFor(block, ctx, scripts);
 				} catch (err) {
 					console.log(err);
 				}

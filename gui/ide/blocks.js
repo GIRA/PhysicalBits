@@ -23,6 +23,7 @@ let UziBlock = (function () {
   }
 
   const colors = {
+    HIDDEN: "#9E8E7F",
     TASKS: 175,
     GPIO: 345,
     MOTORS: 0,
@@ -61,7 +62,30 @@ let UziBlock = (function () {
       text: "HERE BE DRAGONS",
       type: null,
       connections: { up: true, down: true, left: false },
-      color: "#9E8E7F"
+      color: colors.HIDDEN
+    },
+
+    // Imports
+    import: {
+      text: "import %1 from %2",
+      type: null,
+      inputs: {
+        "1": {
+          name: "alias",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput(""), name),
+        },
+        "2": {
+          name: "path",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput(""), name),
+        }
+      },
+      connections: { up: false, down: false, left: false},
+      color: colors.HIDDEN,
+      postload: function (block) {
+        block.setEditable(false);
+      }
     },
 
     // Tasks

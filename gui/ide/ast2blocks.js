@@ -69,8 +69,7 @@ let ASTToBlocks = (function () {
 			} else if (json.path == "Buttons.uzi") {
 				// HACK(Richo): Do nothing?
 			} else {
-				// TODO(Richo): Create an import block
-				return createHereBeDragonsBlock(json, ctx);
+				return createImportBlock(json, ctx);
 			}
 		},
 		UziTaskNode: function (json, ctx) {
@@ -863,6 +862,24 @@ let ASTToBlocks = (function () {
 			child.appendChild(value);
 		}
 		node.appendChild(child);
+	}
+
+	function createImportBlock(json, ctx) {
+		let node = create("block");
+		node.setAttribute("type", "import");
+		appendField(node, "alias", json.alias);
+		appendField(node, "path", json.path);
+
+		// TODO(Richo): Store initialization block as comment or generate blocks?
+		let code = JSON.stringify(json.initializationBlock, null, 2);
+		let comment = create("comment");
+		comment.setAttribute("pinned", "false");
+		comment.setAttribute("h", "160");
+		comment.setAttribute("w", "320");
+		comment.textContent = code;
+		node.appendChild(comment);
+
+		return node;
 	}
 
 	function createHereBeDragonsBlock(stmt, ctx) {
