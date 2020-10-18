@@ -994,7 +994,8 @@
 
   function newProject() {
     MessageBox.confirm(i18n.translate("Beware!"),
-                       i18n.translate("You will lose all your unsaved changes. Are you sure?")).then(ok => {
+                       i18n.translate("You will lose all your unsaved changes. Are you sure?"),
+                       MessageBox.ICONS.warning).then(ok => {
       if (ok) {
     		UziBlock.getWorkspace().clear();
       }
