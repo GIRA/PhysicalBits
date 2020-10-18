@@ -69,7 +69,7 @@
     layout.on('stateChanged', resizeBlockly);
     layout.on('stateChanged', saveToLocalStorage);
     layout.on('stateChanged', checkBrokenLayout);
-    layout.on('stateChanged', updateOptionsPanel);
+    layout.on('stateChanged', updateVisiblePanelsInOptionsModal);
     layout.on('stateChanged', function () {
       // HACK(Richo): The following allows me to translate panel titles
       $(".lm_title").each(function () { $(this).attr("lang", "en"); });
@@ -866,7 +866,7 @@
     });
   }
 
-  function updateOptionsPanel() {
+  function updateVisiblePanelsInOptionsModal() {
     $('input[name="layout-panels"]').each(function () {
       let panelId = $(this).val();
       $(this).prop("checked", $(panelId).is(":visible"));
