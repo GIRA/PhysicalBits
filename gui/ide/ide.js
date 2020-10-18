@@ -853,7 +853,7 @@
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
     });
-    i18n.on("change", function () {
+    i18n.on("update", function () {
       let locale = i18n.currentLocale();
       $('input[name="language-radios"]:radio').each(function () {
         let val = $(this).val();
