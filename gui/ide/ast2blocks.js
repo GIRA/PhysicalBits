@@ -9,6 +9,12 @@ let ASTToBlocks = (function () {
 					node.appendChild(xmlImport);
 				}
 			});
+			json.globals.forEach(function (global) {
+				ctx.addVariable({
+					name: global.name,
+					value: getLiteralValue(global.value),
+				});
+			});
 			json.scripts.forEach(function (script) {
 				node.appendChild(generateXMLFor(script, ctx));
 			});
@@ -23,16 +29,6 @@ let ASTToBlocks = (function () {
 				if (!assignment) return "0";
 
 				return getLiteralValue(assignment.right);
-			}
-			function getLiteralValue(node) {
-				if (!node) return "0";
-				if (node.__class__ == "UziPinLiteralNode") {
-					return node.type + node.number;
-				} else if (node.__class__ == "UziNumberLiteralNode"){
-					return node.value.toString();
-				} else {
-					return "0";
-				}
 			}
 
 			// TODO(Richo): Preserve other initializationBlock statements
@@ -294,6 +290,7 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "declare_local_variable");
 			appendField(node, "variableName", json.name);
 			appendValue(node, "value", generateXMLFor(json.value, ctx));
+			ctx.addVariable({	name: json.name, value: "0" });
 			return node;
 		},
 		UziLogicalOrNode: function (json, ctx) {
@@ -326,6 +323,17 @@ let ASTToBlocks = (function () {
 			return node;
 		}
 	};
+
+	function getLiteralValue(node) {
+		if (!node) return "0";
+		if (node.__class__ == "UziPinLiteralNode") {
+			return node.type + node.number;
+		} else if (node.__class__ == "UziNumberLiteralNode"){
+			return node.value.toString();
+		} else {
+			return "0";
+		}
+	}
 
 	function initExternalVariable(node, json, ctx) {
 		let parts = json.name.split(".");
@@ -907,10 +915,16 @@ let ASTToBlocks = (function () {
 		generate: function (json) {
 			let ctx = {
 				path: [],
+				variables: [],
 				motors: [],
 				sonars: [],
 				joysticks: [],
 
+				addVariable: function (variable) {
+					if (ctx.variables.some(v => v.name == variable.name)) return;
+					variable.index = ctx.variables.length;
+					ctx.variables.push(variable);
+				},
 				addMotor: function (motor) {
 					motor.index = ctx.motors.length;
 					ctx.motors.push(motor);
@@ -950,14 +964,13 @@ let ASTToBlocks = (function () {
 			};
 
 			// TODO(Richo): Preserve old metadata somehow?
-			let old = UziBlock.getProgram();
 			return {
         version: UziBlock.version,
         blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
         motors: ctx.motors,
         sonars: ctx.sonars,
         joysticks: ctx.joysticks,
-        variables: old.variables,
+        variables: ctx.variables,
       };
 		}
 	}
