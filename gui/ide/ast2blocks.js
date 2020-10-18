@@ -66,6 +66,8 @@ let ASTToBlocks = (function () {
 					xPin: xPin,
 					yPin: yPin,
 				});
+			} else if (json.path == "Buttons.uzi") {
+				// HACK(Richo): Do nothing?
 			} else {
 				// TODO(Richo): Create an import block
 				return createHereBeDragonsBlock(json, ctx);
@@ -398,6 +400,8 @@ let ASTToBlocks = (function () {
 			initSonarCall(node, alias, selector, json, ctx);
 		} else if (ctx.joysticks.some(j => j.name == alias)) {
 			initJoystickCall(node, alias, selector, json, ctx);
+		} else if (ctx.isButtonCall(alias, selector)) {
+			initButtonCall(node, alias, selector, json, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -460,6 +464,32 @@ let ASTToBlocks = (function () {
 		} else if (selector == "getMagnitude") {
 			node.setAttribute("type", "get_joystick_magnitude");
 			appendField(node, "joystickName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initButtonCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
+		let args = json.arguments.map(function (each) { return each.value; });
+		if (selector == "isPressed" || selector == "isReleased") {
+			node.setAttribute("type", "button_check_state");
+			appendValue(node, "pinNumber", generateXMLFor(args[0] || defaultArg, ctx));
+			appendField(node, "state", selector == "isPressed" ? "press" : "release");
+		} else if (selector == "waitForPress" || selector == "waitForRelease") {
+			node.setAttribute("type", "button_wait_for_action");
+			appendValue(node, "pinNumber", generateXMLFor(args[0] || defaultArg, ctx));
+			appendField(node, "action", selector == "waitForPress" ? "press" : "release");
+		} else	if (selector == "millisecondsHolding") {
+			node.setAttribute("type", "button_ms_holding");
+			appendValue(node, "pinNumber", generateXMLFor(args[0] || defaultArg, ctx));
+		} else if (selector == "waitForHold" || selector == "waitForHoldAndRelease") {
+			node.setAttribute("type", "button_wait_for_long_action");
+			appendValue(node, "pinNumber", generateXMLFor(args[0] || defaultArg, ctx));
+			appendField(node, "action", selector == "waitForHold" ? "press" : "release");
+			appendField(node, "unit", "ms");
+			appendValue(node, "time", generateXMLFor(args[1] || defaultArg, ctx));
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -960,6 +990,9 @@ let ASTToBlocks = (function () {
 					let index = ctx.path.indexOf(json);
 					if (index < 1 || index >= ctx.path.length) return false;
 					return ctx.path[index - 1].__class__ == "UziBlockNode";
+				},
+				isButtonCall: function (alias, selector) {
+					return ctx.path[0].imports.some(imp => imp.path == "Buttons.uzi" && imp.alias == alias);
 				}
 			};
 
