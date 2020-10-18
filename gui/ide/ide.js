@@ -122,7 +122,7 @@
   function initializeTopBar() {
     $("#new-button").on("click", newProject);
     $("#open-button").on("click", openProject);
-    $("#save-button").on("click", saveProject);
+    $("#download-button").on("click", downloadProject);
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
@@ -1026,7 +1026,7 @@
     input.click();
   }
 
-  function saveProject() {
+  function downloadProject() {
     MessageBox.prompt(i18n.translate("Save project"),
                       i18n.translate("File name:"),
                       lastFileName || "program.phb").then(fileName => {

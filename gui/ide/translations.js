@@ -5,7 +5,9 @@ var TRANSLATIONS = [
 
   ["New...", "New...", "Nuevo...", "Uus...", "Ny..."],
   ["Open...", "Open...", "Abrir...", "Ava...", "Öppna..."],
-  ["Save...", "Save...", "Guardar...", "Salvesta...", "Spara..."],
+  ["Save", "Save", "Guardar", "Salvesta", "Spara"],
+  ["Save as...", "Save as...", "Guardar como...", "Save as...", "Save as..."],
+  ["Download...", "Download...", "Descargar...", "Download...", "Download..."],
   ["Automatic", "Automatic", "Automático", "Automaatne", "Automatisk"],
   ["Other...", "Other...", "Otro...", "Muu...", "Annan..."],
   ["Connect", "Connect", "Conectar", "Ühenda", "Anslut"],
