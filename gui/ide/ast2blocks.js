@@ -34,6 +34,9 @@ let ASTToBlocks = (function () {
 					return "0";
 				}
 			}
+
+			// TODO(Richo): Preserve other initializationBlock statements
+
 			if (json.path == "DCMotor.uzi") {
 				let name = json.alias;
 				let enable = getVariableDefaultValue("enablePin");
@@ -50,11 +53,22 @@ let ASTToBlocks = (function () {
 				let trig = getVariableDefaultValue("trigPin");
 				let echo = getVariableDefaultValue("echoPin");
 				let maxDist = getVariableDefaultValue("maxDistance");
+				// TODO(Richo): Handle start/stop reading
 				ctx.addSonar({
 					name: name,
 					trig: trig,
 					echo: echo,
 					maxDist: maxDist
+				});
+			} else if (json.path == "Joystick.uzi") {
+				let name = json.alias;
+				let xPin = getVariableDefaultValue("xPin");
+				let yPin = getVariableDefaultValue("yPin");
+				// TODO(Richo): Handle start/stop reading
+				ctx.addJoystick({
+					name: name,
+					xPin: xPin,
+					yPin: yPin,
 				});
 			} else {
 				// TODO(Richo): Create an import block
@@ -267,8 +281,11 @@ let ASTToBlocks = (function () {
 		UziVariableNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "variable");
-			appendField(node, "variableName", json.name);
+			if (json.name.includes(".")) {
+				initExternalVariable(node, json, ctx);
+			} else {
+				initRegularVariable(node, json, ctx);
+			}
 			return node;
 		},
 		UziVariableDeclarationNode: function (json, ctx) {
@@ -310,6 +327,27 @@ let ASTToBlocks = (function () {
 		}
 	};
 
+	function initExternalVariable(node, json, ctx) {
+		let parts = json.name.split(".");
+		if (parts.length > 2) {
+			debugger; // TODO(Richo): WTF?
+		}
+		let alias = parts[0];
+		let name = parts[1];
+
+		if (ctx.joysticks.some(j => j.name == alias)) {
+			initJoystickCall(node, alias, name, json, ctx);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initRegularvariable(node, json, ctx);
+		}
+	}
+
+	function initRegularVariable(node, json, ctx) {
+		node.setAttribute("type", "variable");
+		appendField(node, "variableName", json.name);
+	}
+
 	function initProcedureCall(node, json, ctx) {
 		let types = ["proc_call_0args", "proc_call_1args",
 								"proc_call_2args", "proc_call_3args"];
@@ -350,6 +388,8 @@ let ASTToBlocks = (function () {
 			initMotorCall(node, alias, selector, json, ctx);
 		} else if (ctx.sonars.some(s => s.name == alias)) {
 			initSonarCall(node, alias, selector, json, ctx);
+		} else if (ctx.joysticks.some(j => j.name == alias)) {
+			initJoystickCall(node, alias, selector, json, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -393,6 +433,25 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "get_sonar_distance");
 			appendField(node, "sonarName", alias);
 			appendField(node, "unit", "m");
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initJoystickCall(node, alias, selector, json, ctx) {
+		if (selector == "x") {
+			node.setAttribute("type", "get_joystick_x");
+			appendField(node, "joystickName", alias);
+		} else if (selector == "y") {
+			node.setAttribute("type", "get_joystick_y");
+			appendField(node, "joystickName", alias);
+		} else	if (selector == "getAngle") {
+			node.setAttribute("type", "get_joystick_angle");
+			appendField(node, "joystickName", alias);
+		} else if (selector == "getMagnitude") {
+			node.setAttribute("type", "get_joystick_magnitude");
+			appendField(node, "joystickName", alias);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -850,6 +909,7 @@ let ASTToBlocks = (function () {
 				path: [],
 				motors: [],
 				sonars: [],
+				joysticks: [],
 
 				addMotor: function (motor) {
 					motor.index = ctx.motors.length;
@@ -858,6 +918,10 @@ let ASTToBlocks = (function () {
 				addSonar: function (sonar) {
 					sonar.index = ctx.sonars.length;
 					ctx.sonars.push(sonar);
+				},
+				addJoystick: function (joystick) {
+					joystick.index = ctx.joysticks.length;
+					ctx.joysticks.push(joystick);
 				},
 
 				scriptNamed: function (name) {
@@ -885,14 +949,14 @@ let ASTToBlocks = (function () {
 				}
 			};
 
-			// TODO(Richo)
+			// TODO(Richo): Preserve old metadata somehow?
 			let old = UziBlock.getProgram();
 			return {
         version: UziBlock.version,
         blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
         motors: ctx.motors,
         sonars: ctx.sonars,
-        joysticks: old.joysticks,
+        joysticks: ctx.joysticks,
         variables: old.variables,
       };
 		}
