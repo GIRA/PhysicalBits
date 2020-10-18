@@ -540,6 +540,39 @@
       </div>
     </div>
 
+    <!-- MessageBox Modal -->
+    <div class="modal fade" id="msg-box-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">
+              <i id="msg-box-icon" class="fas fa-exclamation-circle"></i>
+              <span id="msg-box-title" class="ml-2">Title</span>
+            </h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div id="msg-box-message" class="col">Message here...</div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <input id="msg-box-input" type="text" class="form-control" ></input>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="msg-box-accept-button" type="submit" class="btn btn-primary" lang="en">Accept</button>
+            <button id="msg-box-cancel-button" type="button" class="btn btn-secondary" lang="en">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -563,6 +596,7 @@
     <script src="translations.js" type="text/javascript"></script>
     <script src="i18n.js" type="text/javascript"></script>
     <script src="XML.js" type="text/javascript"></script>
+    <script src="msgbox.js" type="text/javascript"></script>
     <script src="ast2blocks.js" type="text/javascript"></script>
     <script src="blocks2ast.js" type="text/javascript"></script>
     <script src="blocks.js" type="text/javascript"></script>
