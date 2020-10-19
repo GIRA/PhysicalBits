@@ -1197,11 +1197,11 @@
 	}
 
   function success() {
-    $(document.body).css("border", "4px solid black");
+    $("#container").css("background", "");
   }
 
   function error() {
-    $(document.body).css("border", "4px solid red");
+    $("#container").css("background", "linear-gradient(0deg, rgba(0,0,0,1) 96%, rgba(255,0,0,1) 100%)");
   }
 
 	function autorun() {
