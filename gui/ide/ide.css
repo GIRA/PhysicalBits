@@ -96,6 +96,12 @@
     width: 117%;
   }
 
+  #controls-panel {
+    transform: scale(0.85);
+    transform-origin: 0 0;
+    width: 117%;
+  }
+
   #inspector-panel {
     padding: 10px;
 

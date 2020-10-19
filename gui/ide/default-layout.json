@@ -11,7 +11,7 @@
       "width": 17,
       "content": [{
         "type": "component",
-        "height": 35,
+        "height": 30,
         "componentName": "DOM",
         "componentState": { "id": "#controls-panel" },
         "title": "Controls"
