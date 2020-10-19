@@ -16,7 +16,11 @@ let ASTToBlocks = (function () {
 				});
 			});
 			json.scripts.forEach(function (script) {
-				node.appendChild(generateXMLFor(script, ctx));
+				try {
+					node.appendChild(generateXMLFor(script, ctx));
+				} catch (err) {
+					node.appendChild(createHereBeDragonsBlock("here_be_dragons_script", script, ctx));
+				}
 			});
 			return node;
 		},
@@ -93,7 +97,7 @@ let ASTToBlocks = (function () {
 			let types = ["proc_definition_0args", "proc_definition_1args",
 									"proc_definition_2args", "proc_definition_3args"];
 			if (json.arguments.length > 3) {
-				debugger;
+				throw "Max number of arguments for procedure blocks is 3";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
@@ -110,7 +114,7 @@ let ASTToBlocks = (function () {
 			let types = ["func_definition_0args", "func_definition_1args",
 									"func_definition_2args", "func_definition_3args"];
 			if (json.arguments.length > 3) {
-				debugger;
+				throw "Max number of arguments for function blocks is 3";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
@@ -882,9 +886,9 @@ let ASTToBlocks = (function () {
 		return node;
 	}
 
-	function createHereBeDragonsBlock(stmt, ctx) {
+	function createHereBeDragonsBlock(type, stmt, ctx) {
 		let node = create("block");
-		node.setAttribute("type", "here_be_dragons");
+		node.setAttribute("type", type);
 		// TODO(Richo): Get actual code
 		let code = JSON.stringify(stmt, null, 2);
 		//<comment pinned="false" h="80" w="160">JSON.stringify(stmt, null, 2)</comment>
@@ -904,7 +908,7 @@ let ASTToBlocks = (function () {
 				ctx.path.push(body);
 				return generateXMLFor(stmt, ctx);
 			} catch (err) {
-				return createHereBeDragonsBlock(stmt, ctx);
+				return createHereBeDragonsBlock("here_be_dragons_stmt", stmt, ctx);
 			} finally {
 				ctx.path.pop();
 			}
@@ -942,18 +946,12 @@ let ASTToBlocks = (function () {
 		let func = dispatchTable[type];
 		if (func == undefined) {
 			console.log(json);
-			debugger;
 			throw "CODEGEN ERROR: Type not found '" + type + "'";
 		}
 		try {
 			ctx.path.push(json);
 			return func(json, ctx);
-		}
-		catch (err) {
-			debugger; // ACAACA!
-			throw err;
-		}
-		finally {
+		}	finally {
 			ctx.path.pop();
 		}
 	}

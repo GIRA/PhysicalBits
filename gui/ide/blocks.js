@@ -58,10 +58,16 @@ let UziBlock = (function () {
 
   const spec = {
     // TODO(Richo)
-    here_be_dragons: {
+    here_be_dragons_stmt: {
       text: "HERE BE DRAGONS",
       type: null,
       connections: { up: true, down: true, left: false },
+      color: colors.HIDDEN
+    },
+    here_be_dragons_script: {
+      text: "HERE BE DRAGONS",
+      type: null,
+      connections: { up: false, down: false, left: false },
       color: colors.HIDDEN
     },
 
