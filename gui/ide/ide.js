@@ -865,6 +865,11 @@ const fs = require('fs');
     $("#restore-layout-button").on("click", initializeDefaultLayout);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
     $("#all-caps-checkbox").on("change", updateAllCaps);
+    if (!fs) {
+      $("#autosave-checkbox").attr("disabled", "disabled");
+    } else {
+      $("#autosave-checkbox").on("change", toggleAutosave);
+    }
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
@@ -959,11 +964,16 @@ const fs = require('fs');
     localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
     localStorage["uzi.code"] = ui.code;
     localStorage["uzi.ports"] = JSON.stringify(ui.ports);
+
+    if ($("#autosave-checkbox").get(0).checked && $("#file-name").text()) {
+      saveProject();
+    }
   }
 
   function getUIState() {
     return {
       settings: {
+        autosave:    $("#autosave-checkbox").get(0).checked,
         interactive: $("#interactive-checkbox").get(0).checked,
         allcaps:     $("#all-caps-checkbox").get(0).checked,
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
@@ -982,6 +992,7 @@ const fs = require('fs');
   function setUIState(ui) {
     try {
       if (ui.settings != undefined) {
+        $("#autosave-checkbox").get(0).checked    = ui.settings.autosave;
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
@@ -1078,6 +1089,7 @@ const fs = require('fs');
   }
 
   function saving() {
+    if ($("#file-saved").is(":visible")) return;
     $("#file-saving").show();
     $("#file-saved").hide();
   }
@@ -1236,6 +1248,10 @@ const fs = require('fs');
   function toggleInteractive() {
     scheduleAutorun($("#interactive-checkbox").get(0).checked,
                     "TOGGLE INTERACTIVE!");
+    saveToLocalStorage();
+  }
+
+  function toggleAutosave() {
     saveToLocalStorage();
   }
 
