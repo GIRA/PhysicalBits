@@ -943,6 +943,7 @@ const fs = require('fs');
         ports: JSON.parse(localStorage["uzi.ports"] || "null"),
       };
       setUIState(ui);
+      scheduleAutorun(true, "LOCALSTORAGE RESTORE!");
     } catch (err) {
       console.log(err);
     }
@@ -980,7 +981,7 @@ const fs = require('fs');
 
   function setUIState(ui) {
     try {
-      if (ui.settings) {
+      if (ui.settings != undefined) {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
@@ -988,23 +989,23 @@ const fs = require('fs');
         updateUziSyntax();
       }
 
-      if (ui.fileName) {
+      if (ui.fileName != undefined) {
         $("#file-name").text(ui.fileName);
       }
 
-      if (ui.layout) {
+      if (ui.layout != undefined) {
         initializeLayout(ui.layout);
       }
 
-      if (ui.blockly) {
+      if (ui.blockly != undefined) {
         UziBlock.setProgram(ui.blockly);
       }
 
-      if (ui.code) {
+      if (ui.code != undefined) {
         codeEditor.setValue(ui.code);
       }
 
-      if (ui.ports) {
+      if (ui.ports != undefined) {
         selectedPort = ui.ports.selectedPort;
         userPorts = ui.ports.userPorts;
         updatePortDropdown();
@@ -1021,6 +1022,7 @@ const fs = require('fs');
       if (ok) {
         $("#file-name").text("");
     		UziBlock.getWorkspace().clear();
+        scheduleAutorun(true, "NEW PROJECT!");
       }
     });
   }
@@ -1043,6 +1045,7 @@ const fs = require('fs');
               let ui = JSON.parse(contents);
               setUIState(ui);
               $("#file-name").text(path);
+              scheduleAutorun(true, "OPEN PROJECT!");
             } catch (err) {
               errorHandler(err);
             }
@@ -1063,6 +1066,7 @@ const fs = require('fs');
             let ui = JSON.parse(json);
             setUIState(ui);
             $("#file-name").text(file.name);
+            scheduleAutorun(true, "OPEN PROJECT!");
           } catch (err) {
             errorHandler(err);
           }
