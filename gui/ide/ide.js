@@ -6,7 +6,6 @@
   let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
   let lastProgram = { code: "", type: "uzi" };
-  let lastFileName;
   let outputHistory = [];
 
   let userPorts = [];
@@ -921,6 +920,7 @@
     try {
       let ui = {
         settings: JSON.parse(localStorage["uzi.settings"] || "null"),
+        fileName: localStorage["uzi.fileName"] || "",
         layout: JSON.parse(localStorage["uzi.layout"] || "null"),
         blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
         code: localStorage["uzi.code"],
@@ -937,6 +937,7 @@
 
     let ui = getUIState();
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
+    localStorage["uzi.fileName"] = ui.fileName;
     localStorage["uzi.layout"] = JSON.stringify(ui.layout);
     localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
     localStorage["uzi.code"] = ui.code;
@@ -950,6 +951,7 @@
         allcaps:     $("#all-caps-checkbox").get(0).checked,
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
       },
+      fileName:  $("#file-name").text() || "",
       layout: layout.toConfig(),
       blockly: UziBlock.getProgram(),
       code: getTextualCode(),
@@ -968,6 +970,10 @@
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
 	      updateAllCaps();
         updateUziSyntax();
+      }
+
+      if (ui.fileName) {
+        $("#file-name").text(ui.fileName);
       }
 
       if (ui.layout) {
@@ -997,6 +1003,7 @@
                        i18n.translate("You will lose all your unsaved changes. Are you sure?"),
                        MessageBox.ICONS.warning).then(ok => {
       if (ok) {
+        $("#file-name").text("");
     		UziBlock.getWorkspace().clear();
       }
     });
@@ -1008,7 +1015,7 @@
       let file = input.files[0];
       input.value = null;
       if (file == undefined) return;
-      lastFileName = file.name;
+      $("#file-name").text(file.name);
 
       let reader = new FileReader();
       reader.onload = function(e) {
@@ -1029,17 +1036,17 @@
   function downloadProject() {
     MessageBox.prompt(i18n.translate("Save project"),
                       i18n.translate("File name:"),
-                      lastFileName || "program.phb").then(fileName => {
+                      $("#file-name").text() || "program.phb").then(fileName => {
       if (fileName == undefined) return;
-      lastFileName = fileName;
-      if (!lastFileName.endsWith(".phb")) {
-        lastFileName += ".phb";
+      if (!fileName.endsWith(".phb")) {
+        fileName += ".phb";
       }
+      $("#file-name").text(fileName);
       try {
         let ui = getUIState();
         let json = JSON.stringify(ui);
         let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, lastFileName);
+        saveAs(blob, fileName);
       } catch (err) {
         console.log(err);
         appendToOutput({text: "Error attempting to write the project file", type: "error"});
