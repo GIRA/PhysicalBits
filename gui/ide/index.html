@@ -22,31 +22,32 @@
     <div id="container" class="fullscreen dark-theme">
       <div id="top-bar">
         <div class="row align-items-center">
-          <div class="col">
-            <h2 class="d-inline">
-              <span>Physical</span><span>BITS</span><i class="fas fa-robot"></i>
+          <div class="col-auto">
+            <h2>
+              <span>Physical</span><span>Bits</span><i class="fas fa-robot"></i>
             </h2>
           </div>
-          <div class="col-8 text-center">
-            <div class="d-inline">
-              <div class="btn-group" role="toolbar" aria-label="...">
-                <button id="new-button" type="button" class="btn btn-primary btn-sm">
-                  <i class="fas fa-file mr-1"></i>
-                  <span lang="en">New...</span>
-                </button>
-                <button id="open-button" type="button" class="btn btn-primary btn-sm">
-                  <i class="fas fa-folder-open mr-1"></i>
-                  <span lang="en">Open...</span>
-                  <input id="open-file-input" type="file" accept=".phb" style="display: none;">
-                </button>
-                <button id="download-button" type="button" class="btn btn-primary btn-sm">
-                  <i class="fas fa-save mr-1"></i>
-                  <span lang="en">Download...</span>
-                </button>
-              </div>
+          <div class="col-auto">
+            <div class="btn-group" role="toolbar" aria-label="...">
+              <button id="new-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-file mr-1"></i>
+                <span lang="en">New...</span>
+              </button>
+              <button id="open-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-folder-open mr-1"></i>
+                <span lang="en">Open...</span>
+                <input id="open-file-input" type="file" accept=".phb" style="display: none;">
+              </button>
+              <button id="download-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-save mr-1"></i>
+                <span lang="en">Download...</span>
+              </button>
             </div>
           </div>
-          <div class="col text-right">
+          <div class="col">
+            <div id="file-name"></div>
+          </div>
+          <div class="col-auto">
             <button id="options-button" type="button" class="btn btn-secondary btn-sm">
               <i class="fas fa-cog mr-1"></i>
               <span lang="en">Options...</span>
