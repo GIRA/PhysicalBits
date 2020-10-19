@@ -70,6 +70,8 @@ var TRANSLATIONS = [
   ["Blocks:", "Blocks:", "Bloques:", "Blocks:", "Blocks:"],
   ["Uzi syntax", "Code syntax instead of block text", "Código en lugar del texto de los bloques", "Uzi syntax", "Uzi syntax"],
   ["Text mode:", "Text:", "Texto:", "Text mode:", "Text mode:"],
+  ["Saving...", "Saving...", "Guardando...", "Saving...", "Saving..."],
+  ["Saved!", "Saved!", "¡Guardado!", "Saved!", "Saved!"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],

@@ -1073,13 +1073,28 @@ const fs = require('fs');
     }
   }
 
+  function saving() {
+    $("#file-saving").show();
+    $("#file-saved").hide();
+  }
+
+  function saved() {
+    $("#file-saving").hide();
+    $("#file-saved").show();
+    setTimeout(() => {
+      $("#file-saving").hide();
+      $("#file-saved").hide();
+    }, 1000);
+  }
+
   function saveProject() {
     let path = $("#file-name").text();
     if (!path) { saveAsProject(); }
     else {
+      saving();
       let ui = getUIState();
       let json = JSON.stringify(ui);
-      fs.promises.writeFile(path, json, "utf8").catch(err => {
+      fs.promises.writeFile(path, json, "utf8").then(saved).catch(err => {
         console.log(err);
       });
     }
@@ -1095,9 +1110,10 @@ const fs = require('fs');
       if (!response.canceled) {
         let path = response.filePath;
         $("#file-name").text(path);
+        saving();
         let ui = getUIState();
         let json = JSON.stringify(ui);
-        fs.promises.writeFile(path, json, "utf8").catch(err => {
+        fs.promises.writeFile(path, json, "utf8").then(saved).catch(err => {
           console.log(err);
         });
       }
