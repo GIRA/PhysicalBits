@@ -258,6 +258,10 @@ let BlocksToAST = (function () {
 			let node = JSON.parse(block.children[0].textContent);
 			stream.push(node);
 		},
+		here_be_dragons_expr: function (block, ctx, stream) {
+			let node = JSON.parse(block.children[0].textContent);
+			stream.push(node);
+		},
 		here_be_dragons_script: function (block, ctx, stream) {
 			let node = JSON.parse(block.children[0].textContent);
 			stream.push(node);

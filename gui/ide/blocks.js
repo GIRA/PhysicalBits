@@ -64,6 +64,12 @@ let UziBlock = (function () {
       connections: { up: true, down: true, left: false },
       color: colors.HIDDEN
     },
+    here_be_dragons_expr: {
+      text: "HERE BE DRAGONS",
+      type: null,
+      connections: { up: false, down: false, left: true },
+      color: colors.HIDDEN
+    },
     here_be_dragons_script: {
       text: "HERE BE DRAGONS",
       type: null,
