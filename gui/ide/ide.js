@@ -1262,6 +1262,7 @@
       $("#disconnect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", "disabled");
       $("#run-button").attr("disabled", null);
+      $("#more-buttons").attr("disabled", null);
       $("#install-button").attr("disabled", null);
       setSelectedPort(Uzi.state.portName);
     } else {
@@ -1270,6 +1271,7 @@
       $("#connect-button").attr("disabled", null);
       $("#port-dropdown").attr("disabled", null);
       $("#run-button").attr("disabled", "disabled");
+      $("#more-buttons").attr("disabled", "disabled");
       $("#install-button").attr("disabled", "disabled");
       updatePortDropdown();
     }
