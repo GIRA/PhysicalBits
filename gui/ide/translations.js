@@ -64,6 +64,12 @@ var TRANSLATIONS = [
   ["Port name:", "Port name:", "Nombre del puerto:", "Port name:", "Port name:"],
   ["Accept", "Accept", "Aceptar", "Accept", "Accept"],
   ["Cancel", "Cancel", "Cancelar", "Cancel", "Cancel"],
+  ["Controls", "Controls", "Controles", "Controls", "Controls"],
+  ["General", "General", "General", "General", "General"],
+  ["Program:", "Program:", "Programa:", "Program:", "Program:"],
+  ["Blocks:", "Blocks:", "Bloques:", "Blocks:", "Blocks:"],
+  ["Uzi syntax", "Code syntax instead of block text", "Código en lugar del texto de los bloques", "Uzi syntax", "Uzi syntax"],
+  ["Text mode:", "Text:", "Texto:", "Text mode:", "Text mode:"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],
