@@ -62,6 +62,8 @@ var TRANSLATIONS = [
   ["File name:", "File name:", "Nombre de archivo:", "File name:", "File name:"],
   ["Choose port", "Choose port", "Elegir puerto", "Choose port", "Choose port"],
   ["Port name:", "Port name:", "Nombre del puerto:", "Port name:", "Port name:"],
+  ["Accept", "Accept", "Aceptar", "Accept", "Accept"],
+  ["Cancel", "Cancel", "Cancelar", "Cancel", "Cancel"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],
