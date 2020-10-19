@@ -1103,7 +1103,7 @@ const fs = require('fs');
   function saveAsProject() {
     if (!dialog) return;
     dialog.showSaveDialog({
-      defaultPath: "roboliga.phb",
+      defaultPath: $("#file-name").text() || "program.phb",
       filters: [{name: "Physical Bits project", extensions: ["phb"]}],
       properties: ["openFile"]
     }).then(function (response) {
