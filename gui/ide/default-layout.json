@@ -7,11 +7,20 @@
   "content": [{
     "type": "row",
     "content":[{
-      "type": "component",
-      "componentName": "DOM",
-      "componentState": { "id": "#inspector-panel" },
-      "title": "Inspector",
-      "width": 17
+      "type": "column",
+      "width": 17,
+      "content": [{
+        "type": "component",
+        "height": 35,
+        "componentName": "DOM",
+        "componentState": { "id": "#controls-panel" },
+        "title": "Controls"
+      },{
+        "type": "component",
+        "componentName": "DOM",
+        "componentState": { "id": "#inspector-panel" },
+        "title": "Inspector"
+      }]
     },{
       "type": "component",
       "componentName": "DOM",
