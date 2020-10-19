@@ -38,8 +38,16 @@
                 <span lang="en">Open...</span>
                 <input id="open-file-input" type="file" accept=".phb" style="display: none;">
               </button>
-              <button id="download-button" type="button" class="btn btn-primary btn-sm">
+              <button id="save-button" type="button" class="btn btn-primary btn-sm">
                 <i class="fas fa-save mr-1"></i>
+                <span lang="en">Save</span>
+              </button>
+              <button id="save-as-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-save mr-1"></i>
+                <span lang="en">Save as...</span>
+              </button>
+              <button id="download-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-download mr-1"></i>
                 <span lang="en">Download...</span>
               </button>
             </div>
@@ -601,6 +609,7 @@
 
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
+    <script type="text/javascript"> if (typeof module != "undefined") { jQuery = $ = module.exports; } </script>
     <script src="libs/jquery.serializeJSON/jquery.serializejson.min.js" type="text/javascript"></script>
     <script src="libs/bootstrap-4.3.1/js/bootstrap.bundle.min.js" type="text/javascript"></script>
 

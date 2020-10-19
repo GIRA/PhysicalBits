@@ -25,7 +25,7 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
 let server;
 if (config.startServer) {
   /*
-  NOTE(Richo): VERY IMPORTANT! The stdio 'ignore' option prevents the child process from 
+  NOTE(Richo): VERY IMPORTANT! The stdio 'ignore' option prevents the child process from
   blocking if the main process doesn't read from it.
   See https://nodejs.org/api/child_process.html#child_process_child_process
   */
@@ -53,7 +53,11 @@ function killServer() {
 function createWindow () {
   win = new BrowserWindow({
     show: false,
-    autoHideMenuBar: true
+    autoHideMenuBar: true,
+    webPreferences: {
+      enableRemoteModule: true,
+      nodeIntegration: true
+    }
   });
 
   win.on('closed', function () {

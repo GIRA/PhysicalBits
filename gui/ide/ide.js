@@ -1,3 +1,7 @@
+const electron = require('electron');
+const { dialog } = electron ? electron.remote : {};
+const fs = require('fs');
+
 ﻿let IDE = (function () {
 
   let layout, defaultLayoutConfig;
@@ -119,9 +123,21 @@
   }
 
   function initializeTopBar() {
+    if (electron) {
+      $("#save-button").show();
+      $("#save-as-button").show();
+      $("#download-button").hide();
+    } else {
+      $("#save-button").hide();
+      $("#save-as-button").hide();
+      $("#download-button").show();
+    }
     $("#new-button").on("click", newProject);
     $("#open-button").on("click", openProject);
+    $("#save-button").on("click", saveProject);
+    $("#save-as-button").on("click", saveAsProject);
     $("#download-button").on("click", downloadProject);
+
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
@@ -1010,27 +1026,82 @@
   }
 
   function openProject() {
-    let input = $("#open-file-input").get(0);
-    input.onchange = function () {
-      let file = input.files[0];
-      input.value = null;
-      if (file == undefined) return;
-      $("#file-name").text(file.name);
+    function errorHandler(err) {
+      console.log(err);
+      appendToOutput({text: "Error attempting to read the project file", type: "error"});
+    }
 
-      let reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          let json = e.target.result;
-          let ui = JSON.parse(json);
-          setUIState(ui);
-        } catch (err) {
-          console.log(err);
-          appendToOutput({text: "Error attempting to read the project file", type: "error"});
+    if (dialog && fs) {
+      dialog.showOpenDialog({
+        filters: [{name: "Physical Bits project", extensions: ["phb"]}],
+        properties: ["openFile"]
+      }).then(function (response) {
+        if (!response.canceled) {
+          let path = response.filePaths[0];
+          fs.promises.readFile(path, "utf8").then(contents => {
+            try {
+              let ui = JSON.parse(contents);
+              setUIState(ui);
+              $("#file-name").text(path);
+            } catch (err) {
+              errorHandler(err);
+            }
+          }).catch(errorHandler);
         }
+      });
+    } else {
+      let input = $("#open-file-input").get(0);
+      input.onchange = function () {
+        let file = input.files[0];
+        input.value = null;
+        if (file == undefined) return;
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            let json = e.target.result;
+            let ui = JSON.parse(json);
+            setUIState(ui);
+            $("#file-name").text(file.name);
+          } catch (err) {
+            errorHandler(err);
+          }
+        };
+        reader.readAsText(file);
       };
-      reader.readAsText(file);
-    };
-    input.click();
+      input.click();
+    }
+  }
+
+  function saveProject() {
+    let path = $("#file-name").text();
+    if (!path) { saveAsProject(); }
+    else {
+      let ui = getUIState();
+      let json = JSON.stringify(ui);
+      fs.promises.writeFile(path, json, "utf8").catch(err => {
+        console.log(err);
+      });
+    }
+  }
+
+  function saveAsProject() {
+    if (!dialog) return;
+    dialog.showSaveDialog({
+      defaultPath: "roboliga.phb",
+      filters: [{name: "Physical Bits project", extensions: ["phb"]}],
+      properties: ["openFile"]
+    }).then(function (response) {
+      if (!response.canceled) {
+        let path = response.filePath;
+        $("#file-name").text(path);
+        let ui = getUIState();
+        let json = JSON.stringify(ui);
+        fs.promises.writeFile(path, json, "utf8").catch(err => {
+          console.log(err);
+        });
+      }
+    })
   }
 
   function downloadProject() {
@@ -1046,7 +1117,7 @@
         let ui = getUIState();
         let json = JSON.stringify(ui);
         let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, fileName);
+        saveAs(blob, fileName, { autoBom: false });
       } catch (err) {
         console.log(err);
         appendToOutput({text: "Error attempting to write the project file", type: "error"});
