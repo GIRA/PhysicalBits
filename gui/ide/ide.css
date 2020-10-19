@@ -178,7 +178,7 @@
   }
 
   .lm_goldenlayout {
-    /* HACK(Richo): This removes the background image that comes with the light-theme */
+    /* HACK(Richo): This removes the background image that comes with goldenlayout's theme */
     background: inherit !important;
   }
 
