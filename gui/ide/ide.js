@@ -138,6 +138,8 @@ const fs = require('fs');
     $("#save-as-button").on("click", saveAsProject);
     $("#download-button").on("click", downloadProject);
 
+    $("#program-error").on("click", verify);
+
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
