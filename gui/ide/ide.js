@@ -1364,7 +1364,9 @@ const fs = require('fs');
     lastProgram = { code: program, type: type };
 
     // TODO(Richo): This is a mess!
-    if (!$("#file-saved").is(":visible")) {
+    if (electron &&
+        $("#file-name").text() &&
+        !$("#file-saved").is(":visible")) {
       $("#file-dirty").show();
     }
 
