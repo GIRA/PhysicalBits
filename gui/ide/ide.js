@@ -1330,11 +1330,11 @@ const fs = require('fs');
 	}
 
   function success() {
-    $("#container").css("background", "");
+    $("#program-error").hide();
   }
 
   function error() {
-    $("#container").css("background", "linear-gradient(0deg, rgba(0,0,0,1) 96%, rgba(255,0,0,1) 100%)");
+    $("#program-error").show();
   }
 
 	function autorun() {

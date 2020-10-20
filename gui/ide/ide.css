@@ -96,6 +96,11 @@
     width: 117%;
   }
 
+  #program-error {
+    font-size: x-large;
+    color: red;
+  }
+
   #controls-panel {
     transform: scale(0.85);
     transform-origin: 0 0;
