@@ -937,6 +937,50 @@ const fs = require('fs');
     UziBlock.resizeWorkspace();
   }
 
+  function saveToFile(path) {
+    function errorHandler(err) {
+      console.log(err);
+      appendToOutput({text: "Error attempting to write the project file", type: "error"});
+    }
+    function getSerializedProgram() {
+      let data = {
+        blockly: UziBlock.getProgram(),
+        code: getTextualCode(),
+      };
+      let json = JSON.stringify(data);
+      return json;
+    }
+
+    if (fs) {
+      function saving() {
+        if ($("#file-saved").is(":visible")) return;
+        $("#file-saving").show();
+        $("#file-saved").hide();
+      }
+
+      function saved() {
+        $("#file-saving").hide();
+        $("#file-saved").show();
+        setTimeout(() => {
+          $("#file-saving").hide();
+          $("#file-saved").hide();
+        }, 1000);
+      }
+
+      saving();
+      let program = getSerializedProgram();
+      fs.promises.writeFile(path, program, "utf8").then(saved).catch(errorHandler);
+    } else {
+      try {
+        let program = getSerializedProgram();
+        let blob = new Blob([program], {type: "text/plain;charset=utf-8"});
+        saveAs(blob, path, { autoBom: false });
+      } catch (err) {
+        errorHandler(err);
+      }
+    }
+  }
+
 	function restoreFromLocalStorage() {
     try {
       let ui = {
@@ -1044,6 +1088,16 @@ const fs = require('fs');
       appendToOutput({text: "Error attempting to read the project file", type: "error"});
     }
 
+    function loadSerializedProgram(contents) {
+      let program = JSON.parse(contents);
+      if (program.blockly != undefined) {
+        UziBlock.setProgram(program.blockly);
+      }
+      if (program.code != undefined) {
+        codeEditor.setValue(program.code);
+      }
+    }
+
     if (dialog && fs) {
       dialog.showOpenDialog({
         filters: [{name: "Physical Bits project", extensions: ["phb"]}],
@@ -1053,8 +1107,7 @@ const fs = require('fs');
           let path = response.filePaths[0];
           fs.promises.readFile(path, "utf8").then(contents => {
             try {
-              let ui = JSON.parse(contents);
-              setUIState(ui);
+              loadSerializedProgram(contents);
               $("#file-name").text(path);
               scheduleAutorun(true, "OPEN PROJECT!");
             } catch (err) {
@@ -1073,9 +1126,7 @@ const fs = require('fs');
         let reader = new FileReader();
         reader.onload = function(e) {
           try {
-            let json = e.target.result;
-            let ui = JSON.parse(json);
-            setUIState(ui);
+            loadSerializedProgram(e.target.result);
             $("#file-name").text(file.name);
             scheduleAutorun(true, "OPEN PROJECT!");
           } catch (err) {
@@ -1088,31 +1139,11 @@ const fs = require('fs');
     }
   }
 
-  function saving() {
-    if ($("#file-saved").is(":visible")) return;
-    $("#file-saving").show();
-    $("#file-saved").hide();
-  }
-
-  function saved() {
-    $("#file-saving").hide();
-    $("#file-saved").show();
-    setTimeout(() => {
-      $("#file-saving").hide();
-      $("#file-saved").hide();
-    }, 1000);
-  }
-
   function saveProject() {
     let path = $("#file-name").text();
     if (!path) { saveAsProject(); }
     else {
-      saving();
-      let ui = getUIState();
-      let json = JSON.stringify(ui);
-      fs.promises.writeFile(path, json, "utf8").then(saved).catch(err => {
-        console.log(err);
-      });
+      saveToFile(path);
     }
   }
 
@@ -1126,12 +1157,7 @@ const fs = require('fs');
       if (!response.canceled) {
         let path = response.filePath;
         $("#file-name").text(path);
-        saving();
-        let ui = getUIState();
-        let json = JSON.stringify(ui);
-        fs.promises.writeFile(path, json, "utf8").then(saved).catch(err => {
-          console.log(err);
-        });
+        saveToFile(path);
       }
     })
   }
@@ -1145,15 +1171,7 @@ const fs = require('fs');
         fileName += ".phb";
       }
       $("#file-name").text(fileName);
-      try {
-        let ui = getUIState();
-        let json = JSON.stringify(ui);
-        let blob = new Blob([json], {type: "text/plain;charset=utf-8"});
-        saveAs(blob, fileName, { autoBom: false });
-      } catch (err) {
-        console.log(err);
-        appendToOutput({text: "Error attempting to write the project file", type: "error"});
-      }
+      saveToFile(fileName);
     });
   }
 
