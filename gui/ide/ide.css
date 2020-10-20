@@ -99,6 +99,27 @@
   #program-error {
     font-size: x-large;
     color: red;
+
+    transform: scale(1.15);
+    animation: 0.52s shake cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    0% {
+      transform: scale(1.15) translate3d(-150px, 0, 0);
+    }
+    10%, 90% {
+      transform: scale(1.15) translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+      transform: scale(1.15) translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+      transform: scale(1.15) translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+      transform: scale(1.15) translate3d(4px, 0, 0);
+    }
   }
 
   #controls-panel {
