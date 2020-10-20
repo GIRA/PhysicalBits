@@ -959,6 +959,7 @@ const fs = require('fs');
       }
 
       function saved() {
+        $("#file-dirty").hide();
         $("#file-saving").hide();
         $("#file-saved").show();
         setTimeout(() => {
@@ -1359,6 +1360,11 @@ const fs = require('fs');
 
     dirtyBlocks = dirtyCode = false;
     lastProgram = { code: program, type: type };
+
+    // TODO(Richo): This is a mess!
+    if (!$("#file-saved").is(":visible")) {
+      $("#file-dirty").show();
+    }
 
     let connected = Uzi.state.isConnected;
     let interactive = $("#interactive-checkbox").get(0).checked;
