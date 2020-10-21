@@ -1368,6 +1368,8 @@ const fs = require('fs');
         $("#file-name").text() &&
         !$("#file-saved").is(":visible")) {
       $("#file-dirty").show();
+    } else {
+      $("#file-dirty").hide();
     }
 
     let connected = Uzi.state.isConnected;
