@@ -15,7 +15,7 @@ Promise.each = function(arr, fn) {
   }, Promise.resolve());
 }
 
-const appName = "PhysicalBITS";
+const appName = "PhysicalBits";
 const releasesFolder = "out";
 const version = process.argv[2];
 if (!version) {
