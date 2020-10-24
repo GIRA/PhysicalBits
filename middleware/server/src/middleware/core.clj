@@ -10,8 +10,8 @@
 
 (def project-name
   ; TODO(Richo): Figure out a way of reading this values from the project.clj
-  (let [project-name "UziScript middleware"
-        project-version "0.3.0-SNAPSHOT"]
+  (let [project-name "Physical Bits middleware"
+        project-version "0.4.0-SNAPSHOT"]
     (format "%s (%s)" project-name project-version)))
 
 (def cli-options

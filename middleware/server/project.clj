@@ -1,6 +1,6 @@
-(defproject middleware "0.3.0-SNAPSHOT"
-  :description "UziScript middleware"
-  :url "https://github.com/GIRA/UziScript"
+(defproject middleware "0.4.0-SNAPSHOT"
+  :description "Physical Bits middleware"
+  :url "https://gira.github.io/PhysicalBits/"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
