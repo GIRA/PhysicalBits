@@ -1,5 +1,5 @@
-(defproject middleware "0.4.0-SNAPSHOT"
-  :description "Physical Bits middleware"
+(defproject middleware "1.0.0-SNAPSHOT"
+  :description "Physical Bits server"
   :url "https://gira.github.io/PhysicalBits/"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
