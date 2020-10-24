@@ -10,9 +10,11 @@ Once the server jar is generated you can start the electron app by running:
 
     $ npm start
 
+![electron](/docs/img/electron.png)
+
 ### Configuration
 
-The app uses a configuration file called `config.json` with just three parameters:
+You *probably* won't need to change this but the app uses a small configuration file called `config.json` with just three parameters:
 
 * `"startServer"`: If true, it will start the server by running either `start.bat` (on Windows) or `start.sh` (on linux and macOS).
 * `"index"`: The path to the IDE html file that will be used for the main window.
