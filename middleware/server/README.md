@@ -20,6 +20,10 @@ You can then open a browser pointing to the IDE by running the `open-browser` fu
 
     $ user=> (open-browser)
 
+If everything goes well you should see something like this:
+
+![repl](/docs/img/repl.png)
+
 ## Compilation
 
 To build a jar file you can close the REPL and execute:
