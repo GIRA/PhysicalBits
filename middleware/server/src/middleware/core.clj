@@ -8,11 +8,18 @@
             [middleware.device.controller :as dc])
   (:gen-class))
 
+(defmacro project-data [key]
+  "HACK(Richo): This macro allows to read the project.clj file at compile time"
+  `~(let [data (-> "project.clj" slurp read-string)
+          name (str (nth data 1))
+          version (nth data 2)
+          rest (drop 3 data)]
+      ((apply assoc {:name name, :version version} rest) key)))
+
 (def project-name
-  ; TODO(Richo): Figure out a way of reading this values from the project.clj
-  (let [project-name "Physical Bits middleware"
-        project-version "0.4.0-SNAPSHOT"]
-    (format "%s (%s)" project-name project-version)))
+  (let [description (project-data :description)
+        version (project-data :version)]
+    (format "%s (%s)" description version)))
 
 (def cli-options
   [["-u" "--uzi PATH" "Uzi libraries folder (default: uzi)"
