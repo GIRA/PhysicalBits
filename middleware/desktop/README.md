@@ -14,9 +14,9 @@ Once the server jar is generated you can start the electron app by running:
 
 The app uses a configuration file called `config.json` with just three parameters:
 
-* "startServer": If true, it will start the server by running either `start.bat` (on Windows) or `start.sh` (on linux and macOS).
-* "index": The path to the IDE html file that will be used for the main window.
-* "devTools": If true, the main window will open chrome developer tools automatically.
+* `"startServer"`: If true, it will start the server by running either `start.bat` (on Windows) or `start.sh` (on linux and macOS).
+* `"index"`: The path to the IDE html file that will be used for the main window.
+* `"devTools"`: If true, the main window will open chrome developer tools automatically.
 
 ## Compilation
 
