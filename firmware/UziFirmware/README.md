@@ -2,7 +2,7 @@
 
 The Physical Bits firmware is just a simple Arduino sketch written in C++. We designed it this way because we wanted users to be able to easily upload it with the [Arduino IDE](https://www.arduino.cc/en/Main/Software) (and also modify it, if necessary).
 
-![firmware](../img/firmware.png)
+![firmware](/docs/img/firmware.png)
 
 ## Quick start
 

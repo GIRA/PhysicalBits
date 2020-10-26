@@ -2,7 +2,7 @@
 
 This project is a very simple (and limited) simulator for the Arduino platform. We followed the instructions found [here](https://playground.arduino.cc/Code/VisualStudio/) (and modified the code a little). After that we added a C# GUI to make the simulator more interactive.
 
-![simulator](../img/simulator.png)
+![simulator](/docs/img/simulator.png)
 
 The goal of this project is to be able to develop, debug, and test the firmware without an actual Arduino board. In that regard, this project has been very successful.
 
