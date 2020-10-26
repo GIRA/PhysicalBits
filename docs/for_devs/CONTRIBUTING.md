@@ -61,6 +61,6 @@ The source code for the electron wrapper can be found here: [/middleware/desktop
 
 ## GUI
 
-All the web tools are written in plain html and javascript. By default, the middleware server takes care of hosting these files but you can host them in any way you want as long as the middleware server is accessible and running.
+All the web tools are written in plain HTML, CSS, and Javascript. By default, the middleware server takes care of hosting these files but you can host them in any way you want as long as the middleware server is accessible and running.
 
 You'll find the source code in here: [/gui](https://github.com/GIRA/PhysicalBits/tree/master/gui).
