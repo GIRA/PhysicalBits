@@ -5,8 +5,8 @@
 | Platform | File(s) |
 | :---: |:---:|
 | ![web](https://gira.github.io/PhysicalBits/img/browsers.png)<br>Web | [PhysicalBITS.v0.4.0-web.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-web.zip) <br> (Cross-platform)|
-| ![web](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBITS.v0.4.0-win32-ia32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-ia32.zip) (32 bits)<br>[PhysicalBITS.v0.4.0-win32-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-x64.zip) (64 bits) |
-| ![web](https://gira.github.io/PhysicalBits/img/macos.png)<br>macOS | [PhysicalBITS.v0.4.0-darwin-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-darwin-x64.zip) |
+| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBITS.v0.4.0-win32-ia32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-ia32.zip) (32 bits)<br>[PhysicalBITS.v0.4.0-win32-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-x64.zip) (64 bits) |
+| ![macOS](https://gira.github.io/PhysicalBits/img/macos.png)<br>macOS | [PhysicalBITS.v0.4.0-darwin-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-darwin-x64.zip) |
 
 For older versions visit our [releases page](https://github.com/GIRA/PhysicalBits/releases).
 
@@ -30,6 +30,43 @@ __IMPORTANT__: On some boards a "Low memory" warning is displayed after compilat
 
 ## Starting the application
 
-The web version should work on all platforms, after unzipping simply run the `start.bat` (on Windows) or `start.sh` (on Linux or macOS). After a few seconds a browser should open with the Physical Bits IDE.
+### Web
 
-The desktop versions use [electron](https://www.electronjs.org/) to provide a native experience but in the background they run the same server as the web version. Simply run the `PhysicalBits.exe` (on Windows) or `PhysicalBits.app` (on macOS).
+The web version should work on all platforms.
+
+First, extract the contents of the zip file you've just downloaded into a folder of your preference.
+
+You should see the following files:
+
+![start_web.1](./img/start_web.1.png)
+
+Then, if your on Windows just run the `start.bat`. If your on Linux or macOS run the `start.sh`.
+
+You should see a terminal pop up and, after a few seconds, a browser should open with the Physical Bits IDE.
+
+![start_web.2](./img/start_web.2.png)
+
+__IMPORTANT__: If, for some reason the IDE doesn't open automatically, you can do it yourself by pointing your browser to [localhost:3000/ide/index.html](http://localhost:3000/ide/index.html).
+
+![start_web.3](./img/start_web.3.png)
+
+You can start programming now!
+
+### Desktop
+
+The desktop versions use [electron](https://www.electronjs.org/) to provide a native experience but in the background they run the same server as the web version.
+
+First, extract the contents from the zip file into a folder of your preference.
+
+Depending on your operating system, you should see something like this:
+
+![start_desktop.1](./img/start_desktop.1.png)
+
+Now, you just have to run the `PhysicalBits.exe` (on Windows) or `PhysicalBits.app` (on macOS).
+
+The following loading screen should appear right away and, after a few seconds of the robot bouncing impatiently, the IDE should open.
+
+![start_desktop.2](./img/start_desktop.2.png)
+![start_desktop.3](./img/start_desktop.3.png)
+
+Have fun programming!
