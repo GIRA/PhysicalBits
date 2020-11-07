@@ -64,9 +64,9 @@ Depending on your operating system, you should see something like this:
 
 Now, you just have to run the `PhysicalBits.exe` (on Windows) or `PhysicalBits.app` (on macOS).
 
-The following loading screen should appear right away and, after a few seconds of the robot bouncing impatiently, the IDE should open.
+The following loading screen should appear right away and, after a few seconds of the robot jumping impatiently, the IDE should open.
 
-![start_desktop.2](./img/start_desktop.2.png)
+![start_desktop.2](./img/impatient_bot.gif)
 ![start_desktop.3](./img/start_desktop.3.png)
 
 Have fun programming!
