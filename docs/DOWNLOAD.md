@@ -26,6 +26,8 @@ The `UziFirmware.ino` can be found on the `/firmware` directory inside the zip y
 
 This step needs to be done once for every board you want to use with Physical Bits. We're working on making this step automatic but, for now, you'll need to do it yourself.
 
+__IMPORTANT__: On some boards a "Low memory" warning is displayed after compilation. Don't worry about it, that is by design. The firmware will statically allocate a big chunk of memory to store the user programs at startup. We do this to be able to control how the memory is used and to properly detect and handle memory issues.
+
 ## Starting the application
 
 The web version should work on all platforms, after unzipping simply run the `start.bat` (on Windows) or `start.sh` (on Linux or macOS). After a few seconds a browser should open with the Physical Bits IDE.
