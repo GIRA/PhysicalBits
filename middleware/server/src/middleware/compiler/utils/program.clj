@@ -66,3 +66,6 @@
   (.indexOf (map :name (concat (:arguments script)
                                (:locals script)))
             (:name variable)))
+
+(defn instructions [program]
+  (mapcat :instructions (:scripts program)))
