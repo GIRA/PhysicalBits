@@ -197,4 +197,4 @@
           (print-node (:right node))))
 
 (defmethod print-node :default [node]
-  (throw (ex-info "Not Implemented node reached: " node)))
+  (throw (ex-info "Not Implemented node reached: " {:node node})))
