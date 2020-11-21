@@ -1,28 +1,27 @@
 (ns middleware.test-utils
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.data :as data]
-            ;[ultra.test :as ultra-test]
-            ))
-
-#_(defmethod assert-expr 'equivalent? [msg form]
-  (let [args (rest form)
-        pred (first form)]
-    `(let [values# (list ~@args)
-           result# (apply ~pred values#)
-           expected#  (first values#)
-           actual# (second values#)]
-       (if result#
-         (do-report {:type :pass
-                     :message ~msg
-                     :expected expected#
-                     :actual actual#})
-         (do-report {:type :fail
-                     :message ~msg
-                     :expected expected#
-                     :actual actual#
-                     :diffs (ultra-test/generate-diffs expected# [actual#])}))
-       result#)))
+            [middleware.compiler.compiler :as cc]))
 
 ; TODO(Richo): Change implementation for sets and vectors so that it checks equality
 (defn equivalent? [a b]
   (-> (data/diff a b) first nil?))
+
+
+(def ^:dynamic *test-name* nil)
+
+(defmacro uzitest
+  "Tests declared with uzitest have access to the *test-name* dynamic var"
+  [name & body]
+  `(deftest ~name
+     (binding [*test-name* ~(str name)]
+       (do ~@body))))
+
+(defn compile-ast [ast]
+  ;(println *test-name*)
+  (:compiled (cc/compile-tree ast "")))
+
+(defn compile-string [src]
+  ;(println *test-name*)
+  (:compiled (cc/compile-uzi-string src)))
