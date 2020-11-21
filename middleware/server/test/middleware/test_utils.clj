@@ -8,20 +8,8 @@
 (defn equivalent? [a b]
   (-> (data/diff a b) first nil?))
 
-
-(def ^:dynamic *test-name* nil)
-
-(defmacro uzitest
-  "Tests declared with uzitest have access to the *test-name* dynamic var"
-  [name & body]
-  `(deftest ~name
-     (binding [*test-name* ~(str name)]
-       (do ~@body))))
-
 (defn compile-ast [ast]
-  ;(println *test-name*)
   (:compiled (cc/compile-tree ast "")))
 
 (defn compile-string [src]
-  ;(println *test-name*)
   (:compiled (cc/compile-uzi-string src)))
