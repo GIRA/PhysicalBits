@@ -28,20 +28,17 @@
               program-or-string
               (cg/print program-or-string))
         program (apply cc/compile-uzi-string src args)
-        stats {:ns ns-name
-               :test test-name
-               :instruction-count (count (p/instructions (:compiled program)))
+        stats {:instruction-count (count (p/instructions (:compiled program)))
                :global-count (count (:globals (:compiled program)))
                :encoded-size (count (en/encode (:compiled program)))
                :src src}]
     (swap! global-stats update
            (str ns-name "/" test-name)
-           #(conj % (assoc stats :i (count %))))))
+           #(conj % (assoc stats :name (str ns-name "/" test-name "#" (count %)))))))
 
 (defn- write-compile-stats []
-  (let [cols [:ns :test :i :instruction-count :global-count :encoded-size]
-        rows (sort-by #(str (:ns %) "/" (:test %) "#" (:i %))
-                      (apply concat (vals @global-stats)))
+  (let [cols [:name :instruction-count :global-count :encoded-size]
+        rows (sort-by :name (apply concat (vals @global-stats)))
         ]
     (with-open [w (io/writer compile-stats-path)]
       ; Columns
