@@ -11,8 +11,6 @@
 ; Squeak encoder. They also produce the input programs for the VM tests.
 
 (def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
-(defn test-name []
-  (str/join "." (map (comp :name meta) *testing-vars*)))
 
 (defn write-file [program]
   (let [file-name (str output-path (test-name))
