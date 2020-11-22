@@ -21,26 +21,27 @@
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.1.csv")
 (def ^:private global-stats (atom {}))
 
-(defn register-program! [program-or-string]
+(defn register-program! [program-or-string & args]
   (let [ns-name (ns-name (:ns (meta (first *testing-vars*))))
         test-name (test-name)
         src (if (string? program-or-string)
               program-or-string
               (cg/print program-or-string))
-        program (cc/compile-uzi-string src)
+        program (apply cc/compile-uzi-string src args)
         stats {:ns ns-name
                :test test-name
                :instruction-count (count (p/instructions (:compiled program)))
-               :global-count (count (p/all-globals (:compiled program)))
-               :encoded-size (count (en/encode (:compiled program)))}]
-    (swap! global-stats assoc
+               :global-count (count (:globals (:compiled program)))
+               :encoded-size (count (en/encode (:compiled program)))
+               :src src}]
+    (swap! global-stats update
            (str ns-name "/" test-name)
-           stats)))
+           #(conj % (assoc stats :i (count %))))))
 
 (defn- write-compile-stats []
-  (let [cols [:ns :test :instruction-count :global-count :encoded-size]
-        rows (sort-by #(str (:ns %) "/" (:test %))
-                      (vals @global-stats))
+  (let [cols [:ns :test :i :instruction-count :global-count :encoded-size]
+        rows (sort-by #(str (:ns %) "/" (:test %) "#" (:i %))
+                      (apply concat (vals @global-stats)))
         ]
     (with-open [w (io/writer compile-stats-path)]
       ; Columns
