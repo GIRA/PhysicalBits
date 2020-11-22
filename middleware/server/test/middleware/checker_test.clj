@@ -75,7 +75,9 @@
         checker/check-tree)))
 
 (def invalid? check)
-(def valid? check)
+(defn valid? [src]
+  (register-program! src :lib-dir "../../uzi/tests")
+  (check src))
 
 (deftest block-should-only-contain-statements
   (is (valid? "task foo() {}"))
