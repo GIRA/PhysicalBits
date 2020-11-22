@@ -21,7 +21,7 @@
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.1.csv")
 (def ^:private global-stats (atom {}))
 
-(defn- register-stats! [program-or-string]
+(defn register-program! [program-or-string]
   (let [ns-name (ns-name (:ns (meta (first *testing-vars*))))
         test-name (test-name)
         src (if (string? program-or-string)
@@ -36,14 +36,6 @@
     (swap! global-stats assoc
            (str ns-name "/" test-name)
            stats)))
-
-(defn compile-ast [ast]
-  (register-stats! ast)
-  (:compiled (cc/compile-tree ast "")))
-
-(defn compile-string [src]
-  (register-stats! src)
-  (:compiled (cc/compile-uzi-string src)))
 
 (defn- write-compile-stats []
   (let [cols [:ns :test :instruction-count :global-count :encoded-size]

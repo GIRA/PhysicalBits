@@ -6,6 +6,7 @@
   (:use [middleware.test-utils]))
 
 (defn compile [ast]
+  (register-program! ast)
   (:compiled (cc/compile-tree ast "")))
 
 (deftest empty-program-test
