@@ -4,9 +4,11 @@
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.program :refer [value-size]]
-            [middleware.compiler.emitter :as emit]))
+            [middleware.compiler.emitter :as emit])
+  (:use [middleware.test-utils]))
 
 (defn compile [src]
+  (register-program! src)
   (:compiled (cc/compile-uzi-string src)))
 
 (defn encode [src]

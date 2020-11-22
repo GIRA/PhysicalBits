@@ -1,8 +1,12 @@
 (ns middleware.code-generator-test
   (:refer-clojure :exclude [print])
   (:require [clojure.test :refer :all]
-            [middleware.code-generator.code-generator :refer :all ])
+            [middleware.code-generator.code-generator :as cg])
   (:use [middleware.test-utils]))
+
+(defn print [ast]
+  (register-program! ast)
+  (cg/print ast))
 
 (deftest empty-program
   (testing "An Empty program should return an empty string"

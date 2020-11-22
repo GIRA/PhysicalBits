@@ -4,13 +4,15 @@
             [middleware.compiler.linker :as l])
   (:use [middleware.test-utils]))
 
+(def lib-dir "../../uzi/tests")
+
 (defn compile-uzi-string [src]
-  (:compiled (cc/compile-uzi-string src
-                                    :lib-dir "../../uzi/tests")))
+  (register-program! src :lib-dir lib-dir)
+  (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
 
 (defn link [ast]
   (-> ast
-      (l/resolve-imports "../../uzi/tests")
+      (l/resolve-imports lib-dir)
       ; HACK(Richo): I remove the :primitives key because it makes the diff hard to read
       (dissoc :primitives)))
 

@@ -1,14 +1,14 @@
 (ns middleware.parser-test
   (:require [clojure.test :refer :all]
-            [middleware.parser.parser :as parser :refer [parse]]
-            )
+            [middleware.parser.parser :as pp])
   (:use [middleware.test-utils]))
 
+(def exclusions '#{custom-operator-precedence})
 
-
-(deftest sanity-check
-  (testing "Sanity check."
-    (is (= 1 1))))
+(defn parse [src]
+  (if-not (contains? exclusions (symbol (test-name)))
+    (register-program! src))
+  (pp/parse src))
 
 (deftest parsing-negative-numbers-larger-than-minus-1
   (let [src "task foo() { return -0.5; }"
