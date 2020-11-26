@@ -4,6 +4,7 @@
             [clojure.data :as data]
             [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.core.async :as a :refer [go <!!]]
             [middleware.sound-notification :as sound]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
@@ -19,26 +20,33 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CompileStats ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.1.csv")
-(def ^:private global-stats (atom {}))
+(def ^:private programs (atom {}))
 
 (defn register-program! [program-or-string & args]
   (let [ns-name (ns-name (:ns (meta (first *testing-vars*))))
         test-name (test-name)
-        src (if (string? program-or-string)
-              program-or-string
-              (cg/print program-or-string))
-        program (apply cc/compile-uzi-string src args)
-        stats {:instruction-count (count (p/instructions (:compiled program)))
-               :global-count (count (:globals (:compiled program)))
-               :encoded-size (count (en/encode (:compiled program)))
-               :src src}]
-    (swap! global-stats update
-           (str ns-name "/" test-name)
-           #(conj % (assoc stats :name (str ns-name "/" test-name "#" (count %)))))))
+        key (str ns-name "/" test-name)]
+    (swap! programs update
+           key
+           #(conj % {:name (str key "#" (count %))
+                     :program-or-string program-or-string
+                     :args args}))))
+
+(defn- collect-stats []
+  (map (fn [{:keys [name program-or-string args]}]
+         (let [src (if (string? program-or-string)
+                     program-or-string
+                     (cg/print program-or-string))
+               program (apply cc/compile-uzi-string src args)]
+           {:instruction-count (count (p/instructions (:compiled program)))
+            :global-count (count (:globals (:compiled program)))
+            :encoded-size (count (en/encode (:compiled program)))
+            :name name}))
+       (apply concat (vals @programs))))
 
 (defn- write-compile-stats []
   (let [cols [:name :instruction-count :global-count :encoded-size]
-        rows (sort-by :name (apply concat (vals @global-stats)))
+        rows (sort-by :name (collect-stats))
         aggregate (fn [name f]
                     (into {:name name}
                           (map (fn [k] [k (apply f (mapv k rows))])
@@ -71,12 +79,12 @@
       ; Rows
       (doseq [row rows]
         (write-row! w (map row cols)))))
-  (reset! global-stats {}))
+  (reset! programs {}))
 
 (defmethod report :summary [m]
   (sound/play! (and (zero? (:fail m))
                     (zero? (:error m))))
-  (write-compile-stats)
+  (a/thread (write-compile-stats))
   (with-test-out
     (println "\nRan" (:test m) "tests containing"
              (+ (:pass m) (:fail m) (:error m)) "assertions.")
