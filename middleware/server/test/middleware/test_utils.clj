@@ -22,21 +22,21 @@
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
 (def ^:private programs (atom {}))
 
-(defn register-program! [program-or-string & args]
+(defn register-program! [ast-or-src & args]
   (let [ns-name (ns-name (:ns (meta (first *testing-vars*))))
         test-name (test-name)
         key (str ns-name "/" test-name)]
     (swap! programs update
            key
            #(conj % {:name (str key "#" (count %))
-                     :program-or-string program-or-string
+                     :ast-or-src ast-or-src
                      :args args}))))
 
 (defn- collect-stats []
-  (map (fn [{:keys [name program-or-string args]}]
-         (let [src (if (string? program-or-string)
-                     program-or-string
-                     (cg/print program-or-string))
+  (map (fn [{:keys [name ast-or-src args]}]
+         (let [src (if (string? ast-or-src)
+                     ast-or-src
+                     (cg/print ast-or-src))
                program (apply cc/compile-uzi-string src args)]
            {:instruction-count (count (p/instructions (:compiled program)))
             :global-count (count (:globals (:compiled program)))
