@@ -44,6 +44,10 @@
             :name name}))
        (apply concat (vals @programs))))
 
+(defn- write-row! [writer row]
+  (.write writer (str/join "," (map #(if (ratio? %) (double %) %) row)))
+  (.newLine writer))
+
 (defn- write-compile-stats []
   (let [cols [:name :instruction-count :global-count :encoded-size]
         rows (sort-by :name (collect-stats))
@@ -63,11 +67,7 @@
                                                 (nth sorted midPoint)
                                                 (/ (+ (nth sorted midPoint)
                                                       (nth sorted (dec midPoint)))
-                                                   2)))))
-
-        write-row! (fn [w r]
-                     (.write w (str/join "," (map #(if (ratio? %) (double %) %) r)))
-                     (.newLine w))]
+                                                   2)))))]
     (with-open [w (io/writer compile-stats-path)]
       ; Columns
       (write-row! w (map name cols))
