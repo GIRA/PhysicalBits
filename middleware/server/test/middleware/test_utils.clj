@@ -19,7 +19,7 @@
   (str/join "." (map (comp :name meta) *testing-vars*)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CompileStats ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.1.csv")
+(def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
 (def ^:private programs (atom {}))
 
 (defn register-program! [program-or-string & args]
