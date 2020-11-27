@@ -23,7 +23,7 @@ var btn = $("<div>")
 		.append($("<span>")
 			.addClass("text-uppercase")
 			.text("Get Physical Bits!")));
-var a = $("a:contains('Get Physical Bits')");
+var a = $(".toctree a:contains('Get Physical Bits')");
 a.next().remove();
 a.replaceWith(btn);
 
