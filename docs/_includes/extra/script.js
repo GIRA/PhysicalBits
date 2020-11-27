@@ -5,7 +5,6 @@ looking for a proper solution. This decision will probably come back to bite me.
 */
 
 /* Display the link to the DOWNLOAD page as a button. */
-/*
 var btn = $("<div>")
 	.css("margin", "10px 15px")
 	.append($("<a>")
@@ -15,7 +14,7 @@ var btn = $("<div>")
 		.addClass("btn-block")
 		.css("color", "black")
 		.css("background-color", "orange")
-		.attr("href", "/PhysicalBits/DOWNLOAD.html")
+		.attr("href", "/PhysicalBits/download/")
 		.attr("type", "button")
 		.append($("<i>")
 			.addClass("fa")
@@ -24,11 +23,9 @@ var btn = $("<div>")
 		.append($("<span>")
 			.addClass("text-uppercase")
 			.text("Download")));
-var ul = $(".toctree :first-child").first();
-if (ul.find(".current").get(0) == undefined) {
-	ul.replaceWith(btn);
-}
-*/
+var a = $("a:contains('Get Physical Bits')");
+a.next().remove();
+a.replaceWith(btn);
 
 /* Increase the font size of the title */
 $(".title a").removeClass("h4").addClass("h2");
