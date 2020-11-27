@@ -22,7 +22,7 @@ var btn = $("<div>")
 			.addClass("mx-2"))
 		.append($("<span>")
 			.addClass("text-uppercase")
-			.text("Download")));
+			.text("Get Physical Bits!")));
 var a = $("a:contains('Get Physical Bits')");
 a.next().remove();
 a.replaceWith(btn);
