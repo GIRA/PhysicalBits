@@ -5,6 +5,7 @@ looking for a proper solution. This decision will probably come back to bite me.
 */
 
 /* Display the link to the DOWNLOAD page as a button. */
+/*
 var btn = $("<div>")
 	.css("margin", "10px 15px")
 	.append($("<a>")
@@ -27,6 +28,7 @@ var ul = $(".toctree :first-child").first();
 if (ul.find(".current").get(0) == undefined) {
 	ul.replaceWith(btn);
 }
+*/
 
 /* Increase the font size of the title */
 $(".title a").removeClass("h4").addClass("h2");
