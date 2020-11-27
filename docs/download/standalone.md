@@ -1,4 +1,4 @@
-# Physical Bits - Standalone
+# Standalone
 
 ## Latest release
 

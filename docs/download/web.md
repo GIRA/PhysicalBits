@@ -1,4 +1,4 @@
-# Physical Bits - Web
+# Web
 
 ## Latest release
 
