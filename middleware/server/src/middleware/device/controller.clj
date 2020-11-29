@@ -403,7 +403,7 @@
 (defn connect
   ([] (connect (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
-                 :or {board UNO, baud-rate 57600}}]
+                 :or {board UNO, baud-rate 9600}}]
    (if (connected?)
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
