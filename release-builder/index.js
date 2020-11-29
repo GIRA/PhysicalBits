@@ -152,7 +152,7 @@ function createStartScripts(path, openBrowser) {
   console.log("Creating start scripts");
   let jre_path = "middleware/jre/bin/";
   if (platform == "win32") {
-    jre_path = jre_path.replaceAll("/", "\\");
+    jre_path = jre_path.replace(/\//g, "\\");
   }
   let cmd = jre_path + "java -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
   if (openBrowser) { cmd += " -o"; }
