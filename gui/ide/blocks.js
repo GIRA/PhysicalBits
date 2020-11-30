@@ -2938,13 +2938,19 @@ let UziBlock = (function () {
     },
     setProgram: function (d) {
       // Check compatibility
-      if (d.version != version) { return; }
+      if (d.version != version) { return false; }
 
-      fromXMLText(d.blocks);
-      motors = d.motors || [];
-      sonars = d.sonars || [];
-      joysticks = d.joysticks || [];
-      variables = d.variables || [];
+      try {
+        fromXMLText(d.blocks);
+        motors = d.motors || [];
+        sonars = d.sonars || [];
+        joysticks = d.joysticks || [];
+        variables = d.variables || [];
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
     },
     getUsedVariables: getUsedVariables,
   }
