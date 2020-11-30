@@ -1437,12 +1437,22 @@ const fs = require('fs');
 	}
 
   function getBlocklyCode() {
-    let code = UziBlock.getGeneratedCode();
-    return JSON.stringify(code);
+    try {
+      let code = UziBlock.getGeneratedCode();
+      return JSON.stringify(code);
+    } catch (err) {
+      console.log(err);
+      return "";
+    }
   }
 
   function getTextualCode() {
-    return codeEditor.getValue();
+    try {
+      return codeEditor.getValue();
+    } catch (err) {
+      console.log(err);
+      return "";
+    }
   }
 
   function updateTopBar() {
