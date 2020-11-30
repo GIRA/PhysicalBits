@@ -1142,6 +1142,10 @@ const fs = require('fs');
       appendToOutput({text: "Error attempting to read the project file", type: "error"});
     }
 
+    // HACK(Richo): Clearing this field will temporarily disable the autosave.
+    // TODO(Richo): This is a mess!!
+    $("#file-name").text("");
+
     function load(path, contents) {
       try {
         loadSerializedProgram(contents);
