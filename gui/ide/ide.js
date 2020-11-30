@@ -1112,9 +1112,6 @@ const fs = require('fs');
       return undefined;
     }
 
-    UziBlock.getWorkspace().clear();
-    codeEditor.setValue("");
-
     let program = JSON.parse(contents);
     let blockly = readFirst(program, ["blockly", "blocks"]);
     let code = readFirst(program, ["code", "program"]);
@@ -1122,9 +1119,17 @@ const fs = require('fs');
     if (blockly != undefined) {
       dirtyBlocks = UziBlock.setProgram(blockly);
     }
+
     if (code != undefined) {
       codeEditor.setValue(code);
       dirtyCode = true;
+    }
+
+    if (!dirtyBlocks) {
+      UziBlock.getWorkspace().clear();
+    }
+    if (!dirtyCode) {
+      codeEditor.setValue("");
     }
   }
 
