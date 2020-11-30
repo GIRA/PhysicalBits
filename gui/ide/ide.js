@@ -949,6 +949,9 @@ const fs = require('fs');
 
   function saveToFile(path) {
     function errorHandler(err) {
+      $("#file-dirty").hide();
+      $("#file-saving").hide();
+      $("#file-saved").hide();
       console.log(err);
       appendToOutput({text: "Error attempting to write the project file", type: "error"});
     }
