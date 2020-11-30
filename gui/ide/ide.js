@@ -122,6 +122,14 @@ const fs = require('fs');
       .then(restoreFromLocalStorage);
   }
 
+  function loadDefaultProgram() {
+    return ajax.GET("default.phb")
+      .then(contents => {
+        loadSerializedProgram(contents);
+        scheduleAutorun(true, "DEFAULT PROGRAM!");
+      });
+  }
+
   function initializeTopBar() {
     if (electron) {
       $("#save-button").show();
@@ -995,7 +1003,11 @@ const fs = require('fs');
         ports: JSON.parse(localStorage["uzi.ports"] || "null"),
       };
       setUIState(ui);
-      scheduleAutorun(true, "LOCALSTORAGE RESTORE!");
+      if (ui.fileName == "" && ui.blockly == null && ui.code == null) {
+        loadDefaultProgram();
+      } else {
+        scheduleAutorun(true, "LOCALSTORAGE RESTORE!");
+      }
     } catch (err) {
       console.log(err);
     }
@@ -1090,20 +1102,20 @@ const fs = require('fs');
     });
   }
 
+  function loadSerializedProgram(contents) {
+    let program = JSON.parse(contents);
+    if (program.blockly != undefined) {
+      UziBlock.setProgram(program.blockly);
+    }
+    if (program.code != undefined) {
+      codeEditor.setValue(program.code);
+    }
+  }
+
   function openProject() {
     function errorHandler(err) {
       console.log(err);
       appendToOutput({text: "Error attempting to read the project file", type: "error"});
-    }
-
-    function loadSerializedProgram(contents) {
-      let program = JSON.parse(contents);
-      if (program.blockly != undefined) {
-        UziBlock.setProgram(program.blockly);
-      }
-      if (program.code != undefined) {
-        codeEditor.setValue(program.code);
-      }
     }
 
     if (dialog && fs) {
