@@ -74,7 +74,8 @@ let UziBlock = (function () {
       text: "HERE BE DRAGONS",
       type: null,
       connections: { up: false, down: false, left: false },
-      color: colors.HIDDEN
+      color: colors.HIDDEN,
+      isTopLevel: true,
     },
 
     // Imports
@@ -97,7 +98,8 @@ let UziBlock = (function () {
       color: colors.HIDDEN,
       postload: function (block) {
         block.setEditable(false);
-      }
+      },
+      isTopLevel: true,
     },
 
     // Tasks
@@ -117,7 +119,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      isTopLevel: true,
     },
     timer: {
       text: "task %1 () %4 %2 / %3 { \n %5 }",
@@ -153,7 +156,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      isTopLevel: true,
     },
     start_task: {
       text: "start %name ;",
@@ -1420,7 +1424,8 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_1args: {
       text: "proc %name ( %arg0 ) { \n %stmts }",
@@ -1449,7 +1454,8 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_2args: {
       text: "proc %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1485,7 +1491,8 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_3args: {
       text: "proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1528,7 +1535,8 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     return: {
       text: "exit ;",
@@ -1658,7 +1666,8 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_1args: {
       text: "func %name ( %arg0 ) { \n %stmts }",
@@ -1687,7 +1696,8 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_2args: {
       text: "func %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1723,7 +1733,8 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_3args: {
       text: "func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1766,7 +1777,8 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     return_value: {
       text: "return %value ;",
@@ -1965,6 +1977,14 @@ let UziBlock = (function () {
           evt.ids.forEach(id => timestamps.set(id, time));
         } else if (evt.type == Blockly.Events.DELETE) {
           evt.ids.forEach(id => timestamps.delete(id));
+        }
+
+        if (evt.type == Blockly.Events.MOVE) {
+          let block = workspace.getBlockById(evt.blockId);
+          if (block != null) {
+            block.setDisabled(evt.newParentId == undefined &&
+                              !spec[block.type].isTopLevel);
+          }
         }
 
 
