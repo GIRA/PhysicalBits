@@ -246,6 +246,7 @@ let BlocksToAST = (function () {
 		}
 	};
 
+	// TODO(Richo): The spec now has this info
 	let topLevelBlocks = ["task", "timer",
 												"import", "here_be_dragons_script",
 												"proc_definition_0args", "proc_definition_1args",
