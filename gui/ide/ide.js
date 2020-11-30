@@ -1043,9 +1043,14 @@ const fs = require('fs');
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
-	      updateAllCaps();
-        updateUziSyntax();
+      } else {
+        $("#autosave-checkbox").get(0).checked    = false;
+        $("#interactive-checkbox").get(0).checked = true;
+        $("#all-caps-checkbox").get(0).checked    = false;
+        $("#uzi-syntax-checkbox").get(0).checked  = false;
       }
+      updateAllCaps();
+      updateUziSyntax();
 
       if (ui.fileName != undefined) {
         $("#file-name").text(ui.fileName);
