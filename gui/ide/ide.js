@@ -126,7 +126,7 @@ const fs = require('fs');
     return ajax.GET("default.phb")
       .then(contents => {
         loadSerializedProgram(contents);
-        scheduleAutorun(true, "DEFAULT PROGRAM!");
+        scheduleAutorun(false, "DEFAULT PROGRAM!");
       });
   }
 
@@ -1006,7 +1006,7 @@ const fs = require('fs');
       if (ui.fileName == "" && ui.blockly == null && ui.code == null) {
         loadDefaultProgram();
       } else {
-        scheduleAutorun(true, "LOCALSTORAGE RESTORE!");
+        scheduleAutorun(false, "LOCALSTORAGE RESTORE!");
       }
     } catch (err) {
       console.log(err);
@@ -1073,11 +1073,12 @@ const fs = require('fs');
       }
 
       if (ui.blockly != undefined) {
-        UziBlock.setProgram(ui.blockly);
+        dirtyBlocks = UziBlock.setProgram(ui.blockly);
       }
 
       if (ui.code != undefined) {
         codeEditor.setValue(ui.code);
+        dirtyCode = true;
       }
 
       if (ui.ports != undefined) {
@@ -1103,12 +1104,27 @@ const fs = require('fs');
   }
 
   function loadSerializedProgram(contents) {
-    let program = JSON.parse(contents);
-    if (program.blockly != undefined) {
-      UziBlock.setProgram(program.blockly);
+    function readFirst(program, selectors) {
+      for (let i = 0; i < selectors.length; i++) {
+        let value = program[selectors[i]];
+        if (value != undefined) return value;
+      }
+      return undefined;
     }
-    if (program.code != undefined) {
-      codeEditor.setValue(program.code);
+
+    UziBlock.getWorkspace().clear();
+    codeEditor.setValue("");
+
+    let program = JSON.parse(contents);
+    let blockly = readFirst(program, ["blockly", "blocks"]);
+    let code = readFirst(program, ["code", "program"]);
+
+    if (blockly != undefined) {
+      dirtyBlocks = UziBlock.setProgram(blockly);
+    }
+    if (code != undefined) {
+      codeEditor.setValue(code);
+      dirtyCode = true;
     }
   }
 
@@ -1118,6 +1134,20 @@ const fs = require('fs');
       appendToOutput({text: "Error attempting to read the project file", type: "error"});
     }
 
+    function load(path, contents) {
+      try {
+        loadSerializedProgram(contents);
+        $("#file-name").text(path);
+        scheduleAutorun(false, "OPEN PROJECT!");
+      } catch (err) {
+        errorHandler(err);
+    		UziBlock.getWorkspace().clear();
+        codeEditor.setValue("");
+        $("#file-name").text("");
+        scheduleAutorun(true, "OPEN PROJECT!");
+      }
+    }
+
     if (dialog && fs) {
       dialog.showOpenDialog({
         filters: [{name: "Physical Bits project", extensions: ["phb"]}],
@@ -1125,15 +1155,9 @@ const fs = require('fs');
       }).then(function (response) {
         if (!response.canceled) {
           let path = response.filePaths[0];
-          fs.promises.readFile(path, "utf8").then(contents => {
-            try {
-              loadSerializedProgram(contents);
-              $("#file-name").text(path);
-              scheduleAutorun(true, "OPEN PROJECT!");
-            } catch (err) {
-              errorHandler(err);
-            }
-          }).catch(errorHandler);
+          fs.promises.readFile(path, "utf8")
+            .then(contents => load(path, contents))
+            .catch(errorHandler);
         }
       });
     } else {
@@ -1145,13 +1169,7 @@ const fs = require('fs');
 
         let reader = new FileReader();
         reader.onload = function(e) {
-          try {
-            loadSerializedProgram(e.target.result);
-            $("#file-name").text(file.name);
-            scheduleAutorun(true, "OPEN PROJECT!");
-          } catch (err) {
-            errorHandler(err);
-          }
+          load(file.name, e.target.result);
         };
         reader.readAsText(file);
       };
