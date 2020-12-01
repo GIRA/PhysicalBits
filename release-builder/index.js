@@ -91,11 +91,13 @@ function findJava() {
 }
 
 function createElectronPackage() {
-  return removeDir("../middleware/desktop/out").then(() => {
-    console.log("\nCreating electron package");
-    let cmd = "electron-packager . " + appName + " --out=out --overwrite";
-    return executeCmd(cmd, "../middleware/desktop").catch(log);
-  });
+  console.log("\nCreating electron package");
+  return removeDir("../middleware/desktop/out")
+    .then(() => executeCmd("npm install", "../middleware/desktop").catch(log))
+    .then(() => {
+      let cmd = "electron-packager . " + appName + " --out=out --overwrite";
+      return executeCmd(cmd, "../middleware/desktop").catch(log);
+    });
 }
 
 function copyElectronPackage(path) {
