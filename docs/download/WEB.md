@@ -1,10 +1,12 @@
-# Web
+# Physical Bits (Web edition)
 
 ## Latest release
 
 | Platform | File(s) |
 | :---: |:---:|
-| ![web](https://gira.github.io/PhysicalBits/img/browsers.png)<br>Web | [PhysicalBITS.v0.4.0-web.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-web.zip) <br> (Cross-platform)|
+| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBits.v0.4.1-web-win32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-web-win32.zip) |
+| ![linux](https://gira.github.io/PhysicalBits/img/linux.png)<br>Linux | [PhysicalBits.v0.4.1-web-linux.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-web-linux.zip) |
+| ![macOS](https://gira.github.io/PhysicalBits/img/apple.png)<br>macOS | [PhysicalBits.v0.4.1-web-darwin.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-web-darwin.zip) |
 
 For older versions visit our [releases page](https://github.com/GIRA/PhysicalBits/releases).
 
@@ -41,12 +43,6 @@ __IMPORTANT__: On some boards a "Low memory" warning is displayed after compilat
 You can start programming now!
 
 ## Prerequisites
-
-### Java
-
-Unfortunately, all versions require Java. We're working on removing this dependency but, for now, you'll need it in order to run Physical Bits.
-
-If you already have a version of Java installed on your computer you can skip this step. Otherwise, we recommend you to download and install a version of the [OpenJDK](https://openjdk.java.net/).
 
 ### Microsoft Visual C++ 2010 Redistributable Package
 

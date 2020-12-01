@@ -1,17 +1,18 @@
-# Standalone
+# Physical Bits (Standalone edition)
 
 ## Latest release
 
 | Platform | File(s) |
 | :---: |:---:|
-| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBITS.v0.4.0-win32-ia32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-ia32.zip) (32 bits)<br>[PhysicalBITS.v0.4.0-win32-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-win32-x64.zip) (64 bits) |
-| ![macOS](https://gira.github.io/PhysicalBits/img/macos.png)<br>macOS | [PhysicalBITS.v0.4.0-darwin-x64.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.0/PhysicalBITS.v0.4.0-darwin-x64.zip) |
+| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBits.v0.4.1-desktop-win32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-desktop-win32.zip) |
+| ![linux](https://gira.github.io/PhysicalBits/img/linux.png)<br>Linux | [PhysicalBits.v0.4.1-desktop-linux.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-desktop-linux.zip) |
+| ![macOS](https://gira.github.io/PhysicalBits/img/apple.png)<br>macOS | [PhysicalBits.v0.4.1-desktop-darwin.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.4.1/PhysicalBits.v0.4.1-desktop-darwin.zip) |
 
 For older versions visit our [releases page](https://github.com/GIRA/PhysicalBits/releases).
 
 ## Starting the application
 
-The desktop versions use [electron](https://www.electronjs.org/) to provide a native experience but in the background they run the same server as the web version.
+The standalone versions use [electron](https://www.electronjs.org/) to provide a native experience but in the background they run the same server as the web version.
 
 First, extract the contents from the zip file into a folder of your preference.
 
@@ -19,7 +20,7 @@ Depending on your operating system, you should see something like this:
 
 ![start_desktop.1](../img/start_desktop.1.png)
 
-Now, you just have to run the `PhysicalBits.exe` (on Windows) or `PhysicalBits.app` (on macOS).
+Now, you just have to run the `PhysicalBits.exe` (on Windows) or `PhysicalBits` (on macOS and Linux).
 
 The following loading screen should appear right away and, after a few seconds of the robot jumping impatiently, the IDE should open.
 
@@ -39,12 +40,6 @@ __IMPORTANT__: On some boards a "Low memory" warning is displayed after compilat
 You can start programming now!
 
 ## Prerequisites
-
-### Java
-
-Unfortunately, all versions require Java. We're working on removing this dependency but, for now, you'll need it in order to run Physical Bits.
-
-If you already have a version of Java installed on your computer you can skip this step. Otherwise, we recommend you to download and install a version of the [OpenJDK](https://openjdk.java.net/).
 
 ### Microsoft Visual C++ 2010 Redistributable Package
 
