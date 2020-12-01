@@ -31,11 +31,3 @@ __IMPORTANT__: If, for some reason the IDE doesn't open automatically, you can d
 Before connecting to your Arduino board, you'll need to upload the firmware. Find instructions [here](../getting_started/FIRMWARE.md).
 
 You can start programming now!
-
-## Prerequisites
-
-### Microsoft Visual C++ 2010 Redistributable Package
-
-On Windows you will also need the Visual C++ 2010 Redistributable Package.
-
-If you don't have it already you can download it from [here](https://www.microsoft.com/en-US/download/details.aspx?id=14632).
