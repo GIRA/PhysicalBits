@@ -30,4 +30,6 @@ __IMPORTANT__: If, for some reason the IDE doesn't open automatically, you can d
 
 Before connecting to your Arduino board, you'll need to upload the firmware. Find instructions [here](../getting_started/FIRMWARE.md).
 
-You can start programming now!
+If you find any problem using Physical Bits, please check our [troubleshooting page](../getting_started/TROUBLESHOOTING.md). If you can't find a solution to your problem please submit an [issue](https://github.com/GIRA/PhysicalBits/issues). Thanks!
+
+Happy programming!
