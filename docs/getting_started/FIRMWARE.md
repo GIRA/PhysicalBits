@@ -1,3 +1,7 @@
+---
+sort: 1
+---
+
 # Installing the firmware
 
 In order for Physical Bits to connect to your Arduino board you'll first need to upload the firmware using the [Arduino IDE](https://www.arduino.cc/en/Main/Software).
