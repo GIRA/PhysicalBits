@@ -10,9 +10,9 @@
 
 For older versions visit our [releases page](https://github.com/GIRA/PhysicalBits/releases).
 
-## Starting the application
+## Starting Physical Bits
 
-First, extract the contents from the zip file into a folder of your preference.
+First, extract the contents of the downloaded zip file into a folder of your preference.
 
 Depending on your operating system, you should see something like this:
 
