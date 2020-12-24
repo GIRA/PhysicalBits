@@ -21,6 +21,52 @@
   (write! [this data])
   (listen! [this listener-fn]))
 
+(defn custom-open
+  "Returns an opened serial port. Allows you to specify the
+
+   * :baud-rate (defaults to 115200)
+   * :stopbits (defaults to STOPBITS_1)
+   * :databits (defaults to DATABITS_8)
+   * :parity (defaults to PARITY_NONE).
+
+   Additionally, setting the value of :
+
+   (open \"/dev/ttyUSB0\")
+   (open \"/dev/ttyUSB0\" :baud-rate 9200)"
+
+  ([path & {:keys [baud-rate databits stopbits parity]
+            :or {baud-rate 115200, databits s/DATABITS_8, stopbits s/STOPBITS_1, parity s/PARITY_NONE}}]
+   (try
+     (let [uuid     (.toString (java.util.UUID/randomUUID))
+           port-id  (s/port-identifier path)
+           raw-port ^purejavacomm.SerialPort (.open port-id uuid 0)
+           out      (.getOutputStream raw-port)
+           in       (.getInputStream  raw-port)
+           _        (.setSerialPortParams raw-port baud-rate
+                                          databits
+                                          stopbits
+                                          parity)]
+
+       (assert (not (nil? port-id)) (str "Port specified by path " path " is not available"))
+       (serial.core.Port. path raw-port out in))
+     (catch Exception e
+       (throw (Exception. (str "Sorry, couldn't connect to the port with path " path ) e))))))
+
+; HACK(Richo)
+(defn serial-open [port-name baud-rate timeout]
+  (let [ch (a/chan)
+        t (Thread.
+           #(>!! ch
+                 (try
+                   (custom-open port-name :baud-rate baud-rate)
+                   (catch Exception e false))))]
+    (.start t)
+    (let [[val _] (a/alts!! [ch (a/timeout timeout)])]
+      (when-not val
+        (.interrupt t)
+        (throw (Exception. "Serial port open timeout")))
+      val)))
+
 (extend-type serial.core.Port
   UziPort
   (close! [port] (s/close! port))
@@ -394,7 +440,7 @@
       (do
         (logger/log "Connecting on serial...")
         (logger/log "Opening port: %1" port-name)
-        (s/open port-name :baud-rate baud-rate)))
+        (serial-open port-name baud-rate 12000)))
     (catch Exception e
       (logger/error "Opening port failed!")
       (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
