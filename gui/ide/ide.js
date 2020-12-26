@@ -1270,7 +1270,10 @@ const fs = require('fs');
         attemptConnection(availablePorts);
       }
     } else {
-      Uzi.connect(selectedPort).finally(function () { connecting = false; });
+      Uzi.connect(selectedPort).finally(function () {
+        connecting = false;
+        updateTopBar();
+      });
     }
   }
 
