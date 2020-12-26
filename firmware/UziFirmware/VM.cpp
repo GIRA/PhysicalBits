@@ -66,7 +66,6 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		{
 			stack.push(currentProgram->getGlobal(currentScript->getLocal(i)));
 		}
-		stack.push(0); // Return value slot (default: 0)
 		stack.push(uint32_to_float((uint32)-1 << 16 | pc));
 		
 		coroutine->setLastStart(lastTickStart);
@@ -185,8 +184,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			We know the arguments are already on the stack (it's the compiler's job
 			to push them). Now we need to push:
 				1) The local variables with their default values.
-				2) The return value (default: 0)
-				3) The current framePointer and returnAddress (so that when unwinding
+				2) The current framePointer and returnAddress (so that when unwinding
 				the stack, they can be set correctly).
 			*/
 			currentScript = currentProgram->getScript(argument);
@@ -195,7 +193,6 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			{
 				stack.push(currentProgram->getGlobal(currentScript->getLocal(i)));
 			}
-			stack.push(0); // Return value slot (default: 0)
 			stack.push(uint32_to_float((uint32)framePointer << 16 | pc));
 
 			/*
@@ -669,9 +666,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			uint16 index = framePointer +
 				currentScript->getArgCount() +
 				currentScript->getLocalCount();
-			// TODO(Richo): Duplicated code from WRITE_LOCAL 
-			float value = stack.pop();
-			stack.setElementAt(index, value);
+
+			returnValue = stack.pop();
 
 			// TODO(Richo): Duplicated code from PRIM_RET
 			bool returnFromScriptCall = framePointer != 0;
@@ -1109,8 +1105,6 @@ void VM::unwindStackAndReturn(void)
 	uint32 value = float_to_uint32(stack.pop());
 	pc = value & 0xFFFF;
 	framePointer = value >> 16;
-
-	float returnValue = stack.pop();
 
 	// INFO(Richo): Pop args/locals
 	int varCount = currentScript->getArgCount() + currentScript->getLocalCount();

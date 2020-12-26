@@ -30,6 +30,7 @@ private:
 
 	int32 lastTickStart;
 
+	float returnValue = 0;
 	int16 framePointer = 0;
 	int16 pc = 0;
 	StackArray stack;
