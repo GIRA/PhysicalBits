@@ -1,11 +1,10 @@
 (ns middleware.device.controller
   (:refer-clojure :exclude [send compile])
   (:require [clojure.tools.logging :as log]
-            [serial.core :as s]
-            [serial.util :as su]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [middleware.utils.async :refer :all]
+            [middleware.utils.uzi-port :as s]
             [middleware.device.protocol :refer :all]
             [middleware.device.boards :refer :all]
             [middleware.utils.conversions :refer :all]
@@ -13,83 +12,7 @@
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
-            [middleware.output.logger :as logger])
-  (:import (java.net Socket)))
-
-(defprotocol UziPort
-  (close! [this])
-  (write! [this data])
-  (listen! [this listener-fn]))
-
-(defn custom-open
-  "Returns an opened serial port. Allows you to specify the
-
-   * :baud-rate (defaults to 115200)
-   * :stopbits (defaults to STOPBITS_1)
-   * :databits (defaults to DATABITS_8)
-   * :parity (defaults to PARITY_NONE).
-
-   Additionally, setting the value of :
-
-   (open \"/dev/ttyUSB0\")
-   (open \"/dev/ttyUSB0\" :baud-rate 9200)"
-
-  ([path & {:keys [baud-rate databits stopbits parity]
-            :or {baud-rate 115200, databits s/DATABITS_8, stopbits s/STOPBITS_1, parity s/PARITY_NONE}}]
-   (try
-     (let [uuid     (.toString (java.util.UUID/randomUUID))
-           port-id  (s/port-identifier path)
-           raw-port ^purejavacomm.SerialPort (.open port-id uuid 0)
-           out      (.getOutputStream raw-port)
-           in       (.getInputStream  raw-port)
-           _        (.setSerialPortParams raw-port baud-rate
-                                          databits
-                                          stopbits
-                                          parity)]
-
-       (assert (not (nil? port-id)) (str "Port specified by path " path " is not available"))
-       (serial.core.Port. path raw-port out in))
-     (catch Exception e
-       (throw (Exception. (str "Sorry, couldn't connect to the port with path " path ) e))))))
-
-; HACK(Richo)
-(defn serial-open [port-name baud-rate timeout]
-  (let [ch (a/chan)
-        t (Thread.
-           #(>!! ch
-                 (try
-                   (custom-open port-name :baud-rate baud-rate)
-                   (catch Exception e false))))]
-    (.start t)
-    (let [[val _] (a/alts!! [ch (a/timeout timeout)])]
-      (when-not val
-        (.interrupt t)
-        (throw (Exception. "Serial port open timeout")))
-      val)))
-
-(extend-type serial.core.Port
-  UziPort
-  (close! [port] (s/close! port))
-  (write! [port data] (s/write port data))
-  (listen! [port listener-fn] (s/listen! port #(listener-fn (.read %)))))
-
-(extend-type java.net.Socket
-  UziPort
-  (close! [socket] (.close socket))
-  (write! [socket data]
-          (let [out (.getOutputStream socket)
-                bytes (if (number? data) [data] data)]
-            (.write out (byte-array bytes))))
-  (listen! [socket listener-fn]
-           (let [buffer-size 1000
-                 buffer (byte-array buffer-size)
-                 in (.getInputStream socket)]
-             (go-loop []
-               (when-not (.isClosed socket)
-                 (let [bytes-read (.read in buffer 0 buffer-size)]
-                   (dotimes [i bytes-read]
-                            (listener-fn (bit-and (int (nth buffer i)) 16rFF))))
-                 (recur))))))
+            [middleware.output.logger :as logger]))
 
 (def initial-state {:port-name nil
                     :port nil
@@ -109,8 +32,7 @@
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
 
-(defn available-ports []
-  (vec (sort (su/get-port-names))))
+(def available-ports s/available-ports)
 
 (defn connected? []
   (not (nil? (:port @state))))
@@ -123,7 +45,7 @@
                 (assoc-in [:program :current]
                            (-> % :program :current))))
     (try
-      (close! port)
+      (s/close! port)
       (<!! (timeout 1000)) ; TODO(Richo): Wait a second to stabilize port (?)
       (catch Throwable e
         (log/error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
@@ -132,12 +54,11 @@
 (defn send [bytes]
   (when-let [port (@state :port)]
     (try
-      (write! port bytes)
+      (s/write! port bytes)
       (catch Throwable e
         (log/error (str "ERROR WHILE SENDING -> " (.getMessage e)))
         (disconnect))))
   bytes)
-
 
 (defn- get-global-number [global-name]
   (program/index-of-variable (-> @state :program :running :compiled)
@@ -239,25 +160,30 @@
 
 (defn- request-connection [port in]
   (go
-   (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (write! port [MSG_OUT_CONNECTION_REQUEST
-                  MAJOR_VERSION
-                  MINOR_VERSION])
-   (logger/log "Requesting connection...")
-   ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-   (if-let [n1 (<? in 1000)]
-     (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
-       (write! port n2)
-       ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-       (if (= n2 (<? in 1000))
-         (do
-           (logger/success "Connection accepted!")
-           true)
-         (do
-           (logger/error "Connection rejected")
-           false)))
+   (try
      (do
-       (logger/error "Connection timeout")
+       (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
+       (s/write! port [MSG_OUT_CONNECTION_REQUEST
+                       MAJOR_VERSION
+                       MINOR_VERSION])
+       (logger/log "Requesting connection...")
+       ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
+       (if-let [n1 (<? in 1000)]
+         (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
+           (s/write! port n2)
+           ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
+           (if (= n2 (<? in 1000))
+             (do
+               (logger/success "Connection accepted!")
+               true)
+             (do
+               (logger/error "Connection rejected")
+               false)))
+         (do
+           (logger/error "Connection timeout")
+           false)))
+     (catch Throwable ex
+       (log/error ex)
        false))))
 
 (defn- keep-alive [port]
@@ -436,11 +362,11 @@
       (do
         (logger/log "Connecting on socket...")
         (logger/log "Opening port: %1" port-name)
-        (Socket. address port))
+        (s/open-socket address port))
       (do
         (logger/log "Connecting on serial...")
         (logger/log "Opening port: %1" port-name)
-        (serial-open port-name baud-rate 12000)))
+        (s/open-serial port-name baud-rate)))
     (catch Exception e
       (logger/error "Opening port failed!")
       (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
@@ -454,9 +380,9 @@
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
-         (listen! port #(>!! in %))
+         (s/listen! port #(>!! in %))
          (if-not (<?? (request-connection port in) 15000)
-           (close! port)
+           (s/close! port)
            (do ; Connection successful
              (swap! state assoc
                     :port port
