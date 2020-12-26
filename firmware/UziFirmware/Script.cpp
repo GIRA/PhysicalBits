@@ -5,7 +5,7 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	script->instructionStart = start;
 	script->index = scriptIndex;
 
-	script->stepping = false;
+	script->running = false;
 	script->interval = 0;
 	script->argCount = script->localCount = 0;
 	script->locals = 0; 
@@ -17,7 +17,7 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	uint8 h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
 
-	script->stepping = (h >> 7) & 1;
+	script->running = (h >> 7) & 1;
 	
 	if ((h >> 6) & 1) // Has delay
 	{
@@ -100,14 +100,14 @@ Instruction Script::getInstructionAt(int16 index)
 	return instructions[index - (int16)instructionStart];
 }
 
-bool Script::isStepping(void)
+bool Script::isRunning(void)
 {
-	return stepping;
+	return running;
 }
 
-void Script::setStepping(bool val)
+void Script::setRunning(bool val)
 {
-	stepping = val;
+	running = val;
 }
 
 uint8 Script::getArgCount(void)

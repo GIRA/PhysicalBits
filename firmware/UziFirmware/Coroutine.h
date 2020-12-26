@@ -9,7 +9,7 @@ struct Script;
 
 struct Coroutine
 {
-	Script* activeScript = 0;
+	Script* activeScript = 0; // TODO(Richo): Could be an index (uint8)
 	int16 framePointer = 0;
 	int16 pc = 0;
 
@@ -17,7 +17,7 @@ struct Coroutine
 	uint16 stackAllocated = 0;
 	uint16 stackSize = 0;
 
-	Script* script = 0;
+	Script* script = 0; // TODO(Richo): Could be an index (uint8)
 	int32 nextRun = 0;
 	int32 lastStart = 0;
 

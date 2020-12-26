@@ -8,7 +8,7 @@
 // TODO(Richo): Optimize memory!
 struct Script
 {
-	bool stepping : 1;
+	bool running : 1;
 	uint8 index : 7;
 	uint8 interval = 0;
 
@@ -17,6 +17,7 @@ struct Script
 	uint8 localCount = 0;
 	uint8* locals = 0;
 
+	// TODO(Richo): Store the instructions contiguously in the program
 	int16 instructionStart = 0;
 	uint16 instructionCount = 0;
 	Instruction* instructions = 0;
@@ -28,8 +29,8 @@ struct Script
 	int16 getInstructionStop(void);
 	uint16 getInstructionCount(void);
 	Instruction getInstructionAt(int16);
-	bool isStepping(void);
-	void setStepping(bool);
+	bool isRunning(void);
+	void setRunning(bool);
 	
 	uint8 getArgCount(void);
 

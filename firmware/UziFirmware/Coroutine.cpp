@@ -107,7 +107,7 @@ Error Coroutine::getError(void)
 void Coroutine::setError(Error err)
 {
 	error = err;
-	script->setStepping(false);
+	script->setRunning(false);
 }
 
 void Coroutine::reset(void)

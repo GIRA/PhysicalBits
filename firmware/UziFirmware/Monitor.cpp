@@ -315,7 +315,7 @@ void Monitor::sendRunningTasks(Program* program)
 	{
 		Script* script = program->getScript(i);
 		uint8 val = NO_ERROR;
-		if (script->isStepping()) 
+		if (script->isRunning()) 
 		{
 			val |= 0b10000000;
 		}

@@ -14,7 +14,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 	for (int16 i = 0; i < count; i++)
 	{
 		Script* script = program->getScript(i);
-		if (script->isStepping())
+		if (script->isRunning())
 		{
 			Coroutine* coroutine = script->getCoroutine();
 			if (coroutine == 0)
@@ -210,7 +210,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
 			{
-				script->setStepping(true);
+				script->setRunning(true);
 
 				Coroutine* coroutine = script->getCoroutine();
 				if (coroutine == 0)
@@ -245,7 +245,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
 			{
-				script->setStepping(true);
+				script->setRunning(true);
 			}
 		}
 		break;
@@ -255,7 +255,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
 			{
-				script->setStepping(false);
+				script->setRunning(false);
 
 				Coroutine* coroutine = script->getCoroutine();
 				if (coroutine == 0)
@@ -290,7 +290,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			Script* script = currentProgram->getScript(argument);
 			if (script != 0)
 			{
-				script->setStepping(false);
+				script->setRunning(false);
 
 				/*
 				If we're stopping the current coroutine we need to stop execution
