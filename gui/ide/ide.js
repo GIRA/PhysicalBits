@@ -1505,6 +1505,7 @@ const fs = require('fs');
     updatePinsPanel();
     updateGlobalsPanel();
     updateTasksPanel();
+    updateMemoryPanel();
   }
 
   function updatePinsPanel() {
@@ -1636,6 +1637,18 @@ const fs = require('fs');
           .append($("<td>")
             .addClass(css)
             .html(html)));
+    }
+  }
+
+  function updateMemoryPanel() {
+    if (Uzi.state.isConnected) {
+      $("#arduino-memory").text(Uzi.state.memory.arduino);
+      $("#uzi-memory").text(Uzi.state.memory.uzi);
+      $("#stack-memory").text(Uzi.state.memory.stack);
+    } else {
+      $("#arduino-memory").text("?");
+      $("#uzi-memory").text("?");
+      $("#stack-memory").text("?");
     }
   }
 
