@@ -118,7 +118,7 @@ void Monitor::sendOutgoingMessages(Program* program, GPIO* io, VM* vm)
 	checkKeepAlive();
 	if (state == CONNECTED)
 	{
-		sendReport(io, program);
+		sendReport(io, program, vm);
 		sendProfile();
 		sendVMState(program, vm);
 	}
@@ -150,7 +150,7 @@ void Monitor::sendProfile()
 	}
 }
 
-void Monitor::sendReport(GPIO* io, Program* program)
+void Monitor::sendReport(GPIO* io, Program* program, VM* vm)
 {
 	if (!reporting) return;
 	uint32 now = millis();
@@ -159,7 +159,7 @@ void Monitor::sendReport(GPIO* io, Program* program)
 		sendPinValues(io);
 		sendGlobalValues(program);
 		sendRunningTasks(program);
-		sendFreeRAM();
+		sendFreeRAM(vm);
 		lastTimeReport = now;
 	}
 }
@@ -339,7 +339,7 @@ int freeRam()
 	return (int)&v - (__brkval == 0 ? (int)&__heap_start : (int)__brkval);
 }
 
-void Monitor::sendFreeRAM()
+void Monitor::sendFreeRAM(VM* vm)
 {
 	serial->write(MSG_OUT_FREE_RAM);
 	{
@@ -351,6 +351,13 @@ void Monitor::sendFreeRAM()
 	}
 	{
 		uint32 value = uzi_available();
+		serial->write((value >> 24) & 0xFF);
+		serial->write((value >> 16) & 0xFF);
+		serial->write((value >> 8) & 0xFF);
+		serial->write(value & 0xFF);
+	}
+	{
+		uint32 value = vm->stackAvailable();
 		serial->write((value >> 24) & 0xFF);
 		serial->write((value >> 16) & 0xFF);
 		serial->write((value >> 8) & 0xFF);

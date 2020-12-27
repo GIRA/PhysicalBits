@@ -8,6 +8,7 @@ void StackArray::push(float element)
 		return;
 	}
 	elements[pointer++] = element;
+	if (pointer > max_depth) { max_depth = pointer; }
 }
 
 void StackArray::copyFrom(float* source, uint16 size)
@@ -16,6 +17,7 @@ void StackArray::copyFrom(float* source, uint16 size)
 	error = NO_ERROR;
 	if (size == 0) return;
 	memcpy(&elements[0], source, size * sizeof(float));
+	if (pointer > max_depth) { max_depth = pointer; }
 }
 
 void StackArray::copyTo(float* dest)
@@ -36,7 +38,8 @@ float StackArray::pop(void)
 void StackArray::discard(uint16 amount) 
 {
 	pointer -= amount;
-	if (pointer < 0) {
+	if (pointer < 0) 
+	{
 		pointer = 0;
 		error = STACK_UNDERFLOW;
 	}
@@ -47,7 +50,7 @@ float StackArray::top(void)
 	return elements[pointer - 1];
 }
 
-void StackArray::reset(void)
+void StackArray::clear(void)
 {
 	pointer = 0;
 	error = NO_ERROR;
@@ -68,11 +71,6 @@ uint16 StackArray::getPointer(void)
 	return pointer;
 }
 
-void StackArray::setPointer(uint16 value)
-{
-	pointer = value;
-}
-
 float StackArray::getElementAt(uint16 index)
 {
 	if (index >= MAX_SIZE)
@@ -91,4 +89,9 @@ void StackArray::setElementAt(uint16 index, float value)
 		return;
 	}
 	elements[index] = value;
+}
+
+uint32 StackArray::available() 
+{
+	return (MAX_SIZE - max_depth) * sizeof(float);
 }

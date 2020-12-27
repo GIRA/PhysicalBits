@@ -55,7 +55,7 @@
                     :scripts []
                     :profiler nil
                     :debugger nil
-                    :memory {:arduino nil, :uzi nil}
+                    :memory {:arduino nil, :uzi nil, :stack nil}
                     :program {:current nil, :running nil}
                     :available-ports []})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
@@ -269,12 +269,17 @@
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
             uzi (<! (read-uint32 in))
+            stack (<! (read-uint32 in))
             [old _] (swap-vals! state update :memory
-                                (fn [_] {:arduino arduino, :uzi uzi}))]
+                                (fn [_] {:arduino arduino
+                                         :uzi uzi
+                                         :stack stack}))]
         (when-not (= arduino (-> old :memory :arduino))
           (logger/log "Free Arduino RAM: %1 bytes" arduino))
         (when-not (= uzi (-> old :memory :uzi))
-          (logger/log "Free Uzi RAM: %1 bytes" uzi)))))
+          (logger/log "Free Uzi RAM: %1 bytes" uzi))
+        (when-not (= stack (-> old :memory :stack))
+          (logger/log "Free Stack: %1 bytes" stack)))))
 
 (defn- process-script-state [i byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)

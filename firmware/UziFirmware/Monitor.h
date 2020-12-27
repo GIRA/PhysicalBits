@@ -66,7 +66,7 @@ private:
 	void executeDebugSetBreakpoints(Program* program);
 	void executeDebugSetBreakpointsAll(Program* program);
 
-	void sendReport(GPIO* io, Program* program);
+	void sendReport(GPIO* io, Program* program, VM* vm);
 	void checkKeepAlive();
 	void sendProfile();
 	void sendVMState(Program* program, VM* vm);
@@ -74,7 +74,7 @@ private:
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendRunningTasks(Program* program);
-	void sendFreeRAM();
+	void sendFreeRAM(VM* vm);
 
 	void loadProgramFromReader(Reader* reader, Program** program);
 };

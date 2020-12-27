@@ -26,6 +26,7 @@ public:
 	Script* haltedScript = 0;
 
 	void reset();
+	uint32 stackAvailable(void);
 private:
 
 	int32 lastTickStart;
