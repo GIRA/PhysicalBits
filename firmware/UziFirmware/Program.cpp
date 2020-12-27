@@ -98,7 +98,7 @@ Error readScripts(Reader * rs, Program* program)
 	if (program->scripts == 0) return OUT_OF_MEMORY;
 
 	uint16 instructionCount = 0;
-	for (int16 i = 0; i < program->scriptCount; i++)
+	for (uint8 i = 0; i < program->scriptCount; i++)
 	{
 		Script* script = &program->scripts[i];
 

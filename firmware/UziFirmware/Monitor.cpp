@@ -199,11 +199,11 @@ void Monitor::sendCoroutineState(Program* program, Script* script)
 		uint8 val2 = pc & 0xFF;	// LSB
 		serial->write(val1);
 		serial->write(val2);
-		uint8 fp = coroutine->getFramePointer();
+		uint8 fp = (uint8)coroutine->getFramePointer();
 		serial->write(fp);
-		uint16 stackSize = coroutine->getStackSize();
+		uint8 stackSize = (uint8)coroutine->getStackSize();
 		serial->write(stackSize);
-		for (uint16 j = 0; j < stackSize; j++)
+		for (uint8 j = 0; j < stackSize; j++)
 		{
 			uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
 			serial->write((value >> 24) & 0xFF);
@@ -621,7 +621,7 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 void trace(const char* str)
 {
 	Serial.write(MSG_OUT_TRACE);
-	uint8 size = strlen(str);
+	uint8 size = (uint8)strlen(str);
 	Serial.write(size);
 	for (int i = 0; i < size; i++)
 	{

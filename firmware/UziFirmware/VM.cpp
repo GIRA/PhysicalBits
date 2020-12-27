@@ -119,7 +119,8 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 
 				framePointer = -1;
 				pc = currentScript->getInstructionStart();
-				coroutine->setNextRun(coroutine->getLastStart() + currentProgram->getGlobal(currentScript->interval));
+				int32 nextRun = coroutine->getLastStart() + (int32)currentProgram->getGlobal(currentScript->interval);
+				coroutine->setNextRun(nextRun);
 				break;
 			}
 		}
@@ -501,14 +502,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_SECONDS:
 		{
-			float time = (float)millis() / 1000.0;
+			float time = (float)millis() / 1000.0f;
 			stack.push(time);
 		}
 		break;
 
 		case PRIM_MINUTES:
 		{
-			float time = (float)millis() / 1000.0 / 60.0;
+			float time = (float)millis() / 1000.0f / 60.0f;
 			stack.push(time);
 		}
 		break;
@@ -564,7 +565,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_NEGATE:
 		{
 			float val = stack.pop();
-			stack.push(val == 0 ? 1 : 0);
+			stack.push(val == 0 ? 1.0f : 0.0f);
 		}
 		break;
 
@@ -619,7 +620,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_DELAY_SECONDS:
 		{
 			float seconds = stack.pop();
-			int32 time = seconds * 1000;
+			int32 time = (int32)(seconds * 1000);
 			yieldTime(time, yieldFlag);
 		}
 		break;
@@ -627,7 +628,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_DELAY_MINUTES:
 		{
 			float minutes = stack.pop();
-			int32 time = minutes * 60 * 1000;
+			int32 time = (int32)(minutes * 60 * 1000);
 			yieldTime(time, yieldFlag);
 		}
 		break;
@@ -717,7 +718,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			uint32 a = (uint32)stack.pop();
 			uint32 b = (uint32)stack.pop();
-			stack.push(a & b);
+			float result = (float)(a & b);
+			stack.push(result);
 		}
 		break;
 
@@ -725,13 +727,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			uint32 a = (uint32)stack.pop();
 			uint32 b = (uint32)stack.pop();
-			stack.push(a | b);
+			float result = (float)(a | b);
+			stack.push(result);
 		}
 		break;
 
 		case PRIM_SERIAL_WRITE:
 		{
-			uint8 a = stack.pop();
+			uint8 a = (uint8)stack.pop();
 			monitor->serialWrite(a);
 		}
 		break;
@@ -739,42 +742,42 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_ROUND:
 		{
 			float a = stack.pop();
-			stack.push(round(a));
+			stack.push((float)round(a));
 		}
 		break;
 
 		case PRIM_CEIL:
 		{
 			float a = stack.pop();
-			stack.push(ceil(a));
+			stack.push((float)ceil(a));
 		}
 		break;
 
 		case PRIM_FLOOR:
 		{
 			float a = stack.pop();
-			stack.push(floor(a));
+			stack.push((float)floor(a));
 		}
 		break;
 
 		case PRIM_SQRT:
 		{
 			float a = stack.pop();
-			stack.push(sqrt(a));
+			stack.push((float)sqrt(a));
 		}
 		break;
 
 		case PRIM_ABS:
 		{
 			float a = stack.pop();
-			stack.push(fabs(a));
+			stack.push((float)fabs(a));
 		}
 		break;
 
 		case PRIM_LN:
 		{
 			float a = stack.pop();
-			stack.push(log(a));
+			stack.push((float)log(a));
 		}
 		break;
 
@@ -816,7 +819,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_ATAN:
 		{
 			float a = stack.pop();
-			stack.push(atan(a));
+			stack.push((float)atan(a));
 		}
 		break;
 
@@ -824,7 +827,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			float x = stack.pop();
 			float y = stack.pop();
-			stack.push(atan2(y, x));
+			stack.push((float)atan2(y, x));
 		}
 		break;
 
@@ -832,7 +835,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			float b = stack.pop();
 			float a = stack.pop();
-			stack.push(pow(a, b));
+			stack.push((float)pow(a, b));
 		}
 		break;
 
@@ -854,7 +857,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			float b = stack.pop();
 			float a = stack.pop();
-			stack.push(fmod(a, b));
+			stack.push((float)fmod(a, b));
 		}
 		break;
 
@@ -862,7 +865,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			float n = stack.pop();
 			float a = stack.pop();
-			stack.push(a - (floor(a / n) * n));
+			double result = a - (floor(a / n) * n);
+			stack.push((float)result);
 		}
 		break;
 
@@ -890,21 +894,23 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			int32 b = (int32)stack.pop();
 			int32 a = (int32)stack.pop();
+			int32 result;
 			if (b > a)
 			{
-				stack.push(random(a, b));
+				result = random(a, b);
 			}
 			else
 			{
-				stack.push(random(b, a));
+				result = random(b, a);
 			}
+			stack.push((float)result);
 		}
 		break;
 
 		case PRIM_RANDOM:
 		{
 			int32 max = 0x7FFFFFFF;
-			int32 r1 = fmod(random(max), max);
+			int32 r1 = (int32)fmod(random(max), max);
 			float r2 = (float)((double)r1 / (double)max);
 			stack.push(r2);
 		}
@@ -913,14 +919,14 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_IS_EVEN:
 		{
 			int32 a = (int32)stack.pop();
-			stack.push(a % 2 == 0 ? 1 : 0);
+			stack.push(a % 2 == 0 ? 1.0f : 0.0f);
 		}
 		break;
 
 		case PRIM_IS_ODD:
 		{
 			int32 a = (int32)stack.pop();
-			stack.push(a % 2 == 0 ? 0 : 1);
+			stack.push(a % 2 == 0 ? 0.0f : 1.0f);
 		}
 		break;
 
@@ -928,7 +934,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			int32 a = (int32)stack.pop();
 			if (a <= 1) { stack.push(0); }
-			else if (a % 2 == 0) { stack.push(a == 2 ? 1 : 0); }
+			else if (a % 2 == 0) { stack.push(a == 2 ? 1.0f : 0.0f); }
 			else
 			{
 				bool result = true;
@@ -940,7 +946,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 						break;
 					}
 				}
-				stack.push(result ? 1 : 0);
+				stack.push(result ? 1.0f : 0.0f);
 			}
 		}
 		break;
@@ -949,21 +955,21 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		{
 			float a = stack.pop();
 			int32 a_int = (int32)a;
-			stack.push(a == a_int ? 1 : 0);
+			stack.push(a == a_int ? 1.0f : 0.0f);
 		}
 		break;
 
 		case PRIM_IS_POSITIVE:
 		{
 			float a = stack.pop();
-			stack.push(a >= 0 ? 1 : 0);
+			stack.push(a >= 0 ? 1.0f : 0.0f);
 		}
 		break;
 
 		case PRIM_IS_NEGATIVE:
 		{
 			float a = stack.pop();
-			stack.push(a < 0 ? 1 : 0);
+			stack.push(a < 0 ? 1.0f : 0.0f);
 		}
 		break;
 
@@ -975,23 +981,23 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			else if (b != (int32)b) { stack.push(0); }
 			else
 			{
-				stack.push(fmod(a, b) == 0 ? 1 : 0);
+				stack.push(fmod(a, b) == 0 ? 1.0f : 0.0f);
 			}
 		}
 		break;
 
 		case PRIM_IS_CLOSE_TO:
 		{
-			float epsilon = 0.0001;
+			float epsilon = 0.0001f;
 			float b = stack.pop();
 			float a = stack.pop();
 			if (a == 0)
 			{
-				stack.push(b < epsilon ? 1 : 0);
+				stack.push(b < epsilon ? 1.0f : 0.0f);
 			}
 			else if (b == 0)
 			{
-				stack.push(a < epsilon ? 1 : 0);
+				stack.push(a < epsilon ? 1.0f : 0.0f);
 			}
 			else if (a == b)
 			{
@@ -999,23 +1005,23 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 			}
 			else
 			{
-				float a_abs = fabs(a);
-				float b_abs = fabs(b);
+				float a_abs = (float)fabs(a);
+				float b_abs = (float)fabs(b);
 				float max = a_abs > b_abs ? a_abs : b_abs;
-				float diff = fabs(a - b);
-				stack.push(diff / max < epsilon ? 1 : 0);
+				float diff = (float)fabs(a - b);
+				stack.push(diff / max < epsilon ? 1.0f : 0.0f);
 			}
 		}
 		break;
 
 		case PRIM_SONAR_DIST_CM:
 		{
-			unsigned int maxDist = stack.pop();
-			uint8 echoPin = stack.pop();
-			uint8 trigPin = stack.pop();
+			uint32 maxDist = (uint32)stack.pop();
+			uint8 echoPin = (uint8)stack.pop();
+			uint8 trigPin = (uint8)stack.pop();
 
 			NewPing sonar(trigPin, echoPin, maxDist);
-			unsigned long dist = sonar.ping_cm();
+			float dist = (float)sonar.ping_cm();
 			if (dist > 0) 
 			{
 				stack.push(dist);
@@ -1051,7 +1057,8 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				io->setValue(pins_y[i], LOW);
 				for (int j = 0; j < 8; j++)
 				{
-					io->setValue(pins_x[7 - j], (rows[i] >> j) & 1);
+					int32 value = (rows[i] >> j) & 1;
+					io->setValue(pins_x[7 - j], (float)value);
 				}
 
 				delayMicroseconds(100);
@@ -1068,29 +1075,29 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 		case PRIM_TONE:
 		{
 			float freq = stack.pop();
-			uint8 pin = stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			io->startTone(pin, freq);
 		}
 		break;
 
 		case PRIM_NO_TONE:
 		{
-			uint8 pin = stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			io->stopTone(pin);
 		}
 		break;
 
 		case PRIM_GET_PIN_MODE:
 		{
-			uint8 pin = stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			stack.push(io->getMode(pin));
 		}
 		break;
 
 		case PRIM_SET_PIN_MODE:
 		{
-			uint8 mode = stack.pop();
-			uint8 pin = stack.pop();
+			uint8 mode = (uint8)stack.pop();
+			uint8 pin = (uint8)stack.pop();
 			io->setMode(pin, mode);
 		}
 		break;
