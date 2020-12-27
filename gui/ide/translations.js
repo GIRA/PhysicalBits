@@ -72,6 +72,10 @@ var TRANSLATIONS = [
   ["Text mode:", "Text:", "Texto:", "Teksti kuvamine:", "Textläge:"],
   ["Saving...", "Saving...", "Guardando...", "Salvestamine...", "Sparar..."],
   ["Saved!", "Saved!", "¡Guardado!", "Salvestatud!", "Sparad!"],
+  ["Available memory", "Available memory", "Memoria disponible", "Available memory", "Available memory"],
+  ["Arduino", "Arduino", "Arduino", "Arduino", "Arduino"],
+  ["Program", "Program", "Programa", "Program", "Program"],
+  ["Stack", "Stack", "Pila", "Stack", "Stack"],
 
   // Server
   ["Program size (bytes): %1", "Program size (bytes): %1", "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],
@@ -83,8 +87,6 @@ var TRANSLATIONS = [
   ["Opening port failed!", "Opening port failed!", "¡La apertura del puerto falló!", "Jadapordi avamine nurjus!", "Serieporten kunde inte öppnas!"],
   ["Connection lost!", "Connection lost!", "¡Conexión perdida!", "Ühendus katkes!", "Anslutningen bröts!"],
   ["%1 detected. The program has been stopped.", "%1 detected. The program has been stopped.", "Se detectó %1. El programa ha sido detenido.", "%1 avastatud. Programm on peatatud.", "%1 hittades. Programmet har stoppats."],
-  ["Free Arduino RAM: %1 bytes", "Free Arduino RAM: %1 bytes", "RAM de Arduino disponible: %1 bytes", "Vaba muutmälu Arduinos: %1 baiti", "Ledigt Arduino RAM-minne: %1"],
-  ["Free Uzi RAM: %1 bytes", "Free Uzi RAM: %1 bytes", "RAM de Uzi disponible: %1 bytes", "Vaba töömälu Uzi jaoks: %1 baiti", "Ledigt Uzi RAM-minne: %1 bytes"],
   ["Uzi - Invalid response code: %1", "Uzi - Invalid response code: %1", "Uzi - Código de respuesta inválido: %1", "Uzi – Vigane kostekood: %1", "Uzi - ogiltig svarskod: %1"],
   ["Connection timeout!", "Connection timeout!", "¡Expiró el tiempo de espera de la conexión!", "Ühendus aegus!", "Anslutningen avbröts!"],
   ['%1 detected on script "%2". The script has been stopped.', '%1 detected on script "%2". The script has been stopped.', 'Se detectó %1 en el script "%2". El script ha sido detenido.', '%1 avastatud skriptis "%2". Skript on peatatud.', '%1 hittades i skriptet %2. Skriptet har stoppats.'],
