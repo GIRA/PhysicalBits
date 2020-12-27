@@ -137,8 +137,8 @@ Coroutine* Script::getCoroutine(void)
 		coroutine = uzi_create(Coroutine);
 		if (coroutine == 0) return 0; // TODO(Richo): Notify user of OUT_OF_MEMORY!
 
-		coroutine->script = this;
-		coroutine->activeScript = this;
+		coroutine->scriptIndex = index;
+		coroutine->activeScriptIndex = index;
 		coroutine->framePointer = -1;
 		coroutine->pc = instructionStart;
 		coroutine->nextRun = 0;

@@ -169,7 +169,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	if (vm->halted && !sent) 
 	{
 		sent = true;
-		sendCoroutineState(vm->haltedScript);
+		sendCoroutineState(program, vm->haltedScript);
 
 		/*
 		TODO(Richo): Send the state of all the coroutines?
@@ -180,7 +180,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	}
 }
 
-void Monitor::sendCoroutineState(Script* script)
+void Monitor::sendCoroutineState(Program* program, Script* script)
 {
 	if (script != NULL && script->hasCoroutine())
 	{    
@@ -190,7 +190,7 @@ void Monitor::sendCoroutineState(Script* script)
 		{
 			// TODO(Richo): Is this really necessary?
 			sendError(coroutine->getError());
-			coroutine->reset(); // TODO(Richo): Why?
+			program->resetCoroutine(coroutine); // TODO(Richo): Why?
 		}
 		serial->write(MSG_OUT_COROUTINE_STATE);
 		serial->write(scriptIndex);

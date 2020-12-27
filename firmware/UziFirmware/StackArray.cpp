@@ -1,6 +1,5 @@
 #include "StackArray.h"
 
-
 void StackArray::push(float element)
 {
 	if (pointer >= MAX_SIZE)
@@ -10,6 +9,7 @@ void StackArray::push(float element)
 	}
 	elements[pointer++] = element;
 }
+
 void StackArray::copyFrom(float* source, uint16 size)
 {
 	pointer = size;
@@ -17,10 +17,12 @@ void StackArray::copyFrom(float* source, uint16 size)
 	if (size == 0) return;
 	memcpy(&elements[0], source, size * sizeof(float));
 }
+
 void StackArray::copyTo(float* dest)
 {
 	memcpy(dest, &elements[0], pointer * sizeof(float));
 }
+
 float StackArray::pop(void)
 {
 	if (pointer <= 0)
@@ -30,6 +32,7 @@ float StackArray::pop(void)
 	}
 	return elements[--pointer];
 }
+
 void StackArray::discard(uint16 amount) 
 {
 	pointer -= amount;

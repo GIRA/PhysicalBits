@@ -70,7 +70,7 @@ private:
 	void checkKeepAlive();
 	void sendProfile();
 	void sendVMState(Program* program, VM* vm);
-	void sendCoroutineState(Script* script);
+	void sendCoroutineState(Program* program, Script* script);
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendRunningTasks(Program* program);

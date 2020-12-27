@@ -24,6 +24,9 @@ struct Program
 	bool getReport(uint8);
 	void setReport(uint8, bool);
 	uint8 getGlobalCount(void);
+
+	void setCoroutineError(Coroutine* coroutine, Error error);
+	void Program::resetCoroutine(Coroutine* coroutine);
 };
 
 Error readProgram(Reader* rs, Program* program);

@@ -171,3 +171,19 @@ Script* Program::getScriptForPC(int16 pc)
 	}
 	return NULL;
 }
+
+void Program::setCoroutineError(Coroutine* coroutine, Error err)
+{
+	coroutine->error = err;
+	getScript(coroutine->scriptIndex)->setRunning(false);
+}
+
+
+void Program::resetCoroutine(Coroutine* coroutine)
+{
+	coroutine->error = NO_ERROR;
+	coroutine->activeScriptIndex = coroutine->scriptIndex;
+	coroutine->framePointer = -1;
+	coroutine->pc = getScript(coroutine->scriptIndex)->getInstructionStart();
+	coroutine->stackSize = 0;
+}

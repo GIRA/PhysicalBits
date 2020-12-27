@@ -33,7 +33,7 @@ Error VM::executeProgram(Program *program, GPIO *io, Monitor *monitor)
 void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 {
 	if (this->halted
-		|| (this->haltedScript != NULL && this->haltedScript != coroutine->getScript()))
+		|| (this->haltedScript != NULL && this->haltedScript != currentProgram->getScript(coroutine->scriptIndex)))
 	{
 		/*
 		INFO(Richo): Even though we won't execute this coroutine on this tick, I still
@@ -51,7 +51,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		currentCoroutine = coroutine;
 		coroutine->restoreStack(&stack);
 		pc = coroutine->getPC();
-		currentScript = coroutine->getActiveScript();
+		currentScript = currentProgram->getScript(coroutine->activeScriptIndex);
 		framePointer = coroutine->getFramePointer();
 	}
 
@@ -79,7 +79,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 			if (getBreakpoint(&next) && this->haltedScript == NULL)
 			{
 				this->halted = true;
-				this->haltedScript = coroutine->getScript();
+				this->haltedScript = currentProgram->getScript(coroutine->scriptIndex);
 				//this call is to ensure that the monitor has access to the updated state of the coroutine in the case of a halt.
 				saveCurrentCoroutine();
 				coroutine->setNextRun(lastTickStart);
@@ -92,7 +92,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 		if (coroutine->hasError()) break;
 		if (stack.hasError())
 		{
-			coroutine->setError(stack.getError());
+			currentProgram->setCoroutineError(coroutine, stack.getError());
 			break;
 		}
 		if (yieldFlag)
@@ -128,8 +128,12 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 
 void VM::saveCurrentCoroutine()
 {
-	currentCoroutine->saveStack(&stack);
-	currentCoroutine->setActiveScript(currentScript);
+	Error error = currentCoroutine->saveStack(&stack);
+	if (error != NO_ERROR) 
+	{
+		currentProgram->setCoroutineError(currentCoroutine, error);
+	}
+	currentCoroutine->activeScriptIndex = currentScript->index;
 	currentCoroutine->setFramePointer(framePointer);
 	currentCoroutine->setPC(pc);
 }
@@ -215,7 +219,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				Coroutine* coroutine = script->getCoroutine();
 				if (coroutine == 0)
 				{
-					currentCoroutine->setError(OUT_OF_MEMORY);
+					currentProgram->setCoroutineError(currentCoroutine, OUT_OF_MEMORY);
 				}
 				else if (currentCoroutine == coroutine)
 				{
@@ -234,7 +238,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 					If we're starting another coroutine just resetting the coroutine
 					state is enough.
 					*/
-					coroutine->reset();
+					currentProgram->resetCoroutine(coroutine);
 				}
 			}
 		}
@@ -260,7 +264,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				Coroutine* coroutine = script->getCoroutine();
 				if (coroutine == 0)
 				{
-					currentCoroutine->setError(OUT_OF_MEMORY);
+					currentProgram->setCoroutineError(currentCoroutine, OUT_OF_MEMORY);
 				}
 				else if (currentCoroutine == coroutine)
 				{
@@ -279,7 +283,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 					If we're stopping another coroutine just resetting the coroutine
 					state is enough.
 					*/
-					coroutine->reset();
+					currentProgram->resetCoroutine(coroutine);
 				}
 			}
 		}
@@ -300,7 +304,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 				Coroutine* coroutine = script->getCoroutine();
 				if (coroutine == 0)
 				{
-					currentCoroutine->setError(OUT_OF_MEMORY);
+					currentProgram->setCoroutineError(currentCoroutine, OUT_OF_MEMORY);
 				}
 				else if (currentCoroutine == coroutine)
 				{
@@ -689,7 +693,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_COROUTINE:
 		{
-			stack.push(currentCoroutine->getScript()->getIndex());
+			stack.push(currentCoroutine->scriptIndex);
 		}
 		break;
 
