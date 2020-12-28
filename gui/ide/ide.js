@@ -1644,11 +1644,9 @@ const fs = require('fs');
     if (Uzi.state.isConnected) {
       $("#arduino-memory").text(Uzi.state.memory.arduino);
       $("#uzi-memory").text(Uzi.state.memory.uzi);
-      $("#stack-memory").text(Uzi.state.memory.stack);
     } else {
       $("#arduino-memory").text("?");
       $("#uzi-memory").text("?");
-      $("#stack-memory").text("?");
     }
   }
 
