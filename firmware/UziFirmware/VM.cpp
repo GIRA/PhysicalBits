@@ -1016,15 +1016,15 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 
 		case PRIM_SONAR_DIST_CM:
 		{
-			uint32 maxDist = (uint32)stack.pop();
+			uint16 maxDist = (uint16)stack.pop();
 			uint8 echoPin = (uint8)stack.pop();
 			uint8 trigPin = (uint8)stack.pop();
 
 			NewPing sonar(trigPin, echoPin, maxDist);
-			float dist = (float)sonar.ping_cm();
+			uint32 dist = sonar.ping_cm();
 			if (dist > 0) 
 			{
-				stack.push(dist);
+				stack.push((float)dist);
 			} 
 			else 
 			{
