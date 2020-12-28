@@ -51,6 +51,7 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 		}
 	}
 
+
 	uint8 ic_h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
 	if (ic_h > 0x7F)
@@ -65,17 +66,6 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 		script->instructionCount = ic_h;
 	}
 
-	if (script->instructionCount > 0)
-	{
-		script->instructions = uzi_createArray(Instruction, script->instructionCount);
-		if (script->instructions == 0) return OUT_OF_MEMORY;
-
-		for (int i = 0; i < script->instructionCount; i++)
-		{
-			readInstruction(rs, &script->instructions[i], timeout);
-			if (timeout) return READER_TIMEOUT;
-		}
-	}
 
 	return NO_ERROR;
 }

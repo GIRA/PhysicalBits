@@ -2,6 +2,7 @@
 
 Error readGlobals(Reader* rs, Program* program);
 Error readScripts(Reader* rs, Program* program);
+Error readInstructions(Reader* rs, Program* program);
 
 Error readProgram(Reader* rs, Program* program)
 {
@@ -25,6 +26,9 @@ Error readProgram(Reader* rs, Program* program)
 	if (program->scriptCount > 0)
 	{
 		result = readScripts(rs, program);
+		if (result != NO_ERROR) return result;
+
+		result = readInstructions(rs, program);
 		if (result != NO_ERROR) return result;
 	}
 	return NO_ERROR;
@@ -107,6 +111,29 @@ Error readScripts(Reader * rs, Program* program)
 
 		if (result != NO_ERROR) return result;
 	}
+	
+	return NO_ERROR;
+}
+
+Error readInstructions(Reader* rs, Program* program)
+{
+	bool timeout;
+	for (uint8 i = 0; i < program->scriptCount; i++)
+	{
+		Script* script = &program->scripts[i];
+		if (script->instructionCount > 0)
+		{
+			script->instructions = uzi_createArray(Instruction, script->instructionCount);
+			if (script->instructions == 0) return OUT_OF_MEMORY;
+
+			for (int i = 0; i < script->instructionCount; i++)
+			{
+				readInstruction(rs, &script->instructions[i], timeout);
+				if (timeout) return READER_TIMEOUT;
+			}
+		}
+	}
+
 	return NO_ERROR;
 }
 
