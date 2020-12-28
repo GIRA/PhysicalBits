@@ -118,8 +118,6 @@ Error readScripts(Reader * rs, Program* program)
 
 Error readInstructions(Reader* rs, Program* program)
 {
-	bool timeout;
-
 	uint16 instructionCount = 0;
 	for (uint8 i = 0; i < program->scriptCount; i++)
 	{
@@ -134,6 +132,7 @@ Error readInstructions(Reader* rs, Program* program)
 
 		for (int i = 0; i < instructionCount; i++)
 		{
+			bool timeout;
 			readInstruction(rs, &program->instructions[i], timeout);
 			if (timeout) return READER_TIMEOUT;
 		}
