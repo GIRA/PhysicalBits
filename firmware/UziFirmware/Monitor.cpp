@@ -574,11 +574,7 @@ void Monitor::executeDebugSetBreakpoints(Program* program)
 		int16 pc = stream.nextLong(2, timeout);
 		if (timeout) return;
 
-		Script* script = program->getScriptForPC(pc);
-		if (script != NULL)
-		{
-			script->setBreakpointAt(pc, val);
-		}
+		program->setBreakpointAt(pc, val);
 	}
 }
 
@@ -588,14 +584,16 @@ void Monitor::executeDebugSetBreakpointsAll(Program* program)
 	bool val = stream.next(timeout);
 	if (timeout) return;
 
-	int16 count = program->getScriptCount();
-	for (int16 i = 0; i < count; i++) 
+	int16 scriptCount = program->getScriptCount();
+	uint16 instructionCount = 0;
+	for (int16 i = 0; i < scriptCount; i++) 
 	{
 		Script* script = program->getScript(i);
-		for (int16 pc = script->getInstructionStart(); pc <= script->getInstructionStop(); pc++) 
-		{
-			script->setBreakpointAt(pc, val);
-		}
+		instructionCount += script->getInstructionCount();
+	}
+	for (uint16 i = 0; i < instructionCount; i++) 
+	{
+		program->setBreakpointAt(i, val);
 	}
 }
 

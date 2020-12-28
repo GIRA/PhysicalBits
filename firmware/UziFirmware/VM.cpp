@@ -75,7 +75,7 @@ void VM::executeCoroutine(Coroutine *coroutine, GPIO *io, Monitor *monitor)
 	{
 		if (pc <= currentScript->getInstructionStop())
 		{
-			Instruction next = currentScript->getInstructionAt(pc);
+			Instruction next = currentProgram->getInstructionAt(pc);
 			if (getBreakpoint(&next) && this->haltedScript == NULL)
 			{
 				this->halted = true;
@@ -1138,7 +1138,7 @@ void VM::reset()
 	currentProgram = 0;
 	currentCoroutine = 0;
 	currentScript = 0;
-
+	stack.clear();
 	stack.max_depth = 0;
 }
 

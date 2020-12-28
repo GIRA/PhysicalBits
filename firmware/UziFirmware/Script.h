@@ -17,10 +17,8 @@ struct Script
 	uint8 localCount = 0;
 	uint8* locals = 0;
 
-	// TODO(Richo): Store the instructions contiguously in the program
 	int16 instructionStart = 0;
 	uint16 instructionCount = 0;
-	Instruction* instructions = 0;
 
 	Coroutine* coroutine = 0;
 
@@ -28,7 +26,6 @@ struct Script
 	int16 getInstructionStart(void);
 	int16 getInstructionStop(void);
 	uint16 getInstructionCount(void);
-	Instruction getInstructionAt(int16);
 	bool isRunning(void);
 	void setRunning(bool);
 	
@@ -39,7 +36,6 @@ struct Script
 
 	Coroutine* getCoroutine(void);
 	bool hasCoroutine(void);
-	void setBreakpointAt(int16, bool);
 };
 
 Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, float* globals);

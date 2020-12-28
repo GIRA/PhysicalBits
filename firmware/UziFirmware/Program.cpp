@@ -10,6 +10,7 @@ Error readProgram(Reader* rs, Program* program)
 	program->globals = 0;
 	program->globalsReport = 0;
 	program->scripts = 0;
+	program->instructions = 0;
 
 	bool timeout;
 	program->scriptCount = rs->next(timeout);
@@ -118,19 +119,23 @@ Error readScripts(Reader * rs, Program* program)
 Error readInstructions(Reader* rs, Program* program)
 {
 	bool timeout;
+
+	uint16 instructionCount = 0;
 	for (uint8 i = 0; i < program->scriptCount; i++)
 	{
 		Script* script = &program->scripts[i];
-		if (script->instructionCount > 0)
-		{
-			script->instructions = uzi_createArray(Instruction, script->instructionCount);
-			if (script->instructions == 0) return OUT_OF_MEMORY;
+		instructionCount += script->instructionCount;
+	}
 
-			for (int i = 0; i < script->instructionCount; i++)
-			{
-				readInstruction(rs, &script->instructions[i], timeout);
-				if (timeout) return READER_TIMEOUT;
-			}
+	if (instructionCount > 0)
+	{
+		program->instructions = uzi_createArray(Instruction, instructionCount);
+		if (program->instructions == 0) return OUT_OF_MEMORY;
+
+		for (int i = 0; i < instructionCount; i++)
+		{
+			readInstruction(rs, &program->instructions[i], timeout);
+			if (timeout) return READER_TIMEOUT;
 		}
 	}
 
@@ -213,4 +218,15 @@ void Program::resetCoroutine(Coroutine* coroutine)
 	coroutine->framePointer = -1;
 	coroutine->pc = getScript(coroutine->scriptIndex)->getInstructionStart();
 	coroutine->stackSize = 0;
+}
+
+Instruction Program::getInstructionAt(int16 pc)
+{
+	return instructions[pc];
+}
+
+void Program::setBreakpointAt(int16 pc, bool val)
+{
+	Instruction* inst = &instructions[pc];
+	setBreakpoint(inst, val);
 }

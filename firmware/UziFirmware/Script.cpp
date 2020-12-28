@@ -10,7 +10,6 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	script->argCount = script->localCount = 0;
 	script->locals = 0; 
 	script->instructionCount = 0;
-	script->instructions = 0;
 	script->coroutine = 0;
 
 	bool timeout;
@@ -85,11 +84,6 @@ uint16 Script::getInstructionCount(void)
 	return instructionCount;
 }
 
-Instruction Script::getInstructionAt(int16 index)
-{
-	return instructions[index - (int16)instructionStart];
-}
-
 bool Script::isRunning(void)
 {
 	return running;
@@ -143,11 +137,4 @@ Coroutine* Script::getCoroutine(void)
 bool Script::hasCoroutine(void) 
 {
 	return coroutine != 0;
-}
-
-void Script::setBreakpointAt(int16 pc, bool val)
-{
-	if (pc < getInstructionStart() || pc > getInstructionStop()) return;
-	Instruction* inst = &instructions[pc - instructionStart];
-	setBreakpoint(inst, val);
 }
