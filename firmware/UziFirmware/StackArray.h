@@ -22,8 +22,9 @@ public:
 	void push(float);
 	float pop(void);
 	float top(void);
-	void clear(void);
+	void reset(void);
 	uint16 getPointer(void);
+	void setPointer(uint16);
 	float getElementAt(uint16);
 	void setElementAt(uint16, float);
 	bool hasError(void);
@@ -31,9 +32,6 @@ public:
 	void copyFrom(float*, uint16);
 	void copyTo(float*);
 	void discard(uint16);
-
-	uint32 available(void);
-	uint16 max_depth = 0;
 private:
 
 	float elements[MAX_SIZE];

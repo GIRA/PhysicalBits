@@ -229,7 +229,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 					right now. So, we set the yield flag and reset the vm state.
 					*/
 					yieldFlag = true;
-					stack.clear();
+					stack.reset();
 					pc = script->getInstructionStart();
 					framePointer = -1;
 				}
@@ -274,7 +274,7 @@ void VM::executeInstruction(Instruction instruction, GPIO * io, Monitor *monitor
 					right now. So, we set the yield flag and reset the vm state.
 					*/
 					yieldFlag = true;
-					stack.clear();
+					stack.reset();
 					pc = script->getInstructionStart();
 					framePointer = -1;
 				}
@@ -1138,11 +1138,4 @@ void VM::reset()
 	currentProgram = 0;
 	currentCoroutine = 0;
 	currentScript = 0;
-	stack.clear();
-	stack.max_depth = 0;
-}
-
-uint32 VM::stackAvailable()
-{
-	return stack.available();
 }
