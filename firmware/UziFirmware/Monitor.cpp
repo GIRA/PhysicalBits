@@ -494,15 +494,23 @@ void Monitor::executeSaveProgram(Program** program, GPIO* io)
 		}
 	}
 
-	// Write the buffer into the EEPROM
+	// Write the header for a stored program
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
 	writer.nextPut(MINOR_VERSION);
+
+	// Write the size (for CHECKSUM)
+	// TODO(Richo): Implement a real checksum algorithm
+	writer.nextPut((size >> 8) & 0xFF);
+	writer.nextPut(size & 0xFF);
+
+	// Write the buffer into the EEPROM
 	for (int i = 0; i < size; i++)
 	{
 		writer.nextPut(buf[i]);
 	}
+
 	writer.close();
 
 	// Read the program from the EEPROM
@@ -601,7 +609,23 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 	}
 	else
 	{
-		result = readProgram(reader, p);
+		bool timeout;
+		int32 size = reader->nextLong(2, timeout);
+		if (timeout) 
+		{
+			result = READER_TIMEOUT;
+		}
+		else 
+		{
+			reader->resetCounter();
+			result = readProgram(reader, p);
+
+			// TODO(Richo): Implement a real checksum algorithm
+			if (result == NO_ERROR && reader->counter != size)
+			{
+				result = READER_CHECKSUM_FAIL;
+			}
+		}		
 	}
 
 	if (result == NO_ERROR)
