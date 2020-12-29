@@ -42,6 +42,7 @@
     4 "OUT_OF_MEMORY"
     5 "READER_TIMEOUT"
     6 "DISCONNECT_ERROR"
+    7 "READER_CHECKSUM_FAIL"
     "UNKNOWN_ERROR"))
 
 (defn error? [code] (not= 0 code))

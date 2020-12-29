@@ -162,10 +162,15 @@
 (defn run [program]
   (swap! state assoc-in [:reporting :globals] #{})
   (swap! state assoc-in [:program :running] program)
-  (let [bytes (send (concat [MSG_OUT_SET_PROGRAM]
-                            (en/encode (:compiled program))))]
+  (let [bytecodes (en/encode (:compiled program))
+        msb (bit-shift-right (bit-and (count bytecodes)
+                                      16rFF00)
+                             8)
+        lsb (bit-and (count bytecodes)
+                     16rFF)
+        sent (send (concat [MSG_OUT_SET_PROGRAM msb lsb] bytecodes))]
     (update-reporting program)
-    bytes))
+    sent))
 
 (defn install [program]
   ; TODO(Richo): Should I store the installed program?
