@@ -11,5 +11,6 @@ uint8 SerialReader::next(bool& timeout)
 		timeout = millis() - start > TIMEOUT;
 		if (timeout) return 0;
 	}
+	counter++;
 	return (uint8)serial->read();
 }

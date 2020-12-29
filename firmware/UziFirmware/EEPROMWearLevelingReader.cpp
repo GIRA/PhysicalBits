@@ -22,6 +22,7 @@ uint8 EEPROMWearLevelingReader::next()
 uint8 EEPROMWearLevelingReader::next(bool& timeout)
 {
 	timeout = false;
+	counter++;
 	return next();
 }
 

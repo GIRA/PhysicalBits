@@ -15,6 +15,7 @@ bool ArrayReader::isClosed(void)
 uint8 ArrayReader::next(bool& timeout)
 {
 	timeout = false;
+	counter++;
 	return elements[position++];
 }
 
