@@ -35,7 +35,7 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-#define REPORT_INTERVAL                                   100
+#define REPORT_INTERVAL                                    25
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
 
@@ -152,15 +152,21 @@ void Monitor::sendProfile()
 
 void Monitor::sendReport(GPIO* io, Program* program)
 {
-	if (!reporting) return;
+	if (reporting == 0) return;
 	uint32 now = millis();
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
-		sendPinValues(io);
-		sendGlobalValues(program);
-		sendRunningTasks(program);
-		sendFreeRAM();
+		switch (reporting)
+		{
+		case 1: { sendPinValues(io); } break;
+		case 2: { sendGlobalValues(program); } break;
+		case 3: { sendRunningTasks(program); } break;
+		case 4: { sendFreeRAM(); } break;
+		}
+				
 		lastTimeReport = now;
+		reporting++;
+		if (reporting > 4) { reporting = 1; }
 	}
 }
 
@@ -454,7 +460,7 @@ void Monitor::executeSetMode(GPIO* io)
 
 void Monitor::executeStartReporting()
 {
-	reporting = 1;
+	if (reporting == 0) { reporting = 1; }
 }
 
 void Monitor::executeStopReporting()
