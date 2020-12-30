@@ -152,11 +152,11 @@ void Monitor::sendProfile()
 
 void Monitor::sendReport(GPIO* io, Program* program)
 {
-	if (reporting == 0) return;
+	if (reportingStep == 0) return;
 	uint32 now = millis();
 	if (now - lastTimeReport > REPORT_INTERVAL)
 	{
-		switch (reporting)
+		switch (reportingStep)
 		{
 		case 1: { sendPinValues(io); } break;
 		case 2: { sendGlobalValues(program); } break;
@@ -165,8 +165,8 @@ void Monitor::sendReport(GPIO* io, Program* program)
 		}
 				
 		lastTimeReport = now;
-		reporting++;
-		if (reporting > 4) { reporting = 1; }
+		reportingStep++;
+		if (reportingStep > 4) { reportingStep = 1; }
 	}
 }
 
@@ -460,12 +460,12 @@ void Monitor::executeSetMode(GPIO* io)
 
 void Monitor::executeStartReporting()
 {
-	if (reporting == 0) { reporting = 1; }
+	if (reportingStep == 0) { reportingStep = 1; }
 }
 
 void Monitor::executeStopReporting()
 {
-	reporting = 0;
+	reportingStep = 0;
 }
 
 void Monitor::executeSetReport(GPIO* io)

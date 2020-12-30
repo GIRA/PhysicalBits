@@ -35,7 +35,7 @@ private:
 	uint8 state = DISCONNECTED;
 	uint8 handshake = 0;
 
-	uint8 reporting = 0;
+	uint8 reportingStep = 0;
 	uint32 lastTimeReport = 0;
 
 	int8 keepAliveCounter = 0;
