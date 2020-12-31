@@ -230,6 +230,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 				*/
 				yieldFlag = true;
 				stack_reset();
+				error = NO_ERROR;
 				pc = script->getInstructionStart();
 				framePointer = -1;
 			}
@@ -275,6 +276,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 				*/
 				yieldFlag = true;
 				stack_reset();
+				error = NO_ERROR;
 				pc = script->getInstructionStart();
 				framePointer = -1;
 			}
