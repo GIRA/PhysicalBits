@@ -38,14 +38,14 @@ Error Coroutine::saveStack()
 		}
 	}
 
-	stack_copyTo(stackElements); 
+	stack_saveTo(stackElements); 
 	return NO_ERROR;
 }
 
 Error Coroutine::restoreStack()
 {
 	Error error;
-	stack_copyFrom(stackElements, stackSize, error);
+	stack_restoreFrom(stackElements, stackSize, error);
 	return error;
 }
 

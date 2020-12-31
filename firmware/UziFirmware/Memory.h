@@ -16,8 +16,8 @@ uint16 uzi_used();
 /******************************STACK******************************/
 
 void stack_push(float element, Error& error);
-void stack_copyFrom(float* source, uint16 size, Error& error);
-void stack_copyTo(float* dest);
+void stack_restoreFrom(float* source, uint16 size, Error& error);
+void stack_saveTo(float* dest);
 float stack_pop(Error& error);
 void stack_discard(uint16 amount, Error& error);
 float stack_top(void);

@@ -65,7 +65,7 @@ void stack_push(float element, Error& error)
 	elements[pointer++] = element;
 }
 
-void stack_copyFrom(float* source, uint16 size, Error& error)
+void stack_restoreFrom(float* source, uint16 size, Error& error)
 {
 	pointer = size;
 	error = NO_ERROR;
@@ -73,7 +73,7 @@ void stack_copyFrom(float* source, uint16 size, Error& error)
 	memcpy(&elements[0], source, size * sizeof(float));
 }
 
-void stack_copyTo(float* dest)
+void stack_saveTo(float* dest)
 {
 	memcpy(dest, &elements[0], pointer * sizeof(float));
 }
