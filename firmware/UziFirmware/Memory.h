@@ -15,16 +15,14 @@ uint16 uzi_used();
 
 /******************************STACK******************************/
 
-void stack_push(float element);
-void stack_copyFrom(float* source, uint16 size);
+void stack_push(float element, Error& error);
+void stack_copyFrom(float* source, uint16 size, Error& error);
 void stack_copyTo(float* dest);
-float stack_pop(void);
-void stack_discard(uint16 amount);
+float stack_pop(Error& error);
+void stack_discard(uint16 amount, Error& error);
 float stack_top(void);
 void stack_reset(void);
-bool stack_hasError(void);
-Error stack_getError(void);
 uint16 stack_getPointer(void);
 void stack_setPointer(uint16 value);
-float stack_getElementAt(uint16 index);
-void stack_setElementAt(uint16 index, float value);
+float stack_getElementAt(uint16 index, Error& error);
+void stack_setElementAt(uint16 index, float value, Error& error);

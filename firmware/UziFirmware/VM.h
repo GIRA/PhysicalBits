@@ -38,6 +38,12 @@ private:
 	Coroutine* currentCoroutine = 0;
 	Script* currentScript = 0;
 
+	/*
+	TODO(Richo): Look over all error references to make sure I'm not supressing
+	errors. This is definitely an existing problem but I'm leaving this for later.
+	*/
+	Error error = NO_ERROR;
+
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
 	void saveCurrentCoroutine();

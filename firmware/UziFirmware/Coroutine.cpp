@@ -42,9 +42,11 @@ Error Coroutine::saveStack()
 	return NO_ERROR;
 }
 
-void Coroutine::restoreStack()
+Error Coroutine::restoreStack()
 {
-	stack_copyFrom(stackElements, stackSize); 
+	Error error;
+	stack_copyFrom(stackElements, stackSize, error);
+	return error;
 }
 
 int32 Coroutine::getNextRun(void)

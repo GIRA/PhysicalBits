@@ -54,9 +54,8 @@ In any case, I must be careful to avoid allocating memory used by the stack.
 const uint16 MAX_SIZE = 100;
 float elements[MAX_SIZE];
 uint16 pointer = 0;
-Error error = NO_ERROR;
 
-void stack_push(float element)
+void stack_push(float element, Error& error)
 {
 	if (pointer >= MAX_SIZE)
 	{
@@ -66,7 +65,7 @@ void stack_push(float element)
 	elements[pointer++] = element;
 }
 
-void stack_copyFrom(float* source, uint16 size)
+void stack_copyFrom(float* source, uint16 size, Error& error)
 {
 	pointer = size;
 	error = NO_ERROR;
@@ -79,7 +78,7 @@ void stack_copyTo(float* dest)
 	memcpy(dest, &elements[0], pointer * sizeof(float));
 }
 
-float stack_pop(void)
+float stack_pop(Error& error)
 {
 	if (pointer <= 0)
 	{
@@ -89,7 +88,7 @@ float stack_pop(void)
 	return elements[--pointer];
 }
 
-void stack_discard(uint16 amount)
+void stack_discard(uint16 amount, Error& error)
 {
 	pointer -= amount;
 	if (pointer < 0) {
@@ -103,20 +102,9 @@ float stack_top(void)
 	return elements[pointer - 1];
 }
 
-void stack_reset(void)
+void stack_reset()
 {
 	pointer = 0;
-	error = NO_ERROR;
-}
-
-bool stack_hasError(void)
-{
-	return error != NO_ERROR;
-}
-
-Error stack_getError(void)
-{
-	return error;
 }
 
 uint16 stack_getPointer(void)
@@ -129,7 +117,7 @@ void stack_setPointer(uint16 value)
 	pointer = value;
 }
 
-float stack_getElementAt(uint16 index)
+float stack_getElementAt(uint16 index, Error& error)
 {
 	if (index >= MAX_SIZE)
 	{
@@ -139,7 +127,7 @@ float stack_getElementAt(uint16 index)
 	return elements[index];
 }
 
-void stack_setElementAt(uint16 index, float value)
+void stack_setElementAt(uint16 index, float value, Error& error)
 {
 	if (index >= MAX_SIZE)
 	{

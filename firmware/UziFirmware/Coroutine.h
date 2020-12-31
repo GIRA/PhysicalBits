@@ -26,7 +26,7 @@ struct Coroutine
 	int16 getPC(void);
 	void setPC(int16);
 	Error saveStack();
-	void restoreStack();
+	Error restoreStack();
 	int32 getNextRun(void);
 	void setNextRun(int32);
 	int32 getLastStart(void);
