@@ -43,9 +43,6 @@
     <ClCompile Include="..\..\UziFirmware\SerialReader.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\UziFirmware\StackArray.cpp">
-      <Filter>Sketch</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\UziFirmware\VM.cpp">
       <Filter>Sketch</Filter>
     </ClCompile>
@@ -109,9 +106,6 @@
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\SerialReader.h">
-      <Filter>Sketch</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UziFirmware\StackArray.h">
       <Filter>Sketch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\UziFirmware\VM.h">

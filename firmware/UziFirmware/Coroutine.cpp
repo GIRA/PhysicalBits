@@ -20,9 +20,9 @@ void Coroutine::setPC(int16 value)
 	pc = value;
 }
 
-Error Coroutine::saveStack(StackArray* stack)
+Error Coroutine::saveStack()
 {
-	stackSize = stack->getPointer();
+	stackSize = stack_getPointer();
 	if (stackSize > stackAllocated) // We need to grow!
 	{
 #ifdef __SIMULATOR__
@@ -38,13 +38,13 @@ Error Coroutine::saveStack(StackArray* stack)
 		}
 	}
 
-	stack->copyTo(stackElements); 
+	stack_copyTo(stackElements); 
 	return NO_ERROR;
 }
 
-void Coroutine::restoreStack(StackArray* stack)
+void Coroutine::restoreStack()
 {
-	stack->copyFrom(stackElements, stackSize); 
+	stack_copyFrom(stackElements, stackSize); 
 }
 
 int32 Coroutine::getNextRun(void)

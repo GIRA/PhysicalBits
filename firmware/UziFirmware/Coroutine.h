@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Arduino.h"
-#include "StackArray.h"
 #include "Errors.h"
 #include "Memory.h"
 
@@ -26,8 +25,8 @@ struct Coroutine
 	void setFramePointer(int16);
 	int16 getPC(void);
 	void setPC(int16);
-	Error saveStack(StackArray*);
-	void restoreStack(StackArray*);
+	Error saveStack();
+	void restoreStack();
 	int32 getNextRun(void);
 	void setNextRun(int32);
 	int32 getLastStart(void);

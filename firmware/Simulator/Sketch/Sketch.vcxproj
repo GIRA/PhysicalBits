@@ -129,7 +129,6 @@
     <ClCompile Include="..\..\UziFirmware\Reader.cpp" />
     <ClCompile Include="..\..\UziFirmware\Script.cpp" />
     <ClCompile Include="..\..\UziFirmware\SerialReader.cpp" />
-    <ClCompile Include="..\..\UziFirmware\StackArray.cpp" />
     <ClCompile Include="..\..\UziFirmware\VM.cpp" />
     <ClCompile Include="..\..\UziFirmware\UziSerial.cpp" />
     <ClCompile Include="EEPROM.cpp" />
@@ -154,7 +153,6 @@
     <ClInclude Include="..\..\UziFirmware\Reader.h" />
     <ClInclude Include="..\..\UziFirmware\Script.h" />
     <ClInclude Include="..\..\UziFirmware\SerialReader.h" />
-    <ClInclude Include="..\..\UziFirmware\StackArray.h" />
     <ClInclude Include="..\..\UziFirmware\types.h" />
     <ClInclude Include="..\..\UziFirmware\VM.h" />
     <ClInclude Include="..\..\UziFirmware\UziSerial.h" />

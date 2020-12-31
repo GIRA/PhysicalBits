@@ -4,7 +4,7 @@
 class Monitor;
 
 #include "GPIO.h"
-#include "StackArray.h"
+#include "Memory.h"
 #include "Program.h"
 #include "Errors.h"
 
@@ -33,7 +33,7 @@ private:
 	float returnValue = 0;
 	int16 framePointer = 0;
 	int16 pc = 0;
-	StackArray stack;
+	
 	Program* currentProgram = 0;
 	Coroutine* currentCoroutine = 0;
 	Script* currentScript = 0;
