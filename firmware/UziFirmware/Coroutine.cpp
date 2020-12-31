@@ -22,7 +22,7 @@ void Coroutine::setPC(int16 value)
 
 Error Coroutine::saveStack()
 {
-	stackSize = stack_getPointer();
+	stackSize = stack_size();
 	if (stackSize > stackAllocated) // We need to grow!
 	{
 #ifdef __SIMULATOR__
