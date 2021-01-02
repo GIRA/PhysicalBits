@@ -1,6 +1,6 @@
 #include "Memory.h"
 
-#define BUFFER_SIZE (sizeof(uint8*) * 500)
+#define BUFFER_SIZE (sizeof(uint8*) * 700)
 
 uint8 buf[BUFFER_SIZE];
 uint8* cur = buf;
@@ -51,93 +51,90 @@ The easiest implementation would probably be to make the stack grow backwards.
 In any case, I must be careful to avoid allocating memory used by the stack.
 */
 
-const uint16 MAX_SIZE = 100;
-float elements[MAX_SIZE];
-int16 pointer = MAX_SIZE;
+float* stack_top = (float*)(buf + BUFFER_SIZE);
 
 void stack_push(float element, Error& error)
 {
-	if (pointer <= 0)
+	if (stack_top <= (float*)buf)
 	{
 		error = STACK_OVERFLOW;
 		return;
 	}
-	elements[--pointer] = element;
-}
-
-void stack_restoreFrom(float* source, uint16 size, Error& error)
-{
-	pointer = MAX_SIZE - size;
-	error = NO_ERROR;
-	if (size == 0) return;
-	memcpy(&elements[pointer], source, size * sizeof(float));
-}
-
-void stack_saveTo(float* dest)
-{
-	size_t size = (MAX_SIZE - pointer) * sizeof(float);
-	memcpy(dest, &elements[pointer], size);
+	stack_top -= 1;
+	*stack_top = element;
 }
 
 float stack_pop(Error& error)
 {
-	if (pointer >= MAX_SIZE)
+	if (stack_top >= (float*)(buf + BUFFER_SIZE))
 	{
 		error = STACK_UNDERFLOW;
 		return 0;
 	}
-	return elements[pointer++];
-}
-
-void stack_discard(uint16 amount, Error& error)
-{
-	pointer += amount;
-	if (pointer > MAX_SIZE) 
-	{
-		pointer = MAX_SIZE;
-		error = STACK_UNDERFLOW;
-	}
-}
-
-float stack_top(void)
-{
-	return elements[pointer];
+	float value = *stack_top;
+	stack_top += 1;
+	return value;
 }
 
 void stack_reset()
 {
-	pointer = MAX_SIZE;
+	stack_top = (float*)(buf + BUFFER_SIZE);
 }
 
-uint16 stack_size() 
+void stack_discard(uint16 amount, Error& error)
 {
-	return MAX_SIZE - pointer;
+	stack_top += amount;
+	if (stack_top > (float*)(buf + BUFFER_SIZE))
+	{
+		stack_reset();
+		error = STACK_UNDERFLOW;
+	}
+}
+
+uint16 stack_size()
+{
+	return (float*)(buf + BUFFER_SIZE) - stack_top;
 }
 
 uint16 stack_getPointer()
 {
 	// TODO(Richo): For now, I'm making it look like the stack grows upwards
-	return MAX_SIZE - pointer;
+	return stack_size();
 }
 
 float stack_getElementAt(uint16 index, Error& error)
 {
-	index = MAX_SIZE - index - 1;
-	if (index >= MAX_SIZE)
+	float* pointer = (float*)(buf + BUFFER_SIZE) - index - 1;
+	if (pointer < stack_top)
 	{
 		error = STACK_ACCESS_VIOLATION;
 		return 0;
 	}
-	return elements[index];
+	return *pointer;
 }
+
 
 void stack_setElementAt(uint16 index, float value, Error& error)
 {
-	index = MAX_SIZE - index - 1;
-	if (index >= MAX_SIZE)
+	float* pointer = (float*)(buf + BUFFER_SIZE) - index - 1;
+	if (pointer < stack_top)
 	{
 		error = STACK_ACCESS_VIOLATION;
 		return;
 	}
-	elements[index] = value;
+	*pointer = value;
+}
+
+void stack_restoreFrom(float* source, uint16 size, Error& error)
+{
+	stack_top = (float*)(buf + BUFFER_SIZE) - size;
+	error = NO_ERROR;
+	if (size == 0) return;
+	memcpy(stack_top, source, size * sizeof(float));
+}
+
+void stack_saveTo(float* dest)
+{
+	size_t size = (buf + BUFFER_SIZE) - (uint8*)stack_top;
+	memcpy(dest, stack_top, size);
 }
