@@ -5,10 +5,12 @@
 uint8 buf[BUFFER_SIZE];
 uint8* cur = buf;
 
+// TODO(Richo): Make a stack based on bytes instead of floats
+float* stack_top = (float*)(buf + BUFFER_SIZE);
 
-void* uzi_malloc(size_t size) 
+void* uzi_malloc(size_t size)
 {
-	if (size == 0 || (cur + size) > (buf + BUFFER_SIZE)) 
+	if (size == 0 || (cur + size) > (uint8*)stack_top)
 	{
 		return 0;
 	}
@@ -16,7 +18,7 @@ void* uzi_malloc(size_t size)
 	uint8* tmp = cur;
 	cur += size;
 
-	for (uint16 i = 0; i < size; i++) 
+	for (uint16 i = 0; i < size; i++)
 	{
 		tmp[i] = 0;
 	}
@@ -28,12 +30,12 @@ void uzi_memreset()
 	cur = buf;
 }
 
-uint16 uzi_available() 
+uint16 uzi_available()
 {
-	return BUFFER_SIZE - (cur - buf);
+	return (uint8*)stack_top - cur;
 }
 
-uint16 uzi_used() 
+uint16 uzi_used()
 {
 	return cur - buf;
 }
@@ -41,21 +43,9 @@ uint16 uzi_used()
 
 /******************************STACK******************************/
 
-/*
-TODO(Richo): Maybe make the stack array size variable and use the same memory
-space as the program? I should probably track the stack size as well to see
-how much memory we're normally wasting by having a fixed size. Also, I should
-be careful if I make the stack and the program share the same memory space
-because the program might need to grow as well (due to the coroutine resizings).
-The easiest implementation would probably be to make the stack grow backwards.
-In any case, I must be careful to avoid allocating memory used by the stack.
-*/
-
-float* stack_top = (float*)(buf + BUFFER_SIZE);
-
 void stack_push(float element, Error& error)
 {
-	if (stack_top <= (float*)buf)
+	if (stack_top <= (float*)cur)
 	{
 		error = STACK_OVERFLOW;
 		return;
@@ -127,7 +117,13 @@ void stack_setElementAt(uint16 index, float value, Error& error)
 
 void stack_restoreFrom(float* source, uint16 size, Error& error)
 {
-	stack_top = (float*)(buf + BUFFER_SIZE) - size;
+	float* new_top = (float*)(buf + BUFFER_SIZE) - size;
+	if (new_top < (float*)cur)
+	{
+		error = STACK_OVERFLOW;
+		return;
+	}
+	stack_top = new_top;
 	error = NO_ERROR;
 	if (size == 0) return;
 	memcpy(stack_top, source, size * sizeof(float));
