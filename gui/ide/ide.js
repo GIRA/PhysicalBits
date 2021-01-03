@@ -69,7 +69,7 @@ const fs = require('fs');
 
     window.onresize = updateSize;
     layout.on('stateChanged', updateSize);
-    layout.on('stateChanged', resizeBlockly);
+    layout.on('stateChanged', resizePanels);
     layout.on('stateChanged', saveToLocalStorage);
     layout.on('stateChanged', checkBrokenLayout);
     layout.on('stateChanged', updateVisiblePanelsInOptionsModal);
@@ -80,7 +80,7 @@ const fs = require('fs');
     });
     layout.init();
     updateSize();
-    resizeBlockly();
+    resizePanels();
     checkBrokenLayout();
   }
 
@@ -943,8 +943,12 @@ const fs = require('fs');
     panel.scrollTop = panel.scrollHeight - panel.clientHeight;
   }
 
-  function resizeBlockly() {
+  function resizePanels() {
     UziBlock.resizeWorkspace();
+    
+    if (codeEditor) {
+      codeEditor.resize(true);
+    }
   }
 
   function saveToFile(path) {
