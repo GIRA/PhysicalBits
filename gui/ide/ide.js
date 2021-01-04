@@ -32,6 +32,7 @@ const fs = require('fs');
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
         .then(initializeOutputPanel)
+        .then(initializePlotterPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
@@ -839,6 +840,10 @@ const fs = require('fs');
     })
   }
 
+  function initializePlotterPanel() {
+    // TODO(Richo): ??
+  }
+
   function initializeAutorun() {
     const interval = 10;
     function loop() {
@@ -945,7 +950,7 @@ const fs = require('fs');
 
   function resizePanels() {
     UziBlock.resizeWorkspace();
-    
+
     if (codeEditor) {
       codeEditor.resize(true);
     }

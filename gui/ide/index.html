@@ -191,6 +191,13 @@
       <div id="output-panel" class="fullscreen scrollable px-2">
         <pre id="output-console" ></pre>
       </div>
+      <div id="plotter-panel" class="fullscreen">
+        <div id="plotter-labels" class="text-center" style="font-size: small;">
+        </div>
+        <div class="fullscreen">
+          <canvas id="plotter-canvas" width="100px" height="100px"></canvas>
+        </div>
+      </div>
     </div>
 
     <table id="loading-container"  class="fullscreen dark-theme">
@@ -669,6 +676,7 @@
   	<!-- ACE -->
   	<script src="libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
+
     <script src="polyfills.js" type="text/javascript"></script>
     <script src="translations.js" type="text/javascript"></script>
     <script src="i18n.js" type="text/javascript"></script>
@@ -681,6 +689,9 @@
 
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
+
+    <script src="charts.js" type="text/javascript"></script>
+
     <script>
     function showLoadingScreen() {
       $("#loading-container tbody").css("visibility", "visible");

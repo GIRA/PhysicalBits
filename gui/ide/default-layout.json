@@ -22,11 +22,21 @@
         "title": "Inspector"
       }]
     },{
-      "type": "component",
-      "componentName": "DOM",
-      "componentState": { "id": "#blocks-panel" },
-      "title": "Blocks"
-    },{
+      "type": "column",
+      "width": 58,
+      "content":[{
+        "type": "component",
+        "componentName": "DOM",
+        "componentState": { "id": "#blocks-panel" },
+        "title": "Blocks"
+      },{
+          "type": "component",
+          "height": 30,
+          "componentName": "DOM",
+          "componentState": { "id": "#plotter-panel" },
+          "title": "Plotter"
+        }]
+      },{
       "type": "column",
       "width": 25,
       "content":[{
