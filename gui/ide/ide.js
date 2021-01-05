@@ -841,7 +841,7 @@ const fs = require('fs');
   }
 
   function initializePlotterPanel() {
-    // TODO(Richo): ??
+    Plotter.init();
   }
 
   function initializeAutorun() {
