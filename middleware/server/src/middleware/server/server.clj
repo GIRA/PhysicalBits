@@ -15,9 +15,11 @@
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device]
-            [middleware.output.logger :as logger]))
+            [middleware.output.logger :as logger])
+  (:import (java.net InetAddress DatagramPacket DatagramSocket)))
 
 (def server (atom nil))
+(def udp-server (atom nil))
 
 (defn wrap-websocket [handler]
   (fn [req]
@@ -161,7 +163,14 @@
       (when @update-loop?
         (let [new-state (get-server-state)]
           (when (not= old-state new-state)
-            (a/>! updates {:type :update, :state (json/encode new-state)}))
+            (let [json-state (json/encode new-state)]
+              (a/>! updates {:type :update, :state json-state})
+              (when-let [udp @udp-server]
+                (.send udp
+                       (DatagramPacket. (.getBytes json-state)
+                                        (.length json-state)
+                                        (InetAddress/getByName "localhost")
+                                        3234)))))
           (a/<! (a/timeout 100))
           (recur new-state))))))
 
@@ -211,18 +220,24 @@
       (wrap-content-type)
       (wrap-not-modified)))
 
-(defn start [& {:keys [uzi-libraries web-resources server-port]
+(defn start [& {:keys [uzi-libraries web-resources server-port udp-port]
                 :or {uzi-libraries "../../uzi/libraries"
                      web-resources "../../gui"
-                     server-port 3000}}]
+                     server-port 3000
+                     udp-port 3232}}]
   (when (nil? @server)
     (start-update-loop)
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]
-      (reset! server s))))
+      (reset! server s))
+    (let [s (DatagramSocket. udp-port)]
+      (reset! udp-server s))))
 
 (defn stop []
   (when-let [s @server]
     (stop-update-loop)
     (reset! server nil)
+    (.close s))
+  (when-let [s @udp-server]
+    (reset! udp-server nil)
     (.close s)))
