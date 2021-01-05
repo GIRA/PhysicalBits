@@ -4,7 +4,7 @@ let Plotter = (function () {
 
   let html = document.getElementById("plotter-canvas");
   let ctx = html.getContext("2d");
-  let palette = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'];
+  let palette = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf'];
   let series = [];
   let bounds = { x: 0, y: 0, w: 0, h: 0 };
   let observed = new Set();
@@ -146,9 +146,11 @@ let Plotter = (function () {
       series = series.filter(each => each.label != observable);
       observed.delete(observable);
     } else {
+      let colors = palette.filter(c => !series.some(s => s.color == c));
+      if (colors.length == 0) { colors = palette; }
       series.push({
         label: observable,
-        color: palette[series.length % palette.length],
+        color: colors[Math.floor(Math.random() * colors.length)],
         data: []
       });
       observed.add(observable);
