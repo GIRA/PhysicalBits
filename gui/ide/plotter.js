@@ -157,11 +157,18 @@ let Plotter = (function () {
     resize();
   }
 
+  function colorFor(observable) {
+    if (!observed.has(observable)) return null;
+    let s = series.find(each => each.label == observable);
+    return s.color;
+  }
+
   return {
     init: init,
     resize: resize,
     update: update,
-    toggle: toggle
+    toggle: toggle,
+    colorFor: colorFor
   }
 
 })();

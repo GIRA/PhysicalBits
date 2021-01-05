@@ -1544,9 +1544,11 @@ const fs = require('fs');
     }
 
     function getElementId(val) { return itemPrefix + "-" + val.name; }
+    function getEyeId(val) { return getElementId(val) + "-eye"; }
 
     // NOTE(Richo): The value could have ".", which bothers JQuery but works with document.getElementById
     function getElement(val) { return $(document.getElementById(getElementId(val))); }
+    function getEye(val) { return $(document.getElementById(getEyeId(val))); }
 
     function initializePanel() {
       $container.html("");
@@ -1557,6 +1559,8 @@ const fs = require('fs');
               .addClass("pl-4")
               .append($("<i>")
                 .addClass("fas fa-eye")
+                .css("cursor", "pointer")
+                .attr("id", getEyeId(val))
                 .on("click", () => Plotter.toggle(val.name))))
             .append($("<td>")
               .text(val.name))
@@ -1582,6 +1586,9 @@ const fs = require('fs');
     }
 
     values.elements.forEach(function (val) {
+      let $eye = getEye(val);
+      $eye.css("color", Plotter.colorFor(val.name) || "white");
+
       if (reporting.has(val.name)) {
         let $item = getElement(val);
         if ($item.get(0) == undefined) { initializePanel(); }
