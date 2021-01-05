@@ -36,10 +36,8 @@ for (let i = 0; i < 9; i++) {
     color: palette[i],
     data: []
   }
-  let y = Math.random() * 100;
-  for (let j = 0; j < 10; j++) {
-    s.data.push(y);
-    y += Math.random() * 10 - 5;
+  for (let x = 0; x < 1000; x++) {
+    s.data.push({ x: x, y: 0 });
   }
   series.push(s);
 }
@@ -47,7 +45,11 @@ for (let i = 0; i < 9; i++) {
 setInterval(function() {
   for (let i = 0; i < series.length; i++) {
     let s = series[i];
-    s.data.push(s.data[s.data.length - 1] + Math.random() * 10 - 5);
+    let d = {
+      x: s.data[s.data.length - 1].x + 1,
+      y: s.data[s.data.length - 1].y + Math.random() * 10 - 5
+    }
+    s.data.push(d);
     if (s.data.length > 1000) {
       s.data.shift(1);
     }
@@ -74,9 +76,20 @@ function draw() {
   ctx.fillRect(0, 0, html.width, html.height);
   */
 
-
-  let y_min = Math.min.apply(null, series.map(s => Math.min.apply(null, s.data)))
-  let y_max = Math.max.apply(null, series.map(s => Math.max.apply(null, s.data)))
+  let x_min = Infinity;
+  let y_min = Infinity;
+  let x_max = -Infinity;
+  let y_max = -Infinity;
+  for (let i = 0; i < series.length; i++) {
+    let s = series[i];
+    for (let j = 0; j < s.data.length; j++) {
+      let d = s.data[j];
+      if (d.x < x_min) { x_min = d.x; }
+      if (d.x > x_max) { x_max = d.x; }
+      if (d.y < y_min) { y_min = d.y; }
+      if (d.y > y_max) { y_max = d.y; }
+    }
+  }
 
   ctx.lineWidth = 2;
   ctx.setLineDash([]);
@@ -87,8 +100,8 @@ function draw() {
 
     //ctx.moveTo(0, 0);
     for (let j = 0; j < s.data.length; j++) {
-      let x = j * (html.width/s.data.length);
-      let y = html.height - ((s.data[j] - y_min) / (y_max - y_min)) * html.height;
+      let x = ((s.data[j].x - x_min) / (x_max - x_min)) * html.width;
+      let y = html.height - ((s.data[j].y - y_min) / (y_max - y_min)) * html.height;
       ctx.lineTo(x, y);
     }
     ctx.stroke();
