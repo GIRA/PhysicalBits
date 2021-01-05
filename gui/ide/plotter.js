@@ -121,16 +121,20 @@ let Plotter = (function () {
     if (!old.isConnected && state.isConnected) {
       series.forEach(s => { s.data = []; });
     }
+    updateValues(state.pins.elements);
+    updateValues(state.globals.elements);
+  }
 
+  function updateValues(values) {
     let timestamp = +new Date(); // TODO(Richo): Use timestamp from VM
-    for (let i = 0; i < state.pins.elements.length; i++) {
-      let pin = state.pins.elements[i];
-      if (observed.has(pin.name)) {
-        let s = series.find(each => each.label == pin.name);
+    for (let i = 0; i < values.length; i++) {
+      let val = values[i];
+      if (observed.has(val.name)) {
+        let s = series.find(each => each.label == val.name);
         if (s != undefined) {
           s.data.push({
             x: timestamp,
-            y: pin.value
+            y: val.value
           });
 
           if (s.data.length > PLOTTER_LIMIT) {
