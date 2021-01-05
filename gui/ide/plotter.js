@@ -1,3 +1,5 @@
+let PLOTTER_LIMIT = 200;
+
 let Plotter = (function () {
 
   let html = document.getElementById("plotter-canvas");
@@ -5,6 +7,7 @@ let Plotter = (function () {
   let palette = ['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'];
   let series = [];
   let bounds = { x: 0, y: 0, w: 0, h: 0 };
+  let observed = new Set();
 
   function init() {
     startStepping();
@@ -18,7 +21,6 @@ let Plotter = (function () {
 
   function startStepping() {
     function step() {
-      updateLabels();
       updateBounds();
       draw();
       window.requestAnimationFrame(step);
@@ -115,40 +117,51 @@ let Plotter = (function () {
     drawOrigin();
   }
 
-  // TODO(Richo): This function is just for testing purposes, delete it!
-  (function testData() {
-    series = [];
-    let labels = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ";
-    for (let i = 0; i < 9; i++) {
-      let s = {
-        label: labels[i],
-        color: palette[i],
-        data: []
-      }
-      for (let x = 0; x < 1000; x++) {
-        s.data.push({ x: x, y: 0 });
-      }
-      series.push(s);
+  function update(state, old) {
+    if (!old.isConnected && state.isConnected) {
+      series.forEach(s => { s.data = []; });
     }
 
-    setInterval(function() {
-      for (let i = 0; i < series.length; i++) {
-        let s = series[i];
-        let d = {
-          x: s.data[s.data.length - 1].x + 1,
-          y: s.data[s.data.length - 1].y + Math.random() * 10 - 5,
-        }
-        s.data.push(d);
-        if (s.data.length > 1000) {
-          s.data.shift(1);
+    let timestamp = +new Date(); // TODO(Richo): Use timestamp from VM
+    for (let i = 0; i < state.pins.elements.length; i++) {
+      let pin = state.pins.elements[i];
+      if (observed.has(pin.name)) {
+        let s = series.find(each => each.label == pin.name);
+        if (s != undefined) {
+          s.data.push({
+            x: timestamp,
+            y: pin.value
+          });
+
+          if (s.data.length > PLOTTER_LIMIT) {
+            s.data.splice(0, s.data.length - PLOTTER_LIMIT);
+          }
         }
       }
-    }, 16);
-  })()
+    }
+  }
+
+  function toggle(observable) {
+    if (observed.has(observable)) {
+      series = series.filter(each => each.label != observable);
+      observed.delete(observable);
+    } else {
+      series.push({
+        label: observable,
+        color: palette[series.length % palette.length],
+        data: []
+      });
+      observed.add(observable);
+    }
+    updateLabels();
+    resize();
+  }
 
   return {
     init: init,
     resize: resize,
+    update: update,
+    toggle: toggle
   }
 
 })();

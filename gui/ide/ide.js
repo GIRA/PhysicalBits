@@ -842,6 +842,7 @@ const fs = require('fs');
 
   function initializePlotterPanel() {
     Plotter.init();
+    Uzi.on("update", Plotter.update);
   }
 
   function initializeAutorun() {
@@ -1554,7 +1555,9 @@ const fs = require('fs');
           let $row = $("<tr>")
             .append($("<td>")
               .addClass("pl-4")
-              .html('<i class="fas fa-eye"></i>'))
+              .append($("<i>")
+                .addClass("fas fa-eye")
+                .on("click", () => Plotter.toggle(val.name))))
             .append($("<td>")
               .text(val.name))
             .append($("<td>")
