@@ -7,8 +7,6 @@ let Plotter = (function () {
   let bounds = { x: 0, y: 0, w: 0, h: 0 };
 
   function init() {
-    window.addEventListener("resize", resize);
-    resize();
     startStepping();
   }
 
@@ -20,8 +18,6 @@ let Plotter = (function () {
 
   function startStepping() {
     function step() {
-      // TODO(Richo): This shouldn't be necessary if we tie the resize to the layout state change
-      resize();
       updateLabels();
       updateBounds();
       draw();
@@ -113,6 +109,7 @@ let Plotter = (function () {
   }
 
   function draw() {
+    ctx.clearRect(0, 0, html.width, html.height);
     drawSeries();
     drawAxisLabels();
     drawOrigin();

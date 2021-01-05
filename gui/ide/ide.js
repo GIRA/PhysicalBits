@@ -954,6 +954,8 @@ const fs = require('fs');
     if (codeEditor) {
       codeEditor.resize(true);
     }
+
+    Plotter.resize();
   }
 
   function saveToFile(path) {
