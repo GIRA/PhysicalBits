@@ -237,7 +237,8 @@
 (defn- process-pin-value [in]
   (go
    (let [timestamp (<! (read-timestamp in))
-         count (<? in)]
+         count (<? in)
+         snapshot (atom {:timestamp timestamp, :data {}})]
      (dotimes [_ count]
               (let [n1 (<? in)
                     n2 (<? in)
@@ -247,16 +248,18 @@
                                                      8))
                              1023.0)]
                 (when-let [pin-name (get-pin-name pin-number)]
-                  (swap! state update-in [:pins pin-name]
-                         (fn [_] {:name pin-name
-                                  :number pin-number
-                                  :value value}))))))))
+                  (swap! snapshot assoc-in [:data pin-name]
+                         {:name pin-name
+                          :number pin-number
+                          :value value}))))
+     (swap! state assoc :pins @snapshot))))
 
 (defn- process-global-value [in]
   (go
    (let [timestamp (<! (read-timestamp in))
          count (<? in)
-         globals (vec (program/all-globals (-> @state :program :running :compiled)))]
+         globals (vec (program/all-globals (-> @state :program :running :compiled)))
+         snapshot (atom {:timestamp timestamp, :data {}})]
      (dotimes [_ count]
               (let [number (<? in)
                     n1 (<? in)
@@ -265,11 +268,12 @@
                     n4 (<? in)
                     float-value (bytes->float [n1 n2 n3 n4])]
                 (when-let [global-name (:name (nth globals number {}))]
-                  (swap! state update-in [:globals global-name]
-                         (fn [_] {:name global-name
-                                  :number number
-                                  :value float-value
-                                  :raw-bytes [n1 n2 n3 n4]}))))))))
+                  (swap! snapshot assoc-in [:data global-name]
+                         {:name global-name
+                          :number number
+                          :value float-value
+                          :raw-bytes [n1 n2 n3 n4]}))))
+     (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
@@ -368,8 +372,8 @@
   (go-loop []
     (when (connected?)
       (let [reporting (:reporting @state)]
-        (swap! state update :pins #(select-keys % (:pins reporting)))
-        (swap! state update :globals #(select-keys % (:globals reporting))))
+        (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
+        (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
       (<! (timeout 1000))
       (recur))))
 

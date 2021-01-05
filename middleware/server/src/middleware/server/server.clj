@@ -117,15 +117,17 @@
       (assoc :isConnected (:connected? state)
              :portName (:port-name state)
              :availablePorts (:available-ports state)
-             :pins {:available (mapv (fn [pin-name]
+             :pins {:timestamp (-> state :pins :timestamp)
+                    :available (mapv (fn [pin-name]
                                        {:name pin-name
                                         :reporting (contains? (-> state :reporting :pins)
                                                               pin-name)})
                                      (-> state :board :pin-names))
                     :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                             (:name pin)))
-                                       (-> state :pins vals))}
-             :globals {:available (mapv (fn [{global-name :name}]
+                                       (-> state :pins :data vals))}
+             :globals {:timestamp (-> state :pins :timestamp)
+                       :available (mapv (fn [{global-name :name}]
                                           {:name global-name
                                            :reporting (contains? (-> state :reporting :globals)
                                                                  global-name)})
@@ -133,7 +135,7 @@
                                                 (-> state :program :running :compiled :globals)))
                        :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
                                                                   (:name global)))
-                                          (-> state :globals vals))}
+                                          (-> state :globals :data vals))}
              :output output
              :program (let [program (-> state :program :current)]
                         (-> program
