@@ -35,7 +35,7 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-#define REPORT_INTERVAL                                    25
+#define REPORT_INTERVAL                                     5
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
 

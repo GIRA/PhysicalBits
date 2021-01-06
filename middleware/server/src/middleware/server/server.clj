@@ -171,7 +171,7 @@
                                         (.length json-state)
                                         (InetAddress/getByName "localhost")
                                         3234)))))
-          (a/<! (a/timeout 100))
+          (a/<! (a/timeout 10))
           (recur new-state))))))
 
 (defn stop-update-loop []
