@@ -123,6 +123,7 @@ let Plotter = (function () {
   }
 
   function update(state, old) {
+    if (!state.isConnected) return;
     if (!old.isConnected && state.isConnected) {
       series.forEach(s => { s.data = []; });
     }
