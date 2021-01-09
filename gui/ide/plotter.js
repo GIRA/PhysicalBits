@@ -43,10 +43,15 @@ let Plotter = (function () {
         if (d.y > y_max) { y_max = d.y; }
       }
     }
-    bounds.x = x_min;
-    bounds.y = y_min;
+    bounds.x = x_min == Infinity ? 0 : x_min;
+    bounds.y = y_min == Infinity ? 0 : y_min;
     bounds.w = x_max - x_min;
     bounds.h = y_max - y_min;
+
+    if (bounds.h <= 0) {
+      bounds.y -= 1;
+      bounds.h = 2;
+    }
   }
 
   function updateLabels() {
