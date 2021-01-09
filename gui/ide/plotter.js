@@ -117,9 +117,9 @@ let Plotter = (function () {
 
   function draw() {
     ctx.clearRect(0, 0, html.width, html.height);
+    drawOrigin();
     drawSeries();
     drawAxisLabels();
-    drawOrigin();
   }
 
   function update(state, old) {
