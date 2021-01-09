@@ -126,11 +126,21 @@ let Plotter = (function () {
     if (!old.isConnected && state.isConnected) {
       series.forEach(s => { s.data = []; });
     }
-    updateValues(state.pins);
-    updateValues(state.globals);
+    var toRemove = new Set(observed);
+    updateValues(state.pins, toRemove);
+    updateValues(state.globals, toRemove);
+
+    if (toRemove.size > 0) {
+      toRemove.forEach(each => {
+        remove(each);
+      });
+
+      updateLabels();
+      resize();
+    }
   }
 
-  function updateValues(data) {
+  function updateValues(data, toRemove) {
     let timestamp = data.timestamp;
     if (timestamp == null) return;
 
@@ -148,24 +158,36 @@ let Plotter = (function () {
           if (s.data.length > PLOTTER_LIMIT) {
             s.data.splice(0, s.data.length - PLOTTER_LIMIT);
           }
+
+          toRemove.delete(val.name);
         }
       }
     }
+
+    data.available.forEach(each => toRemove.delete(each.name));
+  }
+
+  function add(observable) {
+    let colors = palette.filter(c => !series.some(s => s.color == c));
+    if (colors.length == 0) { colors = palette; }
+    series.push({
+      label: observable,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      data: []
+    });
+    observed.add(observable);
+  }
+
+  function remove(observable) {
+    series = series.filter(each => each.label != observable);
+    observed.delete(observable);
   }
 
   function toggle(observable) {
     if (observed.has(observable)) {
-      series = series.filter(each => each.label != observable);
-      observed.delete(observable);
+      remove(observable);
     } else {
-      let colors = palette.filter(c => !series.some(s => s.color == c));
-      if (colors.length == 0) { colors = palette; }
-      series.push({
-        label: observable,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        data: []
-      });
-      observed.add(observable);
+      add(observable);
     }
     updateLabels();
     resize();
