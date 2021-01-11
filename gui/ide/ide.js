@@ -4,7 +4,6 @@ const fs = require('fs');
 
 ﻿let IDE = (function () {
 
-  let layout, defaultLayoutConfig;
   let codeEditor;
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
@@ -20,8 +19,7 @@ const fs = require('fs');
   let IDE = {
     init: function () {
       // NOTE(Richo): The following tasks need to be done in order:
-      loadDefaultLayoutConfig()
-        .then(initializeDefaultLayout)
+      initializeLayout()
         .then(initializeCodePanel)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
@@ -40,49 +38,17 @@ const fs = require('fs');
     },
   };
 
-  function loadDefaultLayoutConfig() {
-    return ajax.GET("default-layout.json")
-      .then(function (data) { defaultLayoutConfig = data; });
-  }
+  function initializeLayout() {
+    return LayoutManager.init(function () {
+      resizePanels();
+      saveToLocalStorage();
+      checkBrokenLayout();
+      updateVisiblePanelsInOptionsModal();
 
-  function initializeDefaultLayout() {
-    initializeLayout(defaultLayoutConfig);
-  }
-
-  function initializeLayout(config) {
-    if (layout) { layout.destroy(); }
-    layout = new GoldenLayout(config, "#layout-container");
-    layout.registerComponent('DOM', function(container, state) {
-      let $el = $(state.id);
-      container.getElement().append($el);
-      container.on('destroy', function () {
-        $("#hidden-panels").append($el);
-      });
-    });
-
-    function updateSize() {
-      let w = window.innerWidth;
-      let h = window.innerHeight - $("#top-bar").outerHeight();
-      if (layout.width != w || layout.height != h) {
-        layout.updateSize(w, h);
-      }
-    };
-
-    window.onresize = updateSize;
-    layout.on('stateChanged', updateSize);
-    layout.on('stateChanged', resizePanels);
-    layout.on('stateChanged', saveToLocalStorage);
-    layout.on('stateChanged', checkBrokenLayout);
-    layout.on('stateChanged', updateVisiblePanelsInOptionsModal);
-    layout.on('stateChanged', function () {
       // HACK(Richo): The following allows me to translate panel titles
       $(".lm_title").each(function () { $(this).attr("lang", "en"); });
       i18n.updateUI();
     });
-    layout.init();
-    updateSize();
-    resizePanels();
-    checkBrokenLayout();
   }
 
   function initializeBlocksPanel() {
@@ -861,7 +827,7 @@ const fs = require('fs');
 
   function initializeBrokenLayoutErrorModal() {
     $("#fix-broken-layout-button").on("click", function () {
-      initializeDefaultLayout();
+      LayoutManager.reset();
       $("#broken-layout-modal").modal("hide");
     });
   }
@@ -878,7 +844,7 @@ const fs = require('fs');
   }
 
   function initializeOptionsModal() {
-    $("#restore-layout-button").on("click", initializeDefaultLayout);
+    $("#restore-layout-button").on("click", LayoutManager.reset);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
     $("#all-caps-checkbox").on("change", updateAllCaps);
     if (!fs) {
@@ -910,10 +876,10 @@ const fs = require('fs');
   }
 
   function checkBrokenLayout() {
-    if (layout.config.content.length > 0) return;
+    if (!LayoutManager.isBroken()) return;
 
     setTimeout(function () {
-      if (layout.config.content.length > 0) return;
+      if (!LayoutManager.isBroken()) return;
       $("#broken-layout-modal").modal("show");
     }, 1000);
   }
@@ -1029,7 +995,8 @@ const fs = require('fs');
 	}
 
   function saveToLocalStorage() {
-    if (UziBlock.getWorkspace() == undefined || layout == undefined) return;
+    if (UziBlock.getWorkspace() == undefined) return;
+    if (LayoutManager.getLayoutConfig() == undefined) return;
 
     let ui = getUIState();
     localStorage["uzi.settings"] = JSON.stringify(ui.settings);
@@ -1053,7 +1020,7 @@ const fs = require('fs');
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
       },
       fileName:  $("#file-name").text() || "",
-      layout: layout.toConfig(),
+      layout: LayoutManager.getLayoutConfig(),
       blockly: UziBlock.getProgram(),
       code: getTextualCode(),
       ports: {
@@ -1084,7 +1051,7 @@ const fs = require('fs');
       }
 
       if (ui.layout != undefined) {
-        initializeLayout(ui.layout);
+        LayoutManager.setLayoutConfig(ui.layout);
       }
 
       if (ui.blockly != undefined) {
