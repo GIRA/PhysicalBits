@@ -189,6 +189,7 @@ let Plotter = (function () {
       remove(observable);
     } else {
       add(observable);
+      LayoutManager.showPlotter();
     }
     updateLabels();
     resize();
