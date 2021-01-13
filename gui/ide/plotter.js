@@ -39,6 +39,8 @@ let Plotter = (function () {
         let d = s.data[j];
         if (d.x < x_min) { x_min = d.x; }
         if (d.x > x_max) { x_max = d.x; }
+
+        if (d.y == Infinity || d.y == -Infinity) continue;
         if (d.y < y_min) { y_min = d.y; }
         if (d.y > y_max) { y_max = d.y; }
       }
@@ -71,6 +73,8 @@ let Plotter = (function () {
   function dataToPx(point) {
     let x = ((point.x - bounds.x) / bounds.w) * html.width;
     let y = html.height - ((point.y - bounds.y) / bounds.h) * html.height;
+    if (y == Infinity) { y = html.height + 1; }
+    else if (y == -Infinity) { y = -1; }
     return { x: x, y: y };
   }
 
