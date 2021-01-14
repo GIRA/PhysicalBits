@@ -1,5 +1,7 @@
 #include "VM.h"
 
+uint8 loop_count = 0;
+
 Error VM::executeProgram(Program* program, GPIO* io, Monitor* monitor)
 {
 	if (program != currentProgram)
@@ -321,7 +323,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	case JMP:
 	{
 		pc += argument;
-		if (argument < 0) { yieldTime(0, yieldFlag); }
+		if (argument < 0) 
+		{ 
+			if (++loop_count > 100 || millis() - lastTickStart >= 1) 
+			{
+				yieldTime(0, yieldFlag); 
+				loop_count = 0;
+			}
+		}
 	}
 	break;
 
@@ -330,7 +339,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) == 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -340,7 +356,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) != 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -352,7 +375,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a != b) // TODO(Richo): float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -364,7 +394,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a < b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -376,7 +413,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a <= b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -388,7 +432,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a > b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
@@ -400,7 +451,14 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a >= b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			if (argument < 0)
+			{
+				if (++loop_count > 100 || millis() - lastTickStart >= 1)
+				{
+					yieldTime(0, yieldFlag);
+					loop_count = 0;
+				}
+			}
 		}
 	}
 	break;
