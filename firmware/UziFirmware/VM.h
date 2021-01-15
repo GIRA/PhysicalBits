@@ -45,6 +45,7 @@ private:
 	Error error = NO_ERROR;
 
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
+	void handleBackwardJump(const int16& argument, bool& yieldFlag);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
 	void saveCurrentCoroutine();
 	void yieldTime(int32, bool&);

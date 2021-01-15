@@ -322,15 +322,8 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case JMP:
 	{
-		pc += argument;
-		if (argument < 0) 
-		{ 
-			if (++loop_count > 100 || millis() - lastTickStart >= 1) 
-			{
-				yieldTime(0, yieldFlag); 
-				loop_count = 0;
-			}
-		}
+		pc += argument; 
+		handleBackwardJump(argument, yieldFlag);
 	}
 	break;
 
@@ -339,14 +332,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) == 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -356,14 +342,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) != 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -375,14 +354,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a != b) // TODO(Richo): float comparison
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -394,14 +366,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a < b)
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -413,14 +378,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a <= b)
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -432,14 +390,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a > b)
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -451,14 +402,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a >= b)
 		{
 			pc += argument;
-			if (argument < 0)
-			{
-				if (++loop_count > 100 || millis() - lastTickStart >= 1)
-				{
-					yieldTime(0, yieldFlag);
-					loop_count = 0;
-				}
-			}
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -1161,6 +1105,18 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		io->setMode(pin, mode);
 	}
 	break;
+	}
+}
+
+void VM::handleBackwardJump(const int16& argument, bool& yieldFlag)
+{
+	if (argument < 0)
+	{
+		if (++loop_count >= 100 || millis() - lastTickStart >= 1)
+		{
+			yieldTime(0, yieldFlag);
+			loop_count = 0;
+		}
 	}
 }
 
