@@ -13,6 +13,7 @@ Error VM::executeProgram(Program* program, GPIO* io, Monitor* monitor)
 	int16 count = program->getScriptCount();
 
 	lastTickStart = millis();
+	loop_count = 0;
 	for (int16 i = 0; i < count; i++)
 	{
 		Script* script = program->getScript(i);
