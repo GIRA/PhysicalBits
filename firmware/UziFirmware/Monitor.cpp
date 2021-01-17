@@ -160,7 +160,7 @@ void Monitor::sendProfile()
 		else if (REPORT_INTERVAL > 50) { REPORT_INTERVAL = 50; }
 
 		tickCount = 0;
-		lastTimeProfile = now;
+		lastTimeProfile = millis();
 	}
 }
 
@@ -181,7 +181,7 @@ void Monitor::sendReport(GPIO* io, Program* program)
 			} break;
 		}
 				
-		lastTimeReport = now;
+		lastTimeReport = millis();
 		reportingStep++;
 		if (reportingStep > 3) { reportingStep = 1; }
 	}
