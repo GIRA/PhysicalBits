@@ -1,7 +1,7 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,155,27,284
-AVERAGE,13.79505300353357,4.738515901060071,31.69611307420495
+AVERAGE,13.83038869257951,4.752650176678445,31.74558303886926
 MEDIAN,8,3,21
 middleware.checker-test/assignment-value-should-be-an-expression#0,5,4,13
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
@@ -239,11 +239,11 @@ middleware.parser-test/spaces-1#0,2,2,12
 middleware.parser-test/spaces-2#0,2,2,12
 middleware.parser-test/spaces-3#0,2,2,12
 middleware.parser-test/uzi-syntax#0,17,12,48
-middleware.vm-test-files-gen/Test043ForLoop_uzi-src#0,13,4,29
-middleware.vm-test-files-gen/Test044ReversedForLoop_uzi-src#0,13,4,29
-middleware.vm-test-files-gen/Test045ForLoopWithoutConstantStep_uzi-src#0,20,4,43
-middleware.vm-test-files-gen/Test046ReverseForLoopWithoutConstantStep_uzi-src#0,20,4,47
-middleware.vm-test-files-gen/Test047ForLoopShouldOnlyEvaluateStepOncePerIteration_uzi-src#0,33,5,67
+middleware.vm-test-files-gen/Test043ForLoop_uzi-src#0,15,4,32
+middleware.vm-test-files-gen/Test044ReversedForLoop_uzi-src#0,15,5,32
+middleware.vm-test-files-gen/Test045ForLoopWithoutConstantStep_uzi-src#0,22,5,46
+middleware.vm-test-files-gen/Test046ReverseForLoopWithoutConstantStep_uzi-src#0,22,5,50
+middleware.vm-test-files-gen/Test047ForLoopShouldOnlyEvaluateStepOncePerIteration_uzi-src#0,35,6,69
 middleware.vm-test-files-gen/Test048MutexShouldGuaranteeACriticalSection_uzi-src#0,58,11,112
 middleware.vm-test-files-gen/Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer_uzi-src#0,59,10,98
 middleware.vm-test-files-gen/Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers_uzi-src#0,47,13,92

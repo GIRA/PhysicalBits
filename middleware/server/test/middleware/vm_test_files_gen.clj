@@ -4676,11 +4676,11 @@
 ; should NOT be converted to input programs for the VM tests.
 
 (deftest Test043ForLoop_uzi-src
-  (let [program (compile-string "task for() running { for i = 7 to 11 { turnOn(i); }}")
+  (let [program (compile-string "task for() running { for i = 7 to 11 { turnOn(i); delayS(1); }}")
         actual (en/encode program)]))
 
 (deftest Test044ReversedForLoop_uzi-src
-  (let [program (compile-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); }}")
+  (let [program (compile-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); delayS(1); }}")
         actual (en/encode program)]))
 
 (deftest Test045ForLoopWithoutConstantStep_uzi-src
@@ -4690,6 +4690,7 @@
         	task for() running {
         		for i = 7 to 11 by step {
         			turnOn(i);
+              delayS(1);
         		}
         	}")
         actual (en/encode program)]))
@@ -4701,6 +4702,7 @@
         	task for() running {
         		for i = 11 to 7 by step {
         			turnOn(i);
+              delayS(1);
         		}
         	}")
         actual (en/encode program)]))
@@ -4723,6 +4725,7 @@
         	task for() running {
         		for i = 0 to negatedStop() by negatedStep() {
         			write(D13, i);
+              delayMs(1);
         		}
         	}")
         actual (en/encode program)]))
