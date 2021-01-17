@@ -138,11 +138,13 @@ void Monitor::sendProfile()
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
+		float tps = tickCount / (float)(now - lastTimeProfile) * 1000;
+
 		if (profiling) 
 		{
 			serial->write(MSG_OUT_PROFILE);
 
-			uint16 val = tickCount;
+			uint16 val = tps / 10;
 			uint8 val1 = val >> 7;  // MSB
 			uint8 val2 = val & 127; // LSB
 			serial->write(val1);
@@ -151,7 +153,7 @@ void Monitor::sendProfile()
 			serial->write(REPORT_INTERVAL);
 		}
 
-		if (tickCount < 200) { REPORT_INTERVAL += 1; }
+		if (tps < 2000) { REPORT_INTERVAL += 1; }
 		else { REPORT_INTERVAL -= 1; }
 
 		if (REPORT_INTERVAL < 5) { REPORT_INTERVAL = 5; }
