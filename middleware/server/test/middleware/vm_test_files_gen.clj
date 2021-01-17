@@ -1168,7 +1168,9 @@
                                                     (emit/push-value 1)
                                                     (emit/prim-call "add")
                                                     (emit/write-local "i#1")
-                                                    (emit/jmp -11)])])
+                                                    (emit/push-value 1)
+                                                    (emit/prim-call "delayS")
+                                                    (emit/jmp -13)])])
         actual (en/encode program)]
     (write-file program)))
 
@@ -1177,7 +1179,8 @@
                     :globals #{(emit/constant 0)
                                 (emit/constant 11)
                                 (emit/constant 7)
-                                (emit/constant -1)}
+                                (emit/constant -1)
+                                (emit/constant 1)}
                     :scripts [(emit/script
                                     :name "for"
                                     :running? true
@@ -1196,7 +1199,9 @@
                                                     (emit/push-value -1)
                                                     (emit/prim-call "add")
                                                     (emit/write-local "i#1")
-                                                    (emit/jmp -11)])])
+                                                    (emit/push-value 1)
+                                                    (emit/prim-call "delayS")
+                                                    (emit/jmp -13)])])
         actual (en/encode program)]
     (write-file program)))
 
@@ -1205,7 +1210,8 @@
                     :globals #{(emit/variable "step" 1)
                                 (emit/constant 0)
                                 (emit/constant 7)
-                                (emit/constant 11)}
+                                (emit/constant 11)
+                                (emit/constant 1)}
                     :scripts [(emit/script
                                     :name "for"
                                     :running? true
@@ -1232,7 +1238,9 @@
                                                     (emit/read-local "@1")
                                                     (emit/prim-call "add")
                                                     (emit/write-local "i#1")
-                                                    (emit/jmp -18)])])
+                                                    (emit/push-value 1)
+                                                    (emit/prim-call "delayS")
+                                                    (emit/jmp -20)])])
         actual (en/encode program)]
     (write-file program)))
 
@@ -1241,7 +1249,8 @@
                     :globals #{(emit/variable "step" -1)
                                 (emit/constant 0)
                                 (emit/constant 11)
-                                (emit/constant 7)}
+                                (emit/constant 7)
+                                (emit/constant 1)}
                     :scripts [(emit/script
                                     :name "for"
                                     :running? true
@@ -1268,7 +1277,9 @@
                                                     (emit/read-local "@1")
                                                     (emit/prim-call "add")
                                                     (emit/write-local "i#1")
-                                                    (emit/jmp -18)])])
+                                                    (emit/push-value 1)
+                                                    (emit/prim-call "delayS")
+                                                    (emit/jmp -20)])])
         actual (en/encode program)]
     (write-file program)))
 
@@ -1278,7 +1289,8 @@
                                 (emit/variable "stop" -10)
                                 (emit/constant 0)
                                 (emit/constant -1)
-                                (emit/constant 13)}
+                                (emit/constant 13)
+                                (emit/constant 1)}
                     :scripts [(emit/script
                                     :name "negatedStep"
                                     :running? false
@@ -1330,7 +1342,9 @@
                                                     (emit/read-local "@1")
                                                     (emit/prim-call "add")
                                                     (emit/write-local "i#1")
-                                                    (emit/jmp -19)])])
+                                                    (emit/push-value 1)
+                                                    (emit/prim-call "delayMs")
+                                                    (emit/jmp -21)])])
         actual (en/encode program)]
     (write-file program)))
 
