@@ -25,3 +25,6 @@ uint16 stack_size();
 uint16 stack_getPointer();
 float stack_getElementAt(uint16 index, Error& error);
 void stack_setElementAt(uint16 index, float value, Error& error);
+
+void stack_pushPointer(void* pointer, Error& error);
+void* stack_popPointer(Error& error);

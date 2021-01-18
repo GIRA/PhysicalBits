@@ -150,5 +150,8 @@
     <ClInclude Include="NewPing_mock.h">
       <Filter>Support</Filter>
     </ClInclude>
+    <ClInclude Include="LiquidCrystal_I2C_mock.h">
+      <Filter>Support</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
