@@ -8,10 +8,14 @@ class Monitor;
 #include "Program.h"
 #include "Errors.h"
 
+
+
 #ifdef __SIMULATOR__
 #include "NewPing_mock.h"
+#include "LiquidCrystal_I2C_mock.h"
 #else
 #include "NewPing.h"
+#include "LiquidCrystal_I2C.h"
 #endif // __SIMULATOR__
 
 
