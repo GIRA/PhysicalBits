@@ -41,7 +41,7 @@ private:
 	int8 keepAliveCounter = 0;
 	uint32 lastTimeKeepAlive = 0;
 
-	uint8 profiling = 1; // TODO(Richo)
+	uint8 profiling = 0;
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
