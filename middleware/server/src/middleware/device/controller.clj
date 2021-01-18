@@ -16,6 +16,13 @@
             [middleware.output.logger :as logger])
   (:import (java.net Socket)))
 
+#_(
+(start-profiling)
+(stop-profiling)
+
+(-> @state :profiler :ticks (* 10))
+)
+
 (defprotocol UziPort
   (close! [this])
   (write! [this data])
@@ -317,10 +324,14 @@
   (go (let [n1 (<? in)
             n2 (<? in)
             value (bit-or n2
-                          (bit-shift-left n1 7))]
+                          (bit-shift-left n1 7))
+            report-interval (<? in)]
         (swap! state assoc
                :profiler {:ticks value
-                          :interval-ms 100}))))
+                          :interval-ms 100})
+        (logger/warning "REPORT_INTERVAL: %1 (%2 ticks/s)"
+                        report-interval
+                        (* 10 value)))))
 
 (defn- process-coroutine-state [in]
   (go (let [index (<? in)
