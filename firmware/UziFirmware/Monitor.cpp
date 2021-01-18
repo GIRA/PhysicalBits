@@ -35,9 +35,11 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-#define REPORT_INTERVAL                                     5
+//#define REPORT_INTERVAL                                    25
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
+
+uint8 REPORT_INTERVAL = 25;
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -66,12 +68,12 @@ void Monitor::initSerial(UziSerial* s)
 void Monitor::checkForIncomingMessages(Program** program, GPIO* io, VM* vm)
 {
 	if (!serial->available()) return;
-	
+
 	if (state == DISCONNECTED)
 	{
 		connectionRequest();
 	}
-	else if (state == CONNECTION_REQUESTED) 
+	else if (state == CONNECTION_REQUESTED)
 	{
 		acceptConnection();
 	}
@@ -86,7 +88,7 @@ void Monitor::connectionRequest()
 {
 	bool timeout;
 	uint8 in;
-		
+
 	in = stream.next(timeout);
 	if (timeout || in != MSG_IN_CONNECTION_REQUEST) return;
 	in = stream.next(timeout);
@@ -108,7 +110,7 @@ void Monitor::acceptConnection()
 	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
 	if (in != expected) return;
 
-	state = CONNECTED; 
+	state = CONNECTED;
 	executeKeepAlive();
 	serial->write(expected);
 }
@@ -132,21 +134,33 @@ void Monitor::sendError(uint8 errorCode)
 
 void Monitor::sendProfile()
 {
-	if (!profiling) return;
 	uint32 now = millis();
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		serial->write(MSG_OUT_PROFILE);
+		float tps = tickCount / (float)(now - lastTimeProfile) * 1000;
 
-		uint16 val = tickCount;
-		uint8 val1 = val >> 7;  // MSB
-		uint8 val2 = val & 127; // LSB
-		serial->write(val1);
-		serial->write(val2);
+		if (profiling)
+		{
+			serial->write(MSG_OUT_PROFILE);
+
+			uint16 val = tps / 10;
+			uint8 val1 = val >> 7;  // MSB
+			uint8 val2 = val & 127; // LSB
+			serial->write(val1);
+			serial->write(val2);
+
+			serial->write(REPORT_INTERVAL);
+		}
+
+		if (tps < 2000) { REPORT_INTERVAL += 1; }
+		else { REPORT_INTERVAL -= 1; }
+
+		if (REPORT_INTERVAL < 5) { REPORT_INTERVAL = 5; }
+		else if (REPORT_INTERVAL > 50) { REPORT_INTERVAL = 50; }
 
 		tickCount = 0;
-		lastTimeProfile = now;
+		lastTimeProfile = millis();
 	}
 }
 
@@ -160,19 +174,22 @@ void Monitor::sendReport(GPIO* io, Program* program)
 		{
 		case 1: { sendPinValues(io); } break;
 		case 2: { sendGlobalValues(program); } break;
-		case 3: { sendRunningTasks(program); } break;
-		case 4: { sendFreeRAM(); } break;
+		case 3:
+			{
+				sendRunningTasks(program);
+				sendFreeRAM();
+			} break;
 		}
-				
-		lastTimeReport = now;
+
+		lastTimeReport = millis();
 		reportingStep++;
-		if (reportingStep > 4) { reportingStep = 1; }
+		if (reportingStep > 3) { reportingStep = 1; }
 	}
 }
 
 void Monitor::sendVMState(Program* program, VM* vm)
 {
-	if (vm->halted && !sent) 
+	if (vm->halted && !sent)
 	{
 		sent = true;
 		sendCoroutineState(program, vm->haltedScript);
@@ -189,7 +206,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 void Monitor::sendCoroutineState(Program* program, Script* script)
 {
 	if (script != NULL && script->hasCoroutine())
-	{    
+	{
 		uint8 scriptIndex = script->getIndex();
 		Coroutine* coroutine = script->getCoroutine();
 		if (coroutine->getError() != NO_ERROR)
@@ -226,12 +243,12 @@ void Monitor::checkKeepAlive()
 	int32 now = millis();
 	if (now - lastTimeKeepAlive > KEEP_ALIVE_INTERVAL)
 	{
-		if (keepAliveCounter <= 0) 
+		if (keepAliveCounter <= 0)
 		{
 			state = DISCONNECTED;
 			sendError(DISCONNECT_ERROR);
 		}
-		else 
+		else
 		{
 			keepAliveCounter--;
 		}
@@ -290,7 +307,7 @@ void Monitor::sendGlobalValues(Program* program)
 	if (count == 0) return;
 
 	serial->write(MSG_OUT_GLOBAL_VALUE);
-	
+
 	uint32 time = millis();
 	serial->write((time >> 24) & 0xFF);
 	serial->write((time >> 16) & 0xFF);
@@ -321,11 +338,11 @@ void Monitor::sendRunningTasks(Program* program)
 	{
 		Script* script = program->getScript(i);
 		uint8 val = NO_ERROR;
-		if (script->isRunning()) 
+		if (script->isRunning())
 		{
 			val |= 0b10000000;
 		}
-		if (script->hasCoroutine()) 
+		if (script->hasCoroutine())
 		{
 			val |= (script->getCoroutine()->getError() & 0b01111111);
 		}
@@ -562,13 +579,13 @@ void Monitor::executeSetGlobalReport(Program* program)
 	program->setReport(index, report != 0);
 }
 
-void Monitor::executeDebugContinue(VM* vm) 
+void Monitor::executeDebugContinue(VM* vm)
 {
 	vm->halted = false;
 	sent = false;
 }
 
-void Monitor::executeDebugSetBreakpoints(Program* program) 
+void Monitor::executeDebugSetBreakpoints(Program* program)
 {
 	bool timeout;
 	bool val = stream.next(timeout);
@@ -576,7 +593,7 @@ void Monitor::executeDebugSetBreakpoints(Program* program)
 	uint8 count = stream.next(timeout);
 	if (timeout) return;
 
-	for (uint16 i = 0; i < count; i++) 
+	for (uint16 i = 0; i < count; i++)
 	{
 		int16 pc = stream.nextLong(2, timeout);
 		if (timeout) return;
@@ -593,12 +610,12 @@ void Monitor::executeDebugSetBreakpointsAll(Program* program)
 
 	int16 scriptCount = program->getScriptCount();
 	uint16 instructionCount = 0;
-	for (int16 i = 0; i < scriptCount; i++) 
+	for (int16 i = 0; i < scriptCount; i++)
 	{
 		Script* script = program->getScript(i);
 		instructionCount += script->getInstructionCount();
 	}
-	for (uint16 i = 0; i < instructionCount; i++) 
+	for (uint16 i = 0; i < instructionCount; i++)
 	{
 		program->setBreakpointAt(i, val);
 	}
@@ -617,11 +634,11 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 	{
 		bool timeout;
 		int32 size = reader->nextLong(2, timeout);
-		if (timeout) 
+		if (timeout)
 		{
 			result = READER_TIMEOUT;
 		}
-		else 
+		else
 		{
 			reader->resetCounter();
 			result = readProgram(reader, p);
@@ -631,7 +648,7 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 			{
 				result = READER_CHECKSUM_FAIL;
 			}
-		}		
+		}
 	}
 
 	if (result == NO_ERROR)
@@ -657,9 +674,9 @@ void trace(const char* str)
 	}
 }
 
-void Monitor::serialWrite(uint8 value) 
+void Monitor::serialWrite(uint8 value)
 {
-	if (state == CONNECTED) 
+	if (state == CONNECTED)
 	{
 		serial->write(MSG_OUT_SERIAL_TUNNEL);
 	}

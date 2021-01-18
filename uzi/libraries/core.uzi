@@ -65,6 +65,9 @@ prim mod : modulo;
 prim startTone : tone;
 prim stopTone : noTone;
 
+prim lcd_init;
+prim lcd_print;
+
 proc playTone(pin, tone, ms) {
   startTone(pin, tone);
   delayMs(ms);

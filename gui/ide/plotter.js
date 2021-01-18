@@ -39,14 +39,21 @@ let Plotter = (function () {
         let d = s.data[j];
         if (d.x < x_min) { x_min = d.x; }
         if (d.x > x_max) { x_max = d.x; }
+
+        if (d.y == Infinity || d.y == -Infinity) continue;
         if (d.y < y_min) { y_min = d.y; }
         if (d.y > y_max) { y_max = d.y; }
       }
     }
-    bounds.x = x_min;
-    bounds.y = y_min;
+    bounds.x = x_min == Infinity ? 0 : x_min;
+    bounds.y = y_min == Infinity ? 0 : y_min;
     bounds.w = x_max - x_min;
     bounds.h = y_max - y_min;
+
+    if (bounds.h <= 0) {
+      bounds.y -= 1;
+      bounds.h = 2;
+    }
   }
 
   function updateLabels() {
@@ -66,6 +73,8 @@ let Plotter = (function () {
   function dataToPx(point) {
     let x = ((point.x - bounds.x) / bounds.w) * html.width;
     let y = html.height - ((point.y - bounds.y) / bounds.h) * html.height;
+    if (y == Infinity) { y = html.height + 1; }
+    else if (y == -Infinity) { y = -1; }
     return { x: x, y: y };
   }
 
@@ -112,20 +121,31 @@ let Plotter = (function () {
 
   function draw() {
     ctx.clearRect(0, 0, html.width, html.height);
+    drawOrigin();
     drawSeries();
     drawAxisLabels();
-    drawOrigin();
   }
 
   function update(state, old) {
+    if (!state.isConnected) return;
     if (!old.isConnected && state.isConnected) {
       series.forEach(s => { s.data = []; });
     }
-    updateValues(state.pins);
-    updateValues(state.globals);
+    var toRemove = new Set(observed);
+    updateValues(state.pins, toRemove);
+    updateValues(state.globals, toRemove);
+
+    if (toRemove.size > 0) {
+      toRemove.forEach(each => {
+        remove(each);
+      });
+
+      updateLabels();
+      resize();
+    }
   }
 
-  function updateValues(data) {
+  function updateValues(data, toRemove) {
     let timestamp = data.timestamp;
     if (timestamp == null) return;
 
@@ -143,24 +163,37 @@ let Plotter = (function () {
           if (s.data.length > PLOTTER_LIMIT) {
             s.data.splice(0, s.data.length - PLOTTER_LIMIT);
           }
+
+          toRemove.delete(val.name);
         }
       }
     }
+
+    data.available.forEach(each => toRemove.delete(each.name));
+  }
+
+  function add(observable) {
+    let colors = palette.filter(c => !series.some(s => s.color == c));
+    if (colors.length == 0) { colors = palette; }
+    series.push({
+      label: observable,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      data: []
+    });
+    observed.add(observable);
+  }
+
+  function remove(observable) {
+    series = series.filter(each => each.label != observable);
+    observed.delete(observable);
   }
 
   function toggle(observable) {
     if (observed.has(observable)) {
-      series = series.filter(each => each.label != observable);
-      observed.delete(observable);
+      remove(observable);
     } else {
-      let colors = palette.filter(c => !series.some(s => s.color == c));
-      if (colors.length == 0) { colors = palette; }
-      series.push({
-        label: observable,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        data: []
-      });
-      observed.add(observable);
+      add(observable);
+      LayoutManager.showPlotter();
     }
     updateLabels();
     resize();

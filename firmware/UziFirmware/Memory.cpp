@@ -1,6 +1,6 @@
 #include "Memory.h"
 
-#define BUFFER_SIZE (sizeof(uint8*) * 700)
+#define BUFFER_SIZE (sizeof(uint8*) * 550)
 
 uint8 buf[BUFFER_SIZE];
 uint8* cur = buf;
@@ -133,4 +133,16 @@ void stack_saveTo(float* dest)
 {
 	size_t size = (buf + BUFFER_SIZE) - (uint8*)stack_top;
 	memcpy(dest, stack_top, size);
+}
+
+void stack_pushPointer(void* pointer, Error& error)
+{
+	uint32 value = (uint8*)pointer - buf;
+	stack_push((float)value, error);
+}
+
+void* stack_popPointer(Error& error)
+{
+	uint32 value = (uint32)stack_pop(error);
+	return (void*)(buf + value);
 }

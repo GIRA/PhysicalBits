@@ -1,5 +1,7 @@
 #include "VM.h"
 
+uint8 loop_count = 0;
+
 Error VM::executeProgram(Program* program, GPIO* io, Monitor* monitor)
 {
 	if (program != currentProgram)
@@ -11,6 +13,7 @@ Error VM::executeProgram(Program* program, GPIO* io, Monitor* monitor)
 	int16 count = program->getScriptCount();
 
 	lastTickStart = millis();
+	loop_count = 0;
 	for (int16 i = 0; i < count; i++)
 	{
 		Script* script = program->getScript(i);
@@ -320,8 +323,8 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case JMP:
 	{
-		pc += argument;
-		if (argument < 0) { yieldTime(0, yieldFlag); }
+		pc += argument; 
+		handleBackwardJump(argument, yieldFlag);
 	}
 	break;
 
@@ -330,7 +333,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) == 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -340,7 +343,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (stack_pop(error) != 0) // TODO(Richo): Float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -352,7 +355,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a != b) // TODO(Richo): float comparison
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -364,7 +367,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a < b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -376,7 +379,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a <= b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -388,7 +391,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a > b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -400,7 +403,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (a >= b)
 		{
 			pc += argument;
-			if (argument < 0) { yieldTime(0, yieldFlag); }
+			handleBackwardJump(argument, yieldFlag);
 		}
 	}
 	break;
@@ -1103,6 +1106,51 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		io->setMode(pin, mode);
 	}
 	break;
+
+	case PRIM_LCD_INIT:
+	{
+		uint8 rows = (uint8)stack_pop(error);
+		uint8 cols = (uint8)stack_pop(error);
+		uint8 address = (uint8)stack_pop(error);
+		
+		LiquidCrystal_I2C* lcd = uzi_create(LiquidCrystal_I2C);		
+		if (lcd == 0) { error = OUT_OF_MEMORY; }
+		else 
+		{
+			// HACK(Richo)
+			{
+				LiquidCrystal_I2C temp(address, cols, rows);
+				memcpy(lcd, &temp, sizeof(LiquidCrystal_I2C));
+			}
+			lcd->init();
+			lcd->backlight();
+		}
+		stack_pushPointer(lcd, error);
+	}
+	break;
+
+	case PRIM_LCD_PRINT_VALUE:
+	{
+		float value = stack_pop(error);
+		uint8 line = (uint8)stack_pop(error);
+		LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)stack_popPointer(error);
+		lcd->setCursor(0, line);
+		lcd->print(value);
+	}
+	break;
+
+	}
+}
+
+void VM::handleBackwardJump(const int16& argument, bool& yieldFlag)
+{
+	if (argument < 0)
+	{
+		if (++loop_count >= 100 || millis() - lastTickStart >= 1)
+		{
+			yieldTime(0, yieldFlag);
+			loop_count = 0;
+		}
 	}
 }
 

@@ -74,7 +74,9 @@
    "getPinMode"             [16r45    [1     1]]
    "setPinMode"             [16r46    [2     0]]
    "atan2"                  [16r47    [2     1]]
-   "getServoDegrees"        [16r48    [1     1]]})
+   "getServoDegrees"        [16r48    [1     1]]
+   "lcd_init"               [16r49    [3     1]]
+   "lcd_print"              [16r50    [3     0]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]

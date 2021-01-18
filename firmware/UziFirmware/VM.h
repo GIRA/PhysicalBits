@@ -8,10 +8,14 @@ class Monitor;
 #include "Program.h"
 #include "Errors.h"
 
+
+
 #ifdef __SIMULATOR__
 #include "NewPing_mock.h"
+#include "LiquidCrystal_I2C_mock.h"
 #else
 #include "NewPing.h"
+#include "LiquidCrystal_I2C.h"
 #endif // __SIMULATOR__
 
 
@@ -45,6 +49,7 @@ private:
 	Error error = NO_ERROR;
 
 	void executeInstruction(Instruction, GPIO*, Monitor*, bool&);
+	void handleBackwardJump(const int16& argument, bool& yieldFlag);
 	void executeCoroutine(Coroutine*, GPIO*, Monitor*);
 	void saveCurrentCoroutine();
 	void yieldTime(int32, bool&);
