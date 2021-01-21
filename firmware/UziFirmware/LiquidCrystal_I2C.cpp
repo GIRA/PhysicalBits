@@ -1,3 +1,8 @@
+/*****************************************************
+LiquidCrystal I2C (version 1.1.2)
+by Frank de Brabander and Marco Schwartz
+https://github.com/marcoschwartz/LiquidCrystal_I2C
+******************************************************/
 // Based on the work by DFRobot
 
 #include "LiquidCrystal_I2C.h"
