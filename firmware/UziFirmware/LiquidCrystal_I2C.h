@@ -90,6 +90,10 @@ public:
 #endif
   void command(uint8_t);
   void init();
+  
+  // HACK(Richo)
+  void init0();
+  void init1();
 
 ////compatibility API function aliases
 void blink_on();						// alias for blink()
