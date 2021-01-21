@@ -40,6 +40,11 @@ uint16 uzi_used()
 	return cur - buf;
 }
 
+void* uzi_pointer(uint32 value, Error& error)
+{
+	// TODO(Richo): Check bounds
+	return (void*)(buf + value);
+}
 
 /******************************STACK******************************/
 
@@ -144,5 +149,5 @@ void stack_pushPointer(void* pointer, Error& error)
 void* stack_popPointer(Error& error)
 {
 	uint32 value = (uint32)stack_pop(error);
-	return (void*)(buf + value);
+	return uzi_pointer(value, error);
 }
