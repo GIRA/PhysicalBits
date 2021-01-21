@@ -1107,7 +1107,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_LCD_INIT:
+	case PRIM_LCD_INIT0:
 	{
 		uint8 rows = (uint8)stack_pop(error);
 		uint8 cols = (uint8)stack_pop(error);
@@ -1122,10 +1122,23 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 				LiquidCrystal_I2C temp(address, cols, rows);
 				memcpy(lcd, &temp, sizeof(LiquidCrystal_I2C));
 			}
-			lcd->init();
-			lcd->backlight();
+			lcd->init0();
+			yieldTime(1000, yieldFlag);
 		}
 		stack_pushPointer(lcd, error);
+	}
+	break;
+
+	case PRIM_LCD_INIT1:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+		if (pointer > 0) 
+		{
+			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
+			lcd->init1();
+			lcd->backlight();
+		}
+		stack_push(pointer, error);
 	}
 	break;
 
@@ -1133,9 +1146,13 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	{
 		float value = stack_pop(error);
 		uint8 line = (uint8)stack_pop(error);
-		LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)stack_popPointer(error);
-		lcd->setCursor(0, line);
-		lcd->print(value);
+		uint32 pointer = (uint32)stack_pop(error);
+		if (pointer > 0) 
+		{
+			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
+			lcd->setCursor(0, line);
+			lcd->print(value);
+		}
 	}
 	break;
 
