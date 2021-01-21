@@ -123,10 +123,8 @@
                       "foo"
                       :delay
                       0
-                      :running?
-                      true
-                      :instructions
-                      [(emit/stop "foo")])])
+                      :running? true
+                      :once? true)])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -173,8 +171,8 @@
                       "foo"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "pin#1" 0)]
                       :instructions
@@ -183,8 +181,7 @@
                        (emit/prim-call "add")
                        (emit/write-local "pin#1")
                        (emit/read-local "pin#1")
-                       (emit/prim-call "toggle")
-                       (emit/stop "foo")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -559,16 +556,15 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "a#1" 0) (emit/variable "b#2" 0)]
                       :instructions
                       [(emit/read-local "a#1")
                        (emit/prim-call "toggle")
                        (emit/read-local "b#2")
-                       (emit/prim-call "toggle")
-                       (emit/stop "default")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -616,16 +612,15 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "a#1" 1) (emit/variable "b#2" 2)]
                       :instructions
                       [(emit/read-local "a#1")
                        (emit/prim-call "toggle")
                        (emit/read-local "b#2")
-                       (emit/prim-call "toggle")
-                       (emit/stop "default")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -674,16 +669,15 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "a#1" 1) (emit/variable "b#2" 2)]
                       :instructions
                       [(emit/read-global "b")
                        (emit/prim-call "toggle")
                        (emit/read-local "b#2")
-                       (emit/prim-call "toggle")
-                       (emit/stop "default")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -716,12 +710,11 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 0)
-                       (emit/write-global "temp")
-                       (emit/stop "default")])])
+                       (emit/write-global "temp")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -756,14 +749,13 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "temp#1" 0)]
                       :instructions
                       [(emit/push-value 0)
-                       (emit/write-local "temp#1")
-                       (emit/stop "default")])])
+                       (emit/write-local "temp#1")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -798,12 +790,11 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/script-call "default1")
-                       (emit/prim-call "pop")
-                       (emit/stop "default")])
+                       (emit/prim-call "pop")])
                     (emit/script :name "default1" :delay 0)])
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -848,14 +839,13 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/script-call "default1")
                        (emit/prim-call "pop")
                        (emit/push-value 13)
-                       (emit/prim-call "toggle")
-                       (emit/stop "default")])
+                       (emit/prim-call "toggle")])
                     (emit/script :name "default1" :delay 0)])
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -909,13 +899,12 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/script-call "default1")
-                       (emit/prim-call "pop")
-                       (emit/stop "default")])
+                       (emit/prim-call "pop")])
                     (emit/script
                       :name
                       "default1"
@@ -964,12 +953,11 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/script-call "default1")
-                       (emit/write-global "temp")
-                       (emit/stop "default")])
+                       (emit/write-global "temp")])
                     (emit/script :name "default1" :delay 0)])
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -1028,13 +1016,12 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/script-call "default1")
-                       (emit/write-global "temp")
-                       (emit/stop "default")])
+                       (emit/write-global "temp")])
                     (emit/script
                       :name
                       "default1"
@@ -1147,13 +1134,12 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/script-call "default1")
-                       (emit/prim-call "pop")
-                       (emit/stop "default")])
+                       (emit/prim-call "pop")])
                     (emit/script
                       :name
                       "default1"
@@ -1220,13 +1206,12 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/script-call "default1")
-                       (emit/write-global "temp")
-                       (emit/stop "default")])
+                       (emit/write-global "temp")])
                     (emit/script
                       :name
                       "default1"
@@ -1444,16 +1429,15 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/start "loop")
                        (emit/stop "loop")
                        (emit/resume "loop")
                        (emit/pause "loop")
                        (emit/script-call "loop")
-                       (emit/prim-call "pop")
-                       (emit/stop "main")])])
+                       (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1507,13 +1491,12 @@
                       "default"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 0)
                        (emit/script-call "turnOn")
-                       (emit/prim-call "pop")
-                       (emit/stop "default")])
+                       (emit/prim-call "pop")])
                     (emit/script
                       :name
                       "turnOn"
@@ -1930,13 +1913,12 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/prim-call "toggle")
-                       (emit/jmp -3)
-                       (emit/stop "main")])])
+                       (emit/jmp -3)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1982,15 +1964,14 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 1)
                        (emit/jz 3)
                        (emit/push-value 13)
                        (emit/prim-call "toggle")
-                       (emit/jmp -5)
-                       (emit/stop "main")])])
+                       (emit/jmp -5)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2036,15 +2017,14 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 1)
                        (emit/jnz 3)
                        (emit/push-value 13)
                        (emit/prim-call "toggle")
-                       (emit/jmp -5)
-                       (emit/stop "main")])])
+                       (emit/jmp -5)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2090,14 +2070,13 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/prim-call "toggle")
                        (emit/push-value 1)
-                       (emit/jnz -4)
-                       (emit/stop "main")])])
+                       (emit/jnz -4)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2143,14 +2122,13 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 13)
                        (emit/prim-call "toggle")
                        (emit/push-value 1)
-                       (emit/jz -4)
-                       (emit/stop "main")])])
+                       (emit/jz -4)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2202,15 +2180,14 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 9)
                        (emit/prim-call "isOn")
                        (emit/jnz -3)
                        (emit/push-value 13)
-                       (emit/prim-call "toggle")
-                       (emit/stop "main")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2262,15 +2239,14 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 9)
                        (emit/prim-call "isOn")
                        (emit/jz -3)
                        (emit/push-value 13)
-                       (emit/prim-call "toggle")
-                       (emit/stop "main")])])
+                       (emit/prim-call "toggle")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2318,8 +2294,8 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "i#1" 0)]
                       :instructions
@@ -2335,8 +2311,7 @@
                        (emit/push-value 1)
                        (emit/prim-call "add")
                        (emit/write-local "i#1")
-                       (emit/jmp -11)
-                       (emit/stop "main")])])
+                       (emit/jmp -11)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2405,8 +2380,8 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "i#1" 0)]
                       :instructions
@@ -2422,8 +2397,7 @@
                        (emit/push-value 1)
                        (emit/prim-call "add")
                        (emit/write-local "i#1")
-                       (emit/jmp -11)
-                       (emit/stop "main")])])
+                       (emit/jmp -11)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2579,8 +2553,8 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "i#1" 0) (emit/variable "@1" 0)]
                       :instructions
@@ -2603,8 +2577,7 @@
                        (emit/read-local "@1")
                        (emit/prim-call "add")
                        (emit/write-local "i#1")
-                       (emit/jmp -18)
-                       (emit/stop "main")])])
+                       (emit/jmp -18)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2677,8 +2650,8 @@
                       "main"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "@1" 0)]
                       :instructions
@@ -2696,8 +2669,7 @@
                        (emit/push-value 1)
                        (emit/prim-call "add")
                        (emit/write-local "@1")
-                       (emit/jmp -13)
-                       (emit/stop "main")])])
+                       (emit/jmp -13)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -3682,14 +3654,13 @@
                       "loop"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/read-global "a")
                        (emit/push-value 10)
                        (emit/prim-call "add")
-                       (emit/write-global "a")
-                       (emit/stop "loop")])])
+                       (emit/write-global "a")])])
         actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:globals expected) (:globals actual)))))
@@ -3753,8 +3724,8 @@
                       "loop"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "a#1" 15)]
                       :instructions
@@ -3765,8 +3736,7 @@
                        (emit/read-local "a#1")
                        (emit/push-value 42)
                        (emit/prim-call "add")
-                       (emit/write-local "a#1")
-                       (emit/stop "loop")])])
+                       (emit/write-local "a#1")])])
         actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:globals expected) (:globals actual)))))
@@ -3852,8 +3822,8 @@
                       "loop"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :locals
                       [(emit/variable "a#1" 11)
                        (emit/variable "a#2" 21)]
@@ -3869,8 +3839,7 @@
                        (emit/read-local "a#2")
                        (emit/push-value 20)
                        (emit/prim-call "add")
-                       (emit/write-local "a#2")
-                       (emit/stop "loop")])])
+                       (emit/write-local "a#2")])])
         actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:globals expected) (:globals actual)))))

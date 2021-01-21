@@ -1177,27 +1177,20 @@
 (deftest
   importing-a-script-with-a-local-var-that-shadows-global
   (let [expected (emit/program
-                   :globals
-                   #{(emit/constant 0) (emit/variable "t.a" 0)
-                     (emit/constant 100) (emit/constant 10)}
-                   :scripts
-                   [(emit/script
-                      :name
-                      "t.foo"
-                      :delay
-                      0
-                      :running?
-                      true
-                      :locals
-                      [(emit/variable "b#1" 0)
-                       (emit/variable "a#2" 100)]
-                      :instructions
-                      [(emit/push-value 10)
-                       (emit/write-global "t.a")
-                       (emit/read-global "t.a")
-                       (emit/write-local "b#1")
-                       (emit/read-local "a#2")
-                       (emit/write-local "b#1")
-                       (emit/stop "t.foo")])])
+                   :globals #{(emit/constant 0) (emit/variable "t.a" 0)
+                              (emit/constant 100) (emit/constant 10)}
+                   :scripts [(emit/script
+                              :name "t.foo"
+                              :delay 0
+                              :running? true
+                              :once? true
+                              :locals [(emit/variable "b#1" 0)
+                                       (emit/variable "a#2" 100)]
+                              :instructions [(emit/push-value 10)
+                                             (emit/write-global "t.a")
+                                             (emit/read-global "t.a")
+                                             (emit/write-local "b#1")
+                                             (emit/read-local "a#2")
+                                             (emit/write-local "b#1")])])
         actual (compile-uzi-string "import t from 'test_15.uzi';")]
     (is (equivalent? expected actual))))

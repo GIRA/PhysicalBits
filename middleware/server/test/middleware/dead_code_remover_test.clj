@@ -31,12 +31,11 @@
                       "alive2"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/push-value 11)
-                       (emit/prim-call "toggle")
-                       (emit/stop "alive2")])])
+                       (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  task alive1() running { toggle(D13); }\r\n\t                task dead() stopped { toggle(D12); }\r\n                  task alive2() { toggle(D11); }")]
     (is (= expected actual))))
@@ -380,8 +379,8 @@
                       "setup"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/read-global "a")
                        (emit/jz 3)
@@ -389,8 +388,7 @@
                        (emit/prim-call "turnOn")
                        (emit/jmp 2)
                        (emit/push-value 11)
-                       (emit/prim-call "turnOff")
-                       (emit/stop "setup")])])
+                       (emit/prim-call "turnOff")])])
         actual (compile-uzi-string
                  "\r\n                  \"This is just an example of code that uses all the available syntax\r\n                  in the language.\"\r\n                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                  import foo from 'DCMotor.uzi';\r\n                  import bar from 'Sonar.uzi' {\r\n                    trigPin = 100;\r\n                    echoPin = 200;\r\n                    start reading;\r\n                    stop reading;\r\n                    resume reading;\r\n                    pause reading;\r\n                  }\r\n\r\n                  var a = 10;\r\n                  var b = 0.5;\r\n                  var c;\r\n\r\n                  task blink13() running 2/s { toggle(D13); }\r\n                  task blink12() running 1/s { toggle(D12); }\r\n\r\n                  task setup() {\r\n                    if a { turnOn(D11); }\r\n                    else { turnOff(D11); }\r\n                  }\r\n\r\n                  func fact(n) {\r\n                    if n == 0 { return 1; }\r\n                    return n * fact(n - 1);\r\n                  }\r\n\r\n                  proc foo_bar_baz(a, b, c) {\r\n                    var d = a * b + c;\r\n                    repeat d { toggle(A2); }\r\n                    forever {\r\n                      start blink13, blink12;\r\n                      stop blink13;\r\n                      yield;\r\n                      pause blink12, blink13;\r\n                      resume blink12; yield;\r\n                      return;\r\n                    }\r\n                    while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                    until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                    while 1 >= 0; \"Body is optional\"\r\n                    until 0 <= 1; \"Body is optional\"\r\n                    do { toggle(D9); } while 1 > 0;\r\n                    do { toggle(D8); } until 0 < 1;\r\n                    for i = 0 to 10 by 1 {\r\n                      toggle(A0);\r\n                      delayMs(i * 100);\r\n                    }\r\n                    var e = foo.getSpeed();\r\n                    foo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                    bar.init(trig: a, echo: b, maxDist: c);\r\n                  }")]
     (is (= expected actual))))
@@ -495,8 +493,8 @@
                       "setup"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/read-global "a")
                        (emit/jz 3)
@@ -509,8 +507,7 @@
                        (emit/read-global "b")
                        (emit/read-global "c")
                        (emit/script-call "foo_bar_baz")
-                       (emit/prim-call "pop")
-                       (emit/stop "setup")])
+                       (emit/prim-call "pop")])
                     (emit/script
                       :name
                       "fact"
@@ -756,8 +753,8 @@
                       "setup"
                       :delay
                       0
-                      :running?
-                      true
+                      :running? true
+                      :once? true
                       :instructions
                       [(emit/read-global "a")
                        (emit/jz 3)
@@ -770,8 +767,7 @@
                        (emit/push-value 2)
                        (emit/push-value 3)
                        (emit/script-call "foo_bar_baz")
-                       (emit/prim-call "pop")
-                       (emit/stop "setup")])
+                       (emit/prim-call "pop")])
                     (emit/script
                       :name
                       "fact"
