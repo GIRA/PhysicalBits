@@ -1,0 +1,20 @@
+var lcd = 0;
+var address = 63;
+var cols = 16;
+var rows = 2;
+
+prim lcd_init0;
+prim lcd_init1;
+prim lcd_print;
+
+task setup() {
+	lcd = lcd_init1(lcd_init0(address, cols, rows));
+}
+
+func ready() {
+  return lcd > 0;
+}
+
+proc print(line, value) {
+  lcd_print(lcd, line, value);
+}
