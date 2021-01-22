@@ -10,7 +10,9 @@ struct Script
 {
 	bool running : 1;
 	uint8 index : 7;
-	uint8 interval = 0;
+
+	bool once : 1;
+	uint8 interval : 7;
 
 	uint8 argCount = 0;
 

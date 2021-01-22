@@ -104,6 +104,11 @@ void VM::executeCoroutine(Coroutine* coroutine, GPIO* io, Monitor* monitor)
 		}
 		if (pc > currentScript->getInstructionStop())
 		{
+			if (currentScript->once) 
+			{
+				currentScript->setRunning(false);
+			}
+
 			bool returnFromScriptCall = framePointer != 0;
 			unwindStackAndReturn();
 
