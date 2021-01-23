@@ -5,7 +5,7 @@ let BlocksToAST = (function () {
 			return {
 				__class__: "UziProgramNode",
 				imports: imports,
-				globals: globals.map(g => {
+				globals: globals.filter(g => g != undefined).map(g => {
 					let name = g.name;
 					let value = g.value ? parseFloat(g.value) : 0;
 					return builder.variableDeclaration(id, name, builder.number(id, value));
