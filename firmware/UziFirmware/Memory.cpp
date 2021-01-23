@@ -42,8 +42,12 @@ uint16 uzi_used()
 
 void* uzi_pointer(uint32 value, Error& error)
 {
-	// TODO(Richo): Check bounds
-	return (void*)(buf + value);
+	void* result = (void*)(buf + value);
+	if (result > (uint8*)stack_top) 
+	{
+		error |= STACK_ACCESS_VIOLATION;
+	}
+	return result;
 }
 
 /******************************STACK******************************/
