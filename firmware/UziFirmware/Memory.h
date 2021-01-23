@@ -11,6 +11,7 @@ void* uzi_malloc(size_t size);
 void uzi_memreset();
 uint16 uzi_available();
 uint16 uzi_used();
+void* uzi_pointer(uint32 value, Error& error);
 
 
 /******************************STACK******************************/

@@ -2613,6 +2613,7 @@
                                 (emit/script
                                     :name "setup"
                                     :running? true
+                                    :once? true
                                     :delay 0
                                     :arguments []
                                     :locals []
@@ -2631,8 +2632,7 @@
                                                     (emit/push-value 11)
                                                     (emit/push-value 9)
                                                     (emit/script-call "rightMotor.init")
-                                                    (emit/prim-call "pop")
-                                                    (emit/stop "setup")])
+                                                    (emit/prim-call "pop")])
                                 (emit/script
                                     :name "move"
                                     :running? true

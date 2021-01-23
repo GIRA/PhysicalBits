@@ -284,13 +284,9 @@
 
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
-            uzi (<! (read-uint32 in))
-            [old _] (swap-vals! state update :memory
-                                (fn [_] {:arduino arduino, :uzi uzi}))]
-        (when-not (= arduino (-> old :memory :arduino))
-          (logger/log "Free Arduino RAM: %1 bytes" arduino))
-        (when-not (= uzi (-> old :memory :uzi))
-          (logger/log "Free Uzi RAM: %1 bytes" uzi)))))
+            uzi (<! (read-uint32 in))]
+        (swap! state update :memory
+               (fn [_] {:arduino arduino, :uzi uzi})))))
 
 (defn- process-script-state [i byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -351,7 +347,7 @@
           (logger/newline)
           (logger/warning "%1 detected. The program has been stopped"
                           (error-msg error-code))
-          (if (= error-code 6)
+          (if (error-disconnect? error-code)
             (disconnect))))))
 
 (defn- process-trace [in]

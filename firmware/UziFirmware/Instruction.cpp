@@ -162,8 +162,9 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x46: instruction->opcode = PRIM_SET_PIN_MODE; break;
 				case 0x47: instruction->opcode = PRIM_ATAN2; break;
 				case 0x48: instruction->opcode = PRIM_GET_SERVO_DEGREES; break;
-				case 0x49: instruction->opcode = PRIM_LCD_INIT; break;
-				case 0x50: instruction->opcode = PRIM_LCD_PRINT_VALUE; break;
+				case 0x49: instruction->opcode = PRIM_LCD_INIT0; break;
+				case 0x50: instruction->opcode = PRIM_LCD_INIT1; break;
+				case 0x51: instruction->opcode = PRIM_LCD_PRINT_VALUE; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

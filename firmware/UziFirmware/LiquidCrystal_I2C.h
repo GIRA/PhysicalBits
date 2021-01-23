@@ -1,3 +1,8 @@
+/*****************************************************
+LiquidCrystal I2C (version 1.1.2)
+by Frank de Brabander and Marco Schwartz
+https://github.com/marcoschwartz/LiquidCrystal_I2C
+******************************************************/
 //YWROBOT
 #ifndef LiquidCrystal_I2C_h
 #define LiquidCrystal_I2C_h
@@ -85,6 +90,10 @@ public:
 #endif
   void command(uint8_t);
   void init();
+  
+  // HACK(Richo)
+  void init0();
+  void init1();
 
 ////compatibility API function aliases
 void blink_on();						// alias for blink()
