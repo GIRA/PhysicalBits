@@ -1155,8 +1155,11 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (pointer > 0) 
 		{
 			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
-			lcd->setCursor(0, line);
-			lcd->print(value);
+			if (error == NO_ERROR)
+			{
+				lcd->setCursor(0, line);
+				lcd->print(value);
+			}
 		}
 	}
 	break;
