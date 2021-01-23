@@ -347,7 +347,7 @@
           (logger/newline)
           (logger/warning "%1 detected. The program has been stopped"
                           (error-msg error-code))
-          (if (= error-code 6)
+          (if (error-disconnect? error-code)
             (disconnect))))))
 
 (defn- process-trace [in]
