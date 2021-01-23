@@ -52,7 +52,7 @@ void stack_push(float element, Error& error)
 {
 	if (stack_top <= (float*)cur)
 	{
-		error = STACK_OVERFLOW;
+		error |= STACK_OVERFLOW;
 		return;
 	}
 	stack_top -= 1;
@@ -63,7 +63,7 @@ float stack_pop(Error& error)
 {
 	if (stack_top >= (float*)(buf + BUFFER_SIZE))
 	{
-		error = STACK_UNDERFLOW;
+		error |= STACK_UNDERFLOW;
 		return 0;
 	}
 	float value = *stack_top;
@@ -82,7 +82,7 @@ void stack_discard(uint16 amount, Error& error)
 	if (stack_top > (float*)(buf + BUFFER_SIZE))
 	{
 		stack_reset();
-		error = STACK_UNDERFLOW;
+		error |= STACK_UNDERFLOW;
 	}
 }
 
@@ -102,7 +102,7 @@ float stack_getElementAt(uint16 index, Error& error)
 	float* pointer = (float*)(buf + BUFFER_SIZE) - index - 1;
 	if (pointer < stack_top)
 	{
-		error = STACK_ACCESS_VIOLATION;
+		error |= STACK_ACCESS_VIOLATION;
 		return 0;
 	}
 	return *pointer;
@@ -114,7 +114,7 @@ void stack_setElementAt(uint16 index, float value, Error& error)
 	float* pointer = (float*)(buf + BUFFER_SIZE) - index - 1;
 	if (pointer < stack_top)
 	{
-		error = STACK_ACCESS_VIOLATION;
+		error |= STACK_ACCESS_VIOLATION;
 		return;
 	}
 	*pointer = value;
@@ -125,7 +125,7 @@ void stack_restoreFrom(float* source, uint16 size, Error& error)
 	float* new_top = (float*)(buf + BUFFER_SIZE) - size;
 	if (new_top < (float*)cur)
 	{
-		error = STACK_OVERFLOW;
+		error |= STACK_OVERFLOW;
 		return;
 	}
 	stack_top = new_top;

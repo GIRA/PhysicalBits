@@ -1119,7 +1119,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		uint8 address = (uint8)stack_pop(error);
 		
 		LiquidCrystal_I2C* lcd = uzi_create(LiquidCrystal_I2C);		
-		if (lcd == 0) { error = OUT_OF_MEMORY; }
+		if (lcd == 0) { error |= OUT_OF_MEMORY; }
 		else 
 		{
 			// HACK(Richo)
