@@ -2,6 +2,7 @@
   (:require [middleware.core :refer :all]
             [middleware.device.controller :as dc :refer [state]]
             [middleware.server.server :as server :refer [server]]
+            [middleware.server.udp-server :as udp]
             [middleware.compiler.compiler :as cc]
             [middleware.parser.parser :as pp]
             [middleware.code-generator.code-generator :as cg]
@@ -16,10 +17,12 @@
 (defn stop []
   (dc/stop-port-scan)
   (dc/disconnect)
-  (server/stop))
+  (server/stop)
+  (udp/stop))
 
 (defn start []
-  (server/start))
+  (server/start)
+  (udp/start))
 
 (defn reload []
   (stop)

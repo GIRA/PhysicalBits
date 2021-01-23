@@ -5,6 +5,7 @@
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
             [middleware.server.server :as server]
+            [middleware.server.udp-server :as udp]
             [middleware.device.controller :as dc])
   (:gen-class))
 
@@ -64,6 +65,7 @@
       (server/start :uzi-libraries uzi
                     :web-resources web
                     :server-port server-port)
+      (udp/start)
       (log/info "Server started on port" server-port)
       (when open-browser
         (let [url (str "http://localhost:" server-port)]
