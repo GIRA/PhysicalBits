@@ -126,15 +126,18 @@
                     :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                             (:name pin)))
                                        (-> state :pins :data vals))}
+             ; HACK(Richo): I changed the code to force the inclusion of the "__delta" var
              :globals {:timestamp (-> state :globals :timestamp)
-                       :available (mapv (fn [{global-name :name}]
-                                          {:name global-name
-                                           :reporting (contains? (-> state :reporting :globals)
-                                                                 global-name)})
-                                        (filter :name
-                                                (-> state :program :running :compiled :globals)))
-                       :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                                                  (:name global)))
+                       :available (conj (mapv (fn [{global-name :name}]
+                                                {:name global-name
+                                                 :reporting (contains? (-> state :reporting :globals)
+                                                                       global-name)})
+                                              (filter :name
+                                                      (-> state :program :running :compiled :globals)))
+                                        {:name "__delta" :reporting true})
+                       :elements (filterv (fn [global] (or (= "__delta" (:name global))
+                                                           (contains? (-> state :reporting :globals)
+                                                                      (:name global))))
                                           (-> state :globals :data vals))}
              :output output
              :program (let [program (-> state :program :current)]

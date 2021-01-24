@@ -21,7 +21,13 @@
 (stop-profiling)
 
 (-> @state :profiler :ticks (* 10))
+
+(-> @state :reporting)
+(millis)
+
 )
+
+(defn millis [] (System/currentTimeMillis))
 
 (defprotocol UziPort
   (close! [this])
@@ -266,7 +272,8 @@
    (let [timestamp (<! (read-timestamp in))
          count (<? in)
          globals (vec (program/all-globals (-> @state :program :running :compiled)))
-         snapshot (atom {:timestamp timestamp, :data {}})]
+         snapshot (atom {:timestamp timestamp, :data {}})
+         now (millis)]
      (dotimes [_ count]
               (let [number (<? in)
                     n1 (<? in)
@@ -280,6 +287,23 @@
                           :number number
                           :value float-value
                           :raw-bytes [n1 n2 n3 n4]}))))
+     ; HACK(Richo): Calculating the time since the last snapshot (both in the vm and the middleware)
+     ; and then calculating the difference between these intervals and adding it as global variable
+     ; so that I can observe it in the inspector. Its value should always be close to 0
+     (let [uzi-time timestamp
+           clj-time now
+           previous (-> @state :globals)
+           delta-uzi (- uzi-time (get previous :uzi-time 0))
+           delta-clj (- clj-time (get previous :clj-time 0))
+           delta (- delta-uzi delta-clj)]
+       (swap! snapshot assoc
+              :uzi-time uzi-time
+              :clj-time clj-time)
+       (swap! snapshot assoc-in [:data "__delta"]
+              {:name "__delta"
+               :number count
+               :value delta})
+       #_(logger/info "Delta: %1" delta))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
