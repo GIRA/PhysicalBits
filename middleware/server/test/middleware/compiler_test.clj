@@ -1,10 +1,13 @@
 (ns middleware.compiler-test
-  (:refer-clojure :exclude [compile ])
+  (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
+            [clojure.string :as str]
+            [clojure.walk :as w]
             [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.compiler :as cc]
-            [middleware.compiler.emitter :as emit])
-  (:use [middleware.test-utils ]))
+            [middleware.compiler.emitter :as emit]
+            [middleware.parser.ast-nodes :as ast])
+  (:use [middleware.test-utils]))
 
 (defn compile [ast]
   (register-program! ast)
@@ -12,13 +15,12 @@
 
 (deftest
   empty-program-test
-  (let [ast {:__class__ "UziProgramNode",
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "empty",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode", :statements []}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "empty"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 1000)}
                    :scripts [(emit/script
@@ -30,25 +32,20 @@
 
 (deftest
   program-with-global-variable-test
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [{:__class__ "UziVariableDeclarationNode",
-                        :name "counter"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "empty",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "counter"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :selector "+",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :value {:__class__ "UziVariableNode", :name "counter"}}
-                                                                 {:__class__ "Association",
-                                                                  :value {:__class__ "UziNumberLiteralNode",
-                                                                          :value 1}}]}}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "counter")]
+              :scripts [(ast/task-node
+                          :name "empty"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "counter")
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "counter"))
+                                        (ast/arg-node
+                                          (ast/literal-number-node 1))]))]))])
         expected (emit/program
                    :globals #{(emit/variable "counter" 0) (emit/constant 1000)
                               (emit/constant 1)}
@@ -65,13 +62,11 @@
 
 (deftest
   task-without-ticking-rate
-  (let [ast {:__class__ "UziProgramNode",
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "foo",
-                        :arguments [],
-                        :state "running",
-                        :body {:__class__ "UziBlockNode", :statements []}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "foo"
+                          :state "running"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script :name "foo" :delay 0 :running? true)])
@@ -80,13 +75,11 @@
 
 (deftest
   task-with-once
-  (let [ast {:__class__ "UziProgramNode",
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "foo",
-                        :arguments [],
-                        :state "once",
-                        :body {:__class__ "UziBlockNode", :statements []}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "foo"
+                          :state "once"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
@@ -99,28 +92,21 @@
 
 (deftest
   program-with-local-variable
-  (let [ast {:__class__ "UziProgramNode",
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "foo",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "pin",
-                                             :value {:__class__ "UziCallNode",
-                                                     :selector "+",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :value {:__class__ "UziNumberLiteralNode", :value 1}}
-                                                                 {:__class__ "Association",
-                                                                  :value {:__class__ "UziPinLiteralNode",
-                                                                          :type "D",
-                                                                          :number 13}}]}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "pin"}}]}]}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "foo"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node
+                                     "pin"
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/literal-number-node 1))
+                                        (ast/arg-node
+                                          (ast/literal-pin-node "D" 13))]))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "pin"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
@@ -141,296 +127,208 @@
 
 (deftest
   ast-transform-test
-  (let [original {:__class__ "UziProgramNode",
-                  :scripts [{:__class__ "UziTaskNode",
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 12}}]}]}}]}
-        expected {:__class__ "UziProgramNode",
-                  :__foo__ 1,
-                  :scripts [{:__class__ "UziTaskNode",
-                             :__foo__ 2,
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :__bar__ 5,
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :__bar__ 5,
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :__bar__ 5,
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :__bar__ 5,
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 12}}]}]}}]}
+  (let [original (ast/program-node
+                   :scripts [(ast/task-node
+                               :name "empty"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 13))])
+                                        (ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 12))])]))])
+        expected (w/prewalk
+                  (fn [node] (if (and (map? node)
+                                      (not (ast-utils/task? node))
+                                      (not (ast-utils/call? node))
+                                      (not (ast-utils/number-literal? node)))
+                               (assoc node :__foo__ 5)
+                               node))
+                  (ast/program-node
+                   :scripts [(ast/task-node
+                              :name "EMPTY"
+                              :tick-rate (ast/ticking-rate-node 1 "s")
+                              :state "running"
+                              :body (ast/block-node
+                                     [(ast/call-node
+                                       "TOGGLE"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 14))])
+                                      (ast/call-node
+                                       "TURNON"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 13))])]))]))
         actual (ast-utils/transform
                  original
-                 "UziProgramNode"
-                 (fn [node _] (assoc node :__foo__ 1))
                  "UziTaskNode"
-                 (fn [node _] (assoc node :__foo__ 2))
+                 (fn [node _] (assoc node :name "EMPTY"))
                  "UziCallNode"
-                 (fn [node _] (assoc node :__foo__ 3))
+                 (fn [node _] (update node :selector str/upper-case))
                  "UziNumberLiteralNode"
-                 (fn [node _] (assoc node :__foo__ 4))
+                 (fn [node _] (update node :value inc))
                  :default
-                 (fn [node _] (assoc node :__bar__ 5)))]
+                 (fn [node _] (assoc node :__foo__ 5)))]
     (is (= expected actual))))
 
 (deftest
   ast-transform-without-default-clause
-  (let [original {:__class__ "UziProgramNode",
-                  :scripts [{:__class__ "UziTaskNode",
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 12}}]}]}}]}
-        expected {:__class__ "UziProgramNode",
-                  :__foo__ 1,
-                  :scripts [{:__class__ "UziTaskNode",
-                             :__foo__ 2,
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 12}}]}]}}]}
+  (let [original (ast/program-node
+                   :scripts [(ast/task-node
+                               :name "empty"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 13))])
+                                        (ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 12))])]))])
+        expected (ast/program-node
+                   :scripts [(ast/task-node
+                               :name "EMPTY"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                       [(ast/call-node
+                                          "TOGGLE"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 14))])
+                                        (ast/call-node
+                                          "TURNON"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 13))])]))])
         actual (ast-utils/transform
                  original
-                 "UziProgramNode"
-                 (fn [node _] (assoc node :__foo__ 1))
                  "UziTaskNode"
-                 (fn [node _] (assoc node :__foo__ 2))
+                 (fn [node _] (update node :name str/upper-case))
                  "UziCallNode"
-                 (fn [node _] (assoc node :__foo__ 3))
+                 (fn [node _] (update node :selector str/upper-case))
                  "UziNumberLiteralNode"
-                 (fn [node _] (assoc node :__foo__ 4)))]
+                 (fn [node _] (update node :value inc)))]
     (is (= expected actual))))
 
 (deftest
   ast-transform-pred-test
-  (let [original {:__class__ "UziProgramNode",
-                  :scripts [{:__class__ "UziTaskNode",
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 12}}]}]}}]}
-        expected {:__class__ "UziProgramNode",
-                  :__foo__ 1,
-                  :scripts [{:__class__ "UziTaskNode",
-                             :__foo__ 2,
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :__bar__ 5,
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :__bar__ 5,
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :__bar__ 5,
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :__bar__ 5,
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 12}}]}]}}]}
+  (let [original (ast/program-node
+                   :scripts [(ast/task-node
+                               :name "empty"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 13))])
+                                        (ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 12))])]))])
+        expected (w/prewalk
+                  (fn [node] (if (and (map? node)
+                                      (not (ast-utils/task? node))
+                                      (not (ast-utils/call? node))
+                                      (not (ast-utils/number-literal? node)))
+                               (assoc node :__foo__ 5)
+                               node))
+                  (ast/program-node
+                   :scripts [(ast/task-node
+                              :name "EMPTY"
+                              :tick-rate (ast/ticking-rate-node 1 "s")
+                              :state "running"
+                              :body (ast/block-node
+                                     [(ast/call-node
+                                       "TOGGLE"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 14))])
+                                      (ast/call-node
+                                       "TURNON"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 13))])]))]))
         actual (ast-utils/transformp
                  original
-                 (fn [node _]
-                   (= "UziProgramNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 1))
-                 (fn [node _] (= "UziTaskNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 2))
-                 (fn [node _] (= "UziCallNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 3))
-                 (fn [node _]
-                   (= "UziNumberLiteralNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 4))
+
+                 (fn [node _] (ast-utils/task? node))
+                 (fn [node _] (update node :name str/upper-case))
+
+                 (fn [node _] (ast-utils/call? node))
+                 (fn [node _] (update node :selector str/upper-case))
+
+                 (fn [node _] (ast-utils/number-literal? node))
+                 (fn [node _] (update node :value inc))
+
                  :default
-                 (fn [node _] (assoc node :__bar__ 5)))]
+                 (fn [node _] (assoc node :__foo__ 5)))]
     (is (= expected actual))))
 
 (deftest
   ast-transform-pred-without-default-clause
-  (let [original {:__class__ "UziProgramNode",
-                  :scripts [{:__class__ "UziTaskNode",
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :value 12}}]}]}}]}
-        expected {:__class__ "UziProgramNode",
-                  :__foo__ 1,
-                  :scripts [{:__class__ "UziTaskNode",
-                             :__foo__ 2,
-                             :name "empty",
-                             :arguments [],
-                             :state "running",
-                             :tickingRate {:__class__ "UziTickingRateNode",
-                                           :value 1,
-                                           :scale "s"},
-                             :body {:__class__ "UziBlockNode",
-                                    :statements [{:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "toggle",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 13}}]}
-                                                 {:__class__ "UziCallNode",
-                                                  :__foo__ 3,
-                                                  :selector "turnOn",
-                                                  :arguments [{:__class__ "Association",
-                                                               :key nil,
-                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                       :__foo__ 4,
-                                                                       :value 12}}]}]}}]}
+  (let [original (ast/program-node
+                   :scripts [(ast/task-node
+                               :name "empty"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 13))])
+                                        (ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 12))])]))])
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "EMPTY"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "TOGGLE"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 14))])
+                                     (ast/call-node
+                                      "TURNON"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])]))])
         actual (ast-utils/transformp
                  original
-                 (fn [node _]
-                   (= "UziProgramNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 1))
-                 (fn [node _] (= "UziTaskNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 2))
-                 (fn [node _] (= "UziCallNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 3))
-                 (fn [node _]
-                   (= "UziNumberLiteralNode" (get node :__class__)))
-                 (fn [node _] (assoc node :__foo__ 4)))]
+
+                 (fn [node _] (ast-utils/task? node))
+                 (fn [node _] (update node :name str/upper-case))
+
+                 (fn [node _] (ast-utils/call? node))
+                 (fn [node _] (update node :selector str/upper-case))
+
+                 (fn [node _] (ast-utils/number-literal? node))
+                 (fn [node _] (update node :value inc)))]
     (is (= expected actual))))
 
 (deftest
   program-with-local-variable-whose-value-is-a-compile-time-constant
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "a",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 0}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "a"}}]}
-                                            {:__class__ "UziVariableDeclarationNode",
-                                             :name "b",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 0}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "b"}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 0))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "a"))])
+                                   (ast/variable-declaration-node
+                                     "b"
+                                     (ast/literal-number-node 0))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "b"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
@@ -448,32 +346,23 @@
 
 (deftest
   program-with-local-variable-whose-value-is-a-compile-time-constant-different-than-zero
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "a",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 1}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "a"}}]}
-                                            {:__class__ "UziVariableDeclarationNode",
-                                             :name "b",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 2}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "b"}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 1))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "a"))])
+                                   (ast/variable-declaration-node
+                                     "b"
+                                     (ast/literal-number-node 2))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "b"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1)}
@@ -492,32 +381,24 @@
 
 (deftest
   program-with-equal-nodes-referencing-different-variables
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [{:__class__ "UziVariableDeclarationNode", :name "b"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "a",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 1}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "b"}}]}
-                                            {:__class__ "UziVariableDeclarationNode",
-                                             :name "b",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 2}}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "b"}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "b")]
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 1))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "b"))])
+                                   (ast/variable-declaration-node
+                                     "b"
+                                     (ast/literal-number-node 2))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "b"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1) (emit/variable "b" 0)}
@@ -536,19 +417,15 @@
 
 (deftest
   program-with-assignment-to-global
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [{:__class__ "UziVariableDeclarationNode", :name "temp"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "temp"},
-                                             :right {:__class__ "UziNumberLiteralNode", :value 0}}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "temp")]
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "temp")
+                                     (ast/literal-number-node 0))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/variable "temp" 0)}
                    :scripts [(emit/script
@@ -563,22 +440,17 @@
 
 (deftest
   program-with-assignment-to-local
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "temp",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 0}}
-                                            {:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "temp"},
-                                             :right {:__class__ "UziNumberLiteralNode", :value 0}}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node
+                                     "temp"
+                                     (ast/literal-number-node 0))
+                                   (ast/assignment-node
+                                     (ast/variable-node "temp")
+                                     (ast/literal-number-node 0))]))])
         expected (emit/program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
@@ -594,23 +466,14 @@
 
 (deftest
   program-with-procedure
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "default1",
-                                             :arguments []}]}}
-                       {:__class__ "UziProcedureNode",
-                        :name "default1",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode", :statements []}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node [(ast/call-node "default1" [])]))
+                        (ast/procedure-node
+                          :name "default1"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
@@ -626,30 +489,19 @@
 
 (deftest
   program-with-procedure-call-before-the-end-of-block
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "default1",
-                                             :arguments []}
-                                            {:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :type "D",
-                                                                  :number 13}}]}]}}
-                       {:__class__ "UziProcedureNode",
-                        :name "default1",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode", :statements []}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/call-node "default1" [])
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))
+                        (ast/procedure-node
+                          :name "default1"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
@@ -667,34 +519,22 @@
 
 (deftest
   procedure-with-one-argument
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "default1",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :type "D",
-                                                                  :number 13}}]}]}}
-                       {:__class__ "UziProcedureNode",
-                        :name "default1",
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "arg0"}],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode",
-                                                                  :name "arg0"}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "default1"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))
+                        (ast/procedure-node
+                          :name "default1"
+                          :arguments [(ast/variable-declaration-node "arg0")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
@@ -716,25 +556,18 @@
 
 (deftest
   program-with-function
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [{:__class__ "UziVariableDeclarationNode", :name "temp"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "temp"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :selector "default1",
-                                                     :arguments []}}]}}
-                       {:__class__ "UziFunctionNode",
-                        :name "default1",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode", :statements []}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "temp")]
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "temp")
+                                     (ast/call-node "default1" []))]))
+                        (ast/function-node
+                          :name "default1"
+                          :body (ast/block-node []))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/variable "temp" 0)}
                    :scripts [(emit/script
@@ -750,36 +583,25 @@
 
 (deftest
   function-with-one-arg
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [{:__class__ "UziVariableDeclarationNode", :name "temp"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "temp"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :selector "default1",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziPinLiteralNode",
-                                                                          :type "D",
-                                                                          :number 13}}]}}]}}
-                       {:__class__ "UziFunctionNode",
-                        :name "default1",
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "arg0"}],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode",
-                                                                  :name "arg0"}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "temp")]
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "temp")
+                                     (ast/call-node
+                                       "default1"
+                                       [(ast/arg-node
+                                          (ast/literal-pin-node "D" 13))]))]))
+                        (ast/function-node
+                          :name "default1"
+                          :arguments [(ast/variable-declaration-node "arg0")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)
                               (emit/variable "temp" 0)}
@@ -802,25 +624,20 @@
 
 (deftest
   the-order-of-the-keys-in-a-program-map-should-not-matter
-  (let [ast {:__class__ "UziProgramNode",
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "empty",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "counter"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :selector "+",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :value {:__class__ "UziVariableNode", :name "counter"}}
-                                                                 {:__class__ "Association",
-                                                                  :value {:__class__ "UziNumberLiteralNode",
-                                                                          :value 1}}]}}]}}],
-             :globals [{:__class__ "UziVariableDeclarationNode",
-                        :name "counter"}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "counter")]
+              :scripts [(ast/task-node
+                          :name "empty"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "counter")
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "counter"))
+                                        (ast/arg-node
+                                          (ast/literal-number-node 1))]))]))])
         expected (emit/program
                    :globals #{(emit/variable "counter" 0) (emit/constant 1000)
                               (emit/constant 1)}
@@ -837,33 +654,22 @@
 
 (deftest
   the-order-of-the-keys-in-a-procedure-map-should-not-matter
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "default1",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :type "D",
-                                                                  :number 13}}]}]}}
-                       {:__class__ "UziProcedureNode",
-                        :name "default1",
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "arg0"}}]}]},
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "arg0"}]}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "default1"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))
+                        (ast/procedure-node
+                          :name "default1"
+                          :arguments [(ast/variable-declaration-node "arg0")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
@@ -885,35 +691,25 @@
 
 (deftest
   the-order-of-the-keys-in-a-function-map-should-not-matter
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [{:__class__ "UziVariableDeclarationNode", :name "temp"}],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "temp"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :selector "default1",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziPinLiteralNode",
-                                                                          :type "D",
-                                                                          :number 13}}]}}]}}
-                       {:__class__ "UziFunctionNode",
-                        :name "default1",
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "arg0"}}]}]},
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "arg0"}]}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node "temp")]
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "temp")
+                                     (ast/call-node
+                                       "default1"
+                                       [(ast/arg-node
+                                          (ast/literal-pin-node "D" 13))]))]))
+                        (ast/function-node
+                          :name "default1"
+                          :arguments [(ast/variable-declaration-node "arg0")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)
                               (emit/variable "temp" 0)}
@@ -936,24 +732,15 @@
 
 (deftest
   return-without-value
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziProcedureNode",
-                        :name "default",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode", :value nil}]}}
-                       {:__class__ "UziTaskNode",
-                        :name "loop",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "default",
-                                             :arguments []}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/procedure-node
+                          :name "default"
+                          :body (ast/block-node [(ast/return-node)]))
+                        (ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node [(ast/call-node "default" [])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)}
                    :scripts [(emit/script
@@ -971,49 +758,32 @@
 
 (deftest
   return-with-value
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :name "addition",
-                        :arguments [{:__class__ "UziVariableDeclarationNode", :name "x"}
-                                    {:__class__ "UziVariableDeclarationNode", :name "y"}],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziCallNode",
-                                                     :selector "+",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziVariableNode", :name "x"}}
-                                                                 {:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziVariableNode", :name "y"}}]}}]}}
-                       {:__class__ "UziTaskNode",
-                        :name "loop",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "write",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :type "D",
-                                                                  :number 13}}
-                                                         {:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziCallNode",
-                                                                  :selector "addition",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                                       :value 0.25}}
-                                                                              {:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                                       :value 0.75}}]}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "addition"
+                          :arguments [(ast/variable-declaration-node "x")
+                                      (ast/variable-declaration-node "y")]
+                          :body (ast/block-node
+                                  [(ast/return-node
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "x"))
+                                        (ast/arg-node (ast/variable-node "y"))]))]))
+                        (ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "write"
+                                     [(ast/arg-node (ast/literal-pin-node "D" 13))
+                                      (ast/arg-node
+                                        (ast/call-node
+                                          "addition"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 0.25))
+                                           (ast/arg-node
+                                             (ast/literal-number-node 0.75))]))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 0.75)
                               (emit/constant 1000) (emit/constant 0.25)
@@ -1040,36 +810,25 @@
 
 (deftest
   task-control-nodes
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "loop",
-                        :arguments [],
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode", :value 1, :scale "s"},
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "toggle",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :type "D",
-                                                                  :number 13}}]}]}}
-                       {:__class__ "UziTaskNode",
-                        :name "main",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziScriptStartNode", :scripts ["loop"]}
-                                            {:__class__ "UziScriptStopNode", :scripts ["loop"]}
-                                            {:__class__ "UziScriptResumeNode", :scripts ["loop"]}
-                                            {:__class__ "UziScriptPauseNode", :scripts ["loop"]}
-                                            {:__class__ "UziCallNode",
-                                             :selector "loop",
-                                             :arguments []}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))
+                        (ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/start-node ["loop"])
+                                   (ast/stop-node ["loop"])
+                                   (ast/resume-node ["loop"])
+                                   (ast/pause-node ["loop"])
+                                   (ast/call-node "loop" [])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 13)}
@@ -1094,35 +853,23 @@
 
 (deftest
   script-overriding-primitive
-  (let [ast {:__class__ "UziProgramNode",
-             :imports [],
-             :globals [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :name "default",
-                        :arguments [],
-                        :state "once",
-                        :tickingRate nil,
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "turnOn",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziNumberLiteralNode", :value 0}}]}]}}
-                       {:__class__ "UziProcedureNode",
-                        :name "turnOn",
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "pin"}],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :selector "write",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "pin"}}
-                                                         {:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziNumberLiteralNode",
-                                                                  :value 1}}]}]}}],
-             :primitives []}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "default"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "turnOn"
+                                     [(ast/arg-node (ast/literal-number-node 0))])]))
+                        (ast/procedure-node
+                          :name "turnOn"
+                          :arguments [(ast/variable-declaration-node "pin")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "pin"))
+                                      (ast/arg-node
+                                        (ast/literal-number-node 1))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)}
                    :scripts [(emit/script
@@ -1145,34 +892,19 @@
 
 (deftest
   program-with-yield-statement
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 13,
-                                                                  :type "D"}}],
-                                             :primitiveName "turnOn",
-                                             :selector "turnOn"}
-                                            {:__class__ "UziYieldNode"}
-                                            {:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 13,
-                                                                  :type "D"}}],
-                                             :primitiveName "turnOff",
-                                             :selector "turnOff"}
-                                            {:__class__ "UziYieldNode"}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "turnOn"
+                                     [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                   (ast/yield-node)
+                                   (ast/call-node
+                                     "turnOff"
+                                     [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                   (ast/yield-node)]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1190,58 +922,33 @@
 
 (deftest
   script-call-with-keyword-arguments
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key "a",
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 9,
-                                                                  :type "D"}}
-                                                         {:__class__ "Association",
-                                                          :key "c",
-                                                          :value {:__class__ "UziNumberLiteralNode", :value 0.5}}
-                                                         {:__class__ "Association",
-                                                          :key "b",
-                                                          :value {:__class__ "UziNumberLiteralNode", :value 0.75}}],
-                                             :selector "foo"}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate nil}
-                       {:__class__ "UziProcedureNode",
-                        :arguments [{:__class__ "UziVariableDeclarationNode",
-                                     :name "a",
-                                     :value nil}
-                                    {:__class__ "UziVariableDeclarationNode",
-                                     :name "b",
-                                     :value nil}
-                                    {:__class__ "UziVariableDeclarationNode",
-                                     :name "c",
-                                     :value nil}],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "a"}}
-                                                         {:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "b"}}
-                                                                              {:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "c"}}],
-                                                                  :selector "+"}}],
-                                             :selector "write"}]},
-                        :name "foo",
-                        :state nil,
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "foo"
+                                     [(ast/arg-node "a" (ast/literal-pin-node "D" 9))
+                                      (ast/arg-node "c" (ast/literal-number-node 0.5))
+                                      (ast/arg-node
+                                        "b"
+                                        (ast/literal-number-node 0.75))])]))
+                        (ast/procedure-node
+                          :name "foo"
+                          :arguments [(ast/variable-declaration-node "a")
+                                      (ast/variable-declaration-node "b")
+                                      (ast/variable-declaration-node "c")]
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "a"))
+                                      (ast/arg-node
+                                        (ast/call-node
+                                          "+"
+                                          [(ast/arg-node (ast/variable-node "b"))
+                                           (ast/arg-node
+                                             (ast/variable-node "c"))]))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 0.75)
                               (emit/constant 9) (emit/constant 0.5)}
@@ -1270,45 +977,26 @@
 
 (deftest
   full-conditional
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 13,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "turnOn"}]},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "turnOff"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "turnOff"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 1000) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1328,38 +1016,22 @@
 
 (deftest
   conditional-with-only-true-branch
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 13,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "turnOff"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "turnOff"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 1000) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1376,38 +1048,22 @@
 
 (deftest
   conditional-with-only-false-branch
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 13,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "turnOn"}]},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode", :statements []}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                     (ast/block-node [])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "turnOn"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 1000) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1424,25 +1080,17 @@
 
 (deftest
   forever-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForeverNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziPinLiteralNode",
-                                                                                       :number 13,
-                                                                                       :type "D"}}],
-                                                                  :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/forever-node
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1458,30 +1106,18 @@
 
 (deftest
   while-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziWhileNode",
-                                             :condition
-                                                        {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :negated false,
-                                             :post
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]},
-                                             :pre {:__class__ "UziBlockNode", :statements []}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/while-node
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
@@ -1500,30 +1136,18 @@
 
 (deftest
   until-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziUntilNode",
-                                             :condition
-                                                        {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :negated true,
-                                             :post
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]},
-                                             :pre {:__class__ "UziBlockNode", :statements []}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/until-node
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
@@ -1542,30 +1166,18 @@
 
 (deftest
   do-while-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziDoWhileNode",
-                                             :condition
-                                                        {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :negated false,
-                                             :post {:__class__ "UziBlockNode", :statements []},
-                                             :pre
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/do-while-node
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
@@ -1583,30 +1195,18 @@
 
 (deftest
   do-until-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziDoUntilNode",
-                                             :condition
-                                                        {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :negated true,
-                                             :post {:__class__ "UziBlockNode", :statements []},
-                                             :pre
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/do-until-node
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
@@ -1624,35 +1224,20 @@
 
 (deftest
   wait-while-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziWhileNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 9,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :negated false,
-                                             :post {:__class__ "UziBlockNode", :statements []},
-                                             :pre {:__class__ "UziBlockNode", :statements []}}
-                                            {:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 13,
-                                                                  :type "D"}}],
-                                             :selector "toggle"}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/while-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 9))])
+                                     (ast/block-node []))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 13)}
@@ -1671,35 +1256,20 @@
 
 (deftest
   wait-until-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziUntilNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 9,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :negated true,
-                                             :post {:__class__ "UziBlockNode", :statements []},
-                                             :pre {:__class__ "UziBlockNode", :statements []}}
-                                            {:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 13,
-                                                                  :type "D"}}],
-                                             :selector "toggle"}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/until-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 9))])
+                                     (ast/block-node []))
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 13)}
@@ -1718,31 +1288,21 @@
 
 (deftest
   for-with-constant-step-and-constant-counter
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "i"}}],
-                                                                  :selector "toggle"}]},
-                                             :counter
-                                                        {:__class__ "UziVariableDeclarationNode",
-                                                         :name "i",
-                                                         :value nil},
-                                             :start {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :step {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :stop
-                                                        {:__class__ "UziNumberLiteralNode", :value 10}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/for-node
+                                     "i"
+                                     (ast/literal-number-node 1)
+                                     (ast/literal-number-node 10)
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/variable-node "i"))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 10)}
@@ -1770,42 +1330,25 @@
 
 (deftest
   for-with-constant-step
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 1}}]},
-                        :name "start",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "i"}}],
-                                                                  :selector "toggle"}]},
-                                             :counter
-                                                        {:__class__ "UziVariableDeclarationNode",
-                                                         :name "i",
-                                                         :value nil},
-                                             :start
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [],
-                                                         :selector "start"},
-                                             :step {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :stop
-                                                        {:__class__ "UziNumberLiteralNode", :value 10}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "start"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 1))]))
+                        (ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/for-node
+                                     "i"
+                                     (ast/call-node "start" [])
+                                     (ast/literal-number-node 10)
+                                     (ast/literal-number-node 1)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/variable-node "i"))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 10)}
@@ -1837,46 +1380,27 @@
 
 (deftest
   for-with-constant-negative-step
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziPinLiteralNode",
-                                                                                       :number 9,
-                                                                                       :type "D"}}
-                                                                              {:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziCallNode",
-                                                                                       :arguments [{:__class__ "Association",
-                                                                                                    :key nil,
-                                                                                                    :value {:__class__ "UziVariableNode", :name "i"}}
-                                                                                                   {:__class__ "Association",
-                                                                                                    :key nil,
-                                                                                                    :value {:__class__ "UziNumberLiteralNode",
-                                                                                                            :value 100}}],
-                                                                                       :selector "/"}}],
-                                                                  :selector "write"}]},
-                                             :counter
-                                                        {:__class__ "UziVariableDeclarationNode",
-                                                         :name "i",
-                                                         :value nil},
-                                             :start
-                                                        {:__class__ "UziNumberLiteralNode", :value 100},
-                                             :step
-                                                        {:__class__ "UziNumberLiteralNode", :value -10},
-                                             :stop
-                                                        {:__class__ "UziNumberLiteralNode", :value 0}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/for-node
+                                     "i"
+                                     (ast/literal-number-node 100)
+                                     (ast/literal-number-node 0)
+                                     (ast/literal-number-node -10)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "write"
+                                          [(ast/arg-node (ast/literal-pin-node "D" 9))
+                                           (ast/arg-node
+                                             (ast/call-node
+                                               "/"
+                                               [(ast/arg-node (ast/variable-node "i"))
+                                                (ast/arg-node
+                                                  (ast/literal-number-node
+                                                    100))]))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 100) (emit/constant -10)}
@@ -1906,42 +1430,25 @@
 
 (deftest
   for-without-constant-step
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 1}}]},
-                        :name "step",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "i"}}],
-                                                                  :selector "toggle"}]},
-                                             :counter
-                                                        {:__class__ "UziVariableDeclarationNode",
-                                                         :name "i",
-                                                         :value nil},
-                                             :start {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :step
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [],
-                                                         :selector "step"},
-                                             :stop
-                                                        {:__class__ "UziNumberLiteralNode", :value 10}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "step"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 1))]))
+                        (ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/for-node
+                                     "i"
+                                     (ast/literal-number-node 1)
+                                     (ast/literal-number-node 10)
+                                     (ast/call-node "step" [])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/variable-node "i"))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 10)}
@@ -1980,43 +1487,26 @@
 
 (deftest
   repeat-loop
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 100}}]},
-                        :name "step",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziRepeatNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziPinLiteralNode",
-                                                                                       :number 13,
-                                                                                       :type "D"}}],
-                                                                  :selector "toggle"}
-                                                                 {:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziNumberLiteralNode",
-                                                                                       :value 1000}}],
-                                                                  :selector "delayMs"}]},
-                                             :times
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [],
-                                                         :selector "step"}}]},
-                        :name "main",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "step"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 100))]))
+                        (ast/task-node
+                          :name "main"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/repeat-node
+                                     (ast/call-node "step" [])
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])
+                                        (ast/call-node
+                                          "delayMs"
+                                          [(ast/arg-node
+                                             (ast/literal-number-node 1000))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 100)
                               (emit/constant 1000) (emit/constant 1)
@@ -2051,29 +1541,19 @@
 
 (deftest
   repeat-loop-declares-0-and-1-as-global-constants
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziRepeatNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziPinLiteralNode",
-                                                                                       :number 13,
-                                                                                       :type "D"}}],
-                                                                  :selector "toggle"}]},
-                                             :times
-                                                        {:__class__ "UziNumberLiteralNode", :value 5}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/repeat-node
+                                     (ast/literal-number-node 5)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
@@ -2101,35 +1581,22 @@
 
 (deftest
   for-loop-declares-0-as-global-constant
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziForNode",
-                                             :body {:__class__ "UziBlockNode",
-                                                    :statements [{:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziPinLiteralNode",
-                                                                                       :number 13,
-                                                                                       :type "D"}}],
-                                                                  :selector "toggle"}]},
-                                             :counter
-                                                        {:__class__ "UziVariableDeclarationNode",
-                                                         :name "i",
-                                                         :value nil},
-                                             :start {:__class__ "UziNumberLiteralNode", :value 1},
-                                             :step {:__class__ "UziNumberLiteralNode", :value 2},
-                                             :stop
-                                                        {:__class__ "UziNumberLiteralNode", :value 10}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/for-node
+                                     "i"
+                                     (ast/literal-number-node 1)
+                                     (ast/literal-number-node 10)
+                                     (ast/literal-number-node 2)
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1000) (emit/constant 1)
@@ -2157,26 +1624,16 @@
 
 (deftest
   local-values-are-registered-as-global-constants
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziVariableDeclarationNode",
-                                             :name "a",
-                                             :value nil}
-                                            {:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "a"}}],
-                                             :selector "toggle"}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/variable-declaration-node "a")
+                                   (ast/call-node
+                                     "toggle"
+                                     [(ast/arg-node (ast/variable-node "a"))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)}
                    :scripts [(emit/script
@@ -2191,34 +1648,22 @@
 
 (deftest
   logical-and-without-short-circuit
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalAndNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziNumberLiteralNode", :value 0}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-and-node
+                                       (ast/literal-number-node 1)
+                                       (ast/literal-number-node 0))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
@@ -2237,44 +1682,26 @@
 
 (deftest
   logical-and-with-short-circuit
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 42}}]},
-                        :name "foo",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalAndNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [],
-                                                                 :selector "foo"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "foo"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 42))]))
+                        (ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-and-node
+                                       (ast/literal-number-node 1)
+                                       (ast/call-node "foo" []))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
@@ -2300,34 +1727,22 @@
 
 (deftest
   logical-or-without-short-circuit
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalOrNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziNumberLiteralNode", :value 0}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-or-node
+                                       (ast/literal-number-node 1)
+                                       (ast/literal-number-node 0))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
@@ -2346,44 +1761,26 @@
 
 (deftest
   logical-or-with-short-circuit
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 42}}]},
-                        :name "foo",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalOrNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [],
-                                                                 :selector "foo"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "foo"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 42))]))
+                        (ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-or-node
+                                       (ast/literal-number-node 1)
+                                       (ast/call-node "foo" []))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
@@ -2409,44 +1806,28 @@
 
 (deftest
   logical-and-with-short-circuit-declares-0-as-global-constant
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 42}}]},
-                        :name "foo",
-                        :state "stopped",
-                        :tickingRate {:__class__ "UziTickingRateNode", :scale "s", :value 1}}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalAndNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 2},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [],
-                                                                 :selector "foo"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "foo"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "stopped"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 42))]))
+                        (ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-and-node
+                                       (ast/literal-number-node 2)
+                                       (ast/call-node "foo" []))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1000) (emit/constant 13)
@@ -2472,44 +1853,26 @@
 
 (deftest
   logical-or-with-short-circuit-declares-1-as-global-constant
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 42}}]},
-                        :name "foo",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalOrNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 2},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [],
-                                                                 :selector "foo"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "main",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "foo"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-number-node 42))]))
+                        (ast/task-node
+                          :name "main"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-or-node
+                                       (ast/literal-number-node 2)
+                                       (ast/call-node "foo" []))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1000) (emit/constant 1)
@@ -2535,50 +1898,28 @@
 
 (deftest
   has-side-effects-checks-the-arguments-of-a-call
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziFunctionNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziReturnNode",
-                                             :value {:__class__ "UziPinLiteralNode",
-                                                     :number 13,
-                                                     :type "D"}}]},
-                        :name "pin13",
-                        :state nil,
-                        :tickingRate nil}
-                       {:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalAndNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [{:__class__ "Association",
-                                                                              :key nil,
-                                                                              :value {:__class__ "UziCallNode",
-                                                                                      :arguments [],
-                                                                                      :selector "pin13"}}],
-                                                                 :selector "isOn"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziCallNode",
-                                                                                            :arguments [],
-                                                                                            :selector "pin13"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "loop",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/function-node
+                          :name "pin13"
+                          :body (ast/block-node
+                                  [(ast/return-node (ast/literal-pin-node "D" 13))]))
+                        (ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-and-node
+                                       (ast/literal-number-node 1)
+                                       (ast/call-node
+                                         "isOn"
+                                         [(ast/arg-node (ast/call-node "pin13" []))]))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/call-node "pin13" []))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
@@ -2604,40 +1945,25 @@
 
 (deftest
   has-side-effects-checks-the-arguments-of-a-call-2
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziLogicalAndNode",
-                                                         :left {:__class__ "UziNumberLiteralNode", :value 1},
-                                                         :right {:__class__ "UziCallNode",
-                                                                 :arguments [{:__class__ "Association",
-                                                                              :key nil,
-                                                                              :value {:__class__ "UziPinLiteralNode",
-                                                                                      :number 13,
-                                                                                      :type "D"}}],
-                                                                 :selector "isOn"}},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode", :statements []},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}],
-                                                                       :selector "toggle"}]}}]},
-                        :name "loop",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/logical-and-node
+                                       (ast/literal-number-node 1)
+                                       (ast/call-node
+                                         "isOn"
+                                         [(ast/arg-node
+                                            (ast/literal-pin-node "D" 13))]))
+                                     (ast/block-node
+                                       [(ast/call-node
+                                          "toggle"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))])])
+                                     (ast/block-node []))]))])
         expected (emit/program
                    :globals #{(emit/constant 1000) (emit/constant 1)
                               (emit/constant 13)}
@@ -2657,84 +1983,50 @@
 
 (deftest
   local-variable-declared-multiple-times-inside-script
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [{:__class__ "UziVariableDeclarationNode",
-                        :name "a",
-                        :value {:__class__ "UziNumberLiteralNode", :value 42}}],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 12,
-                                                                  :type "D"}}
-                                                         {:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziVariableNode", :name "a"}}],
-                                             :selector "write"}
-                                            {:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziNumberLiteralNode", :value 0}}],
-                                                         :selector "isOn"},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziVariableDeclarationNode",
-                                                                       :name "a",
-                                                                       :value {:__class__ "UziNumberLiteralNode", :value -10}}
-                                                                      {:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}
-                                                                                   {:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziVariableNode", :name "a"}}],
-                                                                       :selector "write"}]},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziVariableDeclarationNode",
-                                                                       :name "a",
-                                                                       :value {:__class__ "UziNumberLiteralNode", :value 10}}
-                                                                      {:__class__ "UziCallNode",
-                                                                       :arguments [{:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziPinLiteralNode",
-                                                                                            :number 13,
-                                                                                            :type "D"}}
-                                                                                   {:__class__ "Association",
-                                                                                    :key nil,
-                                                                                    :value {:__class__ "UziVariableNode", :name "a"}}],
-                                                                       :selector "write"}]}}
-                                            {:__class__ "UziCallNode",
-                                             :arguments [{:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziPinLiteralNode",
-                                                                  :number 12,
-                                                                  :type "D"}}
-                                                         {:__class__ "Association",
-                                                          :key nil,
-                                                          :value {:__class__ "UziCallNode",
-                                                                  :arguments [{:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziNumberLiteralNode", :value -1}}
-                                                                              {:__class__ "Association",
-                                                                               :key nil,
-                                                                               :value {:__class__ "UziVariableNode", :name "a"}}],
-                                                                  :selector "*"}}],
-                                             :selector "write"}]},
-                        :name "loop",
-                        :state "running",
-                        :tickingRate {:__class__ "UziTickingRateNode",
-                                      :scale "s",
-                                      :value 1}}]}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node
+                          "a"
+                          (ast/literal-number-node 42))]
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :tick-rate (ast/ticking-rate-node 1 "s")
+                          :state "running"
+                          :body (ast/block-node
+                                  [(ast/call-node
+                                     "write"
+                                     [(ast/arg-node (ast/literal-pin-node "D" 12))
+                                      (ast/arg-node (ast/variable-node "a"))])
+                                   (ast/conditional-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-number-node 0))])
+                                     (ast/block-node
+                                       [(ast/variable-declaration-node
+                                          "a"
+                                          (ast/literal-number-node -10))
+                                        (ast/call-node
+                                          "write"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))
+                                           (ast/arg-node (ast/variable-node "a"))])])
+                                     (ast/block-node
+                                       [(ast/variable-declaration-node
+                                          "a"
+                                          (ast/literal-number-node 10))
+                                        (ast/call-node
+                                          "write"
+                                          [(ast/arg-node
+                                             (ast/literal-pin-node "D" 13))
+                                           (ast/arg-node (ast/variable-node "a"))])]))
+                                   (ast/call-node
+                                     "write"
+                                     [(ast/arg-node (ast/literal-pin-node "D" 12))
+                                      (ast/arg-node
+                                        (ast/call-node
+                                          "*"
+                                          [(ast/arg-node (ast/literal-number-node -1))
+                                           (ast/arg-node
+                                             (ast/variable-node "a"))]))])]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 13) (emit/constant 10)
@@ -2770,28 +2062,21 @@
 
 (deftest
   global-variable-with-value-different-than-default
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [{:__class__ "UziVariableDeclarationNode",
-                        :name "a",
-                        :value {:__class__ "UziNumberLiteralNode", :value 42}}],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "a"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziVariableNode", :name "a"}}
-                                                                 {:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziNumberLiteralNode", :value 10}}],
-                                                     :selector "+"}}]},
-                        :name "loop",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node
+                          "a"
+                          (ast/literal-number-node 42))]
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "a"))
+                                        (ast/arg-node
+                                          (ast/literal-number-node 10))]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 10)
                               (emit/variable "a" 42)}
@@ -2810,41 +2095,30 @@
 
 (deftest
   local-variable-shadowing-global-variable
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [{:__class__ "UziVariableDeclarationNode",
-                        :name "a",
-                        :value {:__class__ "UziNumberLiteralNode", :value 42}}],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "a"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziVariableNode", :name "a"}}
-                                                                 {:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziNumberLiteralNode", :value 1}}],
-                                                     :selector "+"}}
-                                            {:__class__ "UziVariableDeclarationNode",
-                                             :name "a",
-                                             :value {:__class__ "UziNumberLiteralNode", :value 15}}
-                                            {:__class__ "UziAssignmentNode",
-                                             :left {:__class__ "UziVariableNode", :name "a"},
-                                             :right {:__class__ "UziCallNode",
-                                                     :arguments [{:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziVariableNode", :name "a"}}
-                                                                 {:__class__ "Association",
-                                                                  :key nil,
-                                                                  :value {:__class__ "UziNumberLiteralNode", :value 42}}],
-                                                     :selector "+"}}]},
-                        :name "loop",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :globals [(ast/variable-declaration-node
+                          "a"
+                          (ast/literal-number-node 42))]
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "a"))
+                                        (ast/arg-node (ast/literal-number-node 1))]))
+                                   (ast/variable-declaration-node
+                                     "a"
+                                     (ast/literal-number-node 15))
+                                   (ast/assignment-node
+                                     (ast/variable-node "a")
+                                     (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/variable-node "a"))
+                                        (ast/arg-node
+                                          (ast/literal-number-node 42))]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 15)
                               (emit/constant 1) (emit/variable "a" 42)
@@ -2869,57 +2143,38 @@
 
 (deftest
   conditional-children-order-should-not-impact-compilation
-  (let [ast {:__class__ "UziProgramNode",
-             :globals [],
-             :imports [],
-             :primitives [],
-             :scripts [{:__class__ "UziTaskNode",
-                        :arguments [],
-                        :body {:__class__ "UziBlockNode",
-                               :statements [{:__class__ "UziConditionalNode",
-                                             :condition
-                                                        {:__class__ "UziCallNode",
-                                                         :arguments [{:__class__ "Association",
-                                                                      :key nil,
-                                                                      :value {:__class__ "UziPinLiteralNode",
-                                                                              :number 9,
-                                                                              :type "D"}}],
-                                                         :selector "isOn"},
-                                             :falseBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziVariableDeclarationNode",
-                                                                       :name "a",
-                                                                       :value {:__class__ "UziNumberLiteralNode", :value 21}}
-                                                                      {:__class__ "UziAssignmentNode",
-                                                                       :left {:__class__ "UziVariableNode", :name "a"},
-                                                                       :right {:__class__ "UziCallNode",
-                                                                               :arguments [{:__class__ "Association",
-                                                                                            :key nil,
-                                                                                            :value {:__class__ "UziVariableNode", :name "a"}}
-                                                                                           {:__class__ "Association",
-                                                                                            :key nil,
-                                                                                            :value {:__class__ "UziNumberLiteralNode",
-                                                                                                    :value 20}}],
-                                                                               :selector "+"}}]},
-                                             :trueBranch
-                                                        {:__class__ "UziBlockNode",
-                                                         :statements [{:__class__ "UziVariableDeclarationNode",
-                                                                       :name "a",
-                                                                       :value {:__class__ "UziNumberLiteralNode", :value 11}}
-                                                                      {:__class__ "UziAssignmentNode",
-                                                                       :left {:__class__ "UziVariableNode", :name "a"},
-                                                                       :right {:__class__ "UziCallNode",
-                                                                               :arguments [{:__class__ "Association",
-                                                                                            :key nil,
-                                                                                            :value {:__class__ "UziVariableNode", :name "a"}}
-                                                                                           {:__class__ "Association",
-                                                                                            :key nil,
-                                                                                            :value {:__class__ "UziNumberLiteralNode",
-                                                                                                    :value 10}}],
-                                                                               :selector "+"}}]}}]},
-                        :name "loop",
-                        :state "once",
-                        :tickingRate nil}]}
+  (let [ast (ast/program-node
+              :scripts [(ast/task-node
+                          :name "loop"
+                          :state "once"
+                          :body (ast/block-node
+                                  [(ast/conditional-node
+                                     (ast/call-node
+                                       "isOn"
+                                       [(ast/arg-node (ast/literal-pin-node "D" 9))])
+                                     (ast/block-node
+                                       [(ast/variable-declaration-node
+                                          "a"
+                                          (ast/literal-number-node 11))
+                                        (ast/assignment-node
+                                          (ast/variable-node "a")
+                                          (ast/call-node
+                                            "+"
+                                            [(ast/arg-node (ast/variable-node "a"))
+                                             (ast/arg-node
+                                               (ast/literal-number-node 10))]))])
+                                     (ast/block-node
+                                       [(ast/variable-declaration-node
+                                          "a"
+                                          (ast/literal-number-node 21))
+                                        (ast/assignment-node
+                                          (ast/variable-node "a")
+                                          (ast/call-node
+                                            "+"
+                                            [(ast/arg-node (ast/variable-node "a"))
+                                             (ast/arg-node
+                                               (ast/literal-number-node
+                                                 20))]))]))]))])
         expected (emit/program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 11) (emit/constant 20)
