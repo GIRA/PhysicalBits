@@ -1,7 +1,8 @@
 (ns middleware.parser.ast-nodes)
 
 (defn program-node
-  [& {:keys [imports globals scripts primitives]}]
+  [& {:keys [imports globals scripts primitives]
+      :or {imports [], globals [], scripts [], primitives []}}]
   {:__class__  "UziProgramNode"
    :imports    imports,
    :globals    globals
