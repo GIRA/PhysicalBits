@@ -12,9 +12,9 @@
   (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
 
 (defn link [ast]
+  "HACK(Richo): I remove the :primitives key because it makes the diff hard to read"
   (-> ast
       (l/resolve-imports lib-dir)
-      ; HACK(Richo): I remove the :primitives key because it makes the diff hard to read
       (dissoc :primitives)))
 
 (def core-import
@@ -22,8 +22,8 @@
 
 (deftest
   importing-library-prepends-imported-tree-with-alias-applied
-  ; import test from 'test_1.uzi';
-  ; task main() { write(D13, test.foo()); }
+  " import test from 'test_1.uzi';"
+  " task main() { write(D13, test.foo()); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -103,9 +103,9 @@
 
 (deftest
   importing-the-same-library-twice-doesnt-collide
-  ; import test1 from 'test_1.uzi';
-  ; import test2 from 'test_1.uzi';
-  ; task main() { write(test2.foo(), test1.foo()); }
+  " import test1 from 'test_1.uzi';"
+  " import test2 from 'test_1.uzi';"
+  " task main() { write(test2.foo(), test1.foo()); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -205,8 +205,8 @@
 
 (deftest
   importing-nested-libraries
-  ; import t2 from 'test_3.uzi';
-  ; task main() { write(D13, t2.bar(1)); }
+  " import t2 from 'test_3.uzi';"
+  " task main() { write(D13, t2.bar(1)); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -335,8 +335,8 @@
 
 (deftest
   stopping-imported-task
-  ; import t3 from 'test_4.uzi';
-  ; task main() running { stop t3.blink13; }
+  " import t3 from 'test_4.uzi';"
+  " task main() running { stop t3.blink13; }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -396,8 +396,8 @@
 
 (deftest
   starting-imported-task
-  ; import t3 from 'test_4.uzi';
-  ; task main() running { start t3.blink13; }
+  " import t3 from 'test_4.uzi';"
+  " task main() running { start t3.blink13; }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -457,8 +457,8 @@
 
 (deftest
   importing-script-that-stops-a-task
-  ; import t from 'test_5.uzi';
-  ; task main() running { t.stopTask(); }
+  " import t from 'test_5.uzi';"
+  " task main() running { t.stopTask(); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -529,8 +529,8 @@
 
 (deftest
   importing-script-that-starts-a-task
-  ; import t from 'test_6.uzi';
-  ; task main() running { t.startTask(); }
+  " import t from 'test_6.uzi';"
+  " task main() running { t.startTask(); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -600,8 +600,8 @@
 
 (deftest
   importing-script-that-calls-internal-proc
-  ; import t from 'test_8.uzi';
-  ; task main() running { t.blink(); }
+  " import t from 'test_8.uzi';"
+  " task main() running { t.blink(); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -691,8 +691,8 @@
 
 (deftest
   importing-script-that-executes-for-loop
-  ; import t from 'test_9.uzi';
-  ; task main() running { t.foo(); }
+  " import t from 'test_9.uzi';"
+  " task main() running { t.foo(); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -758,9 +758,9 @@
 
 (deftest
   specifying-init-block-to-initialize-variables
-  ; import t from 'test_10.uzi' {
-  ;   a = 10; b = 20; c = 30;
-  ; }
+  " import t from 'test_10.uzi' {"
+  "   a = 10; b = 20; c = 30;"
+  " }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -869,10 +869,10 @@
 
 (deftest
   specifying-init-block-to-start-and-stop-tasks
-  ; import t from 'test_11.uzi' {
-  ; 	start stopped1; resume stopped2;
-  ; 	stop running1; pause running2;
-  ; }
+  " import t from 'test_11.uzi' {"
+  " 	start stopped1; resume stopped2;"
+  " 	stop running1; pause running2;"
+  " }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -985,7 +985,7 @@
 
 (deftest
   stopping-once-task-from-init-block-should-have-no-effect
-  ; import t from 'test_12.uzi' { stop setup; }
+  " import t from 'test_12.uzi' { stop setup; }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -1034,8 +1034,8 @@
 
 (deftest
   importing-library-with-primitive-declarations
-  ; import a from 'test_13.uzi';
-  ; task main() { toggle(a.add(3, 4)); }
+  " import a from 'test_13.uzi';"
+  " task main() { toggle(a.add(3, 4)); }"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -1145,8 +1145,8 @@
 
 (deftest
   dependency-cycles-should-not-hang-the-compiler
-  ; import a from 'test_14_a.uzi';
-  ; import b from 'test_14_b.uzi';
+  " import a from 'test_14_a.uzi';"
+  " import b from 'test_14_b.uzi';"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
@@ -1163,7 +1163,7 @@
 
 (deftest
   importing-non-existing-library-should-raise-error
-  ; import t from 'test0_NO_EXISTE.uzi';
+  " import t from 'test0_NO_EXISTE.uzi';"
   (let [ast {:__class__ "UziProgramNode",
              :globals [],
              :imports
