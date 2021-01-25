@@ -88,7 +88,7 @@
 (def parse-program
   (insta/parser
 
-    "program = ws? import*  variableDeclaration*  ((primitive | script) ws?)* ws?
+    "program = ws? import*  ((variableDeclaration | primitive | script) ws?)* ws?
      import = <'import'> ws (identifier ws <'from'> ws)? importPath (endl | ws? block ) ws?
      importPath = <'\\''> #'[^\\']+' <'\\''>
      <script> = (task | function | procedure)

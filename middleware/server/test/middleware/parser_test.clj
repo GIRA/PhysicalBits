@@ -805,3 +805,18 @@
                                              (ast/literal-pin-node "D" 13))])]))])
         actual (parse src)]
     (is (equivalent? expected actual))))
+
+(deftest foo
+  (let [expected (parse "
+          var a = 0;
+          var b = 1;
+          task blink13() running 1/s { toggle(D13); }
+          task loop() { a = a + b; }
+          ")
+        actual (parse "
+          task blink13() running 1/s { toggle(D13); }
+          var a = 0;
+          task loop() { a = a + b; }
+          var b = 1;
+          ")]
+    (is (= expected actual))))

@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,13.46643109540636,4.752650176678445,31.37455830388693
-MEDIAN,8,3,20
+AVERAGE,13.4140350877193,4.754385964912281,31.29473684210526
+MEDIAN,8,4,20
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -227,6 +227,8 @@ middleware.parser-test/blink13#0,2,2,12
 middleware.parser-test/control-structures#0,31,4,65
 middleware.parser-test/control-structures-part-II#0,5,4,17
 middleware.parser-test/empty-program#0,0,0,2
+middleware.parser-test/foo#0,6,5,20
+middleware.parser-test/foo#1,6,5,20
 middleware.parser-test/function-with-arguments#0,0,0,2
 middleware.parser-test/functions-with-calls-and-globals#0,0,0,2
 middleware.parser-test/motor-usage#0,33,12,61
