@@ -33,7 +33,7 @@
     :initializationBlock block}))
 
 (defn task-node
-  [& {:keys [name arguments tick-rate state locals body]
+  [& {:keys [name arguments tick-rate state body]
       :or   {arguments []}}]
   {:__class__   "UziTaskNode",
    :name        name,
@@ -43,7 +43,7 @@
    :tickingRate tick-rate})
 
 (defn procedure-node
-  [& {:keys [name arguments locals body]
+  [& {:keys [name arguments body]
       :or   {arguments []}}]
   {:__class__   "UziProcedureNode",
    :name        name,
@@ -51,7 +51,7 @@
    :body        body})
 
 (defn function-node
-  [& {:keys [name arguments locals body]
+  [& {:keys [name arguments body]
       :or   {arguments []}}]
   {:__class__   "UziFunctionNode",
    :name        name,
