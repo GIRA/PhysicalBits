@@ -1,4 +1,5 @@
-(ns middleware.device.protocol)
+(ns middleware.device.protocol
+  (:require [clojure.string :as str]))
 
 ; Version number
 (def MAJOR_VERSION 0)
@@ -33,16 +34,29 @@
 (def MSG_IN_SERIAL_TUNNEL 8)
 
 ; Error messages
+(def ^:private error-msgs
+  [0 "NO_ERROR"
+   1 "STACK_OVERFLOW"
+   2 "STACK_UNDERFLOW"
+   4 "ACCESS_VIOLATION"
+   8 "OUT_OF_MEMORY"
+   16 "READER_TIMEOUT"
+   32 "DISCONNECT_ERROR"
+   64 "READER_CHECKSUM_FAIL"])
+
 (defn error-msg [code]
-  (case code
-    0 "NO_ERROR"
-    1 "STACK_OVERFLOW"
-    2 "STACK_UNDERFLOW"
-    3 "STACK_ACCESS_VIOLATION"
-    4 "OUT_OF_MEMORY"
-    5 "READER_TIMEOUT"
-    6 "DISCONNECT_ERROR"
-    7 "READER_CHECKSUM_FAIL"
-    "UNKNOWN_ERROR"))
+  (if (= 0 code)
+    "NO_ERROR"
+    (let [msg (str/join
+               " & "
+               (map (fn [[_ k]] k)
+                    (filter (fn [[c _]] (not= 0 (bit-and code c)))
+                            (partition-all 2 error-msgs))))]
+      (if (empty? msg)
+        (str "UNKNOWN_ERROR (" code ")")
+        msg))))
 
 (defn error? [code] (not= 0 code))
+
+(defn error-disconnect? [code]
+  (not= 0 (bit-and code 32)))

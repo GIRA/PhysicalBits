@@ -1,8 +1,8 @@
 ﻿,Loops,Memory used (bytes),Total coroutine resizings
 MIN,3,73,0
 MAX,5040002,1105,6
-AVERAGE,60625.1530612245,167.867346938776,0.36734693877551
-MEDIAN,56,130,0
+AVERAGE,60728.0102040816,168.051020408163,0.36734693877551
+MEDIAN,77,131,0
 Test001TurnOnBytecode,3,75,0
 Test002TurnOffBytecode,3,75,0
 Test003ReadWriteBytecode,3,77,0
@@ -45,11 +45,11 @@ Test039StartOnStoppedTaskShouldJumpToBeginning,102,133,0
 Test040StartOnPausedTaskShouldJumpToBeginning,102,137,1
 Test041PausingShouldPreserveTheStack,302,191,1
 Test042EmptyScriptShouldNotCrashTheVM,3,73,0
-Test043ForLoop,7,108,0
-Test044ReversedForLoop,7,108,0
-Test045ForLoopWithoutConstantStep,7,127,0
-Test046ReverseForLoopWithoutConstantStep,7,127,0
-Test047ForLoopShouldOnlyEvaluateStepOncePerIteration,102,185,0
+Test043ForLoop,52,112,0
+Test044ReversedForLoop,52,112,0
+Test045ForLoopWithoutConstantStep,52,131,0
+Test046ReverseForLoopWithoutConstantStep,52,131,0
+Test047ForLoopShouldOnlyEvaluateStepOncePerIteration,10002,189,0
 Test048MutexShouldGuaranteeACriticalSection,1202,372,3
 Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer,10002,302,1
 Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers,10002,428,3
@@ -96,7 +96,7 @@ Test090DebuggerBreakpointHaltsAreDeterministic,62007,282,1
 Test091ChangingTheProgramResetsTheVMState,606,101,1
 Test092DebuggerSetAllBreakpoints,8,85,1
 Test093DebuggerSetAllBreakpointsWithMultipleScripts,8,131,2
-Test094ProgramWithMultipleImports,102,702,0
+Test094ProgramWithMultipleImports,102,700,0
 Test095ScriptWith127Instructions,10622,339,0
 Test096ScriptWith128Instructions,500002,337,0
 Test097ScriptWith512Instructions,100002,1105,0

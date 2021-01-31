@@ -104,11 +104,9 @@
    :name task-name,
    :delay (rate->delay ticking-rate),
    :running? (contains? #{"running" "once"} state)
+   :once? (= "once" state)
    :locals (collect-locals body)
-   :instructions (let [instructions (compile body ctx)]
-                   (if (= "once" state)
-                     (conj instructions (emit/stop task-name))
-                     instructions))))
+   :instructions (compile body ctx)))
 
 (defn- compile-stmt [node ctx]
   (let [instructions (compile node ctx)]

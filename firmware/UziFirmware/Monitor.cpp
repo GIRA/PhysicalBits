@@ -35,9 +35,11 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-#define REPORT_INTERVAL                                    25
+//#define REPORT_INTERVAL                                    25
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
+
+uint8 REPORT_INTERVAL = 25;
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -132,21 +134,33 @@ void Monitor::sendError(uint8 errorCode)
 
 void Monitor::sendProfile()
 {
-	if (!profiling) return;
 	uint32 now = millis();
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		serial->write(MSG_OUT_PROFILE);
+		float tps = tickCount / (float)(now - lastTimeProfile) * 1000;
 
-		uint16 val = tickCount;
-		uint8 val1 = val >> 7;  // MSB
-		uint8 val2 = val & 127; // LSB
-		serial->write(val1);
-		serial->write(val2);
+		if (profiling) 
+		{
+			serial->write(MSG_OUT_PROFILE);
+
+			uint16 val = tps / 10;
+			uint8 val1 = val >> 7;  // MSB
+			uint8 val2 = val & 127; // LSB
+			serial->write(val1);
+			serial->write(val2);
+
+			serial->write(REPORT_INTERVAL);
+		}
+
+		if (tps < 2000) { REPORT_INTERVAL += 1; }
+		else { REPORT_INTERVAL -= 1; }
+
+		if (REPORT_INTERVAL < 5) { REPORT_INTERVAL = 5; }
+		else if (REPORT_INTERVAL > 50) { REPORT_INTERVAL = 50; }
 
 		tickCount = 0;
-		lastTimeProfile = now;
+		lastTimeProfile = millis();
 	}
 }
 
@@ -160,13 +174,16 @@ void Monitor::sendReport(GPIO* io, Program* program)
 		{
 		case 1: { sendPinValues(io); } break;
 		case 2: { sendGlobalValues(program); } break;
-		case 3: { sendRunningTasks(program); } break;
-		case 4: { sendFreeRAM(); } break;
+		case 3: 
+			{ 
+				sendRunningTasks(program);
+				sendFreeRAM();
+			} break;
 		}
 				
-		lastTimeReport = now;
+		lastTimeReport = millis();
 		reportingStep++;
-		if (reportingStep > 4) { reportingStep = 1; }
+		if (reportingStep > 3) { reportingStep = 1; }
 	}
 }
 

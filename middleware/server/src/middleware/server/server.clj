@@ -126,7 +126,7 @@
                     :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                             (:name pin)))
                                        (-> state :pins :data vals))}
-             :globals {:timestamp (-> state :pins :timestamp)
+             :globals {:timestamp (-> state :globals :timestamp)
                        :available (mapv (fn [{global-name :name}]
                                           {:name global-name
                                            :reporting (contains? (-> state :reporting :globals)
