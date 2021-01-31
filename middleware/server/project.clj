@@ -15,7 +15,9 @@
                  [instaparse "1.4.10"]]
   :main ^:skip-aot middleware.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}
+  :profiles {:uberjar {:aot :all
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"
+                                  "-Dclojure.compiler.elide-meta=[:doc :file :line :added]"]}
 
              :test [:project/test :user/test]
              :dev [:project/dev :user/dev]
