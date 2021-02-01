@@ -24,11 +24,31 @@ if (!version) {
   return;
 }
 
-removeDir(releasesFolder)
-  .then(createJRE)
-  .then(createServerJAR)
-  .then(webRelease)
-  .then(desktopRelease);
+// HACK(Richo): Special build for the Orange Pi Zero
+const opi = process.argv[3] == "opi";
+
+if (opi) {
+  removeDir(releasesFolder)
+    .then(createServerJAR)
+    .then(opiRelease);
+} else {
+  removeDir(releasesFolder)
+    .then(createJRE)
+    .then(createServerJAR)
+    .then(webRelease)
+    .then(desktopRelease);
+}
+
+function opiRelease() {
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-OPI";
+  console.log("\nBuilding " + appName + "-OPI");
+  return createOutFolder(outFolder)
+    .then(() => copyGUI(outFolder))
+    .then(() => copyUziLibraries(outFolder))
+    .then(() => copyServerJAR(outFolder))
+    .then(() => createStartScripts(outFolder, false))
+    .then(() => createZip(outFolder));
+}
 
 function webRelease() {
   let outFolder = releasesFolder + "/" + appName + "." + version + "-web-" + platform;
@@ -152,18 +172,31 @@ function copyServerJAR(path) {
 
 function createStartScripts(path, openBrowser) {
   console.log("Creating start scripts");
-  let jre_path = "middleware/jre/bin/";
-  if (platform == "win32") {
-    jre_path = jre_path.replace(/\//g, "\\");
-  }
-  let cmd = jre_path + "java -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
-  if (openBrowser) { cmd += " -o"; }
-  if (platform == "win32") {
-    return fs.writeFile(path + "/start.bat", cmd);
+  let cmd = "java -showversion -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
+  if (opi) {
+    let zulu_path = "../zulu13/bin/";
+    return Promise.all([
+      fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
+        return fs.chmod(path + "/start.sh", 0o777);
+      }),
+      fs.writeFile(path + "/startzulu.sh", "#!/bin/bash" + "\n" + zulu_path + cmd).then(() => {
+        return fs.chmod(path + "/startzulu.sh", 0o777);
+      })
+    ]);
   } else {
-    return fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
-      return fs.chmod(path + "/start.sh", 0o777);
-    })
+    let jre_path = "middleware/jre/bin/";
+    if (platform == "win32") {
+      jre_path = jre_path.replace(/\//g, "\\");
+    }
+    cmd = jre_path + cmd;
+    if (openBrowser) { cmd += " -o"; }
+    if (platform == "win32") {
+      return fs.writeFile(path + "/start.bat", cmd);
+    } else {
+      return fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
+        return fs.chmod(path + "/start.sh", 0o777);
+      })
+    }
   }
 }
 
