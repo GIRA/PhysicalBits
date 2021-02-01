@@ -202,6 +202,12 @@
 (defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
 (defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
 
+(defn set-report-interval [interval]
+  (send [MSG_OUT_SET_REPORT_INTERVAL
+         (bit-shift-right (bit-and interval 16rFF00)
+                          8)
+         (bit-and interval 16rFF)]))
+
 (defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
 (defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
 
