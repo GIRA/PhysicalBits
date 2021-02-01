@@ -3,7 +3,7 @@
   :url "https://gira.github.io/PhysicalBits/"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/tools.logging "1.1.0"]
                  [ch.qos.logback/logback-classic "1.1.3"]
@@ -15,7 +15,9 @@
                  [instaparse "1.4.10"]]
   :main ^:skip-aot middleware.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}
+  :profiles {:uberjar {:aot :all
+                       :jvm-opts ["-Dclojure.compiler.direct-linking=true"
+                                  "-Dclojure.compiler.elide-meta=[:doc :file :line :added]"]}
 
              :test [:project/test :user/test]
              :dev [:project/dev :user/dev]

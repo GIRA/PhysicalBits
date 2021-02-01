@@ -6,6 +6,7 @@
             [middleware.parser.parser :as pp]
             [middleware.code-generator.code-generator :as cg]
             [program-rewriter :as prw]
+            [ast-rewriter :as ast-rw]
             [clojure.core.async :as a :refer [go-loop <! <!! timeout]]
             [clojure.tools.namespace.repl :as repl]
             [clojure.test :as ctest]
