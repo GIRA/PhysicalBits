@@ -41,11 +41,14 @@ private:
 	int8 keepAliveCounter = 0;
 	uint32 lastTimeKeepAlive = 0;
 
-	uint8 profiling = 0;
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
-	bool sent = false; // TODO(Richo)
+	bool sent : 1; // TODO(Richo)
+	bool profiling : 1;
+	bool fixedReportInterval : 1;
+	uint16 reportInterval : 13;
+
 
 	void connectionRequest();
 	void acceptConnection();
@@ -60,6 +63,7 @@ private:
 	void executeSaveProgram(Program** program, GPIO* io);
 	void executeKeepAlive();
 	void executeProfile();
+	void executeSetReportInterval();
 	void executeSetGlobal(Program* program);
 	void executeSetGlobalReport(Program* program);
 	void executeDebugContinue(VM* vm);
