@@ -15,7 +15,7 @@
 #define MSG_IN_SAVE_PROGRAM                                 6
 #define MSG_IN_KEEP_ALIVE                                   7
 #define MSG_IN_PROFILE                                      8
-// TODO(Richo): Available spot here!
+#define MSG_IN_SET_REPORT_INTERVAL							9
 #define MSG_IN_SET_GLOBAL                                  10
 #define MSG_IN_SET_GLOBAL_REPORT                           11
 #define MSG_IN_DEBUG_CONTINUE							   12
@@ -35,11 +35,9 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-//#define REPORT_INTERVAL                                    25
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
 
-uint8 REPORT_INTERVAL = 25;
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -110,7 +108,10 @@ void Monitor::acceptConnection()
 	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
 	if (in != expected) return;
 
-	state = CONNECTED; 
+	fixedReportInterval = false;
+	reportInterval = 25;
+	state = CONNECTED;
+
 	executeKeepAlive();
 	serial->write(expected);
 }
@@ -150,14 +151,17 @@ void Monitor::sendProfile()
 			serial->write(val1);
 			serial->write(val2);
 
-			serial->write(REPORT_INTERVAL);
+			serial->write(reportInterval);
 		}
 
-		if (tps < 2000) { REPORT_INTERVAL += 1; }
-		else { REPORT_INTERVAL -= 1; }
+		if (!fixedReportInterval)
+		{
+			if (tps < 2000) { reportInterval += 1; }
+			else { reportInterval -= 1; }
 
-		if (REPORT_INTERVAL < 5) { REPORT_INTERVAL = 5; }
-		else if (REPORT_INTERVAL > 50) { REPORT_INTERVAL = 50; }
+			if (reportInterval < 5) { reportInterval = 5; }
+			else if (reportInterval > 50) { reportInterval = 50; }
+		}
 
 		tickCount = 0;
 		lastTimeProfile = millis();
@@ -168,7 +172,7 @@ void Monitor::sendReport(GPIO* io, Program* program)
 {
 	if (reportingStep == 0) return;
 	uint32 now = millis();
-	if (now - lastTimeReport > REPORT_INTERVAL)
+	if (now - lastTimeReport > reportInterval)
 	{
 		switch (reportingStep)
 		{
@@ -421,6 +425,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_PROFILE:
 		executeProfile();
 		break;
+	case MSG_IN_SET_REPORT_INTERVAL:
+		executeSetReportInterval();
+		break;
 	case MSG_IN_SET_GLOBAL:
 		executeSetGlobal(*program);
 		break;
@@ -555,6 +562,24 @@ void Monitor::executeProfile()
 
 	tickCount = 0;
 	lastTimeProfile = millis();
+}
+
+void Monitor::executeSetReportInterval()
+{
+	bool timeout;
+	uint16 interval = stream.nextLong(2, timeout);
+	if (timeout) return;
+
+	if (interval == 0) 
+	{
+		fixedReportInterval = false;
+		reportInterval = 25;
+	}
+	else 
+	{
+		fixedReportInterval = true;
+		reportInterval = interval;
+	}
 }
 
 void Monitor::executeSetGlobal(Program* program)
