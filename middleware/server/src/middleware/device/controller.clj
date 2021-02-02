@@ -13,7 +13,8 @@
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
-            [middleware.output.logger :as logger])
+            [middleware.output.logger :as logger]
+            [middleware.config :as cfg])
   (:import (java.net Socket)))
 
 #_(
@@ -463,6 +464,8 @@
                     :port-name port-name
                     :connected? true
                     :board board)
+             (set-report-interval (get (cfg/read-config)
+                                       :report-interval 0))
              (keep-alive port)
              (process-input in)
              (start-reporting)
