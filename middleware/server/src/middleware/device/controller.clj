@@ -274,6 +274,31 @@
                           :value value}))))
      (swap! state assoc :pins @snapshot))))
 
+(do ; HACK(Richo): Implemented very basic ring-buffer to calculate a moving avg
+
+  (def ^:private ring-buffer (atom {:array (apply vector-of :double (repeat 10 0))
+                                    :index 0}))
+
+  (defn- push* [ring-buffer new]
+    (swap! ring-buffer
+           (fn [{:keys [array index] :as rb}]
+             (-> rb
+                 (update :array #(assoc % (rem index (count array)) new))
+                 (update :index #(rem (inc %) (count array)))))))
+
+  (defn- avg* [ring-buffer]
+    (let [array (:array @ring-buffer)
+          len (count array)]
+      (if (zero? len) 0 (/ (reduce + array) len))))
+
+  (comment
+    (reduce max [ 1 2 5 3 0])
+   (double (avg* ring-buffer))
+   (push* ring-buffer 20.5)
+   (time (dotimes [_ 10000]
+                  (push* ring-buffer (rand-int 10))))
+   ,))
+
 (defn- process-global-value [in]
   (go
    (let [timestamp (<! (read-timestamp in))
@@ -303,6 +328,7 @@
            delta-uzi (- uzi-time (get previous :uzi-time 0))
            delta-clj (- clj-time (get previous :clj-time 0))
            delta (- delta-uzi delta-clj)]
+       (push* ring-buffer delta)
        (swap! snapshot assoc
               :uzi-time uzi-time
               :clj-time clj-time)
@@ -310,7 +336,10 @@
               {:name "__delta"
                :number count
                :value delta})
-       #_(logger/info "Delta: %1" delta))
+       (swap! snapshot assoc-in [:data "__delta_smooth"]
+              {:name "__delta_smooth"
+               :number (inc count)
+               :value (avg* ring-buffer)}))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]

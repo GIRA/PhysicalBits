@@ -134,8 +134,10 @@
                                                                        global-name)})
                                               (filter :name
                                                       (-> state :program :running :compiled :globals)))
-                                        {:name "__delta" :reporting true})
+                                        {:name "__delta" :reporting true}
+                                        {:name "__delta_smooth" :reporting true})
                        :elements (filterv (fn [global] (or (= "__delta" (:name global))
+                                                           (= "__delta_smooth" (:name global))
                                                            (contains? (-> state :reporting :globals)
                                                                       (:name global))))
                                           (-> state :globals :data vals))}
