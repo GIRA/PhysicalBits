@@ -14,7 +14,8 @@
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]
-            [middleware.config :as cfg])
+            [middleware.config :as cfg]
+            [middleware.device.utils.ring-buffer :as rb])
   (:import (java.net Socket)))
 
 #_(
@@ -25,6 +26,7 @@
 (-> @state :profiler :ticks (* 10))
 
 (-> @state :reporting)
+(rb/avg (-> @state :reporting :deltas))
 (millis)
 
 )
@@ -204,13 +206,12 @@
 (defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
 (defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
 
-(def report-interval (atom nil))
-
 (defn set-report-interval [interval]
   (let [interval (int (min interval 65536.0))]
-    (when-not (= @report-interval interval)
-      (reset! report-interval interval)
-      (log/info "Setting report interval:" interval)
+    (when-not (= (-> @state :reporting :interval)
+                 interval)
+      (swap! state assoc-in [:reporting :interval] interval)
+      (logger/warning "Setting report interval: %1" interval)
       (send [MSG_OUT_SET_REPORT_INTERVAL
              (bit-shift-right (bit-and interval 16rFF00)
                               8)
@@ -281,44 +282,8 @@
                           :value value}))))
      (swap! state assoc :pins @snapshot))))
 
-(do ; HACK(Richo): Implemented very basic ring-buffer to calculate a moving avg
-
-  (def ^:private ring-buffer (atom {:array (apply vector-of :double (repeat 50 0))
-                                    :index 0
-                                    :full? false}))
-
-  (defn init-ring-buffer! []
-    (reset! ring-buffer {:array (apply vector-of :double (repeat 50 0))
-                        :index 0
-                        :full? false}))
-
-  (defn- push* [ring-buffer new]
-    (swap! ring-buffer
-           (fn [{:keys [array index] :as rb}]
-             (-> rb
-                 (update :array #(assoc % (rem index (count array)) new))
-                 (update :index #(rem (inc %) (count array)))
-                 (update :full? #(or % (>= (inc index) (count array))))))))
-
-  (defn- avg* [ring-buffer]
-    (let [{:keys [array full?]} @ring-buffer
-          len (count array)]
-      (if (or (zero? len)
-              (not full?))
-        0
-        (/ (reduce + array) len))))
-
-  (comment
-    (reduce max [ 1 2 5 3 0])
-   (double (avg* ring-buffer))
-    (:full? @ring-buffer)
-   (push* ring-buffer 20.5)
-   (time (dotimes [_ 10000]
-                  (push* ring-buffer (rand-int 10))))
-   ,))
-
 (defn- process-global-value [in]
-  (go
+  (go ;<! (timeout 50))
    (let [timestamp (<! (read-timestamp in))
          count (<? in)
          globals (vec (program/all-globals (-> @state :program :running :compiled)))
@@ -345,23 +310,49 @@
            previous (-> @state :globals)
            delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
            delta-clj (- clj-time (get previous :clj-time clj-time))
-           delta (- delta-uzi delta-clj)]
-       (push* ring-buffer delta)
+           delta (- delta-uzi delta-clj)
+           ring-buffer (-> @state :reporting :deltas)
+           add-pseudo-var! (fn [name value]
+                            (swap! snapshot assoc-in [:data name]
+                                   {:name name, :value value}))]
+       (rb/push! ring-buffer delta)
        (swap! snapshot assoc
               :uzi-time uzi-time
               :clj-time clj-time)
-       (swap! snapshot assoc-in [:data "__delta"]
-              {:name "__delta"
-               :number count
-               :value delta})
-       (let [delta-smooth (avg* ring-buffer)]
-         (swap! snapshot assoc-in [:data "__delta_smooth"]
-                {:name "__delta_smooth"
-                 :number (inc count)
-                 :value delta-smooth})
-         (when (> (Math/abs delta-smooth) 5)
-           (log/info "Delta smooth:" (Math/abs delta-smooth))
-           (set-report-interval (min 100 (Math/abs delta-clj))))))
+       (add-pseudo-var! "__delta" delta)
+       (add-pseudo-var! "__time-clj" clj-time)
+       (add-pseudo-var! "__time-uzi" uzi-time)
+       (add-pseudo-var! "__time-diff" (- uzi-time clj-time))
+       (add-pseudo-var! "__delta-uzi" delta-uzi)
+       (add-pseudo-var! "__delta-clj" delta-clj)
+       (let [delta-smooth (rb/avg ring-buffer)]
+         (add-pseudo-var! "__delta_smooth" delta-smooth)
+         ; If the delta-smooth goes below the min we decrement the report-interval
+         (when (and (< (Math/abs delta-smooth)
+                       (get (cfg/read-config) :delta-threshold-min 1))
+                    (> (-> @state :reporting :interval)
+                       (get (cfg/read-config) :report-interval 0)))
+           (logger/warning "DOWN delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
+                           (Math/abs delta-smooth)
+                           (Math/abs delta-clj)
+                           (Math/abs delta-uzi)
+                           (Math/abs delta))
+           (set-report-interval (max (get (cfg/read-config) :report-interval 0)
+                                     (- (-> @state :reporting :interval)
+                                        (get (cfg/read-config) :increment-report-interval 1)))))
+         ; If the delta-smooth goes above the max we increment the report-interval
+         (when (and (> (Math/abs delta-smooth)
+                       (get (cfg/read-config) :delta-threshold-max 5))
+                    (< (-> @state :reporting :interval)
+                       (get (cfg/read-config) :max-report-interval 100)))
+           (logger/warning "UP   delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
+                           (Math/abs delta-smooth)
+                           (Math/abs delta-clj)
+                           (Math/abs delta-uzi)
+                           (Math/abs delta))
+           (set-report-interval (min (get (cfg/read-config) :max-report-interval 100)
+                                     (+ (-> @state :reporting :interval)
+                                        (get (cfg/read-config) :increment-report-interval 1)))))))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
@@ -462,7 +453,8 @@
     (when (connected?)
       (let [reporting (:reporting @state)]
         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
-        (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+        ; HACK(Richo): Temporarily disabling global cleanup
+        #_(swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
       (<! (timeout 1000))
       (recur))))
 
@@ -514,8 +506,11 @@
                     :port port
                     :port-name port-name
                     :connected? true
-                    :board board)
-             (init-ring-buffer!)
+                    :board board
+                    :reporting {:deltas (rb/make-ring-buffer (get (cfg/read-config)
+                                                                  :ring-buffer-size 50))
+                                :pins #{}
+                                :globals #{}})
              (set-report-interval (get (cfg/read-config)
                                        :report-interval 0))
              (keep-alive port)

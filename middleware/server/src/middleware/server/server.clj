@@ -126,18 +126,18 @@
                     :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                             (:name pin)))
                                        (-> state :pins :data vals))}
-             ; HACK(Richo): I changed the code to force the inclusion of the "__delta" var
+             ; HACK(Richo): I changed the code to force the inclusion of the pseudo vars (beginning with "__")
              :globals {:timestamp (-> state :globals :timestamp)
-                       :available (conj (mapv (fn [{global-name :name}]
+                       :available (into (mapv (fn [{global-name :name}]
                                                 {:name global-name
                                                  :reporting (contains? (-> state :reporting :globals)
                                                                        global-name)})
                                               (filter :name
                                                       (-> state :program :running :compiled :globals)))
-                                        {:name "__delta" :reporting true}
-                                        {:name "__delta_smooth" :reporting true})
-                       :elements (filterv (fn [global] (or (= "__delta" (:name global))
-                                                           (= "__delta_smooth" (:name global))
+                                        (mapv (fn [{:keys [name]}] {:name name :reporting true})
+                                              (filter (fn [global] (str/starts-with? (:name global) "__"))
+                                                      (-> state :globals :data vals))))
+                       :elements (filterv (fn [global] (or (str/starts-with? (:name global) "__")
                                                            (contains? (-> state :reporting :globals)
                                                                       (:name global))))
                                           (-> state :globals :data vals))}
