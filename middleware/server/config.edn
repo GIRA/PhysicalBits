@@ -1,6 +1,6 @@
-{:report-interval 0
- :delta-threshold-max 5
- :delta-threshold-min 1
+{:min-report-interval 0
  :max-report-interval 100
+ :delta-threshold-min 1
+ :delta-threshold-max 5
  :increment-report-interval 1
  :ring-buffer-size 50}

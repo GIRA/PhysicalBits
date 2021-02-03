@@ -284,7 +284,7 @@
      (swap! state assoc :pins @snapshot))))
 
 (defn- process-global-value [in]
-  (go ;<! (timeout 50))
+  (go ;(<! (timeout 50)) ; Just for testing...
    (let [timestamp (<! (read-timestamp in))
          count (<? in)
          globals (vec (program/all-globals (-> @state :program :running :compiled)))
@@ -332,7 +332,7 @@
          (when (and (< (Math/abs delta-smooth)
                        (cfg/get-config :delta-threshold-min 1))
                     (> (-> @state :reporting :interval)
-                       (cfg/get-config :report-interval 0)))
+                       (cfg/get-config :report-interval-min 0)))
            (logger/warning "DOWN delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
                            (Math/abs delta-smooth)
                            (Math/abs delta-clj)
@@ -340,20 +340,20 @@
                            (Math/abs delta))
            (set-report-interval (max (cfg/get-config :report-interval 0)
                                      (- (-> @state :reporting :interval)
-                                        (cfg/get-config :increment-report-interval 1)))))
+                                        (cfg/get-config :report-interval-inc 1)))))
          ; If the delta-smooth goes above the max we increment the report-interval
          (when (and (> (Math/abs delta-smooth)
                        (cfg/get-config :delta-threshold-max 5))
                     (< (-> @state :reporting :interval)
-                       (cfg/get-config :max-report-interval 100)))
+                       (cfg/get-config :report-interval-max 100)))
            (logger/warning "UP   delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
                            (Math/abs delta-smooth)
                            (Math/abs delta-clj)
                            (Math/abs delta-uzi)
                            (Math/abs delta))
-           (set-report-interval (min (cfg/get-config :max-report-interval 100)
+           (set-report-interval (min (cfg/get-config :report-interval-max 100)
                                      (+ (-> @state :reporting :interval)
-                                        (cfg/get-config :increment-report-interval 1)))))))
+                                        (cfg/get-config :report-interval-inc 1)))))))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
@@ -508,7 +508,7 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :reporting {:timing-diffs (rb/make-ring-buffer (cfg/get-config :ring-buffer-size 50))
+                    :reporting {:timing-diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 50))
                                 :pins #{}
                                 :globals #{}})
              (set-report-interval (cfg/get-config :report-interval 0))

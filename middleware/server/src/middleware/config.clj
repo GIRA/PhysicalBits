@@ -3,8 +3,8 @@
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]))
 
-(def PATH "config.edn")
-(def cache (atom {}))
+(def ^:private PATH "config.edn")
+(def ^:private cache (atom {}))
 
 (defn- read-file [file]
   (try
@@ -40,5 +40,6 @@
  (get @cache :last-modified)
  (slurp "RICHO")
  (get (read-config "RICHO2") :report-interval 45)
+ (get-in (read-config) [:reporting-thresholds 0] 10)
 @cache
  ,)
