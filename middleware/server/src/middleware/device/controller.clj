@@ -18,6 +18,7 @@
   (:import (java.net Socket)))
 
 #_(
+
 (start-profiling)
 (stop-profiling)
 
@@ -203,11 +204,17 @@
 (defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
 (defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
 
+(def report-interval (atom nil))
+
 (defn set-report-interval [interval]
-  (send [MSG_OUT_SET_REPORT_INTERVAL
-         (bit-shift-right (bit-and interval 16rFF00)
-                          8)
-         (bit-and interval 16rFF)]))
+  (let [interval (int (min interval 65536.0))]
+    (when-not (= @report-interval interval)
+      (reset! report-interval interval)
+      (log/info "Setting report interval:" interval)
+      (send [MSG_OUT_SET_REPORT_INTERVAL
+             (bit-shift-right (bit-and interval 16rFF00)
+                              8)
+             (bit-and interval 16rFF)]))))
 
 (defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
 (defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
@@ -276,24 +283,35 @@
 
 (do ; HACK(Richo): Implemented very basic ring-buffer to calculate a moving avg
 
-  (def ^:private ring-buffer (atom {:array (apply vector-of :double (repeat 10 0))
-                                    :index 0}))
+  (def ^:private ring-buffer (atom {:array (apply vector-of :double (repeat 50 0))
+                                    :index 0
+                                    :full? false}))
+
+  (defn init-ring-buffer! []
+    (reset! ring-buffer {:array (apply vector-of :double (repeat 50 0))
+                        :index 0
+                        :full? false}))
 
   (defn- push* [ring-buffer new]
     (swap! ring-buffer
            (fn [{:keys [array index] :as rb}]
              (-> rb
                  (update :array #(assoc % (rem index (count array)) new))
-                 (update :index #(rem (inc %) (count array)))))))
+                 (update :index #(rem (inc %) (count array)))
+                 (update :full? #(or % (>= (inc index) (count array))))))))
 
   (defn- avg* [ring-buffer]
-    (let [array (:array @ring-buffer)
+    (let [{:keys [array full?]} @ring-buffer
           len (count array)]
-      (if (zero? len) 0 (/ (reduce + array) len))))
+      (if (or (zero? len)
+              (not full?))
+        0
+        (/ (reduce + array) len))))
 
   (comment
     (reduce max [ 1 2 5 3 0])
    (double (avg* ring-buffer))
+    (:full? @ring-buffer)
    (push* ring-buffer 20.5)
    (time (dotimes [_ 10000]
                   (push* ring-buffer (rand-int 10))))
@@ -325,8 +343,8 @@
      (let [uzi-time timestamp
            clj-time now
            previous (-> @state :globals)
-           delta-uzi (- uzi-time (get previous :uzi-time 0))
-           delta-clj (- clj-time (get previous :clj-time 0))
+           delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
+           delta-clj (- clj-time (get previous :clj-time clj-time))
            delta (- delta-uzi delta-clj)]
        (push* ring-buffer delta)
        (swap! snapshot assoc
@@ -336,10 +354,14 @@
               {:name "__delta"
                :number count
                :value delta})
-       (swap! snapshot assoc-in [:data "__delta_smooth"]
-              {:name "__delta_smooth"
-               :number (inc count)
-               :value (avg* ring-buffer)}))
+       (let [delta-smooth (avg* ring-buffer)]
+         (swap! snapshot assoc-in [:data "__delta_smooth"]
+                {:name "__delta_smooth"
+                 :number (inc count)
+                 :value delta-smooth})
+         (when (> (Math/abs delta-smooth) 5)
+           (log/info "Delta smooth:" (Math/abs delta-smooth))
+           (set-report-interval (min 100 (Math/abs delta-clj))))))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
@@ -493,6 +515,7 @@
                     :port-name port-name
                     :connected? true
                     :board board)
+             (init-ring-buffer!)
              (set-report-interval (get (cfg/read-config)
                                        :report-interval 0))
              (keep-alive port)
