@@ -1,6 +1,7 @@
 (ns middleware.device.utils.ring-buffer)
 
 (defn- make-array* [size]
+  ; TODO(Richo): This would probably be faster using a java array, but for now it works
   (apply vector-of :double (repeat size 0)))
 
 (defn make-ring-buffer [size]
@@ -11,8 +12,7 @@
          (fn [{:keys [array index] :as rb}]
            (-> rb
                (update :array #(assoc % (rem index (count array)) new))
-               (update :index #(rem (inc %) (count array)))
-               #_(update :full? #(or % (>= (inc index) (count array))))))))
+               (update :index #(rem (inc %) (count array)))))))
 
 (defn avg [ring-buffer]
   (let [{:keys [array full?]} @ring-buffer

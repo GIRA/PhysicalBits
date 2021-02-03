@@ -24,9 +24,10 @@
 (stop-profiling)
 
 (-> @state :profiler :ticks (* 10))
-
+(-> @state :globals)
+(-> @state :pins)
 (-> @state :reporting)
-(rb/avg (-> @state :reporting :deltas))
+(rb/avg (-> @state :reporting :timing-diffs))
 (millis)
 
 )
@@ -311,11 +312,11 @@
            delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
            delta-clj (- clj-time (get previous :clj-time clj-time))
            delta (- delta-uzi delta-clj)
-           ring-buffer (-> @state :reporting :deltas)
+           timing-diffs (-> @state :reporting :timing-diffs)
            add-pseudo-var! (fn [name value]
                             (swap! snapshot assoc-in [:data name]
                                    {:name name, :value value}))]
-       (rb/push! ring-buffer delta)
+       (rb/push! timing-diffs delta)
        (swap! snapshot assoc
               :uzi-time uzi-time
               :clj-time clj-time)
@@ -325,34 +326,34 @@
        (add-pseudo-var! "__time-diff" (- uzi-time clj-time))
        (add-pseudo-var! "__delta-uzi" delta-uzi)
        (add-pseudo-var! "__delta-clj" delta-clj)
-       (let [delta-smooth (rb/avg ring-buffer)]
+       (let [delta-smooth (rb/avg timing-diffs)]
          (add-pseudo-var! "__delta_smooth" delta-smooth)
          ; If the delta-smooth goes below the min we decrement the report-interval
          (when (and (< (Math/abs delta-smooth)
-                       (get (cfg/read-config) :delta-threshold-min 1))
+                       (cfg/get-config :delta-threshold-min 1))
                     (> (-> @state :reporting :interval)
-                       (get (cfg/read-config) :report-interval 0)))
+                       (cfg/get-config :report-interval 0)))
            (logger/warning "DOWN delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
                            (Math/abs delta-smooth)
                            (Math/abs delta-clj)
                            (Math/abs delta-uzi)
                            (Math/abs delta))
-           (set-report-interval (max (get (cfg/read-config) :report-interval 0)
+           (set-report-interval (max (cfg/get-config :report-interval 0)
                                      (- (-> @state :reporting :interval)
-                                        (get (cfg/read-config) :increment-report-interval 1)))))
+                                        (cfg/get-config :increment-report-interval 1)))))
          ; If the delta-smooth goes above the max we increment the report-interval
          (when (and (> (Math/abs delta-smooth)
-                       (get (cfg/read-config) :delta-threshold-max 5))
+                       (cfg/get-config :delta-threshold-max 5))
                     (< (-> @state :reporting :interval)
-                       (get (cfg/read-config) :max-report-interval 100)))
+                       (cfg/get-config :max-report-interval 100)))
            (logger/warning "UP   delta-smooth: %1, delta-clj: %2, delta-uzi: %3, delta: %4"
                            (Math/abs delta-smooth)
                            (Math/abs delta-clj)
                            (Math/abs delta-uzi)
                            (Math/abs delta))
-           (set-report-interval (min (get (cfg/read-config) :max-report-interval 100)
+           (set-report-interval (min (cfg/get-config :max-report-interval 100)
                                      (+ (-> @state :reporting :interval)
-                                        (get (cfg/read-config) :increment-report-interval 1)))))))
+                                        (cfg/get-config :increment-report-interval 1)))))))
      (swap! state assoc :globals @snapshot))))
 
 (defn- process-free-ram [in]
@@ -507,12 +508,10 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :reporting {:deltas (rb/make-ring-buffer (get (cfg/read-config)
-                                                                  :ring-buffer-size 50))
+                    :reporting {:timing-diffs (rb/make-ring-buffer (cfg/get-config :ring-buffer-size 50))
                                 :pins #{}
                                 :globals #{}})
-             (set-report-interval (get (cfg/read-config)
-                                       :report-interval 0))
+             (set-report-interval (cfg/get-config :report-interval 0))
              (keep-alive port)
              (process-input in)
              (start-reporting)

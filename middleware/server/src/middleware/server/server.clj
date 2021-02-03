@@ -173,6 +173,11 @@
 (defn stop-update-loop []
   (reset! update-loop? false))
 
+(comment
+ (stop-update-loop)
+ (start-update-loop)
+ ,)
+
 (defn uzi-state-handler [socket req]
   (let [in-chan (a/chan)
         topic :update]

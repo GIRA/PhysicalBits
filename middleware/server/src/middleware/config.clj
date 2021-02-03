@@ -31,6 +31,9 @@
   ([] (read-config PATH))
   ([path] (read-config* (io/file path))))
 
+(defn get-config [key default-value]
+  (get (read-config) key default-value))
+
 (comment
  (.lastModified (io/file "RICHO"))
  (read-config)
