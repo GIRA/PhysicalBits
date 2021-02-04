@@ -48,6 +48,12 @@ private:
 	bool profiling : 1;
 	bool fixedReportInterval : 1;
 	uint16 reportInterval : 13;
+	// TODO(Richo): Add a separate middlewareReportInterval variable that sets the min value for 
+	// the reportInterval if fixedReportInterval is set. This way, if the middleware is slow it
+	// can specify a report interval, but if this value is still too much for the VM and performance
+	// degrades it can still increase it to reach its goal. So actually, fixedReportInterval 
+	// wouldn't even be necessary. The vm is free to inc/dec the reportInterval but without going
+	// below the limit set by the middleware. If the middleware is fast, then this min would be 0.
 
 
 	void connectionRequest();
