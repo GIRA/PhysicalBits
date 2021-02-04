@@ -573,7 +573,6 @@ void Monitor::executeSetReportInterval()
 	if (interval == 0) 
 	{
 		fixedReportInterval = false;
-		reportInterval = 25;
 	}
 	else 
 	{
