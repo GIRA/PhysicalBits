@@ -28,7 +28,7 @@
 (-> @state :globals)
 (-> @state :pins)
 (-> @state :reporting)
-(rb/avg (-> @state :reporting :timing-diffs))
+(rb/avg (-> @state :timing :diffs))
 (millis)
 (< (get-in @state [:pseudo-vars :data "juan" :ts])
    (- (-> @state :pseudo-vars :timestamp) 1000))
@@ -36,6 +36,12 @@
 (millis)
 (add-pseudo-var! "richo" 42)
 
+(-> @state :timing)
+(swap! state update :timing
+       #(assoc %
+               :arduino 1
+               :middleware 2))
+(or (get (get @state :timing) :arduino2) 1)
 )
 
 (defn millis [] (System/currentTimeMillis))
@@ -81,14 +87,14 @@
                     :scripts []
                     :profiler nil
                     :debugger nil
+                    :timing {:arduino nil, :middleware nil, :diffs nil}
                     :memory {:arduino nil, :uzi nil}
                     :program {:current nil, :running nil}
                     :available-ports []})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn- add-pseudo-var! [name value]
-  ; TODO(Richo): We can't use millis, we need the VM time (otherwise, this values can't be plotted alongside actual globals)
-  (let [now (millis)]
+  (let [now (or (-> @state :timing :arduino) 0)]
     (swap! state
            #(-> %
                 (assoc-in [:pseudo-vars :timestamp] now)
@@ -282,6 +288,47 @@
 (defn- read-uint16 [in]
   (go (bytes->uint16 (<! (read-vec? 2 in)))))
 
+(defn- process-timestamp [timestamp]
+  "Calculating the time since the last snapshot (both in the vm and the middleware)
+  and then calculating the difference between these intervals and adding it as
+  pseudo variable so that I can observe it in the inspector. Its value should always
+  be close to 0. If not, we try increasing the report interval."
+  (let [arduino-time timestamp
+        middleware-time (millis)
+        timing (-> @state :timing)
+        delta-arduino (- arduino-time
+                         (or (get timing :arduino) arduino-time))
+        delta-middleware (- middleware-time
+                            (or (get timing :middleware) middleware-time))
+        delta (- delta-arduino delta-middleware)
+        timing-diffs (:diffs timing)]
+    (rb/push! timing-diffs delta)
+    (swap! state update :timing
+           #(assoc %
+                   :arduino arduino-time
+                   :middleware middleware-time))
+    (add-pseudo-var! "__delta" delta)
+
+    ; TODO(Richo): Move to process-profile
+    (if-let [vm-ticks (-> @state :profiler :ticks)]
+      (add-pseudo-var! "__tps" (* 10 vm-ticks)))
+    (if-let [vm-report-interval (-> @state :profiler :report-interval)]
+      (add-pseudo-var! "__vm-report-interval" vm-report-interval))
+
+    (let [report-interval (-> @state :reporting :interval)
+          report-interval-inc (cfg/get-config :report-interval-inc 1)
+          delta-smooth (Math/abs (rb/avg timing-diffs))
+          delta-threshold-min (cfg/get-config :delta-threshold-min 1)
+          delta-threshold-max (cfg/get-config :delta-threshold-max 5)]
+      (add-pseudo-var! "__delta_smooth" delta-smooth)
+      (add-pseudo-var! "__report_interval" report-interval)
+      ; If the delta-smooth goes below the min we decrement the report-interval
+      (when (< delta-smooth delta-threshold-min)
+        (set-report-interval (- report-interval report-interval-inc)))
+      ; If the delta-smooth goes above the max we increment the report-interval
+      (when (> delta-smooth delta-threshold-max)
+        (set-report-interval (+ report-interval report-interval-inc))))))
+
 (defn- process-pin-value [in]
   (go
    (let [timestamp (<! (read-timestamp in))
@@ -300,60 +347,30 @@
                          {:name pin-name
                           :number pin-number
                           :value value}))))
-     (swap! state assoc :pins @snapshot))))
+     (swap! state assoc :pins @snapshot)
+     (process-timestamp timestamp))))
 
 (defn- process-global-value [in]
   (go ;(<! (timeout 100)) ; Just for testing...
-   (let [timestamp (<! (read-timestamp in))
-         count (<? in)
-         globals (vec (program/all-globals (-> @state :program :running :compiled)))
-         snapshot (atom {:timestamp timestamp, :data {}})]
-     (dotimes [_ count]
-              (let [number (<? in)
-                    n1 (<? in)
-                    n2 (<? in)
-                    n3 (<? in)
-                    n4 (<? in)
-                    float-value (bytes->float [n1 n2 n3 n4])]
-                (when-let [global-name (:name (nth globals number {}))]
-                  (swap! snapshot assoc-in [:data global-name]
-                         {:name global-name
-                          :number number
-                          :value float-value
-                          :raw-bytes [n1 n2 n3 n4]}))))
-     ; HACK(Richo): Calculating the time since the last snapshot (both in the vm and the middleware)
-     ; and then calculating the difference between these intervals and adding it as global variable
-     ; so that I can observe it in the inspector. Its value should always be close to 0
-     (let [uzi-time timestamp
-           clj-time (millis)
-           previous (-> @state :globals)
-           delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
-           delta-clj (- clj-time (get previous :clj-time clj-time))
-           delta (- delta-uzi delta-clj)
-           timing-diffs (-> @state :reporting :timing-diffs)]
-       (rb/push! timing-diffs delta)
-       (swap! snapshot assoc
-              :uzi-time uzi-time
-              :clj-time clj-time)
-       (add-pseudo-var! "__delta" delta)
-       (if-let [vm-ticks (-> @state :profiler :ticks)]
-         (add-pseudo-var! "__tps" (* 10 vm-ticks)))
-       (if-let [vm-report-interval (-> @state :profiler :report-interval)]
-         (add-pseudo-var! "__vm-report-interval" vm-report-interval))
-       (let [report-interval (-> @state :reporting :interval)
-             report-interval-inc (cfg/get-config :report-interval-inc 1)
-             delta-smooth (Math/abs (rb/avg timing-diffs))
-             delta-threshold-min (cfg/get-config :delta-threshold-min 1)
-             delta-threshold-max (cfg/get-config :delta-threshold-max 5)]
-         (add-pseudo-var! "__delta_smooth" delta-smooth)
-         (add-pseudo-var! "__report_interval" report-interval)
-         ; If the delta-smooth goes below the min we decrement the report-interval
-         (when (< delta-smooth delta-threshold-min)
-           (set-report-interval (- report-interval report-interval-inc)))
-         ; If the delta-smooth goes above the max we increment the report-interval
-         (when (> delta-smooth delta-threshold-max)
-           (set-report-interval (+ report-interval report-interval-inc)))))
-     (swap! state assoc :globals @snapshot))))
+      (let [timestamp (<! (read-timestamp in))
+            count (<? in)
+            globals (vec (program/all-globals (-> @state :program :running :compiled)))
+            snapshot (atom {:timestamp timestamp, :data {}})]
+        (dotimes [_ count]
+                 (let [number (<? in)
+                       n1 (<? in)
+                       n2 (<? in)
+                       n3 (<? in)
+                       n4 (<? in)
+                       float-value (bytes->float [n1 n2 n3 n4])]
+                   (when-let [global-name (:name (nth globals number {}))]
+                     (swap! snapshot assoc-in [:data global-name]
+                            {:name global-name
+                             :number number
+                             :value float-value
+                             :raw-bytes [n1 n2 n3 n4]}))))
+        (swap! state assoc :globals @snapshot)
+        (process-timestamp timestamp))))
 
 (defn- process-free-ram [in]
   (go (let [arduino (<! (read-uint32 in))
@@ -522,8 +539,10 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :reporting {:timing-diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 50))
-                                :pins #{}
+                    :timing {:diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 50))
+                             :arduino nil
+                             :middleware nil}
+                    :reporting {:pins #{}
                                 :globals #{}})
              (set-report-interval (cfg/get-config :report-interval-min 0))
              (keep-alive port)

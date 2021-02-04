@@ -117,7 +117,7 @@
   (-> state
 
       ; NOTE(Richo): First we remove all the keys we don't need
-      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler :available-ports)
+      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler :available-ports :timing)
 
       ; NOTE(Richo): And then we add the missing keys
       (assoc :isConnected (:connected? state)
