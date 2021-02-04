@@ -132,21 +132,20 @@
                     :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                             (:name pin)))
                                        (-> state :pins :data vals))}
-             ; HACK(Richo): I changed the code to force the inclusion of the pseudo vars (beginning with "__")
              :globals {:timestamp (-> state :globals :timestamp)
-                       :available (into (mapv (fn [{global-name :name}]
-                                                {:name global-name
-                                                 :reporting (contains? (-> state :reporting :globals)
-                                                                       global-name)})
-                                              (filter :name
-                                                      (-> state :program :running :compiled :globals)))
-                                        (mapv (fn [{:keys [name]}] {:name name :reporting true})
-                                              (filter (fn [global] (str/starts-with? (:name global) "__"))
-                                                      (-> state :globals :data vals))))
-                       :elements (filterv (fn [global] (or (str/starts-with? (:name global) "__")
-                                                           (contains? (-> state :reporting :globals)
-                                                                      (:name global))))
+                       :available (mapv (fn [{global-name :name}]
+                                          {:name global-name
+                                           :reporting (contains? (-> state :reporting :globals)
+                                                                 global-name)})
+                                        (filter :name
+                                                (-> state :program :running :compiled :globals)))
+                       :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
+                                                                  (:name global)))
                                           (-> state :globals :data vals))}
+             :pseudo-vars {:timestamp (-> state :pseudo-vars :timestamp)
+                           :available (mapv (fn [[name _]] {:name name :reporting true})
+                                            (-> state :pseudo-vars :data))
+                           :elements (-> state :pseudo-vars :data vals)}
              :output output
              :program (let [program (-> state :program :current)]
                         (-> program

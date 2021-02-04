@@ -1485,6 +1485,7 @@ const fs = require('fs');
     updateGlobalsPanel();
     updateTasksPanel();
     updateMemoryPanel();
+    updatePseudoVarsPanel();
   }
 
   function updatePinsPanel() {
@@ -1494,6 +1495,16 @@ const fs = require('fs');
   function updateGlobalsPanel() {
     // TODO(Richo): Old variables no longer present in the program are kept in the panel!
     updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global");
+  }
+
+  function updatePseudoVarsPanel() {
+    let pseudoVars = Uzi.state["pseudo-vars"];
+    if (pseudoVars.available.length == 0) {
+      $("#pseudo-vars-card").hide();
+    } else {
+      updateValuesPanel(pseudoVars, $("#pseudo-vars-table tbody"), $("#no-pseudo-vars-label"), "pseudo-var");
+      $("#pseudo-vars-card").show();
+    }
   }
 
   function updateValuesPanel(values, $container, $emptyLabel, itemPrefix) {

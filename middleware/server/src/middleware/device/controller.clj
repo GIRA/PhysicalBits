@@ -30,6 +30,11 @@
 (-> @state :reporting)
 (rb/avg (-> @state :reporting :timing-diffs))
 (millis)
+(< (get-in @state [:pseudo-vars :data "juan" :ts])
+   (- (-> @state :pseudo-vars :timestamp) 1000))
+
+(millis)
+(add-pseudo-var! "richo" 42)
 
 )
 
@@ -72,6 +77,7 @@
                     :reporting {:pins #{}, :globals #{}}
                     :pins {}
                     :globals {}
+                    :pseudo-vars {:timestamp nil, :data {}}
                     :scripts []
                     :profiler nil
                     :debugger nil
@@ -79,6 +85,15 @@
                     :program {:current nil, :running nil}
                     :available-ports []})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
+
+(defn- add-pseudo-var! [name value]
+  ; TODO(Richo): We can't use millis, we need the VM time (otherwise, this values can't be plotted alongside actual globals)
+  (let [now (millis)]
+    (swap! state
+           #(-> %
+                (assoc-in [:pseudo-vars :timestamp] now)
+                (assoc-in [:pseudo-vars :data name]
+                          {:name name, :value value, :ts now})))))
 
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
@@ -315,10 +330,7 @@
            delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
            delta-clj (- clj-time (get previous :clj-time clj-time))
            delta (- delta-uzi delta-clj)
-           timing-diffs (-> @state :reporting :timing-diffs)
-           add-pseudo-var! (fn [name value]
-                             (swap! snapshot assoc-in [:data name]
-                                    {:name name, :value value}))]
+           timing-diffs (-> @state :reporting :timing-diffs)]
        (rb/push! timing-diffs delta)
        (swap! snapshot assoc
               :uzi-time uzi-time
@@ -440,16 +452,26 @@
 (defn- clean-up-reports []
   (go-loop []
     (when (connected?)
+      ; If we have pseudo vars, remove old ones (older than 1s)
+      (if-not (zero? (count (-> @state :pseudo-vars :data)))
+        (swap! state update-in [:pseudo-vars :data]
+               #(let [limit (- (or (get-in @state [:pseudo-vars :timestamp]) 0) 1000)]
+                  (into {} (remove (fn [[_ value]] (< (:ts value) limit)) %)))))
+      ; Now remove pins/globals that are not being reported anymore
       (let [reporting (:reporting @state)]
         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
-        ; HACK(Richo): Added code to preserve the pseudo vars
-        (swap! state update-in [:globals :data]
-               #(select-keys % (into (:globals reporting)
-                                     (filter (fn [key] (str/starts-with? key "__"))
-                                             (map key %))))))
+        (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+      ; Finally wait 1s and start over
       (<! (timeout 1000))
       (recur))))
 
+(comment
+ (def data {"a" 1 "b" 2 "c" 3})
+ (count {})
+ (select-keys data ["a" "b"])
+ (into {} (remove (fn [[key value]] (str/starts-with? "_" key))
+                  data))
+ ,)
 
 (defn- extract-socket-data [port-name]
   (try

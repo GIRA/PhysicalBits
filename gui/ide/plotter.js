@@ -134,6 +134,7 @@ let Plotter = (function () {
     var toRemove = new Set(observed);
     updateValues(state.pins, toRemove);
     updateValues(state.globals, toRemove);
+    updateValues(state["pseudo-vars"], toRemove);
 
     if (toRemove.size > 0) {
       toRemove.forEach(each => {
