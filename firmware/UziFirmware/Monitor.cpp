@@ -392,6 +392,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	uint8 cmd = stream.next(timeout);
 	if (timeout) return;
 
+	executeKeepAlive();
+	if (cmd == MSG_IN_KEEP_ALIVE) return;
+
 	switch (cmd)
 	{
 	case MSG_IN_SET_PROGRAM:
@@ -418,9 +421,6 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
 		executeSaveProgram(program, io);
-		break;
-	case MSG_IN_KEEP_ALIVE:
-		executeKeepAlive();
 		break;
 	case MSG_IN_PROFILE:
 		executeProfile();
@@ -552,6 +552,7 @@ void Monitor::executeSaveProgram(Program** program, GPIO* io)
 void Monitor::executeKeepAlive()
 {
 	keepAliveCounter = KEEP_ALIVE_COUNTER;
+	lastTimeKeepAlive = millis();
 }
 
 void Monitor::executeProfile()
