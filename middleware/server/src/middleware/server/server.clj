@@ -107,6 +107,12 @@
       (device/set-global-report global-name report?))
     (json-response "OK")))
 
+(defn profile-handler [{:strs [enabled]}]
+  (if (= "true" enabled)
+    (device/start-profiling)
+    (device/stop-profiling))
+  (json-response "OK"))
+
 (defn- format-server-state [state output]
   (-> state
 
@@ -212,6 +218,7 @@
                         (POST "/uzi/install" {params :params} (install-handler uzi-libraries params))
                         (POST "/uzi/pin-report" {params :params} (pin-report-handler params))
                         (POST "/uzi/global-report" {params :params} (global-report-handler params))
+                        (POST "/uzi/profile" {params :params} (profile-handler params))
 
                         (route/not-found "No such page."))
 

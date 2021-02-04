@@ -24,6 +24,7 @@
 (stop-profiling)
 
 (-> @state :profiler :ticks (* 10))
+
 (-> @state :globals)
 (-> @state :pins)
 (-> @state :reporting)
@@ -215,7 +216,7 @@
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
-      (logger/warning "Setting report interval: %1" interval)
+      ;(logger/warning "Setting report interval: %1" interval)
       (send [MSG_OUT_SET_REPORT_INTERVAL
              (bit-shift-right (bit-and interval 16rFF00)
                               8)
@@ -323,6 +324,10 @@
               :uzi-time uzi-time
               :clj-time clj-time)
        (add-pseudo-var! "__delta" delta)
+       (if-let [vm-ticks (-> @state :profiler :ticks)]
+         (add-pseudo-var! "__tps" (* 10 vm-ticks)))
+       (if-let [vm-report-interval (-> @state :profiler :report-interval)]
+         (add-pseudo-var! "__vm-report-interval" vm-report-interval))
        (let [report-interval (-> @state :reporting :interval)
              report-interval-inc (cfg/get-config :report-interval-inc 1)
              delta-smooth (Math/abs (rb/avg timing-diffs))
@@ -380,8 +385,9 @@
             report-interval (<? in)]
         (swap! state assoc
                :profiler {:ticks value
-                          :interval-ms 100})
-        (logger/warning "REPORT_INTERVAL: %1 (%2 ticks/s)"
+                          :interval-ms 100
+                          :report-interval report-interval})
+        #_(logger/warning "REPORT_INTERVAL: %1 (%2 ticks/s)"
                         report-interval
                         (* 10 value)))))
 
@@ -436,10 +442,14 @@
     (when (connected?)
       (let [reporting (:reporting @state)]
         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
-        ; HACK(Richo): Temporarily disabling global cleanup
-        #_(swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+        ; HACK(Richo): Added code to preserve the pseudo vars
+        (swap! state update-in [:globals :data]
+               #(select-keys % (into (:globals reporting)
+                                     (filter (fn [key] (str/starts-with? key "__"))
+                                             (map key %))))))
       (<! (timeout 1000))
       (recur))))
+
 
 (defn- extract-socket-data [port-name]
   (try

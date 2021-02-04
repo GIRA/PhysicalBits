@@ -101,6 +101,15 @@ let Uzi = (function () {
         report: Array.from(report).join(",")
       };
       return POST(url, data);
+    },
+
+    setProfile: function (enabled) {
+      let url = apiURL + "/uzi/profile";
+      let data = {
+        id: id,
+        enabled: enabled
+      };
+      return POST(url, data);
     }
   };
 
