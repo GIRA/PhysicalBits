@@ -291,8 +291,7 @@
    (let [timestamp (<! (read-timestamp in))
          count (<? in)
          globals (vec (program/all-globals (-> @state :program :running :compiled)))
-         snapshot (atom {:timestamp timestamp, :data {}})
-         now (millis)]
+         snapshot (atom {:timestamp timestamp, :data {}})]
      (dotimes [_ count]
               (let [number (<? in)
                     n1 (<? in)
@@ -310,7 +309,7 @@
      ; and then calculating the difference between these intervals and adding it as global variable
      ; so that I can observe it in the inspector. Its value should always be close to 0
      (let [uzi-time timestamp
-           clj-time now
+           clj-time (millis)
            previous (-> @state :globals)
            delta-uzi (- uzi-time (get previous :uzi-time uzi-time))
            delta-clj (- clj-time (get previous :clj-time clj-time))
