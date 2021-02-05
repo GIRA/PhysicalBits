@@ -238,10 +238,7 @@
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
       ;(logger/warning "Setting report interval: %1" interval)
-      (send [MSG_OUT_SET_REPORT_INTERVAL
-             (bit-shift-right (bit-and interval 16rFF00)
-                              8)
-             (bit-and interval 16rFF)]))))
+      (send [MSG_OUT_SET_REPORT_INTERVAL interval]))))
 
 (defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
 (defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))

@@ -570,7 +570,7 @@ void Monitor::executeProfile()
 void Monitor::executeSetReportInterval()
 {
 	bool timeout;
-	uint16 interval = stream.nextLong(2, timeout);
+	uint8 interval = stream.next(timeout);
 	if (timeout) return;
 
 	minReportInterval = interval;
