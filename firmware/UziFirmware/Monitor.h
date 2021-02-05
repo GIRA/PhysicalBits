@@ -81,6 +81,7 @@ private:
 	void sendProfile();
 	void sendVMState(Program* program, VM* vm);
 	void sendCoroutineState(Program* program, Script* script);
+	void sendTimestamp();
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendRunningTasks(Program* program);

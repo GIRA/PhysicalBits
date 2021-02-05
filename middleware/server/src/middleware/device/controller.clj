@@ -366,10 +366,12 @@
         (process-timestamp timestamp))))
 
 (defn- process-free-ram [in]
-  (go (let [arduino (<! (read-uint32 in))
+  (go (let [timestamp (<! (read-timestamp in))
+            arduino (<! (read-uint32 in))
             uzi (<! (read-uint32 in))]
         (swap! state update :memory
-               (fn [_] {:arduino arduino, :uzi uzi})))))
+               (fn [_] {:arduino arduino, :uzi uzi}))
+        (process-timestamp timestamp))))
 
 (defn- process-script-state [i byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -388,7 +390,8 @@
       :task? task?}]))
 
 (defn- process-running-scripts [in]
-  (go (let [count (<? in)
+  (go (let [timestamp (<! (read-timestamp in))
+            count (<? in)
             tuples (map-indexed process-script-state
                                 (<! (read-vec? count in)))
             [old new] (swap-vals! state assoc :scripts (into {} tuples))]
@@ -397,7 +400,8 @@
                        (:error-code script))
             (logger/warning "%1 detected on script \"%2\". The script has been stopped."
                             (:error-msg script)
-                            (:name script)))))))
+                            (:name script))))
+        (process-timestamp timestamp))))
 
 (defn- process-profile [in]
   (go (let [n1 (<? in)

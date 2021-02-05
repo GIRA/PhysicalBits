@@ -178,16 +178,13 @@ void Monitor::sendReport(GPIO* io, Program* program)
 		{
 		case 1: { sendPinValues(io); } break;
 		case 2: { sendGlobalValues(program); } break;
-		case 3: 
-			{ 
-				sendRunningTasks(program);
-				sendFreeRAM();
-			} break;
+		case 3: { sendRunningTasks(program); } break;
+		case 4: { sendFreeRAM(); } break;
 		}
 				
 		lastTimeReport = millis();
 		reportingStep++;
-		if (reportingStep > 3) { reportingStep = 1; }
+		if (reportingStep > 4) { reportingStep = 1; }
 	}
 }
 
@@ -260,6 +257,15 @@ void Monitor::checkKeepAlive()
 	}
 }
 
+void Monitor::sendTimestamp()
+{
+	uint32 time = millis();
+	serial->write((time >> 24) & 0xFF);
+	serial->write((time >> 16) & 0xFF);
+	serial->write((time >> 8) & 0xFF);
+	serial->write(time & 0xFF);
+}
+
 void Monitor::sendPinValues(GPIO* io)
 {
 	uint8 count = 0;
@@ -274,12 +280,7 @@ void Monitor::sendPinValues(GPIO* io)
 	if (count == 0) return;
 
 	serial->write(MSG_OUT_PIN_VALUE);
-
-	uint32 time = millis();
-	serial->write((time >> 24) & 0xFF);
-	serial->write((time >> 16) & 0xFF);
-	serial->write((time >> 8) & 0xFF);
-	serial->write(time & 0xFF);
+	sendTimestamp();
 
 	serial->write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
@@ -310,13 +311,8 @@ void Monitor::sendGlobalValues(Program* program)
 	}
 	if (count == 0) return;
 
-	serial->write(MSG_OUT_GLOBAL_VALUE);
-	
-	uint32 time = millis();
-	serial->write((time >> 24) & 0xFF);
-	serial->write((time >> 16) & 0xFF);
-	serial->write((time >> 8) & 0xFF);
-	serial->write(time & 0xFF);
+	serial->write(MSG_OUT_GLOBAL_VALUE);	
+	sendTimestamp();
 
 	serial->write(count);
 	for (uint8 i = 0; i < program->getGlobalCount(); i++)
@@ -336,6 +332,8 @@ void Monitor::sendGlobalValues(Program* program)
 void Monitor::sendRunningTasks(Program* program)
 {
 	serial->write(MSG_OUT_TICKING_SCRIPTS);
+	sendTimestamp();
+
 	uint8 scriptCount = program->getScriptCount();
 	serial->write(scriptCount);
 	for (int16 i = 0; i < scriptCount; i++)
@@ -369,6 +367,8 @@ int freeRam()
 void Monitor::sendFreeRAM()
 {
 	serial->write(MSG_OUT_FREE_RAM);
+	sendTimestamp();
+
 	{
 		uint32 value = freeRam();
 		serial->write((value >> 24) & 0xFF);
