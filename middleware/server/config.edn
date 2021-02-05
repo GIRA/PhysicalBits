@@ -3,4 +3,5 @@
  :report-interval-inc 5
  :delta-threshold-min 1
  :delta-threshold-max 25
- :timing-diffs-size 10}
+ :timing-diffs-size 10
+ :pseudo-vars? true}

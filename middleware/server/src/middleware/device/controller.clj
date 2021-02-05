@@ -94,12 +94,13 @@
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn- add-pseudo-var! [name value]
-  (let [now (or (-> @state :timing :arduino) 0)]
-    (swap! state
-           #(-> %
-                (assoc-in [:pseudo-vars :timestamp] now)
-                (assoc-in [:pseudo-vars :data name]
-                          {:name name, :value value, :ts now})))))
+  (if (cfg/get-config :pseudo-vars? false)
+    (let [now (or (-> @state :timing :arduino) 0)]
+      (swap! state
+             #(-> %
+                  (assoc-in [:pseudo-vars :timestamp] now)
+                  (assoc-in [:pseudo-vars :data name]
+                            {:name name, :value value, :ts now}))))))
 
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
@@ -464,9 +465,11 @@
     (when (connected?)
       ; If we have pseudo vars, remove old ones (older than 1s)
       (if-not (zero? (count (-> @state :pseudo-vars :data)))
-        (swap! state update-in [:pseudo-vars :data]
-               #(let [limit (- (or (get-in @state [:pseudo-vars :timestamp]) 0) 1000)]
-                  (into {} (remove (fn [[_ value]] (< (:ts value) limit)) %)))))
+        (if (cfg/get-config :pseudo-vars? false)
+          (swap! state update-in [:pseudo-vars :data]
+                 #(let [limit (- (or (get-in @state [:pseudo-vars :timestamp]) 0) 1000)]
+                    (into {} (remove (fn [[_ value]] (< (:ts value) limit)) %))))
+          (swap! state assoc-in [:pseudo-vars :data] {})))
       ; Now remove pins/globals that are not being reported anymore
       (let [reporting (:reporting @state)]
         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
