@@ -18,31 +18,33 @@
             [middleware.device.utils.ring-buffer :as rb])
   (:import (java.net Socket)))
 
-#_(
+(comment
 
-(start-profiling)
-(stop-profiling)
+ (start-profiling)
+ (stop-profiling)
 
-(-> @state :profiler :ticks (* 10))
+ (-> @state :profiler :ticks (* 10))
 
-(-> @state :globals)
-(-> @state :pins)
-(-> @state :reporting)
-(rb/avg (-> @state :timing :diffs))
-(millis)
-(< (get-in @state [:pseudo-vars :data "juan" :ts])
-   (- (-> @state :pseudo-vars :timestamp) 1000))
+ (-> @state :globals)
+ (-> @state :pins)
+ (-> @state :reporting)
+ (rb/avg (-> @state :timing :diffs))
+ (millis)
+ (< (get-in @state [:pseudo-vars :data "juan" :ts])
+    (- (-> @state :pseudo-vars :timestamp) 1000))
 
-(millis)
-(add-pseudo-var! "richo" 42)
+ (millis)
+ (add-pseudo-var! "richo" 42)
 
-(-> @state :timing)
-(swap! state update :timing
-       #(assoc %
-               :arduino 1
-               :middleware 2))
-(or (get (get @state :timing) :arduino2) 1)
-)
+ (-> @state :timing)
+ (swap! state update :timing
+        #(assoc %
+                :arduino 1
+                :middleware 2))
+ (or (get (get @state :timing) :arduino2) 1)
+
+ (a/thread)
+ ,)
 
 (defn millis [] (System/currentTimeMillis))
 (defn constrain [val lower upper] (max lower (min upper val)))
@@ -272,19 +274,19 @@
        false))))
 
 (defn- keep-alive [port]
-  (go-loop []
+  (loop []
     (when (connected?)
       (send [MSG_OUT_KEEP_ALIVE])
-      (<! (timeout 100))
+      (<!! (timeout 100))
       (recur))))
 
 (defn- read-uint32 [in]
-  (go (bytes->uint32 (<! (read-vec? 4 in)))))
+  (bytes->uint32 (read-vec?? 4 in)))
 
 (def read-timestamp read-uint32)
 
 (defn- read-uint16 [in]
-  (go (bytes->uint16 (<! (read-vec? 2 in)))))
+  (bytes->uint16 (read-vec?? 2 in)))
 
 (defn- process-timestamp [timestamp]
   "Calculating the time since the last snapshot (both in the vm and the middleware)
@@ -321,55 +323,53 @@
         (set-report-interval (+ report-interval report-interval-inc))))))
 
 (defn- process-pin-value [in]
-  (go
-   (let [timestamp (<! (read-timestamp in))
-         count (<? in)
-         snapshot (atom {:timestamp timestamp, :data {}})]
-     (dotimes [_ count]
-              (let [n1 (<? in)
-                    n2 (<? in)
-                    pin-number (bit-shift-right n1 2)
-                    value (/ (bit-or n2
-                                     (bit-shift-left (bit-and n1 2r11)
-                                                     8))
-                             1023.0)]
-                (when-let [pin-name (get-pin-name pin-number)]
-                  (swap! snapshot assoc-in [:data pin-name]
-                         {:name pin-name
-                          :number pin-number
-                          :value value}))))
-     (swap! state assoc :pins @snapshot)
-     (process-timestamp timestamp))))
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        snapshot (atom {:timestamp timestamp, :data {}})]
+    (dotimes [_ count]
+             (let [n1 (<?? in)
+                   n2 (<?? in)
+                   pin-number (bit-shift-right n1 2)
+                   value (/ (bit-or n2
+                                    (bit-shift-left (bit-and n1 2r11)
+                                                    8))
+                            1023.0)]
+               (when-let [pin-name (get-pin-name pin-number)]
+                 (swap! snapshot assoc-in [:data pin-name]
+                        {:name pin-name
+                         :number pin-number
+                         :value value}))))
+    (swap! state assoc :pins @snapshot)
+    (process-timestamp timestamp)))
 
 (defn- process-global-value [in]
-  (go ;(<! (timeout 100)) ; Just for testing...
-      (let [timestamp (<! (read-timestamp in))
-            count (<? in)
-            globals (vec (program/all-globals (-> @state :program :running :compiled)))
-            snapshot (atom {:timestamp timestamp, :data {}})]
-        (dotimes [_ count]
-                 (let [number (<? in)
-                       n1 (<? in)
-                       n2 (<? in)
-                       n3 (<? in)
-                       n4 (<? in)
-                       float-value (bytes->float [n1 n2 n3 n4])]
-                   (when-let [global-name (:name (nth globals number {}))]
-                     (swap! snapshot assoc-in [:data global-name]
-                            {:name global-name
-                             :number number
-                             :value float-value
-                             :raw-bytes [n1 n2 n3 n4]}))))
-        (swap! state assoc :globals @snapshot)
-        (process-timestamp timestamp))))
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        globals (vec (program/all-globals (-> @state :program :running :compiled)))
+        snapshot (atom {:timestamp timestamp, :data {}})]
+    (dotimes [_ count]
+             (let [number (<?? in)
+                   n1 (<?? in)
+                   n2 (<?? in)
+                   n3 (<?? in)
+                   n4 (<?? in)
+                   float-value (bytes->float [n1 n2 n3 n4])]
+               (when-let [global-name (:name (nth globals number {}))]
+                 (swap! snapshot assoc-in [:data global-name]
+                        {:name global-name
+                         :number number
+                         :value float-value
+                         :raw-bytes [n1 n2 n3 n4]}))))
+    (swap! state assoc :globals @snapshot)
+    (process-timestamp timestamp)))
 
 (defn- process-free-ram [in]
-  (go (let [timestamp (<! (read-timestamp in))
-            arduino (<! (read-uint32 in))
-            uzi (<! (read-uint32 in))]
-        (swap! state update :memory
-               (fn [_] {:arduino arduino, :uzi uzi}))
-        (process-timestamp timestamp))))
+  (let [timestamp (read-timestamp in)
+        arduino (read-uint32 in)
+        uzi (read-uint32 in)]
+    (swap! state update :memory
+           (fn [_] {:arduino arduino, :uzi uzi}))
+    (process-timestamp timestamp)))
 
 (defn- process-script-state [i byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -388,76 +388,76 @@
       :task? task?}]))
 
 (defn- process-running-scripts [in]
-  (go (let [timestamp (<! (read-timestamp in))
-            count (<? in)
-            tuples (map-indexed process-script-state
-                                (<! (read-vec? count in)))
-            [old new] (swap-vals! state assoc :scripts (into {} tuples))]
-        (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
-          (when-not (= (-> old :scripts (get (:name script)) :error-code)
-                       (:error-code script))
-            (logger/warning "%1 detected on script \"%2\". The script has been stopped."
-                            (:error-msg script)
-                            (:name script))))
-        (process-timestamp timestamp))))
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        tuples (map-indexed process-script-state
+                            (read-vec?? count in))
+        [old new] (swap-vals! state assoc :scripts (into {} tuples))]
+    (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
+      (when-not (= (-> old :scripts (get (:name script)) :error-code)
+                   (:error-code script))
+        (logger/warning "%1 detected on script \"%2\". The script has been stopped."
+                        (:error-msg script)
+                        (:name script))))
+    (process-timestamp timestamp)))
 
 (defn- process-profile [in]
-  (go (let [n1 (<? in)
-            n2 (<? in)
-            value (bit-or n2
-                          (bit-shift-left n1 7))
-            report-interval (<? in)]
-        (swap! state assoc
-               :profiler {:ticks value
-                          :interval-ms 100
-                          :report-interval report-interval})
-        (add-pseudo-var! "__tps" (* 10 value))
-        (add-pseudo-var! "__vm-report-interval" report-interval))))
+  (let [n1 (<?? in)
+        n2 (<?? in)
+        value (bit-or n2
+                      (bit-shift-left n1 7))
+        report-interval (<?? in)]
+    (swap! state assoc
+           :profiler {:ticks value
+                      :interval-ms 100
+                      :report-interval report-interval})
+    (add-pseudo-var! "__tps" (* 10 value))
+    (add-pseudo-var! "__vm-report-interval" report-interval)))
 
 (defn- process-coroutine-state [in]
-  (go (let [index (<? in)
-            pc (<! (read-uint16 in))
-            fp (<? in)
-            stack-size (<? in)
-            stack (<! (read-vec? (* 4 stack-size) in))]
-        (swap! state assoc
-               :debugger {:index index
-                          :pc pc
-                          :fp fp
-                          :stack stack}))))
+  (let [index (<?? in)
+        pc (read-uint16 in)
+        fp (<?? in)
+        stack-size (<?? in)
+        stack (read-vec?? (* 4 stack-size) in)]
+    (swap! state assoc
+           :debugger {:index index
+                      :pc pc
+                      :fp fp
+                      :stack stack})))
 
 (defn- process-error [in]
-  (go (let [error-code (<? in)]
-        (when (> error-code 0)
-          (logger/newline)
-          (logger/warning "%1 detected. The program has been stopped"
-                          (error-msg error-code))
-          (if (error-disconnect? error-code)
-            (disconnect))))))
+  (let [error-code (<?? in)]
+    (when (> error-code 0)
+      (logger/newline)
+      (logger/warning "%1 detected. The program has been stopped"
+                      (error-msg error-code))
+      (if (error-disconnect? error-code)
+        (disconnect)))))
 
 (defn- process-trace [in]
-  (go (let [count (<? in)
-            msg (new String (byte-array (<! (read-vec? count in))) "UTF-8")]
-        (log/info "TRACE:" msg))))
+  (let [count (<?? in)
+        msg (new String (byte-array (read-vec?? count in)) "UTF-8")]
+    (log/info "TRACE:" msg)))
 
 (defn- process-serial-tunnel [in]
-  (go (logger/log "SERIAL: %1" (<? in))))
+  (logger/log "SERIAL: %1" (<?? in)))
 
 (defn- process-input [in]
-  (go-loop []
+  (loop []
     (when (connected?)
-      (when-let [cmd (<? in)]
-        (<! (condp = cmd
-              MSG_IN_PIN_VALUE (process-pin-value in)
-              MSG_IN_GLOBAL_VALUE (process-global-value in)
-              MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
-              MSG_IN_FREE_RAM (process-free-ram in)
-              MSG_IN_PROFILE (process-profile in)
-              MSG_IN_COROUTINE_STATE (process-coroutine-state in)
-              MSG_IN_ERROR (process-error in)
-              MSG_IN_TRACE (process-trace in)
-              MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
-              (go (logger/warning "Uzi - Invalid response code: %1" cmd)))))
+      (when-let [cmd (<?? in)]
+        (condp = cmd
+          MSG_IN_PIN_VALUE (process-pin-value in)
+          MSG_IN_GLOBAL_VALUE (process-global-value in)
+          MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
+          MSG_IN_FREE_RAM (process-free-ram in)
+          MSG_IN_PROFILE (process-profile in)
+          MSG_IN_COROUTINE_STATE (process-coroutine-state in)
+          MSG_IN_ERROR (process-error in)
+          MSG_IN_TRACE (process-trace in)
+          MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
+          (logger/warning "Uzi - Invalid response code: %1" cmd)))
       (recur))))
 
 (defn- clean-up-reports []
@@ -541,8 +541,8 @@
                     :reporting {:pins #{}
                                 :globals #{}})
              (set-report-interval (config/get :report-interval-min 0))
-             (keep-alive port)
-             (process-input in)
+             (a/thread (keep-alive port))
+             (a/thread (process-input in))
              (start-reporting)
              (send-pins-reporting)
              (clean-up-reports))))))))

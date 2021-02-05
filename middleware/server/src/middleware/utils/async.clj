@@ -17,3 +17,10 @@
     (if (<= i 0)
       v
       (recur (dec i) (conj v (<? in))))))
+
+(defn read-vec?? [count in]
+  (loop [i count
+         v []]
+    (if (<= i 0)
+      v
+      (recur (dec i) (conj v (<?? in))))))
