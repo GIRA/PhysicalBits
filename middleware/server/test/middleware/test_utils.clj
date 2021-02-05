@@ -44,7 +44,7 @@
             :name name}))
        (apply concat (vals @programs))))
 
-(defn- write-row! [writer row]
+(defn- write-row! [^java.io.BufferedWriter writer row]
   (.write writer (str/join "," (map #(if (ratio? %) (double %) %) row)))
   (.newLine writer))
 

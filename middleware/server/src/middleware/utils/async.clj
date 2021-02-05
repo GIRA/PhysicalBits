@@ -12,15 +12,13 @@
   ([chan timeout] `(first (a/alts!! [~chan (a/timeout ~timeout)]))))
 
 (defn read-vec? [count in]
-  (a/go-loop [i count
-            v []]
+  (a/go-loop [^long i count, v []]
     (if (<= i 0)
       v
       (recur (dec i) (conj v (<? in))))))
 
 (defn read-vec?? [count in]
-  (loop [i count
-         v []]
+  (loop [^long i count, v []]
     (if (<= i 0)
       v
       (recur (dec i) (conj v (<?? in))))))

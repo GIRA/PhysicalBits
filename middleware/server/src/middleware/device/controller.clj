@@ -47,8 +47,8 @@
  (a/thread)
  ,)
 
-(defn millis [] (System/currentTimeMillis))
-(defn constrain [val lower upper] (max lower (min upper val)))
+(defn millis ^long [] (System/currentTimeMillis))
+(defn constrain [^long val ^long lower ^long upper] (max lower (min upper val)))
 
 (defprotocol UziPort
   (close! [this])
@@ -154,7 +154,7 @@
            global-number
            (if report? 1 0)])))
 
-(defn set-pin-value [pin-name value]
+(defn set-pin-value [pin-name ^double value]
   (let [pin-number (get-pin-number pin-name)]
     (send [MSG_OUT_SET_VALUE
            pin-number
@@ -292,7 +292,7 @@
 (defn- read-uint16 [in]
   (bytes->uint16 (read-vec?? 2 in)))
 
-(defn- process-timestamp [timestamp]
+(defn- process-timestamp [^long timestamp]
   "Calculating the time since the last snapshot (both in the vm and the middleware)
   and then calculating the difference between these intervals and adding it as
   pseudo variable so that I can observe it in the inspector. Its value should always
@@ -300,10 +300,10 @@
   (let [arduino-time timestamp
         middleware-time (millis)
         timing (-> @state :timing)
-        delta-arduino (- arduino-time
-                         (or (get timing :arduino) arduino-time))
-        delta-middleware (- middleware-time
-                            (or (get timing :middleware) middleware-time))
+        ^long previous-arduino-time (or (get timing :arduino) arduino-time)
+        ^long previous-middleware-time (or (get timing :middleware) middleware-time)
+        delta-arduino (- arduino-time previous-arduino-time)
+        delta-middleware (- middleware-time previous-middleware-time)
         delta (- delta-arduino delta-middleware)
         timing-diffs (:diffs timing)]
     (rb/push! timing-diffs delta)
@@ -312,11 +312,11 @@
                    :arduino arduino-time
                    :middleware middleware-time))
     (add-pseudo-var! "__delta" delta)
-    (let [report-interval (-> @state :reporting :interval)
-          report-interval-inc (config/get :report-interval-inc 5)
+    (let [^long report-interval (-> @state :reporting :interval)
+          ^long report-interval-inc (config/get :report-interval-inc 5)
           delta-smooth (Math/abs (rb/avg timing-diffs))
-          delta-threshold-min (config/get :delta-threshold-min 1)
-          delta-threshold-max (config/get :delta-threshold-max 25)]
+          ^long delta-threshold-min (config/get :delta-threshold-min 1)
+          ^long delta-threshold-max (config/get :delta-threshold-max 25)]
       (add-pseudo-var! "__delta_smooth" delta-smooth)
       (add-pseudo-var! "__report_interval" report-interval)
       ; If the delta-smooth goes below the min we decrement the report-interval
@@ -331,8 +331,8 @@
         count (<?? in)
         snapshot (atom {:timestamp timestamp, :data {}})]
     (dotimes [_ count]
-             (let [n1 (<?? in)
-                   n2 (<?? in)
+             (let [^long n1 (<?? in)
+                   ^long n2 (<?? in)
                    pin-number (bit-shift-right n1 2)
                    value (/ (bit-or n2
                                     (bit-shift-left (bit-and n1 2r11)
@@ -375,7 +375,7 @@
            (fn [_] {:arduino arduino, :uzi uzi}))
     (process-timestamp timestamp)))
 
-(defn- process-script-state [i byte]
+(defn- process-script-state [i ^long byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
         error-code (bit-and 2r01111111 byte)
         error-msg (error-msg error-code)
@@ -406,8 +406,8 @@
     (process-timestamp timestamp)))
 
 (defn- process-profile [in]
-  (let [n1 (<?? in)
-        n2 (<?? in)
+  (let [^long n1 (<?? in)
+        ^long n2 (<?? in)
         value (bit-or n2
                       (bit-shift-left n1 7))
         report-interval (<?? in)]
@@ -422,7 +422,7 @@
   (let [index (<?? in)
         pc (read-uint16 in)
         fp (<?? in)
-        stack-size (<?? in)
+        ^long stack-size (<?? in)
         stack (read-vec?? (* 4 stack-size) in)]
     (swap! state assoc
            :debugger {:index index
@@ -431,7 +431,7 @@
                       :stack stack})))
 
 (defn- process-error [in]
-  (let [error-code (<?? in)]
+  (let [^long error-code (<?? in)]
     (when (> error-code 0)
       (logger/newline)
       (logger/warning "%1 detected. The program has been stopped"
@@ -474,8 +474,9 @@
       (if-not (zero? (count (-> @state :pseudo-vars :data)))
         (if (config/get :pseudo-vars? false)
           (swap! state update-in [:pseudo-vars :data]
-                 #(let [limit (- (or (get-in @state [:pseudo-vars :timestamp]) 0) 1000)]
-                    (into {} (remove (fn [[_ value]] (< (:ts value) limit)) %))))
+                 #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
+                        limit (- timestamp 1000)]
+                    (into {} (remove (fn [[_ {^long ts :ts}]] (< ts limit)) %))))
           (swap! state assoc-in [:pseudo-vars :data] {})))
       ; Now remove pins/globals that are not being reported anymore
       (let [reporting (:reporting @state)]

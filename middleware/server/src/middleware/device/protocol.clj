@@ -45,13 +45,13 @@
    32 "DISCONNECT_ERROR"
    64 "READER_CHECKSUM_FAIL"])
 
-(defn error-msg [code]
+(defn error-msg [^long code]
   (if (= 0 code)
     "NO_ERROR"
     (let [msg (str/join
                " & "
                (map (fn [[_ k]] k)
-                    (filter (fn [[c _]] (not= 0 (bit-and code c)))
+                    (filter (fn [[^long c _]] (not= 0 (bit-and code c)))
                             (partition-all 2 error-msgs))))]
       (if (empty? msg)
         (str "UNKNOWN_ERROR (" code ")")
@@ -59,5 +59,5 @@
 
 (defn error? [code] (not= 0 code))
 
-(defn error-disconnect? [code]
+(defn error-disconnect? [^long code]
   (not= 0 (bit-and code 32)))

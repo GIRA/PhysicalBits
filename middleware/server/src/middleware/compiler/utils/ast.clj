@@ -15,7 +15,7 @@
   (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
              (node-type node)))
 
-(defn compile-time-value [node not-constant]
+(defn compile-time-value ^double [node not-constant]
   (condp = (node-type node)
     "UziNumberLiteralNode" (:value node)
     "UziPinLiteralNode" (:value node)

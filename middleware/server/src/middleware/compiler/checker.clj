@@ -125,8 +125,8 @@
 (defmethod check-node "UziFunctionNode" [node errors path]
   (check-script node errors path))
 
-(defmethod check-node "UziTickingRateNode" [node errors path]
-  (assert (> (:value node) 0)
+(defmethod check-node "UziTickingRateNode" [{:keys [^long value] :as node} errors path]
+  (assert (> value 0)
           "Ticking rate must be a positive value"
           node errors))
 

@@ -30,7 +30,7 @@
                   :body "Expected a websocket request."}))))
 
 (defn seconds-handler [^IEventSink socket _]
-  (a/go-loop [i 0]
+  (a/go-loop [^long i 0]
     (when-not (ws/closed? socket)
       (ws/put! socket (str "seconds: " i))
       (a/<! (a/timeout 1000))

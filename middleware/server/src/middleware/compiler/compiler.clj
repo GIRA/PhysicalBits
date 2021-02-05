@@ -16,9 +16,10 @@
 (defn- compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defn- rate->delay [{:keys [value scale] :as node}]
-  (if-not node 0
-    (if (= value 0)
+(defn- rate->delay [{:keys [^double value scale] :as node}]
+  (if-not node
+    0
+    (if (zero? value)
       (double Double/MAX_VALUE)
       (/ (case scale
            "s" 1000
