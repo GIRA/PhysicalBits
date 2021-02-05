@@ -124,7 +124,7 @@
       (close! port)
       (<!! (timeout 1000)) ; TODO(Richo): Wait a second to stabilize port (?)
       (catch Throwable e
-        (log/error (str "ERROR WHILE DISCONNECTING -> " (.getMessage e)))))
+        (log/error "ERROR WHILE DISCONNECTING ->" e)))
     (logger/error "Connection lost!")))
 
 (defn send [bytes]
@@ -132,7 +132,7 @@
     (try
       (write! port bytes)
       (catch Throwable e
-        (log/error (str "ERROR WHILE SENDING -> " (.getMessage e)))
+        (log/error "ERROR WHILE SENDING ->" e)
         (disconnect))))
   bytes)
 
@@ -515,7 +515,7 @@
         (s/open port-name :baud-rate baud-rate)))
     (catch Exception e
       (logger/error "Opening port failed!")
-      (log/error e) ; TODO(Richo): Exceptions should be logged but not sent to the client
+      (log/error "ERROR WHILE OPENING PORT ->" e) ; TODO(Richo): Exceptions should be logged but not sent to the client
       nil)))
 
 (defn connect
