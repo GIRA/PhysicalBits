@@ -1,6 +1,7 @@
 (ns middleware.compiler.utils.program
   (:require [middleware.compiler.emitter :as emit]))
 
+(defn index-of [^java.util.List v e] (.indexOf v e))
 
 (defn value-size
   "Return the number of bytes necessary to encode this value.
@@ -46,12 +47,12 @@
                   (:globals program))))
 
 (defn index-of-constant [program value]
-  (.indexOf (all-globals program)
+  (index-of (all-globals program)
             (emit/constant value)))
 
 (defn index-of-variable
   ([program name]
-   (.indexOf (map :name (all-globals program))
+   (index-of (map :name (all-globals program))
              name))
   ([program name not-found]
    (let [index (index-of-variable program name)]
@@ -63,7 +64,7 @@
     (index-of-constant program (:value global))))
 
 (defn index-of-local [script variable]
-  (.indexOf (map :name (concat (:arguments script)
+  (index-of (map :name (concat (:arguments script)
                                (:locals script)))
             (:name variable)))
 

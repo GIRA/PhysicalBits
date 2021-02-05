@@ -3,6 +3,16 @@
             [middleware.compiler.primitives :as prims]
             [middleware.compiler.utils.program :refer :all]))
 
+(comment
+ (set! *warn-on-reflection* true)
+ (set! *warn-on-reflection* false)
+
+ (.indexOf (map identity [1 2 3]) 2)
+
+ (let [^java.util.List coll (map identity [1 2 3])]
+   (.indexOf coll 2))
+ ,)
+
 (defn- globals-to-encode [program]
   "We need to exclude the default-globals from the encoding"
   (let [constants-to-exclude (set default-globals)]
@@ -101,7 +111,7 @@
 
 (defmethod encode-instruction "UziScriptCallInstruction"
   [instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
+  (let [index (index-of (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
@@ -112,7 +122,7 @@
                  index)]))))
 
 (defn- encode-script-control [code instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
+  (let [index (index-of (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16r7F)
       (throw-not-implemented instr script program

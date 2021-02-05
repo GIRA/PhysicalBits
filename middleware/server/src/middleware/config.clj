@@ -8,7 +8,7 @@
 (def ^:private PATH "config.edn")
 (def ^:private cache (atom {}))
 
-(defn- read-file [file]
+(defn- read-file [^java.io.File file]
   (try
     (log/info "Reading config file:" (.getAbsolutePath file))
     (slurp file)
@@ -17,7 +17,7 @@
       nil)
     (catch Throwable _ nil)))
 
-(defn- read-config [file]
+(defn- read-config [^java.io.File file]
   (let [path (.getAbsolutePath file)
         last-modified (.lastModified file)
         entry (clj-core/get @cache path)]

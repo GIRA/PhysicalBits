@@ -176,7 +176,8 @@
 
 (defn- throw-if-failure [parse-result]
   (if-let [failure (insta/get-failure parse-result)]
-    (throw (Exception. (with-out-str (fail/pprint-failure failure))))
+    (let [^String error-msg (with-out-str (fail/pprint-failure failure))]
+      (throw (Exception. error-msg)))
     parse-result))
 
 (defn parse [str]

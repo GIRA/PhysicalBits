@@ -15,7 +15,8 @@
 (def get-pin-name
   (memoize (fn [pin-number & [board]]
              (let [board (or board UNO)
-                   index (.indexOf (board :pin-numbers) pin-number)]
+                   ^java.util.List pin-numbers (board :pin-numbers)
+                   index (.indexOf pin-numbers pin-number)]
                (if-not (= -1 index)
                  (nth (board :pin-names) index)
                  nil)))))
@@ -23,7 +24,8 @@
 (def get-pin-number
   (memoize (fn [pin-name & [board]]
              (let [board (or board UNO)
-                   index (.indexOf (board :pin-names) pin-name)]
+                   ^java.util.List pin-names (board :pin-names)
+                   index (.indexOf pin-names pin-name)]
                (if-not (= -1 index)
                  (nth (board :pin-numbers) index)
                  nil)))))

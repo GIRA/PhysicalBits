@@ -34,7 +34,7 @@
         ))))
 
 (defn build-binary-expression
-  [parts]
+  [^java.util.List parts]
   (let [operator (first-operator parts)]
     (if (nil? operator)
       (if (= 1 (count parts))

@@ -20,7 +20,7 @@
 (defn float->uint32 [float]
   (Float/floatToRawIntBits (unchecked-float float)))
 
-(defn two's-complement [byte]
+(defn two's-complement [^long byte]
   (if (>= byte 0)
     byte
     (bit-and 16rFF

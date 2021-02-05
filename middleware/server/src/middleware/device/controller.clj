@@ -58,7 +58,10 @@
   UziPort
   (close! [port] (s/close! port))
   (write! [port data] (s/write port data))
-  (listen! [port listener-fn] (s/listen! port #(listener-fn (.read %)))))
+  (listen! [port listener-fn]
+           (s/listen! port
+                      (fn [^java.io.InputStream input-stream]
+                        (listener-fn (.read input-stream))))))
 
 (extend-type java.net.Socket
   UziPort
@@ -507,7 +510,7 @@
 (defn- open-port [port-name baud-rate]
   (try
     (logger/newline)
-    (if-let [[address port] (extract-socket-data port-name)]
+    (if-let [[^String address ^int port] (extract-socket-data port-name)]
       (do
         (logger/log "Connecting on socket...")
         (logger/log "Opening port: %1" port-name)

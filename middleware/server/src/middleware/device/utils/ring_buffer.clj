@@ -14,7 +14,7 @@
                (update :array #(assoc % (rem index (count array)) new))
                (update :index #(rem (inc %) (count array)))))))
 
-(defn avg [ring-buffer]
+(defn avg ^double [ring-buffer]
   (let [{:keys [array full?]} @ring-buffer
         len (count array)]
     (if (zero? len) 0 (/ (reduce + array) len))))

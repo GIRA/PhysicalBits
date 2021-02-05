@@ -15,7 +15,8 @@
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device]
-            [middleware.output.logger :as logger]))
+            [middleware.output.logger :as logger])
+  (:import [manifold.stream.core IEventSink]))
 
 (def server (atom nil))
 
@@ -28,7 +29,7 @@
                   :headers {"content-type" "application/text"}
                   :body "Expected a websocket request."}))))
 
-(defn seconds-handler [socket _]
+(defn seconds-handler [^IEventSink socket _]
   (a/go-loop [i 0]
     (when-not (ws/closed? socket)
       (ws/put! socket (str "seconds: " i))
@@ -38,7 +39,7 @@
 (defn echo-handler [socket _]
   (ws/connect socket socket))
 
-(defn analog-read-handler [socket _]
+(defn analog-read-handler [^IEventSink socket _]
   (a/go-loop []
     (when-not (ws/closed? socket)
       (ws/put! socket (str "A0: " (device/get-pin-value "A0")))
@@ -183,7 +184,7 @@
  (start-update-loop)
  ,)
 
-(defn uzi-state-handler [socket req]
+(defn uzi-state-handler [^IEventSink socket req]
   (let [in-chan (a/chan)
         topic :update]
     (ws/on-closed socket
@@ -238,7 +239,7 @@
       (reset! server s))))
 
 (defn stop []
-  (when-let [s @server]
+  (when-let [^java.io.Closeable s @server]
     (stop-update-loop)
     (reset! server nil)
     (.close s)))

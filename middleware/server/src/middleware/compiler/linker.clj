@@ -6,7 +6,7 @@
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
-(defn parse [file]
+(defn parse [^java.io.File file]
   (let [path (.getAbsolutePath file)
         last-modified (.lastModified file)
         entry (get @parser-cache path)]

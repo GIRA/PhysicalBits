@@ -87,7 +87,7 @@
 (defn- rewrite-tree [code]
   (w/prewalk rewrite-node code))
 
-(defn- fix-newlines [src]
+(defn- fix-newlines ^String [src]
   "Hack to remove a few newlines that make indentation much uglier.
   After this, intellij can indent the code properly"
   (-> src
