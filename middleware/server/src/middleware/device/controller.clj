@@ -307,10 +307,10 @@
                    :middleware middleware-time))
     (add-pseudo-var! "__delta" delta)
     (let [report-interval (-> @state :reporting :interval)
-          report-interval-inc (cfg/get-config :report-interval-inc 1)
+          report-interval-inc (cfg/get-config :report-interval-inc 5)
           delta-smooth (Math/abs (rb/avg timing-diffs))
           delta-threshold-min (cfg/get-config :delta-threshold-min 1)
-          delta-threshold-max (cfg/get-config :delta-threshold-max 5)]
+          delta-threshold-max (cfg/get-config :delta-threshold-max 25)]
       (add-pseudo-var! "__delta_smooth" delta-smooth)
       (add-pseudo-var! "__report_interval" report-interval)
       ; If the delta-smooth goes below the min we decrement the report-interval
@@ -535,7 +535,7 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :timing {:diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 50))
+                    :timing {:diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 10))
                              :arduino nil
                              :middleware nil}
                     :reporting {:pins #{}
