@@ -308,13 +308,6 @@
                    :arduino arduino-time
                    :middleware middleware-time))
     (add-pseudo-var! "__delta" delta)
-
-    ; TODO(Richo): Move to process-profile
-    (if-let [vm-ticks (-> @state :profiler :ticks)]
-      (add-pseudo-var! "__tps" (* 10 vm-ticks)))
-    (if-let [vm-report-interval (-> @state :profiler :report-interval)]
-      (add-pseudo-var! "__vm-report-interval" vm-report-interval))
-
     (let [report-interval (-> @state :reporting :interval)
           report-interval-inc (cfg/get-config :report-interval-inc 1)
           delta-smooth (Math/abs (rb/avg timing-diffs))
@@ -416,9 +409,8 @@
                :profiler {:ticks value
                           :interval-ms 100
                           :report-interval report-interval})
-        #_(logger/warning "REPORT_INTERVAL: %1 (%2 ticks/s)"
-                        report-interval
-                        (* 10 value)))))
+        (add-pseudo-var! "__tps" (* 10 value))
+        (add-pseudo-var! "__vm-report-interval" report-interval))))
 
 (defn- process-coroutine-state [in]
   (go (let [index (<? in)
