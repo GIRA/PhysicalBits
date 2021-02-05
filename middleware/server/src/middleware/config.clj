@@ -1,5 +1,7 @@
 (ns middleware.config
-  (:require [clojure.java.io :as io]
+  (:refer-clojure :exclude [get])
+  (:require [clojure.core :as clj-core]
+            [clojure.java.io :as io]
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]))
 
@@ -15,31 +17,21 @@
       nil)
     (catch Throwable _ nil)))
 
-(defn- read-config* [file]
+(defn- read-config [file]
   (let [path (.getAbsolutePath file)
         last-modified (.lastModified file)
-        entry (get @cache path)]
+        entry (clj-core/get @cache path)]
     (if (= last-modified
-           (get entry :last-modified))
-      (get entry :content)
+           (clj-core/get entry :last-modified))
+      (clj-core/get entry :content)
       (let [content (edn/read-string (read-file file))]
         (swap! cache assoc path {:last-modified last-modified
                                  :content content})
         content))))
 
-(defn read-config
-  ([] (read-config PATH))
-  ([path] (read-config* (io/file path))))
+(defn get-all
+  ([] (get-all PATH))
+  ([path] (read-config (io/file path))))
 
-(defn get-config [key default-value]
-  (get (read-config) key default-value))
-
-(comment
- (.lastModified (io/file "RICHO"))
- (read-config)
- (get @cache :last-modified)
- (slurp "RICHO")
- (get (read-config "RICHO2") :report-interval 45)
- (get-in (read-config) [:reporting-thresholds 0] 10)
-@cache
- ,)
+(defn get [key default-value]
+  (clj-core/get (get-all) key default-value))

@@ -14,7 +14,7 @@
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]
-            [middleware.config :as cfg]
+            [middleware.config :as config]
             [middleware.device.utils.ring-buffer :as rb])
   (:import (java.net Socket)))
 
@@ -94,7 +94,7 @@
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn- add-pseudo-var! [name value]
-  (if (cfg/get-config :pseudo-vars? false)
+  (if (config/get :pseudo-vars? false)
     (let [now (or (-> @state :timing :arduino) 0)]
       (swap! state
              #(-> %
@@ -233,8 +233,8 @@
 
 (defn set-report-interval [interval]
   (let [interval (int (constrain interval
-                                 (cfg/get-config :report-interval-min 0)
-                                 (cfg/get-config :report-interval-max 100)))]
+                                 (config/get :report-interval-min 0)
+                                 (config/get :report-interval-max 100)))]
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
@@ -307,10 +307,10 @@
                    :middleware middleware-time))
     (add-pseudo-var! "__delta" delta)
     (let [report-interval (-> @state :reporting :interval)
-          report-interval-inc (cfg/get-config :report-interval-inc 5)
+          report-interval-inc (config/get :report-interval-inc 5)
           delta-smooth (Math/abs (rb/avg timing-diffs))
-          delta-threshold-min (cfg/get-config :delta-threshold-min 1)
-          delta-threshold-max (cfg/get-config :delta-threshold-max 25)]
+          delta-threshold-min (config/get :delta-threshold-min 1)
+          delta-threshold-max (config/get :delta-threshold-max 25)]
       (add-pseudo-var! "__delta_smooth" delta-smooth)
       (add-pseudo-var! "__report_interval" report-interval)
       ; If the delta-smooth goes below the min we decrement the report-interval
@@ -465,7 +465,7 @@
     (when (connected?)
       ; If we have pseudo vars, remove old ones (older than 1s)
       (if-not (zero? (count (-> @state :pseudo-vars :data)))
-        (if (cfg/get-config :pseudo-vars? false)
+        (if (config/get :pseudo-vars? false)
           (swap! state update-in [:pseudo-vars :data]
                  #(let [limit (- (or (get-in @state [:pseudo-vars :timestamp]) 0) 1000)]
                     (into {} (remove (fn [[_ value]] (< (:ts value) limit)) %))))
@@ -535,12 +535,12 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :timing {:diffs (rb/make-ring-buffer (cfg/get-config :timing-diffs-size 10))
+                    :timing {:diffs (rb/make-ring-buffer (config/get :timing-diffs-size 10))
                              :arduino nil
                              :middleware nil}
                     :reporting {:pins #{}
                                 :globals #{}})
-             (set-report-interval (cfg/get-config :report-interval-min 0))
+             (set-report-interval (config/get :report-interval-min 0))
              (keep-alive port)
              (process-input in)
              (start-reporting)
