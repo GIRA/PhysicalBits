@@ -19,7 +19,8 @@
   (:import (java.net Socket)))
 
 (comment
-
+  (set! *unchecked-math* :warn-on-boxed)
+  (defn m [a b] (+ (* a a) (* b b)))
  (start-profiling)
  (stop-profiling)
 
