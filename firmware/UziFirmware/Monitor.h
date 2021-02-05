@@ -45,9 +45,10 @@ private:
 	uint16 tickCount = 0;
 
 	bool sent : 1; // TODO(Richo)
+	uint8 reportInterval : 7;
 	bool profiling : 1;
-	bool fixedReportInterval : 1;
-	uint16 reportInterval : 13;
+	uint8 minReportInterval : 7;
+
 	// TODO(Richo): Add a separate middlewareReportInterval variable that sets the min value for 
 	// the reportInterval if fixedReportInterval is set. This way, if the middleware is slow it
 	// can specify a report interval, but if this value is still too much for the VM and performance

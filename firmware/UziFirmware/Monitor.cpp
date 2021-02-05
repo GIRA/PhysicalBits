@@ -108,7 +108,7 @@ void Monitor::acceptConnection()
 	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
 	if (in != expected) return;
 
-	fixedReportInterval = false;
+	minReportInterval = 0;
 	reportInterval = 25;
 	state = CONNECTED;
 
@@ -154,13 +154,15 @@ void Monitor::sendProfile()
 			serial->write(reportInterval);
 		}
 
-		if (!fixedReportInterval)
-		{
-			if (tps < 2000) { reportInterval += 1; }
-			else { reportInterval -= 1; }
+		if (tps < 2000) { reportInterval += 1; }
+		else { reportInterval -= 1; }
 
-			if (reportInterval < 5) { reportInterval = 5; }
-			else if (reportInterval > 50) { reportInterval = 50; }
+		if (reportInterval < 5) { reportInterval = 5; }
+		else if (reportInterval > 50) { reportInterval = 50; }
+
+		if (reportInterval < minReportInterval) 
+		{ 
+			reportInterval = minReportInterval; 
 		}
 
 		tickCount = 0;
@@ -571,15 +573,7 @@ void Monitor::executeSetReportInterval()
 	uint16 interval = stream.nextLong(2, timeout);
 	if (timeout) return;
 
-	if (interval == 0) 
-	{
-		fixedReportInterval = false;
-	}
-	else 
-	{
-		fixedReportInterval = true;
-		reportInterval = interval;
-	}
+	minReportInterval = interval;
 }
 
 void Monitor::executeSetGlobal(Program* program)
