@@ -115,47 +115,48 @@
   (json-response "OK"))
 
 (defn- format-server-state [state output]
-  (-> state
+  {:isConnected (:connected? state)
+   :portName (:port-name state)
+   :availablePorts (:available-ports state)
 
-      ; NOTE(Richo): First we remove all the keys we don't need
-      (dissoc :connected? :port :port-name :board :reporting :scripts :profiler :available-ports :timing)
+   :memory (:memory state)
+   :pins {:timestamp (-> state :pins :timestamp)
+          :available (mapv (fn [pin-name]
+                             {:name pin-name
+                              :reporting (contains? (-> state :reporting :pins)
+                                                    pin-name)})
+                           (-> state :board :pin-names))
+          :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
+                                                  (:name pin)))
+                             (-> state :pins :data vals))}
 
-      ; NOTE(Richo): And then we add the missing keys
-      (assoc :isConnected (:connected? state)
-             :portName (:port-name state)
-             :availablePorts (:available-ports state)
-             :pins {:timestamp (-> state :pins :timestamp)
-                    :available (mapv (fn [pin-name]
-                                       {:name pin-name
-                                        :reporting (contains? (-> state :reporting :pins)
-                                                              pin-name)})
-                                     (-> state :board :pin-names))
-                    :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
-                                                            (:name pin)))
-                                       (-> state :pins :data vals))}
-             :globals {:timestamp (-> state :globals :timestamp)
-                       :available (mapv (fn [{global-name :name}]
-                                          {:name global-name
-                                           :reporting (contains? (-> state :reporting :globals)
-                                                                 global-name)})
-                                        (filter :name
-                                                (-> state :program :running :compiled :globals)))
-                       :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                                                  (:name global)))
-                                          (-> state :globals :data vals))}
-             :pseudo-vars {:timestamp (-> state :pseudo-vars :timestamp)
-                           :available (mapv (fn [[name _]] {:name name :reporting true})
-                                            (-> state :pseudo-vars :data))
-                           :elements (-> state :pseudo-vars :data vals)}
-             :output output
-             :program (let [program (-> state :program :current)]
-                        (-> program
-                            (select-keys [:type :src :compiled])
-                            (assoc :ast (:original-ast program))))
-             :tasks (mapv (fn [s] {:scriptName (:name s)
-                                   :isRunning (:running? s)
-                                   :isError (:error? s)})
-                          (filter :task? (-> state :scripts vals))))))
+   :globals {:timestamp (-> state :globals :timestamp)
+             :available (mapv (fn [{global-name :name}]
+                                {:name global-name
+                                 :reporting (contains? (-> state :reporting :globals)
+                                                       global-name)})
+                              (filter :name
+                                      (-> state :program :running :compiled :globals)))
+             :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
+                                                        (:name global)))
+                                (-> state :globals :data vals))}
+
+   :pseudo-vars {:timestamp (-> state :pseudo-vars :timestamp)
+                 :available (mapv (fn [[name _]] {:name name :reporting true})
+                                  (-> state :pseudo-vars :data))
+                 :elements (-> state :pseudo-vars :data vals)}
+
+   :output output
+
+   :program (let [program (-> state :program :current)]
+              (-> program
+                  (select-keys [:type :src :compiled])
+                  (assoc :ast (:original-ast program))))
+
+   :tasks (mapv (fn [s] {:scriptName (:name s)
+                         :isRunning (:running? s)
+                         :isError (:error? s)})
+                (filter :task? (-> state :scripts vals)))})
 
 (defn- get-server-state []
   (format-server-state @device/state (logger/read-entries!)))
