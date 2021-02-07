@@ -127,8 +127,8 @@ let Plotter = (function () {
   }
 
   function update(state, old) {
-    if (!state.isConnected) return;
-    if (!old.isConnected && state.isConnected) {
+    if (!state.connection.isConnected) return;
+    if (!old.connection.isConnected && state.connection.isConnected) {
       series.forEach(s => { s.data = []; });
     }
     var toRemove = new Set(observed);

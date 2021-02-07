@@ -1240,7 +1240,7 @@ const fs = require('fs');
     $("#connect-button").attr("disabled", "disabled");
     $("#port-dropdown").attr("disabled", "disabled");
     if (selectedPort == "automatic") {
-      let availablePorts = Uzi.state.availablePorts;
+      let availablePorts = Uzi.state.connection.availablePorts;
       if (availablePorts.length == 0) {
         appendToOutput({text: "No available ports found", type: "error"});
         connecting = false;
@@ -1344,7 +1344,7 @@ const fs = require('fs');
 
   function updateConnection (newState, previousState) {
     if (previousState == null
-        || (!previousState.isConnected && newState.isConnected)) {
+        || (!previousState.connection.isConnected && newState.connection.isConnected)) {
       scheduleAutorun(true, "UPDATE CONNECTION!");
     }
   }
@@ -1401,7 +1401,7 @@ const fs = require('fs');
       $("#file-dirty").hide();
     }
 
-    let connected = Uzi.state.isConnected;
+    let connected = Uzi.state.connection.isConnected;
     let interactive = $("#interactive-checkbox").get(0).checked;
     let action = connected && interactive ? Uzi.run : Uzi.compile;
     let actionName = action.name.toUpperCase();
@@ -1439,7 +1439,7 @@ const fs = require('fs');
 
   function updateTopBar() {
     if (connecting) return;
-    if (Uzi.state.isConnected) {
+    if (Uzi.state.connection.isConnected) {
       $("#connect-button").hide();
       $("#disconnect-button").show();
       $("#disconnect-button").attr("disabled", null);
@@ -1447,7 +1447,7 @@ const fs = require('fs');
       $("#run-button").attr("disabled", null);
       $("#more-buttons").attr("disabled", null);
       $("#install-button").attr("disabled", null);
-      setSelectedPort(Uzi.state.portName);
+      setSelectedPort(Uzi.state.connection.portName);
     } else {
       $("#disconnect-button").hide();
       $("#connect-button").show();
@@ -1467,7 +1467,7 @@ const fs = require('fs');
       if ($children[i].id == "port-dropdown-divider") break;
       $children[i].remove();
     }
-    let availablePorts = Uzi.state.availablePorts || [];
+    let availablePorts = Uzi.state.connection.availablePorts || [];
     let ports = availablePorts.concat(userPorts.filter(p => availablePorts.indexOf(p) < 0));
     ports.forEach(port => {
       $("<option>")
@@ -1573,7 +1573,7 @@ const fs = require('fs');
 
         let old = $item.data("old-value");
         let cur = val.value;
-        if (cur != null && cur != old && Uzi.state.isConnected) {
+        if (cur != null && cur != old && Uzi.state.connection.isConnected) {
           $item.data("old-value", cur);
           $item.data("last-update", +new Date());
           $item.removeClass("text-muted");
@@ -1612,7 +1612,7 @@ const fs = require('fs');
   function updateTasksPanel() {
     // TODO(Richo): Update in place, don't clear and recreate.
     $("#tasks-table tbody").html("");
-    if (!Uzi.state.isConnected) return;
+    if (!Uzi.state.connection.isConnected) return;
 
     for (let i = 0; i < Uzi.state.tasks.length; i++) {
       let task = Uzi.state.tasks[i];
@@ -1640,7 +1640,7 @@ const fs = require('fs');
   }
 
   function updateMemoryPanel() {
-    if (Uzi.state.isConnected) {
+    if (Uzi.state.connection.isConnected) {
       $("#arduino-memory").text(Uzi.state.memory.arduino);
       $("#uzi-memory").text(Uzi.state.memory.uzi);
     } else {

@@ -115,10 +115,9 @@
   (json-response "OK"))
 
 (defn- format-server-state [state output]
-  {:isConnected (:connected? state)
-   :portName (:port-name state)
-   :availablePorts (:available-ports state)
-
+  {:connection {:isConnected (:connected? state)
+                :portName (:port-name state)
+                :availablePorts (:available-ports state)}
    :memory (:memory state)
    :pins {:timestamp (-> state :pins :timestamp)
           :available (mapv (fn [pin-name]
