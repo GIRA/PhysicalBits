@@ -114,51 +114,73 @@
     (device/stop-profiling))
   (json-response "OK"))
 
-(defn- format-server-state [state output]
-  {:connection {:isConnected (:connected? state)
-                :portName (:port-name state)
-                :availablePorts (:available-ports state)}
-   :memory (:memory state)
-   :pins {:timestamp (-> state :pins :timestamp)
-          :available (mapv (fn [pin-name]
-                             {:name pin-name
-                              :reporting (contains? (-> state :reporting :pins)
-                                                    pin-name)})
-                           (-> state :board :pin-names))
-          :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
-                                                  (:name pin)))
-                             (-> state :pins :data vals))}
+(defn- get-connection-data [state]
+  {:isConnected (:connected? state)
+   :portName (:port-name state)
+   :availablePorts (:available-ports state)})
 
-   :globals {:timestamp (-> state :globals :timestamp)
-             :available (mapv (fn [{global-name :name}]
-                                {:name global-name
-                                 :reporting (contains? (-> state :reporting :globals)
-                                                       global-name)})
-                              (filter :name
-                                      (-> state :program :running :compiled :globals)))
-             :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                                        (:name global)))
-                                (-> state :globals :data vals))}
+(defn- get-memory-data [state]
+  (:memory state))
 
-   :pseudo-vars {:timestamp (-> state :pseudo-vars :timestamp)
-                 :available (mapv (fn [[name _]] {:name name :reporting true})
-                                  (-> state :pseudo-vars :data))
-                 :elements (-> state :pseudo-vars :data vals)}
+(defn- get-tasks-data [state]
+  (mapv (fn [s] {:scriptName (:name s)
+                 :isRunning (:running? s)
+                 :isError (:error? s)})
+        (filter :task? (-> state :scripts vals))))
 
-   :output output
+(defn- get-pins-data [state]
+  {:timestamp (-> state :pins :timestamp)
+   :available (mapv (fn [pin-name]
+                      {:name pin-name
+                       :reporting (contains? (-> state :reporting :pins)
+                                             pin-name)})
+                    (-> state :board :pin-names))
+   :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
+                                           (:name pin)))
+                      (-> state :pins :data vals))})
 
-   :program (let [program (-> state :program :current)]
-              (-> program
-                  (select-keys [:type :src :compiled])
-                  (assoc :ast (:original-ast program))))
+(defn- get-globals-data [state]
+  {:timestamp (-> state :globals :timestamp)
+   :available (mapv (fn [{global-name :name}]
+                      {:name global-name
+                       :reporting (contains? (-> state :reporting :globals)
+                                             global-name)})
+                    (filter :name
+                            (-> state :program :running :compiled :globals)))
+   :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
+                                              (:name global)))
+                      (-> state :globals :data vals))})
 
-   :tasks (mapv (fn [s] {:scriptName (:name s)
-                         :isRunning (:running? s)
-                         :isError (:error? s)})
-                (filter :task? (-> state :scripts vals)))})
+(defn- get-pseudo-vars-data [state]
+  {:timestamp (-> state :pseudo-vars :timestamp)
+   :available (mapv (fn [[name _]] {:name name :reporting true})
+                    (-> state :pseudo-vars :data))
+   :elements (-> state :pseudo-vars :data vals)})
+
+(defn- get-program-data [state]
+  (let [program (-> state :program :current)]
+    (-> program
+        (select-keys [:type :src :compiled])
+        (assoc :ast (:original-ast program)))))
+
+(defn- get-output-data []
+  (logger/read-entries!))
 
 (defn- get-server-state []
-  (format-server-state @device/state (logger/read-entries!)))
+  (let [state @device/state]
+    {:connection (get-connection-data state)
+     :memory (get-memory-data state)
+     :tasks (get-tasks-data state)
+     :output (get-output-data)
+     :pins (get-pins-data state)
+     :globals (get-globals-data state)
+     :pseudo-vars (get-pseudo-vars-data state)
+     :program (get-program-data state)}))
+
+(defn- get-state-diff [old-state new-state]
+  (select-keys new-state
+               (filter #(not= (% old-state) (% new-state))
+                       (keys new-state))))
 
 (def ^:private updates (a/chan))
 (def ^:private updates-pub (a/pub updates :type))
@@ -170,9 +192,10 @@
   (when (compare-and-set! update-loop? false true)
     (a/go-loop [old-state nil]
       (when @update-loop?
-        (let [new-state (get-server-state)]
-          (when (not= old-state new-state)
-            (a/>! updates {:type :update, :state (json/encode new-state)}))
+        (let [new-state (get-server-state)
+              diff (get-state-diff old-state new-state)]
+          (when-not (empty? diff)
+            (a/>! updates {:type :update, :state (json/encode diff)}))
           (a/<! (a/timeout 100))
           (recur new-state))))))
 

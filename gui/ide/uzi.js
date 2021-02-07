@@ -10,7 +10,6 @@ let Uzi = (function () {
   };
 
 
-
   let Uzi = {
     state: null,
     serverAvailable: true,
@@ -143,8 +142,12 @@ let Uzi = (function () {
   }
 
   function update(data) {
-    let previousState = Uzi.state;
-    Uzi.state = data;
+    let previousState = JSON.parse(JSON.stringify(Uzi.state)); // TODO(Richo)
+    if (Uzi.state == null) {
+      Uzi.state = data;
+    } else {
+      Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
+    }
     observers["update"].forEach(function (fn) {
       try {
         fn(Uzi.state, previousState);
@@ -166,7 +169,9 @@ let Uzi = (function () {
           Uzi.serverAvailable = true;
           socket.onmessage = function (evt) {
             try {
-              let data = fixInvalidJSONFloats(JSON.parse(evt.data));
+              let msg = evt.data;
+              console.log(msg.length);
+              let data = fixInvalidJSONFloats(JSON.parse(msg));
               update(data);
               if (!msgReceived) {
                 msgReceived = true;
