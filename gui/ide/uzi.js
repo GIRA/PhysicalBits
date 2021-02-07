@@ -142,7 +142,12 @@ let Uzi = (function () {
   }
 
   function update(data) {
-    let previousState = JSON.parse(JSON.stringify(Uzi.state)); // TODO(Richo)
+    /*
+    TODO(Richo): This parse/stringify pattern for deep-cloning the object doesn't
+    support Infinity or NaN (because JSON sucks). Either clone the object properly
+    or fix the special floats. Otherwise this is just a bug waiting to happen.
+    */
+    let previousState = JSON.parse(JSON.stringify(Uzi.state));
     if (Uzi.state == null) {
       Uzi.state = data;
     } else {
@@ -170,7 +175,6 @@ let Uzi = (function () {
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
-              console.log(msg.length);
               let data = fixInvalidJSONFloats(JSON.parse(msg));
               update(data);
               if (!msgReceived) {
