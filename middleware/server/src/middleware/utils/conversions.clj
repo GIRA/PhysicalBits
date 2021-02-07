@@ -32,8 +32,13 @@
     (float value)
     value))
 
+(defn- NaN? [^double value]
+  (not (== value value)))
+
 (defn try-integer [value]
-  (let [int-val (unchecked-int value)]
-    (if (= 0 (compare int-val value))
-      int-val
-      value)))
+  (if (NaN? value)
+    value
+    (let [int-val (unchecked-int value)]
+      (if (= 0 (compare int-val value))
+        int-val
+        value))))

@@ -13,6 +13,11 @@
   (register-program! ast)
   (:compiled (cc/compile-tree ast "")))
 
+(deftest constants-support-special-floats
+  (is (= ##Inf (:value (emit/constant ##Inf))))
+  (is (= ##-Inf (:value (emit/constant ##-Inf))))
+  (is (Double/isNaN (:value (emit/constant ##NaN)))))
+
 (deftest
   empty-program-test
   (let [ast (ast/program-node
