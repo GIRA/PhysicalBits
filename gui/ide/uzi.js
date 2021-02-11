@@ -11,7 +11,7 @@ let Uzi = (function () {
 
 
   let Uzi = {
-    state: null,
+    state: {},
     serverAvailable: true,
     socket: null,
 
@@ -143,11 +143,8 @@ let Uzi = (function () {
 
   function update(data) {
     let previousState = deepClone(Uzi.state);
-    if (Uzi.state == null) {
-      Uzi.state = data;
-    } else {
-      Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
-    }
+    Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
+    
     observers["update"].forEach(function (fn) {
       try {
         fn(Uzi.state, previousState);
