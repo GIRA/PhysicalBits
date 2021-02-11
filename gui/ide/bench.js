@@ -14,15 +14,24 @@ function run() {
     temp = JSONX.parse(test_data);
   });
   */
-
+  /*
   test_data = JSONX.parse(test_data);
-
   var temp = null;
   suite.add('JSON.stringify(..)', function() {
     temp = JSON.stringify(test_data);
   });
   suite.add('JSONX.stringify(..)', function() {
     temp = JSONX.stringify(test_data);
+  });
+  */
+
+  test_data = JSONX.parse(test_data);
+  var temp = null;
+  suite.add('deepClone (JSONX)', function () {
+    temp = JSONX.parse(JSONX.stringify(test_data));
+  });
+  suite.add('deepClone (utils.js)', function () {
+    temp = deepClone(test_data)
   });
 
   // add listeners
