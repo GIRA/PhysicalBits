@@ -143,11 +143,10 @@ let Uzi = (function () {
 
   function update(data) {
     /*
-    TODO(Richo): This parse/stringify pattern for deep-cloning the object doesn't
-    support Infinity or NaN (because JSON sucks). Either clone the object properly
-    or fix the special floats. Otherwise this is just a bug waiting to happen.
+    TODO(Richo): Using JSONX stringify/parse is probably slower than deep cloning
+    the object manually. Benchmark and refactor!
     */
-    let previousState = JSON.parse(JSON.stringify(Uzi.state));
+    let previousState = JSONX.parse(JSONX.stringify(Uzi.state));
     if (Uzi.state == null) {
       Uzi.state = data;
     } else {
