@@ -256,15 +256,15 @@ let BlocksToAST = (function () {
 	let dispatchTable =  {
 		// TODO(Richo)
 		here_be_dragons_stmt: function (block, ctx, stream) {
-			let node = JSON.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.children[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_expr: function (block, ctx, stream) {
-			let node = JSON.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.children[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_script: function (block, ctx, stream) {
-			let node = JSON.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.children[0].textContent);
 			stream.push(node);
 		},
 		import: function (block, ctx, stream) {
@@ -273,7 +273,7 @@ let BlocksToAST = (function () {
 
 			// NOTE(Richo): Instead of creating the block here we just add the import to the ctx
 			ctx.addImport(alias, path, function () {
-				return JSON.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
+				return JSONX.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
 			});
 		},
 		task: function (block, ctx, stream) {

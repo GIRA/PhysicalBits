@@ -938,7 +938,7 @@ const fs = require('fs');
         blockly: UziBlock.getProgram(),
         code: getTextualCode(),
       };
-      let json = JSON.stringify(data);
+      let json = JSONX.stringify(data);
       return json;
     }
 
@@ -976,12 +976,12 @@ const fs = require('fs');
 	function restoreFromLocalStorage() {
     try {
       let ui = {
-        settings: JSON.parse(localStorage["uzi.settings"] || "null"),
+        settings: JSONX.parse(localStorage["uzi.settings"] || "null"),
         fileName: localStorage["uzi.fileName"] || "",
-        layout: JSON.parse(localStorage["uzi.layout"] || "null"),
-        blockly: JSON.parse(localStorage["uzi.blockly"] || "null"),
+        layout: JSONX.parse(localStorage["uzi.layout"] || "null"),
+        blockly: JSONX.parse(localStorage["uzi.blockly"] || "null"),
         code: localStorage["uzi.code"],
-        ports: JSON.parse(localStorage["uzi.ports"] || "null"),
+        ports: JSONX.parse(localStorage["uzi.ports"] || "null"),
       };
       setUIState(ui);
       if (ui.fileName == "" && ui.blockly == null && ui.code == null) {
@@ -999,12 +999,12 @@ const fs = require('fs');
     if (LayoutManager.getLayoutConfig() == undefined) return;
 
     let ui = getUIState();
-    localStorage["uzi.settings"] = JSON.stringify(ui.settings);
+    localStorage["uzi.settings"] = JSONX.stringify(ui.settings);
     localStorage["uzi.fileName"] = ui.fileName;
-    localStorage["uzi.layout"] = JSON.stringify(ui.layout);
-    localStorage["uzi.blockly"] = JSON.stringify(ui.blockly);
+    localStorage["uzi.layout"] = JSONX.stringify(ui.layout);
+    localStorage["uzi.blockly"] = JSONX.stringify(ui.blockly);
     localStorage["uzi.code"] = ui.code;
-    localStorage["uzi.ports"] = JSON.stringify(ui.ports);
+    localStorage["uzi.ports"] = JSONX.stringify(ui.ports);
 
     if ($("#autosave-checkbox").get(0).checked && $("#file-name").text()) {
       saveProject();
@@ -1094,7 +1094,7 @@ const fs = require('fs');
       return undefined;
     }
 
-    let program = JSON.parse(contents);
+    let program = JSONX.parse(contents);
     let blockly = readFirst(program, ["blockly", "blocks"]);
     let code = readFirst(program, ["code", "program"]);
 
@@ -1421,7 +1421,7 @@ const fs = require('fs');
   function getBlocklyCode() {
     try {
       let code = UziBlock.getGeneratedCode();
-      return JSON.stringify(code);
+      return JSONX.stringify(code);
     } catch (err) {
       console.log(err);
       return "";

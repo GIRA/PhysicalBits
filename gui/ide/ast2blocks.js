@@ -875,7 +875,7 @@ let ASTToBlocks = (function () {
 		appendField(node, "path", json.path);
 
 		// TODO(Richo): Store initialization block as comment or generate blocks?
-		let code = JSON.stringify(json.initializationBlock, null, 2);
+		let code = JSONX.stringify(json.initializationBlock, null, 2);
 		let comment = create("comment");
 		comment.setAttribute("pinned", "false");
 		comment.setAttribute("h", "160");
@@ -894,7 +894,7 @@ let ASTToBlocks = (function () {
 		TODO(Richo): Get actual code to show in the comment and maybe make it visible
 		in a read-only field. The ast should probably be preserved anyway.
 		*/
-		let ast = JSON.stringify(stmt, null, 2);
+		let ast = JSONX.stringify(stmt, null, 2);
 		let comment = create("comment");
 		comment.setAttribute("pinned", "false");
 		comment.setAttribute("h", "160");
