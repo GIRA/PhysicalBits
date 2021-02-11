@@ -142,11 +142,7 @@ let Uzi = (function () {
   }
 
   function update(data) {
-    /*
-    TODO(Richo): Using JSONX stringify/parse is probably slower than deep cloning
-    the object manually. Benchmark and refactor!
-    */
-    let previousState = JSONX.parse(JSONX.stringify(Uzi.state));
+    let previousState = deepClone(Uzi.state);
     if (Uzi.state == null) {
       Uzi.state = data;
     } else {
