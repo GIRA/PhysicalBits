@@ -5,8 +5,8 @@ let JSONX = (function () {
   in the JSON object resulting from a server response. Since JSON	doesn't handle
   these values correctly I'm encoding them in a special way.
   */
-  function fixInvalidJSONFloats(obj) {
-    if (obj instanceof Array) return obj.map(fixInvalidJSONFloats);
+  function decodeSpecialFloats(obj) {
+    if (obj instanceof Array) return obj.map(decodeSpecialFloats);
     if (typeof obj != "object") return obj;
     if (obj === null) return null;
     if (obj === undefined) return undefined;
@@ -19,27 +19,13 @@ let JSONX = (function () {
 
     let value = {};
     for (let m in obj) {
-      value[m] = fixInvalidJSONFloats(obj[m]);
-    }
-    return value;
-  }
-
-  function reviveSpecialFloats(key, value) {
-    if (typeof value != "object") return value;
-    if (value === null) return null;
-    if (value === undefined) return undefined;
-
-    if (value["___INF___"] !== undefined) {
-      return Infinity * value["___INF___"];
-    } else if (value["___NAN___"] !== undefined) {
-      return NaN;
+      value[m] = decodeSpecialFloats(obj[m]);
     }
     return value;
   }
 
   return {
-    parse1: str => fixInvalidJSONFloats(JSON.parse(str)),
-    parse2: str => JSON.parse(str, reviveSpecialFloats),
+    parse: str => decodeSpecialFloats(JSON.parse(str)),
   }
 
 })();
