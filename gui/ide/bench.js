@@ -5,8 +5,8 @@ function run() {
 
   var suite = new Benchmark.Suite;
   // add tests
-  var temp = null;
   /*
+  var temp = null;
   suite.add('JSON.parse(..)', function() {
     temp = JSON.parse(test_data);
   });
@@ -14,6 +14,16 @@ function run() {
     temp = JSONX.parse(test_data);
   });
   */
+
+  test_data = JSONX.parse(test_data);
+
+  var temp = null;
+  suite.add('JSON.stringify(..)', function() {
+    temp = JSON.stringify(test_data);
+  });
+  suite.add('JSONX.stringify(..)', function() {
+    temp = JSONX.stringify(test_data);
+  });
 
   // add listeners
   suite.on('cycle', function(event) {
@@ -23,7 +33,7 @@ function run() {
     console.log('Fastest is ' + this.filter('fastest').map('name'));
     console.log(temp);
   });
-  
+
   suite.run();
 }
 
