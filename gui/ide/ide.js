@@ -657,19 +657,6 @@ const fs = require('fs');
 
     function appendVariableRow(i, variable, usedVariables) {
 
-      function createNumberInput(controlValue, controlName, validationFn) {
-        let input = $("<input>")
-          .attr("type", "number")
-          .addClass("form-control")
-          .addClass("text-center")
-          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
-          .attr("name", controlName);
-        if (validationFn != undefined) {
-          input.on("keyup", validationFn);
-        }
-        input.get(0).value = controlValue;
-        return input;
-      }
       // TODO(Richo): Refactor!
       function createTextInput(controlValue, controlName, validationFn) {
         let input = $("<input>")
@@ -713,7 +700,7 @@ const fs = require('fs');
       let tr = $("<tr>")
         .append($("<input>").attr("type", "hidden").attr("name", "variables[" + i + "][index]").attr("value", i))
         .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]", validateForm)))
-        .append($("<td>").append(createNumberInput(variable.value || "0", "variables[" + i + "][value]")));
+        .append($("<td>").append(createTextInput(variable.value || "0", "variables[" + i + "][value]")));
       tr.append($("<td>").append(createRemoveButton(tr)));
       $("#blockly-variables-modal-container-tbody").append(tr);
     }
