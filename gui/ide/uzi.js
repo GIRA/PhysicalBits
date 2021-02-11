@@ -175,7 +175,7 @@ let Uzi = (function () {
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
-              let data = fixInvalidJSONFloats(JSON.parse(msg));
+              let data = JSONX.parse(msg);
               update(data);
               if (!msgReceived) {
                 msgReceived = true;
@@ -195,30 +195,6 @@ let Uzi = (function () {
         reject(ex);
       }
     });
-  }
-
-	/*
-	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN
-	in the JSON object resulting from a server response. Since JSON	doesn't handle
-  these values correctly I'm encoding them in a special way.
-	*/
-  function fixInvalidJSONFloats(obj) {
-    if (obj instanceof Array) return obj.map(fixInvalidJSONFloats);
-    if (typeof obj != "object") return obj;
-    if (obj === null) return null;
-    if (obj === undefined) return undefined;
-
-    if (obj["___INF___"] !== undefined) {
-      return Infinity * obj["___INF___"];
-    } else if (obj["___NAN___"] !== undefined) {
-      return NaN;
-    }
-
-    let value = {};
-    for (let m in obj) {
-      value[m] = fixInvalidJSONFloats(obj[m]);
-    }
-    return value;
   }
 
   return Uzi;
