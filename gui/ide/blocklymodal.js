@@ -54,7 +54,7 @@ let BlocklyModal = (function () {
     let result = true;
     for (let i = 0; i < data.length; i++) {
       let row = data[i];
-      let input_group = inputs[i.toString()];
+      let input_group = inputs[row.index];
       if (!input_group) continue;
 
       let keys = Object.keys(row);
