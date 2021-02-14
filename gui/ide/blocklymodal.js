@@ -286,5 +286,3 @@ function test_modals() {
   }
   BlocklyModal.show(spec).then(data => console.log(data));
 }
-
-setTimeout(test_modals, 100);
