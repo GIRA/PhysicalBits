@@ -226,6 +226,7 @@ let BlocklyModal = (function () {
     return new Promise(res => {
       close = () => res(getFormData());
       $("#blockly-modal").modal("show");
+      validateForm();
     });
   }
 
