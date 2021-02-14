@@ -135,40 +135,6 @@ const fs = require('fs');
   }
 
   function initializeBlocklyMotorsModal() {
-    function getFormData() {
-      let data = $("#blockly-motors-modal-container").serializeJSON();
-      if (data.motors == undefined) return [];
-      return Object.keys(data.motors).map(k => data.motors[k]);
-    }
-
-    function validateForm() {
-      let inputs = $("#blockly-motors-modal").find("[name*='[name]']");
-      inputs.each(function () { this.classList.remove("is-invalid"); });
-
-      let valid = true;
-      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-      for (let i = 0; i < inputs.length; i++) {
-        let input_i = inputs.get(i);
-
-        // Check valid identifier
-        if (!regex.test(input_i.value)) {
-          input_i.classList.add("is-invalid");
-          valid = false;
-        }
-
-        // Check for duplicates
-        for (let j = i + 1; j < inputs.length; j++) {
-          let input_j = inputs.get(j);
-
-          if (input_i.value == input_j.value) {
-            input_i.classList.add("is-invalid");
-            input_j.classList.add("is-invalid");
-            valid = false;
-          }
-        }
-      }
-      return valid;
-    }
 
     function getUsedMotors() {
       let program = Uzi.state.program;
@@ -177,118 +143,40 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    function getDefaultMotor() {
-      let data = getFormData();
-      let motorNames = new Set(data.map(m => m.name));
-      let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
-      let i = 1;
-      while (motorNames.has(motor.name)) {
-        motor.name = "motor" + i;
-        i++;
-      }
-      return motor;
-    }
-
-    function appendMotorRow(i, motor, usedMotors) {
-      // TODO(Richo): Refactor!
-      function createTextInput(motorName, controlName, validationFn) {
-        let input = $("<input>")
-          .attr("type", "text")
-          .addClass("form-control")
-          .addClass("text-center")
-          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
-          .attr("name", controlName);
-        if (validationFn != undefined) {
-          input.on("keyup", validationFn);
-        }
-        input.get(0).value = motorName;
-        return input;
-      }
-      function createPinDropdown(motorPin, motorName) {
-        let select = $("<select>")
-          .addClass("form-control")
-          .attr("name", motorName);
-        Uzi.state.pins.available.forEach(function (pin) {
-          select.append($("<option>").text(pin.name));
-        });
-        select.get(0).value = motorPin;
-        return select;
-      }
-      function createRemoveButton(row) {
-        let btn = $("<button>")
-          .addClass("btn")
-          .addClass("btn-sm")
-          .attr("type", "button")
-          .append($("<i>")
-            .addClass("fas")
-            .addClass("fa-minus"));
-
-        if (usedMotors.has(motor.name)) {
-          btn
-            //.attr("disabled", "true")
-            .addClass("btn-outline-secondary")
-            .attr("data-toggle", "tooltip")
-            .attr("data-placement", "left")
-            .attr("title", i18n.translate("This motor is being used by the program!"))
-            .on("click", function () {
-              btn.tooltip("toggle");
-            });
-        } else {
-          btn
-            .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); validateForm(); });
-        }
-        return btn;
-      }
-      let tr = $("<tr>")
-        .append($("<input>").attr("type", "hidden").attr("name", "motors[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(motor.name, "motors[" + i + "][name]", validateForm)))
-        .append($("<td>").append(createPinDropdown(motor.enable, "motors[" + i + "][enable]")))
-        .append($("<td>").append(createPinDropdown(motor.fwd, "motors[" + i + "][fwd]")))
-        .append($("<td>").append(createPinDropdown(motor.bwd, "motors[" + i + "][bwd]")))
-      tr.append($("<td>").append(createRemoveButton(tr)));
-      $("#blockly-motors-modal-container-tbody").append(tr);
-    }
-
-    $("#add-motor-row-button").on("click", function () {
-      let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
-      appendMotorRow(nextIndex, getDefaultMotor(), getUsedMotors());
-    });
-
     UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", function () {
-      // Build modal UI
-      $("#blockly-motors-modal-container-tbody").html("");
-      let allMotors = UziBlock.getMotors();
+      let motors = UziBlock.getMotors();
       let usedMotors = getUsedMotors();
-      if (allMotors.length == 0) {
-        appendMotorRow(0, getDefaultMotor(), usedMotors);
-      } else {
-        allMotors.forEach(function (motor, i) {
-          appendMotorRow(i, motor, usedMotors);
-        });
-      }
-      $("#blockly-motors-modal").modal("show");
-      validateForm();
-    });
-
-    $("#blockly-motors-modal").on("hide.bs.modal", function (evt) {
-      if (!validateForm()) {
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
-        return;
-      }
-
-      let data = getFormData();
-      UziBlock.setMotors(data);
-      UziBlock.refreshToolbox();
-      saveToLocalStorage();
-      scheduleAutorun(true, "MOTOR UPDATE!");
-    });
-
-    $("#blockly-motors-modal-container").on("submit", function (e) {
-      e.preventDefault();
-      $("#blockly-motors-modal").modal("hide");
+      let spec = {
+        title: i18n.translate("Configure motors"),
+        cantRemoveMsg: i18n.translate("This motor is being used by the program!"),
+        defaultElement: (data) => {
+          let motorNames = new Set(data.map(m => m.name));
+          let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
+          let i = 1;
+          while (motorNames.has(motor.name)) {
+            motor.name = "motor" + i;
+            i++;
+          }
+          return motor;
+        },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("Motor name")},
+          {id: "enable", type: "pin", name: i18n.translate("Enable pin")},
+          {id: "fwd", type: "pin", name: i18n.translate("Forward pin")},
+          {id: "bwd", type: "pin", name: i18n.translate("Backward pin")},
+        ],
+        rows: motors.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedMotors.has(each.name);
+          return clone;
+        })
+      };
+      BlocklyModal.show(spec).then(data => {
+        UziBlock.setMotors(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "MOTOR UPDATE!");
+      });
     });
   }
 
