@@ -22,6 +22,11 @@ let BlocklyModal = (function () {
     close = nop;
   });
 
+  $("#blockly-modal-container").on("submit", function (e) {
+    e.preventDefault();
+    $("#blockly-modal").modal("hide");
+  });
+
   function getFormData() {
     let data = $("#blockly-modal-container").serializeJSON();
     if (data.elements == undefined) return [];
