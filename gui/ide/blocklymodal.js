@@ -64,7 +64,7 @@ let BlocklyModal = (function () {
         let col = spec.columns.find(c => c.id == key);
         if (!col) continue;
 
-        let validations = col.validations || [];
+        let validations = validationsByType[col.type] || [];
         if (validations.length > 0 && input) {
           let valid = validateInput(input, key, data, validations);
           result = result && valid;
@@ -119,7 +119,7 @@ let BlocklyModal = (function () {
       columns.forEach(col => {
         let buildInput = inputs[col.type] || inputs["text"];
         let value = row[col.id];
-        let validations = col.validations || [];
+        let validations = validationsByType[col.type] || [];
         tr.append($("<td>").append(buildInput(value, i, col.id, validations)));
       });
 
@@ -162,8 +162,8 @@ let BlocklyModal = (function () {
     });
   }
 
-  let inputs = {
-    "text": (value, i, id, validations) => {
+  let inputs = (function () {
+    let text = (value, i, id, validations) => {
       let input = $("<input>")
         .attr("type", "text")
         .addClass("form-control")
@@ -172,20 +172,59 @@ let BlocklyModal = (function () {
         .attr("name", "elements[" + i + "][" + id + "]");
       input.on("keyup", function () {
         if (validations.length == 0) return false;
-
         let data = getFormData();
         return validateInput(this, id, data, validations);
       });
       input.get(0).value = value;
       return input;
+    };
+    let pin = (value, i, id, validations) => {
+      let select = $("<select>")
+        .addClass("form-control")
+        .attr("name", "elements[" + i + "][" + id + "]");
+      Uzi.state.pins.available.forEach(function (pin) {
+        select.append($("<option>").text(pin.name));
+      });
+      select.get(0).value = value;
+      return select;
+    };
+
+    return {
+      text: text,
+      pin: pin,
+      identifier: text,
+      number: text
+    };
+  })();
+
+  let validationsByType = (function () {
+    let identifier = (id, value, data) => {
+      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+      return regex.test(value);
+    };
+    let unique = (id, value, data) => {
+      let other = data.map(each => each[id]);
+      return other.filter(each => each == value).length == 1;
+    };
+    let number = (id, value, data) => {
+      if (value == "Infinity") return true;
+      if (value == "-Infinity") return true;
+      if (value == "NaN") return true;
+      let regex = /^[0-9]+(\.[0-9]+)?$/;
+      return regex.test(value);
+    };
+
+    return {
+      identifier: [identifier, unique],
+      number: [number],
     }
-  }
+  })();
 
   function show(s) {
     spec = s;
     build();
     return new Promise(res => {
-      close = () => res(getFormData());  
+      close = () => res(getFormData());
       $("#blockly-modal").modal("show");
     });
   }
@@ -196,23 +235,6 @@ let BlocklyModal = (function () {
     // TODO(Richo): Testing
     getFormData: getFormData,
     getInputs: getInputs,
-    validations: {
-      identifier: (id, value, data) => {
-        let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-        return regex.test(value);
-      },
-      unique: (id, value, data) => {
-        let other = data.map(each => each[id]);
-        return other.filter(each => each == value).length == 1;
-      },
-      number: (id, value, data) => {
-        if (value == "Infinity") return true;
-        if (value == "-Infinity") return true;
-        if (value == "NaN") return true;
-        let regex = /^[0-9]+(\.[0-9]+)?$/;
-        return regex.test(value);
-      }
-    }
   };
 
 })();
@@ -232,11 +254,9 @@ function test_modals() {
       return element;
     },
     columns: [
-      {name: "Nombre del elemento", id: "elementName", type: "text",
-        validations: [BlocklyModal.validations.unique, BlocklyModal.validations.identifier]},
+      {name: "Nombre del elemento", id: "elementName", type: "identifier"},
       {name: "Pin del elemento", id: "elementPin", type: "pin"},
-      {name: "Num del elemento", id: "elementNum", type: "number",
-        validations: [BlocklyModal.validations.number]}
+      {name: "Num del elemento", id: "elementNum", type: "number"}
     ],
     rows: [
       {
