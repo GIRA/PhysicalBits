@@ -181,40 +181,6 @@ const fs = require('fs');
   }
 
   function initializeBlocklySonarsModal() {
-    function getFormData() {
-      let data = $("#blockly-sonars-modal-container").serializeJSON();
-      if (data.sonars == undefined) return [];
-      return Object.keys(data.sonars).map(k => data.sonars[k]);
-    }
-
-    function validateForm() {
-      let inputs = $("#blockly-sonars-modal").find("[name*='[name]']");
-      inputs.each(function () { this.classList.remove("is-invalid"); });
-
-      let valid = true;
-      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-      for (let i = 0; i < inputs.length; i++) {
-        let input_i = inputs.get(i);
-
-        // Check valid identifier
-        if (!regex.test(input_i.value)) {
-          input_i.classList.add("is-invalid");
-          valid = false;
-        }
-
-        // Check for duplicates
-        for (let j = i + 1; j < inputs.length; j++) {
-          let input_j = inputs.get(j);
-
-          if (input_i.value == input_j.value) {
-            input_i.classList.add("is-invalid");
-            input_j.classList.add("is-invalid");
-            valid = false;
-          }
-        }
-      }
-      return valid;
-    }
 
     function getUsedSonars() {
       let program = Uzi.state.program;
@@ -223,156 +189,44 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    function getDefaultSonar() {
-      let data = getFormData();
-      let sonarNames = new Set(data.map(m => m.name));
-      let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
-      let i = 1;
-      while (sonarNames.has(sonar.name)) {
-        sonar.name = "sonar" + i;
-        i++;
-      }
-      return sonar;
-    }
-
-    function appendSonarRow(i, sonar, usedSonars) {
-      // TODO(Richo): Refactor!
-      function createTextInput(controlValue, controlName, validationFn) {
-        let input = $("<input>")
-          .attr("type", "text")
-          .addClass("form-control")
-          .addClass("text-center")
-          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
-          .attr("name", controlName);
-        if (validationFn != undefined) {
-          input.on("keyup", validationFn);
-        }
-        input.get(0).value = controlValue;
-        return input;
-      }
-      function createPinDropdown(sonarPin, sonarName) {
-        let select = $("<select>")
-          .addClass("form-control")
-          .attr("name", sonarName);
-        Uzi.state.pins.available.forEach(function (pin) {
-          select.append($("<option>").text(pin.name));
-        });
-        select.get(0).value = sonarPin;
-        return select;
-      }
-      function createRemoveButton(row) {
-        let btn = $("<button>")
-          .addClass("btn")
-          .addClass("btn-sm")
-          .attr("type", "button")
-          .append($("<i>")
-            .addClass("fas")
-            .addClass("fa-minus"));
-
-        if (usedSonars.has(sonar.name)) {
-          btn
-            //.attr("disabled", "true")
-            .addClass("btn-outline-secondary")
-            .attr("data-toggle", "tooltip")
-            .attr("data-placement", "left")
-            .attr("title", i18n.translate("This sonar is being used by the program!"))
-            .on("click", function () {
-              btn.tooltip("toggle");
-            });
-        } else {
-          btn
-            .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); validateForm(); });
-        }
-        return btn;
-      }
-      let tr = $("<tr>")
-        .append($("<input>").attr("type", "hidden").attr("name", "sonars[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(sonar.name, "sonars[" + i + "][name]", validateForm)))
-        .append($("<td>").append(createPinDropdown(sonar.trig, "sonars[" + i + "][trig]")))
-        .append($("<td>").append(createPinDropdown(sonar.echo, "sonars[" + i + "][echo]")))
-        .append($("<td>").append(createTextInput(sonar.maxDist, "sonars[" + i + "][maxDist]")))
-      tr.append($("<td>").append(createRemoveButton(tr)));
-      $("#blockly-sonars-modal-container-tbody").append(tr);
-    }
-
-    $("#add-sonar-row-button").on("click", function () {
-      let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
-      appendSonarRow(nextIndex, getDefaultSonar(), getUsedSonars());
-    });
-
     UziBlock.getWorkspace().registerButtonCallback("configureSonars", function () {
-      // Build modal UI
-      $("#blockly-sonars-modal-container-tbody").html("");
-      let allSonars = UziBlock.getSonars();
+      let sonars = UziBlock.getSonars();
       let usedSonars = getUsedSonars();
-      if (allSonars.length == 0) {
-        appendSonarRow(0, getDefaultSonar(), usedSonars);
-      } else {
-        allSonars.forEach(function (sonar, i) {
-          appendSonarRow(i, sonar, usedSonars);
-        });
-      }
-      $("#blockly-sonars-modal").modal("show");
-      validateForm();
-    });
-
-    $("#blockly-sonars-modal").on("hide.bs.modal", function (evt) {
-      if (!validateForm()) {
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
-        return;
-      }
-
-      let data = getFormData();
-      UziBlock.setSonars(data);
-      UziBlock.refreshToolbox();
-      saveToLocalStorage();
-      scheduleAutorun(true, "SONAR UPDATE!");
-    });
-
-    $("#blockly-sonars-modal-container").on("submit", function (e) {
-      e.preventDefault();
-      $("#blockly-sonars-modal").modal("hide");
+      let spec = {
+        title: i18n.translate("Configure sonars"),
+        cantRemoveMsg: i18n.translate("This sonar is being used by the program!"),
+        defaultElement: (data) => {
+          let sonarNames = new Set(data.map(m => m.name));
+          let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
+          let i = 1;
+          while (sonarNames.has(sonar.name)) {
+            sonar.name = "sonar" + i;
+            i++;
+          }
+          return sonar;
+        },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("Sonar name")},
+          {id: "trig", type: "pin", name: i18n.translate("Trig pin")},
+          {id: "echo", type: "pin", name: i18n.translate("Echo pin")},
+          {id: "maxDist", type: "number", name: i18n.translate("Max distance (cm)")},
+        ],
+        rows: sonars.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedSonars.has(each.name);
+          return clone;
+        })
+      };
+      BlocklyModal.show(spec).then(data => {
+        UziBlock.setSonars(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "SONAR UPDATE!");
+      });
     });
   }
 
   function initializeBlocklyJoysticksModal() {
-    function getFormData() {
-      let data = $("#blockly-joysticks-modal-container").serializeJSON();
-      if (data.joysticks == undefined) return [];
-      return Object.keys(data.joysticks).map(k => data.joysticks[k]);
-    }
-
-    function validateForm() {
-      let inputs = $("#blockly-joysticks-modal").find("[name*='[name]']");
-      inputs.each(function () { this.classList.remove("is-invalid"); });
-
-      let valid = true;
-      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-      for (let i = 0; i < inputs.length; i++) {
-        let input_i = inputs.get(i);
-
-        // Check valid identifier
-        if (!regex.test(input_i.value)) {
-          input_i.classList.add("is-invalid");
-          valid = false;
-        }
-
-        // Check for duplicates
-        for (let j = i + 1; j < inputs.length; j++) {
-          let input_j = inputs.get(j);
-
-          if (input_i.value == input_j.value) {
-            input_i.classList.add("is-invalid");
-            input_j.classList.add("is-invalid");
-            valid = false;
-          }
-        }
-      }
-      return valid;
-    }
 
     function getUsedJoysticks() {
       let program = Uzi.state.program;
@@ -381,257 +235,75 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    function getDefaultJoystick() {
-      let data = getFormData();
-      let joystickNames = new Set(data.map(m => m.name));
-      let joystick = { name: "joystick", xPin: "A0", yPin: "A1" };
-      let i = 1;
-      while (joystickNames.has(joystick.name)) {
-        joystick.name = "joystick" + i;
-        i++;
-      }
-      return joystick;
-    }
-
-    function appendJoystickRow(i, joystick, usedJoysticks) {
-      // TODO(Richo): Refactor!
-      function createTextInput(controlValue, controlName, validationFn) {
-        let input = $("<input>")
-          .attr("type", "text")
-          .addClass("form-control")
-          .addClass("text-center")
-          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
-          .attr("name", controlName);
-        if (validationFn != undefined) {
-          input.on("keyup", validationFn);
-        }
-        input.get(0).value = controlValue;
-        return input;
-      }
-      function createPinDropdown(joystickPin, joystickName) {
-        let select = $("<select>")
-          .addClass("form-control")
-          .attr("name", joystickName);
-        Uzi.state.pins.available.forEach(function (pin) {
-          select.append($("<option>").text(pin.name));
-        });
-        select.get(0).value = joystickPin;
-        return select;
-      }
-      function createRemoveButton(row) {
-        let btn = $("<button>")
-          .addClass("btn")
-          .addClass("btn-sm")
-          .attr("type", "button")
-          .append($("<i>")
-            .addClass("fas")
-            .addClass("fa-minus"));
-
-        if (usedJoysticks.has(joystick.name)) {
-          btn
-            //.attr("disabled", "true")
-            .addClass("btn-outline-secondary")
-            .attr("data-toggle", "tooltip")
-            .attr("data-placement", "left")
-            .attr("title", i18n.translate("This joystick is being used by the program!"))
-            .on("click", function () {
-              btn.tooltip("toggle");
-            });
-        } else {
-          btn
-            .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); validateForm(); });
-        }
-        return btn;
-      }
-      let tr = $("<tr>")
-        .append($("<input>").attr("type", "hidden").attr("name", "joysticks[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(joystick.name, "joysticks[" + i + "][name]", validateForm)))
-        .append($("<td>").append(createPinDropdown(joystick.xPin, "joysticks[" + i + "][xPin]")))
-        .append($("<td>").append(createPinDropdown(joystick.yPin, "joysticks[" + i + "][yPin]")))
-      tr.append($("<td>").append(createRemoveButton(tr)));
-      $("#blockly-joysticks-modal-container-tbody").append(tr);
-    }
-
-    $("#add-joystick-row-button").on("click", function () {
-      let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
-      appendJoystickRow(nextIndex, getDefaultJoystick(), getUsedJoysticks());
-    });
-
     UziBlock.getWorkspace().registerButtonCallback("configureJoysticks", function () {
-      // Build modal UI
-      $("#blockly-joysticks-modal-container-tbody").html("");
-      let allJoysticks = UziBlock.getJoysticks();
+      let joysticks = UziBlock.getJoysticks();
       let usedJoysticks = getUsedJoysticks();
-      if (allJoysticks.length == 0) {
-        appendJoystickRow(0, getDefaultJoystick(), usedJoysticks);
-      } else {
-        allJoysticks.forEach(function (joystick, i) {
-          appendJoystickRow(i, joystick, usedJoysticks);
-        });
-      }
-      $("#blockly-joysticks-modal").modal("show");
-      validateForm();
-    });
-
-    $("#blockly-joysticks-modal").on("hide.bs.modal", function (evt) {
-      if (!validateForm()) {
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
-        return;
-      }
-
-      let data = getFormData();
-      UziBlock.setJoysticks(data);
-      UziBlock.refreshToolbox();
-      saveToLocalStorage();
-      scheduleAutorun(true, "JOYSTICK UPDATE!");
-    });
-
-    $("#blockly-joysticks-modal-container").on("submit", function (e) {
-      e.preventDefault();
-      $("#blockly-joysticks-modal").modal("hide");
+      let spec = {
+        title: i18n.translate("Configure joysticks"),
+        cantRemoveMsg: i18n.translate("This joystick is being used by the program!"),
+        defaultElement: (data) => {
+          let joystickNames = new Set(data.map(m => m.name));
+          let joystick = { name: "joystick", xPin: "A0", yPin: "A1" };
+          let i = 1;
+          while (joystickNames.has(joystick.name)) {
+            joystick.name = "joystick" + i;
+            i++;
+          }
+          return joystick;
+        },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("Joystick name")},
+          {id: "xPin", type: "pin", name: i18n.translate("X pin")},
+          {id: "yPin", type: "pin", name: i18n.translate("Y pin")},
+        ],
+        rows: joysticks.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedJoysticks.has(each.name);
+          return clone;
+        })
+      };
+      BlocklyModal.show(spec).then(data => {
+        UziBlock.setJoysticks(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "JOYSTICK UPDATE!");
+      });
     });
   }
 
   function initializeBlocklyVariablesModal() {
-    function getFormData() {
-      let data = $("#blockly-variables-modal-container").serializeJSON();
-      if (data.variables == undefined) return [];
-      return Object.keys(data.variables).map(k => data.variables[k]);
-    }
-
-    function validateForm() {
-      let inputs = $("#blockly-variables-modal").find("[name*='[name]']");
-      inputs.each(function () { this.classList.remove("is-invalid"); });
-
-      let valid = true;
-      let regex = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
-      for (let i = 0; i < inputs.length; i++) {
-        let input_i = inputs.get(i);
-
-        // Check valid identifier
-        if (!regex.test(input_i.value)) {
-          input_i.classList.add("is-invalid");
-          valid = false;
-        }
-
-        // Check for duplicates
-        for (let j = i + 1; j < inputs.length; j++) {
-          let input_j = inputs.get(j);
-
-          if (input_i.value == input_j.value) {
-            input_i.classList.add("is-invalid");
-            input_j.classList.add("is-invalid");
-            valid = false;
-          }
-        }
-      }
-      return valid;
-    }
-
-    function getDefaultVariable() {
-      let data = getFormData();
-      let variableNames = new Set(data.map(m  => m.name));
-      let variable = {name: "variable"};
-      let i = 1;
-      while (variableNames.has(variable.name)) {
-        variable.name = "variable" + i;
-        i++;
-      }
-      return variable;
-    }
-
-    function appendVariableRow(i, variable, usedVariables) {
-
-      // TODO(Richo): Refactor!
-      function createTextInput(controlValue, controlName, validationFn) {
-        let input = $("<input>")
-          .attr("type", "text")
-          .addClass("form-control")
-          .addClass("text-center")
-          .css("padding-right", "initial") // Fix for weird css alignment issue when is-invalid
-          .attr("name", controlName);
-        if (validationFn != undefined) {
-          input.on("keyup", validationFn);
-        }
-        input.get(0).value = controlValue;
-        return input;
-      }
-      function createRemoveButton(row) {
-        let btn = $("<button>")
-          .addClass("btn")
-          .addClass("btn-sm")
-          .attr("type", "button")
-          .append($("<i>")
-            .addClass("fas")
-            .addClass("fa-minus"));
-
-        if (usedVariables.has(variable.name)) {
-          btn
-            //.attr("disabled", "true")
-            .addClass("btn-outline-secondary")
-            .attr("data-toggle", "tooltip")
-            .attr("data-placement", "left")
-            .attr("title", i18n.translate("This variable is being used by the program!"))
-            .on("click", function () {
-              btn.tooltip("toggle");
-            });
-        } else {
-          btn
-            .addClass("btn-outline-danger")
-            .on("click", function () { row.remove(); validateForm(); });
-        }
-        return btn;
-      }
-      let tr = $("<tr>")
-        .append($("<input>").attr("type", "hidden").attr("name", "variables[" + i + "][index]").attr("value", i))
-        .append($("<td>").append(createTextInput(variable.name, "variables[" + i + "][name]", validateForm)))
-        .append($("<td>").append(createTextInput(variable.value || "0", "variables[" + i + "][value]")));
-      tr.append($("<td>").append(createRemoveButton(tr)));
-      $("#blockly-variables-modal-container-tbody").append(tr);
-    }
-
-    $("#add-variable-row-button").on("click", function () {
-      let data = getFormData();
-      let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
-      appendVariableRow(nextIndex, getDefaultVariable(), UziBlock.getUsedVariables());
-    });
-
     UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
-      // Build modal UI
-      $("#blockly-variables-modal-container-tbody").html("");
-      let allVariables = UziBlock.getVariables();
+      let variables = UziBlock.getVariables();
       let usedVariables = UziBlock.getUsedVariables();
-      if (allVariables.length == 0) {
-        appendVariableRow(0, getDefaultVariable(), usedVariables);
-      } else {
-        allVariables.forEach(function (variable, i) {
-          appendVariableRow(i, variable, usedVariables);
-        });
-      }
-      $("#blockly-variables-modal").modal("show");
-      validateForm();
-    });
-
-    $("#blockly-variables-modal").on("hide.bs.modal", function (evt) {
-      if (!validateForm()) {
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
-        return;
-      }
-
-      let data = getFormData();
-      UziBlock.setVariables(data);
-      UziBlock.refreshToolbox();
-      saveToLocalStorage();
-      scheduleAutorun(true, "VARIABLE UPDATE!");
-    });
-
-    $("#blockly-variables-modal-container").on("submit", function (e) {
-      e.preventDefault();
-      $("#blockly-variables-modal").modal("hide");
+      let spec = {
+        title: i18n.translate("Configure variables"),
+        cantRemoveMsg: i18n.translate("This variable is being used by the program!"),
+        defaultElement: (data) => {
+          let variableNames = new Set(data.map(m  => m.name));
+          let variable = {name: "variable", value: "0"};
+          let i = 1;
+          while (variableNames.has(variable.name)) {
+            variable.name = "variable" + i;
+            i++;
+          }
+          return variable;
+        },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("Variable name")},
+          {id: "value", type: "number", name: i18n.translate("Initial value (if global)")},
+        ],
+        rows: variables.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedVariables.has(each.name);
+          return clone;
+        })
+      };
+      BlocklyModal.show(spec).then(data => {
+        UziBlock.setVariables(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "VARIABLE UPDATE!");
+      });
     });
   }
 
