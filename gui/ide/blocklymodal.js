@@ -153,10 +153,7 @@ let BlocklyModal = (function () {
 
       $("#blockly-modal-container-tbody").append(tr);
     };
-
-    rows.forEach(buildRow);
-
-    $("#blockly-modal-add-row-btn").on("click", function () {
+    let appendNewRow = function () {
       let data = getFormData();
       let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
       let element = spec.defaultElement(data);
@@ -164,7 +161,14 @@ let BlocklyModal = (function () {
         element.removable = true;
       }
       buildRow(element, nextIndex);
-    });
+    };
+
+    if (rows.length == 0) {
+      appendNewRow();
+    } else {
+      rows.forEach(buildRow);
+    }
+    $("#blockly-modal-add-row-btn").on("click", appendNewRow);
   }
 
   let inputs = (function () {
