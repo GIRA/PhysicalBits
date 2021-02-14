@@ -11,8 +11,13 @@ let BlocklyModal = (function () {
   let close = nop;
   let spec = null;
 
-  $("#blockly-modal").on("hide.bs.modal", function (e) {
-    // TODO(Richo): Validate entire form and cancel close, if invalid!
+  $("#blockly-modal").on("hide.bs.modal", function (evt) {
+    if (!validateForm()) {
+      evt.preventDefault();
+      evt.stopImmediatePropagation();
+      return;
+    }
+
     close();
     close = nop;
   });
@@ -24,16 +29,59 @@ let BlocklyModal = (function () {
   }
 
   function getInputs() {
-    let inputs = $("#blockly-modal-container input");
-    return inputs.filter(function () { return this.type !== "hidden"; });
+    let inputs = $("#blockly-modal-container input").filter(function () {
+      return this.type !== "hidden";
+    });
+
+    let results = {};
+    let regex = /\w+\[(\d+)\]\[(\w+)\]/;
+    for (let i = 0; i < inputs.length; i++) {
+      let input = inputs[i];
+      let name_groups = regex.exec(input.name);
+      let index = name_groups[1];
+      let name = name_groups[2];
+      if (results[index] == undefined) {
+        results[index] = {};
+      }
+      results[index][name] = input;
+    }
+    return results;
   }
 
   function validateForm() {
     let data = getFormData();
     let inputs = getInputs();
-    data.forEach((row, i) => {
+    let result = true;
+    for (let i = 0; i < data.length; i++) {
+      let row = data[i];
+      let input_group = inputs[i.toString()];
+      if (!input_group) continue;
 
-    });
+      let keys = Object.keys(row);
+      for (let j = 0; j < keys.length; j++) {
+        let key = keys[j];
+        let input = input_group[key];
+        let col = spec.columns.find(c => c.id == key);
+        if (!col) continue;
+
+        let validations = col.validations || [];
+        if (validations.length > 0 && input) {
+          let valid = validateInput(input, key, data, validations);
+          result = result && valid;
+        }
+      }
+    }
+    return result;
+  }
+
+  function validateInput(input, id, data, validations) {
+    let valid = validations.every(v => v(id, input.value, data));
+    if (valid) {
+      input.classList.remove("is-invalid");
+    } else {
+      input.classList.add("is-invalid");
+    }
+    return valid;
   }
 
   function build() {
@@ -126,13 +174,7 @@ let BlocklyModal = (function () {
         if (validations.length == 0) return false;
 
         let data = getFormData();
-        let valid = validations.every(v => v(id, this.value, data));
-        if (valid) {
-          this.classList.remove("is-invalid");
-        } else {
-          this.classList.add("is-invalid");
-        }
-        return valid;
+        return validateInput(this, id, data, validations);
       });
       input.get(0).value = value;
       return input;
@@ -143,8 +185,8 @@ let BlocklyModal = (function () {
     spec = s;
     build();
     return new Promise(res => {
+      close = () => res(getFormData());  
       $("#blockly-modal").modal("show");
-      close = () => res(getFormData());
     });
   }
 
@@ -193,7 +235,8 @@ function test_modals() {
       {name: "Nombre del elemento", id: "elementName", type: "text",
         validations: [BlocklyModal.validations.unique, BlocklyModal.validations.identifier]},
       {name: "Pin del elemento", id: "elementPin", type: "pin"},
-      {name: "Num del elemento", id: "elementNum", type: "number"}
+      {name: "Num del elemento", id: "elementNum", type: "number",
+        validations: [BlocklyModal.validations.number]}
     ],
     rows: [
       {
