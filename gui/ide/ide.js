@@ -149,16 +149,7 @@ const fs = require('fs');
       let spec = {
         title: i18n.translate("Configure motors"),
         cantRemoveMsg: i18n.translate("This motor is being used by the program!"),
-        defaultElement: (data) => {
-          let motorNames = new Set(data.map(m => m.name));
-          let motor = { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" };
-          let i = 1;
-          while (motorNames.has(motor.name)) {
-            motor.name = "motor" + i;
-            i++;
-          }
-          return motor;
-        },
+        defaultElement: { name: "motor", enable: "D10", fwd: "D9", bwd: "D8" },
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Motor name")},
           {id: "enable", type: "pin", name: i18n.translate("Enable pin")},
@@ -195,16 +186,7 @@ const fs = require('fs');
       let spec = {
         title: i18n.translate("Configure sonars"),
         cantRemoveMsg: i18n.translate("This sonar is being used by the program!"),
-        defaultElement: (data) => {
-          let sonarNames = new Set(data.map(m => m.name));
-          let sonar = { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" };
-          let i = 1;
-          while (sonarNames.has(sonar.name)) {
-            sonar.name = "sonar" + i;
-            i++;
-          }
-          return sonar;
-        },
+        defaultElement: { name: "sonar", trig: "D11", echo: "D12", maxDist: "200" },
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Sonar name")},
           {id: "trig", type: "pin", name: i18n.translate("Trig pin")},
@@ -241,16 +223,7 @@ const fs = require('fs');
       let spec = {
         title: i18n.translate("Configure joysticks"),
         cantRemoveMsg: i18n.translate("This joystick is being used by the program!"),
-        defaultElement: (data) => {
-          let joystickNames = new Set(data.map(m => m.name));
-          let joystick = { name: "joystick", xPin: "A0", yPin: "A1" };
-          let i = 1;
-          while (joystickNames.has(joystick.name)) {
-            joystick.name = "joystick" + i;
-            i++;
-          }
-          return joystick;
-        },
+        defaultElement: { name: "joystick", xPin: "A0", yPin: "A1" },
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Joystick name")},
           {id: "xPin", type: "pin", name: i18n.translate("X pin")},
@@ -278,16 +251,7 @@ const fs = require('fs');
       let spec = {
         title: i18n.translate("Configure variables"),
         cantRemoveMsg: i18n.translate("This variable is being used by the program!"),
-        defaultElement: (data) => {
-          let variableNames = new Set(data.map(m  => m.name));
-          let variable = {name: "variable", value: "0"};
-          let i = 1;
-          while (variableNames.has(variable.name)) {
-            variable.name = "variable" + i;
-            i++;
-          }
-          return variable;
-        },
+        defaultElement: {name: "variable", value: "0"},
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Variable name")},
           {id: "value", type: "number", name: i18n.translate("Initial value (if global)")},

@@ -156,7 +156,18 @@ let BlocklyModal = (function () {
     let appendNewRow = function () {
       let data = getFormData();
       let nextIndex = data.length == 0 ? 0: 1 + Math.max.apply(null, data.map(m => m.index));
-      let element = spec.defaultElement(data);
+      let element = deepClone(spec.defaultElement);
+      columns.forEach(col => {
+        if (col.type == "identifier") { // Make unique
+          let used = new Set(data.map(m => m[col.id]));
+          let defaultValue = element[col.id] || "a";
+          let i = 1;
+          while (used.has(element[col.id])) {
+            element[col.id] = defaultValue + i;
+            i++;
+          }
+        }
+      });
       if (element.removable !== false) {
         element.removable = true;
       }
@@ -253,16 +264,7 @@ function test_modals() {
   let spec = {
     title: "Testing Blockly Modals...",
     cantRemoveMsg: "This element is being used by the program!",
-    defaultElement: (data) => {
-      let names = new Set(data.map(m => m.elementName));
-      let element = { elementName: "juan", elementPin: "D10", elementNum: "1" };
-      let i = 1;
-      while (names.has(element.elementName)) {
-        element.elementName = "juan" + i;
-        i++;
-      }
-      return element;
-    },
+    defaultElement: { elementName: "juan", elementPin: "D10", elementNum: "1" },
     columns: [
       {name: "Nombre del elemento", id: "elementName", type: "identifier"},
       {name: "Pin del elemento", id: "elementPin", type: "pin"},
