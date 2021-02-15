@@ -1,11 +1,4 @@
 let BlocklyModal = (function () {
-  /*
-  {
-    title: "",
-    columns: [{name: "", id: "", type: ""}, ...],
-    rows: [{index: 0, removable: t/f, data: {..}}]
-  }
-  */
 
   let nop = () => {};
   let close = nop;
@@ -62,16 +55,14 @@ let BlocklyModal = (function () {
       let input_group = inputs[row.index];
       if (!input_group) continue;
 
-      let keys = Object.keys(row);
-      for (let j = 0; j < keys.length; j++) {
-        let key = keys[j];
-        let input = input_group[key];
-        let col = spec.columns.find(c => c.id == key);
-        if (!col) continue;
+      for (let j = 0; j < spec.columns.length; j++) {
+        let col = spec.columns[j];
+        if (!row[col.id]) continue;
 
+        let input = input_group[col.id];
         let validations = validationsByType[col.type] || [];
         if (validations.length > 0 && input) {
-          let valid = validateInput(input, key, data, validations);
+          let valid = validateInput(input, col.id, data, validations);
           result = result && valid;
         }
       }
@@ -257,5 +248,4 @@ let BlocklyModal = (function () {
     getFormData: getFormData,
     getInputs: getInputs,
   };
-
 })();
