@@ -42,6 +42,7 @@ var TRANSLATIONS = [
   ["Choose pins", "Choose pins", "Elegir pines", "Vali viigud", "Välj ben"],
   ["Choose globals", "Choose globals", "Elegir variables globales", "Vali globaalsed muutujad", "Välj variabler"],
   ["Configure motors", "Configure motors", "Configurar motores", "Seadista mootorid", "Konfigurera motorer"],
+  ["Configure variables", "Configure variables", "Configurar variables", "Seadista muutujaid", "Konfigurera variabler"],
   ["Motor name", "Motor name", "Nombre del motor", "Mootori nimi", "Motorns namn"],
   ["Enable pin", "Enable pin", "Pin Enable", "Sisselülituse viik", "Påslagningsben"],
   ["Forward pin", "Forward pin", "Pin Forward", "Viik ettepoole pööramiseks", "Ben för att rotera framåt"],
