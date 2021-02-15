@@ -259,36 +259,3 @@ let BlocklyModal = (function () {
   };
 
 })();
-
-function test_modals() {
-  let spec = {
-    title: "Testing Blockly Modals...",
-    cantRemoveMsg: "This element is being used by the program!",
-    defaultElement: { elementName: "juan", elementPin: "D10", elementNum: "1" },
-    columns: [
-      {name: "Nombre del elemento", id: "elementName", type: "identifier"},
-      {name: "Pin del elemento", id: "elementPin", type: "pin"},
-      {name: "Num del elemento", id: "elementNum", type: "number"}
-    ],
-    rows: [
-      {
-        elementName: "Richo",
-        elementPin: "D8",
-        elementNum: 42,
-        removable: true
-      },
-      {
-        elementName: "Diego",
-        elementPin: "D13",
-        elementNum: 28,
-      },
-      {
-        elementName: "Sofía",
-        elementPin: "A5",
-        elementNum: 23,
-        removable: false
-      }
-    ]
-  }
-  BlocklyModal.show(spec).then(data => console.log(data));
-}
