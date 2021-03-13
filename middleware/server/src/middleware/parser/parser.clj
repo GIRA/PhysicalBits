@@ -12,7 +12,7 @@
 
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
-  {:integer             (comp clojure.edn/read-string str)
+  {:integer             (comp read-string str)
    :float               (comp #(Double/parseDouble %) str)
    :identifier          str
    :program             (fn [& arg]

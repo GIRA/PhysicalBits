@@ -7,7 +7,6 @@
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/tools.logging "1.1.0"]
                  [ch.qos.logback/logback-classic "1.1.3"]
-                 [org.clojure/tools.cli "1.0.194"] ; TODO(Richo): Is this necessary? Or only for dev?
                  [clj-serial "2.0.5"]
                  [compojure "1.6.1"]
                  [aleph "0.4.6"]
@@ -30,7 +29,8 @@
 
              :project/test {:resource-paths ["env/test/resources"]}
 
-             :project/dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
+             :project/dev {:dependencies [[org.clojure/tools.cli "1.0.194"]
+                                          [org.clojure/tools.namespace "0.3.1"]
                                           [org.clojars.beppu/clj-audio "0.3.0"]]
                            :source-paths ["env/dev/clj"]
                            :resource-paths ["env/dev/resources"]
