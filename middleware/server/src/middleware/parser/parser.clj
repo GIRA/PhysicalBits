@@ -10,10 +10,13 @@
 (defn- first-class-or-default [name col default] (first-or-default #(= (:__class__ %) name) col default))
 (defn- filter-class [name col] (filterv #(= (:__class__ %) name) col))
 
+(defn- parse-int [str] (Integer/parseInt str))
+(defn- parse-double [str] (Double/parseDouble str))
+
 (def scriptTypes #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"})
 (def transformations
-  {:integer             (comp read-string str)
-   :float               (comp #(Double/parseDouble %) str)
+  {:integer             (comp parse-int str)
+   :float               (comp parse-double str)
    :identifier          str
    :program             (fn [& arg]
                           (program-node
