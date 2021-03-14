@@ -31,26 +31,26 @@
                                       (ast/literal-number-node -0.5))]))])
         actual (parse src)]
     (is (equivalent? expected actual))))
+
+(deftest
+  blink13
+  (testing
+    "A Task that blinks the pin 13"
+    (let [src "task default() running 1/s {\n\ttoggle(D13);\n}"
+          expected (ast/program-node
+                    :scripts [(ast/task-node
+                               :name "default"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "toggle"
+                                        [(ast/arg-node
+                                          (ast/literal-pin-node "D" 13))])]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
 (comment
-
-
- (deftest
-   blink13
-   (testing
-     "A Task that blinks the pin 13"
-     (let [src "task default() running 1/s {\n\ttoggle(D13);\n}"
-           expected (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "default"
-                                :tick-rate (ast/ticking-rate-node 1 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "toggle"
-                                         [(ast/arg-node
-                                           (ast/literal-pin-node "D" 13))])]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
 
  (deftest
    procedure-with-argument

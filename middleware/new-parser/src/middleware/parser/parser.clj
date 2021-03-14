@@ -13,7 +13,10 @@
 (def grammar
   {:program [:ws?
              (pp/star :import)
-             (pp/star [(pp/or :variable-declaration :primitive :script :ws)])
+             (pp/star [(pp/or :variable-declaration
+                              :primitive
+                              :script
+                              :ws)])
              :ws?]
    :import TODO
    :variable-declaration TODO
@@ -37,7 +40,9 @@
                  \)]
    :argument :identifier
    :task-state (pp/optional (pp/or "running" "stopped"))
-   :ticking-rate TODO
+   :ticking-rate [(pp/or :float :integer)
+                  :ws? "/" :ws?
+                  (pp/or "s" "m" "h" "d")]
    :block ["{" :statement-list "}"]
    :statement-list [:ws? (pp/star :statement) :ws?]
    :statement (pp/or :variable-declaration :assignment :return :conditional
@@ -59,7 +64,7 @@
    :forever TODO
    :for TODO
    :yield TODO
-   :expression-statement TODO
+   :expression-statement [:expr :endl]
    :function TODO
    :procedure TODO
    :endl [:ws? \;]
@@ -81,7 +86,7 @@
                        "Not binary")))
    :value-expr (pp/or :literal :variable)
    :literal (pp/or :constant :number)
-   :constant TODO
+   :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
    :float (pp/flatten
            (pp/or "NaN"
@@ -92,7 +97,19 @@
    :integer (pp/flatten [(pp/optional \-) :digits])
    :variable TODO
    :unary TODO
-   :call TODO
+   :call [:script-reference :ws? :arg-list]
+   :script-reference :identifier
+   :arg-list [\(
+              :ws?
+              (pp/optional
+               (pp/separated-by :named-arg
+                                [:ws? \, :ws?]))
+              :ws?
+              \)]
+   :named-arg [(pp/optional [:identifier :ws? \:
+                             :ws? ; TODO(Richo): Is this necessary?
+                             ])
+               :expr]
    :ws (pp/plus pp/space)
    :ws? (pp/optional :ws)})
 
@@ -114,7 +131,7 @@
             :name name
             :state state
             :args args
-            :ticking-rate ticking-rate
+            :tick-rate ticking-rate
             :body body))
    :block (fn [[_ stmts _]]
             (ast/block-node stmts))
@@ -125,7 +142,18 @@
    :return (fn [[_ value _]]
              (ast/return-node value))
    :separated-expr (fn [[_ expr]] expr)
-   :sub-expr (fn [[_ expr _]] expr)})
+   :sub-expr (fn [[_ expr _]] expr)
+   :constant (fn [[letter number]]
+               (ast/literal-pin-node letter number))
+   :arg-list (fn [[_ _ args _ _]]
+               (take-nth 2 args))
+   :named-arg (fn [[[name] value]]
+                (ast/arg-node name value))
+   :call (fn [[selector _ args]]
+           (ast/call-node selector args))
+   :ticking-rate (fn [[times _ _ _ scale]]
+                   (ast/ticking-rate-node times scale))
+   :expression-statement (fn [[expr]] expr)})
 
 (def parser (pp/compose grammar transformations :program))
 
@@ -136,31 +164,40 @@
 
 (comment
 
+ (take-nth 2 [1 2 3])
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "task foo() { return -0.5; }")
+   (def src "task default() running 1/s {\n\ttoggle(D13);\n}")
    (def expected (ast/program-node
                   :scripts [(ast/task-node
-                             :name "foo"
-                             :state "once"
+                             :name "default"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
                              :body (ast/block-node
-                                    [(ast/return-node
-                                      (ast/literal-number-node -0.5))]))]))
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
    (pprint (first diff))
    (println)
    (println "ONLY IN ACTUAL")
-   (pprint (second diff)))
+   (pprint (second diff))
+   (println)
+   (println "T")
+   (pprint (nth diff 2))
+   (= expected actual))
 
  (pprint actual)
  (pprint expected)
 
- (pp/parse (get-in parser [:parsers :task]) "task foo () { return 0.1;}")
+ (pp/parse (get-in parser [:parsers :ticking-rate]) "1 / s")
 
- (pp/parse (get-in parser [:parsers :block]) "{ return -0.1; }")
+
+ (pprint (pp/parse (get-in parser [:parsers :task]) "task default() running 1/s {}"))
 
  (Double/parseDouble "Infinity")
  ,,,)
