@@ -40,7 +40,7 @@
    :name        name,
    :arguments   arguments,
    :body        body,
-   :state       state,
+   :state       (or state "once"),
    :tickingRate tick-rate})
 
 (defn procedure-node
