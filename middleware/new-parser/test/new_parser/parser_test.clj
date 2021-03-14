@@ -19,21 +19,19 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
+(deftest
+  parsing-negative-numbers-larger-than-minus-1
+  (let [src "task foo() { return -0.5; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -0.5))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
 (comment
-
- (deftest
-   parsing-negative-numbers-larger-than-minus-1
-   (let [src "task foo() { return -0.5; }"
-         expected (ast/program-node
-                   :scripts [(ast/task-node
-                              :name "foo"
-                              :state "once"
-                              :body (ast/block-node
-                                     [(ast/return-node
-                                       (ast/literal-number-node -0.5))]))])
-         actual (parse src)]
-     (is (equivalent? expected actual))))
-
 
 
  (deftest
