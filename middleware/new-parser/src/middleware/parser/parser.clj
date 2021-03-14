@@ -2,13 +2,18 @@
   (:require [middleware.parser.ast-nodes :as ast]
             [petitparser.core :as pp]))
 
+(do
+  (require '[clojure.pprint :refer [pprint]])
+  (require '[clojure.data :as data])
+  (set! *print-level* 20)
+  (set! *print-length* 100))
+
 (def TODO (pp/predicate (fn [_] false) "NOP!"))
 
 (def grammar
   {:program [:ws?
              (pp/star :import)
-             (pp/star [(pp/or :variable-declaration :primitive :script)
-                       :ws?])
+             (pp/star [(pp/or :variable-declaration :primitive :script :ws)])
              :ws?]
    :import TODO
    :variable-declaration TODO
@@ -94,11 +99,16 @@
 (defn- parse-int [str] (Integer/parseInt str))
 (defn- parse-double [str] (Double/parseDouble str))
 
+; TODO(Richo): This should probably be in a utils.ast namespace
+(defn- script? [node]
+  (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
+             (:__class__ node)))
+
 (def transformations
-  {:program (fn [[_ imports members _]]
+  {:program (fn [[_ imports [members] _]]
               (ast/program-node
                :imports imports
-               :scripts members))
+               :scripts (filterv script? members)))
    :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
            (ast/task-node
             :name name
@@ -110,24 +120,44 @@
             (ast/block-node stmts))
    :statement-list (fn [[_ stmts _]] stmts)
    :integer (comp parse-int str)
-   :double (comp parse-double str)
+   :float (comp parse-double str)
    :number ast/literal-number-node
    :return (fn [[_ value _]]
              (ast/return-node value))
-   })
+   :separated-expr (fn [[_ expr]] expr)
+   :sub-expr (fn [[_ expr _]] expr)})
 
 (def parser (pp/compose grammar transformations :program))
 
 (defn parse [src]
-  (ast/program-node))
+  (let [result (pp/parse parser src)]
+    ;(pprint result)
+    result))
 
 (comment
- (do (require '[clojure.pprint :refer [pprint]])
-   (set! *print-level* 20)
-   (set! *print-length* 100))
 
 
- (pprint (pp/parse parser "task foo() { return -0.5; }"))
+ (do
+   (def parser (pp/compose grammar transformations :program))
+   (def src "task foo() { return -0.5; }")
+   (def expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -0.5))]))]))
+   (def actual (pp/parse parser src))
+   (def diff (data/diff expected actual))
+   (println "ONLY IN EXPECTED")
+   (pprint (first diff))
+   (println)
+   (println "ONLY IN ACTUAL")
+   (pprint (second diff)))
+
+ (pprint actual)
+ (pprint expected)
+
  (pp/parse (get-in parser [:parsers :task]) "task foo () { return 0.1;}")
 
  (pp/parse (get-in parser [:parsers :block]) "{ return -0.1; }")
