@@ -28,14 +28,17 @@
           :task-state :ws?
           (pp/optional :ticking-rate) :ws?
           :block]
+   :function ["func" :ws :identifier :ws? :params-list :ws? :block]
+   :procedure ["proc" :ws :identifier :ws? :params-list :ws? :block]
    :identifier (pp/flatten
                 (pp/separated-by [(pp/or \_ pp/letter)
                                   (pp/star (pp/or \_ pp/word))]
                                  \.))
    :params-list [\(
-                 (pp/optional [:ws?
-                               :argument
-                               (pp/star [:ws? \, :ws? :argument])])
+                 :ws?
+                 (pp/optional
+                  (pp/separated-by :argument
+                                   [:ws? \, :ws?]))
                  :ws?
                  \)]
    :argument :identifier
@@ -44,11 +47,12 @@
                   :ws? "/" :ws?
                   (pp/or "s" "m" "h" "d")]
    :block ["{" :statement-list "}"]
-   :statement-list [:ws? (pp/star :statement) :ws?]
-   :statement (pp/or :variable-declaration :assignment :return :conditional
+   :statement-list [:ws? (pp/star :statement)]
+   :statement [(pp/or :variable-declaration :assignment :return :conditional
                      :start-task :stop-task :pause-task :resume-task
                      :while :do-while :until :do-until :repeat :forever :for
                      :yield :expression-statement)
+               :ws?]
    :assignment TODO
    :return ["return" (pp/optional :separated-expr) :endl]
    :conditional TODO
@@ -65,8 +69,6 @@
    :for TODO
    :yield TODO
    :expression-statement [:expr :endl]
-   :function TODO
-   :procedure TODO
    :endl [:ws? \;]
    :separated-expr (pp/or [:ws? :sub-expr]
                           [:ws :expr])
@@ -95,7 +97,7 @@
                   [(pp/optional \-) :digits \. :digits]))
    :digits (pp/plus pp/digit)
    :integer (pp/flatten [(pp/optional \-) :digits])
-   :variable TODO
+   :variable :identifier
    :unary TODO
    :call [:script-reference :ws? :arg-list]
    :script-reference :identifier
@@ -133,9 +135,15 @@
             :args args
             :tick-rate ticking-rate
             :body body))
+   :procedure (fn [[_ _ name _ args _ body]]
+                (ast/procedure-node
+                 :name name
+                 :arguments args
+                 :body body))
    :block (fn [[_ stmts _]]
             (ast/block-node stmts))
-   :statement-list (fn [[_ stmts _]] stmts)
+   :statement-list (fn [[_ stmts]] stmts)
+   :statement (fn [[stmt _]] stmt)
    :integer (comp parse-int str)
    :float (comp parse-double str)
    :number ast/literal-number-node
@@ -146,14 +154,19 @@
    :constant (fn [[letter number]]
                (ast/literal-pin-node letter number))
    :arg-list (fn [[_ _ args _ _]]
-               (take-nth 2 args))
+               (vec (take-nth 2 args)))
+   :params-list (fn [[_ _ args _ _]]
+                  (vec (take-nth 2 args)))
    :named-arg (fn [[[name] value]]
                 (ast/arg-node name value))
    :call (fn [[selector _ args]]
            (ast/call-node selector args))
    :ticking-rate (fn [[times _ _ _ scale]]
                    (ast/ticking-rate-node times scale))
-   :expression-statement (fn [[expr]] expr)})
+   :expression-statement (fn [[expr]] expr)
+   :variable ast/variable-node
+   :argument ast/variable-declaration-node
+   })
 
 (def parser (pp/compose grammar transformations :program))
 
@@ -168,17 +181,24 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "task default() running 1/s {\n\ttoggle(D13);\n}")
+   (def src "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}")
    (def expected (ast/program-node
-                  :scripts [(ast/task-node
-                             :name "default"
-                             :tick-rate (ast/ticking-rate-node 1 "s")
-                             :state "running"
-                             :body (ast/block-node
-                                    [(ast/call-node
-                                      "toggle"
-                                      [(ast/arg-node
-                                        (ast/literal-pin-node "D" 13))])]))]))
+             :scripts [(ast/procedure-node
+                        :name "blink"
+                        :arguments [(ast/variable-declaration-node "arg0")]
+                        :body (ast/block-node
+                               [(ast/call-node
+                                 "turnOn"
+                                 [(ast/arg-node
+                                   (ast/variable-node "arg0"))])
+                                (ast/call-node
+                                 "delayS"
+                                 [(ast/arg-node
+                                   (ast/literal-number-node 1))])
+                                (ast/call-node
+                                 "turnOff"
+                                 [(ast/arg-node
+                                   (ast/variable-node "arg0"))])]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -194,10 +214,12 @@
  (pprint actual)
  (pprint expected)
 
- (pp/parse (get-in parser [:parsers :ticking-rate]) "1 / s")
+ (pprint (pp/parse (get-in parser [:parsers :program]) "proc blink(arg0) {turnOn(arg0);delayS(1);turnOff(arg0);}"))
 
-
- (pprint (pp/parse (get-in parser [:parsers :task]) "task default() running 1/s {}"))
+(pp/parse (pp/plus pp/space)
+          "\n\t")
+ (pprint (pp/parse (get-in parser [:parsers :params-list])
+                   "(a, b, c)"))
 
  (Double/parseDouble "Infinity")
  ,,,)

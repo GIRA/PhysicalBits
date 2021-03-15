@@ -50,32 +50,32 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  procedure-with-argument
+  (testing
+    "A procedure with a single argument"
+    (let [src "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
+          expected (ast/program-node
+                    :scripts [(ast/procedure-node
+                               :name "blink"
+                               :arguments [(ast/variable-declaration-node "arg0")]
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "turnOn"
+                                        [(ast/arg-node
+                                          (ast/variable-node "arg0"))])
+                                       (ast/call-node
+                                        "delayS"
+                                        [(ast/arg-node
+                                          (ast/literal-number-node 1))])
+                                       (ast/call-node
+                                        "turnOff"
+                                        [(ast/arg-node
+                                          (ast/variable-node "arg0"))])]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   procedure-with-argument
-   (testing
-     "A procedure with a single argument"
-     (let [src "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}"
-           expected (ast/program-node
-                     :scripts [(ast/procedure-node
-                                :name "blink"
-                                :arguments [(ast/variable-declaration-node "arg0")]
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "turnOn"
-                                         [(ast/arg-node
-                                           (ast/variable-node "arg0"))])
-                                        (ast/call-node
-                                         "delayS"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 1))])
-                                        (ast/call-node
-                                         "turnOff"
-                                         [(ast/arg-node
-                                           (ast/variable-node "arg0"))])]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    function-with-arguments
