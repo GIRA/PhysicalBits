@@ -75,28 +75,28 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  function-with-arguments
+  (testing
+    "A Function with two arguments and a return"
+    (let [src "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}"
+          expected (ast/program-node
+                    :scripts [(ast/function-node
+                               :name "default"
+                               :arguments [(ast/variable-declaration-node "arg0")
+                                           (ast/variable-declaration-node "arg1")]
+                               :body (ast/block-node
+                                      [(ast/return-node
+                                        (ast/call-node
+                                         "%"
+                                         [(ast/arg-node
+                                           (ast/variable-node "arg0"))
+                                          (ast/arg-node
+                                           (ast/variable-node "arg1"))]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   function-with-arguments
-   (testing
-     "A Function with two arguments and a return"
-     (let [src "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}"
-           expected (ast/program-node
-                     :scripts [(ast/function-node
-                                :name "default"
-                                :arguments [(ast/variable-declaration-node "arg0")
-                                            (ast/variable-declaration-node "arg1")]
-                                :body (ast/block-node
-                                       [(ast/return-node
-                                         (ast/call-node
-                                          "%"
-                                          [(ast/arg-node
-                                            (ast/variable-node "arg0"))
-                                           (ast/arg-node
-                                            (ast/variable-node "arg1"))]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    functions-with-calls-and-globals

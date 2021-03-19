@@ -75,7 +75,7 @@
    :sub-expr [\(
               :ws? :expr :ws?
               \)]
-   :expr (pp/or :non-binary-expr :binary-expr)
+   :expr (pp/or :binary-expr :non-binary-expr )
    :non-binary-expr (pp/or :unary :call :sub-expr :value-expr)
    :binary-expr [:non-binary-expr :ws?
                  (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
@@ -83,7 +83,7 @@
                      (pp/plus
                       (pp/predicate
                        (fn [chr] ; TODO(Richo): Maybe avoid regex? Measure performance!
-                         (re-find #"[^a-zA-Z0-9\\s\\[\\]\\(\\)\\{\\}\\\"\\':#_;,]"
+                         (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
                                   (str chr)))
                        "Not binary")))
    :value-expr (pp/or :literal :variable)
@@ -98,7 +98,8 @@
    :digits (pp/plus pp/digit)
    :integer (pp/flatten [(pp/optional \-) :digits])
    :variable :identifier
-   :unary TODO
+   :unary :not
+   :not TODO
    :call [:script-reference :ws? :arg-list]
    :script-reference :identifier
    :arg-list [\(
@@ -123,6 +124,55 @@
   (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
              (:__class__ node)))
 
+(def precedence-table
+  [#{"**"}
+   #{"*" "/" "%"}
+   #{"+" "-"}
+   #{"<<" ">>"}
+   #{"<" "<=" ">" ">="}
+   #{"==" "!="}
+   #{"&"}
+   #{"^"}
+   #{"|"}
+   #{"&&"}
+   #{"||"}])
+
+(defn- build-binary-expression [selector left right]
+  [selector left right]
+  (case selector
+    "&&" (ast/logical-and-node left right)
+    "||" (ast/logical-or-node left right)
+    (ast/binary-expression-node left selector right)))
+
+(defn- fix-precedence [nodes operators]
+  (if (< (count nodes) 3)
+    nodes
+    (let [result (atom [])
+          left (atom (first nodes))]
+      (doseq [[op right] (partition-all 2 (drop 1 nodes))]
+        (if (or (nil? operators)
+                (contains? operators op))
+          (let [expr (build-binary-expression op @left right)]
+            ; TODO(Richo): Add token!
+            (reset! left expr))
+          (do
+            (swap! result conj @left op)
+            (reset! left right))))
+      (swap! result conj @left)
+      @result)))
+
+(defn- reduce-binary-expresions [left operations]
+  (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
+        ; we have (1 + 2 + 3)
+        result-1 (reduce #(apply conj %1 %2) [left] operations)
+        ; Then reduce operators according to the precedence table
+        result-2 (reduce fix-precedence result-1 precedence-table)
+        ; If a binary expression was not reduced after going through the precedence	table,
+        ; we iterate once again but this time reducing any operator found (left to right)
+        result-3 (reduce fix-precedence result-2 nil)]
+    ; Finally, we should have a single expression in our results
+    (first result-3)))
+
 (def transformations
   {:program (fn [[_ imports [members] _]]
               (ast/program-node
@@ -135,6 +185,11 @@
             :args args
             :tick-rate ticking-rate
             :body body))
+   :function (fn [[_ _ name _ args _ body]]
+                (ast/function-node
+                 :name name
+                 :arguments args
+                 :body body))
    :procedure (fn [[_ _ name _ args _ body]]
                 (ast/procedure-node
                  :name name
@@ -150,7 +205,7 @@
    :return (fn [[_ value _]]
              (ast/return-node value))
    :separated-expr (fn [[_ expr]] expr)
-   :sub-expr (fn [[_ expr _]] expr)
+   :sub-expr (fn [[_ _ expr _ _]] expr)
    :constant (fn [[letter number]]
                (ast/literal-pin-node letter number))
    :arg-list (fn [[_ _ args _ _]]
@@ -166,6 +221,10 @@
    :expression-statement (fn [[expr]] expr)
    :variable ast/variable-node
    :argument ast/variable-declaration-node
+   :binary-expr (fn [[left _ ops]]
+                  (let [operations (map (fn [[op _ right]] [op right])
+                                        ops)]
+                    (reduce-binary-expresions left operations)))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -181,24 +240,20 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "proc blink(arg0) {\n\tturnOn(arg0);\n\tdelayS(1);\n\tturnOff(arg0);\n}")
+   (def src "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}")
    (def expected (ast/program-node
-             :scripts [(ast/procedure-node
-                        :name "blink"
-                        :arguments [(ast/variable-declaration-node "arg0")]
-                        :body (ast/block-node
-                               [(ast/call-node
-                                 "turnOn"
-                                 [(ast/arg-node
-                                   (ast/variable-node "arg0"))])
-                                (ast/call-node
-                                 "delayS"
-                                 [(ast/arg-node
-                                   (ast/literal-number-node 1))])
-                                (ast/call-node
-                                 "turnOff"
-                                 [(ast/arg-node
-                                   (ast/variable-node "arg0"))])]))]))
+                  :scripts [(ast/function-node
+                             :name "default"
+                             :arguments [(ast/variable-declaration-node "arg0")
+                                         (ast/variable-declaration-node "arg1")]
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/call-node
+                                       "%"
+                                       [(ast/arg-node
+                                         (ast/variable-node "arg0"))
+                                        (ast/arg-node
+                                         (ast/variable-node "arg1"))]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -207,19 +262,43 @@
    (println "ONLY IN ACTUAL")
    (pprint (second diff))
    (println)
-   (println "T")
+   (println "IN BOTH")
    (pprint (nth diff 2))
    (= expected actual))
 
  (pprint actual)
  (pprint expected)
 
- (pprint (pp/parse (get-in parser [:parsers :program]) "proc blink(arg0) {turnOn(arg0);delayS(1);turnOff(arg0);}"))
+ (pprint (parse "task blink13() running 1/s { toggle(pin: D-13); }"))
 
-(pp/parse (pp/plus pp/space)
-          "\n\t")
- (pprint (pp/parse (get-in parser [:parsers :params-list])
-                   "(a, b, c)"))
+ (pprint (pp/parse (get-in parser [:parsers :function])
+                   "func foo(a, b) {\n\treturn foo(a + b);\n}"))
 
- (Double/parseDouble "Infinity")
+ (pprint (pp/parse (get-in parser [:parsers :sub-expr])
+                   "(3)"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  ,,,)
