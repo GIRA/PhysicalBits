@@ -112,7 +112,7 @@
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
-   :counter   (variable-declaration-node name (literal-number-node 0)),
+   :counter   (variable-declaration-node name),
    :start     from,
    :stop      to,
    :step      by,

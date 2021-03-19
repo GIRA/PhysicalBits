@@ -13,13 +13,13 @@
 (def grammar
   {:program [:ws?
              (pp/star :import)
-             (pp/star [(pp/or :variable-declaration
+             (pp/star (pp/or :variable-declaration
                               :primitive
                               :script
-                              :ws)])
+                              :ws))
              :ws?]
    :import TODO
-   :variable-declaration TODO
+   :variable-declaration ["var" :ws :variable (pp/optional [:ws? \= :ws? :expr :ws?]) :endl :ws?]
    :primitive TODO
    :script (pp/or :task :function :procedure)
    :task ["task" :ws
@@ -53,7 +53,7 @@
                      :while :do-while :until :do-until :repeat :forever :for
                      :yield :expression-statement)
                :ws?]
-   :assignment TODO
+   :assignment [:variable :ws? \= :ws? :expr :endl]
    :return ["return" (pp/optional :separated-expr) :endl]
    :conditional TODO
    :start-task TODO
@@ -66,7 +66,10 @@
    :do-until TODO
    :repeat TODO
    :forever TODO
-   :for TODO
+   :for ["for" :ws :variable :ws? \= :ws? :expr :ws
+         "to" :separated-expr
+         (pp/optional [:ws "by" :separated-expr])
+         :ws? :block]
    :yield TODO
    :expression-statement [:expr :endl]
    :endl [:ws? \;]
@@ -124,6 +127,9 @@
   (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
              (:__class__ node)))
 
+(defn- variable-declaration? [node]
+  (= "UziVariableDeclarationNode" (:__class__ node)))
+
 (def precedence-table
   [#{"**"}
    #{"*" "/" "%"}
@@ -174,9 +180,10 @@
     (first result-3)))
 
 (def transformations
-  {:program (fn [[_ imports [members] _]]
+  {:program (fn [[_ imports members _]]
               (ast/program-node
                :imports imports
+               :globals (filterv variable-declaration? members)
                :scripts (filterv script? members)))
    :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
            (ast/task-node
@@ -225,6 +232,18 @@
                   (let [operations (map (fn [[op _ right]] [op right])
                                         ops)]
                     (reduce-binary-expresions left operations)))
+   :variable-declaration (fn [[_ _ var [_ _ _ expr]]]
+                           (ast/variable-declaration-node
+                            (:name var)
+                            (or expr (ast/literal-number-node 0))))
+   :for (fn [[_ _ var _ _ _ start _ _ stop [_ _ step] _ body]]
+          (ast/for-node (:name var)
+                        start
+                        stop
+                        (or step (ast/literal-number-node 1))
+                        body))
+   :assignment (fn [[variable _ _ _ value]]
+                 (ast/assignment-node variable value))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -240,20 +259,46 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "func default(arg0, arg1) {\n\treturn (arg0 % arg1);\n}")
+   (def src "var global;\n\nfunc forIncrease(from, to, by) {\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}")
    (def expected (ast/program-node
+                  :globals [(ast/variable-declaration-node "global")]
                   :scripts [(ast/function-node
-                             :name "default"
-                             :arguments [(ast/variable-declaration-node "arg0")
-                                         (ast/variable-declaration-node "arg1")]
+                             :name "forIncrease"
+                             :arguments [(ast/variable-declaration-node "from")
+                                         (ast/variable-declaration-node "to")
+                                         (ast/variable-declaration-node "by")]
                              :body (ast/block-node
-                                    [(ast/return-node
+                                    [(ast/for-node
+                                      "i"
+                                      (ast/variable-node "from")
+                                      (ast/variable-node "to")
+                                      (ast/variable-node "by")
+                                      (ast/block-node
+                                       [(ast/assignment-node
+                                         (ast/variable-node "global")
+                                         (ast/call-node
+                                          "+"
+                                          [(ast/arg-node
+                                            (ast/variable-node "global"))
+                                           (ast/arg-node
+                                            (ast/literal-number-node
+                                             1))]))]))
+                                     (ast/return-node
+                                      (ast/variable-node "global"))]))
+                            (ast/function-node
+                             :name "run"
+                             :body (ast/block-node
+                                    [(ast/variable-declaration-node
+                                      "temp"
                                       (ast/call-node
-                                       "%"
+                                       "forIncrease"
                                        [(ast/arg-node
-                                         (ast/variable-node "arg0"))
+                                         (ast/literal-number-node 1))
                                         (ast/arg-node
-                                         (ast/variable-node "arg1"))]))]))]))
+                                         (ast/literal-number-node 10))
+                                        (ast/arg-node
+                                         (ast/literal-number-node
+                                          0.5))]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -269,10 +314,15 @@
  (pprint actual)
  (pprint expected)
 
- (pprint (parse "task blink13() running 1/s { toggle(pin: D-13); }"))
+ (pprint (parse "var b;func foo() {}"))
 
- (pprint (pp/parse (get-in parser [:parsers :function])
-                   "func foo(a, b) {\n\treturn foo(a + b);\n}"))
+ (pprint (pp/parse (get-in parser [:parsers :assignment])
+                   "a = 10;"))
+
+ (pprint (pp/parse (pp/transform (get-in parser [:parsers :assignment])
+                                 (fn [[variable _ _ _ value]]
+                                   (ast/assignment-node variable value)))
+                   "a = 10;"))
 
  (pprint (pp/parse (get-in parser [:parsers :sub-expr])
                    "(3)"))

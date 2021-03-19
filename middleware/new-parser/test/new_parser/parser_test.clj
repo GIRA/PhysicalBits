@@ -96,54 +96,54 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  functions-with-calls-and-globals
+  (testing
+    "A program with two functions that modify a global"
+    (let [src "var global;\n\nfunc forIncrease(from, to, by) {\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
+          expected (ast/program-node
+                    :globals [(ast/variable-declaration-node "global")]
+                    :scripts [(ast/function-node
+                               :name "forIncrease"
+                               :arguments [(ast/variable-declaration-node "from")
+                                           (ast/variable-declaration-node "to")
+                                           (ast/variable-declaration-node "by")]
+                               :body (ast/block-node
+                                      [(ast/for-node
+                                        "i"
+                                        (ast/variable-node "from")
+                                        (ast/variable-node "to")
+                                        (ast/variable-node "by")
+                                        (ast/block-node
+                                         [(ast/assignment-node
+                                           (ast/variable-node "global")
+                                           (ast/call-node
+                                            "+"
+                                            [(ast/arg-node
+                                              (ast/variable-node "global"))
+                                             (ast/arg-node
+                                              (ast/literal-number-node
+                                               1))]))]))
+                                       (ast/return-node
+                                        (ast/variable-node "global"))]))
+                              (ast/function-node
+                               :name "run"
+                               :body (ast/block-node
+                                      [(ast/variable-declaration-node
+                                        "temp"
+                                        (ast/call-node
+                                         "forIncrease"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 1))
+                                          (ast/arg-node
+                                           (ast/literal-number-node 10))
+                                          (ast/arg-node
+                                           (ast/literal-number-node
+                                            0.5))]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   functions-with-calls-and-globals
-   (testing
-     "A program with two functions that modify a global"
-     (let [src "var global;\n\nfunc forIncrease(from, to, by) {\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}"
-           expected (ast/program-node
-                     :globals [(ast/variable-declaration-node "global")]
-                     :scripts [(ast/function-node
-                                :name "forIncrease"
-                                :arguments [(ast/variable-declaration-node "from")
-                                            (ast/variable-declaration-node "to")
-                                            (ast/variable-declaration-node "by")]
-                                :body (ast/block-node
-                                       [(ast/for-node
-                                         "i"
-                                         (ast/variable-node "from")
-                                         (ast/variable-node "to")
-                                         (ast/variable-node "by")
-                                         (ast/block-node
-                                          [(ast/assignment-node
-                                            (ast/variable-node "global")
-                                            (ast/call-node
-                                             "+"
-                                             [(ast/arg-node
-                                               (ast/variable-node "global"))
-                                              (ast/arg-node
-                                               (ast/literal-number-node
-                                                1))]))]))
-                                        (ast/return-node
-                                         (ast/variable-node "global"))]))
-                               (ast/function-node
-                                :name "run"
-                                :body (ast/block-node
-                                       [(ast/variable-declaration-node
-                                         "temp"
-                                         (ast/call-node
-                                          "forIncrease"
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 1))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 10))
-                                           (ast/arg-node
-                                            (ast/literal-number-node
-                                             0.5))]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    operator-precedence
