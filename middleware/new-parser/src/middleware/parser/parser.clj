@@ -167,6 +167,7 @@
       (swap! result conj @left)
       @result)))
 
+
 (defn- reduce-binary-expresions [left operations]
   (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
         ; we have (1 + 2 + 3)
@@ -175,7 +176,7 @@
         result-2 (reduce fix-precedence result-1 precedence-table)
         ; If a binary expression was not reduced after going through the precedence	table,
         ; we iterate once again but this time reducing any operator found (left to right)
-        result-3 (reduce fix-precedence result-2 nil)]
+        result-3 (fix-precedence result-2 nil)]
     ; Finally, we should have a single expression in our results
     (first result-3)))
 
@@ -259,46 +260,50 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "var global;\n\nfunc forIncrease(from, to, by) {\n\tfor i = from to to by by {\n\t\tglobal = (global + 1);\n\t}\n\treturn global;\n}\n\nfunc run() {\n\tvar temp = forIncrease(1, 10, 0.5);\n}")
+   (def src "\ntask blink13() running 2/s {\nreturn a * b/c**d+n ~ j ** 3;\n } ")
    (def expected (ast/program-node
-                  :globals [(ast/variable-declaration-node "global")]
-                  :scripts [(ast/function-node
-                             :name "forIncrease"
-                             :arguments [(ast/variable-declaration-node "from")
-                                         (ast/variable-declaration-node "to")
-                                         (ast/variable-declaration-node "by")]
+                  :scripts [(ast/task-node
+                             :name "blink13"
+                             :tick-rate (ast/ticking-rate-node 2 "s")
+                             :state "running"
                              :body (ast/block-node
-                                    [(ast/for-node
-                                      "i"
-                                      (ast/variable-node "from")
-                                      (ast/variable-node "to")
-                                      (ast/variable-node "by")
-                                      (ast/block-node
-                                       [(ast/assignment-node
-                                         (ast/variable-node "global")
+                                    [(ast/return-node
+                                      (ast/call-node
+                                       "~"
+                                       [(ast/arg-node
                                          (ast/call-node
                                           "+"
                                           [(ast/arg-node
-                                            (ast/variable-node "global"))
+                                            (ast/call-node
+                                             "/"
+                                             [(ast/arg-node
+                                               (ast/call-node
+                                                "*"
+                                                [(ast/arg-node
+                                                  (ast/variable-node
+                                                   "a"))
+                                                 (ast/arg-node
+                                                  (ast/variable-node
+                                                   "b"))]))
+                                              (ast/arg-node
+                                               (ast/call-node
+                                                "**"
+                                                [(ast/arg-node
+                                                  (ast/variable-node
+                                                   "c"))
+                                                 (ast/arg-node
+                                                  (ast/variable-node
+                                                   "d"))]))]))
+                                           (ast/arg-node
+                                            (ast/variable-node "n"))]))
+                                        (ast/arg-node
+                                         (ast/call-node
+                                          "**"
+                                          [(ast/arg-node
+                                            (ast/variable-node "j"))
                                            (ast/arg-node
                                             (ast/literal-number-node
-                                             1))]))]))
-                                     (ast/return-node
-                                      (ast/variable-node "global"))]))
-                            (ast/function-node
-                             :name "run"
-                             :body (ast/block-node
-                                    [(ast/variable-declaration-node
-                                      "temp"
-                                      (ast/call-node
-                                       "forIncrease"
-                                       [(ast/arg-node
-                                         (ast/literal-number-node 1))
-                                        (ast/arg-node
-                                         (ast/literal-number-node 10))
-                                        (ast/arg-node
-                                         (ast/literal-number-node
-                                          0.5))]))]))]))
+                                             3))]))]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -316,16 +321,20 @@
 
  (pprint (parse "var b;func foo() {}"))
 
- (pprint (pp/parse (get-in parser [:parsers :assignment])
-                   "a = 10;"))
+ (pprint (pp/parse (get-in parser [:parsers :expr])
+                   "a * b/c**d+n ~ j ** 3"))
 
- (pprint (pp/parse (pp/transform (get-in parser [:parsers :assignment])
-                                 (fn [[variable _ _ _ value]]
-                                   (ast/assignment-node variable value)))
-                   "a = 10;"))
+ (pprint (pp/parse (get-in parser [:parsers :non-binary-expr])
+                   "4 ~ 2"))
 
- (pprint (pp/parse (get-in parser [:parsers :sub-expr])
-                   "(3)"))
+ (pprint (pp/parse (get-in parser [:parsers :binary-selector])
+                   " "))
+
+ (pprint (pp/parse (get-in parser [:parsers :binary-expr])
+                   "3 ~ 4"))
+
+ (pp/parse (pp/flatten (pp/plus ["~" (pp/star pp/space) pp/digit]))
+           "~ 4 ~ 5")
 
 
  ,,,)

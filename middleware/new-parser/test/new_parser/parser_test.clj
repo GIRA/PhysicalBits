@@ -176,58 +176,58 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  custom-operator-precedence
+  (testing
+    "a more complex squence of operators, including user defined ones"
+    (let [src "\ntask blink13() running 2/s {\nreturn a * b/c**d+n ~ j ** 3;\n } "
+          expected (ast/program-node
+                    :scripts [(ast/task-node
+                               :name "blink13"
+                               :tick-rate (ast/ticking-rate-node 2 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/return-node
+                                        (ast/call-node
+                                         "~"
+                                         [(ast/arg-node
+                                           (ast/call-node
+                                            "+"
+                                            [(ast/arg-node
+                                              (ast/call-node
+                                               "/"
+                                               [(ast/arg-node
+                                                 (ast/call-node
+                                                  "*"
+                                                  [(ast/arg-node
+                                                    (ast/variable-node
+                                                     "a"))
+                                                   (ast/arg-node
+                                                    (ast/variable-node
+                                                     "b"))]))
+                                                (ast/arg-node
+                                                 (ast/call-node
+                                                  "**"
+                                                  [(ast/arg-node
+                                                    (ast/variable-node
+                                                     "c"))
+                                                   (ast/arg-node
+                                                    (ast/variable-node
+                                                     "d"))]))]))
+                                             (ast/arg-node
+                                              (ast/variable-node "n"))]))
+                                          (ast/arg-node
+                                           (ast/call-node
+                                            "**"
+                                            [(ast/arg-node
+                                              (ast/variable-node "j"))
+                                             (ast/arg-node
+                                              (ast/literal-number-node
+                                               3))]))]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   custom-operator-precedence
-   (testing
-     "a more complex squence of operators, including user defined ones"
-     (let [src "\ntask blink13() running 2/s {\nreturn a * b/c**d+n ~ j ** 3;\n } "
-           expected (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "blink13"
-                                :tick-rate (ast/ticking-rate-node 2 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/return-node
-                                         (ast/call-node
-                                          "~"
-                                          [(ast/arg-node
-                                            (ast/call-node
-                                             "+"
-                                             [(ast/arg-node
-                                               (ast/call-node
-                                                "/"
-                                                [(ast/arg-node
-                                                  (ast/call-node
-                                                   "*"
-                                                   [(ast/arg-node
-                                                     (ast/variable-node
-                                                      "a"))
-                                                    (ast/arg-node
-                                                     (ast/variable-node
-                                                      "b"))]))
-                                                 (ast/arg-node
-                                                  (ast/call-node
-                                                   "**"
-                                                   [(ast/arg-node
-                                                     (ast/variable-node
-                                                      "c"))
-                                                    (ast/arg-node
-                                                     (ast/variable-node
-                                                      "d"))]))]))
-                                              (ast/arg-node
-                                               (ast/variable-node "n"))]))
-                                           (ast/arg-node
-                                            (ast/call-node
-                                             "**"
-                                             [(ast/arg-node
-                                               (ast/variable-node "j"))
-                                              (ast/arg-node
-                                               (ast/literal-number-node
-                                                3))]))]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    control-structures
