@@ -143,40 +143,40 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  operator-precedence
+  (testing
+    "A Function with some of the operators to check if the correct precedence is being built"
+    (let [src "func operate(arg0, arg1) {\n\treturn arg0 + arg1**2*3;\n}"
+          expected (ast/program-node
+                    :scripts [(ast/function-node
+                               :name "operate"
+                               :arguments [(ast/variable-declaration-node "arg0")
+                                           (ast/variable-declaration-node "arg1")]
+                               :body (ast/block-node
+                                      [(ast/return-node
+                                        (ast/call-node
+                                         "+"
+                                         [(ast/arg-node
+                                           (ast/variable-node "arg0"))
+                                          (ast/arg-node
+                                           (ast/call-node
+                                            "*"
+                                            [(ast/arg-node
+                                              (ast/call-node
+                                               "**"
+                                               [(ast/arg-node
+                                                 (ast/variable-node "arg1"))
+                                                (ast/arg-node
+                                                 (ast/literal-number-node
+                                                  2))]))
+                                             (ast/arg-node
+                                              (ast/literal-number-node
+                                               3))]))]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   operator-precedence
-   (testing
-     "A Function with some of the operators to check if the correct precedence is being built"
-     (let [src "func operate(arg0, arg1) {\n\treturn arg0 + arg1**2*3;\n}"
-           expected (ast/program-node
-                     :scripts [(ast/function-node
-                                :name "operate"
-                                :arguments [(ast/variable-declaration-node "arg0")
-                                            (ast/variable-declaration-node "arg1")]
-                                :body (ast/block-node
-                                       [(ast/return-node
-                                         (ast/call-node
-                                          "+"
-                                          [(ast/arg-node
-                                            (ast/variable-node "arg0"))
-                                           (ast/arg-node
-                                            (ast/call-node
-                                             "*"
-                                             [(ast/arg-node
-                                               (ast/call-node
-                                                "**"
-                                                [(ast/arg-node
-                                                  (ast/variable-node "arg1"))
-                                                 (ast/arg-node
-                                                  (ast/literal-number-node
-                                                   2))]))
-                                              (ast/arg-node
-                                               (ast/literal-number-node
-                                                3))]))]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    custom-operator-precedence
