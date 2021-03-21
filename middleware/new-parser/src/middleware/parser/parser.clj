@@ -63,7 +63,7 @@
    :while ["while" :separated-expr :ws? (pp/or :block :endl) :ws?]
    :do-while ["do" :ws? :block :ws? "while" :separated-expr :endl]
    :until ["until" :separated-expr :ws? (pp/or :block :endl) :ws?]
-   :do-until ["do" :ws? :block :ws? "while" :separated-expr :endl]
+   :do-until ["do" :ws? :block :ws? "until" :separated-expr :endl]
    :repeat ["repeat" :separated-expr :ws? :block]
    :forever ["forever" :ws? :block]
    :for ["for" :ws :variable :ws? \= :ws? :expr :ws
