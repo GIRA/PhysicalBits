@@ -23,7 +23,9 @@
             :import-path (pp/or :endl [:ws? :block]) :ws?]
    :import-path ["'" (pp/flatten (pp/star (pp/negate "'"))) "'"]
    :variable-declaration ["var" :ws :variable (pp/optional [:ws? \= :ws? :expr :ws?]) :endl :ws?]
-   :primitive TODO
+   :primitive ["prim" :ws
+               (pp/optional [(pp/or :binary-selector :identifier) :ws \: :ws])
+               :identifier :endl]
    :script (pp/or :task :function :procedure)
    :task ["task" :ws
           :identifier :ws?
@@ -135,6 +137,9 @@
 (defn- variable-declaration? [node]
   (= "UziVariableDeclarationNode" (:__class__ node)))
 
+(defn- primitive? [node]
+  (= "UziPrimitiveDeclarationNode" (:__class__ node)))
+
 (def precedence-table
   [#{"**"}
    #{"*" "/" "%"}
@@ -191,7 +196,8 @@
               (ast/program-node
                :imports imports
                :globals (filterv variable-declaration? members)
-               :scripts (filterv script? members)))
+               :scripts (filterv script? members)
+               :primitives (filterv primitive? members)))
    :import (fn [[_ _ [alias] path [_ init-block]]]
              ; TODO(Richo): Handle case where no alias is specified
              ; TODO(Richo): Handle case with no init-block
@@ -285,6 +291,10 @@
                  (ast/resume-node (vec tasks)))
    :not (fn [[_ _ expr]]
           (ast/call-node "!" [(ast/arg-node expr)]))
+   :primitive (fn [[_ _ [alias] name]]
+                (if alias
+                  (ast/primitive-node alias name)
+                  (ast/primitive-node name)))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -386,8 +396,8 @@
  (pprint (pp/parse (get-in parser [:parsers :binary-selector])
                    " "))
 
- (pprint (pp/parse (get-in parser [:parsers :not])
-                   "!1"))
+ (pprint (pp/parse (get-in parser [:parsers :primitive])
+                   "prim add;"))
 
  (pprint (pp/parse (get-in parser [:parsers :script-list])
                    "blink13, loop, a, b;"))

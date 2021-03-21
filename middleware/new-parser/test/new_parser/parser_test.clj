@@ -447,39 +447,38 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
+(deftest
+  primitive-definition
+  (testing
+    "Creating a few primitives"
+    (let [src "\nprim add;\nprim ~= : notEquals;\n\ntask test() {\n\tvar a = add(3, 4);\n\tvar b = 3 ~= 4;\n}"
+          expected (ast/program-node
+                    :scripts [(ast/task-node
+                               :name "test"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/variable-declaration-node
+                                        "a"
+                                        (ast/call-node
+                                         "add"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 3))
+                                          (ast/arg-node
+                                           (ast/literal-number-node 4))]))
+                                       (ast/variable-declaration-node
+                                        "b"
+                                        (ast/call-node
+                                         "~="
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 3))
+                                          (ast/arg-node
+                                           (ast/literal-number-node 4))]))]))]
+                    :primitives [(ast/primitive-node "add")
+                                 (ast/primitive-node "~=" "notEquals")])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
 (comment
-
-
- (deftest
-   primitive-definition
-   (testing
-     "Creating a few primitives"
-     (let [src "\nprim add;\nprim ~= : notEquals;\n\ntask test() {\n\tvar a = add(3, 4);\n\tvar b = 3 ~= 4;\n}"
-           expected (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "test"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/variable-declaration-node
-                                         "a"
-                                         (ast/call-node
-                                          "add"
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 3))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 4))]))
-                                        (ast/variable-declaration-node
-                                         "b"
-                                         (ast/call-node
-                                          "~="
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 3))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 4))]))]))]
-                     :primitives [(ast/primitive-node "add")
-                                  (ast/primitive-node "~=" "notEquals")])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
 
  (deftest
    uzi-syntax
