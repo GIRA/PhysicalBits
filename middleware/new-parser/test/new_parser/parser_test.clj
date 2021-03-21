@@ -287,33 +287,33 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  control-structures-2
+  (testing
+    "A task with a do while, do until and a yield"
+    (let [src "task test()\n{\n\tdo{var a = 3;}\n\tuntil(1);\n\tdo{\n\t\tvar a= 4;\n\t\tyield;\n\t}while(1);\n}"
+          expected (ast/program-node
+                    :scripts [(ast/task-node
+                               :name "test"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/do-until-node
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/variable-declaration-node
+                                           "a"
+                                           (ast/literal-number-node 3))]))
+                                       (ast/do-while-node
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/variable-declaration-node
+                                           "a"
+                                           (ast/literal-number-node 4))
+                                          (ast/yield-node)]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   control-structures-part-II
-   (testing
-     "A task with a do while, do until and a yield"
-     (let [src "task test()\n{\n\tdo{var a = 3;}\n\tuntil(1);\n\tdo{\n\t\tvar a= 4;\n\t\tyield;\n\t}while(1);\n}"
-           expected (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "test"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/do-until-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/variable-declaration-node
-                                            "a"
-                                            (ast/literal-number-node 3))]))
-                                        (ast/do-while-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/variable-declaration-node
-                                            "a"
-                                            (ast/literal-number-node 4))
-                                           (ast/yield-node)]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    motor-usage

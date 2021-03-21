@@ -70,7 +70,7 @@
          "to" :separated-expr
          (pp/optional [:ws "by" :separated-expr])
          :ws? :block]
-   :yield TODO
+   :yield ["yield" :endl]
    :expression-statement [:expr :endl]
    :endl [:ws? \;]
    :separated-expr (pp/or [:ws? :sub-expr]
@@ -263,6 +263,7 @@
               (ast/forever-node body))
    :repeat (fn [[_ times _ body]]
              (ast/repeat-node times body))
+   :yield (constantly (ast/yield-node))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -278,59 +279,25 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}")
+   (def src "task test()\n{\n\tdo{var a = 3;}\n\tuntil(1);\n\tdo{\n\t\tvar a= 4;\n\t\tyield;\n\t}while(1);\n}")
    (def expected (ast/program-node
                   :scripts [(ast/task-node
-                             :name "while_loop"
+                             :name "test"
                              :state "once"
                              :body (ast/block-node
-                                    [(ast/while-node
+                                    [(ast/do-until-node
                                       (ast/literal-number-node 1)
                                       (ast/block-node
-                                       [(ast/while-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node []))]))]))
-                            (ast/task-node
-                             :name "until_loop"
-                             :state "once"
-                             :body (ast/block-node
-                                    [(ast/until-node
+                                       [(ast/variable-declaration-node
+                                         "a"
+                                         (ast/literal-number-node 3))]))
+                                     (ast/do-while-node
                                       (ast/literal-number-node 1)
                                       (ast/block-node
-                                       [(ast/until-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node []))]))]))
-                            (ast/task-node
-                             :name "repeat_forever"
-                             :state "once"
-                             :body (ast/block-node
-                                    [(ast/forever-node
-                                      (ast/block-node
-                                       [(ast/repeat-node
-                                         (ast/literal-number-node 5)
-                                         (ast/block-node []))]))]))
-                            (ast/task-node
-                             :name "conditional"
-                             :state "once"
-                             :body (ast/block-node
-                                    [(ast/conditional-node
-                                      (ast/literal-number-node 1)
-                                      (ast/block-node
-                                       [(ast/conditional-node
-                                         (ast/literal-number-node 0)
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "delayS"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node
-                                               1000))])])
-                                         (ast/block-node []))])
-                                      (ast/block-node
-                                       [(ast/call-node
-                                         "delayMs"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node
-                                            1000))])]))]))]))
+                                       [(ast/variable-declaration-node
+                                         "a"
+                                         (ast/literal-number-node 4))
+                                        (ast/yield-node)]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -357,8 +324,8 @@
  (pprint (pp/parse (get-in parser [:parsers :binary-selector])
                    " "))
 
- (pprint (pp/parse (get-in parser [:parsers :do-while])
-                   "do {return(D13);} while 1;"))
+ (pprint (pp/parse (get-in parser [:parsers :do-until])
+                   "do{var a = 3;}\n\tuntil(1);"))
 
  (pp/parse (pp/flatten (pp/plus ["~" (pp/star pp/space) pp/digit]))
            "~ 4 ~ 5")
