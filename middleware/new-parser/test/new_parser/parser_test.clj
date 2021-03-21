@@ -313,141 +313,142 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
+(deftest
+  motor-usage
+  (testing
+    "Two tasks that operate a servo and a DC. This has some imports"
+    (let [src "import motor from 'DCMotor.uzi' {\n\tenablePin = D10;\n\tforwardPin = D9;\n\treversePin = D8;\n}\n\ntask servo() {\n\tforever {\n\t\tsetServoDegrees(D3, 90);\n\t\tdelayMs(1000);\n\t\tsetServoDegrees(D3, 0);\n\t\tdelayMs(1000);\n\t}\n}\n\ntask default1() running 20/m {\n\tmotor.forward(speed: 1);\n\tdelayMs(1000);\n\tmotor.brake();\n\tdelayMs(1000);\n}"
+          expected (ast/program-node
+                    :imports [(ast/import-node
+                               "motor"
+                               "DCMotor.uzi"
+                               (ast/block-node
+                                [(ast/assignment-node
+                                  (ast/variable-node "enablePin")
+                                  (ast/literal-pin-node "D" 10))
+                                 (ast/assignment-node
+                                  (ast/variable-node "forwardPin")
+                                  (ast/literal-pin-node "D" 9))
+                                 (ast/assignment-node
+                                  (ast/variable-node "reversePin")
+                                  (ast/literal-pin-node "D" 8))]))]
+                    :scripts [(ast/task-node
+                               :name "servo"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/forever-node
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "setServoDegrees"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 3))
+                                            (ast/arg-node
+                                             (ast/literal-number-node 90))])
+                                          (ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/literal-number-node 1000))])
+                                          (ast/call-node
+                                           "setServoDegrees"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 3))
+                                            (ast/arg-node
+                                             (ast/literal-number-node 0))])
+                                          (ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/literal-number-node
+                                              1000))])]))]))
+                              (ast/task-node
+                               :name "default1"
+                               :tick-rate (ast/ticking-rate-node 20 "m")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "motor.forward"
+                                        [(ast/arg-node
+                                          "speed"
+                                          (ast/literal-number-node 1))])
+                                       (ast/call-node
+                                        "delayMs"
+                                        [(ast/arg-node
+                                          (ast/literal-number-node 1000))])
+                                       (ast/call-node "motor.brake" [])
+                                       (ast/call-node
+                                        "delayMs"
+                                        [(ast/arg-node
+                                          (ast/literal-number-node 1000))])]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
+(deftest
+  sonar-and-button
+  (testing
+    "Two tasks where one handles a button to start and stop the sonar one"
+    (let [src "import sonar from 'Sonar.uzi' {\n\ttrigPin = D11;\n\techoPin = D12;\n\tmaxDistance = 200;\n\tstart reading;\n}\nimport buttons from 'Buttons.uzi' {\n\tdebounceMs = 50;\n}\n\nvar variable1;\n\ntask sonar() stopped 1/h {\n\twrite(D13, sonar.distance_cm());\n}\n\ntask button() running 1/s {\n\tif variable1 {\n\t\tbuttons.waitForRelease(D7);\n\t\tvariable1 = !variable1;\n\t\tstart sonar;\n\t} else {\n\t\tstop sonar;\n\t}\n}"
+          expected (ast/program-node
+                    :imports [(ast/import-node
+                               "sonar"
+                               "Sonar.uzi"
+                               (ast/block-node
+                                [(ast/assignment-node
+                                  (ast/variable-node "trigPin")
+                                  (ast/literal-pin-node "D" 11))
+                                 (ast/assignment-node
+                                  (ast/variable-node "echoPin")
+                                  (ast/literal-pin-node "D" 12))
+                                 (ast/assignment-node
+                                  (ast/variable-node "maxDistance")
+                                  (ast/literal-number-node 200))
+                                 (ast/start-node ["reading"])]))
+                              (ast/import-node
+                               "buttons"
+                               "Buttons.uzi"
+                               (ast/block-node
+                                [(ast/assignment-node
+                                  (ast/variable-node "debounceMs")
+                                  (ast/literal-number-node 50))]))]
+                    :globals [(ast/variable-declaration-node "variable1")]
+                    :scripts [(ast/task-node
+                               :name "sonar"
+                               :tick-rate (ast/ticking-rate-node 1 "h")
+                               :state "stopped"
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "write"
+                                        [(ast/arg-node
+                                          (ast/literal-pin-node "D" 13))
+                                         (ast/arg-node
+                                          (ast/call-node
+                                           "sonar.distance_cm"
+                                           []))])]))
+                              (ast/task-node
+                               :name "button"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/conditional-node
+                                        (ast/variable-node "variable1")
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "buttons.waitForRelease"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 7))])
+                                          (ast/assignment-node
+                                           (ast/variable-node "variable1")
+                                           (ast/call-node
+                                            "!"
+                                            [(ast/arg-node
+                                              (ast/variable-node
+                                               "variable1"))]))
+                                          (ast/start-node ["sonar"])])
+                                        (ast/block-node
+                                         [(ast/stop-node ["sonar"])]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
 (comment
 
- (deftest
-   motor-usage
-   (testing
-     "Two tasks that operate a servo and a DC. This has some imports"
-     (let [src "import motor from 'DCMotor.uzi' {\n\tenablePin = D10;\n\tforwardPin = D9;\n\treversePin = D8;\n}\n\ntask servo() {\n\tforever {\n\t\tsetServoDegrees(D3, 90);\n\t\tdelayMs(1000);\n\t\tsetServoDegrees(D3, 0);\n\t\tdelayMs(1000);\n\t}\n}\n\ntask default1() running 20/m {\n\tmotor.forward(speed: 1);\n\tdelayMs(1000);\n\tmotor.brake();\n\tdelayMs(1000);\n}"
-           expected (ast/program-node
-                     :imports [(ast/import-node
-                                "motor"
-                                "DCMotor.uzi"
-                                (ast/block-node
-                                 [(ast/assignment-node
-                                   (ast/variable-node "enablePin")
-                                   (ast/literal-pin-node "D" 10))
-                                  (ast/assignment-node
-                                   (ast/variable-node "forwardPin")
-                                   (ast/literal-pin-node "D" 9))
-                                  (ast/assignment-node
-                                   (ast/variable-node "reversePin")
-                                   (ast/literal-pin-node "D" 8))]))]
-                     :scripts [(ast/task-node
-                                :name "servo"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/forever-node
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "setServoDegrees"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 3))
-                                             (ast/arg-node
-                                              (ast/literal-number-node 90))])
-                                           (ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node 1000))])
-                                           (ast/call-node
-                                            "setServoDegrees"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 3))
-                                             (ast/arg-node
-                                              (ast/literal-number-node 0))])
-                                           (ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node
-                                               1000))])]))]))
-                               (ast/task-node
-                                :name "default1"
-                                :tick-rate (ast/ticking-rate-node 20 "m")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "motor.forward"
-                                         [(ast/arg-node
-                                           "speed"
-                                           (ast/literal-number-node 1))])
-                                        (ast/call-node
-                                         "delayMs"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 1000))])
-                                        (ast/call-node "motor.brake" [])
-                                        (ast/call-node
-                                         "delayMs"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 1000))])]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
-
- (deftest
-   sonar-and-button
-   (testing
-     "Two tasks where one handles a button to start and stop the sonar one"
-     (let [src "import sonar from 'Sonar.uzi' {\n\ttrigPin = D11;\n\techoPin = D12;\n\tmaxDistance = 200;\n\tstart reading;\n}\nimport buttons from 'Buttons.uzi' {\n\tdebounceMs = 50;\n}\n\nvar variable1;\n\ntask sonar() stopped 1/h {\n\twrite(D13, sonar.distance_cm());\n}\n\ntask button() running 1/s {\n\tif variable1 {\n\t\tbuttons.waitForRelease(D7);\n\t\tvariable1 = !variable1;\n\t\tstart sonar;\n\t} else {\n\t\tstop sonar;\n\t}\n}"
-           expected (ast/program-node
-                     :imports [(ast/import-node
-                                "sonar"
-                                "Sonar.uzi"
-                                (ast/block-node
-                                 [(ast/assignment-node
-                                   (ast/variable-node "trigPin")
-                                   (ast/literal-pin-node "D" 11))
-                                  (ast/assignment-node
-                                   (ast/variable-node "echoPin")
-                                   (ast/literal-pin-node "D" 12))
-                                  (ast/assignment-node
-                                   (ast/variable-node "maxDistance")
-                                   (ast/literal-number-node 200))
-                                  (ast/start-node ["reading"])]))
-                               (ast/import-node
-                                "buttons"
-                                "Buttons.uzi"
-                                (ast/block-node
-                                 [(ast/assignment-node
-                                   (ast/variable-node "debounceMs")
-                                   (ast/literal-number-node 50))]))]
-                     :globals [(ast/variable-declaration-node "variable1")]
-                     :scripts [(ast/task-node
-                                :name "sonar"
-                                :tick-rate (ast/ticking-rate-node 1 "h")
-                                :state "stopped"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "write"
-                                         [(ast/arg-node
-                                           (ast/literal-pin-node "D" 13))
-                                          (ast/arg-node
-                                           (ast/call-node
-                                            "sonar.distance_cm"
-                                            []))])]))
-                               (ast/task-node
-                                :name "button"
-                                :tick-rate (ast/ticking-rate-node 1 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/conditional-node
-                                         (ast/variable-node "variable1")
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "buttons.waitForRelease"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 7))])
-                                           (ast/assignment-node
-                                            (ast/variable-node "variable1")
-                                            (ast/call-node
-                                             "!"
-                                             [(ast/arg-node
-                                               (ast/variable-node
-                                                "variable1"))]))
-                                           (ast/start-node ["sonar"])])
-                                         (ast/block-node
-                                          [(ast/stop-node ["sonar"])]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
 
  (deftest
    primitive-definition

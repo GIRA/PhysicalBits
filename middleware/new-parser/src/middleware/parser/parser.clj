@@ -18,7 +18,10 @@
                               :script
                               :ws))
              :ws?]
-   :import TODO
+   :import ["import" :ws
+            (pp/optional [:identifier :ws "from" :ws])
+            :import-path (pp/or :endl [:ws? :block]) :ws?]
+   :import-path ["'" (pp/flatten (pp/star (pp/negate "'"))) "'"]
    :variable-declaration ["var" :ws :variable (pp/optional [:ws? \= :ws? :expr :ws?]) :endl :ws?]
    :primitive TODO
    :script (pp/or :task :function :procedure)
@@ -56,10 +59,12 @@
    :assignment [:variable :ws? \= :ws? :expr :endl]
    :return ["return" (pp/optional :separated-expr) :endl]
    :conditional ["if" :separated-expr :ws? :block (pp/optional [:ws? "else" :ws? :block])]
-   :start-task TODO
-   :stop-task TODO
-   :pause-task TODO
-   :resume-task TODO
+   :start-task ["start" :ws :script-list :endl]
+   :stop-task ["stop" :ws :script-list :endl]
+   :pause-task ["pause" :ws :script-list :endl]
+   :resume-task ["resume" :ws :script-list :endl]
+   :script-list (pp/separated-by :script-reference
+                                 [:ws? \, :ws?])
    :while ["while" :separated-expr :ws? (pp/or :block :endl) :ws?]
    :do-while ["do" :ws? :block :ws? "while" :separated-expr :endl]
    :until ["until" :separated-expr :ws? (pp/or :block :endl) :ws?]
@@ -102,7 +107,7 @@
    :integer (pp/flatten [(pp/optional \-) :digits])
    :variable :identifier
    :unary :not
-   :not TODO
+   :not [\! :ws? :non-binary-expr]
    :call [:script-reference :ws? :arg-list]
    :script-reference :identifier
    :arg-list [\(
@@ -187,6 +192,11 @@
                :imports imports
                :globals (filterv variable-declaration? members)
                :scripts (filterv script? members)))
+   :import (fn [[_ _ [alias] path [_ init-block]]]
+             ; TODO(Richo): Handle case where no alias is specified
+             ; TODO(Richo): Handle case with no init-block
+             (ast/import-node alias path init-block))
+   :import-path (fn [[_ path _]] path)
    :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
            (ast/task-node
             :name name
@@ -195,10 +205,10 @@
             :tick-rate ticking-rate
             :body body))
    :function (fn [[_ _ name _ args _ body]]
-                (ast/function-node
-                 :name name
-                 :arguments args
-                 :body body))
+               (ast/function-node
+                :name name
+                :arguments args
+                :body body))
    :procedure (fn [[_ _ name _ args _ body]]
                 (ast/procedure-node
                  :name name
@@ -264,6 +274,17 @@
    :repeat (fn [[_ times _ body]]
              (ast/repeat-node times body))
    :yield (constantly (ast/yield-node))
+   :script-list (partial take-nth 2)
+   :start-task (fn [[_ _ tasks _]]
+                 (ast/start-node (vec tasks)))
+   :stop-task (fn [[_ _ tasks _]]
+                 (ast/stop-node (vec tasks)))
+   :pause-task (fn [[_ _ tasks _]]
+                 (ast/pause-node (vec tasks)))
+   :resume-task (fn [[_ _ tasks _]]
+                 (ast/resume-node (vec tasks)))
+   :not (fn [[_ _ expr]]
+          (ast/call-node "!" [(ast/arg-node expr)]))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -279,25 +300,65 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "task test()\n{\n\tdo{var a = 3;}\n\tuntil(1);\n\tdo{\n\t\tvar a= 4;\n\t\tyield;\n\t}while(1);\n}")
+   (def src "import sonar from 'Sonar.uzi' {\n\ttrigPin = D11;\n\techoPin = D12;\n\tmaxDistance = 200;\n\tstart reading;\n}\nimport buttons from 'Buttons.uzi' {\n\tdebounceMs = 50;\n}\n\nvar variable1;\n\ntask sonar() stopped 1/h {\n\twrite(D13, sonar.distance_cm());\n}\n\ntask button() running 1/s {\n\tif variable1 {\n\t\tbuttons.waitForRelease(D7);\n\t\tvariable1 = !variable1;\n\t\tstart sonar;\n\t} else {\n\t\tstop sonar;\n\t}\n}")
    (def expected (ast/program-node
+                  :imports [(ast/import-node
+                             "sonar"
+                             "Sonar.uzi"
+                             (ast/block-node
+                              [(ast/assignment-node
+                                (ast/variable-node "trigPin")
+                                (ast/literal-pin-node "D" 11))
+                               (ast/assignment-node
+                                (ast/variable-node "echoPin")
+                                (ast/literal-pin-node "D" 12))
+                               (ast/assignment-node
+                                (ast/variable-node "maxDistance")
+                                (ast/literal-number-node 200))
+                               (ast/start-node ["reading"])]))
+                            (ast/import-node
+                             "buttons"
+                             "Buttons.uzi"
+                             (ast/block-node
+                              [(ast/assignment-node
+                                (ast/variable-node "debounceMs")
+                                (ast/literal-number-node 50))]))]
+                  :globals [(ast/variable-declaration-node "variable1")]
                   :scripts [(ast/task-node
-                             :name "test"
-                             :state "once"
+                             :name "sonar"
+                             :tick-rate (ast/ticking-rate-node 1 "h")
+                             :state "stopped"
                              :body (ast/block-node
-                                    [(ast/do-until-node
-                                      (ast/literal-number-node 1)
+                                    [(ast/call-node
+                                      "write"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))
+                                       (ast/arg-node
+                                        (ast/call-node
+                                         "sonar.distance_cm"
+                                         []))])]))
+                            (ast/task-node
+                             :name "button"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/conditional-node
+                                      (ast/variable-node "variable1")
                                       (ast/block-node
-                                       [(ast/variable-declaration-node
-                                         "a"
-                                         (ast/literal-number-node 3))]))
-                                     (ast/do-while-node
-                                      (ast/literal-number-node 1)
+                                       [(ast/call-node
+                                         "buttons.waitForRelease"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "D" 7))])
+                                        (ast/assignment-node
+                                         (ast/variable-node "variable1")
+                                         (ast/call-node
+                                          "!"
+                                          [(ast/arg-node
+                                            (ast/variable-node
+                                             "variable1"))]))
+                                        (ast/start-node ["sonar"])])
                                       (ast/block-node
-                                       [(ast/variable-declaration-node
-                                         "a"
-                                         (ast/literal-number-node 4))
-                                        (ast/yield-node)]))]))]))
+                                       [(ast/stop-node ["sonar"])]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -311,6 +372,7 @@
    (= expected actual))
 
  (pprint actual)
+ (-> actual :scripts second :body :statements first :trueBranch :statements second)
  (pprint expected)
 
  (pprint (parse "var b;func foo() {}"))
@@ -324,11 +386,11 @@
  (pprint (pp/parse (get-in parser [:parsers :binary-selector])
                    " "))
 
- (pprint (pp/parse (get-in parser [:parsers :do-until])
-                   "do{var a = 3;}\n\tuntil(1);"))
+ (pprint (pp/parse (get-in parser [:parsers :not])
+                   "!1"))
 
- (pp/parse (pp/flatten (pp/plus ["~" (pp/star pp/space) pp/digit]))
-           "~ 4 ~ 5")
+ (pprint (pp/parse (get-in parser [:parsers :script-list])
+                   "blink13, loop, a, b;"))
 
 
  ,,,)
