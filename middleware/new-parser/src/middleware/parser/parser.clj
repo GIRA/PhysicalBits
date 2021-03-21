@@ -55,17 +55,17 @@
                :ws?]
    :assignment [:variable :ws? \= :ws? :expr :endl]
    :return ["return" (pp/optional :separated-expr) :endl]
-   :conditional TODO
+   :conditional ["if" :separated-expr :ws? :block (pp/optional [:ws? "else" :ws? :block])]
    :start-task TODO
    :stop-task TODO
    :pause-task TODO
    :resume-task TODO
-   :while TODO
-   :do-while TODO
-   :until TODO
-   :do-until TODO
-   :repeat TODO
-   :forever TODO
+   :while ["while" :separated-expr :ws? (pp/or :block :endl) :ws?]
+   :do-while ["do" :ws? :block :ws? "while" :separated-expr :endl]
+   :until ["until" :separated-expr :ws? (pp/or :block :endl) :ws?]
+   :do-until ["do" :ws? :block :ws? "while" :separated-expr :endl]
+   :repeat ["repeat" :separated-expr :ws? :block]
+   :forever ["forever" :ws? :block]
    :for ["for" :ws :variable :ws? \= :ws? :expr :ws
          "to" :separated-expr
          (pp/optional [:ws "by" :separated-expr])
@@ -168,6 +168,7 @@
       @result)))
 
 
+; TODO(Richo): Refactor this, maybe with a threaded macro or something...
 (defn- reduce-binary-expresions [left operations]
   (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
         ; we have (1 + 2 + 3)
@@ -245,6 +246,23 @@
                         body))
    :assignment (fn [[variable _ _ _ value]]
                  (ast/assignment-node variable value))
+   :while (fn [[_ condition _ body]]
+            (ast/while-node condition (or body (ast/block-node []))))
+   :until (fn [[_ condition _ body]]
+            (ast/until-node condition (or body (ast/block-node []))))
+   :do-while (fn [[_ _ body _ _ condition]]
+               (ast/do-while-node condition body))
+   :do-until (fn [[_ _ body _ _ condition]]
+               (ast/do-until-node condition body))
+   :endl (constantly nil)
+   :conditional (fn [[_ condition _ true-branch [_ _ _ false-branch]]]
+                  (ast/conditional-node condition
+                                        true-branch
+                                        (or false-branch (ast/block-node []))))
+   :forever (fn [[_ _ body]]
+              (ast/forever-node body))
+   :repeat (fn [[_ times _ body]]
+             (ast/repeat-node times body))
    })
 
 (def parser (pp/compose grammar transformations :program))
@@ -260,50 +278,59 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "\ntask blink13() running 2/s {\nreturn a * b/c**d+n ~ j ** 3;\n } ")
+   (def src "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}")
    (def expected (ast/program-node
                   :scripts [(ast/task-node
-                             :name "blink13"
-                             :tick-rate (ast/ticking-rate-node 2 "s")
-                             :state "running"
+                             :name "while_loop"
+                             :state "once"
                              :body (ast/block-node
-                                    [(ast/return-node
-                                      (ast/call-node
-                                       "~"
-                                       [(ast/arg-node
-                                         (ast/call-node
-                                          "+"
-                                          [(ast/arg-node
-                                            (ast/call-node
-                                             "/"
-                                             [(ast/arg-node
-                                               (ast/call-node
-                                                "*"
-                                                [(ast/arg-node
-                                                  (ast/variable-node
-                                                   "a"))
-                                                 (ast/arg-node
-                                                  (ast/variable-node
-                                                   "b"))]))
-                                              (ast/arg-node
-                                               (ast/call-node
-                                                "**"
-                                                [(ast/arg-node
-                                                  (ast/variable-node
-                                                   "c"))
-                                                 (ast/arg-node
-                                                  (ast/variable-node
-                                                   "d"))]))]))
-                                           (ast/arg-node
-                                            (ast/variable-node "n"))]))
-                                        (ast/arg-node
-                                         (ast/call-node
-                                          "**"
-                                          [(ast/arg-node
-                                            (ast/variable-node "j"))
-                                           (ast/arg-node
-                                            (ast/literal-number-node
-                                             3))]))]))]))]))
+                                    [(ast/while-node
+                                      (ast/literal-number-node 1)
+                                      (ast/block-node
+                                       [(ast/while-node
+                                         (ast/literal-number-node 1)
+                                         (ast/block-node []))]))]))
+                            (ast/task-node
+                             :name "until_loop"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/until-node
+                                      (ast/literal-number-node 1)
+                                      (ast/block-node
+                                       [(ast/until-node
+                                         (ast/literal-number-node 1)
+                                         (ast/block-node []))]))]))
+                            (ast/task-node
+                             :name "repeat_forever"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/forever-node
+                                      (ast/block-node
+                                       [(ast/repeat-node
+                                         (ast/literal-number-node 5)
+                                         (ast/block-node []))]))]))
+                            (ast/task-node
+                             :name "conditional"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/conditional-node
+                                      (ast/literal-number-node 1)
+                                      (ast/block-node
+                                       [(ast/conditional-node
+                                         (ast/literal-number-node 0)
+                                         (ast/block-node
+                                          [(ast/call-node
+                                            "delayS"
+                                            [(ast/arg-node
+                                              (ast/literal-number-node
+                                               1000))])])
+                                         (ast/block-node []))])
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "delayMs"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node
+                                            1000))])]))]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -330,8 +357,8 @@
  (pprint (pp/parse (get-in parser [:parsers :binary-selector])
                    " "))
 
- (pprint (pp/parse (get-in parser [:parsers :binary-expr])
-                   "3 ~ 4"))
+ (pprint (pp/parse (get-in parser [:parsers :do-while])
+                   "do {return(D13);} while 1;"))
 
  (pp/parse (pp/flatten (pp/plus ["~" (pp/star pp/space) pp/digit]))
            "~ 4 ~ 5")

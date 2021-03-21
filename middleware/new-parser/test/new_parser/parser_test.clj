@@ -227,67 +227,67 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  control-structures
+  (testing
+    "Several tasks with the main control structures on them"
+    (let [src "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}"
+          expected (ast/program-node
+                    :scripts [(ast/task-node
+                               :name "while_loop"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/while-node
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/while-node
+                                           (ast/literal-number-node 1)
+                                           (ast/block-node []))]))]))
+                              (ast/task-node
+                               :name "until_loop"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/until-node
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/until-node
+                                           (ast/literal-number-node 1)
+                                           (ast/block-node []))]))]))
+                              (ast/task-node
+                               :name "repeat_forever"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/forever-node
+                                        (ast/block-node
+                                         [(ast/repeat-node
+                                           (ast/literal-number-node 5)
+                                           (ast/block-node []))]))]))
+                              (ast/task-node
+                               :name "conditional"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/conditional-node
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/conditional-node
+                                           (ast/literal-number-node 0)
+                                           (ast/block-node
+                                            [(ast/call-node
+                                              "delayS"
+                                              [(ast/arg-node
+                                                (ast/literal-number-node
+                                                 1000))])])
+                                           (ast/block-node []))])
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/literal-number-node
+                                              1000))])]))]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
 
- (deftest
-   control-structures
-   (testing
-     "Several tasks with the main control structures on them"
-     (let [src "task while_loop() {\n\twhile 1 {\n\t\twhile 1;\n\t}\n}\n\ntask until_loop() {\n\tuntil 1 {\n\t\tuntil 1;\n\t}\n}\n\ntask repeat_forever() {\n\tforever {\n\t\trepeat 5 {}\n\t}\n}\n\ntask conditional() {\n\tif 1 {\n\t\tif 0 {\n\t\t\tdelayS(1000);\n\t\t}\n\t} else {\n\t\tdelayMs(1000);\n\t}\n}"
-           expected (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "while_loop"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/while-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/while-node
-                                            (ast/literal-number-node 1)
-                                            (ast/block-node []))]))]))
-                               (ast/task-node
-                                :name "until_loop"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/until-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/until-node
-                                            (ast/literal-number-node 1)
-                                            (ast/block-node []))]))]))
-                               (ast/task-node
-                                :name "repeat_forever"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/forever-node
-                                         (ast/block-node
-                                          [(ast/repeat-node
-                                            (ast/literal-number-node 5)
-                                            (ast/block-node []))]))]))
-                               (ast/task-node
-                                :name "conditional"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/conditional-node
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/conditional-node
-                                            (ast/literal-number-node 0)
-                                            (ast/block-node
-                                             [(ast/call-node
-                                               "delayS"
-                                               [(ast/arg-node
-                                                 (ast/literal-number-node
-                                                  1000))])])
-                                            (ast/block-node []))])
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node
-                                               1000))])]))]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+(comment
 
  (deftest
    control-structures-part-II
