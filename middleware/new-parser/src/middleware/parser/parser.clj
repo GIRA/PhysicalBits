@@ -123,8 +123,11 @@
                              :ws? ; TODO(Richo): Is this necessary?
                              ])
                :expr]
-   :ws (pp/plus pp/space)
-   :ws? (pp/optional :ws)})
+
+   ; TODO(Richo): Don't lose the comments
+   :ws (pp/plus (pp/or pp/space :comment))
+   :ws? (pp/optional :ws)
+   :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
 
 (defn- parse-int [str] (Integer/parseInt str))
 (defn- parse-double [str] (Double/parseDouble str))
@@ -199,9 +202,11 @@
                :scripts (filterv script? members)
                :primitives (filterv primitive? members)))
    :import (fn [[_ _ [alias] path [_ init-block]]]
-             ; TODO(Richo): Handle case where no alias is specified
-             ; TODO(Richo): Handle case with no init-block
-             (ast/import-node alias path init-block))
+             (if alias
+               (if init-block
+                 (ast/import-node alias path init-block)
+                 (ast/import-node alias path))
+               (ast/import-node path)))
    :import-path (fn [[_ path _]] path)
    :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
            (ast/task-node
@@ -310,65 +315,281 @@
 
  (do
    (def parser (pp/compose grammar transformations :program))
-   (def src "import sonar from 'Sonar.uzi' {\n\ttrigPin = D11;\n\techoPin = D12;\n\tmaxDistance = 200;\n\tstart reading;\n}\nimport buttons from 'Buttons.uzi' {\n\tdebounceMs = 50;\n}\n\nvar variable1;\n\ntask sonar() stopped 1/h {\n\twrite(D13, sonar.distance_cm());\n}\n\ntask button() running 1/s {\n\tif variable1 {\n\t\tbuttons.waitForRelease(D7);\n\t\tvariable1 = !variable1;\n\t\tstart sonar;\n\t} else {\n\t\tstop sonar;\n\t}\n}")
+   (def src "\"This is just an example of code that uses all the available syntax\nin the language.\"\n\"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\n\nimport foo from 'DCMotor.uzi';\nimport bar from 'Sonar.uzi' {\n  trigPin = 100;\n  echoPin = 200;\n  start reading;\n  stop reading;\n  pause reading;\n  resume reading;\n}\n\nvar a = 10;\nvar b = 0.5;\nvar c;\n\ntask blink13() running 2/s { toggle(D13); }\ntask blink12() running 1/s { toggle(D12); }\n\ntask setup() {\n    if a { turnOn(D11); }\n    else { turnOff(D11); }\n}\n\nfunc fact(n) {\n    if n == 0 { return 1; }\n    return n * fact(n - 1);\n}\n\nproc foo_bar_baz(a, b, c) {\n    var d = a * b + c;\n    repeat d { toggle(A2); }\n    forever {\n        start blink13, blink12;\n        stop blink13;\n        yield;\n        pause blink12, blink13;\n        resume blink12; yield;\n        return;\n    }\n    while 1 && 0 { toggle(D10); delayMs(1000); }\n    until 0 || 0 { toggle(D10); delayMs(1000); }\n    while 1 >= 0; \"Body is optional\"\n    until 0 <= 1; \"Body is optional\"\n    do { toggle(D9); } while 1 > 0;\n    do { toggle(D8); } until 0 < 1;\n    for i = 0 to 10 by 1 {\n        toggle(A0);\n        delayMs(i * 100);\n    }\n\tvar e = foo.getSpeed();\n\tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\n\tbar.init(trig: a, echo: b, maxDist: c);\n}\n"
+         )
    (def expected (ast/program-node
                   :imports [(ast/import-node
-                             "sonar"
+                             "foo"
+                             "DCMotor.uzi"
+                             #_(ast/block-node []))
+                            (ast/import-node
+                             "bar"
                              "Sonar.uzi"
                              (ast/block-node
                               [(ast/assignment-node
                                 (ast/variable-node "trigPin")
-                                (ast/literal-pin-node "D" 11))
+                                (ast/literal-number-node 100))
                                (ast/assignment-node
                                 (ast/variable-node "echoPin")
-                                (ast/literal-pin-node "D" 12))
-                               (ast/assignment-node
-                                (ast/variable-node "maxDistance")
                                 (ast/literal-number-node 200))
-                               (ast/start-node ["reading"])]))
-                            (ast/import-node
-                             "buttons"
-                             "Buttons.uzi"
-                             (ast/block-node
-                              [(ast/assignment-node
-                                (ast/variable-node "debounceMs")
-                                (ast/literal-number-node 50))]))]
-                  :globals [(ast/variable-declaration-node "variable1")]
+                               (ast/start-node ["reading"])
+                               (ast/stop-node ["reading"])
+                               (ast/pause-node ["reading"])
+                               (ast/resume-node ["reading"])]))]
+                  :globals [(ast/variable-declaration-node
+                             "a"
+                             (ast/literal-number-node 10))
+                            (ast/variable-declaration-node
+                             "b"
+                             (ast/literal-number-node 0.5))
+                            (ast/variable-declaration-node
+                             "c"
+                             (ast/literal-number-node 0))]
                   :scripts [(ast/task-node
-                             :name "sonar"
-                             :tick-rate (ast/ticking-rate-node 1 "h")
-                             :state "stopped"
+                             :name "blink13"
+                             :tick-rate (ast/ticking-rate-node 2 "s")
+                             :state "running"
                              :body (ast/block-node
                                     [(ast/call-node
-                                      "write"
+                                      "toggle"
                                       [(ast/arg-node
-                                        (ast/literal-pin-node "D" 13))
-                                       (ast/arg-node
-                                        (ast/call-node
-                                         "sonar.distance_cm"
-                                         []))])]))
+                                        (ast/literal-pin-node "D" 13))])]))
                             (ast/task-node
-                             :name "button"
+                             :name "blink12"
                              :tick-rate (ast/ticking-rate-node 1 "s")
                              :state "running"
                              :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 12))])]))
+                            (ast/task-node
+                             :name "setup"
+                             :state "once"
+                             :body (ast/block-node
                                     [(ast/conditional-node
-                                      (ast/variable-node "variable1")
+                                      (ast/variable-node "a")
                                       (ast/block-node
                                        [(ast/call-node
-                                         "buttons.waitForRelease"
+                                         "turnOn"
                                          [(ast/arg-node
-                                           (ast/literal-pin-node "D" 7))])
-                                        (ast/assignment-node
-                                         (ast/variable-node "variable1")
-                                         (ast/call-node
-                                          "!"
-                                          [(ast/arg-node
-                                            (ast/variable-node
-                                             "variable1"))]))
-                                        (ast/start-node ["sonar"])])
+                                           (ast/literal-pin-node "D" 11))])])
                                       (ast/block-node
-                                       [(ast/stop-node ["sonar"])]))]))]))
+                                       [(ast/call-node
+                                         "turnOff"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node
+                                            "D"
+                                            11))])]))]))
+                            (ast/function-node
+                             :name "fact"
+                             :arguments [(ast/variable-declaration-node
+                                          "n"
+                                          (ast/literal-number-node 0))]
+                             :body (ast/block-node
+                                    [(ast/conditional-node
+                                      (ast/call-node
+                                       "=="
+                                       [(ast/arg-node (ast/variable-node "n"))
+                                        (ast/arg-node
+                                         (ast/literal-number-node 0))])
+                                      (ast/block-node
+                                       [(ast/return-node
+                                         (ast/literal-number-node 1))])
+                                      (ast/block-node []))
+                                     (ast/return-node
+                                      (ast/call-node
+                                       "*"
+                                       [(ast/arg-node (ast/variable-node "n"))
+                                        (ast/arg-node
+                                         (ast/call-node
+                                          "fact"
+                                          [(ast/arg-node
+                                            (ast/call-node
+                                             "-"
+                                             [(ast/arg-node
+                                               (ast/variable-node "n"))
+                                              (ast/arg-node
+                                               (ast/literal-number-node
+                                                1))]))]))]))]))
+                            (ast/procedure-node
+                             :name "foo_bar_baz"
+                             :arguments [(ast/variable-declaration-node
+                                          "a"
+                                          (ast/literal-number-node 0))
+                                         (ast/variable-declaration-node
+                                          "b"
+                                          (ast/literal-number-node 0))
+                                         (ast/variable-declaration-node
+                                          "c"
+                                          (ast/literal-number-node 0))]
+                             :body (ast/block-node
+                                    [(ast/variable-declaration-node
+                                      "d"
+                                      (ast/call-node
+                                       "+"
+                                       [(ast/arg-node
+                                         (ast/call-node
+                                          "*"
+                                          [(ast/arg-node
+                                            (ast/variable-node "a"))
+                                           (ast/arg-node
+                                            (ast/variable-node "b"))]))
+                                        (ast/arg-node
+                                         (ast/variable-node "c"))]))
+                                     (ast/repeat-node
+                                      (ast/variable-node "d")
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "A" 2))])]))
+                                     (ast/forever-node
+                                      (ast/block-node
+                                       [(ast/start-node ["blink13" "blink12"])
+                                        (ast/stop-node ["blink13"])
+                                        (ast/yield-node)
+                                        (ast/pause-node ["blink12" "blink13"])
+                                        (ast/resume-node ["blink12"])
+                                        (ast/yield-node)
+                                        (ast/return-node)]))
+                                     (ast/while-node
+                                      (ast/logical-and-node
+                                       (ast/literal-number-node 1)
+                                       (ast/literal-number-node 0))
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "D" 10))])
+                                        (ast/call-node
+                                         "delayMs"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node
+                                            1000))])]))
+                                     (ast/until-node
+                                      (ast/logical-or-node
+                                       (ast/literal-number-node 0)
+                                       (ast/literal-number-node 0))
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "D" 10))])
+                                        (ast/call-node
+                                         "delayMs"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node
+                                            1000))])]))
+                                     (ast/while-node
+                                      (ast/call-node
+                                       ">="
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 1))
+                                        (ast/arg-node
+                                         (ast/literal-number-node 0))])
+                                      (ast/block-node []))
+                                     (ast/until-node
+                                      (ast/call-node
+                                       "<="
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 0))
+                                        (ast/arg-node
+                                         (ast/literal-number-node 1))])
+                                      (ast/block-node []))
+                                     (ast/do-while-node
+                                      (ast/call-node
+                                       ">"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 1))
+                                        (ast/arg-node
+                                         (ast/literal-number-node 0))])
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "D" 9))])]))
+                                     (ast/do-until-node
+                                      (ast/call-node
+                                       "<"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 0))
+                                        (ast/arg-node
+                                         (ast/literal-number-node 1))])
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "D" 8))])]))
+                                     (ast/for-node
+                                      "i"
+                                      (ast/literal-number-node 0)
+                                      (ast/literal-number-node 10)
+                                      (ast/literal-number-node 1)
+                                      (ast/block-node
+                                       [(ast/call-node
+                                         "toggle"
+                                         [(ast/arg-node
+                                           (ast/literal-pin-node "A" 0))])
+                                        (ast/call-node
+                                         "delayMs"
+                                         [(ast/arg-node
+                                           (ast/call-node
+                                            "*"
+                                            [(ast/arg-node
+                                              (ast/variable-node "i"))
+                                             (ast/arg-node
+                                              (ast/literal-number-node
+                                               100))]))])]))
+                                     (ast/variable-declaration-node
+                                      "e"
+                                      (ast/call-node "foo.getSpeed" []))
+                                     (ast/call-node
+                                      "foo.init"
+                                      [(ast/arg-node
+                                        (ast/call-node
+                                         "fact"
+                                         [(ast/arg-node
+                                           (ast/call-node
+                                            "+"
+                                            [(ast/arg-node
+                                              (ast/call-node
+                                               "*"
+                                               [(ast/arg-node
+                                                 (ast/literal-number-node
+                                                  1))
+                                                (ast/arg-node
+                                                 (ast/literal-number-node
+                                                  -2))]))
+                                             (ast/arg-node
+                                              (ast/literal-number-node
+                                               -3.5))]))]))
+                                       (ast/arg-node
+                                        (ast/call-node
+                                         "+"
+                                         [(ast/arg-node
+                                           (ast/variable-node "a"))
+                                          (ast/arg-node
+                                           (ast/call-node
+                                            "/"
+                                            [(ast/arg-node
+                                              (ast/variable-node "b"))
+                                             (ast/arg-node
+                                              (ast/variable-node
+                                               "d"))]))]))
+                                       (ast/arg-node
+                                        (ast/literal-number-node 0))])
+                                     (ast/call-node
+                                      "bar.init"
+                                      [(ast/arg-node
+                                        "trig"
+                                        (ast/variable-node "a"))
+                                       (ast/arg-node
+                                        "echo"
+                                        (ast/variable-node "b"))
+                                       (ast/arg-node
+                                        "maxDist"
+                                        (ast/variable-node "c"))])]))]))
    (def actual (pp/parse parser src))
    (def diff (data/diff expected actual))
    (println "ONLY IN EXPECTED")
@@ -378,14 +599,14 @@
    (pprint (second diff))
    (println)
    (println "IN BOTH")
-   (pprint (nth diff 2))
+   ;(pprint (nth diff 2))
    (= expected actual))
 
  (pprint actual)
- (-> actual :scripts second :body :statements first :trueBranch :statements second)
  (pprint expected)
 
- (pprint (parse "var b;func foo() {}"))
+ (pprint (parse "\"This is just an example of code that uses all the available syntax\nin the language.\"\n\"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\n\nimport foo from 'DCMotor.uzi';\nimport bar from 'Sonar.uzi'{\n  trigPin = 100;\n  echoPin = 200;\n  start reading;\n  stop reading;\n  pause reading;\n  resume reading;\n}\n\nvar a = 10;\nvar b = 0.5;\nvar c;\n\ntask blink13() running 2/s { toggle(D13); }\ntask blink12() running 1/s { toggle(D12); }\n\ntask setup() {\n    if a { turnOn(D11); }\n    else { turnOff(D11); }\n}\n\nfunc fact(n) {\n    if n == 0 { return; }\n    return n * fact(n - 1);\n}\n\nproc foo_bar_baz(a, b, c) {\n    var d = a * b + c;\n    repeat d { toggle(A2); }\n    forever {\n        start blink13, blink12;\n        stop blink13;\n        yield;\n        pause blink12, blink13;\n        resume blink12; yield;\n        return;\n    }\n    while 1 && 0 { toggle(D10); delayMs(1000); }\n    until 0 || 0 { toggle(D10); delayMs(1000); }\n    while 1 >= 0; \"Body is optional\"\n    until 0 <= 1; \"Body is optional\"\n    do { toggle(D9); } while 1 > 0;\n    do { toggle(D8); } until 0 < 1;\n    for i = 0 to 10 by 1 {\n        toggle(A0);\n        delayMs(i * 100);\n    }\n\tvar e = foo.getSpeed();\n\tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\n\tbar.init(trig: a, echo: b, maxDist: c);\n}\n"
+                ))
 
  (pprint (pp/parse (get-in parser [:parsers :expr])
                    "a * b/c**d+n ~ j ** 3"))

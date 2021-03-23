@@ -478,288 +478,287 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
-
- (deftest
-   uzi-syntax
-   (testing
-     "A code that explores all the syntax of UZI. This is based on the file syntax.uzi"
-     (let [src "\"This is just an example of code that uses all the available syntax\nin the language.\"\n\"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\n\nimport foo from 'DCMotor.uzi';\nimport bar from 'Sonar.uzi' {\n  trigPin = 100;\n  echoPin = 200;\n  start reading;\n  stop reading;\n  pause reading;\n  resume reading;\n}\n\nvar a = 10;\nvar b = 0.5;\nvar c;\n\ntask blink13() running 2/s { toggle(D13); }\ntask blink12() running 1/s { toggle(D12); }\n\ntask setup() {\n    if a { turnOn(D11); }\n    else { turnOff(D11); }\n}\n\nfunc fact(n) {\n    if n == 0 { return 1; }\n    return n * fact(n - 1);\n}\n\nproc foo_bar_baz(a, b, c) {\n    var d = a * b + c;\n    repeat d { toggle(A2); }\n    forever {\n        start blink13, blink12;\n        stop blink13;\n        yield;\n        pause blink12, blink13;\n        resume blink12; yield;\n        return;\n    }\n    while 1 && 0 { toggle(D10); delayMs(1000); }\n    until 0 || 0 { toggle(D10); delayMs(1000); }\n    while 1 >= 0; \"Body is optional\"\n    until 0 <= 1; \"Body is optional\"\n    do { toggle(D9); } while 1 > 0;\n    do { toggle(D8); } until 0 < 1;\n    for i = 0 to 10 by 1 {\n        toggle(A0);\n        delayMs(i * 100);\n    }\n\tvar e = foo.getSpeed();\n\tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\n\tbar.init(trig: a, echo: b, maxDist: c);\n}\n"
-           expected (ast/program-node
-                     :imports [(ast/import-node
-                                "foo"
-                                "DCMotor.uzi"
-                                (ast/block-node []))
-                               (ast/import-node
-                                "bar"
-                                "Sonar.uzi"
-                                (ast/block-node
-                                 [(ast/assignment-node
-                                   (ast/variable-node "trigPin")
-                                   (ast/literal-number-node 100))
-                                  (ast/assignment-node
-                                   (ast/variable-node "echoPin")
-                                   (ast/literal-number-node 200))
-                                  (ast/start-node ["reading"])
-                                  (ast/stop-node ["reading"])
-                                  (ast/pause-node ["reading"])
-                                  (ast/resume-node ["reading"])]))]
-                     :globals [(ast/variable-declaration-node
-                                "a"
-                                (ast/literal-number-node 10))
-                               (ast/variable-declaration-node
-                                "b"
-                                (ast/literal-number-node 0.5))
-                               (ast/variable-declaration-node
-                                "c"
-                                (ast/literal-number-node 0))]
-                     :scripts [(ast/task-node
-                                :name "blink13"
-                                :tick-rate (ast/ticking-rate-node 2 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "toggle"
-                                         [(ast/arg-node
-                                           (ast/literal-pin-node "D" 13))])]))
-                               (ast/task-node
-                                :name "blink12"
-                                :tick-rate (ast/ticking-rate-node 1 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "toggle"
-                                         [(ast/arg-node
-                                           (ast/literal-pin-node "D" 12))])]))
-                               (ast/task-node
-                                :name "setup"
-                                :state "once"
-                                :body (ast/block-node
-                                       [(ast/conditional-node
-                                         (ast/variable-node "a")
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "turnOn"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 11))])])
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "turnOff"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node
-                                               "D"
-                                               11))])]))]))
-                               (ast/function-node
-                                :name "fact"
-                                :arguments [(ast/variable-declaration-node
-                                             "n"
-                                             (ast/literal-number-node 0))]
-                                :body (ast/block-node
-                                       [(ast/conditional-node
-                                         (ast/call-node
-                                          "=="
-                                          [(ast/arg-node (ast/variable-node "n"))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 0))])
-                                         (ast/block-node
-                                          [(ast/return-node
-                                            (ast/literal-number-node 1))])
-                                         (ast/block-node []))
-                                        (ast/return-node
-                                         (ast/call-node
-                                          "*"
-                                          [(ast/arg-node (ast/variable-node "n"))
-                                           (ast/arg-node
-                                            (ast/call-node
-                                             "fact"
-                                             [(ast/arg-node
-                                               (ast/call-node
-                                                "-"
-                                                [(ast/arg-node
-                                                  (ast/variable-node "n"))
-                                                 (ast/arg-node
-                                                  (ast/literal-number-node
-                                                   1))]))]))]))]))
-                               (ast/procedure-node
-                                :name "foo_bar_baz"
-                                :arguments [(ast/variable-declaration-node
-                                             "a"
-                                             (ast/literal-number-node 0))
-                                            (ast/variable-declaration-node
-                                             "b"
-                                             (ast/literal-number-node 0))
-                                            (ast/variable-declaration-node
-                                             "c"
-                                             (ast/literal-number-node 0))]
-                                :body (ast/block-node
-                                       [(ast/variable-declaration-node
-                                         "d"
-                                         (ast/call-node
-                                          "+"
-                                          [(ast/arg-node
-                                            (ast/call-node
-                                             "*"
-                                             [(ast/arg-node
-                                               (ast/variable-node "a"))
-                                              (ast/arg-node
-                                               (ast/variable-node "b"))]))
-                                           (ast/arg-node
-                                            (ast/variable-node "c"))]))
-                                        (ast/repeat-node
-                                         (ast/variable-node "d")
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "A" 2))])]))
-                                        (ast/forever-node
-                                         (ast/block-node
-                                          [(ast/start-node ["blink13" "blink12"])
-                                           (ast/stop-node ["blink13"])
-                                           (ast/yield-node)
-                                           (ast/pause-node ["blink12" "blink13"])
-                                           (ast/resume-node ["blink12"])
-                                           (ast/yield-node)
-                                           (ast/return-node)]))
-                                        (ast/while-node
-                                         (ast/logical-and-node
-                                          (ast/literal-number-node 1)
-                                          (ast/literal-number-node 0))
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 10))])
-                                           (ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node
-                                               1000))])]))
-                                        (ast/until-node
-                                         (ast/logical-or-node
-                                          (ast/literal-number-node 0)
-                                          (ast/literal-number-node 0))
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 10))])
-                                           (ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/literal-number-node
-                                               1000))])]))
-                                        (ast/while-node
-                                         (ast/call-node
-                                          ">="
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 1))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 0))])
-                                         (ast/block-node []))
-                                        (ast/until-node
-                                         (ast/call-node
-                                          "<="
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 0))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 1))])
-                                         (ast/block-node []))
-                                        (ast/do-while-node
-                                         (ast/call-node
-                                          ">"
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 1))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 0))])
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 9))])]))
-                                        (ast/do-until-node
-                                         (ast/call-node
-                                          "<"
-                                          [(ast/arg-node
-                                            (ast/literal-number-node 0))
-                                           (ast/arg-node
-                                            (ast/literal-number-node 1))])
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "D" 8))])]))
-                                        (ast/for-node
-                                         "i"
-                                         (ast/literal-number-node 0)
-                                         (ast/literal-number-node 10)
-                                         (ast/literal-number-node 1)
-                                         (ast/block-node
-                                          [(ast/call-node
-                                            "toggle"
-                                            [(ast/arg-node
-                                              (ast/literal-pin-node "A" 0))])
-                                           (ast/call-node
-                                            "delayMs"
-                                            [(ast/arg-node
-                                              (ast/call-node
-                                               "*"
-                                               [(ast/arg-node
-                                                 (ast/variable-node "i"))
-                                                (ast/arg-node
-                                                 (ast/literal-number-node
-                                                  100))]))])]))
-                                        (ast/variable-declaration-node
-                                         "e"
-                                         (ast/call-node "foo.getSpeed" []))
+(deftest
+  uzi-syntax
+  (testing
+    "A code that explores all the syntax of UZI. This is based on the file syntax.uzi"
+    (let [src "\"This is just an example of code that uses all the available syntax\nin the language.\"\n\"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\n\nimport foo from 'DCMotor.uzi';\nimport bar from 'Sonar.uzi' {\n  trigPin = 100;\n  echoPin = 200;\n  start reading;\n  stop reading;\n  pause reading;\n  resume reading;\n}\n\nvar a = 10;\nvar b = 0.5;\nvar c;\n\ntask blink13() running 2/s { toggle(D13); }\ntask blink12() running 1/s { toggle(D12); }\n\ntask setup() {\n    if a { turnOn(D11); }\n    else { turnOff(D11); }\n}\n\nfunc fact(n) {\n    if n == 0 { return 1; }\n    return n * fact(n - 1);\n}\n\nproc foo_bar_baz(a, b, c) {\n    var d = a * b + c;\n    repeat d { toggle(A2); }\n    forever {\n        start blink13, blink12;\n        stop blink13;\n        yield;\n        pause blink12, blink13;\n        resume blink12; yield;\n        return;\n    }\n    while 1 && 0 { toggle(D10); delayMs(1000); }\n    until 0 || 0 { toggle(D10); delayMs(1000); }\n    while 1 >= 0; \"Body is optional\"\n    until 0 <= 1; \"Body is optional\"\n    do { toggle(D9); } while 1 > 0;\n    do { toggle(D8); } until 0 < 1;\n    for i = 0 to 10 by 1 {\n        toggle(A0);\n        delayMs(i * 100);\n    }\n\tvar e = foo.getSpeed();\n\tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\n\tbar.init(trig: a, echo: b, maxDist: c);\n}\n"
+          expected (ast/program-node
+                    :imports [(ast/import-node
+                               "foo"
+                               "DCMotor.uzi")
+                              (ast/import-node
+                               "bar"
+                               "Sonar.uzi"
+                               (ast/block-node
+                                [(ast/assignment-node
+                                  (ast/variable-node "trigPin")
+                                  (ast/literal-number-node 100))
+                                 (ast/assignment-node
+                                  (ast/variable-node "echoPin")
+                                  (ast/literal-number-node 200))
+                                 (ast/start-node ["reading"])
+                                 (ast/stop-node ["reading"])
+                                 (ast/pause-node ["reading"])
+                                 (ast/resume-node ["reading"])]))]
+                    :globals [(ast/variable-declaration-node
+                               "a"
+                               (ast/literal-number-node 10))
+                              (ast/variable-declaration-node
+                               "b"
+                               (ast/literal-number-node 0.5))
+                              (ast/variable-declaration-node
+                               "c"
+                               (ast/literal-number-node 0))]
+                    :scripts [(ast/task-node
+                               :name "blink13"
+                               :tick-rate (ast/ticking-rate-node 2 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "toggle"
+                                        [(ast/arg-node
+                                          (ast/literal-pin-node "D" 13))])]))
+                              (ast/task-node
+                               :name "blink12"
+                               :tick-rate (ast/ticking-rate-node 1 "s")
+                               :state "running"
+                               :body (ast/block-node
+                                      [(ast/call-node
+                                        "toggle"
+                                        [(ast/arg-node
+                                          (ast/literal-pin-node "D" 12))])]))
+                              (ast/task-node
+                               :name "setup"
+                               :state "once"
+                               :body (ast/block-node
+                                      [(ast/conditional-node
+                                        (ast/variable-node "a")
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "turnOn"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 11))])])
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "turnOff"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node
+                                              "D"
+                                              11))])]))]))
+                              (ast/function-node
+                               :name "fact"
+                               :arguments [(ast/variable-declaration-node
+                                            "n"
+                                            (ast/literal-number-node 0))]
+                               :body (ast/block-node
+                                      [(ast/conditional-node
                                         (ast/call-node
-                                         "foo.init"
-                                         [(ast/arg-node
+                                         "=="
+                                         [(ast/arg-node (ast/variable-node "n"))
+                                          (ast/arg-node
+                                           (ast/literal-number-node 0))])
+                                        (ast/block-node
+                                         [(ast/return-node
+                                           (ast/literal-number-node 1))])
+                                        (ast/block-node []))
+                                       (ast/return-node
+                                        (ast/call-node
+                                         "*"
+                                         [(ast/arg-node (ast/variable-node "n"))
+                                          (ast/arg-node
                                            (ast/call-node
                                             "fact"
                                             [(ast/arg-node
                                               (ast/call-node
-                                               "+"
+                                               "-"
                                                [(ast/arg-node
-                                                 (ast/call-node
-                                                  "*"
-                                                  [(ast/arg-node
-                                                    (ast/literal-number-node
-                                                     1))
-                                                   (ast/arg-node
-                                                    (ast/literal-number-node
-                                                     -2))]))
+                                                 (ast/variable-node "n"))
                                                 (ast/arg-node
                                                  (ast/literal-number-node
-                                                  -3.5))]))]))
-                                          (ast/arg-node
+                                                  1))]))]))]))]))
+                              (ast/procedure-node
+                               :name "foo_bar_baz"
+                               :arguments [(ast/variable-declaration-node
+                                            "a"
+                                            (ast/literal-number-node 0))
+                                           (ast/variable-declaration-node
+                                            "b"
+                                            (ast/literal-number-node 0))
+                                           (ast/variable-declaration-node
+                                            "c"
+                                            (ast/literal-number-node 0))]
+                               :body (ast/block-node
+                                      [(ast/variable-declaration-node
+                                        "d"
+                                        (ast/call-node
+                                         "+"
+                                         [(ast/arg-node
                                            (ast/call-node
-                                            "+"
+                                            "*"
                                             [(ast/arg-node
                                               (ast/variable-node "a"))
                                              (ast/arg-node
-                                              (ast/call-node
-                                               "/"
-                                               [(ast/arg-node
-                                                 (ast/variable-node "b"))
-                                                (ast/arg-node
-                                                 (ast/variable-node
-                                                  "d"))]))]))
+                                              (ast/variable-node "b"))]))
+                                          (ast/arg-node
+                                           (ast/variable-node "c"))]))
+                                       (ast/repeat-node
+                                        (ast/variable-node "d")
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "A" 2))])]))
+                                       (ast/forever-node
+                                        (ast/block-node
+                                         [(ast/start-node ["blink13" "blink12"])
+                                          (ast/stop-node ["blink13"])
+                                          (ast/yield-node)
+                                          (ast/pause-node ["blink12" "blink13"])
+                                          (ast/resume-node ["blink12"])
+                                          (ast/yield-node)
+                                          (ast/return-node)]))
+                                       (ast/while-node
+                                        (ast/logical-and-node
+                                         (ast/literal-number-node 1)
+                                         (ast/literal-number-node 0))
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 10))])
+                                          (ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/literal-number-node
+                                              1000))])]))
+                                       (ast/until-node
+                                        (ast/logical-or-node
+                                         (ast/literal-number-node 0)
+                                         (ast/literal-number-node 0))
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 10))])
+                                          (ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/literal-number-node
+                                              1000))])]))
+                                       (ast/while-node
+                                        (ast/call-node
+                                         ">="
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 1))
                                           (ast/arg-node
                                            (ast/literal-number-node 0))])
+                                        (ast/block-node []))
+                                       (ast/until-node
                                         (ast/call-node
-                                         "bar.init"
+                                         "<="
                                          [(ast/arg-node
-                                           "trig"
-                                           (ast/variable-node "a"))
+                                           (ast/literal-number-node 0))
                                           (ast/arg-node
-                                           "echo"
-                                           (ast/variable-node "b"))
+                                           (ast/literal-number-node 1))])
+                                        (ast/block-node []))
+                                       (ast/do-while-node
+                                        (ast/call-node
+                                         ">"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 1))
                                           (ast/arg-node
-                                           "maxDist"
-                                           (ast/variable-node "c"))])]))])
-           actual (parse src)]
-       (is (equivalent? expected actual)))))
+                                           (ast/literal-number-node 0))])
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 9))])]))
+                                       (ast/do-until-node
+                                        (ast/call-node
+                                         "<"
+                                         [(ast/arg-node
+                                           (ast/literal-number-node 0))
+                                          (ast/arg-node
+                                           (ast/literal-number-node 1))])
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "D" 8))])]))
+                                       (ast/for-node
+                                        "i"
+                                        (ast/literal-number-node 0)
+                                        (ast/literal-number-node 10)
+                                        (ast/literal-number-node 1)
+                                        (ast/block-node
+                                         [(ast/call-node
+                                           "toggle"
+                                           [(ast/arg-node
+                                             (ast/literal-pin-node "A" 0))])
+                                          (ast/call-node
+                                           "delayMs"
+                                           [(ast/arg-node
+                                             (ast/call-node
+                                              "*"
+                                              [(ast/arg-node
+                                                (ast/variable-node "i"))
+                                               (ast/arg-node
+                                                (ast/literal-number-node
+                                                 100))]))])]))
+                                       (ast/variable-declaration-node
+                                        "e"
+                                        (ast/call-node "foo.getSpeed" []))
+                                       (ast/call-node
+                                        "foo.init"
+                                        [(ast/arg-node
+                                          (ast/call-node
+                                           "fact"
+                                           [(ast/arg-node
+                                             (ast/call-node
+                                              "+"
+                                              [(ast/arg-node
+                                                (ast/call-node
+                                                 "*"
+                                                 [(ast/arg-node
+                                                   (ast/literal-number-node
+                                                    1))
+                                                  (ast/arg-node
+                                                   (ast/literal-number-node
+                                                    -2))]))
+                                               (ast/arg-node
+                                                (ast/literal-number-node
+                                                 -3.5))]))]))
+                                         (ast/arg-node
+                                          (ast/call-node
+                                           "+"
+                                           [(ast/arg-node
+                                             (ast/variable-node "a"))
+                                            (ast/arg-node
+                                             (ast/call-node
+                                              "/"
+                                              [(ast/arg-node
+                                                (ast/variable-node "b"))
+                                               (ast/arg-node
+                                                (ast/variable-node
+                                                 "d"))]))]))
+                                         (ast/arg-node
+                                          (ast/literal-number-node 0))])
+                                       (ast/call-node
+                                        "bar.init"
+                                        [(ast/arg-node
+                                          "trig"
+                                          (ast/variable-node "a"))
+                                         (ast/arg-node
+                                          "echo"
+                                          (ast/variable-node "b"))
+                                         (ast/arg-node
+                                          "maxDist"
+                                          (ast/variable-node "c"))])]))])
+          actual (parse src)]
+      (is (equivalent? expected actual)))))
+
+(comment
 
  (deftest
    spaces-1
