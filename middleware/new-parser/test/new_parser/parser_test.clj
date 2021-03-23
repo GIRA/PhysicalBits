@@ -758,69 +758,65 @@
           actual (parse src)]
       (is (equivalent? expected actual)))))
 
-(comment
+(deftest
+  spaces-1
+  (let [src "task default() running 1/s {\n\ttoggle(D13 );\n}"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "default"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
 
- (deftest
-   spaces-1
-   (let [src "task default() running 1/s {\n\ttoggle(D13 );\n}"
-         expected (ast/program-node
-                   :scripts [(ast/task-node
-                              :name "default"
-                              :tick-rate (ast/ticking-rate-node 1 "s")
-                              :state "running"
-                              :body (ast/block-node
-                                     [(ast/call-node
-                                       "toggle"
-                                       [(ast/arg-node
-                                         (ast/literal-pin-node "D" 13))])]))])
-         actual (parse src)]
-     (is (equivalent? expected actual))))
+(deftest
+  spaces-2
+  (let [src "task default() running 1/s {\n\ttoggle (D13);\n}"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "default"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
 
- (deftest
-   spaces-2
-   (let [src "task default() running 1/s {\n\ttoggle (D13);\n}"
-         expected (ast/program-node
-                   :scripts [(ast/task-node
-                              :name "default"
-                              :tick-rate (ast/ticking-rate-node 1 "s")
-                              :state "running"
-                              :body (ast/block-node
-                                     [(ast/call-node
-                                       "toggle"
-                                       [(ast/arg-node
-                                         (ast/literal-pin-node "D" 13))])]))])
-         actual (parse src)]
-     (is (equivalent? expected actual))))
+(deftest
+  spaces-3
+  (let [src "task default () running 1/s {\n\ttoggle(D13);\n}"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "default"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-pin-node "D" 13))])]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
 
- (deftest
-   spaces-3
-   (let [src "task default () running 1/s {\n\ttoggle(D13);\n}"
-         expected (ast/program-node
-                   :scripts [(ast/task-node
-                              :name "default"
-                              :tick-rate (ast/ticking-rate-node 1 "s")
-                              :state "running"
-                              :body (ast/block-node
-                                     [(ast/call-node
-                                       "toggle"
-                                       [(ast/arg-node
-                                         (ast/literal-pin-node "D" 13))])]))])
-         actual (parse src)]
-     (is (equivalent? expected actual))))
-
- (deftest foo
-   (let [expected (parse "
-            var a = 0;
-            var b = 1;
-            task blink13() running 1/s { toggle(D13); }
-            task loop() { a = a + b; }
-            ")
-         actual (parse "
-            task blink13() running 1/s { toggle(D13); }
-            var a = 0;
-            task loop() { a = a + b; }
-            var b = 1;
-            ")]
-     (is (= expected actual))))
-
- ,)
+(deftest global-variables-can-be-declared-after-tasks-that-use-them
+  (let [expected (parse "
+               var a = 0;
+               var b = 1;
+               task blink13() running 1/s { toggle(D13); }
+               task loop() { a = a + b; }
+               ")
+        actual (parse "
+               task blink13() running 1/s { toggle(D13); }
+               var a = 0;
+               task loop() { a = a + b; }
+               var b = 1;
+               ")]
+    (is (= expected actual))))
