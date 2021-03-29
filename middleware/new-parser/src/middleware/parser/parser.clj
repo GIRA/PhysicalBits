@@ -2,12 +2,6 @@
   (:require [middleware.parser.ast-nodes :as ast]
             [petitparser.core :as pp]))
 
-(do
-  (require '[clojure.pprint :refer [pprint]])
-  (require '[clojure.data :as data])
-  (set! *print-level* 20)
-  (set! *print-length* 100))
-
 (def TODO (pp/predicate (fn [_] false) "NOP!"))
 
 (def grammar
@@ -212,7 +206,7 @@
            (ast/task-node
             :name name
             :state state
-            :args args
+            :arguments args
             :tick-rate ticking-rate
             :body body))
    :function (fn [[_ _ name _ args _ body]]
@@ -311,7 +305,11 @@
 
 (comment
 
- (take-nth 2 [1 2 3])
+ (do
+   (require '[clojure.pprint :refer [pprint]])
+   (require '[clojure.data :as data])
+   (set! *print-level* 20)
+   (set! *print-length* 100))
 
  (do
    (def parser (pp/compose grammar transformations :program))
