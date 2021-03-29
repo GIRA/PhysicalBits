@@ -23,7 +23,8 @@
 (def ^:private programs (atom {}))
 
 (defn register-program! [ast-or-src & args]
-  (let [ns-name (ns-name (:ns (meta (first *testing-vars*))))
+  (let [namespace (:ns (meta (first *testing-vars*)))
+        ns-name (if namespace (ns-name namespace) "ACAACA")
         test-name (test-name)
         key (str ns-name "/" test-name)]
     (swap! programs update
