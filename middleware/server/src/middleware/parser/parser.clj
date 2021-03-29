@@ -206,7 +206,7 @@
            (ast/task-node
             :name name
             :state state
-            :args args
+            :arguments args
             :tick-rate ticking-rate
             :body body))
    :function (fn [[_ _ name _ args _ body]]
