@@ -225,12 +225,12 @@ middleware.encoder-test/script-with-while-loop-2#0,5,2,13
 middleware.linker-test/importing-a-script-with-a-local-var-that-shadows-global#0,6,4,20
 middleware.parser-test/blink13#0,2,2,12
 middleware.parser-test/control-structures#0,31,4,65
-middleware.parser-test/control-structures-part-II#0,5,4,17
+middleware.parser-test/control-structures-2#0,5,4,17
 middleware.parser-test/empty-program#0,0,0,2
-middleware.parser-test/foo#0,6,5,20
-middleware.parser-test/foo#1,6,5,20
 middleware.parser-test/function-with-arguments#0,0,0,2
 middleware.parser-test/functions-with-calls-and-globals#0,0,0,2
+middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#0,6,5,20
+middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#1,6,5,20
 middleware.parser-test/motor-usage#0,33,12,61
 middleware.parser-test/operator-precedence#0,0,0,2
 middleware.parser-test/parsing-negative-numbers-larger-than-minus-1#0,2,2,11

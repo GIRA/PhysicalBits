@@ -40,7 +40,7 @@
    :name        name,
    :arguments   arguments,
    :body        body,
-   :state       state,
+   :state       (or state "once"),
    :tickingRate tick-rate})
 
 (defn procedure-node
@@ -112,7 +112,7 @@
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
-   :counter   (variable-declaration-node name (literal-number-node 0)),
+   :counter   (variable-declaration-node name),
    :start     from,
    :stop      to,
    :step      by,
