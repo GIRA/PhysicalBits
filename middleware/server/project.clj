@@ -12,6 +12,7 @@
                  [compojure "1.6.1"]
                  [aleph "0.4.6"]
                  [cheshire "5.9.0"]
+                 [clj-petitparser "0.1.0-SNAPSHOT"]
                  [instaparse "1.4.10"]]
   :main ^:skip-aot middleware.core
   :target-path "target/%s"
