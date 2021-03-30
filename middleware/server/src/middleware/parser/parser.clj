@@ -5,7 +5,8 @@
 (def TODO (pp/predicate (fn [_] false) "NOP!"))
 
 (def grammar
-  {:program [:ws?
+  {:start (pp/end :program)
+   :program [:ws?
              (pp/star :import)
              (pp/star (pp/or :variable-declaration
                               :primitive
@@ -296,7 +297,7 @@
                   (ast/primitive-node name)))
    })
 
-(def parser (pp/compose grammar transformations :program))
+(def parser (pp/compose grammar transformations))
 
 (defn parse [src]
   (let [result (pp/parse parser src)]
@@ -312,7 +313,7 @@
    (set! *print-length* 100))
 
  (do
-   (def parser (pp/compose grammar transformations :program))
+   (def parser (pp/compose grammar transformations))
    (def src "task foo() { return (3) + 4; }")
    (def expected (ast/program-node
                   :scripts [(ast/task-node
