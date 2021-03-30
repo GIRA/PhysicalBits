@@ -11,6 +11,21 @@
     (register-program! src))
   (pp/parse src))
 
+(deftest return-should-not-be-confused-with-call
+  (let [src "task foo() { return (3) + 4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/call-node
+                                       "+"
+                                       [(ast/arg-node (ast/literal-number-node 3))
+                                        (ast/arg-node (ast/literal-number-node 4))]))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
+
 (deftest
   empty-program
   (testing
