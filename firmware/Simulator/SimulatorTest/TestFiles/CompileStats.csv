@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,13.4140350877193,4.754385964912281,31.29473684210526
-MEDIAN,8,4,20
+AVERAGE,13.38111888111888,4.748251748251748,31.22377622377622
+MEDIAN,8,3.5,20
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -236,6 +236,7 @@ middleware.parser-test/operator-precedence#0,0,0,2
 middleware.parser-test/parsing-negative-numbers-larger-than-minus-1#0,2,2,11
 middleware.parser-test/primitive-definition#0,8,3,20
 middleware.parser-test/procedure-with-argument#0,0,0,2
+middleware.parser-test/return-should-not-be-confused-with-call#0,4,3,11
 middleware.parser-test/sonar-and-button#0,31,14,75
 middleware.parser-test/spaces-1#0,2,2,12
 middleware.parser-test/spaces-2#0,2,2,12
