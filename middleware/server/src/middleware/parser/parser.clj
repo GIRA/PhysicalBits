@@ -113,9 +113,7 @@
                                 [:ws? \, :ws?]))
               :ws?
               \)]
-   :named-arg [(pp/optional [:identifier :ws? \:
-                             :ws? ; TODO(Richo): Is this necessary?
-                             ])
+   :named-arg [(pp/optional [:identifier :ws? \: :ws?])
                :expr]
 
    ; TODO(Richo): Don't lose the comments
