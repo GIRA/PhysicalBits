@@ -81,7 +81,7 @@
               :ws? :expr :ws?
               \)]
    :expr (pp/or :binary-expr :non-binary-expr )
-   :non-binary-expr (pp/or :unary :call :sub-expr :value-expr)
+   :non-binary-expr (pp/or :unary :literal :call :variable :sub-expr)
    :binary-expr [:non-binary-expr :ws?
                  (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
    :binary-selector (pp/flatten
@@ -91,7 +91,6 @@
                          (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
                                   (str chr)))
                        "Not binary")))
-   :value-expr (pp/or :literal :variable)
    :literal (pp/or :constant :number)
    :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
