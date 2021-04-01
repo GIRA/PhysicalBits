@@ -2,7 +2,175 @@
   (:require [middleware.parser.ast-nodes :as ast]
             [petitparser.core :as pp]))
 
-(def TODO (pp/predicate (fn [_] false) "NOP!"))
+(defn- parse-int [str] (Integer/parseInt str))
+(defn- parse-double [str] (Double/parseDouble str))
+
+; TODO(Richo): This should probably be in a utils.ast namespace
+(defn- script? [node]
+  (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
+             (:__class__ node)))
+(defn- variable-declaration? [node]
+  (= "UziVariableDeclarationNode" (:__class__ node)))
+(defn- primitive? [node]
+  (= "UziPrimitiveDeclarationNode" (:__class__ node)))
+
+(def precedence-table
+  [#{"**"}
+   #{"*" "/" "%"}
+   #{"+" "-"}
+   #{"<<" ">>"}
+   #{"<" "<=" ">" ">="}
+   #{"==" "!="}
+   #{"&"}
+   #{"^"}
+   #{"|"}
+   #{"&&"}
+   #{"||"}])
+
+(defn- build-binary-expression [selector left right]
+  [selector left right]
+  (case selector
+    "&&" (ast/logical-and-node left right)
+    "||" (ast/logical-or-node left right)
+    (ast/binary-expression-node left selector right)))
+
+(defn- fix-precedence [nodes operators]
+  (if (< (count nodes) 3)
+    nodes
+    (let [result (atom [])
+          left (atom (first nodes))]
+      (doseq [[op right] (partition-all 2 (drop 1 nodes))]
+        (if (or (nil? operators)
+                (contains? operators op))
+          (let [expr (build-binary-expression op @left right)]
+            ; TODO(Richo): Add token!
+            (reset! left expr))
+          (do
+            (swap! result conj @left op)
+            (reset! left right))))
+      (swap! result conj @left)
+      @result)))
+
+; TODO(Richo): Refactor this, maybe with a threaded macro or something...
+(defn- reduce-binary-expresions [left operations]
+  (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
+        ; we have (1 + 2 + 3)
+        result-1 (reduce #(apply conj %1 %2) [left] operations)
+        ; Then reduce operators according to the precedence table
+        result-2 (reduce fix-precedence result-1 precedence-table)
+        ; If a binary expression was not reduced after going through the precedence	table,
+        ; we iterate once again but this time reducing any operator found (left to right)
+        result-3 (fix-precedence result-2 nil)]
+    ; Finally, we should have a single expression in our results
+    (first result-3)))
+
+(def transformations
+  {:program (fn [[_ imports members _]]
+              (ast/program-node
+               :imports imports
+               :globals (filterv variable-declaration? members)
+               :scripts (filterv script? members)
+               :primitives (filterv primitive? members)))
+   :import (fn [[_ _ [alias] path [_ init-block]]]
+             (if alias
+               (if init-block
+                 (ast/import-node alias path init-block)
+                 (ast/import-node alias path))
+               (ast/import-node path)))
+   :import-path (fn [[_ path _]] path)
+   :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
+           (ast/task-node
+            :name name
+            :state state
+            :arguments args
+            :tick-rate ticking-rate
+            :body body))
+   :function (fn [[_ _ name _ args _ body]]
+               (ast/function-node
+                :name name
+                :arguments args
+                :body body))
+   :procedure (fn [[_ _ name _ args _ body]]
+                (ast/procedure-node
+                 :name name
+                 :arguments args
+                 :body body))
+   :block (fn [[_ stmts _]]
+            (ast/block-node stmts))
+   :statement-list (fn [[_ stmts]] stmts)
+   :statement (fn [[stmt _]] stmt)
+   :integer (comp parse-int str)
+   :float (comp parse-double str)
+   :number ast/literal-number-node
+   :return (fn [[_ value _]]
+             (ast/return-node value))
+   :separated-expr (fn [[_ expr]] expr)
+   :sub-expr (fn [[_ _ expr _ _]] expr)
+   :constant (fn [[letter number]]
+               (ast/literal-pin-node letter number))
+   :arg-list (fn [[_ _ args _ _]]
+               (vec (take-nth 2 args)))
+   :params-list (fn [[_ _ args _ _]]
+                  (vec (take-nth 2 args)))
+   :named-arg (fn [[[name] value]]
+                (ast/arg-node name value))
+   :call (fn [[selector _ args]]
+           (ast/call-node selector args))
+   :ticking-rate (fn [[times _ _ _ scale]]
+                   (ast/ticking-rate-node times scale))
+   :expression-statement (fn [[expr]] expr)
+   :variable ast/variable-node
+   :argument ast/variable-declaration-node
+   :binary-expr (fn [[left _ ops]]
+                  (let [operations (map (fn [[op _ right]] [op right])
+                                        ops)]
+                    (reduce-binary-expresions left operations)))
+   :variable-declaration (fn [[_ _ var [_ _ _ expr]]]
+                           (ast/variable-declaration-node
+                            (:name var)
+                            (or expr (ast/literal-number-node 0))))
+   :for (fn [[_ _ var _ _ _ start _ _ stop [_ _ step] _ body]]
+          (ast/for-node (:name var)
+                        start
+                        stop
+                        (or step (ast/literal-number-node 1))
+                        body))
+   :assignment (fn [[variable _ _ _ value]]
+                 (ast/assignment-node variable value))
+   :while (fn [[_ condition _ body]]
+            (ast/while-node condition (or body (ast/block-node []))))
+   :until (fn [[_ condition _ body]]
+            (ast/until-node condition (or body (ast/block-node []))))
+   :do-while (fn [[_ _ body _ _ condition]]
+               (ast/do-while-node condition body))
+   :do-until (fn [[_ _ body _ _ condition]]
+               (ast/do-until-node condition body))
+   :endl (constantly nil)
+   :conditional (fn [[_ condition _ true-branch [_ _ _ false-branch]]]
+                  (ast/conditional-node condition
+                                        true-branch
+                                        (or false-branch (ast/block-node []))))
+   :forever (fn [[_ _ body]]
+              (ast/forever-node body))
+   :repeat (fn [[_ times _ body]]
+             (ast/repeat-node times body))
+   :yield (constantly (ast/yield-node))
+   :script-list (partial take-nth 2)
+   :start-task (fn [[_ _ tasks _]]
+                 (ast/start-node (vec tasks)))
+   :stop-task (fn [[_ _ tasks _]]
+                (ast/stop-node (vec tasks)))
+   :pause-task (fn [[_ _ tasks _]]
+                 (ast/pause-node (vec tasks)))
+   :resume-task (fn [[_ _ tasks _]]
+                  (ast/resume-node (vec tasks)))
+   :not (fn [[_ _ expr]]
+          (ast/call-node "!" [(ast/arg-node expr)]))
+   :primitive (fn [[_ _ [alias] name]]
+                (if alias
+                  (ast/primitive-node alias name)
+                  (ast/primitive-node name)))
+   })
 
 (def grammar
   {:start (pp/end :program)
@@ -120,179 +288,6 @@
    :ws (pp/plus (pp/or pp/space :comment))
    :ws? (pp/optional :ws)
    :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
-
-(defn- parse-int [str] (Integer/parseInt str))
-(defn- parse-double [str] (Double/parseDouble str))
-
-; TODO(Richo): This should probably be in a utils.ast namespace
-(defn- script? [node]
-  (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
-             (:__class__ node)))
-
-(defn- variable-declaration? [node]
-  (= "UziVariableDeclarationNode" (:__class__ node)))
-
-(defn- primitive? [node]
-  (= "UziPrimitiveDeclarationNode" (:__class__ node)))
-
-(def precedence-table
-  [#{"**"}
-   #{"*" "/" "%"}
-   #{"+" "-"}
-   #{"<<" ">>"}
-   #{"<" "<=" ">" ">="}
-   #{"==" "!="}
-   #{"&"}
-   #{"^"}
-   #{"|"}
-   #{"&&"}
-   #{"||"}])
-
-(defn- build-binary-expression [selector left right]
-  [selector left right]
-  (case selector
-    "&&" (ast/logical-and-node left right)
-    "||" (ast/logical-or-node left right)
-    (ast/binary-expression-node left selector right)))
-
-(defn- fix-precedence [nodes operators]
-  (if (< (count nodes) 3)
-    nodes
-    (let [result (atom [])
-          left (atom (first nodes))]
-      (doseq [[op right] (partition-all 2 (drop 1 nodes))]
-        (if (or (nil? operators)
-                (contains? operators op))
-          (let [expr (build-binary-expression op @left right)]
-            ; TODO(Richo): Add token!
-            (reset! left expr))
-          (do
-            (swap! result conj @left op)
-            (reset! left right))))
-      (swap! result conj @left)
-      @result)))
-
-
-; TODO(Richo): Refactor this, maybe with a threaded macro or something...
-(defn- reduce-binary-expresions [left operations]
-  (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
-        ; we have (1 + 2 + 3)
-        result-1 (reduce #(apply conj %1 %2) [left] operations)
-        ; Then reduce operators according to the precedence table
-        result-2 (reduce fix-precedence result-1 precedence-table)
-        ; If a binary expression was not reduced after going through the precedence	table,
-        ; we iterate once again but this time reducing any operator found (left to right)
-        result-3 (fix-precedence result-2 nil)]
-    ; Finally, we should have a single expression in our results
-    (first result-3)))
-
-(def transformations
-  {:program (fn [[_ imports members _]]
-              (ast/program-node
-               :imports imports
-               :globals (filterv variable-declaration? members)
-               :scripts (filterv script? members)
-               :primitives (filterv primitive? members)))
-   :import (fn [[_ _ [alias] path [_ init-block]]]
-             (if alias
-               (if init-block
-                 (ast/import-node alias path init-block)
-                 (ast/import-node alias path))
-               (ast/import-node path)))
-   :import-path (fn [[_ path _]] path)
-   :task (fn [[_ _ name _ args _ state _ ticking-rate _ body]]
-           (ast/task-node
-            :name name
-            :state state
-            :arguments args
-            :tick-rate ticking-rate
-            :body body))
-   :function (fn [[_ _ name _ args _ body]]
-               (ast/function-node
-                :name name
-                :arguments args
-                :body body))
-   :procedure (fn [[_ _ name _ args _ body]]
-                (ast/procedure-node
-                 :name name
-                 :arguments args
-                 :body body))
-   :block (fn [[_ stmts _]]
-            (ast/block-node stmts))
-   :statement-list (fn [[_ stmts]] stmts)
-   :statement (fn [[stmt _]] stmt)
-   :integer (comp parse-int str)
-   :float (comp parse-double str)
-   :number ast/literal-number-node
-   :return (fn [[_ value _]]
-             (ast/return-node value))
-   :separated-expr (fn [[_ expr]] expr)
-   :sub-expr (fn [[_ _ expr _ _]] expr)
-   :constant (fn [[letter number]]
-               (ast/literal-pin-node letter number))
-   :arg-list (fn [[_ _ args _ _]]
-               (vec (take-nth 2 args)))
-   :params-list (fn [[_ _ args _ _]]
-                  (vec (take-nth 2 args)))
-   :named-arg (fn [[[name] value]]
-                (ast/arg-node name value))
-   :call (fn [[selector _ args]]
-           (ast/call-node selector args))
-   :ticking-rate (fn [[times _ _ _ scale]]
-                   (ast/ticking-rate-node times scale))
-   :expression-statement (fn [[expr]] expr)
-   :variable ast/variable-node
-   :argument ast/variable-declaration-node
-   :binary-expr (fn [[left _ ops]]
-                  (let [operations (map (fn [[op _ right]] [op right])
-                                        ops)]
-                    (reduce-binary-expresions left operations)))
-   :variable-declaration (fn [[_ _ var [_ _ _ expr]]]
-                           (ast/variable-declaration-node
-                            (:name var)
-                            (or expr (ast/literal-number-node 0))))
-   :for (fn [[_ _ var _ _ _ start _ _ stop [_ _ step] _ body]]
-          (ast/for-node (:name var)
-                        start
-                        stop
-                        (or step (ast/literal-number-node 1))
-                        body))
-   :assignment (fn [[variable _ _ _ value]]
-                 (ast/assignment-node variable value))
-   :while (fn [[_ condition _ body]]
-            (ast/while-node condition (or body (ast/block-node []))))
-   :until (fn [[_ condition _ body]]
-            (ast/until-node condition (or body (ast/block-node []))))
-   :do-while (fn [[_ _ body _ _ condition]]
-               (ast/do-while-node condition body))
-   :do-until (fn [[_ _ body _ _ condition]]
-               (ast/do-until-node condition body))
-   :endl (constantly nil)
-   :conditional (fn [[_ condition _ true-branch [_ _ _ false-branch]]]
-                  (ast/conditional-node condition
-                                        true-branch
-                                        (or false-branch (ast/block-node []))))
-   :forever (fn [[_ _ body]]
-              (ast/forever-node body))
-   :repeat (fn [[_ times _ body]]
-             (ast/repeat-node times body))
-   :yield (constantly (ast/yield-node))
-   :script-list (partial take-nth 2)
-   :start-task (fn [[_ _ tasks _]]
-                 (ast/start-node (vec tasks)))
-   :stop-task (fn [[_ _ tasks _]]
-                 (ast/stop-node (vec tasks)))
-   :pause-task (fn [[_ _ tasks _]]
-                 (ast/pause-node (vec tasks)))
-   :resume-task (fn [[_ _ tasks _]]
-                 (ast/resume-node (vec tasks)))
-   :not (fn [[_ _ expr]]
-          (ast/call-node "!" [(ast/arg-node expr)]))
-   :primitive (fn [[_ _ [alias] name]]
-                (if alias
-                  (ast/primitive-node alias name)
-                  (ast/primitive-node name)))
-   })
 
 (def parser (pp/compose grammar transformations))
 
