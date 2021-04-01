@@ -20,23 +20,3 @@
 
 (defn open-browser []
   (browse-url "http://localhost:3000"))
-
-(comment
- (require '[middleware.parser.parser :as new-parser])
- (require '[middleware.parser.old-parser :as old-parser])
- (use 'criterium.core)
-
- (def sources (mapv slurp
-                    (filter #(.isFile %)
-                            (file-seq (clojure.java.io/file "../../uzi/libraries")))))
-
- (def trees (time (mapv old-parser/parse sources)))
-
- (with-progress-reporting (bench (mapv new-parser/parse sources) :verbose))
-
-
- (def src (slurp "../../uzi/tests/syntax.uzi"))
- (with-progress-reporting (bench (new-parser/parse src) :verbose))
-
-
- ,)
