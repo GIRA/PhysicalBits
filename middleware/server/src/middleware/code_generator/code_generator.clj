@@ -38,7 +38,12 @@
           (print-optative-block (:initializationBlock node))))
 
 (defmethod print-node "UziVariableDeclarationNode" [node]
-  (format "var %s = %s;", (:name node) (print-node (:value node))))
+  (if (:value node)
+    (format "var %s = %s;"
+            (:name node)
+            (print-node (:value node)))
+    (format "var %s;"
+            (:name node))))
 
 (defmethod print-node "UziNumberLiteralNode" [node]
   (str (:value node)))
@@ -197,4 +202,4 @@
           (print-node (:right node))))
 
 (defmethod print-node :default [node]
-  (throw (ex-info "Not Implemented node reached: " node)))
+  (throw (ex-info "Not Implemented node reached: " {:node node})))

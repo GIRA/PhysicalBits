@@ -26,6 +26,7 @@ uint8 EEPROMReader::next(bool& timeout)
 	timeout = false;
 	uint8 result = EEPROM.read(position);
 	incrementPosition();
+	counter++;
 	return result;
 }
 

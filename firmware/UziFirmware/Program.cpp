@@ -2,6 +2,7 @@
 
 Error readGlobals(Reader* rs, Program* program);
 Error readScripts(Reader* rs, Program* program);
+Error readInstructions(Reader* rs, Program* program);
 
 Error readProgram(Reader* rs, Program* program)
 {
@@ -9,6 +10,7 @@ Error readProgram(Reader* rs, Program* program)
 	program->globals = 0;
 	program->globalsReport = 0;
 	program->scripts = 0;
+	program->instructions = 0;
 
 	bool timeout;
 	program->scriptCount = rs->next(timeout);
@@ -25,6 +27,9 @@ Error readProgram(Reader* rs, Program* program)
 	if (program->scriptCount > 0)
 	{
 		result = readScripts(rs, program);
+		if (result != NO_ERROR) return result;
+
+		result = readInstructions(rs, program);
 		if (result != NO_ERROR) return result;
 	}
 	return NO_ERROR;
@@ -98,7 +103,7 @@ Error readScripts(Reader * rs, Program* program)
 	if (program->scripts == 0) return OUT_OF_MEMORY;
 
 	uint16 instructionCount = 0;
-	for (int16 i = 0; i < program->scriptCount; i++)
+	for (uint8 i = 0; i < program->scriptCount; i++)
 	{
 		Script* script = &program->scripts[i];
 
@@ -107,6 +112,32 @@ Error readScripts(Reader * rs, Program* program)
 
 		if (result != NO_ERROR) return result;
 	}
+	
+	return NO_ERROR;
+}
+
+Error readInstructions(Reader* rs, Program* program)
+{
+	uint16 instructionCount = 0;
+	for (uint8 i = 0; i < program->scriptCount; i++)
+	{
+		Script* script = &program->scripts[i];
+		instructionCount += script->instructionCount;
+	}
+
+	if (instructionCount > 0)
+	{
+		program->instructions = uzi_createArray(Instruction, instructionCount);
+		if (program->instructions == 0) return OUT_OF_MEMORY;
+
+		for (int i = 0; i < instructionCount; i++)
+		{
+			bool timeout;
+			readInstruction(rs, &program->instructions[i], timeout);
+			if (timeout) return READER_TIMEOUT;
+		}
+	}
+
 	return NO_ERROR;
 }
 
@@ -170,4 +201,31 @@ Script* Program::getScriptForPC(int16 pc)
 		}
 	}
 	return NULL;
+}
+
+void Program::setCoroutineError(Coroutine* coroutine, Error err)
+{
+	coroutine->error = err;
+	getScript(coroutine->scriptIndex)->setRunning(false);
+}
+
+
+void Program::resetCoroutine(Coroutine* coroutine)
+{
+	coroutine->error = NO_ERROR;
+	coroutine->activeScriptIndex = coroutine->scriptIndex;
+	coroutine->framePointer = -1;
+	coroutine->pc = getScript(coroutine->scriptIndex)->getInstructionStart();
+	coroutine->stackSize = 0;
+}
+
+Instruction Program::getInstructionAt(int16 pc)
+{
+	return instructions[pc];
+}
+
+void Program::setBreakpointAt(int16 pc, bool val)
+{
+	Instruction* inst = &instructions[pc];
+	setBreakpoint(inst, val);
 }

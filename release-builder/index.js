@@ -15,72 +15,119 @@ Promise.each = function(arr, fn) {
   }, Promise.resolve());
 }
 
-const appName = "PhysicalBITS";
+const appName = "PhysicalBits";
 const releasesFolder = "out";
+const platform = process.platform;
 const version = process.argv[2];
 if (!version) {
   console.log("ERROR! Version required");
   return;
 }
 
-removeDir(releasesFolder)
-  .then(createServerJAR)
-  .then(webRelease)
-  .then(desktopRelease);
+// HACK(Richo): Special build for the Orange Pi Zero
+const opi = process.argv[3] == "opi";
+
+if (opi) {
+  removeDir(releasesFolder)
+    .then(createServerJAR)
+    .then(opiRelease);
+} else {
+  removeDir(releasesFolder)
+    .then(createJRE)
+    .then(createServerJAR)
+    .then(webRelease)
+    .then(desktopRelease);
+}
+
+function opiRelease() {
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-OPI";
+  console.log("\nBuilding " + appName + "-OPI");
+  return createOutFolder(outFolder)
+    .then(() => copyGUI(outFolder))
+    .then(() => copyUziLibraries(outFolder))
+    .then(() => copyServerJAR(outFolder))
+    .then(() => createStartScripts(outFolder, false))
+    .then(() => createZip(outFolder));
+}
 
 function webRelease() {
-  let outFolder = releasesFolder + "/" + appName + "." + version + "-web";
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-web-" + platform;
   console.log("\nBuilding " + appName + "-web");
   return createOutFolder(outFolder)
     .then(() => copyFirmware(outFolder))
     .then(() => copyGUI(outFolder))
     .then(() => copyUziLibraries(outFolder))
+    .then(() => copyJRE(outFolder))
     .then(() => copyServerJAR(outFolder))
     .then(() => createStartScripts(outFolder, true))
     .then(() => createZip(outFolder));
 }
 
 function desktopRelease() {
-  let tempFolder = releasesFolder + "/" + appName + "." + version + "-desktop";
-  return createElectronPackages()
-    .then(() => copyElectronPackages(tempFolder))
-    .then(() => fs.readdir(tempFolder)
-      .then(folders => Promise.each(folders, folder => {
-        console.log("\nBuilding " + folder);
-        let packageFolder = tempFolder + "/" + folder;
-        let appFolder;
-        if (folder.includes("win32")) {
-          appFolder = packageFolder + "/resources/app";
-        } else {
-          appFolder = packageFolder + "/" + appName + ".app/Contents/Resources/app/";
-        }
-        let finalFolder = releasesFolder + "/" + folder.replace(appName, appName + "." + version);
-        return copyFirmware(packageFolder)
-          .then(() => copyGUI(appFolder))
-          .then(() => copyUziLibraries(appFolder))
-          .then(() => copyServerJAR(appFolder))
-          .then(() => createStartScripts(appFolder, false))
-          .then(() => createConfigJSON(appFolder))
-          .then(() => fs.rename(packageFolder, finalFolder))
-          .then(() => createZip(finalFolder));
-      })))
-    .then(() => fs.rmdir(tempFolder));
+  let outFolder = releasesFolder + "/" + appName + "." + version + "-desktop-" + platform;
+  return createElectronPackage()
+    .then(() => copyElectronPackage(outFolder))
+    .then(() => {
+      let appFolder;
+      if (platform == "darwin") {
+        appFolder = outFolder + "/" + appName + ".app/Contents/Resources/app/";
+      } else {
+        appFolder = outFolder + "/resources/app";
+      }
+
+      return copyFirmware(outFolder)
+        .then(() => copyGUI(appFolder))
+        .then(() => copyUziLibraries(appFolder))
+        .then(() => copyJRE(appFolder))
+        .then(() => copyServerJAR(appFolder))
+        .then(() => createStartScripts(appFolder, false))
+        .then(() => createConfigJSON(appFolder))
+        .then(() => createZip(outFolder));
+    });
 }
 
-function createElectronPackages() {
-  return removeDir("../middleware/desktop/out").then(() => {
-    let platforms = ["win32", "darwin"];
-    return Promise.each(platforms, platform => {
-      console.log("\nCreating " + platform + " electron packages");
-      let cmd = "electron-packager . " + appName + " --platform=" + platform + " --arch=all --out=out --overwrite";
-      return executeCmd(cmd, "../middleware/desktop").catch(log);
-    });
+function createJRE() {
+  console.log("\nCreating JRE");
+  let outputFolder = "out/jre";
+  return removeDir(outputFolder).then(findJava).then(java_home => {
+    let modules = "java.base,java.sql,java.xml,java.naming,java.desktop";
+    let cmd = java_home + "jlink --add-modules " + modules + " --output "  + outputFolder + " --strip-debug --no-man-pages --no-header-files --compress=2";
+    return executeCmd(cmd).catch(log);
   });
 }
 
-function copyElectronPackages(path) {
-  console.log("Copying electron packages");
-  return copyDir("../middleware/desktop/out", path).catch(log);
+function findJava() {
+  if (platform == "darwin") {
+    /*
+    For some reason, in macOS the jlink program is not found, so we need to go to the actual java
+    folder and find it. To do that, it seems the easier way is to execute a command that will
+    return the folder. Then, we find the binaries inside the bin folder.
+    */
+    return executeCmd("/usr/libexec/java_home").then(java_home => java_home.trim() + "/bin/");
+  } else {
+    // Other platforms should find jlink in the path already, so we don't need to find the java home
+    return Promise.resolve("");
+  }
+}
+
+function createElectronPackage() {
+  console.log("\nCreating electron package");
+  return removeDir("../middleware/desktop/out")
+    .then(() => executeCmd("npm install", "../middleware/desktop").catch(log))
+    .then(() => {
+      let cmd = "electron-packager . " + appName + " --out=out --overwrite";
+      return executeCmd(cmd, "../middleware/desktop").catch(log);
+    });
+}
+
+function copyElectronPackage(path) {
+  console.log("Copying electron package");
+  return fs.readdir("../middleware/desktop/out").then(entries => {
+    if (entries.length == 0) throw "No electron package!";
+    else if (entries.length > 1) throw "More than 1 electron package!";
+
+    return copyDir("../middleware/desktop/out/" + entries[0], path).catch(log);
+  });
 }
 
 function createServerJAR() {
@@ -108,6 +155,11 @@ function copyUziLibraries(path) {
   return copyDir("../uzi/libraries", path + "/middleware/uzi").catch(log);
 }
 
+function copyJRE(path) {
+  console.log("Copying JRE");
+  return copyDir("out/jre", path + "/middleware/jre").catch(log);
+}
+
 function copyServerJAR(path) {
   console.log("Copying server jar");
   let uberjarFolder = "../middleware/server/target/uberjar";
@@ -120,14 +172,32 @@ function copyServerJAR(path) {
 
 function createStartScripts(path, openBrowser) {
   console.log("Creating start scripts");
-  let cmd = "java -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
-  if (openBrowser) { cmd += " -o"; }
-  return Promise.all([
-    fs.writeFile(path + "/start.bat", cmd),
-    fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
-      return fs.chmod(path + "/start.sh", 0o777);
-    })
-  ]);
+  let cmd = "java -showversion -jar middleware/server.jar -w middleware/gui -u middleware/uzi";
+  if (opi) {
+    let zulu_path = "../zulu13/bin/";
+    return Promise.all([
+      fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
+        return fs.chmod(path + "/start.sh", 0o777);
+      }),
+      fs.writeFile(path + "/startzulu.sh", "#!/bin/bash" + "\n" + zulu_path + cmd).then(() => {
+        return fs.chmod(path + "/startzulu.sh", 0o777);
+      })
+    ]);
+  } else {
+    let jre_path = "middleware/jre/bin/";
+    if (platform == "win32") {
+      jre_path = jre_path.replace(/\//g, "\\");
+    }
+    cmd = jre_path + cmd;
+    if (openBrowser) { cmd += " -o"; }
+    if (platform == "win32") {
+      return fs.writeFile(path + "/start.bat", cmd);
+    } else {
+      return fs.writeFile(path + "/start.sh", "#!/bin/bash" + "\n" + cmd).then(() => {
+        return fs.chmod(path + "/start.sh", 0o777);
+      })
+    }
+  }
 }
 
 function createConfigJSON(path) {
@@ -158,7 +228,11 @@ function copyDir(source, destination) {
 
 function executeCmd(cmd, cwd) {
   return new Promise((resolve, reject) => {
-    let p = exec(cmd, { cwd: cwd }, (error, stdout, stderr) => {
+    let options = {};
+    if (cwd) {
+      options.cwd = cwd;
+    }
+    let p = exec(cmd, options, (error, stdout, stderr) => {
       if (error) {
         reject({ error: error, stdout: stdout, stderr: stderr });
       } else {
@@ -169,7 +243,7 @@ function executeCmd(cmd, cwd) {
     p.stdout.on("data", (data) => { console.log(data.toString().trim()); });
     p.stderr.on("data", (data) => { console.log(data.toString().trim()); });
     p.on('exit', (code) => { console.log("--- Process (PID: " + p.pid + ") exited with code " + code) });
-    console.log("--- Started process (PID: " + p.pid + ") $ " + cwd + " > " + cmd);
+    console.log("--- Started process (PID: " + p.pid + ") $ " + (cwd ? cwd : ".") + " > " + cmd);
   });
 }
 

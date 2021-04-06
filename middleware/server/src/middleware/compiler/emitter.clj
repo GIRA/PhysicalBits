@@ -21,15 +21,16 @@
   {:__class__ "UziVariable" :value (simplify (or value 0))})
 
 (defn script
-  [& {:keys [name arguments delay running? locals instructions]
-      :or {arguments [] delay 0 running? false locals [] instructions []}}]
+  [& {:keys [name arguments delay running? once? locals instructions]
+      :or {arguments [], delay 0, running? false, once? false, locals [], instructions []}}]
   {:__class__ "UziScript"
    :arguments arguments
    :delay (constant delay)
    :instructions instructions
    :locals locals
    :name name
-   :running? running?})
+   :running? running?
+   :once? once?})
 
 (defn write-global [var-name]
   {:__class__ "UziPopInstruction"

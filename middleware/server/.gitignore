@@ -12,3 +12,7 @@ pom.xml.asc
 .hg/
 .idea
 /plugin.iml
+
+/log
+
+/resources/js/main.js

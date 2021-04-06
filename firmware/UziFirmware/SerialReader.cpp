@@ -1,6 +1,6 @@
 #include "SerialReader.h"
 
-#define TIMEOUT		1000
+#define TIMEOUT		100
 
 uint8 SerialReader::next(bool& timeout)
 {
@@ -11,5 +11,6 @@ uint8 SerialReader::next(bool& timeout)
 		timeout = millis() - start > TIMEOUT;
 		if (timeout) return 0;
 	}
+	counter++;
 	return (uint8)serial->read();
 }

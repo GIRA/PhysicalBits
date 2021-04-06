@@ -1,20 +1,4 @@
 #include "Coroutine.h"
-#include "Script.h"
-
-Script* Coroutine::getScript(void)
-{
-	return script;
-}
-
-Script* Coroutine::getActiveScript(void)
-{
-	return activeScript;
-}
-
-void Coroutine::setActiveScript(Script* value)
-{
-	activeScript = value;
-}
 
 int16 Coroutine::getFramePointer(void)
 {
@@ -36,9 +20,9 @@ void Coroutine::setPC(int16 value)
 	pc = value;
 }
 
-void Coroutine::saveStack(StackArray* stack)
+Error Coroutine::saveStack()
 {
-	stackSize = stack->getPointer();
+	stackSize = stack_size();
 	if (stackSize > stackAllocated) // We need to grow!
 	{
 #ifdef __SIMULATOR__
@@ -49,18 +33,20 @@ void Coroutine::saveStack(StackArray* stack)
 		stackElements = uzi_createArray(float, stackAllocated);
 		if (stackElements == 0) 
 		{
-			setError(OUT_OF_MEMORY);
 			stackAllocated = stackSize = 0;			
-			return;
+			return OUT_OF_MEMORY;
 		}
 	}
 
-	stack->copyTo(stackElements); 
+	stack_saveTo(stackElements); 
+	return NO_ERROR;
 }
 
-void Coroutine::restoreStack(StackArray* stack)
+Error Coroutine::restoreStack()
 {
-	stack->copyFrom(stackElements, stackSize); 
+	Error error;
+	stack_restoreFrom(stackElements, stackSize, error);
+	return error;
 }
 
 int32 Coroutine::getNextRun(void)
@@ -102,20 +88,4 @@ bool Coroutine::hasError()
 Error Coroutine::getError(void)
 {
 	return error;
-}
-
-void Coroutine::setError(Error err)
-{
-	error = err;
-	script->setStepping(false);
-}
-
-void Coroutine::reset(void)
-{
-	error = NO_ERROR;
-	activeScript = script;
-	framePointer = -1;
-	pc = script->getInstructionStart();
-	stackSize = 0;
-
 }

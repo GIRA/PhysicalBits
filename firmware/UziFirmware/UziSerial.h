@@ -16,6 +16,6 @@ public:
 	void write(unsigned char);
 
 private:
-	long baudRate = 57600;
+	long baudRate = 9600;
 };
 

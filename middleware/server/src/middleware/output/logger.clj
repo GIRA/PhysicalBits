@@ -5,12 +5,19 @@
 
 (def ^:private entries* (atom []))
 
+(defn- uzi-format [text args]
+  (loop [t text, i 0]
+    (if-let [val (get args i)]
+      (recur
+        (str/replace t (str "%" (inc i)) val)
+        (inc i))
+      t)))
+
 (defn read-entries! []
   (let [[entries _] (reset-vals! entries* [])]
     (when-not (empty? entries)
-      (log/info (format "Messages read from output logger: %d\n"
-                        (count entries))
-                (str/join "\n" (mapv str entries))))
+      (doseq [entry entries]
+        (log/info (uzi-format (:text entry) (:args entry)))))
     entries))
 
 (defn- append [msg-type format-str args]

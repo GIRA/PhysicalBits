@@ -24,7 +24,7 @@
   (w/postwalk #(if-not (map? %)
                  %
                  (condp = (keys %)
-                   [:___INF___] (* (:___INF___ %) ##Inf)
+                   [:___INF___] (if (= 1 (:___INF___ %)) ##Inf ##-Inf)
                    [:___NAN___] ##NaN
                    %))
               obj))

@@ -5,34 +5,35 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	script->instructionStart = start;
 	script->index = scriptIndex;
 
-	script->stepping = false;
+	script->running = false;
+	script->once = false;
 	script->interval = 0;
 	script->argCount = script->localCount = 0;
 	script->locals = 0; 
 	script->instructionCount = 0;
-	script->instructions = 0;
 	script->coroutine = 0;
 
 	bool timeout;
 	uint8 h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
 
-	script->stepping = (h >> 7) & 1;
+	script->running = (h >> 7) & 1;
+	script->once = ((h >> 6) & 1);
 	
-	if ((h >> 6) & 1) // Has delay
+	if ((h >> 5) & 1) // Has delay
 	{
 		uint8 index = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
 		script->interval = index;
 	}
 
-	if ((h >> 5) & 1) // Has arguments
+	if ((h >> 4) & 1) // Has arguments
 	{
 		script->argCount = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
 	}
 
-	if ((h >> 4) & 1) // Has locals
+	if ((h >> 3) & 1) // Has locals
 	{
 		script->localCount = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
@@ -51,6 +52,7 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 		}
 	}
 
+
 	uint8 ic_h = rs->next(timeout);
 	if (timeout) return READER_TIMEOUT;
 	if (ic_h > 0x7F)
@@ -65,17 +67,6 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 		script->instructionCount = ic_h;
 	}
 
-	if (script->instructionCount > 0)
-	{
-		script->instructions = uzi_createArray(Instruction, script->instructionCount);
-		if (script->instructions == 0) return OUT_OF_MEMORY;
-
-		for (int i = 0; i < script->instructionCount; i++)
-		{
-			readInstruction(rs, &script->instructions[i], timeout);
-			if (timeout) return READER_TIMEOUT;
-		}
-	}
 
 	return NO_ERROR;
 }
@@ -95,19 +86,14 @@ uint16 Script::getInstructionCount(void)
 	return instructionCount;
 }
 
-Instruction Script::getInstructionAt(int16 index)
+bool Script::isRunning(void)
 {
-	return instructions[index - (int16)instructionStart];
+	return running;
 }
 
-bool Script::isStepping(void)
+void Script::setRunning(bool val)
 {
-	return stepping;
-}
-
-void Script::setStepping(bool val)
-{
-	stepping = val;
+	running = val;
 }
 
 uint8 Script::getArgCount(void)
@@ -137,8 +123,8 @@ Coroutine* Script::getCoroutine(void)
 		coroutine = uzi_create(Coroutine);
 		if (coroutine == 0) return 0; // TODO(Richo): Notify user of OUT_OF_MEMORY!
 
-		coroutine->script = this;
-		coroutine->activeScript = this;
+		coroutine->scriptIndex = index;
+		coroutine->activeScriptIndex = index;
 		coroutine->framePointer = -1;
 		coroutine->pc = instructionStart;
 		coroutine->nextRun = 0;
@@ -153,11 +139,4 @@ Coroutine* Script::getCoroutine(void)
 bool Script::hasCoroutine(void) 
 {
 	return coroutine != 0;
-}
-
-void Script::setBreakpointAt(int16 pc, bool val)
-{
-	if (pc < getInstructionStart() || pc > getInstructionStop()) return;
-	Instruction* inst = &instructions[pc - instructionStart];
-	setBreakpoint(inst, val);
 }

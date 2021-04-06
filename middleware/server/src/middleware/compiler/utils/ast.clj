@@ -15,7 +15,7 @@
   (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
              (node-type node)))
 
-(defn compile-time-value [node not-constant]
+(defn compile-time-value ^double [node not-constant]
   (condp = (node-type node)
     "UziNumberLiteralNode" (:value node)
     "UziPinLiteralNode" (:value node)
@@ -91,8 +91,14 @@
 (defn pin-literal? [node]
   (= "UziPinLiteralNode" (node-type node)))
 
+(defn number-literal? [node]
+  (= "UziNumberLiteralNode" (node-type node)))
+
+(defn call? [node]
+  (= "UziCallNode" (node-type node)))
+
 (defn has-side-effects? [{:keys [primitive-name arguments] :as node}]
-  (if (= "UziCallNode" (node-type node))
+  (if (call? node)
     (if-not primitive-name
       true ; Script calls could always have side-effects
       (if (some has-side-effects? (map :value arguments))

@@ -18,7 +18,7 @@ namespace SimulatorTest
 
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
-        private const byte MINOR_VERSION = 7;
+        private const byte MINOR_VERSION = 8;
         private const byte KEEP_ALIVE = 7;
 
         public TestContext TestContext { get; set; }
@@ -998,14 +998,14 @@ namespace SimulatorTest
 
             for (int i = 7; i <= 11; i++)
             {
-                sketch.SetMillis(i);
-                sketch.Loop();
+                sketch.SetMillis(i * 1000);
+                Loop();
 
                 for (int j = 7; j <= 11; j++)
                 {
                     bool shouldBeOn = j <= i;
                     string msg = string.Format("D{0} should be {1}", j, shouldBeOn ? "on" : "off");
-                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);
+                    Assert.AreEqual(shouldBeOn ? 1023 : 0, sketch.GetPinValue(j), msg);                    
                 }
             }
         }
@@ -1017,8 +1017,8 @@ namespace SimulatorTest
 
             for (int i = 11; i >= 7; i--)
             {
-                sketch.SetMillis(100 - i);
-                sketch.Loop();
+                sketch.SetMillis((100 - i) * 1000);
+                Loop();
 
                 for (int j = 11; j >= 7; j--)
                 {
@@ -1036,8 +1036,8 @@ namespace SimulatorTest
 
             for (int i = 7; i <= 11; i++)
             {
-                sketch.SetMillis(i);
-                sketch.Loop();
+                sketch.SetMillis(i * 1000);
+                Loop();
 
                 for (int j = 7; j <= 11; j++)
                 {
@@ -1055,8 +1055,8 @@ namespace SimulatorTest
 
             for (int i = 11; i >= 7; i--)
             {
-                sketch.SetMillis(100 - i);
-                sketch.Loop();
+                sketch.SetMillis((100 - i) * 1000);
+                Loop();
 
                 for (int j = 11; j >= 7; j--)
                 {
@@ -1075,8 +1075,13 @@ namespace SimulatorTest
             for (int i = 0; i < 100; i++)
             {
                 sketch.SetMillis(i * 1000 + 50);
-                sketch.Loop();
-                Assert.AreEqual(1023 * (i % 2), sketch.GetPinValue(13), "D13 should blink on each tick");
+
+                // Execute the VM loop multiple times in the same ms but the step should be the same anyway
+                for (int j = 0; j < 100; j++)
+                {
+                    sketch.Loop();
+                    Assert.AreEqual(1023 * (i % 2), sketch.GetPinValue(13), "D13 should blink on each tick");
+                }
             }
         }
 

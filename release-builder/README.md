@@ -1,12 +1,14 @@
-### Quick start
+# Release Builder
 
-This project allows you to build all Physical BITS releases by running:
+## Quick start
 
-    $ node . v0.0.0
+This project allows you to build a Physical Bits release by running:
+
+    $ node . [version]
 
 After running, check the `/out` folder for the generated files.
 
-### Dependencies
+## Dependencies
 
 First of all, you'll obviously need [Node.js](https://nodejs.org/) installed.
 
@@ -18,4 +20,4 @@ You will also need the following:
 
 * [Leiningen](https://leiningen.org/) to be able to build the server jar. This also needs [Java](https://openjdk.java.net/) installed.
 * [electron-packager](https://github.com/electron/electron-packager) to build the desktop versions. This needs to be installed globally (`npm install electron-packager -g`).
-* [Wine](https://wiki.winehq.org/MacOS) in macOS to be able to build windows packages (`brew cask isntall xquartz` and then `brew cask install --no-quarantine wine-stable`).
+* [Wine](https://wiki.winehq.org/MacOS) in macOS to be able to build windows packages (`brew cask install xquartz` and then `brew cask install --no-quarantine wine-stable`).

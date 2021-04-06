@@ -151,7 +151,7 @@ void GPIO::startTone(uint8 pin, float freq)
 		tonePin = pin;
 	}
 	setMode(pin, OUTPUT);
-	tone(pin, freq);
+	tone(pin, (uint32)freq);
 }
 
 void GPIO::stopTone(uint8 pin)

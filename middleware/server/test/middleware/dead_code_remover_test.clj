@@ -2,1521 +2,728 @@
   (:require [clojure.test :refer :all]
             [clojure.walk :as w]
             [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.compiler.compiler :as cc])
-  (:use [middleware.test-utils]))
+            [middleware.compiler.compiler :as cc]
+            [middleware.compiler.emitter :as emit])
+  (:use [middleware.test-utils ]))
 
 (defn compile-uzi-string [src]
+  (register-program! src)
   (:compiled (cc/compile-uzi-string src)))
 
-(deftest stopped-task-with-no-refs-should-be-removed
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "alive1",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "alive2"}],
-                             :locals [],
-                             :name "alive2",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 11}}}
-        actual (compile-uzi-string "
-                  task alive1() running { toggle(D13); }
-	                task dead() stopped { toggle(D12); }
-                  task alive2() { toggle(D11); }")]
+(deftest
+  stopped-task-with-no-refs-should-be-removed
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 11)
+                              (emit/constant 13)}
+                   :scripts [(emit/script
+                               :name "alive1"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "alive2"
+                               :delay 0
+                               :running? true
+                               :once? true
+                               :instructions [(emit/push-value 11)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                  task alive1() running { toggle(D13); }\r\n\t                task dead() stopped { toggle(D12); }\r\n                  task alive2() { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest start-task-should-mark-the-script-as-alive
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "dead"}],
-                             :locals [],
-                             :name "alive",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "dead",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-                		task alive() running { toggle(D13); start dead; }
-                		task dead() stopped { toggle(D12); }
-                		task reallyDead() stopped { toggle(D11); }")]
+(deftest
+  start-task-should-mark-the-script-as-alive
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "alive"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/start "dead")])
+                             (emit/script
+                               :name "dead"
+                               :delay 0
+                               :instructions [(emit/push-value 12)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                \t\ttask alive() running { toggle(D13); start dead; }\r\n                \t\ttask dead() stopped { toggle(D12); }\r\n                \t\ttask reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest stop-task-should-mark-the-script-as-alive
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "dead"}],
-                             :locals [],
-                             :name "alive",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "dead",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-              		task alive() running { toggle(D13); stop dead; }
-              		task dead() stopped { toggle(D12); }
-              		task reallyDead() stopped { toggle(D11); }")]
+(deftest
+  stop-task-should-mark-the-script-as-alive
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "alive"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/stop "dead")])
+                             (emit/script
+                               :name "dead"
+                               :delay 0
+                               :instructions [(emit/push-value 12)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n              \t\ttask alive() running { toggle(D13); stop dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest pause-task-should-mark-the-script-as-alive
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziPauseScriptInstruction",
-                                             :argument "dead"}],
-                             :locals [],
-                             :name "alive",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "dead",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-              		task alive() running { toggle(D13); pause dead; }
-              		task dead() stopped { toggle(D12); }
-              		task reallyDead() stopped { toggle(D11); }")]
+(deftest
+  pause-task-should-mark-the-script-as-alive
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "alive"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/pause "dead")])
+                             (emit/script
+                               :name "dead"
+                               :delay 0
+                               :instructions [(emit/push-value 12)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n              \t\ttask alive() running { toggle(D13); pause dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest resume-task-should-mark-the-script-as-alive
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziResumeScriptInstruction",
-                                             :argument "dead"}],
-                             :locals [],
-                             :name "alive",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "dead",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-              		task alive() running { toggle(D13); resume dead; }
-              		task dead() stopped { toggle(D12); }
-              		task reallyDead() stopped { toggle(D11); }")]
+(deftest
+  resume-task-should-mark-the-script-as-alive
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "alive"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/resume "dead")])
+                             (emit/script
+                               :name "dead"
+                               :delay 0
+                               :instructions [(emit/push-value 12)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n              \t\ttask alive() running { toggle(D13); resume dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
-(deftest the-visit-order-should-not-matter
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "dead",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "dead"}],
-                             :locals [],
-                             :name "alive",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-                  task dead() stopped { toggle(D12); }
-              		task alive() running { toggle(D13); start dead; }
-              		task reallyDead() stopped { toggle(D11); }")]
+(deftest
+  the-visit-order-should-not-matter
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "dead"
+                               :delay 0
+                               :instructions [(emit/push-value 12) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "alive"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/start "dead")])])
+        actual (compile-uzi-string
+                 "\r\n                  task dead() stopped { toggle(D12); }\r\n              \t\ttask alive() running { toggle(D13); start dead; }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
     (is (= expected actual))))
 
-
-(deftest circular-refs-should-not-be-a-problem
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "bar"}],
-                             :locals [],
-                             :name "foo",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziStartScriptInstruction",
-                                             :argument "foo"},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "bar",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 12}}}
-        actual (compile-uzi-string "
-                  task foo() running { toggle(D13); start bar; }
-                  task bar() stopped { start foo; toggle(D12); }")]
+(deftest
+  circular-refs-should-not-be-a-problem
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 13)
+                              (emit/constant 12)}
+                   :scripts [(emit/script
+                               :name "foo"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")
+                                              (emit/start "bar")])
+                             (emit/script
+                               :name "bar"
+                               :delay 0
+                               :instructions [(emit/start "foo")
+                                              (emit/push-value 12)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                  task foo() running { toggle(D13); start bar; }\r\n                  task bar() stopped { start foo; toggle(D12); }")]
     (is (= expected actual))))
 
-(deftest stopped-script-that-starts-itself-should-not-count
-  (let [expected {:__class__ "UziProgram", :scripts [], :globals #{}}
-        actual (compile-uzi-string "task bar() stopped { start bar; toggle(D12); }")]
+(deftest
+  stopped-script-that-starts-itself-should-not-count
+  (let [expected (emit/program :globals #{} :scripts [])
+        actual (compile-uzi-string
+                 "task bar() stopped { start bar; toggle(D12); }")]
     (is (= expected actual))))
 
-(deftest unused-globals-should-be-removed
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "blink13",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 1000},
-                               {:__class__ "UziVariable",
-                                :value 13}}}
-        actual (compile-uzi-string "
-                  var a = 0;
-                  task blink13() running 1/s { toggle(D13); }")]
+(deftest
+  unused-globals-should-be-removed
+  (let [expected (emit/program
+                   :globals #{(emit/constant 1000) (emit/constant 13)}
+                   :scripts [(emit/script
+                               :name "blink13"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { toggle(D13); }")]
     (is (= expected actual))))
 
-(deftest unused-globals-should-be-removed-even-if-they-have-references-from-dead-script
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "blink13",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 1000},
-                               {:__class__ "UziVariable",
-                                :value 13}}}
-        actual (compile-uzi-string "
-                  var a = 0;
-                  task blink13() running 1/s { toggle(D13); }
-                  task test() stopped { a = 100; }")]
+(deftest
+  unused-globals-should-be-removed-even-if-they-have-references-from-dead-script
+  (let [expected (emit/program
+                   :globals #{(emit/constant 1000) (emit/constant 13)}
+                   :scripts [(emit/script
+                               :name "blink13"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/push-value 13)
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { toggle(D13); }\r\n                  task test() stopped { a = 100; }")]
     (is (= expected actual))))
 
-(deftest used-globals-should-not-be-removed
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "b"
-                                                        :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "blink13",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :name "b",
-                                :value 1},
-                               {:__class__ "UziVariable",
-                                :value 1000}}}
-        actual (compile-uzi-string "
-                var a = 0;
-                var b = 1;
-                task blink13() running 1/s { toggle(b); }
-                task test() stopped { a = b + 1; }")]
+(deftest
+  used-globals-should-not-be-removed
+  (let [expected (emit/program
+                   :globals #{(emit/variable "b" 1) (emit/constant 1000)}
+                   :scripts [(emit/script
+                               :name "blink13"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/read-global "b")
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                var a = 0;\r\n                var b = 1;\r\n                task blink13() running 1/s { toggle(b); }\r\n                task test() stopped { a = b + 1; }")]
     (is (= expected actual))))
 
-(deftest unused-globals-should-be-removed-even-if-they-are-hidden-by-a-local
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 1000},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "a#1",
-                                                        :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [{:__class__ "UziVariable",
-                                       :name "a#1",
-                                       :value 13}],
-                             :name "blink13",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :value 1000},
-                               {:__class__ "UziVariable",
-                                :value 13}}}
-        actual (compile-uzi-string "
-                  var a = 0;
-                  task blink13() running 1/s { var a = D13; toggle(a); }")]
+(deftest
+  unused-globals-should-be-removed-even-if-they-are-hidden-by-a-local
+  (let [expected (emit/program
+                   :globals #{(emit/constant 1000) (emit/constant 13)}
+                   :scripts [(emit/script
+                               :name "blink13"
+                               :delay 1000
+                               :running? true
+                               :locals [(emit/variable "a#1" 13)]
+                               :instructions [(emit/read-local "a#1")
+                                              (emit/prim-call "toggle")])])
+        actual (compile-uzi-string
+                 "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { var a = D13; toggle(a); }")]
     (is (= expected actual))))
 
-
-(deftest calling-a-script-should-mark-it-as-alive
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable",
-                                          :name "speed#1",
-                                          :value 0}],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "m.reversePin",
-                                                        :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "turnOff"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "m.forwardPin",
-                                                        :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "turnOn"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "m.enablePin",
-                                                        :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "speed#1",
-                                                        :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "write"}}],
-                             :locals [],
-                             :name "m.forward",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 1}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "m.forward"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "pop"}}],
-                             :locals [],
-                             :name "loop",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :name "m.enablePin",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :name "m.forwardPin",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :name "m.reversePin",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 1}}}
-        actual (compile-uzi-string "
-                  import m from 'DCMotor.uzi';
-                  task loop() running { m.forward(1); }")]
+(deftest
+  calling-a-script-should-mark-it-as-alive
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/variable "m.reversePin" 0)
+                              (emit/constant 1) (emit/variable "m.forwardPin" 0)
+                              (emit/variable "m.enablePin" 0)}
+                   :scripts [(emit/script
+                               :name "m.forward"
+                               :arguments [(emit/variable "speed#1" 0)]
+                               :delay 0
+                               :instructions [(emit/read-global "m.reversePin")
+                                              (emit/prim-call "turnOff")
+                                              (emit/read-global "m.forwardPin")
+                                              (emit/prim-call "turnOn")
+                                              (emit/read-global "m.enablePin")
+                                              (emit/read-local "speed#1")
+                                              (emit/prim-call "write")])
+                             (emit/script
+                               :name "loop"
+                               :delay 0
+                               :running? true
+                               :instructions [(emit/push-value 1)
+                                              (emit/script-call "m.forward")
+                                              (emit/prim-call "pop")])])
+        actual (compile-uzi-string
+                 "\r\n                  import m from 'DCMotor.uzi';\r\n                  task loop() running { m.forward(1); }")]
     (is (= expected actual))))
 
-
-(deftest a-more-complete-example
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 500},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "blink13",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "toggle"}}],
-                             :locals [],
-                             :name "blink12",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable",
-                                     :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :name "a",
-                                                        :value 0}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 3},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "turnOn"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument 2},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable",
-                                                        :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive",
-                                                        :name "turnOff"}},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "setup"}],
-                             :locals [],
-                             :name "setup",
-                             :running? true}],
-                  :globals #{{:__class__ "UziVariable",
-                                :name "a",
-                                :value 10},
-                               {:__class__ "UziVariable",
-                                :value 500},
-                               {:__class__ "UziVariable",
-                                :value 13},
-                               {:__class__ "UziVariable",
-                                :value 1000},
-                               {:__class__ "UziVariable",
-                                :value 12},
-                               {:__class__ "UziVariable",
-                                :value 0},
-                               {:__class__ "UziVariable",
-                                :value 11}}}
-        actual (compile-uzi-string "
-                  \"This is just an example of code that uses all the available syntax
-                  in the language.\"
-                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"
-
-                  import foo from 'DCMotor.uzi';
-                  import bar from 'Sonar.uzi' {
-                    trigPin = 100;
-                    echoPin = 200;
-                    start reading;
-                    stop reading;
-                    resume reading;
-                    pause reading;
-                  }
-
-                  var a = 10;
-                  var b = 0.5;
-                  var c;
-
-                  task blink13() running 2/s { toggle(D13); }
-                  task blink12() running 1/s { toggle(D12); }
-
-                  task setup() {
-                    if a { turnOn(D11); }
-                    else { turnOff(D11); }
-                  }
-
-                  func fact(n) {
-                    if n == 0 { return 1; }
-                    return n * fact(n - 1);
-                  }
-
-                  proc foo_bar_baz(a, b, c) {
-                    var d = a * b + c;
-                    repeat d { toggle(A2); }
-                    forever {
-                      start blink13, blink12;
-                      stop blink13;
-                      yield;
-                      pause blink12, blink13;
-                      resume blink12; yield;
-                      return;
-                    }
-                    while 1 && 0 { toggle(D10); delayMs(1000); }
-                    until 0 || 0 { toggle(D10); delayMs(1000); }
-                    while 1 >= 0; \"Body is optional\"
-                    until 0 <= 1; \"Body is optional\"
-                    do { toggle(D9); } while 1 > 0;
-                    do { toggle(D8); } until 0 < 1;
-                    for i = 0 to 10 by 1 {
-                      toggle(A0);
-                      delayMs(i * 100);
-                    }
-                    var e = foo.getSpeed();
-                    foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
-                    bar.init(trig: a, echo: b, maxDist: c);
-                  }")]
+(deftest
+  a-more-complete-example
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 11)
+                              (emit/constant 1000) (emit/constant 13)
+                              (emit/constant 500) (emit/constant 12)
+                              (emit/variable "a" 10)}
+                   :scripts [(emit/script
+                               :name "blink13"
+                               :delay 500
+                               :running? true
+                               :instructions [(emit/push-value 13) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "blink12"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/push-value 12) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "setup"
+                               :delay 0
+                               :running? true
+                               :once? true
+                               :instructions [(emit/read-global "a")
+                                              (emit/jz 3)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOn")
+                                              (emit/jmp 2)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOff")])])
+        actual (compile-uzi-string
+                 "\r\n                  \"This is just an example of code that uses all the available syntax\r\n                  in the language.\"\r\n                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                  import foo from 'DCMotor.uzi';\r\n                  import bar from 'Sonar.uzi' {\r\n                    trigPin = 100;\r\n                    echoPin = 200;\r\n                    start reading;\r\n                    stop reading;\r\n                    resume reading;\r\n                    pause reading;\r\n                  }\r\n\r\n                  var a = 10;\r\n                  var b = 0.5;\r\n                  var c;\r\n\r\n                  task blink13() running 2/s { toggle(D13); }\r\n                  task blink12() running 1/s { toggle(D12); }\r\n\r\n                  task setup() {\r\n                    if a { turnOn(D11); }\r\n                    else { turnOff(D11); }\r\n                  }\r\n\r\n                  func fact(n) {\r\n                    if n == 0 { return 1; }\r\n                    return n * fact(n - 1);\r\n                  }\r\n\r\n                  proc foo_bar_baz(a, b, c) {\r\n                    var d = a * b + c;\r\n                    repeat d { toggle(A2); }\r\n                    forever {\r\n                      start blink13, blink12;\r\n                      stop blink13;\r\n                      yield;\r\n                      pause blink12, blink13;\r\n                      resume blink12; yield;\r\n                      return;\r\n                    }\r\n                    while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                    until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                    while 1 >= 0; \"Body is optional\"\r\n                    until 0 <= 1; \"Body is optional\"\r\n                    do { toggle(D9); } while 1 > 0;\r\n                    do { toggle(D8); } until 0 < 1;\r\n                    for i = 0 to 10 by 1 {\r\n                      toggle(A0);\r\n                      delayMs(i * 100);\r\n                    }\r\n                    var e = foo.getSpeed();\r\n                    foo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                    bar.init(trig: a, echo: b, maxDist: c);\r\n                  }")]
     (is (= expected actual))))
 
-
-(deftest a-more-complete-example-2
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "en#1", :value 0},
-                                         {:__class__ "UziVariable", :name "f#2", :value 0},
-                                         {:__class__ "UziVariable", :name "r#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "en#1", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.enablePin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "f#2", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.forwardPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "r#3", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.reversePin", :value 0}}],
-                             :locals [], :name "foo.init",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.enablePin", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "read"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}}],
-                             :locals [], :name "foo.getSpeed",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "trig#1", :value 0},
-                                         {:__class__ "UziVariable", :name "echo#2", :value 0},
-                                         {:__class__ "UziVariable", :name "maxDist#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "trig#1", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.trigPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "echo#2", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.echoPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "maxDist#3", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.maxDistance", :value 0}}],
-                             :locals [], :name "bar.init",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 100},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.trigPin", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.echoPin", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.maxDistance", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "sonarDistCm"}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.distance", :value 0}}],
-                             :locals [], :name "bar.reading",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 500},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}}],
-                             :locals [], :name "blink13",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}}],
-                             :locals [], :name "blink12",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a", :value 0}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 3},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "turnOn"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument 2},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "turnOff"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "c", :value 0}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo_bar_baz"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "setup"}],
-                             :locals [], :name "setup",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "n#1", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "equals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 2},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "subtract"}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "fact"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}}],
-                             :locals [], :name "fact",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "a#1", :value 0},
-                                         {:__class__ "UziVariable", :name "b#2", :value 0},
-                                         {:__class__ "UziVariable", :name "c#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "c#3", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThan"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 7},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 16}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -11},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "yield"}},
-                                            {:__class__ "UziPauseScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziPauseScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziResumeScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "yield"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "ret"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -10},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "logicalAnd"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 5},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1000}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -9},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "logicalOr"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument 5},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1000}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -9},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "greaterThanOrEquals"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument -4},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThanOrEquals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument -4},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 9}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "greaterThan"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument -6},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 8}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThan"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument -6},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThanOrEquals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 11},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 14}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 100}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -15},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo.getSpeed"},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "e#6", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value -2}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value -3.5}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "fact"},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "divide"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo.init"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "c#3", :value 0}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "bar.init"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}}],
-                             :locals [{:__class__ "UziVariable", :name "d#4", :value 0},
-                                      {:__class__ "UziVariable", :name "i#5", :value 0},
-                                      {:__class__ "UziVariable", :name "e#6", :value 0},
-                                      {:__class__ "UziVariable", :name "@1", :value 0}],
-                             :name "foo_bar_baz",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable", :name "foo.enablePin", :value 0},
-                               {:__class__ "UziVariable", :name "foo.forwardPin", :value 0},
-                               {:__class__ "UziVariable", :name "foo.reversePin", :value 0},
-                               {:__class__ "UziVariable", :name "bar.trigPin", :value 100},
-                               {:__class__ "UziVariable", :name "bar.echoPin", :value 200},
-                               {:__class__ "UziVariable", :name "bar.maxDistance", :value 100},
-                               {:__class__ "UziVariable", :name "bar.distance", :value 0},
-                               {:__class__ "UziVariable", :name "a", :value 10},
-                               {:__class__ "UziVariable", :name "b", :value 0.5},
-                               {:__class__ "UziVariable", :name "c", :value 0},
-                               {:__class__ "UziVariable", :value 0},
-                               {:__class__ "UziVariable", :value 100},
-                               {:__class__ "UziVariable", :value 500},
-                               {:__class__ "UziVariable", :value 13},
-                               {:__class__ "UziVariable", :value 1000},
-                               {:__class__ "UziVariable", :value 12},
-                               {:__class__ "UziVariable", :value 11},
-                               {:__class__ "UziVariable", :value 1},
-                               {:__class__ "UziVariable", :value 16},
-                               {:__class__ "UziVariable", :value 10},
-                               {:__class__ "UziVariable", :value 9},
-                               {:__class__ "UziVariable", :value 8},
-                               {:__class__ "UziVariable", :value 14},
-                               {:__class__ "UziVariable", :value -2},
-                               {:__class__ "UziVariable", :value -3.5}}}
-        actual (compile-uzi-string "
-                      \"This is just an example of code that uses all the available syntax
-                      in the language.\"
-                      \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"
-
-                      import foo from 'DCMotor.uzi';
-                      import bar from 'Sonar.uzi' {
-                        trigPin = 100;
-                        echoPin = 200;
-                        stop reading;
-                        start reading;
-                        pause reading;
-                        resume reading;
-                      }
-
-                      var a = 10;
-                      var b = 0.5;
-                      var c;
-
-                      task blink13() running 2/s { toggle(D13); }
-                      task blink12() running 1/s { toggle(D12); }
-
-                      task setup() {
-                          if a { turnOn(D11); }
-                          else { turnOff(D11); }
-                          foo_bar_baz(a, b, c);
-                      }
-
-                      func fact(n) {
-                          if n == 0 { return 1; }
-                          return n * fact(n - 1);
-                      }
-
-                      proc foo_bar_baz(a, b, c) {
-                          var d = a * b + c;
-                          repeat d { toggle(A2); }
-                          forever {
-                              start blink13, blink12;
-                              stop blink13;
-                              yield;
-                              pause blink12, blink13;
-                              resume blink12; yield;
-                              return;
-                          }
-                          while 1 && 0 { toggle(D10); delayMs(1000); }
-                          until 0 || 0 { toggle(D10); delayMs(1000); }
-                          while 1 >= 0; \"Body is optional\"
-                          until 0 <= 1; \"Body is optional\"
-                          do { toggle(D9); } while 1 > 0;
-                          do { toggle(D8); } until 0 < 1;
-                          for i = 0 to 10 by 1 {
-                              toggle(A0);
-                              delayMs(i * 100);
-                          }
-                      	var e = foo.getSpeed();
-                      	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
-                      	bar.init(trig: a, echo: b, maxDist: c);
-                      }")]
+(deftest
+  a-more-complete-example-2
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/variable "c" 0)
+                              (emit/constant 9) (emit/constant -2)
+                              (emit/variable "foo.forwardPin" 0)
+                              (emit/variable "bar.trigPin" 100)
+                              (emit/constant 11)
+                              (emit/variable "bar.echoPin" 200)
+                              (emit/variable "foo.reversePin" 0)
+                              (emit/constant 100)
+                              (emit/variable "bar.distance" 0)
+                              (emit/constant 1000) (emit/constant 1)
+                              (emit/constant 13) (emit/variable "b" 0.5)
+                              (emit/constant 16) (emit/constant 10)
+                              (emit/variable "foo.enablePin" 0)
+                              (emit/constant 8) (emit/constant 14)
+                              (emit/constant 500) (emit/constant -3.5)
+                              (emit/constant 12)
+                              (emit/variable "bar.maxDistance" 100)
+                              (emit/variable "a" 10)}
+                   :scripts [(emit/script
+                               :name "foo.init"
+                               :arguments [(emit/variable "en#1" 0)
+                                           (emit/variable "f#2" 0)
+                                           (emit/variable "r#3" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "en#1")
+                                              (emit/write-global "foo.enablePin")
+                                              (emit/read-local "f#2")
+                                              (emit/write-global "foo.forwardPin")
+                                              (emit/read-local "r#3")
+                                              (emit/write-global "foo.reversePin")])
+                             (emit/script
+                               :name "foo.getSpeed"
+                               :delay 0
+                               :instructions [(emit/read-global "foo.enablePin")
+                                              (emit/prim-call "read")
+                                              (emit/prim-call "retv")])
+                             (emit/script
+                               :name "bar.init"
+                               :arguments [(emit/variable "trig#1" 0)
+                                           (emit/variable "echo#2" 0)
+                                           (emit/variable "maxDist#3" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "trig#1")
+                                              (emit/write-global "bar.trigPin")
+                                              (emit/read-local "echo#2")
+                                              (emit/write-global "bar.echoPin")
+                                              (emit/read-local "maxDist#3")
+                                              (emit/write-global "bar.maxDistance")])
+                             (emit/script
+                               :name "bar.reading"
+                               :delay 100
+                               :running? true
+                               :instructions [(emit/read-global "bar.trigPin")
+                                              (emit/read-global "bar.echoPin")
+                                              (emit/read-global "bar.maxDistance")
+                                              (emit/prim-call "sonarDistCm")
+                                              (emit/write-global "bar.distance")])
+                             (emit/script
+                               :name "blink13"
+                               :delay 500
+                               :running? true
+                               :instructions [(emit/push-value 13) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "blink12"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/push-value 12) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "setup"
+                               :delay 0
+                               :running? true
+                               :once? true
+                               :instructions [(emit/read-global "a")
+                                              (emit/jz 3)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOn")
+                                              (emit/jmp 2)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOff")
+                                              (emit/read-global "a")
+                                              (emit/read-global "b")
+                                              (emit/read-global "c")
+                                              (emit/script-call "foo_bar_baz")
+                                              (emit/prim-call "pop")])
+                             (emit/script
+                               :name "fact"
+                               :arguments [(emit/variable "n#1" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "n#1")
+                                              (emit/push-value 0)
+                                              (emit/prim-call "equals")
+                                              (emit/jz 2)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "retv")
+                                              (emit/read-local "n#1")
+                                              (emit/read-local "n#1")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "subtract")
+                                              (emit/script-call "fact")
+                                              (emit/prim-call "multiply")
+                                              (emit/prim-call "retv")])
+                             (emit/script
+                               :name "foo_bar_baz"
+                               :arguments [(emit/variable "a#1" 0)
+                                           (emit/variable "b#2" 0)
+                                           (emit/variable "c#3" 0)]
+                               :delay 0
+                               :locals [(emit/variable "d#4" 0)
+                                        (emit/variable "i#5" 0)
+                                        (emit/variable "e#6" 0)
+                                        (emit/variable "@1" 0)]
+                               :instructions [(emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/prim-call "multiply")
+                                              (emit/read-local "c#3")
+                                              (emit/prim-call "add")
+                                              (emit/write-local "d#4")
+                                              (emit/push-value 0)
+                                              (emit/write-local "@1")
+                                              (emit/read-local "@1")
+                                              (emit/read-local "d#4")
+                                              (emit/prim-call "lessThan")
+                                              (emit/jz 7)
+                                              (emit/push-value 16)
+                                              (emit/prim-call "toggle")
+                                              (emit/read-local "@1")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "add")
+                                              (emit/write-local "@1")
+                                              (emit/jmp -11)
+                                              (emit/start "blink13")
+                                              (emit/start "blink12")
+                                              (emit/stop "blink13")
+                                              (emit/prim-call "yield")
+                                              (emit/pause "blink12")
+                                              (emit/pause "blink13")
+                                              (emit/resume "blink12")
+                                              (emit/prim-call "yield")
+                                              (emit/prim-call "ret")
+                                              (emit/jmp -10)
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "logicalAnd")
+                                              (emit/jz 5)
+                                              (emit/push-value 10)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1000)
+                                              (emit/prim-call "delayMs")
+                                              (emit/jmp -9)
+                                              (emit/push-value 0)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "logicalOr")
+                                              (emit/jnz 5)
+                                              (emit/push-value 10)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1000)
+                                              (emit/prim-call "delayMs")
+                                              (emit/jmp -9)
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "greaterThanOrEquals")
+                                              (emit/jnz -4)
+                                              (emit/push-value 0)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "lessThanOrEquals")
+                                              (emit/jz -4)
+                                              (emit/push-value 9)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "greaterThan")
+                                              (emit/jnz -6)
+                                              (emit/push-value 8)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 0)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "lessThan")
+                                              (emit/jz -6)
+                                              (emit/push-value 0)
+                                              (emit/write-local "i#5")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 10)
+                                              (emit/prim-call "lessThanOrEquals")
+                                              (emit/jz 11)
+                                              (emit/push-value 14)
+                                              (emit/prim-call "toggle")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 100)
+                                              (emit/prim-call "multiply")
+                                              (emit/prim-call "delayMs")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "add")
+                                              (emit/write-local "i#5")
+                                              (emit/jmp -15)
+                                              (emit/script-call "foo.getSpeed")
+                                              (emit/write-local "e#6")
+                                              (emit/push-value 1)
+                                              (emit/push-value -2)
+                                              (emit/prim-call "multiply")
+                                              (emit/push-value -3.5)
+                                              (emit/prim-call "add")
+                                              (emit/script-call "fact")
+                                              (emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/read-local "d#4")
+                                              (emit/prim-call "divide")
+                                              (emit/prim-call "add")
+                                              (emit/push-value 0)
+                                              (emit/script-call "foo.init")
+                                              (emit/prim-call "pop")
+                                              (emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/read-local "c#3")
+                                              (emit/script-call "bar.init")
+                                              (emit/prim-call "pop")])])
+        actual (compile-uzi-string
+                 "\r\n                      \"This is just an example of code that uses all the available syntax\r\n                      in the language.\"\r\n                      \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                      import foo from 'DCMotor.uzi';\r\n                      import bar from 'Sonar.uzi' {\r\n                        trigPin = 100;\r\n                        echoPin = 200;\r\n                        stop reading;\r\n                        start reading;\r\n                        pause reading;\r\n                        resume reading;\r\n                      }\r\n\r\n                      var a = 10;\r\n                      var b = 0.5;\r\n                      var c;\r\n\r\n                      task blink13() running 2/s { toggle(D13); }\r\n                      task blink12() running 1/s { toggle(D12); }\r\n\r\n                      task setup() {\r\n                          if a { turnOn(D11); }\r\n                          else { turnOff(D11); }\r\n                          foo_bar_baz(a, b, c);\r\n                      }\r\n\r\n                      func fact(n) {\r\n                          if n == 0 { return 1; }\r\n                          return n * fact(n - 1);\r\n                      }\r\n\r\n                      proc foo_bar_baz(a, b, c) {\r\n                          var d = a * b + c;\r\n                          repeat d { toggle(A2); }\r\n                          forever {\r\n                              start blink13, blink12;\r\n                              stop blink13;\r\n                              yield;\r\n                              pause blink12, blink13;\r\n                              resume blink12; yield;\r\n                              return;\r\n                          }\r\n                          while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                          until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                          while 1 >= 0; \"Body is optional\"\r\n                          until 0 <= 1; \"Body is optional\"\r\n                          do { toggle(D9); } while 1 > 0;\r\n                          do { toggle(D8); } until 0 < 1;\r\n                          for i = 0 to 10 by 1 {\r\n                              toggle(A0);\r\n                              delayMs(i * 100);\r\n                          }\r\n                      \tvar e = foo.getSpeed();\r\n                      \tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                      \tbar.init(trig: a, echo: b, maxDist: c);\r\n                      }")]
     (is (= expected actual))))
 
-
-(deftest a-more-complete-example-3
-  (let [expected {:__class__ "UziProgram",
-                  :scripts [{:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "en#1", :value 0},
-                                         {:__class__ "UziVariable", :name "f#2", :value 0},
-                                         {:__class__ "UziVariable", :name "r#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "en#1", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.enablePin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "f#2", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.forwardPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "r#3", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.reversePin", :value 0}}],
-                             :locals [], :name "foo.init",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "foo.enablePin", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "read"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}}],
-                             :locals [], :name "foo.getSpeed",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "trig#1", :value 0},
-                                         {:__class__ "UziVariable", :name "echo#2", :value 0},
-                                         {:__class__ "UziVariable", :name "maxDist#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "trig#1", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.trigPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "echo#2", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.echoPin", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "maxDist#3", :value 0}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.maxDistance", :value 0}}],
-                             :locals [], :name "bar.init",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 100},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.trigPin", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.echoPin", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.maxDistance", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "sonarDistCm"}},
-                                            {:__class__ "UziPopInstruction",
-                                             :argument {:__class__ "UziVariable", :name "bar.distance", :value 0}}],
-                             :locals [], :name "bar.reading",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 500},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 13}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}}],
-                             :locals [], :name "blink13",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 1000},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 12}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}}],
-                             :locals [], :name "blink12",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a", :value 0}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 3},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "turnOn"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument 2},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 11}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "turnOff"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 2}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 3}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo_bar_baz"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "setup"}],
-                             :locals [], :name "setup",
-                             :running? true},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "n#1", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "equals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 2},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "n#1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "subtract"}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "fact"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "retv"}}],
-                             :locals [], :name "fact",
-                             :running? false},
-                            {:__class__ "UziScript",
-                             :arguments [{:__class__ "UziVariable", :name "a#1", :value 0},
-                                         {:__class__ "UziVariable", :name "b#2", :value 0},
-                                         {:__class__ "UziVariable", :name "c#3", :value 0}],
-                             :delay {:__class__ "UziVariable", :value 0},
-                             :instructions [{:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "c#3", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThan"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 7},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 16}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "@1", :value 0}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -11},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziStartScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziStopScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "yield"}},
-                                            {:__class__ "UziPauseScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziPauseScriptInstruction",
-                                             :argument "blink13"},
-                                            {:__class__ "UziResumeScriptInstruction",
-                                             :argument "blink12"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "yield"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "ret"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -10},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "logicalAnd"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 5},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1000}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -9},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "logicalOr"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument 5},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1000}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -9},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "greaterThanOrEquals"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument -4},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThanOrEquals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument -4},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 9}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "greaterThan"}},
-                                            {:__class__ "UziJNZInstruction",
-                                             :argument -6},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 8}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThan"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument -6},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 10}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "lessThanOrEquals"}},
-                                            {:__class__ "UziJZInstruction",
-                                             :argument 11},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 14}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "toggle"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 100}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "delayMs"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "i#5", :value 0}},
-                                            {:__class__ "UziJMPInstruction",
-                                             :argument -15},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo.getSpeed"},
-                                            {:__class__ "UziWriteLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "e#6", :value 0}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 1}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value -2}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "multiply"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value -3.5}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "fact"},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "d#4", :value 0}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "divide"}},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "add"}},
-                                            {:__class__ "UziPushInstruction",
-                                             :argument {:__class__ "UziVariable", :value 0}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "foo.init"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "a#1", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "b#2", :value 0}},
-                                            {:__class__ "UziReadLocalInstruction",
-                                             :argument {:__class__ "UziVariable", :name "c#3", :value 0}},
-                                            {:__class__ "UziScriptCallInstruction",
-                                             :argument "bar.init"},
-                                            {:__class__ "UziPrimitiveCallInstruction",
-                                             :argument {:__class__ "UziPrimitive", :name "pop"}}],
-                             :locals [{:__class__ "UziVariable", :name "d#4", :value 0},
-                                      {:__class__ "UziVariable", :name "i#5", :value 0},
-                                      {:__class__ "UziVariable", :name "e#6", :value 0},
-                                      {:__class__ "UziVariable", :name "@1", :value 0}],
-                             :name "foo_bar_baz",
-                             :running? false}],
-                  :globals #{{:__class__ "UziVariable", :name "foo.enablePin", :value 0},
-                               {:__class__ "UziVariable", :name "foo.forwardPin", :value 0},
-                               {:__class__ "UziVariable", :name "foo.reversePin", :value 0},
-                               {:__class__ "UziVariable", :name "bar.trigPin", :value 100},
-                               {:__class__ "UziVariable", :name "bar.echoPin", :value 200},
-                               {:__class__ "UziVariable", :name "bar.maxDistance", :value 100},
-                               {:__class__ "UziVariable", :name "bar.distance", :value 0},
-                               {:__class__ "UziVariable", :name "a", :value 10},
-                               {:__class__ "UziVariable", :value 0},
-                               {:__class__ "UziVariable", :value 100},
-                               {:__class__ "UziVariable", :value 500},
-                               {:__class__ "UziVariable", :value 13},
-                               {:__class__ "UziVariable", :value 1000},
-                               {:__class__ "UziVariable", :value 12},
-                               {:__class__ "UziVariable", :value 11},
-                               {:__class__ "UziVariable", :value 1},
-                               {:__class__ "UziVariable", :value 2},
-                               {:__class__ "UziVariable", :value 3},
-                               {:__class__ "UziVariable", :value 16},
-                               {:__class__ "UziVariable", :value 10},
-                               {:__class__ "UziVariable", :value 9},
-                               {:__class__ "UziVariable", :value 8},
-                               {:__class__ "UziVariable", :value 14},
-                               {:__class__ "UziVariable", :value -2},
-                               {:__class__ "UziVariable", :value -3.5}}}
-        actual (compile-uzi-string "
-                  \"This is just an example of code that uses all the available syntax
-                  in the language.\"
-                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"
-
-                  import foo from 'DCMotor.uzi';
-                  import bar from 'Sonar.uzi' {
-                    trigPin = 100;
-                    echoPin = 200;
-                    stop reading;
-                    start reading;
-                    pause reading;
-                    resume reading;
-                  }
-
-                  var a = 10;
-                  var b = 0.5;
-                  var c;
-
-                  task blink13() running 2/s { toggle(D13); }
-                  task blink12() running 1/s { toggle(D12); }
-
-                  task setup() {
-                      if a { turnOn(D11); }
-                      else { turnOff(D11); }
-                      foo_bar_baz(1, 2, 3);
-                  }
-
-                  func fact(n) {
-                      if n == 0 { return 1; }
-                      return n * fact(n - 1);
-                  }
-
-                  proc foo_bar_baz(a, b, c) {
-                      var d = a * b + c;
-                      repeat d { toggle(A2); }
-                      forever {
-                          start blink13, blink12;
-                          stop blink13;
-                          yield;
-                          pause blink12, blink13;
-                          resume blink12; yield;
-                          return;
-                      }
-                      while 1 && 0 { toggle(D10); delayMs(1000); }
-                      until 0 || 0 { toggle(D10); delayMs(1000); }
-                      while 1 >= 0; \"Body is optional\"
-                      until 0 <= 1; \"Body is optional\"
-                      do { toggle(D9); } while 1 > 0;
-                      do { toggle(D8); } until 0 < 1;
-                      for i = 0 to 10 by 1 {
-                          toggle(A0);
-                          delayMs(i * 100);
-                      }
-                  	var e = foo.getSpeed();
-                  	foo.init(fact(1 * -2 + -3.5), a + b/d, 0);
-                  	bar.init(trig: a, echo: b, maxDist: c);
-                  }")]
+(deftest
+  a-more-complete-example-3
+  (let [expected (emit/program
+                   :globals #{(emit/constant 0) (emit/constant 9)
+                              (emit/constant -2) (emit/constant 2)
+                              (emit/variable "foo.forwardPin" 0)
+                              (emit/variable "bar.trigPin" 100)
+                              (emit/constant 11)
+                              (emit/variable "bar.echoPin" 200)
+                              (emit/variable "foo.reversePin" 0)
+                              (emit/constant 100)
+                              (emit/variable "bar.distance" 0) (emit/constant 3)
+                              (emit/constant 1000) (emit/constant 1)
+                              (emit/constant 13) (emit/constant 16)
+                              (emit/constant 10)
+                              (emit/variable "foo.enablePin" 0)
+                              (emit/constant 8) (emit/constant 14)
+                              (emit/constant 500) (emit/constant -3.5)
+                              (emit/constant 12)
+                              (emit/variable "bar.maxDistance" 100)
+                              (emit/variable "a" 10)}
+                   :scripts [(emit/script
+                               :name "foo.init"
+                               :arguments [(emit/variable "en#1" 0)
+                                           (emit/variable "f#2" 0)
+                                           (emit/variable "r#3" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "en#1")
+                                              (emit/write-global "foo.enablePin")
+                                              (emit/read-local "f#2")
+                                              (emit/write-global "foo.forwardPin")
+                                              (emit/read-local "r#3")
+                                              (emit/write-global "foo.reversePin")])
+                             (emit/script
+                               :name "foo.getSpeed"
+                               :delay 0
+                               :instructions [(emit/read-global "foo.enablePin")
+                                              (emit/prim-call "read")
+                                              (emit/prim-call "retv")])
+                             (emit/script
+                               :name "bar.init"
+                               :arguments [(emit/variable "trig#1" 0)
+                                           (emit/variable "echo#2" 0)
+                                           (emit/variable "maxDist#3" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "trig#1")
+                                              (emit/write-global "bar.trigPin")
+                                              (emit/read-local "echo#2")
+                                              (emit/write-global "bar.echoPin")
+                                              (emit/read-local "maxDist#3")
+                                              (emit/write-global "bar.maxDistance")])
+                             (emit/script
+                               :name "bar.reading"
+                               :delay 100
+                               :running? true
+                               :instructions [(emit/read-global "bar.trigPin")
+                                              (emit/read-global "bar.echoPin")
+                                              (emit/read-global "bar.maxDistance")
+                                              (emit/prim-call "sonarDistCm")
+                                              (emit/write-global "bar.distance")])
+                             (emit/script
+                               :name "blink13"
+                               :delay 500
+                               :running? true
+                               :instructions [(emit/push-value 13) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "blink12"
+                               :delay 1000
+                               :running? true
+                               :instructions [(emit/push-value 12) (emit/prim-call "toggle")])
+                             (emit/script
+                               :name "setup"
+                               :delay 0
+                               :running? true
+                               :once? true
+                               :instructions [(emit/read-global "a")
+                                              (emit/jz 3)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOn")
+                                              (emit/jmp 2)
+                                              (emit/push-value 11)
+                                              (emit/prim-call "turnOff")
+                                              (emit/push-value 1)
+                                              (emit/push-value 2)
+                                              (emit/push-value 3)
+                                              (emit/script-call "foo_bar_baz")
+                                              (emit/prim-call "pop")])
+                             (emit/script
+                               :name "fact"
+                               :arguments [(emit/variable "n#1" 0)]
+                               :delay 0
+                               :instructions [(emit/read-local "n#1")
+                                              (emit/push-value 0)
+                                              (emit/prim-call "equals")
+                                              (emit/jz 2)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "retv")
+                                              (emit/read-local "n#1")
+                                              (emit/read-local "n#1")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "subtract")
+                                              (emit/script-call "fact")
+                                              (emit/prim-call "multiply")
+                                              (emit/prim-call "retv")])
+                             (emit/script
+                               :name "foo_bar_baz"
+                               :arguments [(emit/variable "a#1" 0)
+                                           (emit/variable "b#2" 0)
+                                           (emit/variable "c#3" 0)]
+                               :delay 0
+                               :locals [(emit/variable "d#4" 0)
+                                        (emit/variable "i#5" 0)
+                                        (emit/variable "e#6" 0)
+                                        (emit/variable "@1" 0)]
+                               :instructions [(emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/prim-call "multiply")
+                                              (emit/read-local "c#3")
+                                              (emit/prim-call "add")
+                                              (emit/write-local "d#4")
+                                              (emit/push-value 0)
+                                              (emit/write-local "@1")
+                                              (emit/read-local "@1")
+                                              (emit/read-local "d#4")
+                                              (emit/prim-call "lessThan")
+                                              (emit/jz 7)
+                                              (emit/push-value 16)
+                                              (emit/prim-call "toggle")
+                                              (emit/read-local "@1")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "add")
+                                              (emit/write-local "@1")
+                                              (emit/jmp -11)
+                                              (emit/start "blink13")
+                                              (emit/start "blink12")
+                                              (emit/stop "blink13")
+                                              (emit/prim-call "yield")
+                                              (emit/pause "blink12")
+                                              (emit/pause "blink13")
+                                              (emit/resume "blink12")
+                                              (emit/prim-call "yield")
+                                              (emit/prim-call "ret")
+                                              (emit/jmp -10)
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "logicalAnd")
+                                              (emit/jz 5)
+                                              (emit/push-value 10)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1000)
+                                              (emit/prim-call "delayMs")
+                                              (emit/jmp -9)
+                                              (emit/push-value 0)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "logicalOr")
+                                              (emit/jnz 5)
+                                              (emit/push-value 10)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1000)
+                                              (emit/prim-call "delayMs")
+                                              (emit/jmp -9)
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "greaterThanOrEquals")
+                                              (emit/jnz -4)
+                                              (emit/push-value 0)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "lessThanOrEquals")
+                                              (emit/jz -4)
+                                              (emit/push-value 9)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 1)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "greaterThan")
+                                              (emit/jnz -6)
+                                              (emit/push-value 8)
+                                              (emit/prim-call "toggle")
+                                              (emit/push-value 0)
+                                              (emit/push-value 1)
+                                              (emit/prim-call "lessThan")
+                                              (emit/jz -6)
+                                              (emit/push-value 0)
+                                              (emit/write-local "i#5")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 10)
+                                              (emit/prim-call "lessThanOrEquals")
+                                              (emit/jz 11)
+                                              (emit/push-value 14)
+                                              (emit/prim-call "toggle")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 100)
+                                              (emit/prim-call "multiply")
+                                              (emit/prim-call "delayMs")
+                                              (emit/read-local "i#5")
+                                              (emit/push-value 1)
+                                              (emit/prim-call "add")
+                                              (emit/write-local "i#5")
+                                              (emit/jmp -15)
+                                              (emit/script-call "foo.getSpeed")
+                                              (emit/write-local "e#6")
+                                              (emit/push-value 1)
+                                              (emit/push-value -2)
+                                              (emit/prim-call "multiply")
+                                              (emit/push-value -3.5)
+                                              (emit/prim-call "add")
+                                              (emit/script-call "fact")
+                                              (emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/read-local "d#4")
+                                              (emit/prim-call "divide")
+                                              (emit/prim-call "add")
+                                              (emit/push-value 0)
+                                              (emit/script-call "foo.init")
+                                              (emit/prim-call "pop")
+                                              (emit/read-local "a#1")
+                                              (emit/read-local "b#2")
+                                              (emit/read-local "c#3")
+                                              (emit/script-call "bar.init")
+                                              (emit/prim-call "pop")])])
+        actual (compile-uzi-string
+                 "\r\n                  \"This is just an example of code that uses all the available syntax\r\n                  in the language.\"\r\n                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                  import foo from 'DCMotor.uzi';\r\n                  import bar from 'Sonar.uzi' {\r\n                    trigPin = 100;\r\n                    echoPin = 200;\r\n                    stop reading;\r\n                    start reading;\r\n                    pause reading;\r\n                    resume reading;\r\n                  }\r\n\r\n                  var a = 10;\r\n                  var b = 0.5;\r\n                  var c;\r\n\r\n                  task blink13() running 2/s { toggle(D13); }\r\n                  task blink12() running 1/s { toggle(D12); }\r\n\r\n                  task setup() {\r\n                      if a { turnOn(D11); }\r\n                      else { turnOff(D11); }\r\n                      foo_bar_baz(1, 2, 3);\r\n                  }\r\n\r\n                  func fact(n) {\r\n                      if n == 0 { return 1; }\r\n                      return n * fact(n - 1);\r\n                  }\r\n\r\n                  proc foo_bar_baz(a, b, c) {\r\n                      var d = a * b + c;\r\n                      repeat d { toggle(A2); }\r\n                      forever {\r\n                          start blink13, blink12;\r\n                          stop blink13;\r\n                          yield;\r\n                          pause blink12, blink13;\r\n                          resume blink12; yield;\r\n                          return;\r\n                      }\r\n                      while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                      until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                      while 1 >= 0; \"Body is optional\"\r\n                      until 0 <= 1; \"Body is optional\"\r\n                      do { toggle(D9); } while 1 > 0;\r\n                      do { toggle(D8); } until 0 < 1;\r\n                      for i = 0 to 10 by 1 {\r\n                          toggle(A0);\r\n                          delayMs(i * 100);\r\n                      }\r\n                  \tvar e = foo.getSpeed();\r\n                  \tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                  \tbar.init(trig: a, echo: b, maxDist: c);\r\n                  }")]
     (is (= expected actual))))

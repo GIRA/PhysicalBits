@@ -1,7 +1,9 @@
 let UziBlock = (function () {
 
-  let version = 2;
+  let version = 3;
   let blocklyArea, blocklyDiv, workspace;
+  let timestamps = new Map();
+  let userInteraction = false;
   let motors = [];
   let sonars = [];
   let joysticks = [];
@@ -21,6 +23,7 @@ let UziBlock = (function () {
   }
 
   const colors = {
+    HIDDEN: "#9E8E7F",
     TASKS: 175,
     GPIO: 345,
     MOTORS: 0,
@@ -55,11 +58,48 @@ let UziBlock = (function () {
 
   const spec = {
     // TODO(Richo)
-    here_be_dragons: {
+    here_be_dragons_stmt: {
       text: "HERE BE DRAGONS",
       type: null,
       connections: { up: true, down: true, left: false },
-      color: "#9E8E7F"
+      color: colors.HIDDEN
+    },
+    here_be_dragons_expr: {
+      text: "HERE BE DRAGONS",
+      type: null,
+      connections: { up: false, down: false, left: true },
+      color: colors.HIDDEN
+    },
+    here_be_dragons_script: {
+      text: "HERE BE DRAGONS",
+      type: null,
+      connections: { up: false, down: false, left: false },
+      color: colors.HIDDEN,
+      isTopLevel: true,
+    },
+
+    // Imports
+    import: {
+      text: "import %1 from %2",
+      type: null,
+      inputs: {
+        "1": {
+          name: "alias",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput(""), name),
+        },
+        "2": {
+          name: "path",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput(""), name),
+        }
+      },
+      connections: { up: false, down: false, left: false},
+      color: colors.HIDDEN,
+      postload: function (block) {
+        block.setEditable(false);
+      },
+      isTopLevel: true,
     },
 
     // Tasks
@@ -68,7 +108,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "1": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
@@ -79,14 +119,15 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      isTopLevel: true,
     },
     timer: {
       text: "task %1 () %4 %2 / %3 { \n %5 }",
       type: null,
       inputs: {
         "1": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("default"), name),
         },
@@ -115,14 +156,15 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      isTopLevel: true,
     },
     start_task: {
       text: "start %name ;",
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -135,7 +177,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -148,7 +190,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -161,7 +203,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "taskName": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -174,7 +216,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "taskName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentTasksForDropdown), name),
         }
@@ -1242,7 +1284,7 @@ let UziBlock = (function () {
       postload: (block) => block.setInputsInline(true)
     },
     number_between: {
-      text: "isBetween ( %1 , %2 , %3 )",
+      text: "isBetween ( value: %1 , min: %2 , max: %3 )",
       type: types.BOOLEAN,
       inputs: {
         "1": {
@@ -1367,7 +1409,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1382,14 +1424,15 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_1args: {
       text: "proc %name ( %arg0 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1411,14 +1454,15 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_2args: {
       text: "proc %name ( %arg0 , %arg1 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1447,14 +1491,15 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     proc_definition_3args: {
       text: "proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1490,7 +1535,8 @@ let UziBlock = (function () {
       color: colors.PROCEDURES,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     return: {
       text: "exit ;",
@@ -1504,7 +1550,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(0)), name),
@@ -1519,7 +1565,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(1)), name),
@@ -1540,7 +1586,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(2)), name),
@@ -1568,7 +1614,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "procName": {
-          name: "procName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(3)), name),
@@ -1605,7 +1651,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1620,14 +1666,15 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_1args: {
       text: "func %name ( %arg0 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1649,14 +1696,15 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_2args: {
       text: "func %name ( %arg0 , %arg1 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1685,14 +1733,15 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     func_definition_3args: {
       text: "func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
       type: null,
       inputs: {
         "name": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldTextInput("default"), name),
@@ -1728,7 +1777,8 @@ let UziBlock = (function () {
       color: colors.FUNCTIONS,
       postload: function (block) {
         if (uziSyntax) { block.setInputsInline(true); }
-      }
+      },
+      isTopLevel: true,
     },
     return_value: {
       text: "return %value ;",
@@ -1748,7 +1798,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(0)), name),
@@ -1763,7 +1813,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(1)), name),
@@ -1784,7 +1834,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(2)), name),
@@ -1812,7 +1862,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {
         "funcName": {
-          name: "funcName",
+          name: "scriptName",
           types: null,
           builder: (block, input, name) => block.appendDummyInput()
                                           .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(3)), name),
@@ -1905,14 +1955,46 @@ let UziBlock = (function () {
       });
 
       workspace.addChangeListener(function (evt) {
-        if (evt.type == Blockly.Events.UI) return; // Ignore these events
+        if (evt.type == Blockly.Events.UI) {
+          userInteraction = true;
+          return; // Ignore these events
+        }
+
+        /*
+        NOTE(Richo): Whenever a block is created or deleted we update the timestamps map.
+        These timestamps should help us disambiguate when two proc/func blocks with the same
+        name exist and we rename one. What should we do with the calling blocks?
+        If we always update the calling blocks then we get into surprising behavior.
+        For example, right after we duplicate an existing proc if we rename it then it will
+        update calling blocks that we didn't intended to change. Because they refer to the
+        original proc, not the new one! Using only the proc name to distinguish them makes
+        this impossible. So if we store the creation time of each block we can use it to
+        choose the older one, and avoid updating calling blocks when a younger block is
+        renamed. It's kind of complicated but I think it works...
+        */
+        if (evt.type == Blockly.Events.CREATE) {
+          let time = +new Date();
+          evt.ids.forEach(id => timestamps.set(id, time));
+        } else if (evt.type == Blockly.Events.DELETE) {
+          evt.ids.forEach(id => timestamps.delete(id));
+        }
+
+        if (evt.type == Blockly.Events.MOVE) {
+          let block = workspace.getBlockById(evt.blockId);
+          if (block != null) {
+            block.setDisabled(evt.newParentId == undefined &&
+                              !spec[block.type].isTopLevel);
+          }
+        }
+
 
         handleTaskBlocksEvents(evt);
         handleProcedureBlocksEvents(evt);
         handleFunctionBlocksEvents(evt);
+
         handleVariableDeclarationBlocksEvents(evt);
 
-        trigger("change");
+        trigger("change", userInteraction);
       });
 
       initTasksToolboxCategory(toolbox, workspace);
@@ -1942,7 +2024,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "taskName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let tasks = getCurrentScriptNames();
@@ -1963,7 +2045,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter((field) => field.getAttribute("name") == "taskName");
+            .filter((field) => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let tasks = getCurrentTaskNames();
@@ -2067,7 +2149,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "procName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let defaultName = "default";
@@ -2093,7 +2175,7 @@ let UziBlock = (function () {
             Array.from(node.getElementsByTagName("block"))
               .filter(block => block.getAttribute("type") == type)
               .map(block => Array.from(block.getElementsByTagName("field"))
-                  .filter(field => field.getAttribute("name") == "procName"))
+                  .filter(field => field.getAttribute("name") == "scriptName"))
               .flat()
               .forEach(field => field.innerText = defaultName);
             }
@@ -2120,7 +2202,7 @@ let UziBlock = (function () {
 
         let fields = blocks.map(function (block) {
           return Array.from(block.getElementsByTagName("field"))
-            .filter(field => field.getAttribute("name") == "funcName");
+            .filter(field => field.getAttribute("name") == "scriptName");
         }).flat();
 
         let defaultName = "default";
@@ -2146,7 +2228,7 @@ let UziBlock = (function () {
             Array.from(node.getElementsByTagName("block"))
               .filter(block => block.getAttribute("type") == type)
               .map(block => Array.from(block.getElementsByTagName("field"))
-                  .filter(field => field.getAttribute("name") == "funcName"))
+                  .filter(field => field.getAttribute("name") == "scriptName"))
               .flat()
               .forEach(field => field.innerText = defaultName);
             }
@@ -2305,8 +2387,7 @@ let UziBlock = (function () {
 
   function getArgumentName(scriptName, name) {
     let definitionBlock = workspace.getTopBlocks()
-                                   .find(b => b.getFieldValue("procName") == scriptName ||
-                                              b.getFieldValue("funcName") == scriptName);
+                                   .find(b => b.getFieldValue("scriptName") == scriptName);
 
     if (definitionBlock) {
       let fieldValue = definitionBlock.getFieldValue(name);
@@ -2327,7 +2408,7 @@ let UziBlock = (function () {
     let interestingBlocks = ["task", "timer"];
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("taskName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getCurrentProcedureNames(nargs) {
@@ -2336,7 +2417,7 @@ let UziBlock = (function () {
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("procName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getLastProcedureName(nargs) {
@@ -2350,23 +2431,12 @@ let UziBlock = (function () {
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
-      .map(b => b.getFieldValue("funcName"));
+      .map(b => b.getFieldValue("scriptName"));
   }
 
   function getLastFunctionName(nargs) {
     let names = getCurrentFunctionNames(nargs);
     return names.length > 0 ? names[names.length - 1] : "default";
-  }
-
-  function getDefaultTaskName() {
-    let names = getCurrentTaskNames();
-    let def = "default";
-    let i = 1;
-    while (names.includes(def)) {
-      def = "default" + i;
-      i++;
-    }
-    return def;
   }
 
   function currentTasksForDropdown() {
@@ -2407,29 +2477,55 @@ let UziBlock = (function () {
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
-  function handleProcedureBlocksEvents(evt) {
-    let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
-                            "proc_definition_2args", "proc_definition_3args"];
-    let callBlocks = ["proc_call_0args", "proc_call_1args",
-                      "proc_call_2args", "proc_call_3args"];
+  function handleScriptBlocksEvents(evt, definitionBlocks, callBlocks) {
+    /*
+    NOTE(Richo): I a script is being created by user action make sure to assign
+    a unique name to avoid collisions as much as possible.
+    */
+    if (userInteraction && evt.type == Blockly.Events.CREATE
+        && definitionBlocks.includes(evt.xml.getAttribute("type"))) {
+      let block = workspace.getBlockById(evt.blockId);
+      let name = block.getField("scriptName").getValue();
+      if (workspace.getTopBlocks()
+          .some(b => b != block && b.type == block.type &&
+                    b.getField("scriptName").getValue() == name)) {
+        let finalName = name;
+        let i = 1;
+        let names = getCurrentScriptNames();
+        while (names.includes(finalName)) {
+          finalName = name + i;
+          i++;
+        }
+        block.getField("scriptName").setValue(finalName);
+      }
+    }
 
     /*
-    NOTE(Richo): If a procedure is renamed we want to update all calling blocks.
-    And if a calling block is changed to refer to another procedure we need to update
+    NOTE(Richo): If a script is renamed we want to update all calling blocks.
+    And if a calling block is changed to refer to another task we need to update
     its argument names.
     */
     if (evt.type == Blockly.Events.CHANGE
        && evt.element == "field"
-       && evt.name == "procName") {
+       && evt.name == "scriptName") {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
-        // A definition block has changed, we need to update all calling blocks
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
-        workspace.getAllBlocks()
-          .filter(b => callBlock == b.type)
-          .map(b => b.getField("procName"))
-          .filter(f => f != undefined && f.getValue() == evt.oldValue)
-          .forEach(f => f.setValue(evt.newValue));
+        // A definition block has changed, we need to update calling blocks
+        // But only if the block is the oldest of its twins!
+        let twinBlocks = workspace.getTopBlocks()
+          .filter(b => b.type == block.type)
+          .filter(b => {
+            let field = b.getField("scriptName");
+            return field && field.getValue() == evt.oldValue;
+          });
+        let time = timestamps.get(block.id);
+        if (!twinBlocks.some(b => timestamps.get(b.id) < time)) {
+          workspace.getAllBlocks()
+            .filter(b => callBlocks.includes(b.type))
+            .map(b => b.getField("scriptName"))
+            .filter(f => f != undefined && f.getValue() == evt.oldValue)
+            .forEach(f => f.setValue(evt.newValue));
+        }
       } else if (block != undefined && callBlocks.includes(block.type)) {
         // A calling block has changed, we need to update its argument names
         updateArgumentFields(block);
@@ -2442,13 +2538,28 @@ let UziBlock = (function () {
        && evt.name && evt.name.startsWith("arg")) {
       let block = workspace.getBlockById(evt.blockId);
       if (block != undefined && definitionBlocks.includes(block.type)) {
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
         workspace.getAllBlocks()
-          .filter(b => callBlock == b.type &&
-                      block.getFieldValue("procName") == b.getFieldValue("procName"))
+          .filter(b => callBlocks.includes(b.type) &&
+                      block.getFieldValue("scriptName") == b.getFieldValue("scriptName"))
           .forEach(updateArgumentFields);
       }
     }
+  }
+
+  function handleTaskBlocksEvents(evt) {
+    let definitionBlocks = ["task", "timer"];
+    let callBlocks = ["start_task", "stop_task",
+                      "resume_task", "pause_task",
+                      "run_task"];
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
+  }
+
+  function handleProcedureBlocksEvents(evt) {
+    let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
+                            "proc_definition_2args", "proc_definition_3args"];
+    let callBlocks = ["proc_call_0args", "proc_call_1args",
+                      "proc_call_2args", "proc_call_3args"];
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
   function handleFunctionBlocksEvents(evt) {
@@ -2456,60 +2567,7 @@ let UziBlock = (function () {
                             "func_definition_2args", "func_definition_3args"];
     let callBlocks = ["func_call_0args", "func_call_1args",
                       "func_call_2args", "func_call_3args"];
-
-    /*
-    NOTE(Richo): If a function is renamed we want to update all calling blocks.
-    And if a calling block is changed to refer to another function we need to update
-    its argument names.
-    */
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name == "funcName") {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        // A definition block has changed, we need to update all calling blocks
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
-        workspace.getAllBlocks()
-          .filter(b => callBlock == b.type)
-          .map(b => b.getField("funcName"))
-          .filter(f => f != undefined && f.getValue() == evt.oldValue)
-          .forEach(f => f.setValue(evt.newValue));
-      } else if (block != undefined && callBlocks.includes(block.type)) {
-        // A calling block has changed, we need to update its argument names
-        updateArgumentFields(block);
-      }
-    }
-
-    // NOTE(Richo): If an argument is renamed we want to update all the calling blocks.
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name && evt.name.startsWith("arg")) {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && definitionBlocks.includes(block.type)) {
-        let callBlock = callBlocks[definitionBlocks.indexOf(block.type)];
-        workspace.getAllBlocks()
-          .filter(b => callBlock == b.type &&
-                      block.getFieldValue("funcName") == b.getFieldValue("funcName"))
-          .forEach(updateArgumentFields);
-      }
-    }
-  }
-
-  function handleTaskBlocksEvents(evt) {
-    // NOTE(Richo): If a task is renamed we want to update all referencing blocks.
-    let interestingBlocks = ["task", "timer"];
-    if (evt.type == Blockly.Events.CHANGE
-       && evt.element == "field"
-       && evt.name == "taskName") {
-      let block = workspace.getBlockById(evt.blockId);
-      if (block != undefined && interestingBlocks.includes(block.type)) {
-        workspace.getAllBlocks()
-          .filter(b => !interestingBlocks.includes(b.type))
-          .map(b => b.getField("taskName"))
-          .filter(f => f != undefined && f.getValue() == evt.oldValue)
-          .forEach(f => f.setValue(evt.newValue));
-      }
-    }
+    handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
   function handleVariableDeclarationBlocksEvents(evt) {
@@ -2647,10 +2705,10 @@ let UziBlock = (function () {
     observers[evt].push(callback);
   }
 
-  function trigger(evt) {
+  function trigger(evt, args) {
     observers[evt].forEach(function (fn) {
       try {
-        fn();
+        fn(args);
       } catch (err) {
         console.log(err);
       }
@@ -2667,7 +2725,7 @@ let UziBlock = (function () {
   function updateArgumentFields(callBlock) {
     callBlock.inputList.filter(i => i.name.startsWith("arg"))
       .forEach(i => {
-        let scriptName = callBlock.getFieldValue("procName") || callBlock.getFieldValue("funcName");
+        let scriptName = callBlock.getFieldValue("scriptName");
         let inputName = i.name;
         i.fieldRow
           .filter(f => f.class_ == inputName)
@@ -2677,7 +2735,13 @@ let UziBlock = (function () {
 
   function getGeneratedCode(){
     let xml = Blockly.Xml.workspaceToDom(workspace);
-    return BlocksToAST.generate(xml, motors, sonars, joysticks, variables);
+    let metadata = {
+      motors: motors,
+      sonars: sonars,
+      joysticks: joysticks,
+      variables: variables,
+    };
+    return BlocksToAST.generate(xml, metadata);
   }
 
   function refreshWorkspace() {
@@ -2693,6 +2757,11 @@ let UziBlock = (function () {
     refreshToolbox();
   }
 
+  function cleanUp() {
+    workspace.cleanUp();
+    workspace.scrollCenter();
+  }
+
   function toXML() {
     return Blockly.Xml.workspaceToDom(workspace);
   }
@@ -2701,7 +2770,8 @@ let UziBlock = (function () {
     return Blockly.Xml.domToText(toXML());
   }
 
-  function fromXML(xml, cleanUp) {
+  function fromXML(xml) {
+    userInteraction = false;
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
 
@@ -2719,11 +2789,6 @@ let UziBlock = (function () {
     workspace.getAllBlocks()
       .filter(b => b.type.includes("_call_"))
       .forEach(updateArgumentFields);
-
-    if (cleanUp) {
-      workspace.cleanUp();
-      workspace.scrollCenter();
-    }
   }
 
   function fromXMLText(xml) {
@@ -2760,6 +2825,7 @@ let UziBlock = (function () {
     refreshToolbox: refreshToolbox,
     resizeWorkspace: resizeBlockly,
 
+    version: version,
     types: types,
     spec: spec,
 
@@ -2768,8 +2834,7 @@ let UziBlock = (function () {
       refreshAll();
     },
 
-    fromXML: fromXML,
-    toXML: toXML,
+    cleanUp: cleanUp,
 
     getGeneratedCode: getGeneratedCode,
 
@@ -2861,7 +2926,7 @@ let UziBlock = (function () {
 
       variables = data;
     },
-    getDataForStorage: function () {
+    getProgram: function () {
       return {
         version: version,
         blocks: toXMLText(),
@@ -2871,15 +2936,21 @@ let UziBlock = (function () {
         variables: variables,
       };
     },
-    setDataFromStorage: function (d) {
+    setProgram: function (d) {
       // Check compatibility
-      if (d.version != version) { return; }
+      if (d.version != version) { return false; }
 
-      fromXMLText(d.blocks);
-      motors = d.motors || [];
-      sonars = d.sonars || [];
-      joysticks = d.joysticks || [];
-      variables = d.variables || [];
+      try {
+        fromXMLText(d.blocks);
+        motors = d.motors || [];
+        sonars = d.sonars || [];
+        joysticks = d.joysticks || [];
+        variables = d.variables || [];
+        return true;
+      } catch (err) {
+        console.log(err);
+        return false;
+      }
     },
     getUsedVariables: getUsedVariables,
   }

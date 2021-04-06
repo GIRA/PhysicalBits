@@ -35,17 +35,19 @@ private:
 	uint8 state = DISCONNECTED;
 	uint8 handshake = 0;
 
-	uint8 reporting = 0;
+	uint8 reportingStep = 0;
 	uint32 lastTimeReport = 0;
 
 	int8 keepAliveCounter = 0;
 	uint32 lastTimeKeepAlive = 0;
 
-	uint8 profiling = 0;
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
-	bool sent = false; // TODO(Richo)
+	bool sent : 1; // TODO(Richo)
+	uint8 reportInterval : 7;
+	bool profiling : 1;
+	uint8 minReportInterval : 7;
 
 	void connectionRequest();
 	void acceptConnection();
@@ -60,6 +62,7 @@ private:
 	void executeSaveProgram(Program** program, GPIO* io);
 	void executeKeepAlive();
 	void executeProfile();
+	void executeSetReportInterval();
 	void executeSetGlobal(Program* program);
 	void executeSetGlobalReport(Program* program);
 	void executeDebugContinue(VM* vm);
@@ -70,7 +73,8 @@ private:
 	void checkKeepAlive();
 	void sendProfile();
 	void sendVMState(Program* program, VM* vm);
-	void sendCoroutineState(Script* script);
+	void sendCoroutineState(Program* program, Script* script);
+	void sendTimestamp();
 	void sendPinValues(GPIO* io);
 	void sendGlobalValues(Program* program);
 	void sendRunningTasks(Program* program);

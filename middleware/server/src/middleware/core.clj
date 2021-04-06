@@ -8,11 +8,18 @@
             [middleware.device.controller :as dc])
   (:gen-class))
 
+(defmacro project-data [key]
+  "HACK(Richo): This macro allows to read the project.clj file at compile time"
+  `~(let [data (-> "project.clj" slurp read-string)
+          name (str (nth data 1))
+          version (nth data 2)
+          rest (drop 3 data)]
+      ((apply assoc {:name name, :version version} rest) key)))
+
 (def project-name
-  ; TODO(Richo): Figure out a way of reading this values from the project.clj
-  (let [project-name "UziScript middleware"
-        project-version "0.3.0-SNAPSHOT"]
-    (format "%s (%s)" project-name project-version)))
+  (let [description (project-data :description)
+        version (project-data :version)]
+    (format "%s (%s)" description version)))
 
 (def cli-options
   [["-u" "--uzi PATH" "Uzi libraries folder (default: uzi)"
@@ -42,7 +49,7 @@
        (str/join \newline errors)))
 
 (defn exit [status msg]
-  (println msg)
+  (log/info msg)
   (System/exit status))
 
 (defn -main [& args]
@@ -52,15 +59,15 @@
     (when (:help options)
       (exit 0 (usage summary)))
     (let [{:keys [uzi web server-port arduino-port open-browser]} options]
-      (println project-name)
-      (println "Starting server...")
+      (log/info project-name)
+      (log/info "Starting server...")
       (server/start :uzi-libraries uzi
                     :web-resources web
                     :server-port server-port)
-      (println "Server started on port" server-port)
+      (log/info "Server started on port" server-port)
       (when open-browser
         (let [url (str "http://localhost:" server-port)]
-          (println "Opening browser on" url)
+          (log/info "Opening browser on" url)
           (browse-url url)))
       (println)
       (when arduino-port

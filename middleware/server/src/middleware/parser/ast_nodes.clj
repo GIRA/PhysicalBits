@@ -1,7 +1,8 @@
 (ns middleware.parser.ast-nodes)
 
 (defn program-node
-  [& {:keys [imports globals scripts primitives]}]
+  [& {:keys [imports globals scripts primitives]
+      :or {imports [], globals [], scripts [], primitives []}}]
   {:__class__  "UziProgramNode"
    :imports    imports,
    :globals    globals
@@ -24,26 +25,26 @@
   {:__class__ "UziBlockNode" :statements statements})
 
 (defn import-node
-  ([path] (import-node nil path))
-  ([alias path] (import-node alias path nil))
+  ([path] {:__class__ "UziImportNode", :path path})
+  ([alias path]
+   (assoc (import-node path)
+          :alias alias))
   ([alias path block]
-   {:__class__           "UziImportNode",
-    :alias               alias,
-    :path                path,
-    :initializationBlock block}))
+   (assoc (import-node alias path)
+          :initializationBlock block)))
 
 (defn task-node
-  [& {:keys [name arguments tick-rate state locals body]
+  [& {:keys [name arguments tick-rate state body]
       :or   {arguments []}}]
   {:__class__   "UziTaskNode",
    :name        name,
    :arguments   arguments,
    :body        body,
-   :state       state,
+   :state       (or state "once"),
    :tickingRate tick-rate})
 
 (defn procedure-node
-  [& {:keys [name arguments locals body]
+  [& {:keys [name arguments body]
       :or   {arguments []}}]
   {:__class__   "UziProcedureNode",
    :name        name,
@@ -51,7 +52,7 @@
    :body        body})
 
 (defn function-node
-  [& {:keys [name arguments locals body]
+  [& {:keys [name arguments body]
       :or   {arguments []}}]
   {:__class__   "UziFunctionNode",
    :name        name,
@@ -111,7 +112,7 @@
 (defn for-node
   [name from to by block]
   {:__class__ "UziForNode",
-   :counter   (variable-declaration-node name (literal-number-node 0)),
+   :counter   (variable-declaration-node name),
    :start     from,
    :stop      to,
    :step      by,

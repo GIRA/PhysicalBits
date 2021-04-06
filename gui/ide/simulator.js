@@ -123,12 +123,12 @@ class Simulator {
           //TODO: callStack : this.callStack,
           stack :this.stack
         };
-       this.currentScript.vmState = JSON.stringify(vmState);
+       this.currentScript.vmState = JSONX.stringify(vmState);
       }
       this.currentScript = newScript;
       if(newScript.vmState)
       {
-        let vmState = JSON.parse(newScript.vmState);
+        let vmState = JSONX.parse(newScript.vmState);
         this.pc = vmState.pc;
         this.locals = vmState.locals;
         this.stack = vmState.stack;

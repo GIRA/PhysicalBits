@@ -29,3 +29,8 @@ float Reader::nextFloat(bool& timeout)
 	uint32 value = (a << 24) | (b << 16) | (c << 8) | d;
 	return uint32_to_float(value);
 }
+
+void Reader::resetCounter() 
+{
+	counter = 0;
+}

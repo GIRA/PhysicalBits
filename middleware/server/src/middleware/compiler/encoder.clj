@@ -3,24 +3,35 @@
             [middleware.compiler.primitives :as prims]
             [middleware.compiler.utils.program :refer :all]))
 
+(comment
+ (set! *warn-on-reflection* true)
+ (set! *warn-on-reflection* false)
+
+ (.indexOf (map identity [1 2 3]) 2)
+
+ (let [^java.util.List coll (map identity [1 2 3])]
+   (.indexOf coll 2))
+ ,)
+
 (defn- globals-to-encode [program]
   "We need to exclude the default-globals from the encoding"
   (let [constants-to-exclude (set default-globals)]
     (filter (complement constants-to-exclude)
             (:globals program))))
 
-(defn- encode-global [value size]
+(defn- encode-global [^double value ^long size]
   "If the size equals 4 we have to encode it as a float"
-  (let [actual-value (if (= 4 size)
-                       (float->uint32 value)
-                       value)]
-    (map (fn [n]
+  (let [^long actual-value (if (= 4 size)
+                             (float->uint32 value)
+                             value)]
+    (map (fn [^long n]
            (bit-and (bit-shift-right actual-value
                                      (* 8 n))
                     16rFF))
          (range (dec size) -1 -1))))
 
-(defn- encode-global-group [size group]
+
+(defn- encode-global-group [^long size group]
   "The first byte or each group says how many variables and the size.
    - 6 bits: var count
    - 2 bits: size
@@ -43,39 +54,6 @@
                       (mapcat #(encode-global-group size %)
                               (partition-all 2r111111 (groups size))))
                     [1 2 3 4]))))
-
-(defn encode-script-header
-  [{:keys [arguments delay locals running?]} program]
-  (let [has-delay? (> (:value delay) 0)
-        has-arguments? (not (empty? arguments))
-        has-locals? (not (empty? locals))]
-    (concat
-     ; First byte:
-     ; 1 bit : isTicking (1 true / 0 false)
-     ; 1 bit: hasDelay (1 true / 0 false)
-     ; 1 bit: hasArguments (1 true / 0 false)
-     ; 1 bit: hasLocals (1 true / 0 false)
-     ; 4 bits: reserved for future use
-     [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
-                       (bit-shift-left (if has-delay? 1 0) 6)
-                       (bit-shift-left (if has-arguments? 1 0) 5)
-                       (bit-shift-left (if has-locals? 1 0) 4))
-               16rFF)]
-
-     ; If the script has a delay write its index on the global list
-     (when has-delay?
-       [(index-of-constant program (:value delay))])
-
-     ; If the script has arguments write the argument count
-     (when has-arguments?
-       [(count arguments)])
-
-     ; If the script has locals write the local count followed by
-     ; each local index on the global list
-     (when has-locals?
-       (concat [(count locals)]
-               (map #(index-of-constant program (:value %))
-                    locals))))))
 
 (defmulti encode-instruction (fn [instr script program] (:__class__ instr)))
 
@@ -123,7 +101,7 @@
 (defmethod encode-instruction "UziPrimitiveCallInstruction"
   [instr script program]
   (let [primitive (prims/primitive (-> instr :argument :name))
-        code (:code primitive)]
+        ^long code (:code primitive)]
     (if (< code 16)
       [(bit-or 16rA0 code)]
       (if (< code 32)
@@ -134,7 +112,7 @@
 
 (defmethod encode-instruction "UziScriptCallInstruction"
   [instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
+  (let [index (index-of (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
@@ -144,8 +122,8 @@
         [(bit-or 16rC0
                  index)]))))
 
-(defn- encode-script-control [code instr script program]
-  (let [index (.indexOf (map :name (:scripts program))
+(defn- encode-script-control [^long code instr script program]
+  (let [index (index-of (map :name (:scripts program))
                         (:argument instr))]
     (if (> index 16r7F)
       (throw-not-implemented instr script program
@@ -190,31 +168,35 @@
   [16rF5 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziTurnOnInstruction"
-  [instr script program]
-  (if (> (:argument instr) 16r1F)
+  [{:keys [^byte argument] :as instr} script program]
+  (if (> argument 16r1F)
     (throw-not-implemented instr script program)
-    [(bit-or 16r00 (:argument instr))]))
+    [(bit-or 16r00 argument)]))
 
 (defmethod encode-instruction "UziTurnOffInstruction"
-  [instr script program]
-  (if (> (:argument instr) 16r1F)
+  [{:keys [^byte argument] :as instr} script program]
+  (if (> argument 16r1F)
     (throw-not-implemented instr script program)
-    [(bit-or 16r20 (:argument instr))]))
+    [(bit-or 16r20 argument)]))
 
 (defmethod encode-instruction "UziWriteInstruction"
-  [instr script program]
-  (if (> (:argument instr) 16r1F)
+  [{:keys [^byte argument] :as instr} script program]
+  (if (> argument 16r1F)
     (throw-not-implemented instr script program)
-    [(bit-or 16r40 (:argument instr))]))
+    [(bit-or 16r40 argument)]))
 
 (defmethod encode-instruction "UziReadInstruction"
-  [instr script program]
-  (if (> (:argument instr) 16r1F)
+  [{:keys [^byte argument] :as instr} script program]
+  (if (> argument 16r1F)
     (throw-not-implemented instr script program)
-    [(bit-or 16r60 (:argument instr))]))
+    [(bit-or 16r60 argument)]))
 
 (defmethod encode-instruction :default [instr script program]
   (throw-not-implemented instr script program))
+
+(defn encode-instructions [script program]
+  (mapcat #(encode-instruction % script program)
+          (:instructions script)))
 
 (defn- encode-instruction-count [script]
   (let [count (-> script :instructions count)]
@@ -225,20 +207,50 @@
          (bit-and count 16rFF)]
         [count]))))
 
-(defn encode-instructions [script program]
-  (concat (encode-instruction-count script)
-          (mapcat #(encode-instruction % script program)
-                  (:instructions script))))
+(defn encode-script-header
+  [{:keys [arguments delay locals running? once?] :as script} program]
+  (let [^double delay (:value delay)
+        has-delay? (> delay 0)
+        has-arguments? (not (empty? arguments))
+        has-locals? (not (empty? locals))]
+    (concat
+     ; First byte:
+     ; 1 bit : is running? (1 true / 0 false)
+     ; 1 bit : run once? (1 true / 0 false)
+     ; 1 bit: has delay? (1 true / 0 false)
+     ; 1 bit: has arguments? (1 true / 0 false)
+     ; 1 bit: has locals? (1 true / 0 false)
+     ; 3 bits: reserved for future use
+     [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
+                       (bit-shift-left (if once? 1 0) 6)
+                       (bit-shift-left (if has-delay? 1 0) 5)
+                       (bit-shift-left (if has-arguments? 1 0) 4)
+                       (bit-shift-left (if has-locals? 1 0) 3))
+               16rFF)]
 
-(defn encode-script [script program]
-  (concat (encode-script-header script program)
-          (encode-instructions script program)))
+     ; If the script has a delay write its index on the global list
+     (when has-delay?
+       [(index-of-constant program delay)])
+
+     ; If the script has arguments write the argument count
+     (when has-arguments?
+       [(count arguments)])
+
+     ; If the script has locals write the local count followed by
+     ; each local index on the global list
+     (when has-locals?
+       (concat [(count locals)]
+               (map #(index-of-constant program (:value %))
+                    locals)))
+
+     (encode-instruction-count script))))
 
 (defn encode-program [program]
   (concat [(count (:scripts program))]
           (encode-globals program)
-          (mapcat (fn [script]
-                    (encode-script script program))
+          (mapcat #(encode-script-header % program)
+                  (:scripts program))
+          (mapcat #(encode-instructions % program)
                   (:scripts program))))
 
 (defn encode [program]

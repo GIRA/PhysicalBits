@@ -81,7 +81,8 @@
     font-family: 'ChargerRegular';
     font-weight: normal;
     font-style: normal;
-    padding: 5px 5px;
+    padding: 0;
+    margin: 0;
   }
 
   #container {
@@ -89,7 +90,39 @@
   }
 
   #top-bar {
-    padding: 5px 10px;
+    padding: 5px 10px 0px;
+    transform: scale(0.85);
+    transform-origin: 0 0;
+    width: 117%;
+  }
+
+  #program-error {
+    font-size: x-large;
+    color: red;
+
+    transform: scale(1.15);
+    animation: 0.52s shake cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    0% {
+      transform: scale(1.15) translate3d(-150px, 0, 0);
+    }
+    10%, 90% {
+      transform: scale(1.15) translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+      transform: scale(1.15) translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+      transform: scale(1.15) translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+      transform: scale(1.15) translate3d(4px, 0, 0);
+    }
+  }
+
+  #controls-panel {
     transform: scale(0.85);
     transform-origin: 0 0;
     width: 117%;
@@ -111,7 +144,6 @@
 
   .dark-theme {
     background: rgb(0,0,0);
-    background: linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(35,35,35,1) 30%, rgba(35,35,35,1) 100%);
     color: white;
   }
 
@@ -178,10 +210,33 @@
 
   }
 
+  .lm_goldenlayout {
+    /* HACK(Richo): This removes the background image that comes with goldenlayout's theme */
+    background: inherit !important;
+  }
+
+
   #output-panel pre {
     overflow: visible;
   }
 
   .allCapsMode {
     font-variant: small-caps;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    opacity:0;
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: lightgray;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
   }

@@ -2,7 +2,7 @@
 
 /* VERSION NUMBER */
 #define MAJOR_VERSION                                       0
-#define MINOR_VERSION                                       7
+#define MINOR_VERSION                                       8
 
 /* INCOMING */
 #define MSG_IN_CONNECTION_REQUEST                         255
@@ -15,7 +15,7 @@
 #define MSG_IN_SAVE_PROGRAM                                 6
 #define MSG_IN_KEEP_ALIVE                                   7
 #define MSG_IN_PROFILE                                      8
-// TODO(Richo): Available spot here!
+#define MSG_IN_SET_REPORT_INTERVAL							9
 #define MSG_IN_SET_GLOBAL                                  10
 #define MSG_IN_SET_GLOBAL_REPORT                           11
 #define MSG_IN_DEBUG_CONTINUE							   12
@@ -35,9 +35,9 @@
 
 /* OTHER CONSTANTS */
 #define PROGRAM_START                             (uint8)0xC3
-#define REPORT_INTERVAL                                   100
 #define KEEP_ALIVE_INTERVAL                                10
 #define KEEP_ALIVE_COUNTER								  100
+
 
 void Monitor::loadInstalledProgram(Program** program)
 {
@@ -108,7 +108,10 @@ void Monitor::acceptConnection()
 	uint8 expected = (MAJOR_VERSION + MINOR_VERSION + handshake) % 256;
 	if (in != expected) return;
 
-	state = CONNECTED; 
+	minReportInterval = 0;
+	reportInterval = 25;
+	state = CONNECTED;
+
 	executeKeepAlive();
 	serial->write(expected);
 }
@@ -132,35 +135,58 @@ void Monitor::sendError(uint8 errorCode)
 
 void Monitor::sendProfile()
 {
-	if (!profiling) return;
 	uint32 now = millis();
 	tickCount++;
 	if (now - lastTimeProfile > 100)
 	{
-		serial->write(MSG_OUT_PROFILE);
+		float tps = tickCount / (float)(now - lastTimeProfile) * 1000;
 
-		uint16 val = tickCount;
-		uint8 val1 = val >> 7;  // MSB
-		uint8 val2 = val & 127; // LSB
-		serial->write(val1);
-		serial->write(val2);
+		if (profiling) 
+		{
+			serial->write(MSG_OUT_PROFILE);
+
+			uint16 val = tps / 10;
+			uint8 val1 = val >> 7;  // MSB
+			uint8 val2 = val & 127; // LSB
+			serial->write(val1);
+			serial->write(val2);
+
+			serial->write(reportInterval);
+		}
+
+		if (tps < 2000) { reportInterval += 1; }
+		else { reportInterval -= 1; }
+
+		if (reportInterval < 5) { reportInterval = 5; }
+		else if (reportInterval > 50) { reportInterval = 50; }
+
+		if (reportInterval < minReportInterval) 
+		{ 
+			reportInterval = minReportInterval; 
+		}
 
 		tickCount = 0;
-		lastTimeProfile = now;
+		lastTimeProfile = millis();
 	}
 }
 
 void Monitor::sendReport(GPIO* io, Program* program)
 {
-	if (!reporting) return;
+	if (reportingStep == 0) return;
 	uint32 now = millis();
-	if (now - lastTimeReport > REPORT_INTERVAL)
+	if (now - lastTimeReport > reportInterval)
 	{
-		sendPinValues(io);
-		sendGlobalValues(program);
-		sendRunningTasks(program);
-		sendFreeRAM();
-		lastTimeReport = now;
+		switch (reportingStep)
+		{
+		case 1: { sendPinValues(io); } break;
+		case 2: { sendGlobalValues(program); } break;
+		case 3: { sendRunningTasks(program); } break;
+		case 4: { sendFreeRAM(); } break;
+		}
+				
+		lastTimeReport = millis();
+		reportingStep++;
+		if (reportingStep > 4) { reportingStep = 1; }
 	}
 }
 
@@ -169,7 +195,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	if (vm->halted && !sent) 
 	{
 		sent = true;
-		sendCoroutineState(vm->haltedScript);
+		sendCoroutineState(program, vm->haltedScript);
 
 		/*
 		TODO(Richo): Send the state of all the coroutines?
@@ -180,7 +206,7 @@ void Monitor::sendVMState(Program* program, VM* vm)
 	}
 }
 
-void Monitor::sendCoroutineState(Script* script)
+void Monitor::sendCoroutineState(Program* program, Script* script)
 {
 	if (script != NULL && script->hasCoroutine())
 	{    
@@ -190,7 +216,7 @@ void Monitor::sendCoroutineState(Script* script)
 		{
 			// TODO(Richo): Is this really necessary?
 			sendError(coroutine->getError());
-			coroutine->reset(); // TODO(Richo): Why?
+			program->resetCoroutine(coroutine); // TODO(Richo): Why?
 		}
 		serial->write(MSG_OUT_COROUTINE_STATE);
 		serial->write(scriptIndex);
@@ -199,11 +225,11 @@ void Monitor::sendCoroutineState(Script* script)
 		uint8 val2 = pc & 0xFF;	// LSB
 		serial->write(val1);
 		serial->write(val2);
-		uint8 fp = coroutine->getFramePointer();
+		uint8 fp = (uint8)coroutine->getFramePointer();
 		serial->write(fp);
-		uint16 stackSize = coroutine->getStackSize();
+		uint8 stackSize = (uint8)coroutine->getStackSize();
 		serial->write(stackSize);
-		for (uint16 j = 0; j < stackSize; j++)
+		for (uint8 j = 0; j < stackSize; j++)
 		{
 			uint32 value = float_to_uint32(coroutine->getStackElementAt(j));
 			serial->write((value >> 24) & 0xFF);
@@ -233,6 +259,15 @@ void Monitor::checkKeepAlive()
 	}
 }
 
+void Monitor::sendTimestamp()
+{
+	uint32 time = millis();
+	serial->write((time >> 24) & 0xFF);
+	serial->write((time >> 16) & 0xFF);
+	serial->write((time >> 8) & 0xFF);
+	serial->write(time & 0xFF);
+}
+
 void Monitor::sendPinValues(GPIO* io)
 {
 	uint8 count = 0;
@@ -247,12 +282,7 @@ void Monitor::sendPinValues(GPIO* io)
 	if (count == 0) return;
 
 	serial->write(MSG_OUT_PIN_VALUE);
-
-	uint32 time = millis();
-	serial->write((time >> 24) & 0xFF);
-	serial->write((time >> 16) & 0xFF);
-	serial->write((time >> 8) & 0xFF);
-	serial->write(time & 0xFF);
+	sendTimestamp();
 
 	serial->write(count);
 	for (uint8 i = 0; i < TOTAL_PINS; i++)
@@ -283,13 +313,8 @@ void Monitor::sendGlobalValues(Program* program)
 	}
 	if (count == 0) return;
 
-	serial->write(MSG_OUT_GLOBAL_VALUE);
-	
-	uint32 time = millis();
-	serial->write((time >> 24) & 0xFF);
-	serial->write((time >> 16) & 0xFF);
-	serial->write((time >> 8) & 0xFF);
-	serial->write(time & 0xFF);
+	serial->write(MSG_OUT_GLOBAL_VALUE);	
+	sendTimestamp();
 
 	serial->write(count);
 	for (uint8 i = 0; i < program->getGlobalCount(); i++)
@@ -309,13 +334,15 @@ void Monitor::sendGlobalValues(Program* program)
 void Monitor::sendRunningTasks(Program* program)
 {
 	serial->write(MSG_OUT_TICKING_SCRIPTS);
+	sendTimestamp();
+
 	uint8 scriptCount = program->getScriptCount();
 	serial->write(scriptCount);
 	for (int16 i = 0; i < scriptCount; i++)
 	{
 		Script* script = program->getScript(i);
 		uint8 val = NO_ERROR;
-		if (script->isStepping()) 
+		if (script->isRunning()) 
 		{
 			val |= 0b10000000;
 		}
@@ -342,6 +369,8 @@ int freeRam()
 void Monitor::sendFreeRAM()
 {
 	serial->write(MSG_OUT_FREE_RAM);
+	sendTimestamp();
+
 	{
 		uint32 value = freeRam();
 		serial->write((value >> 24) & 0xFF);
@@ -364,6 +393,9 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	bool timeout;
 	uint8 cmd = stream.next(timeout);
 	if (timeout) return;
+
+	executeKeepAlive();
+	if (cmd == MSG_IN_KEEP_ALIVE) return;
 
 	switch (cmd)
 	{
@@ -392,11 +424,11 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		vm->reset();
 		executeSaveProgram(program, io);
 		break;
-	case MSG_IN_KEEP_ALIVE:
-		executeKeepAlive();
-		break;
 	case MSG_IN_PROFILE:
 		executeProfile();
+		break;
+	case MSG_IN_SET_REPORT_INTERVAL:
+		executeSetReportInterval();
 		break;
 	case MSG_IN_SET_GLOBAL:
 		executeSetGlobal(*program);
@@ -454,12 +486,12 @@ void Monitor::executeSetMode(GPIO* io)
 
 void Monitor::executeStartReporting()
 {
-	reporting = 1;
+	if (reportingStep == 0) { reportingStep = 1; }
 }
 
 void Monitor::executeStopReporting()
 {
-	reporting = 0;
+	reportingStep = 0;
 }
 
 void Monitor::executeSetReport(GPIO* io)
@@ -494,15 +526,23 @@ void Monitor::executeSaveProgram(Program** program, GPIO* io)
 		}
 	}
 
-	// Write the buffer into the EEPROM
+	// Write the header for a stored program
 	EEPROMWearLevelingWriter writer;
 	writer.nextPut(PROGRAM_START);
 	writer.nextPut(MAJOR_VERSION);
 	writer.nextPut(MINOR_VERSION);
+
+	// Write the size (for CHECKSUM)
+	// TODO(Richo): Implement a real checksum algorithm
+	writer.nextPut((size >> 8) & 0xFF);
+	writer.nextPut(size & 0xFF);
+
+	// Write the buffer into the EEPROM
 	for (int i = 0; i < size; i++)
 	{
 		writer.nextPut(buf[i]);
 	}
+
 	writer.close();
 
 	// Read the program from the EEPROM
@@ -514,6 +554,7 @@ void Monitor::executeSaveProgram(Program** program, GPIO* io)
 void Monitor::executeKeepAlive()
 {
 	keepAliveCounter = KEEP_ALIVE_COUNTER;
+	lastTimeKeepAlive = millis();
 }
 
 void Monitor::executeProfile()
@@ -524,6 +565,15 @@ void Monitor::executeProfile()
 
 	tickCount = 0;
 	lastTimeProfile = millis();
+}
+
+void Monitor::executeSetReportInterval()
+{
+	bool timeout;
+	uint8 interval = stream.next(timeout);
+	if (timeout) return;
+
+	minReportInterval = interval;
 }
 
 void Monitor::executeSetGlobal(Program* program)
@@ -567,11 +617,7 @@ void Monitor::executeDebugSetBreakpoints(Program* program)
 		int16 pc = stream.nextLong(2, timeout);
 		if (timeout) return;
 
-		Script* script = program->getScriptForPC(pc);
-		if (script != NULL)
-		{
-			script->setBreakpointAt(pc, val);
-		}
+		program->setBreakpointAt(pc, val);
 	}
 }
 
@@ -581,14 +627,16 @@ void Monitor::executeDebugSetBreakpointsAll(Program* program)
 	bool val = stream.next(timeout);
 	if (timeout) return;
 
-	int16 count = program->getScriptCount();
-	for (int16 i = 0; i < count; i++) 
+	int16 scriptCount = program->getScriptCount();
+	uint16 instructionCount = 0;
+	for (int16 i = 0; i < scriptCount; i++) 
 	{
 		Script* script = program->getScript(i);
-		for (int16 pc = script->getInstructionStart(); pc <= script->getInstructionStop(); pc++) 
-		{
-			script->setBreakpointAt(pc, val);
-		}
+		instructionCount += script->getInstructionCount();
+	}
+	for (uint16 i = 0; i < instructionCount; i++) 
+	{
+		program->setBreakpointAt(i, val);
 	}
 }
 
@@ -603,7 +651,23 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 	}
 	else
 	{
-		result = readProgram(reader, p);
+		bool timeout;
+		int32 size = reader->nextLong(2, timeout);
+		if (timeout) 
+		{
+			result = READER_TIMEOUT;
+		}
+		else 
+		{
+			reader->resetCounter();
+			result = readProgram(reader, p);
+
+			// TODO(Richo): Implement a real checksum algorithm
+			if (result == NO_ERROR && reader->counter != size)
+			{
+				result = READER_CHECKSUM_FAIL;
+			}
+		}		
 	}
 
 	if (result == NO_ERROR)
@@ -621,7 +685,7 @@ void Monitor::loadProgramFromReader(Reader* reader, Program** program)
 void trace(const char* str)
 {
 	Serial.write(MSG_OUT_TRACE);
-	uint8 size = strlen(str);
+	uint8 size = (uint8)strlen(str);
 	Serial.write(size);
 	for (int i = 0; i < size; i++)
 	{

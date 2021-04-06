@@ -3,16 +3,80 @@ let ASTToBlocks = (function () {
 	let dispatchTable = {
 		UziProgramNode: function (json, ctx) {
 			let node = create("xml");
+			json.imports.forEach(function (imp) {
+				let xmlImport = generateXMLFor(imp, ctx);
+				if (xmlImport) {
+					node.appendChild(xmlImport);
+				}
+			});
+			json.globals.forEach(function (global) {
+				ctx.addVariable({
+					name: global.name,
+					value: getLiteralValue(global.value),
+				});
+			});
 			json.scripts.forEach(function (script) {
-				node.appendChild(generateXMLFor(script, ctx));
+				node.appendChild(generateXMLForScript(script, ctx));
 			});
 			return node;
+		},
+		UziImportNode: function (json, ctx) {
+			function getVariableDefaultValue(varName) {
+				let assignment = json.initializationBlock.statements.find(stmt =>
+					stmt.__class__ == "UziAssignmentNode" &&
+					stmt.left.__class__ == "UziVariableNode" &&
+					stmt.left.name == varName);
+				if (!assignment) return "0";
+
+				return getLiteralValue(assignment.right);
+			}
+
+			// TODO(Richo): Preserve other initializationBlock statements
+
+			if (json.path == "DCMotor.uzi") {
+				let name = json.alias;
+				let enable = getVariableDefaultValue("enablePin");
+				let fwd = getVariableDefaultValue("forwardPin");
+				let bwd = getVariableDefaultValue("reversePin");
+				ctx.addMotor({
+					name: name,
+					enable: enable,
+					fwd: fwd,
+					bwd: bwd
+				});
+			} else if (json.path == "Sonar.uzi") {
+				let name = json.alias;
+				let trig = getVariableDefaultValue("trigPin");
+				let echo = getVariableDefaultValue("echoPin");
+				let maxDist = getVariableDefaultValue("maxDistance");
+				// TODO(Richo): Handle start/stop reading
+				ctx.addSonar({
+					name: name,
+					trig: trig,
+					echo: echo,
+					maxDist: maxDist
+				});
+			} else if (json.path == "Joystick.uzi") {
+				let name = json.alias;
+				let xPin = getVariableDefaultValue("xPin");
+				let yPin = getVariableDefaultValue("yPin");
+				// TODO(Richo): Handle start/stop reading
+				ctx.addJoystick({
+					name: name,
+					xPin: xPin,
+					yPin: yPin,
+				});
+			} else if (json.path == "Buttons.uzi") {
+				// HACK(Richo): Do nothing?
+			} else {
+				return createImportBlock(json, ctx);
+			}
 		},
 		UziTaskNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", json.state === "once" ? "task" : "timer");
-			appendField(node, "taskName", json.name);
+			appendField(node, "scriptName", json.name);
 			if (json.tickingRate !== null) {
 				appendField(node, "runningTimes", json.tickingRate.value);
 				appendField(node, "tickingScale", json.tickingRate.scale);
@@ -29,14 +93,14 @@ let ASTToBlocks = (function () {
 			let types = ["proc_definition_0args", "proc_definition_1args",
 									"proc_definition_2args", "proc_definition_3args"];
 			if (json.arguments.length > 3) {
-				debugger;
+				throw "Max number of arguments for procedure blocks is 3";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
 			script.arguments.forEach(function (arg, i) {
 				appendField(node, "arg" + i, arg.name);
 			});
-			appendField(node, "procName", json.name);
+			appendField(node, "scriptName", json.name);
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
@@ -46,14 +110,14 @@ let ASTToBlocks = (function () {
 			let types = ["func_definition_0args", "func_definition_1args",
 									"func_definition_2args", "func_definition_3args"];
 			if (json.arguments.length > 3) {
-				debugger;
+				throw "Max number of arguments for function blocks is 3";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
 			script.arguments.forEach(function (arg, i) {
 				appendField(node, "arg" + i, arg.name);
 			});
-			appendField(node, "funcName", json.name);
+			appendField(node, "scriptName", json.name);
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
@@ -62,13 +126,15 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			if (ctx.isTask(json.selector)) {
 				node.setAttribute("type", "run_task");
-				appendField(node, "taskName", json.selector);
+				appendField(node, "scriptName", json.selector);
 			} else if (ctx.isProcedure(json.selector) || ctx.isFunction(json.selector)) {
 				if (ctx.isInStatementPosition(json)) {
 					initProcedureCall(node, json, ctx);
 				} else {
 					initFunctionCall(node, json, ctx);
 				}
+			} else if (json.selector.includes(".")){
+				initExternalCall(node, json, ctx);
 			} else {
 				initPrimitiveCall(node, json, ctx);
 			}
@@ -112,28 +178,28 @@ let ASTToBlocks = (function () {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "start_task");
-			appendField(node, "taskName", json.scripts[0]);
+			appendField(node, "scriptName", json.scripts[0]);
 			return node;
 		},
 		UziScriptStopNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "stop_task");
-			appendField(node, "taskName", json.scripts[0]);
+			appendField(node, "scriptName", json.scripts[0]);
 			return node;
 		},
 		UziScriptResumeNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "resume_task");
-			appendField(node, "taskName", json.scripts[0]);
+			appendField(node, "scriptName", json.scripts[0]);
 			return node;
 		},
 		UziScriptPauseNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "pause_task");
-			appendField(node, "taskName", json.scripts[0]);
+			appendField(node, "scriptName", json.scripts[0]);
 			return node;
 		},
 		UziConditionalNode: function (json, ctx) {
@@ -142,7 +208,7 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type",
 				json.falseBranch.statements.length > 0 ?
 				"conditional_full" : "conditional_simple");
-			appendValue(node, "condition", generateXMLFor(json.condition, ctx));
+			appendValue(node, "condition", json.condition, ctx);
 			appendStatements(node, "trueBranch", json.trueBranch, ctx);
 			appendStatements(node, "falseBranch", json.falseBranch, ctx);
 			return node;
@@ -158,7 +224,7 @@ let ASTToBlocks = (function () {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat_times");
-			appendValue(node, "times", generateXMLFor(json.times, ctx));
+			appendValue(node, "times", json.times, ctx);
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
@@ -167,7 +233,7 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat");
 			appendField(node, "negate", json.negated);
-			appendValue(node, "condition", generateXMLFor(json.condition, ctx));
+			appendValue(node, "condition", json.condition, ctx);
 			appendStatements(node, "statements", json.post, ctx);
 			return node;
 		},
@@ -176,7 +242,7 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "repeat");
 			appendField(node, "negate", json.negated);
-			appendValue(node, "condition", generateXMLFor(json.condition, ctx));
+			appendValue(node, "condition", json.condition, ctx);
 			appendStatements(node, "statements", json.post, ctx);
 			return node;
 		},
@@ -185,9 +251,9 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "for");
 			appendField(node, "variableName", json.counter.name);
-			appendValue(node, "start", generateXMLFor(json.start, ctx));
-			appendValue(node, "stop", generateXMLFor(json.stop, ctx));
-			appendValue(node, "step", generateXMLFor(json.step, ctx));
+			appendValue(node, "start", json.start, ctx);
+			appendValue(node, "stop", json.stop, ctx);
+			appendValue(node, "step", json.step, ctx);
 			appendStatements(node, "statements", json.body, ctx);
 			return node;
 		},
@@ -201,19 +267,22 @@ let ASTToBlocks = (function () {
 				&& json.right.arguments[0].value.name == json.left.name) {
 				node.setAttribute("type", "increment_variable");
 				appendField(node, "variableName", json.left.name);
-				appendValue(node, "value", generateXMLFor(json.right.arguments[1].value, ctx));
+				appendValue(node, "value", json.right.arguments[1].value, ctx);
 			} else {
 				node.setAttribute("type", "set_variable");
 				appendField(node, "variableName", json.left.name);
-				appendValue(node, "value", generateXMLFor(json.right, ctx));
+				appendValue(node, "value", json.right, ctx);
 			}
 			return node;
 		},
 		UziVariableNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "variable");
-			appendField(node, "variableName", json.name);
+			if (json.name.includes(".")) {
+				initExternalVariable(node, json, ctx);
+			} else {
+				initRegularVariable(node, json, ctx);
+			}
 			return node;
 		},
 		UziVariableDeclarationNode: function (json, ctx) {
@@ -221,7 +290,8 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "declare_local_variable");
 			appendField(node, "variableName", json.name);
-			appendValue(node, "value", generateXMLFor(json.value, ctx));
+			appendValue(node, "value", json.value, ctx);
+			ctx.addVariable({	name: json.name, value: "0" });
 			return node;
 		},
 		UziLogicalOrNode: function (json, ctx) {
@@ -229,8 +299,8 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "or");
-			appendValue(node, "left", generateXMLFor(json.left, ctx));
-			appendValue(node, "right", generateXMLFor(json.right, ctx));
+			appendValue(node, "left", json.left, ctx);
+			appendValue(node, "right", json.right, ctx);
 			return node;
 		},
 		UziLogicalAndNode: function (json, ctx) {
@@ -238,8 +308,8 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "and");
-			appendValue(node, "left", generateXMLFor(json.left, ctx));
-			appendValue(node, "right", generateXMLFor(json.right, ctx));
+			appendValue(node, "left", json.left, ctx);
+			appendValue(node, "right", json.right, ctx);
 			return node;
 		},
 		UziReturnNode: function (json, ctx) {
@@ -247,13 +317,45 @@ let ASTToBlocks = (function () {
 			node.setAttribute("id", json.id);
 			if (json.value) {
 				node.setAttribute("type", "return_value");
-				appendValue(node, "value", generateXMLFor(json.value, ctx));
+				appendValue(node, "value", json.value, ctx);
 			} else {
 				node.setAttribute("type", "return");
 			}
 			return node;
 		}
 	};
+
+	function getLiteralValue(node) {
+		if (!node) return "0";
+		if (node.__class__ == "UziPinLiteralNode") {
+			return node.type + node.number;
+		} else if (node.__class__ == "UziNumberLiteralNode"){
+			return node.value.toString();
+		} else {
+			return "0";
+		}
+	}
+
+	function initExternalVariable(node, json, ctx) {
+		let parts = json.name.split(".");
+		if (parts.length > 2) {
+			debugger; // TODO(Richo): WTF?
+		}
+		let alias = parts[0];
+		let name = parts[1];
+
+		if (ctx.joysticks.some(j => j.name == alias)) {
+			initJoystickCall(node, alias, name, json, ctx);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initRegularvariable(node, json, ctx);
+		}
+	}
+
+	function initRegularVariable(node, json, ctx) {
+		node.setAttribute("type", "variable");
+		appendField(node, "variableName", json.name);
+	}
 
 	function initProcedureCall(node, json, ctx) {
 		let types = ["proc_call_0args", "proc_call_1args",
@@ -262,10 +364,10 @@ let ASTToBlocks = (function () {
 			throw "Max number of arguments for call blocks is 3";
 		}
 		node.setAttribute("type", types[json.arguments.length]);
-		appendField(node, "procName", json.selector);
+		appendField(node, "scriptName", json.selector);
 		let script = ctx.scriptNamed(json.selector);
 		json.arguments.forEach(function (arg, index) {
-			appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
+			appendValue(node, "arg" + index, arg.value, ctx);
 		});
 	}
 
@@ -276,11 +378,121 @@ let ASTToBlocks = (function () {
 			throw "Max number of arguments for call blocks is 3";
 		}
 		node.setAttribute("type", types[json.arguments.length]);
-		appendField(node, "funcName", json.selector);
+		appendField(node, "scriptName", json.selector);
 		let script = ctx.scriptNamed(json.selector);
 		json.arguments.forEach(function (arg, index) {
-			appendValue(node, "arg" + index, generateXMLFor(arg.value, ctx));
+			appendValue(node, "arg" + index, arg.value, ctx);
 		});
+	}
+
+	function initExternalCall(node, json, ctx) {
+		let parts = json.selector.split(".");
+		if (parts.length > 2) {
+			debugger; // TODO(Richo): WTF?
+		}
+		let alias = parts[0];
+		let selector = parts[1];
+
+		if (ctx.motors.some(m => m.name == alias)) {
+			initMotorCall(node, alias, selector, json, ctx);
+		} else if (ctx.sonars.some(s => s.name == alias)) {
+			initSonarCall(node, alias, selector, json, ctx);
+		} else if (ctx.joysticks.some(j => j.name == alias)) {
+			initJoystickCall(node, alias, selector, json, ctx);
+		} else if (ctx.isButtonCall(alias, selector)) {
+			initButtonCall(node, alias, selector, json, ctx);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initMotorCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
+		let args = json.arguments.map(function (each) { return each.value; });
+		if (selector == "forward" || selector == "backward") {
+			node.setAttribute("type", "move_dcmotor");
+			appendField(node, "motorName", alias);
+			appendField(node, "direction", selector == "forward" ? "fwd" : "bwd");
+			appendValue(node, "speed", args[0] || defaultArg, ctx);
+		} else if (selector == "setSpeed") {
+			node.setAttribute("type", "change_speed_dcmotor");
+			appendField(node, "motorName", alias);
+			appendValue(node, "speed", args[0] || defaultArg, ctx);
+		} else if (selector == "getSpeed") {
+			node.setAttribute("type", "get_speed_dcmotor");
+			appendField(node, "motorName", alias);
+		} else if (selector == "brake") {
+			node.setAttribute("type", "stop_dcmotor");
+			appendField(node, "motorName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initSonarCall(node, alias, selector, json, ctx) {
+		if (selector == "distance_mm") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "mm");
+		} else if (selector == "distance_cm") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "cm");
+		} else if (selector == "distance_m") {
+			node.setAttribute("type", "get_sonar_distance");
+			appendField(node, "sonarName", alias);
+			appendField(node, "unit", "m");
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initJoystickCall(node, alias, selector, json, ctx) {
+		if (selector == "x") {
+			node.setAttribute("type", "get_joystick_x");
+			appendField(node, "joystickName", alias);
+		} else if (selector == "y") {
+			node.setAttribute("type", "get_joystick_y");
+			appendField(node, "joystickName", alias);
+		} else	if (selector == "getAngle") {
+			node.setAttribute("type", "get_joystick_angle");
+			appendField(node, "joystickName", alias);
+		} else if (selector == "getMagnitude") {
+			node.setAttribute("type", "get_joystick_magnitude");
+			appendField(node, "joystickName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initButtonCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
+		let args = json.arguments.map(function (each) { return each.value; });
+		if (selector == "isPressed" || selector == "isReleased") {
+			node.setAttribute("type", "button_check_state");
+			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendField(node, "state", selector == "isPressed" ? "press" : "release");
+		} else if (selector == "waitForPress" || selector == "waitForRelease") {
+			node.setAttribute("type", "button_wait_for_action");
+			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendField(node, "action", selector == "waitForPress" ? "press" : "release");
+		} else	if (selector == "millisecondsHolding") {
+			node.setAttribute("type", "button_ms_holding");
+			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+		} else if (selector == "waitForHold" || selector == "waitForHoldAndRelease") {
+			node.setAttribute("type", "button_wait_for_long_action");
+			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendField(node, "action", selector == "waitForHold" ? "press" : "release");
+			appendField(node, "unit", "ms");
+			appendValue(node, "time", args[1] || defaultArg, ctx);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
 	}
 
 	function initPrimitiveCall(node, json, ctx) {
@@ -288,46 +500,46 @@ let ASTToBlocks = (function () {
 		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector === "toggle") {
 			node.setAttribute("type", "toggle_pin");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "turnOn") {
 			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "on");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "turnOff") {
 			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "off");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "isOn") {
 			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "on");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "isOff") {
 			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "off");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "write") {
 			node.setAttribute("type", "write_pin");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
-			appendValue(node, "pinValue", generateXMLFor(args[1], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinValue", args[1], ctx);
 		} else if (selector === "read") {
 			node.setAttribute("type", "read_pin");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "setServoDegrees") {
 			node.setAttribute("type", "set_servo_degrees");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
-			appendValue(node, "servoValue", generateXMLFor(args[1], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "servoValue", args[1], ctx);
 		} else if (selector === "delayMs") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "ms");
-			appendValue(node, "time", generateXMLFor(args[0], ctx));
+			appendValue(node, "time", args[0], ctx);
 		} else if (selector === "delayS") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "s");
-			appendValue(node, "time", generateXMLFor(args[0], ctx));
+			appendValue(node, "time", args[0], ctx);
 		} else if (selector === "delayM") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "m");
-			appendValue(node, "time", generateXMLFor(args[0], ctx));
+			appendValue(node, "time", args[0], ctx);
 		} else if (selector === "millis") {
 			node.setAttribute("type", "elapsed_time");
 			appendField(node, "unit", "ms");
@@ -340,162 +552,162 @@ let ASTToBlocks = (function () {
 		} else if (selector === "sin") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "sin");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "cos") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "cos");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "tan") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "tan");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "asin") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "asin");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "acos") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "acos");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "atan") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "atan");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "round") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "round");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "ceil") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "ceil");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "floor") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "floor");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "sqrt") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "sqrt");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "abs") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "abs");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "ln") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "ln");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "log10") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "log10");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "exp") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "exp");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "pow10") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "pow10");
-			appendValue(node, "number", generateXMLFor(args[0], ctx));
+			appendValue(node, "number", args[0], ctx);
 		} else if (selector === "+") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "ADD");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "-") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "MINUS");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "*") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "MULTIPLY");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "/") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "DIVIDE");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "**") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "POWER");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "==") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "==");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "!=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "!=");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "<=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "<=");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "<") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "<");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === ">=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", ">=");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === ">") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", ">");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "!") {
 			node.setAttribute("type", "logical_not");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isEven") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "even");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isOdd") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "odd");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isPrime") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "prime");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isWhole") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "whole");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isPositive") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "positive");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isNegative") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "negative");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "isDivisibleBy") {
 			node.setAttribute("type", "number_divisibility");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "%") {
 			node.setAttribute("type", "number_modulo");
-			appendValue(node, "dividend", generateXMLFor(args[0], ctx));
-			appendValue(node, "divisor", generateXMLFor(args[1], ctx));
+			appendValue(node, "dividend", args[0], ctx);
+			appendValue(node, "divisor", args[1], ctx);
 		} else if (selector === "constrain") {
 			node.setAttribute("type", "number_constrain");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
-			appendValue(node, "low", generateXMLFor(args[1], ctx));
-			appendValue(node, "high", generateXMLFor(args[2], ctx));
+			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "low", args[1], ctx);
+			appendValue(node, "high", args[2], ctx);
 		} else if (selector === "randomInt") {
 			node.setAttribute("type", "number_random_int");
-			appendValue(node, "from", generateXMLFor(args[0], ctx));
-			appendValue(node, "to", generateXMLFor(args[1], ctx));
+			appendValue(node, "from", args[0], ctx);
+			appendValue(node, "to", args[1], ctx);
 		} else if (selector === "random") {
 			node.setAttribute("type", "number_random_float");
 		} else if (selector === "setPinMode") {
@@ -503,71 +715,71 @@ let ASTToBlocks = (function () {
 			if (args[1].__class__ == "UziNumberLiteralNode" &&
 					args[1].value >= 0 && args[1].value < validModes.length) {
 				node.setAttribute("type", "set_pin_mode");
-				appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+				appendValue(node, "pinNumber", args[0], ctx);
 				appendField(node, "mode", validModes[args[1].value] || "INPUT");
 			} else {
 				initProcedureCall(node, json, ctx);
 			}
 		} else if (selector === "getServoDegrees") {
 			node.setAttribute("type", "get_servo_degrees");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "servoWrite") {
 			// servoWrite(D3, 0.5) -> setServoDegrees(D3, 0.5 * 180);
 			node.setAttribute("type", "set_servo_degrees");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 
 			let value = create("block");
 			value.setAttribute("type", "math_arithmetic");
 			appendField(value, "operator", "MULTIPLY");
-			appendValue(value, "left", generateXMLFor(args[1], ctx));
+			appendValue(value, "left", args[1], ctx);
 			let multiplier = create("block");
 			multiplier.setAttribute("type", "number");
 			appendField(multiplier, "value", 180);
-			appendValue(value, "right", multiplier);
+			appendValueNode(value, "right", multiplier);
 
-			appendValue(node, "servoValue", value);
+			appendValueNode(node, "servoValue", value);
 		} else if (selector === "&") {
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "and");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "|") {
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "or");
-			appendValue(node, "left", generateXMLFor(args[0], ctx));
-			appendValue(node, "right", generateXMLFor(args[1], ctx));
+			appendValue(node, "left", args[0], ctx);
+			appendValue(node, "right", args[1], ctx);
 		} else if (selector === "startTone") {
 			node.setAttribute("type", "start_tone");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
-			appendValue(node, "tone", generateXMLFor(args[1], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "tone", args[1], ctx);
 		} else if (selector === "stopTone") {
 			node.setAttribute("type", "stop_tone");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
 		} else if (selector === "playTone") {
 			node.setAttribute("type", "play_tone");
 			appendField(node, "unit", "ms");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
-			appendValue(node, "tone", generateXMLFor(args[1], ctx));
-			appendValue(node, "time", generateXMLFor(args[2], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "tone", args[1], ctx);
+			appendValue(node, "time", args[2], ctx);
 		} else if (selector === "stopToneAndWait") {
 			node.setAttribute("type", "stop_tone_wait");
 			appendField(node, "unit", "ms");
-			appendValue(node, "pinNumber", generateXMLFor(args[0], ctx));
-			appendValue(node, "time", generateXMLFor(args[1], ctx));
+			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "time", args[1], ctx);
 		} else if (selector === "isBetween") {
 			node.setAttribute("type", "number_between");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
-			appendValue(node, "low", generateXMLFor(args[1], ctx));
-			appendValue(node, "high", generateXMLFor(args[2], ctx));
+			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "low", args[1], ctx);
+			appendValue(node, "high", args[2], ctx);
 		} else if (selector === "pin") {
 			node.setAttribute("type", "pin_cast");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "number") {
 			node.setAttribute("type", "number_cast");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else if (selector === "bool") {
 			node.setAttribute("type", "boolean_cast");
-			appendValue(node, "value", generateXMLFor(args[0], ctx));
+			appendValue(node, "value", args[0], ctx);
 		} else {
 			/*
 			NOTE(Richo): Fallback code. If we don't have a specific block for the selector
@@ -627,11 +839,15 @@ let ASTToBlocks = (function () {
 
 		let preferredType = input.types[0];
 		let cast = createCast(preferredType);
-		appendValue(cast, "value", value);
+		appendValueNode(cast, "value", value);
 		return cast;
 	}
 
-	function appendValue(node, name, value) {
+	function appendValue(node, name, json, ctx) {
+		appendValueNode(node, name, generateXMLForExpression(json, ctx));
+	}
+
+	function appendValueNode(node, name, value) {
 		let child = create("value");
 		child.setAttribute("name", name);
 
@@ -652,33 +868,53 @@ let ASTToBlocks = (function () {
 		node.appendChild(child);
 	}
 
-	function createHereBeDragonsBlock(stmt, ctx) {
+	function createImportBlock(json, ctx) {
 		let node = create("block");
-		node.setAttribute("type", "here_be_dragons");
-		// TODO(Richo): Get actual code
-		let code = JSON.stringify(stmt, null, 2);
-		//<comment pinned="false" h="80" w="160">JSON.stringify(stmt, null, 2)</comment>
+		node.setAttribute("type", "import");
+		appendField(node, "alias", json.alias);
+		appendField(node, "path", json.path);
+
+		// TODO(Richo): Store initialization block as comment or generate blocks?
+		let code = JSONX.stringify(json.initializationBlock, null, 2);
 		let comment = create("comment");
 		comment.setAttribute("pinned", "false");
 		comment.setAttribute("h", "160");
 		comment.setAttribute("w", "320");
 		comment.textContent = code;
+		node.appendChild(comment);
+
+		return node;
+	}
+
+	function createHereBeDragonsBlock(type, stmt, ctx) {
+		let node = create("block");
+		node.setAttribute("type", type);
+
+		/*
+		TODO(Richo): Get actual code to show in the comment and maybe make it visible
+		in a read-only field. The ast should probably be preserved anyway.
+		*/
+		let ast = JSONX.stringify(stmt, null, 2);
+		let comment = create("comment");
+		comment.setAttribute("pinned", "false");
+		comment.setAttribute("h", "160");
+		comment.setAttribute("w", "320");
+		comment.textContent = ast;
 
 		node.appendChild(comment);
 		return node;
 	}
 
 	function appendStatements(node, name, body, ctx) {
-		let statements = body.statements.map(function(stmt) {
+		let statements = body.statements.map(stmt => {
 			try {
 				ctx.path.push(body);
-				return generateXMLFor(stmt, ctx);
-			} catch (err) {
-				return createHereBeDragonsBlock(stmt, ctx);
+				return generateXMLForStatement(stmt, ctx);
 			} finally {
 				ctx.path.pop();
 			}
 		});
+
 		let len = statements.length;
 		if (len <= 0) return;
 		let child = create("statement");
@@ -707,19 +943,41 @@ let ASTToBlocks = (function () {
 		return document.createElement(name);
 	}
 
+	function generateXMLForStatement(stmt, ctx) {
+		try {
+			return generateXMLFor(stmt, ctx);
+		} catch (err) {
+			return createHereBeDragonsBlock("here_be_dragons_stmt", stmt, ctx);
+		}
+	}
+
+	function generateXMLForExpression(expr, ctx) {
+		try {
+			return generateXMLFor(expr, ctx);
+		} catch (err) {
+			return createHereBeDragonsBlock("here_be_dragons_expr", expr, ctx);
+		}
+	}
+
+	function generateXMLForScript(script, ctx) {
+		try {
+			return generateXMLFor(script, ctx);
+		} catch (err) {
+			return createHereBeDragonsBlock("here_be_dragons_script", script, ctx);
+		}
+	}
+
 	function generateXMLFor(json, ctx) {
 		let type = json.__class__;
 		let func = dispatchTable[type];
 		if (func == undefined) {
 			console.log(json);
-			debugger;
 			throw "CODEGEN ERROR: Type not found '" + type + "'";
 		}
 		try {
 			ctx.path.push(json);
 			return func(json, ctx);
-		}
-		finally {
+		}	finally {
 			ctx.path.pop();
 		}
 	}
@@ -728,6 +986,29 @@ let ASTToBlocks = (function () {
 		generate: function (json) {
 			let ctx = {
 				path: [],
+				variables: [],
+				motors: [],
+				sonars: [],
+				joysticks: [],
+
+				addVariable: function (variable) {
+					if (ctx.variables.some(v => v.name == variable.name)) return;
+					variable.index = ctx.variables.length;
+					ctx.variables.push(variable);
+				},
+				addMotor: function (motor) {
+					motor.index = ctx.motors.length;
+					ctx.motors.push(motor);
+				},
+				addSonar: function (sonar) {
+					sonar.index = ctx.sonars.length;
+					ctx.sonars.push(sonar);
+				},
+				addJoystick: function (joystick) {
+					joystick.index = ctx.joysticks.length;
+					ctx.joysticks.push(joystick);
+				},
+
 				scriptNamed: function (name) {
 					return ctx.path[0].scripts.find(function (each) {
 						return each.name === name;
@@ -750,9 +1031,21 @@ let ASTToBlocks = (function () {
 					let index = ctx.path.indexOf(json);
 					if (index < 1 || index >= ctx.path.length) return false;
 					return ctx.path[index - 1].__class__ == "UziBlockNode";
+				},
+				isButtonCall: function (alias, selector) {
+					return ctx.path[0].imports.some(imp => imp.path == "Buttons.uzi" && imp.alias == alias);
 				}
 			};
-			return generateXMLFor(json, ctx);
+
+			// TODO(Richo): Preserve old metadata somehow?
+			return {
+        version: UziBlock.version,
+        blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
+        motors: ctx.motors,
+        sonars: ctx.sonars,
+        joysticks: ctx.joysticks,
+        variables: ctx.variables,
+      };
 		}
 	}
 })();

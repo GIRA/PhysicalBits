@@ -16,9 +16,10 @@
 (defn- compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defn- rate->delay [{:keys [value scale] :as node}]
-  (if-not node 0
-    (if (= value 0)
+(defn- rate->delay [{:keys [^double value scale] :as node}]
+  (if-not node
+    0
+    (if (zero? value)
       (double Double/MAX_VALUE)
       (/ (case scale
            "s" 1000
@@ -104,11 +105,9 @@
    :name task-name,
    :delay (rate->delay ticking-rate),
    :running? (contains? #{"running" "once"} state)
+   :once? (= "once" state)
    :locals (collect-locals body)
-   :instructions (let [instructions (compile body ctx)]
-                   (if (= "once" state)
-                     (conj instructions (emit/stop task-name))
-                     instructions))))
+   :instructions (compile body ctx)))
 
 (defn- compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
