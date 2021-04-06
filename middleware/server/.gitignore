@@ -14,3 +14,5 @@ pom.xml.asc
 /plugin.iml
 
 /log
+
+/resources/js/main.js
