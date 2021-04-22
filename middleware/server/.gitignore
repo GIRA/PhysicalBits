@@ -15,4 +15,6 @@ pom.xml.asc
 
 /log
 
-/resources/js/main.js
+/public/js
+/node_modules
+/.shadow-cljs
