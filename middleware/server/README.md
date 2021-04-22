@@ -24,6 +24,12 @@ If everything goes well you should see something like this:
 
 ![repl](/docs/img/repl.png)
 
+To run tests I find is better to use the [test-refresh](https://github.com/jakemcc/lein-test-refresh) plugin. Execute the following in a separate terminal:
+
+    $ lein test-refresh
+
+Now you should have a process running that automatically runs all the tests whenever a source file changes. I also modified the report function to play a short sound as a notification if the tests pass or fail.
+
 ## Quick start (ClojureScript)
 
 In ClojureScript, we are currently using [shadow-cljs](https://github.com/thheller/shadow-cljs) for development.
