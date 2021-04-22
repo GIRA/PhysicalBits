@@ -4,7 +4,6 @@
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.clojure/clojurescript "1.10.773"]
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/tools.logging "1.1.0"]
                  [org.clojure/tools.cli "1.0.194"] ; Parse CLI arguments
@@ -16,12 +15,6 @@
                  [clj-petitparser "0.1.2-SNAPSHOT"]]
   :main ^:skip-aot middleware.core
   :target-path "target/%s"
- 
-  :plugins [[lein-cljsbuild "1.1.8"]]
-  :cljsbuild {:builds {:dev {:source-paths ["src-cljs"]
-                             :compiler {:output-to "resources/js/main.js"
-                                        :optimizations :whitespace
-                                        :pretty-print true}}}}
 
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
