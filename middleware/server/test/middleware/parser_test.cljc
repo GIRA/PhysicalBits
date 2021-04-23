@@ -1,15 +1,22 @@
 (ns middleware.parser-test
-  (:require [clojure.test :refer :all]
+  (:require #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [deftest is testing]])
+           #?(:cljs [clojure.data :as data])
             [middleware.parser.parser :as pp]
             [middleware.parser.ast-nodes :as ast])
-  (:use [middleware.test-utils ]))
+  #?(:clj (:use [middleware.test-utils ])))
+
+#?(:cljs
+   (defn equivalent? [a b]
+     (-> (data/diff a b) first nil?)))
 
 (def exclusions #{'custom-operator-precedence})
 
 (defn parse [src]
-  (if-not (contains? exclusions (symbol (test-name)))
-    (register-program! src))
+  #?(:clj (if-not (contains? exclusions (symbol (test-name)))
+          (register-program! src)))
   (pp/parse src))
+
 
 (deftest return-should-not-be-confused-with-call
   (let [src "task foo() { return (3) + 4; }"
