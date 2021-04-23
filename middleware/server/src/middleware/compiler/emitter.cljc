@@ -1,5 +1,5 @@
 (ns middleware.compiler.emitter
-  (:require [middleware.utils.conversions :refer :all]))
+  (:require [middleware.utils.conversions :as c]))
 
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
@@ -9,7 +9,7 @@
 
 (def ^:private simplify
   "Tries to reduce the value to its equivalent integer or float (ratios not allowed)"
-  (comp try-integer non-fraction))
+  (comp c/try-integer c/non-fraction))
 
 (defn variable
   ([name] (variable name 0))

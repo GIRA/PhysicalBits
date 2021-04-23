@@ -1,4 +1,4 @@
-(ns middleware.test-utils
+(ns middleware.compile-stats
   (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.data :as data]
@@ -11,14 +11,9 @@
             [middleware.code-generator.code-generator :as cg]
             [middleware.compiler.utils.program :as p]))
 
-; TODO(Richo): Change implementation for sets and vectors so that it checks equality
-(defn equivalent? [a b]
-  (-> (data/diff a b) first nil?))
-
 (defn test-name []
   (str/join "." (map (comp :name meta) *testing-vars*)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CompileStats ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
 (def ^:private programs (atom {}))
 

@@ -1,6 +1,5 @@
 (ns middleware.utils.conversions)
 
-
 (defn bytes->uint32 [[^byte n1 ^byte n2 ^byte n3 ^byte n4]]
   (bit-or (bit-shift-left n1 24)
           (bit-shift-left n2 16)

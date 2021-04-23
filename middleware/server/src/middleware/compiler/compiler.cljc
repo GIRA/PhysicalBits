@@ -1,6 +1,6 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
-  (:require [clojure.tools.logging :as log]
+  (:require #?(:clj [clojure.tools.logging :as log])
             [middleware.utils.json :as json]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]

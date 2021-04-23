@@ -1,9 +1,10 @@
 (ns middleware.compiler-autogen-test
-  (:require [clojure.test :refer :all]
+  #?(:clj (:use [middleware.compile-stats]))
+  (:require #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [deftest is testing]])
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
-            [middleware.compiler.emitter :as emit])
-  (:use [middleware.test-utils]))
+            [middleware.compiler.emitter :as emit]))
 
 
 (defn compile-uzi-string [src]

@@ -1,14 +1,10 @@
 (ns middleware.parser-test
+  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing]])
-           #?(:cljs [clojure.data :as data])
+            [middleware.test-utils :refer [equivalent?]]
             [middleware.parser.parser :as pp]
-            [middleware.parser.ast-nodes :as ast])
-  #?(:clj (:use [middleware.test-utils ])))
-
-#?(:cljs
-   (defn equivalent? [a b]
-     (-> (data/diff a b) first nil?)))
+            [middleware.parser.ast-nodes :as ast]))
 
 (def exclusions #{'custom-operator-precedence})
 

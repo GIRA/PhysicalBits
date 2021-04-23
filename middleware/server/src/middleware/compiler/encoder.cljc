@@ -1,21 +1,11 @@
 (ns middleware.compiler.encoder
-  (:require [middleware.utils.conversions :refer :all]
+  (:require [middleware.utils.conversions :refer [float->uint32 two's-complement]]
             [middleware.compiler.primitives :as prims]
-            [middleware.compiler.utils.program :refer :all]))
-
-(comment
- (set! *warn-on-reflection* true)
- (set! *warn-on-reflection* false)
-
- (.indexOf (map identity [1 2 3]) 2)
-
- (let [^java.util.List coll (map identity [1 2 3])]
-   (.indexOf coll 2))
- ,)
+            [middleware.compiler.utils.program :as p]))
 
 (defn- globals-to-encode [program]
   "We need to exclude the default-globals from the encoding"
-  (let [constants-to-exclude (set default-globals)]
+  (let [constants-to-exclude (set p/default-globals)]
     (filter (complement constants-to-exclude)
             (:globals program))))
 
@@ -48,7 +38,7 @@
   "The globals are grouped by size before encoding. We use 6 bits to
    specify each group size, so we are limited to 63 variables per group."
   (let [to-encode (map :value (globals-to-encode program))
-        groups (group-by value-size to-encode)]
+        groups (group-by p/value-size to-encode)]
     (concat [(count to-encode)]
             (mapcat (fn [size]
                       (mapcat #(encode-global-group size %)
@@ -69,7 +59,7 @@
 
 (defmethod encode-instruction "UziPushInstruction" ; TODO(Richo) Read-global
   [instr script program]
-  (let [index (index-of-global program (:argument instr))]
+  (let [index (p/index-of-global program (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:global-index index})
@@ -79,7 +69,7 @@
 
 (defmethod encode-instruction "UziPopInstruction" ; TODO(Richo): Write-global
   [instr script program]
-  (let [index (index-of-global program (:argument instr))]
+  (let [index (p/index-of-global program (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:global-index index})
@@ -89,12 +79,12 @@
 
 (defmethod encode-instruction "UziReadLocalInstruction"
   [instr script program]
-  (let [index (index-of-local script (:argument instr))]
+  (let [index (p/index-of-local script (:argument instr))]
     [16rFF index]))
 
 (defmethod encode-instruction "UziWriteLocalInstruction"
   [instr script program]
-  (let [index (index-of-local script (:argument instr))]
+  (let [index (p/index-of-local script (:argument instr))]
     [16rFF (bit-or 16r80 index)]))
 
 
@@ -112,8 +102,8 @@
 
 (defmethod encode-instruction "UziScriptCallInstruction"
   [instr script program]
-  (let [index (index-of (map :name (:scripts program))
-                        (:argument instr))]
+  (let [index (p/index-of (map :name (:scripts program))
+                          (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:script-index index})
@@ -123,8 +113,8 @@
                  index)]))))
 
 (defn- encode-script-control [^long code instr script program]
-  (let [index (index-of (map :name (:scripts program))
-                        (:argument instr))]
+  (let [index (p/index-of (map :name (:scripts program))
+                          (:argument instr))]
     (if (> index 16r7F)
       (throw-not-implemented instr script program
                              {:script-index index})
@@ -230,7 +220,7 @@
 
      ; If the script has a delay write its index on the global list
      (when has-delay?
-       [(index-of-constant program delay)])
+       [(p/index-of-constant program delay)])
 
      ; If the script has arguments write the argument count
      (when has-arguments?
@@ -240,7 +230,7 @@
      ; each local index on the global list
      (when has-locals?
        (concat [(count locals)]
-               (map #(index-of-constant program (:value %))
+               (map #(p/index-of-constant program (:value %))
                     locals)))
 
      (encode-instruction-count script))))
@@ -255,6 +245,6 @@
 
 (defn encode [program]
   (-> program
-      sort-globals
+      p/sort-globals
       encode-program
       vec))

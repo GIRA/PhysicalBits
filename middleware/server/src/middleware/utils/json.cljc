@@ -1,6 +1,6 @@
 (ns middleware.utils.json
   (:require [clojure.walk :as w]
-            [cheshire.core :as json]))
+            #?(:clj [cheshire.core :as json])))
 
 
 (defn- fix-outgoing-floats [obj]

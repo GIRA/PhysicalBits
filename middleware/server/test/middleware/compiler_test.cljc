@@ -1,13 +1,15 @@
 (ns middleware.compiler-test
   (:refer-clojure :exclude [compile])
-  (:require [clojure.test :refer :all]
+  #?(:clj (:use [middleware.compile-stats]))
+  (:require #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [deftest is testing]])
+            [middleware.test-utils :refer [equivalent?]]
             [clojure.string :as str]
             [clojure.walk :as w]
             [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.emitter :as emit]
-            [middleware.parser.ast-nodes :as ast])
-  (:use [middleware.test-utils]))
+            [middleware.parser.ast-nodes :as ast]))
 
 (defn compile [ast]
   (register-program! ast)

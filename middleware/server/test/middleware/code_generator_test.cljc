@@ -1,9 +1,10 @@
 (ns middleware.code-generator-test
   (:refer-clojure :exclude [print])
-  (:require [clojure.test :refer :all]
+  #?(:clj (:use [middleware.compile-stats]))
+  (:require #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [deftest is testing]])
             [middleware.code-generator.code-generator :as cg]
-            [middleware.parser.ast-nodes :as ast])
-  (:use [middleware.test-utils]))
+            [middleware.parser.ast-nodes :as ast]))
 
 (defn print [ast] (register-program! ast) (cg/print ast))
 
