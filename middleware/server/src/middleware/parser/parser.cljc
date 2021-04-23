@@ -2,8 +2,11 @@
   (:require [middleware.parser.ast-nodes :as ast]
             [petitparser.core :as pp]))
 
-(defn- parse-int [str] (Integer/parseInt str))
-(defn- parse-double [str] (Double/parseDouble str))
+(defn- parse-int [str] #?(:clj (Integer/parseInt str)
+                          :cljs (js/parseInt str)))
+
+(defn- parse-double [str] #?(:clj (Double/parseDouble str)
+                             :cljs (js/parseFloat str)))
 
 ; TODO(Richo): This should probably be in a utils.ast namespace
 (defn- script? [node]
@@ -298,6 +301,15 @@
 
 (comment
 
+  (pp/parse (-> parser :parsers :identifier) "richo")
+ (re-matches #"(?u)\p{L}" "í")
+
+ (.test (js/RegExp. "\\p{L}" "u") "é")
+ (.exec #"(?u)\p{L}" "á")
+  (pp/parse pp/digit \1)
+  (re-matches #"\w" )
+  (pp/parse (pp/plus pp/letter) "AAA")
+
  (do
    (require '[clojure.pprint :refer [pprint]])
    (require '[clojure.data :as data])
@@ -357,5 +369,9 @@
 (pprint (parse "func map(value, fromLow, fromHigh, toLow, toHigh) {
   return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }"))
+
+
+(parse-int "32.015")
+(parse-double "32.56")
 
  ,,,)
