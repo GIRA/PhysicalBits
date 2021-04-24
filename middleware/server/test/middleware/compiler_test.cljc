@@ -15,9 +15,7 @@
   #?(:clj (register-program! ast))
   (:compiled (cc/compile-tree ast "")))
 
-(defn- NaN? [n]
-  #?(:clj (not (== n n))
-     ))
+(defn- NaN? [n] (not (== n n)))
 
 (deftest constants-support-special-floats
   (is (= ##Inf (:value (emit/constant ##Inf))))
