@@ -16,7 +16,7 @@
   (w/postwalk #(if-not (number? %)
                  %
                  (cond
-                   (not= % %) {:___NAN___ 0}
+                   (not (== % %)) {:___NAN___ 0}
                    (= ##Inf %) {:___INF___ 1}
                    (= ##-Inf %) {:___INF___ -1}
                    :else %))

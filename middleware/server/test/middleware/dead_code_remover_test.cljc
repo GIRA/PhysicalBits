@@ -8,7 +8,7 @@
             [middleware.compiler.emitter :as emit]))
 
 (defn compile-uzi-string [src]
-  (register-program! src)
+  #?(:clj (register-program! src))
   (:compiled (cc/compile-uzi-string src)))
 
 (deftest

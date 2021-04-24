@@ -13,7 +13,7 @@
 ; so that we catch exceptions early, and (2) provide programs for CompileStats.csv
 
 (defn compile [src]
-  (register-program! src)
+  #?(:clj (register-program! src))
   (:compiled (cc/compile-uzi-string src)))
 
 (defn encode [src]

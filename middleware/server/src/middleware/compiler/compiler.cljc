@@ -20,7 +20,8 @@
   (if-not node
     0
     (if (zero? value)
-      (double Double/MAX_VALUE)
+      (double #?(:clj Double/MAX_VALUE
+                 :cljs (.-MAX_VALUE js/Number)))
       (/ (case scale
            "s" 1000
            "m" (* 1000 60)
@@ -492,9 +493,9 @@
   (let [errors (checker/check-tree ast)]
     (if (empty? errors)
       ast
-      (throw (ex-info (format "%d error%s found!"
-                              (count errors)
-                              (if (= 1 (count errors)) "" "s"))
+      (throw (ex-info (str (count errors)
+                           " error" (if (= 1 (count errors)) "" "s")
+                           " found!")
                       {:src src
                        :errors errors})))))
 

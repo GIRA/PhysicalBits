@@ -12,13 +12,17 @@
             [middleware.parser.ast-nodes :as ast]))
 
 (defn compile [ast]
-  (register-program! ast)
+  #?(:clj (register-program! ast))
   (:compiled (cc/compile-tree ast "")))
+
+(defn- NaN? [n]
+  #?(:clj (not (== n n))
+     ))
 
 (deftest constants-support-special-floats
   (is (= ##Inf (:value (emit/constant ##Inf))))
   (is (= ##-Inf (:value (emit/constant ##-Inf))))
-  (is (Double/isNaN (:value (emit/constant ##NaN)))))
+  (is (NaN? (:value (emit/constant ##NaN)))))
 
 (deftest
   empty-program-test

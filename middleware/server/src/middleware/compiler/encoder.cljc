@@ -158,25 +158,33 @@
   [16rF5 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziTurnOnInstruction"
-  [{:keys [^byte argument] :as instr} script program]
+  [#?(:clj {:keys [^byte argument] :as instr}
+      :cljs {:keys [argument] :as instr})
+   script program]
   (if (> argument 16r1F)
     (throw-not-implemented instr script program)
     [(bit-or 16r00 argument)]))
 
 (defmethod encode-instruction "UziTurnOffInstruction"
-  [{:keys [^byte argument] :as instr} script program]
+  [#?(:clj {:keys [^byte argument] :as instr}
+      :cljs {:keys [argument] :as instr})
+   script program]
   (if (> argument 16r1F)
     (throw-not-implemented instr script program)
     [(bit-or 16r20 argument)]))
 
 (defmethod encode-instruction "UziWriteInstruction"
-  [{:keys [^byte argument] :as instr} script program]
+  [#?(:clj {:keys [^byte argument] :as instr}
+      :cljs {:keys [argument] :as instr})
+   script program]
   (if (> argument 16r1F)
     (throw-not-implemented instr script program)
     [(bit-or 16r40 argument)]))
 
 (defmethod encode-instruction "UziReadInstruction"
-  [{:keys [^byte argument] :as instr} script program]
+  [#?(:clj {:keys [^byte argument] :as instr}
+      :cljs {:keys [argument] :as instr})
+   script program]
   (if (> argument 16r1F)
     (throw-not-implemented instr script program)
     [(bit-or 16r60 argument)]))

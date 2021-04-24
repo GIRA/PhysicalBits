@@ -11,7 +11,7 @@
 (def lib-dir "../../uzi/tests")
 
 (defn compile-uzi-string [src]
-  (register-program! src :lib-dir lib-dir)
+  #?(:clj (register-program! src :lib-dir lib-dir))
   (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
 
 (defn- without-prims [ast]
@@ -583,16 +583,18 @@
   " import a from 'test_14_a.uzi';"
   " import b from 'test_14_b.uzi';"
   (let [ast (ast/program-node
-              :imports [(ast/import-node "a" "test_14_a.uzi")
-                        (ast/import-node "b" "test_14_b.uzi")])]
-    (is (thrown? Exception (link ast)))))
+             :imports [(ast/import-node "a" "test_14_a.uzi")
+                       (ast/import-node "b" "test_14_b.uzi")])]
+    (is (thrown? #?(:clj Exception :cljs js/Error)
+                 (link ast)))))
 
 (deftest
   importing-non-existing-library-should-raise-error
   " import t from 'test0_NO_EXISTE.uzi';"
   (let [ast (ast/program-node
-              :imports [(ast/import-node "t" "test0_NO_EXISTE.uzi")])]
-    (is (thrown? Exception (link ast)))))
+             :imports [(ast/import-node "t" "test0_NO_EXISTE.uzi")])]
+    (is (thrown? #?(:clj Exception :cljs js/Error)
+                 (link ast)))))
 
 (deftest
   importing-a-script-with-a-local-var-that-shadows-global
