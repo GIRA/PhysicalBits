@@ -11,7 +11,7 @@
 
 (defn uint32->float [^long uint32]
   #?(:clj (Float/intBitsToFloat (unchecked-int uint32))
-     :cljs (throw (js/Error. "Not implemented yet!"))))
+     :cljs (throw (js/Error. "ACAACA uint32->float!"))))
 
 (defn bytes->float [^bytes bytes]
   (uint32->float (bytes->uint32 bytes)))
@@ -23,7 +23,7 @@
 
 (defn float->uint32 [^double float]
   #?(:clj (Float/floatToRawIntBits (unchecked-float float))
-     :cljs (throw (js/Error. "Not implemented yet!"))))
+     :cljs (throw (js/Error. "ACAACA float->uint32!"))))
 
 (defn two's-complement [^long byte]
   (if (>= byte 0)
