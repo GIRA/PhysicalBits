@@ -139,11 +139,10 @@
       (let [nargs-expected (first (:stack-transition prim))
             nargs-provided (count (:arguments node))]
         (assert (= nargs-expected nargs-provided)
-                (format "Calling '%s' with %d argument%s (expected: %d)"
-                        (:selector node)
-                        nargs-provided
-                        (if (= 1 nargs-provided) "" "s")
-                        nargs-expected)
+                (str "Calling '" (:selector node)
+                     "' with " nargs-provided
+                     " argument" (if (= 1 nargs-provided) "" "s")
+                     " (expected: " nargs-expected ")")
                 node errors)))))
 
 (defn- contains-all? [a b]

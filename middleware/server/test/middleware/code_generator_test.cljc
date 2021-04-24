@@ -6,7 +6,9 @@
             [middleware.code-generator.code-generator :as cg]
             [middleware.parser.ast-nodes :as ast]))
 
-(defn print [ast] (register-program! ast) (cg/print ast))
+(defn print [ast]
+  #?(:clj (register-program! ast))
+  (cg/print ast))
 
 (deftest
   empty-program

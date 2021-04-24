@@ -9,62 +9,66 @@
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]))
 
-(defmethod report :should-be-invalid [m]
-  (with-test-out
-    (inc-report-counter :fail)
-    (println "\nFAIL in" (testing-vars-str m))
-    (when (seq *testing-contexts*) (println (testing-contexts-str)))
-    (when-let [message (:message m)] (println message))
-    (println "should be invalid:" (pr-str (:program m)))
-    (println "errors:" (pr-str (:errors m)))))
+#?(:clj
+   (defmethod report :should-be-invalid [m]
+     (with-test-out
+       (inc-report-counter :fail)
+       (println "\nFAIL in" (testing-vars-str m))
+       (when (seq *testing-contexts*) (println (testing-contexts-str)))
+       (when-let [message (:message m)] (println message))
+       (println "should be invalid:" (pr-str (:program m)))
+       (println "errors:" (pr-str (:errors m))))))
 
-(defmethod report :should-be-valid [m]
-  (with-test-out
-    (inc-report-counter :fail)
-    (println "\nFAIL in" (testing-vars-str m))
-    (when (seq *testing-contexts*) (println (testing-contexts-str)))
-    (when-let [message (:message m)] (println message))
-    (println "should be valid:" (pr-str (:program m)))
-    (println "--------------------------")
-    (println "errors:" (pr-str (:errors m)))))
+#?(:clj
+   (defmethod report :should-be-valid [m]
+     (with-test-out
+       (inc-report-counter :fail)
+       (println "\nFAIL in" (testing-vars-str m))
+       (when (seq *testing-contexts*) (println (testing-contexts-str)))
+       (when-let [message (:message m)] (println message))
+       (println "should be valid:" (pr-str (:program m)))
+       (println "--------------------------")
+       (println "errors:" (pr-str (:errors m))))))
 
-(defmethod assert-expr 'invalid? [msg form]
-  (let [args (rest form)
-        pred (first form)]
-    `(let [values# (list ~@args)
-           errors# (apply ~pred values#)
-           result# (not (empty? errors#))
-           expected#  (first values#)
-           actual# (second values#)]
-       (if result#
-         (do-report {:type :pass
-                     :message ~msg
-                     :program (first values#)
-                     :errors errors#})
-         (do-report {:type :should-be-invalid
-                     :message ~msg
-                     :program (first values#)
-                     :errors errors#}))
-       result#)))
+#?(:clj
+   (defmethod assert-expr 'invalid? [msg form]
+     (let [args (rest form)
+           pred (first form)]
+       `(let [values# (list ~@args)
+              errors# (apply ~pred values#)
+              result# (not (empty? errors#))
+              expected#  (first values#)
+              actual# (second values#)]
+          (if result#
+            (do-report {:type :pass
+                        :message ~msg
+                        :program (first values#)
+                        :errors errors#})
+            (do-report {:type :should-be-invalid
+                        :message ~msg
+                        :program (first values#)
+                        :errors errors#}))
+          result#))))
 
-(defmethod assert-expr 'valid? [msg form]
-  (let [args (rest form)
-        pred (first form)]
-    `(let [values# (list ~@args)
-           errors# (apply ~pred values#)
-           result# (empty? errors#)
-           expected#  (first values#)
-           actual# (second values#)]
-       (if result#
-         (do-report {:type :pass
-                     :message ~msg
-                     :program (first values#)
-                     :errors errors#})
-         (do-report {:type :should-be-valid
-                     :message ~msg
-                     :program (first values#)
-                     :errors errors#}))
-       result#)))
+#?(:clj
+   (defmethod assert-expr 'valid? [msg form]
+     (let [args (rest form)
+           pred (first form)]
+       `(let [values# (list ~@args)
+              errors# (apply ~pred values#)
+              result# (empty? errors#)
+              expected#  (first values#)
+              actual# (second values#)]
+          (if result#
+            (do-report {:type :pass
+                        :message ~msg
+                        :program (first values#)
+                        :errors errors#})
+            (do-report {:type :should-be-valid
+                        :message ~msg
+                        :program (first values#)
+                        :errors errors#}))
+          result#))))
 
 (defn check [src]
   (let [ast (if (string? src)
@@ -77,7 +81,7 @@
 
 (def invalid? check)
 (defn valid? [src]
-  (register-program! src :lib-dir "../../uzi/tests")
+  #?(:clj (register-program! src :lib-dir "../../uzi/tests"))
   (check src))
 
 (deftest block-should-only-contain-statements

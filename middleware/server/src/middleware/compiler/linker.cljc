@@ -1,19 +1,19 @@
 (ns middleware.compiler.linker
   (:require [middleware.compiler.utils.ast :as ast-utils]
-            #?(:clj [clojure.java.io :as io])
+            [middleware.utils.fs :as fs]
             [middleware.parser.parser :as parser]
             [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
 (defn parse [^java.io.File file]
-  (let [path (.getAbsolutePath file)
-        last-modified (.lastModified file)
+  (let [path (fs/absolute-path file)
+        last-modified (fs/last-modified file)
         entry (get @parser-cache path)]
     (if (= last-modified
            (get entry :last-modified))
       (get entry :content)
-      (let [content (parser/parse (slurp file))]
+      (let [content (parser/parse (fs/read file))]
         (swap! parser-cache assoc path {:last-modified last-modified
                                         :content content})
         content))))
@@ -103,8 +103,8 @@
   [{:keys [alias path initializationBlock] :as imp}, libs-dir, visited-imports]
   (when (contains? visited-imports {:alias alias :path path})
     (throw (ex-info "Dependency cycle detected" {:import imp, :visited visited-imports})))
-  (let [file (io/file libs-dir path)]
-    (if (.exists file)
+  (let [file (fs/file libs-dir path)]
+    (if (fs/exists? file)
       (let [imported-ast (-> (parse file)
                              ast-utils/assign-internal-ids
                              (apply-initialization-block initializationBlock)
@@ -119,7 +119,7 @@
       (throw (ex-info "File not found"
                       {:import imp
                        :file file
-                       :absolute-path (.getAbsolutePath file)})))))
+                       :absolute-path (fs/absolute-path file)})))))
 
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)

@@ -2,13 +2,21 @@
   (:require [clojure.walk :as w]
             #?(:clj [cheshire.core :as json])))
 
+(defn- encode* [obj]
+  #?(:clj (json/generate-string obj)
+     :cljs (.stringify js/JSON (clj->js obj))))
+
+(defn- decode* [str]
+  #?(:clj (json/parse-string str true)
+     :cljs (js->clj (.parse js/JSON str)
+              :keywordize-keys true)))
 
 (defn- fix-outgoing-floats [obj]
   "Hack to be able to encode special floats that JSON doesn't support"
   (w/postwalk #(if-not (number? %)
                  %
                  (cond
-                   (Double/isNaN %) {:___NAN___ 0}
+                   (not= % %) {:___NAN___ 0}
                    (= ##Inf %) {:___INF___ 1}
                    (= ##-Inf %) {:___INF___ -1}
                    :else %))
@@ -17,7 +25,7 @@
 (defn encode [obj]
   (-> obj
       fix-outgoing-floats
-      json/generate-string))
+      encode*))
 
 (defn- fix-incoming-floats [obj]
   "Hack to be able to decode special floats that JSON doesn't support"
@@ -31,5 +39,5 @@
 
 (defn decode [str]
   (-> str
-      (json/parse-string true)
+      decode*
       fix-incoming-floats))

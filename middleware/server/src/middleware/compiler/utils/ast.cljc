@@ -308,6 +308,10 @@
 
 (def local? (complement global?))
 
+(defn- create-uuid []
+  #?(:clj (.toString (java.util.UUID/randomUUID))
+     :cljs (str (random-uuid))))
+
 (defn assign-internal-ids
   "This function is important because it will guarantee that all nodes are different
    when compared with =. Due to clojure's philosophy regarding values, identity, and
@@ -318,4 +322,4 @@
    the code more fragile than simply adding this artificial :internal-id"
   [ast]
   (transform ast
-             :default (fn [node _] (assoc node :internal-id (.toString (java.util.UUID/randomUUID))))))
+             :default (fn [node _] (assoc node :internal-id (create-uuid)))))
