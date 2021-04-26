@@ -1,6 +1,7 @@
 (ns middleware.utils.fs
   (:refer-clojure :exclude [read exists?])
-  (:require #?(:clj [clojure.java.io :as io])))
+  (:require #?(:clj [clojure.java.io :as io]
+               :cljs [ajax.core :refer [GET]])))
 
 (defn read [file]
   #?(:clj (slurp file)
@@ -21,3 +22,24 @@
 (defn file [parent child]
   #?(:clj (io/file parent child)
      :cljs (throw (js/Error. "ACAACA file!"))))
+
+(comment
+ (js/alert "Richo")
+
+ (require '[ajax.core :refer [GET]])
+
+ (defn handler [response]
+   (.log js/console (str response)))
+
+ (defn error-handler [{:keys [status status-text]}]
+   (.log js/console (str "something bad happened: " status " " status-text)))
+
+ (GET "http://localhost:8080/core.uzi"
+      {:handler handler
+       :error-handler error-handler})
+
+
+ (GET "http://localhost:8080/core.uzi"
+      {:handler handler
+       :error-handler error-handler})
+ ,)
