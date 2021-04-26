@@ -22,7 +22,8 @@
 
 (defn file [parent child]
   #?(:clj (io/file parent child)
-     :cljs {:path child, :exists? true, :last-modified (rand)}))
+     :cljs {:path (str (clojure.string/replace parent "\\" "/") "/" child),
+            :exists? true, :last-modified (rand)}))
 
 (comment
  (js/alert "Richo")
