@@ -94,7 +94,7 @@ let Uzi = (function () {
       return new Promise((resolve, reject) => {
         var result = prueba.core.compile(src, type);
         var program = {
-          type: result.type,
+          type: type,
           src: result.src,
           compiled: result.compiled,
           ast: result["original-ast"]
