@@ -92,17 +92,39 @@ let Uzi = (function () {
 		compile: function (src, type, silent) {
       // HACK(Richo): Instead of going to the server to compile, we do it locally
       return new Promise((resolve, reject) => {
-        var result = prueba.core.compile(src, type);
-        var program = {
-          type: type,
-          src: result.src,
-          compiled: result.compiled,
-          ast: result["original-ast"]
-        };
-        resolve(program);
-        update({
-          program: program,
-        });
+        try {
+          var result = prueba.core.compile(src, type);
+          var program = {
+            type: type,
+            src: result.src,
+            compiled: result.compiled,
+            ast: result["original-ast"]
+          };
+          resolve(program);
+          var output = [];
+          if (!silent) {
+            output = [
+              {text: ""},
+              {type: "info", text: (new Date()).toLocaleString()},
+              {type: "success", text: "Compilation successful!", args: []}
+            ]
+          }
+          update({
+            program: program,
+            output: output
+          });
+        } catch (err) {
+          if (!silent) {
+            update({
+              output: [
+                {text: ""},
+                {type: "info", text: (new Date()).toLocaleString()},
+                {type: "error", text: err.toString()}
+              ]
+            });
+          }
+          reject(err);
+        }
       });
 
       let url = apiURL + "/uzi/compile";
