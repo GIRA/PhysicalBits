@@ -8,7 +8,7 @@
  :nrepl {:port 9000
          :middleware []}
 
- ;:dev-http {8080 "public"}
+ :dev-http {8080 "public"}
 
  :builds {:compiler {:target :browser
                      :modules {:main {:init-fn prueba.core/init}}}
