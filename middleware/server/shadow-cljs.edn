@@ -2,16 +2,17 @@
                 "src" "test"]
 
  :dependencies [[proto-repl "0.3.1"]
-                [clj-petitparser "0.1.2-SNAPSHOT"]]
+                [clj-petitparser "0.1.2-SNAPSHOT"]
+                [cljs-ajax "0.8.3"]]
 
  :nrepl {:port 9000
          :middleware []}
 
- :dev-http {8080 "public"}
+ ;:dev-http {8080 "public"}
 
  :builds {:compiler {:target :browser
                      :modules {:main {:init-fn prueba.core/init}}}
-         
+
           :test {:target :browser-test
                  :test-dir "resources/public/js/test"
                  :devtools {:http-port 8021
