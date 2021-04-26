@@ -1,27 +1,28 @@
 (ns middleware.utils.fs
   (:refer-clojure :exclude [read exists?])
   (:require #?(:clj [clojure.java.io :as io]
-               :cljs [ajax.core :refer [GET]])))
+               :cljs [ajax.core :refer [GET]])
+            #?(:cljs [middleware.utils.fs-macros :as m])))
 
 (defn read [file]
   #?(:clj (slurp file)
-     :cljs (throw (js/Error. "ACAACA read!"))))
+     :cljs (m/read-file* (:path file)) #_(throw (js/Error. "ACAACA read!"))))
 
 (defn absolute-path [file]
   #?(:clj (.getAbsolutePath file)
-     :cljs (throw (js/Error. "ACAACA absolute-path!"))))
+     :cljs (:path file)))
 
 (defn last-modified [file]
   #?(:clj (.lastModified file)
-     :cljs (throw (js/Error. "ACAACA last-modified!"))))
+     :cljs (:last-modified file)))
 
 (defn exists? [file]
   #?(:clj (.exists file)
-     :cljs (throw (js/Error. "ACAACA exists?!"))))
+     :cljs (:exists? file)))
 
 (defn file [parent child]
   #?(:clj (io/file parent child)
-     :cljs (throw (js/Error. "ACAACA file!"))))
+     :cljs {:path child, :exists? true, :last-modified (rand)}))
 
 (comment
  (js/alert "Richo")
