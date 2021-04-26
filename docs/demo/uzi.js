@@ -11,11 +11,28 @@ let Uzi = (function () {
 
 
   let Uzi = {
-    state: {},
+    /*
+    HACK(Richo): Normally the state can be an empty object because once we connect
+    to the server the initial value is supplied. However, since we are now fully local
+    we don't have the initial state from the server so I'm initializing it with default
+    values so that the IDE doesn't break.
+    */
+    state: {
+      connection: {
+        availablePorts: [],
+      },
+      output: [],
+      pins: {available: [], elements: []},
+      globals: {available: [], elements: []},
+      "pseudo-vars": {available: [], elements: []},
+      program: {src: null, compiled: null, ast: null}
+    },
     serverAvailable: true,
     socket: null,
 
     start: function (preferredHost) {
+      return Promise.resolve(); // HACK(Richo): Early exit, don't attempt to connect at all
+
       host = preferredHost || "";
       apiURL = host ? "http://" + host : "";
       wsURL = "ws://" + (host || location.host);
@@ -51,6 +68,25 @@ let Uzi = (function () {
     },
 
 		compile: function (src, type, silent) {
+      // HACK(Richo): Instead of going to the server to compile, we do it locally
+      return new Promise((resolve, reject) => {
+        if (type == "uzi") {
+          var result = prueba.core.compile(src);
+          var program = {
+            type: result.type,
+            src: result.src,
+            compiled: result.compiled,
+            ast: result["original-ast"]
+          };
+          resolve(program);
+          update({
+            program: program,
+          });
+        } else {
+          resolve(null);
+        }
+      });
+
       let url = apiURL + "/uzi/compile";
       let data = {
         id: id,
@@ -144,7 +180,7 @@ let Uzi = (function () {
   function update(data) {
     let previousState = deepClone(Uzi.state);
     Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
-    
+
     observers["update"].forEach(function (fn) {
       try {
         fn(Uzi.state, previousState);
