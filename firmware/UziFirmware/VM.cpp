@@ -1166,7 +1166,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_INIT:
 	{
-		int8 size = (int8)stack_pop(error);
+		int32 size = (int32)stack_pop(error);
 		if (size > 0) 
 		{
 			float* array = uzi_createArray(float, size);
@@ -1182,7 +1182,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_GET:
 	{
-		int8 index = (int8)stack_pop(error);
+		int32 index = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		float result = 0;
@@ -1202,7 +1202,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	case PRIM_ARRAY_SET:
 	{
 		float element = stack_pop(error);
-		int8 index = (int8)stack_pop(error);
+		int32 index = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		if (pointer > 0 && index >= 0)
