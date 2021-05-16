@@ -80,10 +80,7 @@ let i18n = (function () {
         let locale = locales[current] || {};
 
         if (locale.hasOwnProperty(string)) {
-            let translation = locale[string];
-            if (translation == null) {
-              translation = locales[spec[0]][string];
-            }
+            let translation = locale[string] || string;
             return translation.toString();
         } else {
             if (untranslatable.indexOf(string) === -1) untranslatable.push(string);
