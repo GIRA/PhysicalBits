@@ -1164,6 +1164,58 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	case PRIM_ARRAY_INIT:
+	{
+		int8 size = (int8)stack_pop(error);
+		if (size > 0) 
+		{
+			float* array = uzi_createArray(float, size);
+			if (array == 0) { error |= OUT_OF_MEMORY; }
+			stack_pushPointer(array, error);
+		}
+		else 
+		{
+			stack_pushPointer(0, error);
+		}
+	}
+	break;
+
+	case PRIM_ARRAY_GET:
+	{
+		int8 index = (int8)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0 && index >= 0) 
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR) 
+			{
+				result = array[index];
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+
+	case PRIM_ARRAY_SET:
+	{
+		float element = stack_pop(error);
+		int8 index = (int8)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		if (pointer > 0 && index >= 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				array[index] = element;
+			}
+		}
+	}
+	break;
+
 	}
 }
 

@@ -165,6 +165,9 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x49: instruction->opcode = PRIM_LCD_INIT0; break;
 				case 0x50: instruction->opcode = PRIM_LCD_INIT1; break;
 				case 0x51: instruction->opcode = PRIM_LCD_PRINT_VALUE; break;
+				case 0x52: instruction->opcode = PRIM_ARRAY_INIT; break;
+				case 0x53: instruction->opcode = PRIM_ARRAY_GET; break;
+				case 0x54: instruction->opcode = PRIM_ARRAY_SET; break;
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}
