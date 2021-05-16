@@ -1,0 +1,28 @@
+var size = 0;
+var array = 0;
+
+prim array_init;
+prim array_set;
+prim array_get;
+
+task setup() {
+	array = array_init(size);
+}
+
+func get(index) {
+	if index >= size { return 0; }
+	return array_get(array, index);
+}
+
+proc set(index, element) {
+	if index >= size { return; }
+	array_set(array, index, element);
+}
+
+func get_random() {
+	return array_get(array, randomInt(0, size));
+}
+
+func count() {
+	return size;
+}
