@@ -10,12 +10,10 @@ task setup() {
 }
 
 func get(index) {
-	if index >= size { return 0; }
 	return array_get(array, index);
 }
 
 proc set(index, element) {
-	if index >= size { return; }
 	array_set(array, index, element);
 }
 
