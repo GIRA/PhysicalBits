@@ -77,7 +77,10 @@
    "getServoDegrees"        [16r48    [1     1]]
    "lcd_init0"              [16r49    [3     1]]
    "lcd_init1"              [16r50    [1     1]]
-   "lcd_print"              [16r51    [3     0]]})
+   "lcd_print"              [16r51    [3     0]]
+   "array_init"             [16r52    [1     1]]
+   "array_get"              [16r53    [2     1]]
+   "array_set"              [16r54    [3     0]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]
