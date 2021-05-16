@@ -1169,8 +1169,9 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		int32 size = (int32)stack_pop(error);
 		if (size > 0) 
 		{
-			float* array = uzi_createArray(float, size);
+			float* array = uzi_createArray(float, size + 1);
 			if (array == 0) { error |= OUT_OF_MEMORY; }
+			else { array[0] = size; }
 			stack_pushPointer(array, error);
 		}
 		else 
@@ -1191,7 +1192,11 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 			float* array = (float*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR) 
 			{
-				result = array[index];
+				int32 size = (float)array[0];
+				if (index < size)
+				{
+					result = array[index + 1];
+				}
 			}
 		}
 		stack_push(result, error);
@@ -1210,7 +1215,11 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 			float* array = (float*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR)
 			{
-				array[index] = element;
+				int32 size = (float)array[0];
+				if (index < size)
+				{
+					array[index + 1] = element;
+				}
 			}
 		}
 	}
