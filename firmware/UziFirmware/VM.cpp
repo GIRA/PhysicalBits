@@ -1225,6 +1225,123 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	case PRIM_ARRAY_CLEAR:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				// TODO(Richo): Use memset instead of a for loop
+				for (int i = 0; i < size; i++)
+				{
+					array[i + 1] = 0;
+				}
+			}
+		}
+	}
+	break;
+
+	case PRIM_ARRAY_SUM:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				
+				for (int i = 0; i < size; i++)
+				{
+					result += array[i + 1];
+				}
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_AVG:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+
+				for (int i = 0; i < size; i++)
+				{
+					result += array[i + 1];
+				}
+				result /= size;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_MAX:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				float max = array[1];
+				for (int i = 1; i < size; i++)
+				{
+					if (array[i + 1] > max) 
+					{
+						max = array[i + 1];
+					}
+				}
+				result = max;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_MIN:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				float min = array[1];
+				for (int i = 1; i < size; i++)
+				{
+					if (array[i + 1] < min)
+					{
+						min = array[i + 1];
+					}
+				}
+				result = min;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
 	}
 }
 

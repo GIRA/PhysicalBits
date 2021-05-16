@@ -4,6 +4,11 @@ var array = 0;
 prim array_init;
 prim array_set;
 prim array_get;
+prim array_clear;
+prim array_sum;
+prim array_avg;
+prim array_max;
+prim array_min;
 
 task setup() {
 	array = array_init(size);
@@ -23,4 +28,24 @@ func get_random() {
 
 func count() {
 	return size;
+}
+
+proc clear() {
+	array_clear(array);
+}
+
+func sum() {
+	return array_sum(array);
+}
+
+func avg() {
+	return array_avg(array);
+}
+
+func max() {
+	return array_max(array);
+}
+
+func min() {
+	return array_min(array);
 }

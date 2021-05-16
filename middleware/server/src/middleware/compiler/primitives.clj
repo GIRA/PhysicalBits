@@ -80,7 +80,12 @@
    "lcd_print"              [16r51    [3     0]]
    "array_init"             [16r52    [1     1]]
    "array_get"              [16r53    [2     1]]
-   "array_set"              [16r54    [3     0]]})
+   "array_set"              [16r54    [3     0]]
+   "array_clear"            [16r55    [1     0]]
+   "array_sum"              [16r56    [1     1]]
+   "array_avg"              [16r57    [1     1]]
+   "array_max"              [16r58    [1     1]]
+   "array_min"              [16r59    [1     1]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]
