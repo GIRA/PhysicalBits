@@ -72,6 +72,12 @@ let ASTToBlocks = (function () {
 				return createImportBlock(json, ctx);
 			}
 		},
+		UziYieldNode: function (json, ctx) {
+			let node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "yield");
+			return node;
+		},
 		UziTaskNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);

@@ -78,6 +78,15 @@ let UziBlock = (function () {
       isTopLevel: true,
     },
 
+    // Secret
+    yield: {
+      text: "yield ;",
+      type: null,
+      inputs: {},
+      connections: { up: true, down: true, left: false },
+      color: colors.TASKS
+    },
+
     // Imports
     import: {
       text: "import %1 from %2",

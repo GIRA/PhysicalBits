@@ -57,6 +57,12 @@ let BlocksToAST = (function () {
 				body: builder.block(id, statements)
 			};
 		},
+		yield: function (id) {
+			return {
+				__class__: "UziYieldNode",
+				id: id,
+			};
+		},
 		scriptCall: function (id, selector, args) {
 			return {
 				__class__: "UziCallNode",
@@ -275,6 +281,10 @@ let BlocksToAST = (function () {
 			ctx.addImport(alias, path, function () {
 				return JSONX.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
 			});
+		},
+		yield: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.yield(id));
 		},
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
