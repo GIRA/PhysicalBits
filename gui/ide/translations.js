@@ -109,6 +109,7 @@ var TRANSLATIONS = [
   /* "stop task %name" */ ["stop %name ;", "stop %name", "detener %name", "peata %name", "stoppa %name"],
   /* "resume task %name" */ ["resume %name ;", "resume %name", "continuar %name", "jätka %name", "återta %name"],
   /* "run task %name" */ ["%taskName () ;", "run %taskName", "ejecutar %taskName", "käivita %taskName", "kör %taskName"],
+  /* "yield" */ ["yield ;", "suspend until next tick", "suspender hasta el siguiente ciclo", null, null],
   /* "toggle pin %1" */ ["toggle( %1 ) ;", "toggle pin %1", "alternar pin %1", "lülita ümber viigu %1 väärtus", "växla värdet på ben %1"],
   /* "set state %1 on pin %2" */ ["turn %1 ( %2 ) ;", "%1 pin %2", "%1 pin %2", "%1 viik %2", "%1 ben %2"],
   /* "is %1 pin %2" */ ["%1 ( %2 )", "is %1 pin %2", "está %1 el pin %2", "on viik %1 %2", "är ben %1 %2"],
