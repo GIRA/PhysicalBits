@@ -33,7 +33,8 @@ func get(index) {
 }
 
 proc set(index, element) {
-	if index >= count { return; }
+	if index >= size { return; }
+	if index >= count { count = index + 1; }
 	array_set(array, index, element);
 }
 
