@@ -35,17 +35,17 @@ proc clear() {
 }
 
 func sum() {
-	return array_sum(array);
+	return array_sum(array, size);
 }
 
 func avg() {
-	return array_avg(array);
+	return array_avg(array, size);
 }
 
 func max() {
-	return array_max(array);
+	return array_max(array, size);
 }
 
 func min() {
-	return array_min(array);
+	return array_min(array, size);
 }

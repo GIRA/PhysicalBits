@@ -1247,6 +1247,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_SUM:
 	{
+		int32 limit = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		float result = 0;
@@ -1256,8 +1257,9 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 			if (error == NO_ERROR)
 			{
 				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
 				
-				for (int i = 0; i < size; i++)
+				for (int i = 0; i < limit; i++)
 				{
 					result += array[i + 1];
 				}
@@ -1269,6 +1271,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_AVG:
 	{
+		int32 limit = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		float result = 0;
@@ -1278,12 +1281,13 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 			if (error == NO_ERROR)
 			{
 				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
 
-				for (int i = 0; i < size; i++)
+				for (int i = 0; i < limit; i++)
 				{
 					result += array[i + 1];
 				}
-				result /= size;
+				result /= limit;
 			}
 		}
 		stack_push(result, error);
@@ -1292,17 +1296,20 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_MAX:
 	{
+		int32 limit = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		float result = 0;
-		if (pointer > 0)
+		if (pointer > 0 && limit > 0)
 		{
 			float* array = (float*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR)
 			{
 				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+
 				float max = array[1];
-				for (int i = 1; i < size; i++)
+				for (int i = 1; i < limit; i++)
 				{
 					if (array[i + 1] > max) 
 					{
@@ -1318,17 +1325,20 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 
 	case PRIM_ARRAY_MIN:
 	{
+		int32 limit = (int32)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 
 		float result = 0;
-		if (pointer > 0)
+		if (pointer > 0 && limit > 0)
 		{
 			float* array = (float*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR)
 			{
 				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+
 				float min = array[1];
-				for (int i = 1; i < size; i++)
+				for (int i = 1; i < limit; i++)
 				{
 					if (array[i + 1] < min)
 					{
