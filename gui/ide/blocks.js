@@ -84,7 +84,7 @@ let UziBlock = (function () {
       type: null,
       inputs: {},
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.CONTROL,
     },
 
     // Imports
