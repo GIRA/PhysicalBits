@@ -95,7 +95,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: false},
-      color: colors.HIDDEN,
+      color: colors.TASKS,
       postload: function (block) {
         block.setEditable(false);
       },
