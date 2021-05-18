@@ -799,6 +799,30 @@ let BlocksToAST = (function () {
 
 			stream.push(builder.variableDeclaration(id, name, value));
 		},
+		list_get: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+			let index = generateCodeForValue(block, ctx, "index");
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "get";
+			let arg = {name: "index", value: index};
+			stream.push(builder.scriptCall(id, selector, [arg]));
+		},
+		list_set: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "set";
+			let args = [
+				{name: "index", value: generateCodeForValue(block, ctx, "index")},
+				{name: "element", value: generateCodeForValue(block, ctx, "value")},
+			];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
 		proc_definition_0args: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
@@ -1285,6 +1309,16 @@ let BlocksToAST = (function () {
 					ctx.addImport("buttons", "Buttons.uzi", function () {
 						let stmts = [];
 						stmts.push(builder.assignment(null, "debounceMs", builder.number(null, 50)));
+						return builder.block(null, stmts);
+					});
+				},
+				addListImport: function (alias) {
+					ctx.addImport(alias, "List.uzi", function () {
+						let list = metadata.lists.find(function (m) { return m.name === alias; });
+						if (list == undefined) return null;
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "size", builder.number(null, parseInt(list.size))));
 						return builder.block(null, stmts);
 					});
 				},

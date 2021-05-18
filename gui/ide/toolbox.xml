@@ -548,6 +548,27 @@
   </category>
   <category name="Lists" custom="LISTS">
     <button text="Configure lists..." callbackKey="configureLists"></button>
+    <block type="list_get">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_set">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
   </category>
   <category name="Procedures" custom="PROCEDURES">
     <block type="proc_definition_0args">

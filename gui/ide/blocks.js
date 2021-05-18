@@ -1414,6 +1414,49 @@ let UziBlock = (function () {
       color: colors.VARIABLES
     },
 
+    // Lists
+    list_get: {
+      text: "%name . get ( %index )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "index": {
+          name: "index",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_set: {
+      text: "%name . set ( %index , %value ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "index": {
+          name: "index",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        },
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+
     // Procedures
     proc_definition_0args: {
       text: "proc %name () { \n %stmts }",
@@ -2153,7 +2196,7 @@ let UziBlock = (function () {
         nodes.splice(1); // Leave the button
       } else {
         let fields = node.getElementsByTagName("field");
-        for (let i = 1; i < fields.length; i++) {
+        for (let i = 0; i < fields.length; i++) {
           let field = fields[i];
           if (field.getAttribute("name") === "listName") {
             field.innerText = lists[lists.length-1].name;
@@ -2508,6 +2551,11 @@ let UziBlock = (function () {
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
+  function currentListsForDropdown() {
+    if (lists.length == 0) return [[null, null]];
+    return lists.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function handleScriptBlocksEvents(evt, definitionBlocks, callBlocks) {
     /*
     NOTE(Richo): I a script is being created by user action make sure to assign
@@ -2771,6 +2819,7 @@ let UziBlock = (function () {
       sonars: sonars,
       joysticks: joysticks,
       variables: variables,
+      lists: lists,
     };
     return BlocksToAST.generate(xml, metadata);
   }
@@ -2987,6 +3036,7 @@ let UziBlock = (function () {
         sonars: sonars,
         joysticks: joysticks,
         variables: variables,
+        lists: lists,
       };
     },
     setProgram: function (d) {
@@ -2999,6 +3049,7 @@ let UziBlock = (function () {
         sonars = d.sonars || [];
         joysticks = d.joysticks || [];
         variables = d.variables || [];
+        lists = d.lists || [];
         return true;
       } catch (err) {
         console.log(err);
