@@ -26,6 +26,7 @@ const fs = require('fs');
         .then(initializeBlocklySonarsModal)
         .then(initializeBlocklyJoysticksModal)
         .then(initializeBlocklyVariablesModal)
+        .then(initializeBlocklyListsModal)
         .then(initializeAutorun)
         .then(initializeTopBar)
         .then(initializeInspectorPanel)
@@ -267,6 +268,41 @@ const fs = require('fs');
         UziBlock.refreshToolbox();
         saveToLocalStorage();
         scheduleAutorun(true, "VARIABLE UPDATE!");
+      });
+    });
+  }
+
+  function initializeBlocklyListsModal() {
+
+    function getUsedLists() {
+      let program = Uzi.state.program;
+      if (program == null) return new Set();
+      // HACK(Richo): We are actually returning all the aliases, not just lists
+      return new Set(program.ast.imports.map(imp => imp.alias));
+    }
+
+    UziBlock.getWorkspace().registerButtonCallback("configureLists", function () {
+      let lists = UziBlock.getLists();
+      let usedLists = getUsedLists();
+      let spec = {
+        title: i18n.translate("Configure lists"),
+        cantRemoveMsg: i18n.translate("This list is being used by the program!"),
+        defaultElement: { name: "list", size: "10" },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("List name")},
+          {id: "size", type: "number", name: i18n.translate("Capacity")},
+        ],
+        rows: lists.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedLists.has(each.name);
+          return clone;
+        })
+      };
+      BlocklyModal.show(spec).then(data => {
+        UziBlock.setLists(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "LIST UPDATE!");
       });
     });
   }

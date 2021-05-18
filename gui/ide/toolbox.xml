@@ -546,6 +546,9 @@
       <field name="variableName"></field>
     </block>
   </category>
+  <category name="Lists" custom="LISTS">
+    <button text="Configure lists..." callbackKey="configureLists"></button>
+  </category>
   <category name="Procedures" custom="PROCEDURES">
     <block type="proc_definition_0args">
       <field name="scriptName">default</field>

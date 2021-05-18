@@ -8,6 +8,7 @@ let UziBlock = (function () {
   let sonars = [];
   let joysticks = [];
   let variables = [];
+  let lists = [];
   let observers = {
     "change" : [],
   };
@@ -32,6 +33,7 @@ let UziBlock = (function () {
     CONTROL: 140,
     MATH: 210,
     VARIABLES: 305,
+    LISTS: 305,
     PROCEDURES: 285,
     FUNCTIONS: 265,
   }
@@ -2011,6 +2013,7 @@ let UziBlock = (function () {
       initSonarToolboxCategory(toolbox, workspace);
       initJoystickToolboxCategory(toolbox, workspace);
       initVariablesToolboxCategory(toolbox, workspace);
+      initListsToolboxCategory(toolbox, workspace);
       initProceduresToolboxCategory(toolbox, workspace);
       initFunctionsToolboxCategory(toolbox, workspace);
 
@@ -2135,6 +2138,25 @@ let UziBlock = (function () {
           let field = fields[i];
           if (field.getAttribute("name") === "variableName") {
             field.innerText = variables[variables.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initListsToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("LISTS", function () {
+      let node = XML.getChildNode(toolbox, "Lists", "originalName");
+      let nodes = Array.from(node.children);
+      if (lists.length == 0) {
+        nodes.splice(1); // Leave the button
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 1; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "listName") {
+            field.innerText = lists[lists.length-1].name;
           }
         }
       }
@@ -2934,6 +2956,28 @@ let UziBlock = (function () {
         });
 
       variables = data;
+    },
+    getLists: function () { return lists; },
+    setLists: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (lists[m.index] == undefined) return;
+        renames.set(lists[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("listName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      lists = data;
     },
     getProgram: function () {
       return {
