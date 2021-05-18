@@ -841,7 +841,7 @@ let BlocksToAST = (function () {
 
 			ctx.addListImport(listName);
 
-			let selector = listName + "." + "push";
+			let selector = listName + "." + "pop";
 			let args = [];
 			stream.push(builder.scriptCall(id, selector, args));
 		},
