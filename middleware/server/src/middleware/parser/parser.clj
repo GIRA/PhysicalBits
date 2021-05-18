@@ -289,14 +289,47 @@
    :ws? (pp/optional :ws)
    :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
 
-(def parser (pp/compose grammar transformations))
+(defn- update-keys [map keys f]
+  (reduce (fn [m k] (update m k f)) map keys))
 
-(defn parse [src]
-  (let [result (pp/parse parser src)]
-    ;(pprint result)
-    result))
+(defn- compose-with-tokens [grammar transformations]
+  (let [rules (keys transformations)
+        grammar (update-keys grammar rules pp/token)
+        transformations (update-keys transformations rules
+                                     (fn [f]
+                                       (fn [{:keys [parsed-value start count]}]
+                                         (let [result (f parsed-value)]
+                                           (if (map? result)
+                                             (assoc result :token-range [start count])
+                                             result)))))]
+    (pp/compose grammar transformations)))
+
+(def parser (compose-with-tokens grammar transformations))
+
+(defn parse [src] (pp/parse parser src))
 
 (comment
+
+  (pprint grammar)
+
+  (map grammar
+       (keys transformations))
+
+       (fn [{:keys [parsed-value start count]}]
+                 (assoc (ast/literal-number-node parsed-value)
+                        :token-range [start count])
+                 #_(ast/literal-number-node parsed-value))
+
+  (pprint (reduce #(update %1 %2 (fn [f]
+                                   (fn [{:keys [parsed-value start count]}]
+                                     (let [result (f parsed-value)]
+                                       (if (map? result)
+                                         (assoc result :token-range [start count])
+                                         result)))))
+                  transformations
+                  (keys transformations)))
+
+ (reduce + (range 0 10))
 
  (do
    (require '[clojure.pprint :refer [pprint]])

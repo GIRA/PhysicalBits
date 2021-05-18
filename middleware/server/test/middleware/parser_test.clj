@@ -1,5 +1,6 @@
 (ns middleware.parser-test
   (:require [clojure.test :refer :all]
+            [clojure.walk :as w]
             [middleware.parser.parser :as pp]
             [middleware.parser.ast-nodes :as ast])
   (:use [middleware.test-utils ]))
@@ -9,7 +10,11 @@
 (defn parse [src]
   (if-not (contains? exclusions (symbol (test-name)))
     (register-program! src))
-  (pp/parse src))
+  ; TODO(Richo): Improve equality/equivalence checking so that I don't need to remove :token-range
+  (w/postwalk #(if (map? %)
+               (dissoc % :token-range)
+               %)
+             (pp/parse src)))
 
 (deftest return-should-not-be-confused-with-call
   (let [src "task foo() { return (3) + 4; }"
