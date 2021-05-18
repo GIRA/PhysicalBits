@@ -511,7 +511,6 @@ let ASTToBlocks = (function () {
 	}
 
 	function initListCall(node, alias, selector, json, ctx) {
-		debugger;
 		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
 		let args = json.arguments.map(function (each) { return each.value; });
 		if (selector == "set") {
