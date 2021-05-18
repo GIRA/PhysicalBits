@@ -1456,6 +1456,141 @@ let UziBlock = (function () {
       connections: { up: true, down: true, left: false },
       color: colors.VARIABLES
     },
+    list_push: {
+      text: "%name . push ( %value ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_pop: {
+      text: "%name . pop ( ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_clear: {
+      text: "%name . clear ( ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_random: {
+      text: "%name . get_random ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_count: {
+      text: "%name . count ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_size: {
+      text: "%name . size ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_sum: {
+      text: "%name . sum ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_avg: {
+      text: "%name . avg ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_max: {
+      text: "%name . max ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_min: {
+      text: "%name . min ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
 
     // Procedures
     proc_definition_0args: {

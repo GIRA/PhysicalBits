@@ -522,9 +522,30 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "list_get");
 			appendField(node, "listName", alias);
 			appendValue(node, "index", args[0] || defaultArg, ctx);
+		} else if (selector == "push") {
+			node.setAttribute("type", "list_push");
+			appendField(node, "listName", alias);
+			appendValue(node, "value", args[0] || defaultArg, ctx);
 		} else {
-			// NOTE(Richo): Fallback code...
-			initPrimitiveCall(node, json, ctx);
+			let selectors = {
+				"pop": "list_pop",
+				"clear": "list_clear",
+				"count": "list_count",
+				"size": "list_size",
+				"get_random": "list_random",
+				"sum": "list_sum",
+				"avg": "list_avg",
+				"max": "list_max",
+				"min": "list_min"
+			};
+			let block_type = selectors[selector];
+			if (block_type) {
+				node.setAttribute("type", block_type);
+				appendField(node, "listName", alias);
+			} else {
+				// NOTE(Richo): Fallback code...
+				initPrimitiveCall(node, json, ctx);
+			}
 		}
 	}
 
