@@ -18,8 +18,8 @@ func get(index) {
 	return array_get(array, index);
 }
 
-proc set(index, element) {
-	array_set(array, index, element);
+proc set(index, value) {
+	array_set(array, index, value);
 }
 
 func get_random() {

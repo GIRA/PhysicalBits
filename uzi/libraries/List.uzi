@@ -15,9 +15,9 @@ task setup() {
 	array = array_init(size);
 }
 
-proc push(element) {
+proc push(value) {
 	if count >= size { return; }
-	array_set(array, count, element);
+	array_set(array, count, value);
 	count = count + 1;
 }
 
@@ -32,10 +32,10 @@ func get(index) {
 	return array_get(array, index);
 }
 
-proc set(index, element) {
+proc set(index, value) {
 	if index >= size { return; }
 	if index >= count { count = index + 1; }
-	array_set(array, index, element);
+	array_set(array, index, value);
 }
 
 func get_random() {
