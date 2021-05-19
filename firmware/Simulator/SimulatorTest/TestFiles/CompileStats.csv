@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,13.38111888111888,4.748251748251748,31.22377622377622
-MEDIAN,8,3.5,20
+AVERAGE,13.34843205574913,4.742160278745645,31.16376306620209
+MEDIAN,8,3,20
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -17,6 +17,7 @@ middleware.checker-test/conditions-should-be-expressions#0,4,3,11
 middleware.checker-test/global-declarations-only-allow-literals#0,0,1,4
 middleware.checker-test/global-declarations-only-allow-literals#1,0,1,4
 middleware.checker-test/global-declarations-only-allow-literals#2,0,1,4
+middleware.checker-test/local-declaration-value-should-be-an-expression#0,4,3,14
 middleware.checker-test/logical-operators-should-have-expression-operands#0,6,3,13
 middleware.checker-test/logical-operators-should-have-expression-operands#1,6,3,13
 middleware.checker-test/loop-body-should-contain-only-statements#0,8,4,18

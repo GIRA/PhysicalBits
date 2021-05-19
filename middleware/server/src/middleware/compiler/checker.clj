@@ -206,7 +206,9 @@
       (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
         (assert (not (contains? local-names (:name node)))
               "Variable already declared"
-              node errors)))))
+              node errors))))
+  (when-let [value (:value node)]
+    (assert-expression value errors)))
 
 (defmethod check-node "UziVariableNode" [node errors path]
   (assert (ast-utils/variable-named (:name node) path)
