@@ -206,6 +206,9 @@
                                      (ast/literal-number-node 3)
                                      (ast/literal-number-node 5))]))]))))
 
+(deftest local-declaration-value-should-be-an-expression
+  (is (valid? "task foo() { var a = 3 + 4; }"))
+  (is (invalid? "task foo() { var a = turnOff(D13); }")))
 
 (deftest conditional-branches-should-be-blocks
   (is (valid? "task foo() { if 1 { turnOn(D13); } else { turnOff(D13); }}"))

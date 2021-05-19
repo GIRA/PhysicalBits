@@ -1,0 +1,72 @@
+var size = 0;
+var array = 0;
+var count = 0;
+
+prim array_init;
+prim array_set;
+prim array_get;
+prim array_clear;
+prim array_sum;
+prim array_avg;
+prim array_max;
+prim array_min;
+
+task setup() {
+	array = array_init(size);
+}
+
+proc push(value) {
+	if count >= size { return; }
+	array_set(array, count, value);
+	count = count + 1;
+}
+
+proc pop() {
+	if count <= 0 { return; }
+	count = count - 1;
+	array_set(array, count, 0);
+}
+
+func get(index) {
+	if index >= count { return 0; }
+	return array_get(array, index);
+}
+
+proc set(index, value) {
+	if index >= size { return; }
+	if index >= count { count = index + 1; }
+	array_set(array, index, value);
+}
+
+func get_random() {
+	return array_get(array, randomInt(0, count));
+}
+
+func clear() {
+	array_clear(array);
+	count = 0;
+}
+
+func count() {
+	return count;
+}
+
+func size() {
+	return size;
+}
+
+func sum() {
+	return array_sum(array, count);
+}
+
+func avg() {
+	return array_avg(array, count);
+}
+
+func max() {
+	return array_max(array, count);
+}
+
+func min() {
+	return array_min(array, count);
+}

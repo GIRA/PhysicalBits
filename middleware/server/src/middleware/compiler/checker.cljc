@@ -3,10 +3,13 @@
   (:refer-clojure :exclude [assert])
   (:require [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.primitives :as prims]
+            [petitparser.token :as t]
             [clojure.data :as data]))
 
 (defn- register-error! [description node errors]
   (swap! errors conj {:node node
+                      :src (if-let [token (get (meta node) :token)]
+                             (t/input-value token))
                       :description description}))
 
 (defn- assert [bool description node errors]
@@ -205,7 +208,9 @@
       (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
         (assert (not (contains? local-names (:name node)))
               "Variable already declared"
-              node errors)))))
+              node errors))))
+  (when-let [value (:value node)]
+    (assert-expression value errors)))
 
 (defmethod check-node "UziVariableNode" [node errors path]
   (assert (ast-utils/variable-named (:name node) path)

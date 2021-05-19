@@ -1164,6 +1164,194 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	case PRIM_ARRAY_INIT:
+	{
+		int32 size = (int32)stack_pop(error);
+		if (size > 0) 
+		{
+			float* array = uzi_createArray(float, size + 1);
+			if (array == 0) { error |= OUT_OF_MEMORY; }
+			else { array[0] = size; }
+			stack_pushPointer(array, error);
+		}
+		else 
+		{
+			stack_pushPointer(0, error);
+		}
+	}
+	break;
+
+	case PRIM_ARRAY_GET:
+	{
+		int32 index = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0 && index >= 0) 
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR) 
+			{
+				int32 size = (float)array[0];
+				if (index < size)
+				{
+					result = array[index + 1];
+				}
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+
+	case PRIM_ARRAY_SET:
+	{
+		float element = stack_pop(error);
+		int32 index = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		if (pointer > 0 && index >= 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				if (index < size)
+				{
+					array[index + 1] = element;
+				}
+			}
+		}
+	}
+	break;
+
+	case PRIM_ARRAY_CLEAR:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				// TODO(Richo): Use memset instead of a for loop
+				for (int i = 0; i < size; i++)
+				{
+					array[i + 1] = 0;
+				}
+			}
+		}
+	}
+	break;
+
+	case PRIM_ARRAY_SUM:
+	{
+		int32 limit = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+				
+				for (int i = 0; i < limit; i++)
+				{
+					result += array[i + 1];
+				}
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_AVG:
+	{
+		int32 limit = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+
+				for (int i = 0; i < limit; i++)
+				{
+					result += array[i + 1];
+				}
+				result /= limit;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_MAX:
+	{
+		int32 limit = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0 && limit > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+
+				float max = array[1];
+				for (int i = 1; i < limit; i++)
+				{
+					if (array[i + 1] > max) 
+					{
+						max = array[i + 1];
+					}
+				}
+				result = max;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
+	case PRIM_ARRAY_MIN:
+	{
+		int32 limit = (int32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+
+		float result = 0;
+		if (pointer > 0 && limit > 0)
+		{
+			float* array = (float*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				int32 size = (float)array[0];
+				if (limit > size) { limit = size; }
+
+				float min = array[1];
+				for (int i = 1; i < limit; i++)
+				{
+					if (array[i + 1] < min)
+					{
+						min = array[i + 1];
+					}
+				}
+				result = min;
+			}
+		}
+		stack_push(result, error);
+	}
+	break;
+
 	}
 }
 

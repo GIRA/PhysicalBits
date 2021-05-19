@@ -1,0 +1,75 @@
+<html>
+  <head>
+    <title>Simulator</title>
+    <link rel="stylesheet" type="text/css" href=simulator.css>
+  </head>
+<body>
+  <div class="buttons">
+    <button onclick="start()" id="start-button" type="button" class="button">Start</button>
+    <button onclick="sim.updateProgram();" id="update-button" type="button" class="button">Update</button>
+    <!-- <button onclick="sim.execute()" id="next-button" type="button" class="button">Next Instruction</button> -->
+    <button onclick="sim.stopProgram()" id="stop-button" type="button" class="button">Stop</button>
+  </div>
+
+  <svg width="700" height="500" id="svg" x="200" y="100" ></svg>> </svg>
+  <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
+  <script src="ajax.js" type="text/javascript"></script>
+  <script src="uzi.js" type="text/javascript" ></script>
+  <script src="simulator.js" type="text/javascript"></script>
+  <script src="graphics.js" type="text/javascript" ></script>
+  <script>
+    
+  var svg = document.getElementById("svg");
+  var sim = new Simulator();
+  var g = ctorGraphics();
+
+  $(document).ready(function () {
+    Uzi.start().then(() => {
+      console.log("Uzi started successfully!");
+      sim.updateProgram();
+    });
+    g.drawCircles(svg,20,sim);
+    g.createPins(sim);
+    g.createStackTable();
+  });
+  </script>
+  <script>
+    function start(){
+      sim.startProgram(750);
+      g.showStats(sim,svg);
+    }
+    function updateSpeed(value){
+      g.displaySpeed(value);
+      sim.stopProgram();
+      sim.startProgram(value);
+    }
+  
+  </script>
+
+  <div class="left">
+    <table id="globalsTable"class="globals">
+      <caption>Globals</caption>
+    </table>
+
+    <table id="pinsTable" class="pins">
+      <caption>Pins</caption>
+    </table>
+
+    <div>
+      <h1  class="texts">Simulator Speed</h1>
+      <input type="range" min="1" max="1500" value="750" class="slider" id="speedSlider" oninput="updateSpeed(this.value)">
+      <h1 id="speed" class="texts">750</h1>
+    </div>
+  </div>
+
+  <div class="right">
+    <table id="stackTable" class="stack">
+      <caption>Stack</caption>
+    </table>
+    <h1 id="pc" class="texts">PC</h1>
+  </div>
+  
+  
+  
+</body>
+</html>

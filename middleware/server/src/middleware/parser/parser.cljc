@@ -292,12 +292,24 @@
    :ws? (pp/optional :ws)
    :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
 
-(def parser (pp/compose grammar transformations))
+(defn- update-keys [map keys f]
+  (reduce (fn [m k] (update m k f)) map keys))
 
-(defn parse [src]
-  (let [result (pp/parse parser src)]
-    ;(pprint result)
-    result))
+(defn- compose-with-tokens [grammar transformations]
+  (let [rules (keys transformations)
+        grammar (update-keys grammar rules pp/token)
+        transformations (update-keys transformations rules
+                                     (fn [f]
+                                       (fn [{:keys [parsed-value] :as token}]
+                                         (let [result (f parsed-value)]
+                                           (if (map? result)
+                                             (with-meta result {:token token})
+                                             result)))))]
+    (pp/compose grammar transformations)))
+
+(def parser (compose-with-tokens grammar transformations))
+
+(defn parse [src] (pp/parse parser src))
 
 (comment
 
@@ -341,9 +353,20 @@
    ;(pprint (nth diff 2))
    (= expected actual))
 
- (pprint actual)
- (pprint expected)
+   (require '[clojure.walk :as w])
 
+
+  (def t (let [tokens (atom [])]
+           (w/postwalk (fn [o]
+                         (when-let [m (meta o)]
+                           (swap! tokens conj m))
+                         o)
+                       actual)
+           @tokens))
+ (count t)
+ (pprint (meta actual))
+ (pprint expected)
+(meta {})
 
  (pprint (pp/parse (get-in parser [:parsers :return])
                    "return (3) + 4;"))

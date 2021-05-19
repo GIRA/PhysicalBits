@@ -546,6 +546,65 @@
       <field name="variableName"></field>
     </block>
   </category>
+  <category name="Lists" custom="LISTS">
+    <button text="Configure lists..." callbackKey="configureLists"></button>
+    <block type="list_get">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_set">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_push">
+      <field name="listName"></field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_pop">
+      <field name="listName"></field>
+    </block>
+    <block type="list_clear">
+      <field name="listName"></field>
+    </block>
+    <block type="list_count">
+      <field name="listName"></field>
+    </block>
+    <block type="list_size">
+      <field name="listName"></field>
+    </block>
+    <block type="list_random">
+      <field name="listName"></field>
+    </block>
+    <block type="list_sum">
+      <field name="listName"></field>
+    </block>
+    <block type="list_avg">
+      <field name="listName"></field>
+    </block>
+    <block type="list_max">
+      <field name="listName"></field>
+    </block>
+    <block type="list_min">
+      <field name="listName"></field>
+    </block>
+  </category>
   <category name="Procedures" custom="PROCEDURES">
     <block type="proc_definition_0args">
       <field name="scriptName">default</field>

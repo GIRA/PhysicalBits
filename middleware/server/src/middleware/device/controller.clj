@@ -173,6 +173,7 @@
     (doseq [pin-name pins]
       (set-pin-report pin-name true))))
 
+; TODO(Richo): This function makes no sense here!
 (defn compile [src type silent? & args]
   (try
     (let [compile-fn (case type
@@ -195,10 +196,17 @@
         (logger/error (.getMessage ex))
         ; TODO(Richo): Improve the error message for checker errors
         (when-let [{errors :errors} (ex-data ex)]
-          (doseq [{:keys [description node]} errors]
-            (logger/error description)
-            (logger/error (str node)))))
+          (doseq [[^long i {:keys [description node src]}]
+                  (map-indexed (fn [i e] [i e])
+                               errors)]
+            (logger/error (str "├─ " (inc i) ". " description))
+            (if src
+              (logger/error (str "|     ..." src "..."))
+              (when-let [id (:id node)]
+                (logger/error (str "|     Block ID: " id)))))
+          (logger/error (str "└─ Compilation failed!"))))
       (throw ex))))
+
 
 (defn- update-reporting [program]
   "All pins and globals referenced in the program must be enabled"
