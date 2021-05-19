@@ -3,10 +3,13 @@
   (:refer-clojure :exclude [assert])
   (:require [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.primitives :as prims]
+            [petitparser.token :as t]
             [clojure.data :as data]))
 
 (defn- register-error! [description node errors]
   (swap! errors conj {:node node
+                      :src (if-let [token (get (meta node) :token)]
+                             (t/input-value token))
                       :description description}))
 
 (defn- assert [bool description node errors]
