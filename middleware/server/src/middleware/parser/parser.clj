@@ -297,10 +297,10 @@
         grammar (update-keys grammar rules pp/token)
         transformations (update-keys transformations rules
                                      (fn [f]
-                                       (fn [{:keys [parsed-value start count]}]
+                                       (fn [{:keys [parsed-value] :as token}]
                                          (let [result (f parsed-value)]
                                            (if (map? result)
-                                             (assoc result :token-range [start count])
+                                             (with-meta result {:token token})
                                              result)))))]
     (pp/compose grammar transformations)))
 
@@ -310,26 +310,6 @@
 
 (comment
 
-  (pprint grammar)
-
-  (map grammar
-       (keys transformations))
-
-       (fn [{:keys [parsed-value start count]}]
-                 (assoc (ast/literal-number-node parsed-value)
-                        :token-range [start count])
-                 #_(ast/literal-number-node parsed-value))
-
-  (pprint (reduce #(update %1 %2 (fn [f]
-                                   (fn [{:keys [parsed-value start count]}]
-                                     (let [result (f parsed-value)]
-                                       (if (map? result)
-                                         (assoc result :token-range [start count])
-                                         result)))))
-                  transformations
-                  (keys transformations)))
-
- (reduce + (range 0 10))
 
  (do
    (require '[clojure.pprint :refer [pprint]])
@@ -362,9 +342,20 @@
    ;(pprint (nth diff 2))
    (= expected actual))
 
- (pprint actual)
- (pprint expected)
+   (require '[clojure.walk :as w])
 
+
+  (def t (let [tokens (atom [])]
+           (w/postwalk (fn [o]
+                         (when-let [m (meta o)]
+                           (swap! tokens conj m))
+                         o)
+                       actual)
+           @tokens))
+ (count t)
+ (pprint (meta actual))
+ (pprint expected)
+(meta {})
 
  (pprint (pp/parse (get-in parser [:parsers :return])
                    "return (3) + 4;"))

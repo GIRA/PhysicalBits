@@ -10,11 +10,7 @@
 (defn parse [src]
   (if-not (contains? exclusions (symbol (test-name)))
     (register-program! src))
-  ; TODO(Richo): Improve equality/equivalence checking so that I don't need to remove :token-range
-  (w/postwalk #(if (map? %)
-               (dissoc % :token-range)
-               %)
-             (pp/parse src)))
+  (pp/parse src))
 
 (deftest return-should-not-be-confused-with-call
   (let [src "task foo() { return (3) + 4; }"
