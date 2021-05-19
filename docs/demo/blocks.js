@@ -8,6 +8,7 @@ let UziBlock = (function () {
   let sonars = [];
   let joysticks = [];
   let variables = [];
+  let lists = [];
   let observers = {
     "change" : [],
   };
@@ -32,6 +33,7 @@ let UziBlock = (function () {
     CONTROL: 140,
     MATH: 210,
     VARIABLES: 305,
+    LISTS: 305,
     PROCEDURES: 285,
     FUNCTIONS: 265,
   }
@@ -78,6 +80,15 @@ let UziBlock = (function () {
       isTopLevel: true,
     },
 
+    // Secret
+    yield: {
+      text: "yield ;",
+      type: null,
+      inputs: {},
+      connections: { up: true, down: true, left: false },
+      color: colors.CONTROL,
+    },
+
     // Imports
     import: {
       text: "import %1 from %2",
@@ -95,7 +106,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: false},
-      color: colors.HIDDEN,
+      color: colors.TASKS,
       postload: function (block) {
         block.setEditable(false);
       },
@@ -1403,6 +1414,184 @@ let UziBlock = (function () {
       color: colors.VARIABLES
     },
 
+    // Lists
+    list_get: {
+      text: "%name . get ( %index )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "index": {
+          name: "index",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_set: {
+      text: "%name . set ( %index , %value ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "index": {
+          name: "index",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        },
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_push: {
+      text: "%name . push ( %value ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_pop: {
+      text: "%name . pop ( ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_clear: {
+      text: "%name . clear ( ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.VARIABLES
+    },
+    list_random: {
+      text: "%name . get_random ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_count: {
+      text: "%name . count ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_size: {
+      text: "%name . size ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_sum: {
+      text: "%name . sum ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_avg: {
+      text: "%name . avg ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_max: {
+      text: "%name . max ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+    list_min: {
+      text: "%name . min ( )",
+      type: types.NUMBER,
+      inputs: {
+        "name": {
+          name: "listName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentListsForDropdown), name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.VARIABLES
+    },
+
     // Procedures
     proc_definition_0args: {
       text: "proc %name () { \n %stmts }",
@@ -2002,6 +2191,7 @@ let UziBlock = (function () {
       initSonarToolboxCategory(toolbox, workspace);
       initJoystickToolboxCategory(toolbox, workspace);
       initVariablesToolboxCategory(toolbox, workspace);
+      initListsToolboxCategory(toolbox, workspace);
       initProceduresToolboxCategory(toolbox, workspace);
       initFunctionsToolboxCategory(toolbox, workspace);
 
@@ -2126,6 +2316,25 @@ let UziBlock = (function () {
           let field = fields[i];
           if (field.getAttribute("name") === "variableName") {
             field.innerText = variables[variables.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initListsToolboxCategory(toolbox, workspace) {
+    workspace.registerToolboxCategoryCallback("LISTS", function () {
+      let node = XML.getChildNode(toolbox, "Lists", "originalName");
+      let nodes = Array.from(node.children);
+      if (lists.length == 0) {
+        nodes.splice(1); // Leave the button
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "listName") {
+            field.innerText = lists[lists.length-1].name;
           }
         }
       }
@@ -2477,6 +2686,11 @@ let UziBlock = (function () {
     return variables.map(function(each) { return [ each.name, each.name ]; });
   }
 
+  function currentListsForDropdown() {
+    if (lists.length == 0) return [[null, null]];
+    return lists.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function handleScriptBlocksEvents(evt, definitionBlocks, callBlocks) {
     /*
     NOTE(Richo): I a script is being created by user action make sure to assign
@@ -2740,6 +2954,7 @@ let UziBlock = (function () {
       sonars: sonars,
       joysticks: joysticks,
       variables: variables,
+      lists: lists,
     };
     return BlocksToAST.generate(xml, metadata);
   }
@@ -2926,6 +3141,28 @@ let UziBlock = (function () {
 
       variables = data;
     },
+    getLists: function () { return lists; },
+    setLists: function (data) {
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (lists[m.index] == undefined) return;
+        renames.set(lists[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("listName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      lists = data;
+    },
     getProgram: function () {
       return {
         version: version,
@@ -2934,6 +3171,7 @@ let UziBlock = (function () {
         sonars: sonars,
         joysticks: joysticks,
         variables: variables,
+        lists: lists,
       };
     },
     setProgram: function (d) {
@@ -2946,6 +3184,7 @@ let UziBlock = (function () {
         sonars = d.sonars || [];
         joysticks = d.joysticks || [];
         variables = d.variables || [];
+        lists = d.lists || [];
         return true;
       } catch (err) {
         console.log(err);

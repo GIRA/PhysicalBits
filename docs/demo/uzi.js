@@ -93,7 +93,7 @@ let Uzi = (function () {
       // HACK(Richo): Instead of going to the server to compile, we do it locally
       return new Promise((resolve, reject) => {
         try {
-          var result = prueba.core.compile(src, type);
+          var result = middleware.core.compile(src, type);
           var program = {
             type: type,
             src: result.src,

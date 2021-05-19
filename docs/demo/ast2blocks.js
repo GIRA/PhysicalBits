@@ -68,9 +68,22 @@ let ASTToBlocks = (function () {
 				});
 			} else if (json.path == "Buttons.uzi") {
 				// HACK(Richo): Do nothing?
+			} else if (json.path == "List.uzi") {
+				let name = json.alias;
+				let size = getVariableDefaultValue("size");
+				ctx.addList({
+					name: name,
+					size: size
+				});
 			} else {
 				return createImportBlock(json, ctx);
 			}
+		},
+		UziYieldNode: function (json, ctx) {
+			let node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "yield");
+			return node;
 		},
 		UziTaskNode: function (json, ctx) {
 			let node = create("block");
@@ -401,6 +414,8 @@ let ASTToBlocks = (function () {
 			initJoystickCall(node, alias, selector, json, ctx);
 		} else if (ctx.isButtonCall(alias, selector)) {
 			initButtonCall(node, alias, selector, json, ctx);
+		} else if (ctx.lists.some(l => l.name == alias)) {
+			initListCall(node, alias, selector, json, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -492,6 +507,45 @@ let ASTToBlocks = (function () {
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initListCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
+		let args = json.arguments.map(function (each) { return each.value; });
+		if (selector == "set") {
+			node.setAttribute("type", "list_set");
+			appendField(node, "listName", alias);
+			appendValue(node, "index", args[0] || defaultArg, ctx);
+			appendValue(node, "value", args[1] || defaultArg, ctx);
+		} else if (selector == "get") {
+			node.setAttribute("type", "list_get");
+			appendField(node, "listName", alias);
+			appendValue(node, "index", args[0] || defaultArg, ctx);
+		} else if (selector == "push") {
+			node.setAttribute("type", "list_push");
+			appendField(node, "listName", alias);
+			appendValue(node, "value", args[0] || defaultArg, ctx);
+		} else {
+			let selectors = {
+				"pop": "list_pop",
+				"clear": "list_clear",
+				"count": "list_count",
+				"size": "list_size",
+				"get_random": "list_random",
+				"sum": "list_sum",
+				"avg": "list_avg",
+				"max": "list_max",
+				"min": "list_min"
+			};
+			let block_type = selectors[selector];
+			if (block_type) {
+				node.setAttribute("type", block_type);
+				appendField(node, "listName", alias);
+			} else {
+				// NOTE(Richo): Fallback code...
+				initPrimitiveCall(node, json, ctx);
+			}
 		}
 	}
 
@@ -990,6 +1044,7 @@ let ASTToBlocks = (function () {
 				motors: [],
 				sonars: [],
 				joysticks: [],
+				lists: [],
 
 				addVariable: function (variable) {
 					if (ctx.variables.some(v => v.name == variable.name)) return;
@@ -1007,6 +1062,10 @@ let ASTToBlocks = (function () {
 				addJoystick: function (joystick) {
 					joystick.index = ctx.joysticks.length;
 					ctx.joysticks.push(joystick);
+				},
+				addList: function (list) {
+					list.index = ctx.lists.length;
+					ctx.lists.push(list);
 				},
 
 				scriptNamed: function (name) {
@@ -1045,6 +1104,7 @@ let ASTToBlocks = (function () {
         sonars: ctx.sonars,
         joysticks: ctx.joysticks,
         variables: ctx.variables,
+				lists: ctx.lists,
       };
 		}
 	}

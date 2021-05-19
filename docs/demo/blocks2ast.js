@@ -57,6 +57,12 @@ let BlocksToAST = (function () {
 				body: builder.block(id, statements)
 			};
 		},
+		yield: function (id) {
+			return {
+				__class__: "UziYieldNode",
+				id: id,
+			};
+		},
 		scriptCall: function (id, selector, args) {
 			return {
 				__class__: "UziCallNode",
@@ -275,6 +281,10 @@ let BlocksToAST = (function () {
 			ctx.addImport(alias, path, function () {
 				return JSONX.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
 			});
+		},
+		yield: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.yield(id));
 		},
 		task: function (block, ctx, stream) {
 			let id = XML.getId(block);
@@ -789,6 +799,132 @@ let BlocksToAST = (function () {
 
 			stream.push(builder.variableDeclaration(id, name, value));
 		},
+		list_get: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+			let index = generateCodeForValue(block, ctx, "index");
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "get";
+			let arg = {name: "index", value: index};
+			stream.push(builder.scriptCall(id, selector, [arg]));
+		},
+		list_set: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "set";
+			let args = [
+				{name: "index", value: generateCodeForValue(block, ctx, "index")},
+				{name: "value", value: generateCodeForValue(block, ctx, "value")},
+			];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_push: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "push";
+			let args = [
+				{name: "value", value: generateCodeForValue(block, ctx, "value")},
+			];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_pop: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "pop";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_clear: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "clear";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_count: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "count";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_size: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "size";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_random: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "get_random";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_sum: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "sum";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_avg: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "avg";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_max: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "max";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		list_min: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let listName = asIdentifier(XML.getChildNode(block, "listName").innerText);
+
+			ctx.addListImport(listName);
+
+			let selector = listName + "." + "min";
+			let args = [];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
 		proc_definition_0args: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
@@ -1275,6 +1411,16 @@ let BlocksToAST = (function () {
 					ctx.addImport("buttons", "Buttons.uzi", function () {
 						let stmts = [];
 						stmts.push(builder.assignment(null, "debounceMs", builder.number(null, 50)));
+						return builder.block(null, stmts);
+					});
+				},
+				addListImport: function (alias) {
+					ctx.addImport(alias, "List.uzi", function () {
+						let list = metadata.lists.find(function (m) { return m.name === alias; });
+						if (list == undefined) return null;
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "size", builder.number(null, parseInt(list.size))));
 						return builder.block(null, stmts);
 					});
 				},
