@@ -1,5 +1,4 @@
-{:source-paths ["env/dev/cljs" "src-cljs"
-                "src" "test"]
+{:source-paths ["env/dev/cljs" "src" "test"]
 
  :dependencies [[proto-repl "0.3.1"]
                 [clj-petitparser "0.1.2-SNAPSHOT"]
@@ -11,7 +10,7 @@
  :dev-http {8080 "public"}
 
  :builds {:compiler {:target :browser
-                     :modules {:main {:init-fn prueba.core/init}}}
+                     :modules {:main {:init-fn middleware.core/init}}}
 
           :test {:target :browser-test
                  :test-dir "resources/public/js/test"

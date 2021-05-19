@@ -1,4 +1,4 @@
-(ns prueba.core
+(ns middleware.core
   (:require [middleware.parser.parser :as p])
   (:require [middleware.compiler.compiler :as c]))
 
@@ -9,7 +9,7 @@
   (clj->js (p/parse str)))
 
 (defn ^:export compile [str type]
- (println type)
- (if (= type "uzi")
-  (clj->js (c/compile-uzi-string str))
-  (clj->js (c/compile-json-string str))))
+  (println type)
+  (if (= type "uzi")
+    (clj->js (c/compile-uzi-string str))
+    (clj->js (c/compile-json-string str))))
