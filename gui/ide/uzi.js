@@ -10,9 +10,8 @@ let Uzi = (function () {
   };
 
 
-
   let Uzi = {
-    state: null,
+    state: {},
     serverAvailable: true,
     socket: null,
 
@@ -101,6 +100,15 @@ let Uzi = (function () {
         report: Array.from(report).join(",")
       };
       return POST(url, data);
+    },
+
+    setProfile: function (enabled) {
+      let url = apiURL + "/uzi/profile";
+      let data = {
+        id: id,
+        enabled: enabled
+      };
+      return POST(url, data);
     }
   };
 
@@ -134,8 +142,9 @@ let Uzi = (function () {
   }
 
   function update(data) {
-    let previousState = Uzi.state;
-    Uzi.state = data;
+    let previousState = deepClone(Uzi.state);
+    Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
+    
     observers["update"].forEach(function (fn) {
       try {
         fn(Uzi.state, previousState);
@@ -157,7 +166,8 @@ let Uzi = (function () {
           Uzi.serverAvailable = true;
           socket.onmessage = function (evt) {
             try {
-              let data = fixInvalidJSONFloats(JSON.parse(evt.data));
+              let msg = evt.data;
+              let data = JSONX.parse(msg);
               update(data);
               if (!msgReceived) {
                 msgReceived = true;
@@ -177,30 +187,6 @@ let Uzi = (function () {
         reject(ex);
       }
     });
-  }
-
-	/*
-	HACK(Richo): This function will fix occurrences of Infinity, -Infinity, and NaN
-	in the JSON object resulting from a server response. Since JSON	doesn't handle
-  these values correctly I'm encoding them in a special way.
-	*/
-  function fixInvalidJSONFloats(obj) {
-    if (obj instanceof Array) return obj.map(fixInvalidJSONFloats);
-    if (typeof obj != "object") return obj;
-    if (obj === null) return null;
-    if (obj === undefined) return undefined;
-
-    if (obj["___INF___"] !== undefined) {
-      return Infinity * obj["___INF___"];
-    } else if (obj["___NAN___"] !== undefined) {
-      return NaN;
-    }
-
-    let value = {};
-    for (let m in obj) {
-      value[m] = fixInvalidJSONFloats(obj[m]);
-    }
-    return value;
   }
 
   return Uzi;

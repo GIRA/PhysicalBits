@@ -16,6 +16,7 @@
 (def MSG_OUT_SAVE_PROGRAM 6)
 (def MSG_OUT_KEEP_ALIVE 7)
 (def MSG_OUT_PROFILE 8)
+(def MSG_OUT_SET_REPORT_INTERVAL 9)
 (def MSG_OUT_SET_GLOBAL 10)
 (def MSG_OUT_SET_GLOBAL_REPORT 11)
 (def MSG_OUT_DEBUG_CONTINUE	12)
@@ -44,13 +45,13 @@
    32 "DISCONNECT_ERROR"
    64 "READER_CHECKSUM_FAIL"])
 
-(defn error-msg [code]
+(defn error-msg [^long code]
   (if (= 0 code)
     "NO_ERROR"
     (let [msg (str/join
                " & "
                (map (fn [[_ k]] k)
-                    (filter (fn [[c _]] (not= 0 (bit-and code c)))
+                    (filter (fn [[^long c _]] (not= 0 (bit-and code c)))
                             (partition-all 2 error-msgs))))]
       (if (empty? msg)
         (str "UNKNOWN_ERROR (" code ")")
@@ -58,5 +59,5 @@
 
 (defn error? [code] (not= 0 code))
 
-(defn error-disconnect? [code]
+(defn error-disconnect? [^long code]
   (not= 0 (bit-and code 32)))

@@ -1,0 +1,7 @@
+{:report-interval-min 0
+ :report-interval-max 100
+ :report-interval-inc 5
+ :delta-threshold-min 1
+ :delta-threshold-max 25
+ :timing-diffs-size 10
+ :pseudo-vars? true}

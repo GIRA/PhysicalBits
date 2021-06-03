@@ -14,3 +14,8 @@ pom.xml.asc
 /plugin.iml
 
 /log
+
+/resources/public/js/test
+/public/js
+/node_modules
+/.shadow-cljs

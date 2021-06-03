@@ -50,7 +50,7 @@ The execution of each task at the correct time is performed automatically by the
 
 Primitive instructions like `delay()` are provided to allow the user to block the executing task for a given amount of time without affecting the rest. Arduino related primitives are also included but in some cases their names and behavior were modified to offer a simplified interface with the hardware. For example, the Arduino `digitalRead()` and `analogRead()` functions are merged into a single primitive function called `read()`, which accepts a pin number and returns a floating-point value that is always in the [0,1] range. If the pin is digital the resulting value can either be 0 or 1 but if the pin is analog the function will normalize its value between 0 and 1. An equivalent implementation of the `write()` procedure is also provided. We believe these small design details make the language more accessible to beginners by providing a concise (and consistent) interface to the hardware.
 
-UziScript also supports external libraries that can extend the primitive functionality of the language. You can find examples [here](uzi/libraries).
+UziScript also supports external libraries that can extend the primitive functionality of the language. You can find examples [here](https://github.com/GIRA/PhysicalBits/tree/master/uzi/libraries).
 
 The UziScript grammar, written as a PEG, can be found [here](https://github.com/GIRA/PhysicalBits/tree/master/docs/uzi.pegjs). However, this grammar is not guaranteed to be up to date with the actual implementation.
 

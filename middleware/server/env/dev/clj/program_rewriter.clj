@@ -2,7 +2,8 @@
   (:require [clojure.walk :as w]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
-            [clojure.pprint :as pprint]))
+            [clojure.pprint :as pprint]
+            [clojure.string :as str]))
 
 (defmulti ^:private rewrite-node :__class__)
 
@@ -86,16 +87,36 @@
 (defn- rewrite-tree [code]
   (w/prewalk rewrite-node code))
 
+(defn- fix-newlines ^String [src]
+  "Hack to remove a few newlines that make indentation much uglier.
+  After this, intellij can indent the code properly"
+  (-> src
+      (str/replace #"(:globals)\s+" "$1 ")
+      (str/replace #"(:scripts)\s+" "$1 ")
+      (str/replace #"(:tickingRate)\s+" "$1 ")
+      (str/replace #"(:body)\s+" "$1 ")
+      (str/replace #"(:name)\s+" "$1 ")
+      (str/replace #"(:delay)\s+" "$1 ")
+      (str/replace #"(:running\?)\s+" "$1 ")
+      (str/replace #"(:once\?)\s+" "$1 ")
+      (str/replace #"(:left)\s+" "$1 ")
+      (str/replace #"(:right)\s+" "$1 ")
+      (str/replace #"(:arguments)\s+" "$1 ")
+      (str/replace #"(:value)\s+" "$1 ")
+      (str/replace #"(:instructions)\s+" "$1 ")
+      (str/replace #"(:primitives)\s+" "$1 ")
+      (str/replace #"(:locals)\s+" "$1 ")
+      (str/replace #"(:statements)\s+" "$1 ")
+      (str/replace #"(:imports)\s+" "$1 ")))
+
 (defn rewrite-file [input-path output-path]
   (println "BEWARE! This doesn't preserve comments and the pretty print sucks.")
   (with-open [reader (java.io.PushbackReader. (io/reader input-path))
               writer (io/writer output-path)]
     (loop []
       (when-let [next (edn/read {:eof nil} reader)]
-        (pprint/write (rewrite-tree next)
-                      :stream writer
-                      :dispatch pprint/code-dispatch
-                      :pretty true
-                      :readably* true)
-        (.write writer "\n\n")
+        (.write writer (fix-newlines (with-out-str (pprint/write (rewrite-tree next)
+                                                                 :dispatch pprint/code-dispatch
+                                                                 :pretty true))))
+        (.write writer "\r\n\r\n")
         (recur)))))
