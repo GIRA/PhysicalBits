@@ -4,8 +4,8 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.java.browse :refer [browse-url]]
-            [middleware.server.server :as server]
-            [middleware.server.udp-server :as udp]
+            [middleware.server.http :as http]
+            [middleware.server.udp :as udp]
             [middleware.device.controller :as dc])
   (:gen-class))
 
@@ -62,9 +62,9 @@
     (let [{:keys [uzi web server-port arduino-port open-browser]} options]
       (log/info project-name)
       (log/info "Starting server...")
-      (server/start :uzi-libraries uzi
-                    :web-resources web
-                    :server-port server-port)
+      (http/start :uzi-libraries uzi
+                  :web-resources web
+                  :server-port server-port)
       (udp/start)
       (log/info "Server started on port" server-port)
       (when open-browser

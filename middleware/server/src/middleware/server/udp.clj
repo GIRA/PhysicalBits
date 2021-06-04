@@ -1,4 +1,4 @@
-(ns middleware.server.udp-server
+(ns middleware.server.udp
   (:require [clojure.core.async :as a]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device])

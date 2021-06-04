@@ -1,4 +1,4 @@
-(ns middleware.server.server
+(ns middleware.server.http
   (:require [clojure.core.async :as a]
             [clojure.string :as str]
             [compojure.core :as compojure :refer [GET POST]]
