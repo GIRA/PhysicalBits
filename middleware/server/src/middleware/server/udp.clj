@@ -36,8 +36,8 @@
       (when @update-loop?
         (let [new-state (get-server-state)]
           (when (not= old-state new-state)
-            (let [json-state (json/encode new-state)]
-              (when-let [udp @udp-server]
+            (let [^String json-state (json/encode new-state)]
+              (when-let [^DatagramSocket udp @udp-server]
                 (.send udp
                        (DatagramPacket. (.getBytes json-state)
                                         (.length json-state)
@@ -56,7 +56,7 @@
       (reset! udp-server s))))
 
 (defn stop []
-  (when-let [s @udp-server]
+  (when-let [^DatagramSocket s @udp-server]
     (stop-update-loop)
     (reset! udp-server nil)
     (.close s)))
