@@ -234,7 +234,8 @@
                 :or {uzi-libraries "../../uzi/libraries"
                      web-resources "../../gui"
                      server-port 3000}}]
-  (when (nil? @server)
+  (when (and (nil? @server)
+             (config/get-in [:http :enabled?] true))
     (start-update-loop)
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]

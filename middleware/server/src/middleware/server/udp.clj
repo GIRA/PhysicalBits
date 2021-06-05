@@ -61,7 +61,8 @@
   (reset! update-loop? false))
 
 (defn start []
-  (when (nil? @server)
+  (when (and (nil? @server)
+             (config/get-in [:udp :enabled?] true))
     (start-update-loop)
     (let [s (DatagramSocket. SERVER_PORT)]
       (reset! server s))))
