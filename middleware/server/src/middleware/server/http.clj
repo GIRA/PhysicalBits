@@ -15,7 +15,8 @@
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device]
-            [middleware.output.logger :as logger])
+            [middleware.output.logger :as logger]
+            [middleware.config :as config])
   (:import [manifold.stream.core IEventSink]))
 
 (def server (atom nil))
@@ -180,7 +181,7 @@
                diff (get-state-diff old-state new-state)]
            (when-not (empty? diff)
              (>!! updates {:type :update, :state (json/encode diff)}))
-           (<!! (a/timeout 100))
+           (<!! (a/timeout (config/get-in [:http :interval] 100)))
            (recur new-state)))))))
 
 (defn stop-update-loop []

@@ -1,7 +1,8 @@
 (ns middleware.server.udp
   (:require [clojure.core.async :as a :refer [thread <!!]]
             [middleware.utils.json :as json]
-            [middleware.device.controller :as device])
+            [middleware.device.controller :as device]
+            [middleware.config :as config])
   (:import (java.net InetAddress DatagramPacket DatagramSocket)))
 
 (def server (atom nil))
@@ -48,8 +49,13 @@
                                          (.length json-state)
                                          (InetAddress/getByName "localhost")
                                          CLIENT_PORT)))))
-           (<!! (a/timeout 10))
+           (<!! (a/timeout (config/get-in [:udp :interval] 10)))
            (recur new-state)))))))
+
+(comment
+  (stop-update-loop)
+  (start-update-loop)
+ ,)
 
 (defn stop-update-loop []
   (reset! update-loop? false))
