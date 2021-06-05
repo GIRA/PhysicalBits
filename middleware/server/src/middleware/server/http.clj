@@ -1,5 +1,5 @@
 (ns middleware.server.http
-  (:require [clojure.core.async :as a]
+  (:require [clojure.core.async :as a :refer [<!! >!! thread]]
             [clojure.string :as str]
             [compojure.core :as compojure :refer [GET POST]]
             [ring.middleware.params :refer [wrap-params]]
@@ -28,23 +28,6 @@
         (d/catch {:status 400
                   :headers {"content-type" "application/text"}
                   :body "Expected a websocket request."}))))
-
-(defn seconds-handler [^IEventSink socket _]
-  (a/go-loop [^long i 0]
-    (when-not (ws/closed? socket)
-      (ws/put! socket (str "seconds: " i))
-      (a/<! (a/timeout 1000))
-      (recur (inc i)))))
-
-(defn echo-handler [socket _]
-  (ws/connect socket socket))
-
-(defn analog-read-handler [^IEventSink socket _]
-  (a/go-loop []
-    (when-not (ws/closed? socket)
-      (ws/put! socket (str "A0: " (device/get-pin-value "A0")))
-      (a/<! (a/timeout 100))
-      (recur))))
 
 (defn json-response [data & [status]]
   {:status  (or status 200)
@@ -190,14 +173,15 @@
 
 (defn start-update-loop []
   (when (compare-and-set! update-loop? false true)
-    (a/go-loop [old-state nil]
-      (when @update-loop?
-        (let [new-state (get-server-state)
-              diff (get-state-diff old-state new-state)]
-          (when-not (empty? diff)
-            (a/>! updates {:type :update, :state (json/encode diff)}))
-          (a/<! (a/timeout 100))
-          (recur new-state))))))
+    (thread
+     (loop [old-state nil]
+       (when @update-loop?
+         (let [new-state (get-server-state)
+               diff (get-state-diff old-state new-state)]
+           (when-not (empty? diff)
+             (>!! updates {:type :update, :state (json/encode diff)}))
+           (<!! (a/timeout 100))
+           (recur new-state)))))))
 
 (defn stop-update-loop []
   (reset! update-loop? false))
@@ -224,12 +208,6 @@
 
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
-
-                        ; Testing
-                        (GET "/seconds" [] (wrap-websocket seconds-handler))
-                        (GET "/echo" [] (wrap-websocket echo-handler))
-                        (GET "/analog-read" [] (wrap-websocket analog-read-handler))
-
 
                         ; Uzi api
                         (GET "/uzi" [] (wrap-websocket uzi-state-handler))
