@@ -46,6 +46,7 @@ function opiRelease() {
     .then(() => copyGUI(outFolder))
     .then(() => copyUziLibraries(outFolder))
     .then(() => copyServerJAR(outFolder))
+    .then(() => copyConfigEDN(outFolder))
     .then(() => createStartScripts(outFolder, false))
     .then(() => createZip(outFolder));
 }
@@ -59,6 +60,7 @@ function webRelease() {
     .then(() => copyUziLibraries(outFolder))
     .then(() => copyJRE(outFolder))
     .then(() => copyServerJAR(outFolder))
+    .then(() => copyConfigEDN(outFolder))
     .then(() => createStartScripts(outFolder, true))
     .then(() => createZip(outFolder));
 }
@@ -80,6 +82,7 @@ function desktopRelease() {
         .then(() => copyUziLibraries(appFolder))
         .then(() => copyJRE(appFolder))
         .then(() => copyServerJAR(appFolder))
+        .then(() => copyConfigEDN(appFolder))
         .then(() => createStartScripts(appFolder, false))
         .then(() => createConfigJSON(appFolder))
         .then(() => createZip(outFolder));
@@ -168,6 +171,12 @@ function copyServerJAR(path) {
     if (jar == undefined) { throw "NO UBERJAR FOUND!!"; }
     return fs.copyFile(uberjarFolder + "/" + jar, path + "/middleware/server.jar").catch(log);
   });
+}
+
+function copyConfigEDN(path) {
+  console.log("Copying config.edn file");
+  let configPath = "../middleware/server/config.edn";
+  return fs.copyFile(configPath, path + "/config.edn").catch(log);
 }
 
 function createStartScripts(path, openBrowser) {
