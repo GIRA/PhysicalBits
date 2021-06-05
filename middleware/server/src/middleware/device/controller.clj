@@ -100,7 +100,7 @@
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn- add-pseudo-var! [name value]
-  (if (config/get :pseudo-vars? false)
+  (if (config/get-in [:device :pseudo-vars?] false)
     (let [now (or (-> @state :timing :arduino) 0)]
       (swap! state
              #(-> %
@@ -247,8 +247,8 @@
 
 (defn set-report-interval [interval]
   (let [interval (int (constrain interval
-                                 (config/get :report-interval-min 0)
-                                 (config/get :report-interval-max 100)))]
+                                 (config/get-in [:device :report-interval-min] 0)
+                                 (config/get-in [:device :report-interval-max] 100)))]
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
@@ -321,10 +321,10 @@
                    :middleware middleware-time))
     (add-pseudo-var! "__delta" delta)
     (let [^long report-interval (-> @state :reporting :interval)
-          ^long report-interval-inc (config/get :report-interval-inc 5)
+          ^long report-interval-inc (config/get-in [:device :report-interval-inc] 5)
           delta-smooth (Math/abs (rb/avg timing-diffs))
-          ^long delta-threshold-min (config/get :delta-threshold-min 1)
-          ^long delta-threshold-max (config/get :delta-threshold-max 25)]
+          ^long delta-threshold-min (config/get-in [:device :delta-threshold-min] 1)
+          ^long delta-threshold-max (config/get-in [:device :delta-threshold-max] 25)]
       (add-pseudo-var! "__delta_smooth" delta-smooth)
       (add-pseudo-var! "__report_interval" report-interval)
       ; If the delta-smooth goes below the min we decrement the report-interval
@@ -480,7 +480,7 @@
     (when (connected?)
       ; If we have pseudo vars, remove old ones (older than 1s)
       (if-not (zero? (count (-> @state :pseudo-vars :data)))
-        (if (config/get :pseudo-vars? false)
+        (if (config/get-in [:device :pseudo-vars?] false)
           (swap! state update-in [:pseudo-vars :data]
                  #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
                         limit (- timestamp 1000)]
@@ -551,12 +551,13 @@
                     :port-name port-name
                     :connected? true
                     :board board
-                    :timing {:diffs (rb/make-ring-buffer (config/get :timing-diffs-size 10))
+                    :timing {:diffs (rb/make-ring-buffer
+                                     (config/get-in [:device :timing-diffs-size] 10))
                              :arduino nil
                              :middleware nil}
                     :reporting {:pins #{}
                                 :globals #{}})
-             (set-report-interval (config/get :report-interval-min 0))
+             (set-report-interval (config/get-in [:device :report-interval-min] 0))
              (a/thread (keep-alive port))
              (a/thread (process-input in))
              (start-reporting)

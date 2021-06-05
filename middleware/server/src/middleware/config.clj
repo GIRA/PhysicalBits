@@ -1,6 +1,6 @@
 (ns middleware.config
-  (:refer-clojure :exclude [get])
-  (:require [clojure.core :as clj-core]
+  (:refer-clojure :exclude [get get-in])
+  (:require [clojure.core :as clj]
             [clojure.java.io :as io]
             [clojure.edn :as edn]
             [clojure.tools.logging :as log]))
@@ -20,10 +20,10 @@
 (defn- read-config [^java.io.File file]
   (let [path (.getAbsolutePath file)
         last-modified (.lastModified file)
-        entry (clj-core/get @cache path)]
+        entry (clj/get @cache path)]
     (if (= last-modified
-           (clj-core/get entry :last-modified))
-      (clj-core/get entry :content)
+           (clj/get entry :last-modified))
+      (clj/get entry :content)
       (let [content (edn/read-string (read-file file))]
         (swap! cache assoc path {:last-modified last-modified
                                  :content content})
@@ -34,4 +34,7 @@
   ([path] (read-config (io/file path))))
 
 (defn get [key default-value]
-  (clj-core/get (get-all) key default-value))
+  (clj/get (get-all) key default-value))
+
+(defn get-in [keys default-value]
+  (clj/get-in (get-all) keys default-value))
