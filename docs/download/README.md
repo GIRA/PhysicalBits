@@ -23,4 +23,5 @@ You can also [try the editor online](http://gira.github.io/PhysicalBits/demo) wi
   <i class="fa fa-download mr-2" style="font-size: inherit;"></i>
   <span>Get Physical Bits</span>
   <span style="font-weight: bolder;">Standalone!</span>
+   <div style="font-size: initial;">(recommended for most users)</div>
 </a>
