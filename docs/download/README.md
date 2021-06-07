@@ -5,7 +5,7 @@ Physical Bits comes in two flavors: a [web version](./WEB.md) that you can use d
 You can also [try the editor online](http://gira.github.io/PhysicalBits/demo) without downloading anything.
 
 <a class="h4 btn btn-large" href="http://gira.github.io/PhysicalBits/demo" type="button">
-  <i class="fas fa-globe mr-2"></i>
+  <i class="fa fa-globe mr-2"></i>
   <span>Try editor online!</span>
 </a>
 
