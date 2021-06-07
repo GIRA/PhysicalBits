@@ -11,11 +11,11 @@ You can also [try the editor online](http://gira.github.io/PhysicalBits/demo) wi
 </a>
 
 <a class="btn btn-large" href="./WEB.html" type="button" style="font-size: x-large;">
-  <i class="fa fa-download mr-2" style="font-size: inherit;></i>
+  <i class="fa fa-download mr-2" style="font-size: inherit;"></i>
   <span>Get Physical Bits Web!</span>
 </a>
 
 <a class="h4 btn btn-large" href="./STANDALONE.html" type="button" style="font-size: x-large;">
-  <i class="fa fa-download mr-2" style="font-size: inherit;></i>
+  <i class="fa fa-download mr-2" style="font-size: inherit;"></i>
   <span>Get Physical Bits Standalone!</span>
 </a>
