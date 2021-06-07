@@ -4,17 +4,18 @@ Physical Bits comes in two flavors: a [web version](./WEB.md) that you can use d
 
 You can also [try the editor online](http://gira.github.io/PhysicalBits/demo) without downloading anything.
 
-<a class="h4 btn btn-large" href="http://gira.github.io/PhysicalBits/demo" type="button">
-  <i class="fa fa-globe mr-2"></i>
-  <span>Try editor online!</span>
+<a class="btn btn-large" href="http://gira.github.io/PhysicalBits/demo" type="button" style="font-size: x-large;">
+  <i class="fa fa-globe mr-2" style="font-size: inherit;"></i>
+  <span class="mr-2">Try editor online!</span>
+  <span style="color:red">(NEW)</span> 
 </a>
 
-<a class="h4 btn btn-large" href="./WEB.html" type="button">
-  <i class="fa fa-download mr-2"></i>
+<a class="btn btn-large" href="./WEB.html" type="button" style="font-size: x-large;">
+  <i class="fa fa-download mr-2" style="font-size: inherit;></i>
   <span>Get Physical Bits Web!</span>
 </a>
 
-<a class="h4 btn btn-large" href="./STANDALONE.html" type="button">
-  <i class="fa fa-download mr-2"></i>
+<a class="h4 btn btn-large" href="./STANDALONE.html" type="button" style="font-size: x-large;">
+  <i class="fa fa-download mr-2" style="font-size: inherit;></i>
   <span>Get Physical Bits Standalone!</span>
 </a>
