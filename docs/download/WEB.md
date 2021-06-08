@@ -18,13 +18,13 @@ You should see the following files:
 
 ![start_web.1](../img/start_web.1.png)
 
-Then, if your on Windows just run the `start.bat`. If your on Linux or macOS run the `start.sh`.
+Then, if you're on Windows just run the `start.bat`. If you're on Linux or macOS run the `start.sh`.
 
 You should see a terminal pop up and, after a few seconds, a browser should open with the Physical Bits IDE.
 
 ![start_web.2](../img/start_web.2.png)
 
-__IMPORTANT__: If, for some reason the IDE doesn't open automatically, you can do it yourself by pointing your browser to [localhost:3000/ide/index.html](http://localhost:3000/ide/index.html).
+__IMPORTANT__: If, for some reason the IDE doesn't open automatically, you can do it yourself by pointing your browser to [localhost:3000](http://localhost:3000).
 
 ![start_web.3](../img/start_web.3.png)
 
