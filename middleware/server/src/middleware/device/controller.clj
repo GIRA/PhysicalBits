@@ -146,6 +146,16 @@
                              global-name
                              nil))
 
+(defn set-global-value [global-name ^double value]
+  (let [global-number (get-global-number global-name)
+        actual-value (float->uint32 value)]
+    (send [MSG_OUT_SET_GLOBAL
+           global-number
+           (bit-and 16rFF (bit-shift-right actual-value 24))
+           (bit-and 16rFF (bit-shift-right actual-value 16))
+           (bit-and 16rFF (bit-shift-right actual-value 8))
+           (bit-and 16rFF actual-value)])))
+
 (defn set-global-report [global-name report?]
   (when-let [global-number (get-global-number global-name)]
     (swap! state update-in [:reporting :globals]
