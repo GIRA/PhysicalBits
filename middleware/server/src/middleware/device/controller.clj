@@ -147,14 +147,14 @@
                              nil))
 
 (defn set-global-value [global-name ^double value]
-  (let [global-number (get-global-number global-name)
-        actual-value (float->uint32 value)]
-    (send [MSG_OUT_SET_GLOBAL
-           global-number
-           (bit-and 16rFF (bit-shift-right actual-value 24))
-           (bit-and 16rFF (bit-shift-right actual-value 16))
-           (bit-and 16rFF (bit-shift-right actual-value 8))
-           (bit-and 16rFF actual-value)])))
+  (when-let [global-number (get-global-number global-name)]
+    (let [^long actual-value (float->uint32 value)]
+      (send [MSG_OUT_SET_GLOBAL
+             global-number
+             (bit-and 16rFF (bit-shift-right actual-value 24))
+             (bit-and 16rFF (bit-shift-right actual-value 16))
+             (bit-and 16rFF (bit-shift-right actual-value 8))
+             (bit-and 16rFF actual-value)]))))
 
 (defn set-global-report [global-name report?]
   (when-let [global-number (get-global-number global-name)]
@@ -165,7 +165,7 @@
            (if report? 1 0)])))
 
 (defn set-pin-value [pin-name ^double value]
-  (let [pin-number (get-pin-number pin-name)]
+  (when-let [pin-number (get-pin-number pin-name)]
     (send [MSG_OUT_SET_VALUE
            pin-number
            (Math/round (* value 255.0))])))
