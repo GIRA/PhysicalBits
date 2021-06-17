@@ -16,12 +16,8 @@
 
 (defn get-server-state []
   (let [state @device/state]
-    {:pins (filterv (fn [pin] (contains? (-> state :reporting :pins)
-                                                    (:name pin)))
-                               (-> state :pins :data vals))
-     :globals (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                                          (:name global)))
-                                  (-> state :globals :data vals))}))
+    {:pins (-> state :pins :data vals)
+     :globals (-> state :globals :data vals)}))
 
 (defn- start-incoming-thread []
   (thread
