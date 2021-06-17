@@ -16,25 +16,12 @@
 
 (defn get-server-state []
   (let [state @device/state]
-    {:pins {:timestamp (-> state :pins :timestamp)
-            :available (mapv (fn [pin-name]
-                               {:name pin-name
-                                :reporting (contains? (-> state :reporting :pins)
-                                                      pin-name)})
-                             (-> state :board :pin-names))
-            :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
+    {:pins (filterv (fn [pin] (contains? (-> state :reporting :pins)
                                                     (:name pin)))
-                               (-> state :pins :data vals))}
-     :globals {:timestamp (-> state :globals :timestamp)
-               :available (mapv (fn [{global-name :name}]
-                                  {:name global-name
-                                   :reporting (contains? (-> state :reporting :globals)
-                                                         global-name)})
-                                (filter :name
-                                        (-> state :program :running :compiled :globals)))
-               :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
+                               (-> state :pins :data vals))
+     :globals (filterv (fn [global] (contains? (-> state :reporting :globals)
                                                           (:name global)))
-                                  (-> state :globals :data vals))}}))
+                                  (-> state :globals :data vals))}))
 
 (defn- start-incoming-thread []
   (thread
