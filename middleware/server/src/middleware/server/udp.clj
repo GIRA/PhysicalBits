@@ -19,6 +19,16 @@
     {:pins (-> state :pins :data vals)
      :globals (-> state :globals :data vals)}))
 
+(defn- send! [data]
+  (when-let [^DatagramSocket udp @server]
+    (let [^String json (json/encode data)
+          buf (.getBytes json "utf8")
+          packet (DatagramPacket. buf
+                                  (count buf)
+                                  (InetAddress/getByName "localhost")
+                                  CLIENT_PORT)]
+      (.send udp packet))))
+
 (defn- start-incoming-thread []
   (thread
    (let [buf (byte-array 256)
@@ -32,6 +42,7 @@
              (println ">>>" msg)
              (try
                (case action
+                 "init" (send! (get-server-state))
                  "set_pin_value" (device/set-pin-value name value)
                  "set_global_value" (device/set-global-value name value))
                (catch Throwable e (log/error "ERROR WHILE RECEIVING (udp) ->" e)))))
@@ -44,14 +55,7 @@
      (when @update-loop?
        (let [new-state (get-server-state)]
          (when (not= old-state new-state)
-           (let [^String json-state (json/encode new-state)]
-             (when-let [^DatagramSocket udp @server]
-               (let [buf (.getBytes json-state "utf8")
-                     packet (DatagramPacket. buf
-                                             (count buf)
-                                             (InetAddress/getByName "localhost")
-                                             CLIENT_PORT)]
-                 (.send udp packet)))))
+           (send! new-state))
          (<!! (a/timeout (config/get-in [:udp :interval] 10)))
          (recur new-state))))))
 
