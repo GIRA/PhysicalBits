@@ -4,8 +4,8 @@
           :delta-threshold-min 1
           :delta-threshold-max 25
           :timing-diffs-size 10
-          :pseudo-vars? true}
+          :pseudo-vars? false}
  :http {:enabled? true
         :interval 100}
  :udp {:enabled? true
-       :interval 10}}
+       :interval 16}}
