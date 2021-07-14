@@ -571,6 +571,37 @@
       </div>
     </div>
 
+    <!-- DEMO Modal -->
+    <div class="modal fade" id="demo-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row justify-content-md-center">
+                <div class="col-auto">
+                  <img class="img-fluid" src="logo.png" alt="Physical Bits">
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="col text-justify" style="font-size: larger;">
+                  <p></p>
+                  <p lang="en">Welcome to the online DEMO of the Physical Bits environment!</p>
+                  <p lang="en">This DEMO is intended to showcase the editor and its capabilities. Therefore, its functionality is limited and it doesn't currently support connecting to a device in order to interactively program it.</p>
+                  <p>
+                    <span lang="en">If you want to experience the full benefits of this programming environment, please download an appropriate version for your OS here:</span>
+                    <span><a href="https://gira.github.io/PhysicalBits/download/" lang="en">DOWNLOADS</a></span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="demo-accept-button" type="button" class="btn btn-primary" data-dismiss="modal" lang="en">Accept</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
@@ -607,9 +638,11 @@
     <script src="plotter.js" type="text/javascript"></script>
     <script src="blocklymodal.js" type="text/javascript"></script>
 
+    <!-- If this file is loaded, the IDE will run locally
+    <script src="middleware/main.js" type="text/javascript"></script>-->
+
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
-
 
     <script>
     function showLoadingScreen() {
@@ -626,6 +659,11 @@
       Uzi.start(location.host ? "" : "localhost:3000").then(function () {
         fullProgressBar();
         IDE.init();
+
+        // HACK(Richo): If the middleware is present we show the DEMO modal
+        if (window.middleware) {
+          $("#demo-modal").modal();
+        }
       });
     });
     </script>

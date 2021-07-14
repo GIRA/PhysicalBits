@@ -9,13 +9,16 @@ let Uzi = (function () {
     "server-disconnect" : []
   };
 
+  // HACK(Richo): If the middleware is loaded we run locally
+  let localFlag = window.middleware != undefined;
+
 
   let Uzi = {
     /*
-    HACK(Richo): Normally the state can be an empty object because once we connect
-    to the server the initial value is supplied. However, since we are now fully local
-    we don't have the initial state from the server so I'm initializing it with default
-    values so that the IDE doesn't break.
+    NOTE(Richo): Normally the state can be an empty object because once we connect
+    to the server the initial value is supplied. However, since we now work fully locally
+    we might not have the initial state from the server so I'm initializing it with default
+    values. This way if we don't connect to the server the IDE doesn't break.
     */
     state: {
       connection: {
@@ -53,7 +56,10 @@ let Uzi = (function () {
     socket: null,
 
     start: function (preferredHost) {
-      return Promise.resolve(); // HACK(Richo): Early exit, don't attempt to connect at all
+      if (localFlag) {
+        // NOTE(Richo): Early exit, don't attempt to connect at all
+        return Promise.resolve();
+      }
 
       host = preferredHost || "";
       apiURL = host ? "http://" + host : "";
@@ -90,42 +96,10 @@ let Uzi = (function () {
     },
 
 		compile: function (src, type, silent) {
-      // HACK(Richo): Instead of going to the server to compile, we do it locally
-      return new Promise((resolve, reject) => {
-        try {
-          var result = middleware.core.compile(src, type);
-          var program = {
-            type: type,
-            src: result.src,
-            compiled: result.compiled,
-            ast: result["original-ast"]
-          };
-          resolve(program);
-          var output = [];
-          if (!silent) {
-            output = [
-              {text: ""},
-              {type: "info", text: (new Date()).toLocaleString()},
-              {type: "success", text: "Compilation successful!", args: []}
-            ]
-          }
-          update({
-            program: program,
-            output: output
-          });
-        } catch (err) {
-          if (!silent) {
-            update({
-              output: [
-                {text: ""},
-                {type: "info", text: (new Date()).toLocaleString()},
-                {type: "error", text: err.toString()}
-              ]
-            });
-          }
-          reject(err);
-        }
-      });
+      if (localFlag) {
+        // NOTE(Richo): Instead of going to the server to compile, we do it locally
+        return compileLocal(src, type, silent);
+      }
 
       let url = apiURL + "/uzi/compile";
       let data = {
@@ -189,6 +163,16 @@ let Uzi = (function () {
   };
 
   function POST(url, data) {
+    if (localFlag) {
+      update({
+        output: [
+          {text: ""},
+          {type: "info", text: (new Date()).toLocaleString()},
+          {type: "error", text: "Not implemented in the DEMO version"}
+        ]
+      });
+      return Promise.resolve();
+    }
     return ajax.POST(url, data);
   }
 
@@ -198,6 +182,44 @@ let Uzi = (function () {
 
   function errorHandler (err) {
     console.log(err);
+  }
+
+  function compileLocal(src, type, silent) {
+    return new Promise((resolve, reject) => {
+      try {
+        var result = middleware.core.compile(src, type);
+        var program = {
+          type: type,
+          src: result.src,
+          compiled: result.compiled,
+          ast: result["original-ast"]
+        };
+        resolve(program);
+        var output = [];
+        if (!silent) {
+          output = [
+            {text: ""},
+            {type: "info", text: (new Date()).toLocaleString()},
+            {type: "success", text: "Compilation successful!", args: []}
+          ]
+        }
+        update({
+          program: program,
+          output: output
+        });
+      } catch (err) {
+        if (!silent) {
+          update({
+            output: [
+              {text: ""},
+              {type: "info", text: (new Date()).toLocaleString()},
+              {type: "error", text: err.toString()}
+            ]
+          });
+        }
+        reject(err);
+      }
+    });
   }
 
   function reconnect() {
