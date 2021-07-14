@@ -659,11 +659,6 @@
       Uzi.start(location.host ? "" : "localhost:3000").then(function () {
         fullProgressBar();
         IDE.init();
-
-        // HACK(Richo): If the middleware is present we show the DEMO modal
-        if (window.middleware) {
-          $("#demo-modal").modal();
-        }
       });
     });
     </script>
