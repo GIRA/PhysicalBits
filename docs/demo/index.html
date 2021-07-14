@@ -28,16 +28,6 @@
 
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9PZE06MGWB"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-9PZE06MGWB');
-    </script>
   </head>
   <body>
     <div id="container" class="fullscreen dark-theme">
@@ -581,7 +571,6 @@
       </div>
     </div>
 
-
     <!-- DEMO Modal -->
     <div class="modal fade" id="demo-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -613,6 +602,7 @@
       </div>
     </div>
 
+
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
     <script type="text/javascript"> if (typeof module != "undefined") { jQuery = $ = module.exports; } </script>
@@ -632,6 +622,7 @@
   	<!-- ACE -->
   	<script src="libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
+
     <script src="polyfills.js" type="text/javascript"></script>
     <script src="utils.js" type="text/javascript"></script>
     <script src="jsonx.js" type="text/javascript"></script>
@@ -647,11 +638,11 @@
     <script src="plotter.js" type="text/javascript"></script>
     <script src="blocklymodal.js" type="text/javascript"></script>
 
+    <!-- If this file is loaded, the IDE will run locally-->
     <script src="middleware/main.js" type="text/javascript"></script>
 
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
-
 
     <script>
     function showLoadingScreen() {
@@ -668,7 +659,11 @@
       Uzi.start(location.host ? "" : "localhost:3000").then(function () {
         fullProgressBar();
         IDE.init();
-        $("#demo-modal").modal();
+
+        // HACK(Richo): If the middleware is present we show the DEMO modal
+        if (window.middleware) {
+          $("#demo-modal").modal();
+        }
       });
     });
     </script>
