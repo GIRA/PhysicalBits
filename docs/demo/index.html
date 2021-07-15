@@ -28,16 +28,6 @@
 
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9PZE06MGWB"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-9PZE06MGWB');
-    </script>
   </head>
   <body>
     <div id="container" class="fullscreen dark-theme">
@@ -50,12 +40,11 @@
           </div>
           <div class="col-auto">
             <div class="btn-group" role="toolbar" aria-label="...">
-              
-              <button id="submit-button" type="button" class="btn btn-primary btn-sm">
-                <i class="far fa-trash-restore-alt"></i>
-                <span lang="en">Submit</span>
+              <button id="new-button" type="button" class="btn btn-primary btn-sm">
+                <i class="fas fa-file mr-1"></i>
+                <span lang="en">New...</span>
               </button>
-              <!--<button id="open-button" type="button" class="btn btn-primary btn-sm">
+              <button id="open-button" type="button" class="btn btn-primary btn-sm">
                 <i class="fas fa-folder-open mr-1"></i>
                 <span lang="en">Open...</span>
                 <input id="open-file-input" type="file" accept=".phb" style="display: none;">
@@ -71,7 +60,7 @@
               <button id="download-button" type="button" class="btn btn-primary btn-sm">
                 <i class="fas fa-download mr-1"></i>
                 <span lang="en">Download...</span>
-              </button>-->
+              </button>
             </div>
           </div>
           <div class="col">
@@ -100,7 +89,7 @@
       <div id="layout-container"></div>
     </div>
     <div id="hidden-panels" style="display: none;">
-      <!--<div id="controls-panel" class="container">
+      <div id="controls-panel" class="container">
         <form>
           <div class="form-group">
             <label for="port-dropdown" style="margin: 10px 0px 0px" lang="en">Port name:</label>
@@ -218,7 +207,7 @@
             </div>
           </div>
         </div>
-      </div>-->
+      </div>
       <div id="blocks-panel" class="fullscreen">
         <div id="blocks-editor"></div>
         <div id="blockly" style="position: absolute;"></div>
@@ -369,7 +358,7 @@
                     <div class="tab-pane fade" id="v-pills-layout" role="tabpanel" aria-labelledby="v-pills-layout-tab">
                       <div class="container">
                         <h6 lang="en">Panels:</h6>
-                        <!--<div class="row">
+                        <div class="row">
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
                               <input type="checkbox" class="custom-control-input" id="controls-panel-checkbox" name="layout-panels" value="#controls-panel" disabled>
@@ -382,7 +371,7 @@
                               <label class="custom-control-label" for="inspector-panel-checkbox" lang="en">Inspector</label>
                             </div>
                           </div>
-                        </div>-->
+                        </div>
                         <div class="row">
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
@@ -582,7 +571,6 @@
       </div>
     </div>
 
-
     <!-- DEMO Modal -->
     <div class="modal fade" id="demo-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -614,6 +602,7 @@
       </div>
     </div>
 
+
     <!-- JQuery/Popper/Bootstrap -->
     <script src="libs/jquery/jquery-1.12.4.min.js" type="text/javascript"></script>
     <script type="text/javascript"> if (typeof module != "undefined") { jQuery = $ = module.exports; } </script>
@@ -633,6 +622,7 @@
   	<!-- ACE -->
   	<script src="libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
+
     <script src="polyfills.js" type="text/javascript"></script>
     <script src="utils.js" type="text/javascript"></script>
     <script src="jsonx.js" type="text/javascript"></script>
@@ -648,11 +638,11 @@
     <script src="plotter.js" type="text/javascript"></script>
     <script src="blocklymodal.js" type="text/javascript"></script>
 
+    <!-- If this file is loaded, the IDE will run locally-->
     <script src="middleware/main.js" type="text/javascript"></script>
 
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
-
 
     <script>
     function showLoadingScreen() {
@@ -669,7 +659,11 @@
       Uzi.start(location.host ? "" : "localhost:3000").then(function () {
         fullProgressBar();
         IDE.init();
-        $("#demo-modal").modal();
+
+        // HACK(Richo): If the middleware is present we show the DEMO modal
+        if (window.middleware) {
+          $("#demo-modal").modal();
+        }
       });
     });
     </script>

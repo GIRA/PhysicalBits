@@ -109,7 +109,6 @@ const fs = require('fs');
       $("#download-button").show();
     }
     $("#new-button").on("click", newProject);
-    $("#submit-button").on("click", submit);
     $("#open-button").on("click", openProject);
     $("#save-button").on("click", saveProject);
     $("#save-as-button").on("click", saveAsProject);
@@ -632,15 +631,7 @@ const fs = require('fs');
       }
     });
   }
-  function submit() {
-    MessageBox.confirm("Trabajo terminado",
-                       "Presiona aceptar para mandar el trabajo a la cola").then(ok => {
-      if (ok) {
-        alert("trabajo en la cola");
-      }
-    });
-  }
-  
+
   function loadSerializedProgram(contents) {
     function readFirst(program, selectors) {
       for (let i = 0; i < selectors.length; i++) {
