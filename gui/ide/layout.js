@@ -9,7 +9,7 @@ let LayoutManager = (function () {
     },
     "content": [{
       "type": "row",
-      "content":[{
+      "content":[/*{
         "type": "column",
         "width": 17,
         "content": [{
@@ -26,7 +26,7 @@ let LayoutManager = (function () {
           "componentState": { "id": "#inspector-panel" },
           "title": "Inspector"
         }]
-      },{
+      },*/{
         "id": "blocks",
         "type": "component",
         "componentName": "DOM",
