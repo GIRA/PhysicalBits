@@ -108,7 +108,7 @@ const fs = require('fs');
       $("#save-as-button").hide();
       $("#download-button").show();
     }
-    $("#submit-button").on("click", submitProject);
+    $("#new-button").on("click", newProject);
     $("#open-button").on("click", openProject);
     $("#save-button").on("click", saveProject);
     $("#save-as-button").on("click", saveAsProject);
@@ -620,11 +620,14 @@ const fs = require('fs');
     }
   }
 
-  function submitProject() {
-    MessageBox.confirm("Trabajo terminado",
-                       "Presiona aceptar para mandar el trabajo a la cola").then(ok => {
+  function newProject() {
+    MessageBox.confirm(i18n.translate("Beware!"),
+                       i18n.translate("You will lose all your unsaved changes. Are you sure?"),
+                       MessageBox.ICONS.warning).then(ok => {
       if (ok) {
-        alert("trabajo en la cola");
+        $("#file-name").text("");
+    		UziBlock.getWorkspace().clear();
+        scheduleAutorun(true, "NEW PROJECT!");
       }
     });
   }
