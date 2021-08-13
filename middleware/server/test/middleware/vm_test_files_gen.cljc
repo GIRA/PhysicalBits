@@ -1,9 +1,10 @@
 (ns middleware.vm-test-files-gen
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer [get-current-env] :refer-macros [deftest is testing]])
             [middleware.compiler.compiler :as cc]
             #?(:clj [middleware.device.controller :as dc])
+            #?(:cljs [middleware.utils.fs-macros :as m])
             [middleware.compiler.encoder :as en]
             [middleware.compiler.emitter :as emit]
             [clojure.string :as str]))
@@ -14,15 +15,32 @@
 ; in some cases, they compare the output from the compiler with the handwritten program.
 ; NOTE(Richo): They also provide programs for the CompileStats.csv file
 
-(def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
+(def ^:const output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
+
+#?(:cljs
+   ; HACK(Richo): This function should be in compile-stats but I haven't made it
+   ; work in cljs yet...
+   (defn test-name []
+     (str/join "." (map (comp :name meta) (:testing-vars (get-current-env))))))
 
 (defn write-file [program]
   ; TODO(Richo): Write the files in cljs! Or maybe just read the existing files and
   ; compare the output? That approach would probably be simpler but it would also
   ; require to run the clj tests *before* running the cljs tests.
   #?(:clj (let [file-name (str output-path (test-name))
-              bytes (dc/run {:compiled program})]
-          (spit file-name (str/join ", " bytes)))))
+                bytes (dc/run {:compiled program})]
+            (spit file-name (str/join ", " bytes)))
+    :cljs (let [file-name (str output-path (test-name))
+                ; HACK(Richo): I'm reading the files using the fs-macros hack
+                ; HACK(Richo): Since I haven't ported the controller yet and I wanted to
+                ; check the encoder ASAP, I decided to drop the first 3 bytes from the file
+                ; which are part of the controller's protocol. This way I'm simply comparing
+                ; encoded programs (without the protocol header and stuff)
+                expected (drop 3 (map (fn [s] (js/parseInt s))
+                                      (str/split (m/read-file* file-name "../../firmware/Simulator/SimulatorTest/TestFiles/")
+                                                 ",")))
+                actual (en/encode program)]
+            (is (= expected actual)))))
 
 (defn compile-string [src]
   #?(:clj (register-program! src))
