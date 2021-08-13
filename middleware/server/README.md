@@ -72,13 +72,19 @@ Now you should be able to evaluate code in the context of the browser.
 
 ### Testing
 
-In order to run the tests on every change you should do the above and then
+In order to run the tests on every change you should do the above and then, in a separate terminal:
 
     $ npx shadow-cljs watch test
 
+After the build is completed you should be able to run the tests in the browser (the url should be http://localhost:8021/). While the browser window is open any change in the source code should run the tests automatically.
+
 ### Compilation
 
-ACAACA
+To build the ClojureScript version of the compiler you should execute the following:
+
+    $ npx shadow-cljs release compiler
+
+The compiled output should be a single javascript file (`public/js/main.js`) that you can load in the browser.
 
 ## Dependencies
 
