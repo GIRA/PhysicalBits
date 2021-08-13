@@ -3,7 +3,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing]])
             [middleware.compiler.compiler :as cc]
-            [middleware.device.controller :as dc]
+            #?(:clj [middleware.device.controller :as dc])
             [middleware.compiler.encoder :as en]
             [middleware.compiler.emitter :as emit]
             [clojure.string :as str]))
@@ -17,12 +17,15 @@
 (def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
 
 (defn write-file [program]
-  (let [file-name (str output-path (test-name))
-        bytes (dc/run {:compiled program})]
-    (spit file-name (str/join ", " bytes))))
+  ; TODO(Richo): Write the files in cljs! Or maybe just read the existing files and
+  ; compare the output? That approach would probably be simpler but it would also
+  ; require to run the clj tests *before* running the cljs tests.
+  #?(:clj (let [file-name (str output-path (test-name))
+              bytes (dc/run {:compiled program})]
+          (spit file-name (str/join ", " bytes)))))
 
 (defn compile-string [src]
-  (register-program! src)
+  #?(:clj (register-program! src))
   (:compiled (cc/compile-uzi-string src)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
