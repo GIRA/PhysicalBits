@@ -1,5 +1,20 @@
 (ns middleware.utils.conversions)
 
+#?(:cljs (def int8 (js/Int8Array. 4)))
+#?(:cljs (def int32 (js/Int32Array. (.-buffer int8) 0 1)))
+#?(:cljs (def float32 (js/Float32Array. (.-buffer int8) 0 1)))
+
+(defn uint32->float [^long n]
+  #?(:clj (Float/intBitsToFloat (unchecked-int n))
+     :cljs (do
+             (aset int32 0 (unchecked-int n))
+             (aget float32 0))))
+
+(defn float->uint32 [^double n]
+  #?(:clj (Float/floatToRawIntBits (unchecked-float n))
+    :cljs (do
+            (aset float32 0 (unchecked-float n))
+            (aget int32 0))))
 
 (defn bytes->uint32
   [#?(:clj [^byte n1 ^byte n2 ^byte n3 ^byte n4]
@@ -9,10 +24,6 @@
           (bit-shift-left n3 8)
           n4))
 
-(defn uint32->float [^long uint32]
-  #?(:clj (Float/intBitsToFloat (unchecked-int uint32))
-     :cljs (throw (js/Error. "ACAACA uint32->float!"))))
-
 (defn bytes->float [^bytes bytes]
   (uint32->float (bytes->uint32 bytes)))
 
@@ -20,10 +31,6 @@
                         :cljs [msb lsb])]
   (bit-or (bit-shift-left msb 8)
           lsb))
-
-(defn float->uint32 [^double float]
-  #?(:clj (Float/floatToRawIntBits (unchecked-float float))
-     :cljs (throw (js/Error. "ACAACA float->uint32!"))))
 
 (defn two's-complement [^long byte]
   (if (>= byte 0)
