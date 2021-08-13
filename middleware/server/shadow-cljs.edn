@@ -14,5 +14,6 @@
 
           :test {:target :browser-test
                  :test-dir "resources/public/js/test"
+                 :ns-regexp "-(test|gen)\\d?$"
                  :devtools {:http-port 8021
                             :http-root "resources/public/js/test"}}}}
