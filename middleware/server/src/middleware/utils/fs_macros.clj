@@ -15,8 +15,8 @@
 ;; of the JVM, I can access the filesystem without problems. This way the compiler can keep
 ;; its sync implementation.
 ;; I know, it's an ugly hack and I will fix it soon, but for now, it seems to work.
-(defmacro read-file* [path]
+(defmacro read-file* [path root]
   (let [data (into {} (map (fn [f] [(str/replace (.getPath f) "\\" "/") (slurp f)])
                            (filter (memfn isFile)
-                                   (file-seq (io/file "../../uzi/")))))]
+                                   (file-seq (io/file root)))))]
     `(get ~data ~path nil)))

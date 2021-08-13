@@ -6,7 +6,7 @@
 
 (defn read [file]
   #?(:clj (slurp file)
-     :cljs (m/read-file* (:path file)) #_(throw (js/Error. "ACAACA read!"))))
+     :cljs (m/read-file* (:path file) "../../uzi")))
 
 (defn absolute-path [file]
   #?(:clj (.getAbsolutePath file)
