@@ -15,7 +15,7 @@
 ; in some cases, they compare the output from the compiler with the handwritten program.
 ; NOTE(Richo): They also provide programs for the CompileStats.csv file
 
-(def ^:const output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
+(def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
 
 #?(:cljs
    ; HACK(Richo): This function should be in compile-stats but I haven't made it
@@ -24,20 +24,22 @@
      (str/join "." (map (comp :name meta) (:testing-vars (get-current-env))))))
 
 (defn write-file [program]
-  ; TODO(Richo): Write the files in cljs! Or maybe just read the existing files and
-  ; compare the output? That approach would probably be simpler but it would also
-  ; require to run the clj tests *before* running the cljs tests.
   #?(:clj (let [file-name (str output-path (test-name))
                 bytes (dc/run {:compiled program})]
             (spit file-name (str/join ", " bytes)))
+
+    ; HACK(Richo): Instead of writing the file I'm just read the existing files and
+    ; comparing the output. This requires to run the clj tests *before* running the cljs tests.
     :cljs (let [file-name (str output-path (test-name))
                 ; HACK(Richo): I'm reading the files using the fs-macros hack
                 ; HACK(Richo): Since I haven't ported the controller yet and I wanted to
                 ; check the encoder ASAP, I decided to drop the first 3 bytes from the file
                 ; which are part of the controller's protocol. This way I'm simply comparing
                 ; encoded programs (without the protocol header and stuff)
+                root output-path
                 expected (drop 3 (map (fn [s] (js/parseInt s))
-                                      (str/split (m/read-file* file-name "../../firmware/Simulator/SimulatorTest/TestFiles/")
+                                      (str/split (m/read-file* file-name
+                                                               "../../firmware/Simulator/SimulatorTest/TestFiles/")
                                                  ",")))
                 actual (en/encode program)]
             (is (= expected actual)))))
