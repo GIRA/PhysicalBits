@@ -297,10 +297,13 @@
        (logger/error "Connection timeout")
        false))))
 
-(defn- keep-alive [port]
+(defn send-keep-alive []
+  (send [MSG_OUT_KEEP_ALIVE]))
+
+(defn- keep-alive-loop []
   (loop []
     (when (connected?)
-      (send [MSG_OUT_KEEP_ALIVE])
+      (send-keep-alive)
       (<!! (timeout 100))
       (recur))))
 
@@ -570,7 +573,7 @@
                     :reporting {:pins #{}
                                 :globals #{}})
              (set-report-interval (config/get-in [:device :report-interval-min] 0))
-             (a/thread (keep-alive port))
+             (a/thread (keep-alive-loop))
              (a/thread (process-input in))
              (start-reporting)
              (send-pins-reporting)
