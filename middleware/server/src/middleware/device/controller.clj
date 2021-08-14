@@ -168,6 +168,7 @@
   (when-let [pin-number (get-pin-number pin-name)]
     (send [MSG_OUT_SET_VALUE
            pin-number
+           ; TODO(Richo): Maybe clamp the value between [0 1]?
            (Math/round (* value 255.0))])))
 
 (defn set-pin-report [pin-name report?]
