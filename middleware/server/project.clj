@@ -41,5 +41,6 @@
                            ;:middleware [ultra.plugin/middleware]
                            :plugins [;[venantius/ultra "0.6.0"]
                                      [com.jakemccrary/lein-test-refresh "0.24.1"]]
-                           :global-vars {*unchecked-math* :warn-on-boxed
-                                         *warn-on-reflection* true}}})
+                           :global-vars {;*unchecked-math* :warn-on-boxed
+                                         ;*warn-on-reflection* true
+                                         }}})
