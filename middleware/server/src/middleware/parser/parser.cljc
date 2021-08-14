@@ -266,10 +266,18 @@
    :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
    :float (pp/flatten
-           (pp/or "NaN"
-                  "-Infinity"
-                  "Infinity"
-                  [(pp/optional \-) :digits \. :digits]))
+           (pp/or
+            ; NOTE(Richo): Special floats
+            "NaN" "-Infinity" "Infinity"
+
+            ; NOTE(Richo): Scientific notation
+            [(pp/optional \-) :digits
+             (pp/optional [\. :digits])
+             (pp/case-insensitive \e)
+             (pp/optional \-) :digits]
+
+            ; NOTE(Richo): Regular float
+            [(pp/optional \-) :digits \. :digits]))
    :digits (pp/plus pp/digit)
    :integer (pp/flatten [(pp/optional \-) :digits])
    :variable :identifier
@@ -312,7 +320,7 @@
 (defn parse [src] (pp/parse parser src))
 
 (comment
-
+(pp/parse (-> parser :parsers :float) "-1e4")
   (pp/parse (-> parser :parsers :identifier) "richo")
  (re-matches #"(?u)\p{L}" "í")
 
