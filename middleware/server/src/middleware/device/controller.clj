@@ -274,16 +274,22 @@
   (swap! state assoc :debugger nil)
   (send [MSG_OUT_DEBUG_CONTINUE]))
 
+(defn connection-request-msg []
+  [MSG_OUT_CONNECTION_REQUEST
+   MAJOR_VERSION
+   MINOR_VERSION])
+
+(defn handshake-confirmation [n1]
+  (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256))
+
 (defn- request-connection [port in]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (write! port [MSG_OUT_CONNECTION_REQUEST
-                  MAJOR_VERSION
-                  MINOR_VERSION])
+   (write! port (connection-request-msg))
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
    (if-let [n1 (<? in 1000)]
-     (let [n2 (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256)]
+     (let [n2 (handshake-confirmation n1)]
        (write! port n2)
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
        (if (= n2 (<? in 1000))
