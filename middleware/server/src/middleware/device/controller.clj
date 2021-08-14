@@ -44,7 +44,7 @@
                 :middleware 2))
  (or (get (get @state :timing) :arduino2) 1)
 
- (a/thread)
+ (set-report-interval 5)
  ,)
 
 (defn millis ^long [] (System/currentTimeMillis))
@@ -252,6 +252,7 @@
   (swap! state assoc :debugger nil)
   (send (p/continue)))
 
+; TODO(Richo): Extract incoming handshake messages?
 (defn- request-connection [port in]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
@@ -340,7 +341,8 @@
                          :number pin-number
                          :value value}))))
     (swap! state assoc :pins @snapshot)
-    (process-timestamp timestamp)))
+    (process-timestamp timestamp)
+    @snapshot))
 
 (defn- process-global-value [in]
   (let [timestamp (read-timestamp in)
@@ -361,15 +363,18 @@
                          :value float-value
                          :raw-bytes [n1 n2 n3 n4]}))))
     (swap! state assoc :globals @snapshot)
-    (process-timestamp timestamp)))
+    (process-timestamp timestamp)
+    @snapshot))
 
 (defn- process-free-ram [in]
   (let [timestamp (read-timestamp in)
         arduino (read-uint32 in)
-        uzi (read-uint32 in)]
-    (swap! state update :memory
-           (fn [_] {:arduino arduino, :uzi uzi}))
-    (process-timestamp timestamp)))
+        uzi (read-uint32 in)
+        memory {:arduino arduino, :uzi uzi}]
+    (swap! state assoc :memory memory)
+    (process-timestamp timestamp)
+    memory))
+
 
 (defn- process-script-state [i ^long byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -390,41 +395,45 @@
 (defn- process-running-scripts [in]
   (let [timestamp (read-timestamp in)
         count (<?? in)
-        tuples (map-indexed process-script-state
-                            (read-vec?? count in))
-        [old new] (swap-vals! state assoc :scripts (into {} tuples))]
+        scripts (into {}
+                      (map-indexed process-script-state
+                                   (read-vec?? count in)))
+        [old new] (swap-vals! state assoc :scripts scripts)]
     (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
       (when-not (= (-> old :scripts (get (:name script)) :error-code)
                    (:error-code script))
         (logger/warning "%1 detected on script \"%2\". The script has been stopped."
                         (:error-msg script)
                         (:name script))))
-    (process-timestamp timestamp)))
+    (process-timestamp timestamp)
+    scripts))
 
 (defn- process-profile [in]
   (let [^long n1 (<?? in)
         ^long n2 (<?? in)
         value (bit-or n2
                       (bit-shift-left n1 7))
-        report-interval (<?? in)]
-    (swap! state assoc
-           :profiler {:ticks value
-                      :interval-ms 100
-                      :report-interval report-interval})
+        report-interval (<?? in)
+        profiler {:ticks value
+                  :interval-ms 100
+                  :report-interval report-interval}]
+    (swap! state assoc :profiler profiler)
     (add-pseudo-var! "__tps" (* 10 value))
-    (add-pseudo-var! "__vm-report-interval" report-interval)))
+    (add-pseudo-var! "__vm-report-interval" report-interval)
+    profiler))
 
 (defn- process-coroutine-state [in]
   (let [index (<?? in)
         pc (read-uint16 in)
         fp (<?? in)
         ^long stack-size (<?? in)
-        stack (read-vec?? (* 4 stack-size) in)]
-    (swap! state assoc
-           :debugger {:index index
-                      :pc pc
-                      :fp fp
-                      :stack stack})))
+        stack (read-vec?? (* 4 stack-size) in)
+        debugger {:index index
+                  :pc pc
+                  :fp fp
+                  :stack stack}]
+    (swap! state assoc :debugger debugger)
+    debugger))
 
 (defn- process-error [in]
   (let [^long error-code (<?? in)]
@@ -433,32 +442,39 @@
       (logger/warning "%1 detected. The program has been stopped"
                       (p/error-msg error-code))
       (if (p/error-disconnect? error-code)
-        (disconnect)))))
+        (disconnect)))
+    error-code))
 
 (defn- process-trace [in]
   (let [count (<?? in)
         msg (new String (byte-array (read-vec?? count in)) "UTF-8")]
-    (log/info "TRACE:" msg)))
+    (log/info "TRACE:" msg)
+    msg))
 
 (defn- process-serial-tunnel [in]
-  (logger/log "SERIAL: %1" (<?? in)))
+  (let [value (<?? in)]
+    (logger/log "SERIAL: %1" value)
+    value))
+
+(defn process-next-message [in]
+  (when-let [cmd (<?? in)]
+    (condp = cmd
+      p/MSG_IN_PIN_VALUE (process-pin-value in)
+      p/MSG_IN_GLOBAL_VALUE (process-global-value in)
+      p/MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
+      p/MSG_IN_FREE_RAM (process-free-ram in)
+      p/MSG_IN_PROFILE (process-profile in)
+      p/MSG_IN_COROUTINE_STATE (process-coroutine-state in)
+      p/MSG_IN_ERROR (process-error in)
+      p/MSG_IN_TRACE (process-trace in)
+      p/MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
+      (logger/warning "Uzi - Invalid response code: %1" cmd))))
 
 (defn- process-input [in]
   (loop []
     (when (connected?)
       (try
-        (when-let [cmd (<?? in)]
-          (condp = cmd
-            p/MSG_IN_PIN_VALUE (process-pin-value in)
-            p/MSG_IN_GLOBAL_VALUE (process-global-value in)
-            p/MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
-            p/MSG_IN_FREE_RAM (process-free-ram in)
-            p/MSG_IN_PROFILE (process-profile in)
-            p/MSG_IN_COROUTINE_STATE (process-coroutine-state in)
-            p/MSG_IN_ERROR (process-error in)
-            p/MSG_IN_TRACE (process-trace in)
-            p/MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
-            (logger/warning "Uzi - Invalid response code: %1" cmd)))
+        (process-next-message in)
         (catch Throwable e
           (log/error "ERROR WHILE PROCESSING INPUT ->" e)))
       (recur))))
