@@ -267,8 +267,8 @@
       ;(logger/warning "Setting report interval: %1" interval)
       (send [MSG_OUT_SET_REPORT_INTERVAL interval]))))
 
-(defn set-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
-(defn clear-all-breakpoings [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
+(defn set-all-breakpoints [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
+(defn clear-all-breakpoints [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
 
 (defn send-continue []
   (swap! state assoc :debugger nil)
