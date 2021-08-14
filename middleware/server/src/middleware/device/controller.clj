@@ -246,9 +246,10 @@
                                       16rFF00)
                              8)
         lsb (bit-and (count bytecodes)
-                     16rFF)]
-    (send (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes))
-    (logger/success "Installed program successfully!")))
+                     16rFF)
+        result (send (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes))]
+    (logger/success "Installed program successfully!")
+    result))
 
 (defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
 (defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
