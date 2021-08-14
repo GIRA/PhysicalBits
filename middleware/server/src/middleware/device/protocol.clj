@@ -1,5 +1,6 @@
 (ns middleware.device.protocol
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [middleware.utils.conversions :as c]))
 
 ; Version number
 (def MAJOR_VERSION 0)
@@ -61,3 +62,68 @@
 
 (defn error-disconnect? [^long code]
   (not= 0 (bit-and code 32)))
+
+
+(defn set-global-value [global-number ^double value]
+  (let [^long actual-value (c/float->uint32 value)]
+    [MSG_OUT_SET_GLOBAL
+     global-number
+     (bit-and 16rFF (bit-shift-right actual-value 24))
+     (bit-and 16rFF (bit-shift-right actual-value 16))
+     (bit-and 16rFF (bit-shift-right actual-value 8))
+     (bit-and 16rFF actual-value)]))
+
+(defn set-global-report [global-number report?]
+  [MSG_OUT_SET_GLOBAL_REPORT
+   global-number
+   (if report? 1 0)])
+
+(defn set-pin-value [pin-number ^double value]
+  [MSG_OUT_SET_VALUE
+   pin-number
+   ; TODO(Richo): Maybe clamp the value between [0 1]?
+   (Math/round (* value 255.0))])
+
+(defn set-pin-report [pin-number report?]
+  [MSG_OUT_SET_REPORT
+   pin-number
+   (if report? 1 0)])
+
+(defn run [bytecodes]
+  (let [msb (bit-shift-right (bit-and (count bytecodes)
+                                      16rFF00)
+                             8)
+        lsb (bit-and (count bytecodes)
+                     16rFF)]
+    (concat [MSG_OUT_SET_PROGRAM msb lsb] bytecodes)))
+
+(defn install [bytecodes]
+  (let [msb (bit-shift-right (bit-and (count bytecodes)
+                                      16rFF00)
+                             8)
+        lsb (bit-and (count bytecodes)
+                     16rFF)]
+    (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes)))
+
+(defn start-reporting [] [MSG_OUT_START_REPORTING])
+(defn stop-reporting [] [MSG_OUT_STOP_REPORTING])
+
+(defn start-profiling [] [MSG_OUT_PROFILE 1])
+(defn stop-profiling [] [MSG_OUT_PROFILE 0])
+
+(defn set-report-interval [interval]
+  [MSG_OUT_SET_REPORT_INTERVAL interval])
+
+(defn set-all-breakpoints [] [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1])
+(defn clear-all-breakpoints [] [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0])
+(defn continue [] [MSG_OUT_DEBUG_CONTINUE])
+
+(defn request-connection []
+  [MSG_OUT_CONNECTION_REQUEST
+   MAJOR_VERSION
+   MINOR_VERSION])
+
+(defn confirm-handshake [n1]
+  (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256))
+
+(defn keep-alive [] [MSG_OUT_KEEP_ALIVE])

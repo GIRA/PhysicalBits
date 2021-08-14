@@ -1,14 +1,8 @@
 (ns middleware.protocol-test
   (:require [clojure.test :refer :all]
-            [middleware.device.controller :as dc]
             [middleware.device.protocol :as p]))
 
-(def program (dc/compile
-              "var counter; task loop() running { counter = counter + 1; }"
-              "uzi" true))
-
 (deftest set-global-value
-  (dc/run program)
   (doseq [[value bytes]
           {10       [10 3 65 32 0 0]
            -1       [10 3 191 128 0 0]
@@ -20,12 +14,11 @@
            65537    [10 3 71 128 0 128]
            -65536   [10 3 199 128 0 0]
            -65537   [10 3 199 128 0 128]}]
-    (is (= bytes (dc/set-global-value "counter" value)))))
+    (is (= bytes (p/set-global-value 3 value)))))
 
 (deftest set-global-report
-  (dc/run program)
-  (is (= [11 3 1] (dc/set-global-report "counter" true)))
-  (is (= [11 3 0] (dc/set-global-report "counter" false))))
+  (is (= [11 3 1] (p/set-global-report 3 true)))
+  (is (= [11 3 0] (p/set-global-report 3 false))))
 
 (deftest set-pin-value
   (doseq [[value bytes]
@@ -36,46 +29,51 @@
            0.3  [1 13 77]
            0.9  [1 13 230]
            1.0  [1 13 255]}]
-    (is (= bytes (dc/set-pin-value "D13" value)))))
+    (is (= bytes (p/set-pin-value 13 value)))))
 
 (deftest set-global-report
-  (is (= [5 13 1] (dc/set-pin-report "D13" true)))
-  (is (= [5 13 0] (dc/set-pin-report "D13" false))))
+  (is (= [5 13 1] (p/set-pin-report 13 true)))
+  (is (= [5 13 0] (p/set-pin-report 13 false))))
+
+(deftest run-program
+  (let [bytecodes [1 1 4 0 128 4 131 129 166 147]]
+    (is (= [0 0 10 1 1 4 0 128 4 131 129 166 147]
+           (p/run bytecodes)))))
 
 (deftest install-program
-  (is (= [6 0 10 1 1 4 0 128 4 131 129 166 147]
-         (dc/install program))))
+  (let [bytecodes [1 1 4 0 128 4 131 129 166 147]]
+    (is (= [6 0 10 1 1 4 0 128 4 131 129 166 147]
+           (p/install bytecodes)))))
 
 (deftest start-reporting
-  (is (= [3] (dc/start-reporting))))
+  (is (= [3] (p/start-reporting))))
 
 (deftest stop-reporting
-  (is (= [4] (dc/stop-reporting))))
+  (is (= [4] (p/stop-reporting))))
 
 (deftest start-profiling
-  (is (= [8 1] (dc/start-profiling))))
+  (is (= [8 1] (p/start-profiling))))
 
 (deftest stop-profiling
-  (is (= [8 0] (dc/stop-profiling))))
+  (is (= [8 0] (p/stop-profiling))))
 
 (deftest set-report-interval
-  (dc/set-report-interval 0) ; NOTE(Richo): Make sure it's set to something different
-  (is (= [9 50] (dc/set-report-interval 50))))
+  (is (= [9 50] (p/set-report-interval 50))))
 
 (deftest set-all-breakpoints
-  (is (= [14 1] (dc/set-all-breakpoints))))
+  (is (= [14 1] (p/set-all-breakpoints))))
 
 (deftest clear-all-breakpoints
-  (is (= [14 0] (dc/clear-all-breakpoints))))
+  (is (= [14 0] (p/clear-all-breakpoints))))
 
 (deftest send-continue
-  (is (= [12] (dc/send-continue))))
+  (is (= [12] (p/continue))))
 
-(deftest send-keep-alive
-  (is (= [7] (dc/send-keep-alive))))
+(deftest keep-alive
+  (is (= [7] (p/keep-alive))))
 
-(deftest connection-request
-  (is (= [255 0 8] (dc/connection-request-msg))))
+(deftest request-connection
+  (is (= [255 0 8] (p/request-connection))))
 
-(deftest handshake-confirmation
-  (is (= 50 (dc/handshake-confirmation 42))))
+(deftest confirm-handshake
+  (is (= 50 (p/confirm-handshake 42))))

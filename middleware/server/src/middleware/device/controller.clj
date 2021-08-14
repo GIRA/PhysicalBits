@@ -6,7 +6,7 @@
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [middleware.utils.async :refer :all]
-            [middleware.device.protocol :refer :all]
+            [middleware.device.protocol :as p]
             [middleware.device.boards :refer :all]
             [middleware.utils.conversions :refer :all]
             [middleware.compiler.compiler :as cc]
@@ -148,36 +148,23 @@
 
 (defn set-global-value [global-name ^double value]
   (when-let [global-number (get-global-number global-name)]
-    (let [^long actual-value (float->uint32 value)]
-      (send [MSG_OUT_SET_GLOBAL
-             global-number
-             (bit-and 16rFF (bit-shift-right actual-value 24))
-             (bit-and 16rFF (bit-shift-right actual-value 16))
-             (bit-and 16rFF (bit-shift-right actual-value 8))
-             (bit-and 16rFF actual-value)]))))
+    (send (p/set-global-value global-number value))))
 
 (defn set-global-report [global-name report?]
   (when-let [global-number (get-global-number global-name)]
     (swap! state update-in [:reporting :globals]
            (if report? conj disj) global-name)
-    (send [MSG_OUT_SET_GLOBAL_REPORT
-           global-number
-           (if report? 1 0)])))
+    (send (p/set-global-report global-number report?))))
 
 (defn set-pin-value [pin-name ^double value]
   (when-let [pin-number (get-pin-number pin-name)]
-    (send [MSG_OUT_SET_VALUE
-           pin-number
-           ; TODO(Richo): Maybe clamp the value between [0 1]?
-           (Math/round (* value 255.0))])))
+    (send (p/set-pin-value pin-number value))))
 
 (defn set-pin-report [pin-name report?]
   (when-let [pin-number (get-pin-number pin-name)]
     (swap! state update-in [:reporting :pins]
            (if report? conj disj) pin-name)
-    (send [MSG_OUT_SET_REPORT
-           pin-number
-           (if report? 1 0)])))
+    (send (p/set-pin-report pin-number report?))))
 
 (defn send-pins-reporting []
   (let [pins (-> @state :reporting :pins)]
@@ -230,32 +217,25 @@
   (swap! state assoc-in [:reporting :globals] #{})
   (swap! state assoc-in [:program :running] program)
   (let [bytecodes (en/encode (:compiled program))
-        msb (bit-shift-right (bit-and (count bytecodes)
-                                      16rFF00)
-                             8)
-        lsb (bit-and (count bytecodes)
-                     16rFF)
-        sent (send (concat [MSG_OUT_SET_PROGRAM msb lsb] bytecodes))]
+        sent (send (p/run bytecodes))]
     (update-reporting program)
     sent))
 
 (defn install [program]
   ; TODO(Richo): Should I store the installed program?
   (let [bytecodes (en/encode (:compiled program))
-        msb (bit-shift-right (bit-and (count bytecodes)
-                                      16rFF00)
-                             8)
-        lsb (bit-and (count bytecodes)
-                     16rFF)
-        result (send (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes))]
+        sent (send (p/install bytecodes))]
+    ; TODO(Richo): This message is actually a lie, we really don't know yet if the
+    ; program was installed successfully. I think we need to add a confirmation
+    ; message coming from the firmware
     (logger/success "Installed program successfully!")
-    result))
+    sent))
 
-(defn start-reporting [] (send [MSG_OUT_START_REPORTING]))
-(defn stop-reporting [] (send [MSG_OUT_STOP_REPORTING]))
+(defn start-reporting [] (send (p/start-reporting)))
+(defn stop-reporting [] (send (p/stop-reporting)))
 
-(defn start-profiling [] (send [MSG_OUT_PROFILE 1]))
-(defn stop-profiling [] (send [MSG_OUT_PROFILE 0]))
+(defn start-profiling [] (send (p/start-profiling)))
+(defn stop-profiling [] (send (p/stop-profiling)))
 
 (defn set-report-interval [interval]
   (let [interval (int (constrain interval
@@ -264,32 +244,22 @@
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
-      ;(logger/warning "Setting report interval: %1" interval)
-      (send [MSG_OUT_SET_REPORT_INTERVAL interval]))))
+      (send (p/set-report-interval interval)))))
 
-(defn set-all-breakpoints [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1]))
-(defn clear-all-breakpoints [] (send [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0]))
-
+(defn set-all-breakpoints [] (send (p/set-all-breakpoints)))
+(defn clear-all-breakpoints [] (send (p/clear-all-breakpoints)))
 (defn send-continue []
   (swap! state assoc :debugger nil)
-  (send [MSG_OUT_DEBUG_CONTINUE]))
-
-(defn connection-request-msg []
-  [MSG_OUT_CONNECTION_REQUEST
-   MAJOR_VERSION
-   MINOR_VERSION])
-
-(defn handshake-confirmation [n1]
-  (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256))
+  (send (p/continue)))
 
 (defn- request-connection [port in]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (write! port (connection-request-msg))
+   (write! port (p/request-connection))
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
    (if-let [n1 (<? in 1000)]
-     (let [n2 (handshake-confirmation n1)]
+     (let [n2 (p/confirm-handshake n1)]
        (write! port n2)
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
        (if (= n2 (<? in 1000))
@@ -303,13 +273,10 @@
        (logger/error "Connection timeout")
        false))))
 
-(defn send-keep-alive []
-  (send [MSG_OUT_KEEP_ALIVE]))
-
 (defn- keep-alive-loop []
   (loop []
     (when (connected?)
-      (send-keep-alive)
+      (send (p/keep-alive))
       (<!! (timeout 100))
       (recur))))
 
@@ -407,7 +374,7 @@
 (defn- process-script-state [i ^long byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
         error-code (bit-and 2r01111111 byte)
-        error-msg (error-msg error-code)
+        error-msg (p/error-msg error-code)
         program (-> @state :program :running)
         script-name (-> program :compiled :scripts (get i) :name)
         task? (-> program :final-ast :scripts (get i) ast/task?)]
@@ -415,7 +382,7 @@
      {:index i
       :name script-name
       :running? running?
-      :error? (error? error-code)
+      :error? (p/error? error-code)
       :error-code error-code
       :error-msg error-msg
       :task? task?}]))
@@ -464,8 +431,8 @@
     (when (> error-code 0)
       (logger/newline)
       (logger/warning "%1 detected. The program has been stopped"
-                      (error-msg error-code))
-      (if (error-disconnect? error-code)
+                      (p/error-msg error-code))
+      (if (p/error-disconnect? error-code)
         (disconnect)))))
 
 (defn- process-trace [in]
@@ -482,15 +449,15 @@
       (try
         (when-let [cmd (<?? in)]
           (condp = cmd
-            MSG_IN_PIN_VALUE (process-pin-value in)
-            MSG_IN_GLOBAL_VALUE (process-global-value in)
-            MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
-            MSG_IN_FREE_RAM (process-free-ram in)
-            MSG_IN_PROFILE (process-profile in)
-            MSG_IN_COROUTINE_STATE (process-coroutine-state in)
-            MSG_IN_ERROR (process-error in)
-            MSG_IN_TRACE (process-trace in)
-            MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
+            p/MSG_IN_PIN_VALUE (process-pin-value in)
+            p/MSG_IN_GLOBAL_VALUE (process-global-value in)
+            p/MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
+            p/MSG_IN_FREE_RAM (process-free-ram in)
+            p/MSG_IN_PROFILE (process-profile in)
+            p/MSG_IN_COROUTINE_STATE (process-coroutine-state in)
+            p/MSG_IN_ERROR (process-error in)
+            p/MSG_IN_TRACE (process-trace in)
+            p/MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
             (logger/warning "Uzi - Invalid response code: %1" cmd)))
         (catch Throwable e
           (log/error "ERROR WHILE PROCESSING INPUT ->" e)))
