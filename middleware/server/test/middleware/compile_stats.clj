@@ -28,7 +28,7 @@
                      :ast-or-src ast-or-src
                      :args args}))))
 
-(defn- collect-stats []
+(defn- collect-stats [programs]
   (map (fn [{:keys [name ast-or-src args]}]
          (let [src (if (string? ast-or-src)
                      ast-or-src
@@ -38,43 +38,44 @@
             :global-count (count (:globals (:compiled program)))
             :encoded-size (count (en/encode (:compiled program)))
             :name name}))
-       (apply concat (vals @programs))))
+       (apply concat (vals programs))))
 
 (defn- write-row! [^java.io.BufferedWriter writer row]
   (.write writer (str/join "," (map #(if (ratio? %) (double %) %) row)))
   (.newLine writer))
 
 (defn- write-compile-stats []
-  (let [cols [:name :instruction-count :global-count :encoded-size]
-        rows (sort-by :name (collect-stats))
-        aggregate (fn [name f]
-                    (into {:name name}
-                          (map (fn [k] [k (apply f (mapv k rows))])
-                               (drop 1 cols))))
-        min-values (aggregate "MIN" min)
-        max-values (aggregate "MAX" max)
-        avg-values (aggregate "AVERAGE" (fn [& values] (/ (reduce + values)
-                                                          (count values))))
-        median-values (aggregate "MEDIAN" (fn [& values]
-                                            (let [sorted (sort values)
-                                                  countd (count values)
-                                                  midPoint (int (/ countd 2))]
-                                              (if (odd? countd)
-                                                (nth sorted midPoint)
-                                                (/ (+ (nth sorted midPoint)
-                                                      (nth sorted (dec midPoint)))
-                                                   2)))))]
-    (with-open [w (io/writer compile-stats-path)]
-      ; Columns
-      (write-row! w (map name cols))
-      ; Aggregate data
-      (write-row! w (map min-values cols))
-      (write-row! w (map max-values cols))
-      (write-row! w (map avg-values cols))
-      (write-row! w (map median-values cols))
-      ; Rows
-      (doseq [row rows]
-        (write-row! w (map row cols)))))
+  (when (not (empty? @programs))
+    (let [cols [:name :instruction-count :global-count :encoded-size]
+          rows (sort-by :name (collect-stats @programs))
+          aggregate (fn [name f]
+                      (into {:name name}
+                            (map (fn [k] [k (apply f (mapv k rows))])
+                                 (drop 1 cols))))
+          min-values (aggregate "MIN" min)
+          max-values (aggregate "MAX" max)
+          avg-values (aggregate "AVERAGE" (fn [& values] (/ (reduce + values)
+                                                            (count values))))
+          median-values (aggregate "MEDIAN" (fn [& values]
+                                              (let [sorted (sort values)
+                                                    countd (count values)
+                                                    midPoint (int (/ countd 2))]
+                                                (if (odd? countd)
+                                                  (nth sorted midPoint)
+                                                  (/ (+ (nth sorted midPoint)
+                                                        (nth sorted (dec midPoint)))
+                                                     2)))))]
+      (with-open [w (io/writer compile-stats-path)]
+        ; Columns
+        (write-row! w (map name cols))
+        ; Aggregate data
+        (write-row! w (map min-values cols))
+        (write-row! w (map max-values cols))
+        (write-row! w (map avg-values cols))
+        (write-row! w (map median-values cols))
+        ; Rows
+        (doseq [row rows]
+          (write-row! w (map row cols))))))
   (reset! programs {}))
 
 (defmethod report :summary [m]
