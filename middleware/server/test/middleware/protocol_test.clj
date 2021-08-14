@@ -7,9 +7,8 @@
               "var counter; task loop() running { counter = counter + 1; }"
               "uzi" true))
 
-(dc/run program)
-
 (deftest set-global-value
+  (dc/run program)
   (doseq [[value bytes]
           {10       [10 3 65 32 0 0]
            -1       [10 3 191 128 0 0]
@@ -24,6 +23,7 @@
     (is (= bytes (dc/set-global-value "counter" value)))))
 
 (deftest set-global-report
+  (dc/run program)
   (is (= [11 3 1] (dc/set-global-report "counter" true)))
   (is (= [11 3 0] (dc/set-global-report "counter" false))))
 
@@ -79,14 +79,3 @@
 
 (deftest handshake-confirmation
   (is (= 50 (dc/handshake-confirmation 42))))
-
-(comment
-(mod )
-(dc/handshake-confirmation 42)
-  (dc/start-reporting)
-
-  (dc/start-profiling)
-  (dc/stop-profiling)
-
- (dc/set-report-interval 0)
- ,,,)
