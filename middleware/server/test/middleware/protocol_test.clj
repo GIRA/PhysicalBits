@@ -121,67 +121,115 @@
 
 (deftest process-running-scripts
   (setup)
-  (let [in (a/to-chan (remove string?
-                              ["timestamp"  0 0 13 58
-                               "count"      0]))]
-    (is (= (dc/process-running-scripts in) {})))
-  (let [in (a/to-chan (remove string?
-                              ["timestamp"  0 0 46 12
-                               "count"      1
-                               "scripts"    128]))]
-    (is (= (dc/process-running-scripts in)
-           {"blink13" {:running? true,
-                       :index 0,
-                       :name "blink13",
-                       :error-code 0,
-                       :error-msg "NO_ERROR",
-                       :task? true,
-                       :error? false}})))
-  (let [in (a/to-chan (remove string?
-                              ["timestamp"    0 0 19 16
-                               "count"        4
-                               "scripts"      128 8 0 0]))]
-    (is (= (dc/process-running-scripts in)
-           {"loop" {:running? false,
-                    :index 1,
-                    :name "loop",
-                    :error-code 8,
-                    :error-msg "OUT_OF_MEMORY",
-                    :task? true,
-                    :error? true},
-            "blink13" {:running? true,
-                       :index 0,
-                       :name "blink13",
-                       :error-code 0,
-                       :error-msg "NO_ERROR",
-                       :task? true,
-                       :error? false},
-            "inc" {:running? false,
-                   :index 3,
-                   :name "inc",
-                   :error-code 0,
-                   :error-msg "NO_ERROR",
-                   :task? false,
-                   :error? false},
-            "add" {:running? false,
-                   :index 2,
-                   :name "add",
-                   :error-code 0,
-                   :error-msg "NO_ERROR",
-                   :task? false,
-                   :error? false}}))))
+  (is (= (p/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 13 58
+                              "count"      0])))
+         [3386 []]))
+  (is (= (p/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 46 12
+                              "count"      1
+                              "scripts"    128])))
+         [11788 [{:running? true
+                  :error-code 0
+                  :error-msg "NO_ERROR"
+                  :error? false}]]))
+  (is (= (p/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"    0 0 19 16
+                              "count"        4
+                              "scripts"      128 8 0 0])))
+         [4880 [{:running? true
+                 :error-code 0
+                 :error-msg "NO_ERROR"
+                 :error? false}
+                {:running? false
+                 :error-code 8
+                 :error-msg "OUT_OF_MEMORY"
+                 :error? true}
+                {:running? false
+                 :error-code 0
+                 :error-msg "NO_ERROR"
+                 :error? false}
+                {:running? false
+                 :error-code 0
+                 :error-msg "NO_ERROR"
+                 :error? false}]]))
+  (is (= (dc/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 13 58
+                              "count"      0])))
+         {}))
+  (is (= (dc/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 46 12
+                              "count"      1
+                              "scripts"    128])))
+         {"blink13" {:running? true,
+                     :index 0,
+                     :name "blink13",
+                     :error-code 0,
+                     :error-msg "NO_ERROR",
+                     :task? true,
+                     :error? false}}))
+  (is (= (dc/process-running-scripts
+          (a/to-chan (remove string?
+                             ["timestamp"    0 0 19 16
+                              "count"        4
+                              "scripts"      128 8 0 0])))
+         {"loop" {:running? false,
+                  :index 1,
+                  :name "loop",
+                  :error-code 8,
+                  :error-msg "OUT_OF_MEMORY",
+                  :task? true,
+                  :error? true},
+          "blink13" {:running? true,
+                     :index 0,
+                     :name "blink13",
+                     :error-code 0,
+                     :error-msg "NO_ERROR",
+                     :task? true,
+                     :error? false},
+          "inc" {:running? false,
+                 :index 3,
+                 :name "inc",
+                 :error-code 0,
+                 :error-msg "NO_ERROR",
+                 :task? false,
+                 :error? false},
+          "add" {:running? false,
+                 :index 2,
+                 :name "add",
+                 :error-code 0,
+                 :error-msg "NO_ERROR",
+                 :task? false,
+                 :error? false}})))
 
 (deftest process-free-ram
   (setup)
-  (let [in (a/to-chan (remove string?
-                              ["timestamp"  0 0 13 101
-                               "arduino"    248 49 53 88
-                               "uzi"        0 0 8 134]))]
-    (is (= (dc/process-free-ram in)
-           {:uzi 2182, :arduino 4163974488}))))
+  (is (= (p/process-free-ram
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 13 101
+                              "arduino"    248 49 53 88
+                              "uzi"        0 0 8 134])))
+         [3429 {:uzi 2182, :arduino 4163974488}]))
+  (is (= (dc/process-free-ram
+          (a/to-chan (remove string?
+                             ["timestamp"  0 0 13 101
+                              "arduino"    248 49 53 88
+                              "uzi"        0 0 8 134])))
+         {:uzi 2182, :arduino 4163974488})))
 
 (deftest process-pin-value
   (setup)
+  (is (= (p/process-pin-value
+          (a/to-chan (remove string? ["timestamp"			0 0 55 79
+                                      "count"					1
+                                      "n1[0]"					52
+                                      "n2[0]"					0])))
+         [14159 [{:number 13 :value 0.0}]]))
   (is (= (dc/process-pin-value
           (a/to-chan (remove string? ["timestamp"			0 0 55 79
                                       "count"					1
@@ -191,6 +239,15 @@
 
 (deftest process-global-value
   (setup)
+  (is (= (p/process-global-value
+          (a/to-chan (remove string? ["timestamp"				0 0 55 87
+                                      "count" 				  2
+                                      "number[0]" 			3
+                                      "n1..n4[0]" 			0x42 0x28 0x00 0x00
+                                      "number[1]"				4
+                                      "n1..n4[1]"				0x42 0x28 0x00 0x00])))
+         [14167 [{:number 3 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}
+                 {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]]))
   (is (= (dc/process-global-value
           (a/to-chan (remove string? ["timestamp"				0 0 55 87
                                       "count" 				  2
@@ -210,6 +267,11 @@
 
 (deftest process-profile
   (setup)
+  (is (= (p/process-profile
+          (a/to-chan (remove string? ["n1"				178
+                                      "n2"				51
+                                      "report-interval"	5])))
+         {:report-interval 5, :ticks 22835, :interval-ms 100}))
   (is (= (dc/process-profile
           (a/to-chan (remove string? ["n1"				178
                                       "n2"				51
@@ -217,24 +279,33 @@
          {:report-interval 5, :ticks 22835, :interval-ms 100})))
 
 (deftest process-error
-  (is (= (p/error-msg (dc/process-error (a/to-chan [1])))
-         "STACK_OVERFLOW"))
-  (is (= (p/error-msg (dc/process-error (a/to-chan [2])))
-         "STACK_UNDERFLOW"))
-  (is (= (p/error-msg (dc/process-error (a/to-chan [4])))
-         "ACCESS_VIOLATION"))
-  (is (= (p/error-msg (dc/process-error (a/to-chan [8])))
-         "OUT_OF_MEMORY"))
-  (is (= (p/error-msg (dc/process-error (a/to-chan [9])))
-         "STACK_OVERFLOW & OUT_OF_MEMORY")))
+  (is (= (p/process-error (a/to-chan [1]))
+         {:code 1 :msg "STACK_OVERFLOW"}))
+  (is (= (p/process-error (a/to-chan [2]))
+         {:code 2 :msg "STACK_UNDERFLOW"}))
+  (is (= (p/process-error (a/to-chan [4]))
+         {:code 4 :msg "ACCESS_VIOLATION"}))
+  (is (= (p/process-error (a/to-chan [8]))
+         {:code 8 :msg "OUT_OF_MEMORY"}))
+  (is (= (p/process-error (a/to-chan [9]))
+         {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"})))
 
 (deftest process-coroutine-state
-  (let [in (a/to-chan (remove string?
-                              ["index"        1
-                               "pc"           2 3
-                               "fp"           4
-                               "stack-size"   2
-                               "stack"        0 1 2 3
-                                              4 5 6 7]))]
-    (is (= (dc/process-coroutine-state in)
-           {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}))))
+  (is (= (p/process-coroutine-state
+          (a/to-chan (remove string?
+                             ["index"        1
+                              "pc"           2 3
+                              "fp"           4
+                              "stack-size"   2
+                              "stack"        0 1 2 3
+                              4 5 6 7])))
+         {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}))
+  (is (= (dc/process-coroutine-state
+          (a/to-chan (remove string?
+                             ["index"        1
+                              "pc"           2 3
+                              "fp"           4
+                              "stack-size"   2
+                              "stack"        0 1 2 3
+                              4 5 6 7])))
+         {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4})))

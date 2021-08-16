@@ -327,126 +327,88 @@
         (set-report-interval (+ report-interval report-interval-inc))))))
 
 (defn process-pin-value [in]
-  (let [timestamp (read-timestamp in)
-        count (<?? in)
-        snapshot (atom {:timestamp timestamp, :data {}})]
-    (dotimes [_ count]
-             (let [^long n1 (<?? in)
-                   ^long n2 (<?? in)
-                   pin-number (bit-shift-right n1 2)
-                   value (/ (bit-or n2
-                                    (bit-shift-left (bit-and n1 2r11)
-                                                    8))
-                            1023.0)]
-               (when-let [pin-name (get-pin-name pin-number)]
-                 (swap! snapshot assoc-in [:data pin-name]
-                        {:name pin-name
-                         :number pin-number
-                         :value value}))))
-    (swap! state assoc :pins @snapshot)
+  (let [[timestamp data] (p/process-pin-value in)]
     (process-timestamp timestamp)
-    @snapshot))
+    (let [pins (into {}
+                     (map (fn [pin]
+                            (when-let [name (get-pin-name (:number pin))]
+                              [name (assoc pin :name name)]))
+                          data))]
+      (swap! state assoc
+             :pins {:timestamp timestamp :data pins})
+      ; TODO(Richo): Return value unnecessary, just for testing...
+      {:timestamp timestamp :data pins})))
 
 (defn process-global-value [in]
-  (let [timestamp (read-timestamp in)
-        count (<?? in)
-        globals (vec (program/all-globals (-> @state :program :running :compiled)))
-        snapshot (atom {:timestamp timestamp, :data {}})]
-    (dotimes [_ count]
-             (let [number (<?? in)
-                   n1 (<?? in)
-                   n2 (<?? in)
-                   n3 (<?? in)
-                   n4 (<?? in)
-                   float-value (bytes->float [n1 n2 n3 n4])]
-               (when-let [global-name (:name (nth globals number {}))]
-                 (swap! snapshot assoc-in [:data global-name]
-                        {:name global-name
-                         :number number
-                         :value float-value
-                         :raw-bytes [n1 n2 n3 n4]}))))
-    (swap! state assoc :globals @snapshot)
+  (let [[timestamp data] (p/process-global-value in)
+        globals (vec (program/all-globals (-> @state :program :running :compiled)))]
     (process-timestamp timestamp)
-    @snapshot))
+    (let [globals (into {}
+                        (map (fn [{:keys [number] :as global}]
+                               (when-let [name (:name (nth globals number {}))]
+                                 [name (assoc global :name name)]))
+                             data))]
+      (swap! state assoc
+             :globals
+             {:timestamp timestamp :data globals})
+      ; TODO(Richo): Return value unnecessary, just for testing...
+      {:timestamp timestamp :data globals})))
 
 (defn process-free-ram [in]
-  (let [timestamp (read-timestamp in)
-        arduino (read-uint32 in)
-        uzi (read-uint32 in)
-        memory {:arduino arduino, :uzi uzi}]
-    (swap! state assoc :memory memory)
+  (let [[timestamp memory] (p/process-free-ram in)]
     (process-timestamp timestamp)
+    (swap! state assoc :memory memory)
+    ; TODO(Richo): Return value unnecessary, just for testing...
     memory))
 
-
-(defn- process-script-state [i ^long byte]
-  (let [running? (> (bit-and 2r10000000 byte) 0)
-        error-code (bit-and 2r01111111 byte)
-        error-msg (p/error-msg error-code)
-        program (-> @state :program :running)
-        script-name (-> program :compiled :scripts (get i) :name)
-        task? (-> program :final-ast :scripts (get i) ast/task?)]
-    [script-name
-     {:index i
-      :name script-name
-      :running? running?
-      :error? (p/error? error-code)
-      :error-code error-code
-      :error-msg error-msg
-      :task? task?}]))
-
 (defn process-running-scripts [in]
-  (let [timestamp (read-timestamp in)
-        count (<?? in)
-        scripts (into {}
-                      (map-indexed process-script-state
-                                   (read-vec?? count in)))
-        [old new] (swap-vals! state assoc :scripts scripts)]
+  (let [[timestamp scripts] (p/process-running-scripts in)
+        program (-> @state :program :running)
+        get-script-name (fn [i] (-> program :compiled :scripts (get i) :name))
+        task? (fn [i] (-> program :final-ast :scripts (get i) ast/task?))
+        [old new] (swap-vals! state assoc
+                              :scripts
+                              (into {} (map-indexed
+                                        (fn [i script]
+                                          (let [name (get-script-name i)]
+                                            [name
+                                             (assoc script
+                                                    :index i
+                                                    :name name
+                                                    :task? (task? i))]))
+                                        scripts)))]
+    (process-timestamp timestamp)
     (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
       (when-not (= (-> old :scripts (get (:name script)) :error-code)
                    (:error-code script))
         (logger/warning "%1 detected on script \"%2\". The script has been stopped."
                         (:error-msg script)
                         (:name script))))
-    (process-timestamp timestamp)
-    scripts))
+    ; TODO(Richo): Return value unnecessary, just for testing...
+    (:scripts new)))
 
 (defn process-profile [in]
-  (let [^long n1 (<?? in)
-        ^long n2 (<?? in)
-        value (bit-or n2
-                      (bit-shift-left n1 7))
-        report-interval (<?? in)
-        profiler {:ticks value
-                  :interval-ms 100
-                  :report-interval report-interval}]
+  (let [profiler (p/process-profile in)]
     (swap! state assoc :profiler profiler)
-    (add-pseudo-var! "__tps" (* 10 value))
-    (add-pseudo-var! "__vm-report-interval" report-interval)
+    (add-pseudo-var! "__tps" (* 10 (:ticks profiler)))
+    (add-pseudo-var! "__vm-report-interval" (:report-interval profiler))
+    ; TODO(Richo): Return value unnecessary, just for testing...
     profiler))
 
 (defn process-coroutine-state [in]
-  (let [index (<?? in)
-        pc (read-uint16 in)
-        fp (<?? in)
-        ^long stack-size (<?? in)
-        stack (read-vec?? (* 4 stack-size) in)
-        debugger {:index index
-                  :pc pc
-                  :fp fp
-                  :stack stack}]
+  (let [debugger (p/process-coroutine-state in)]
     (swap! state assoc :debugger debugger)
+    ; TODO(Richo): Return value unnecessary, just for testing...
     debugger))
 
 (defn process-error [in]
-  (let [^long error-code (<?? in)]
-    (when (> error-code 0)
-      (logger/newline)
-      (logger/warning "%1 detected. The program has been stopped"
-                      (p/error-msg error-code))
-      (if (p/error-disconnect? error-code)
-        (disconnect)))
-    error-code))
+  (when-let [{:keys [code msg]} (p/process-error in)]
+    (logger/newline)
+    (logger/warning "%1 detected. The program has been stopped" msg)
+    (if (p/error-disconnect? code)
+      (disconnect))
+    ; TODO(Richo): Return value unnecessary, just for testing...
+    code))
 
 (defn- process-trace [in]
   (let [count (<?? in)

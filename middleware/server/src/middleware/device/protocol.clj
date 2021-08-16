@@ -1,6 +1,7 @@
 (ns middleware.device.protocol
   (:require [clojure.string :as str]
-            [middleware.utils.conversions :as c]))
+            [middleware.utils.conversions :as c]
+            [middleware.utils.async :refer [<?? read-vec??]]))
 
 ; Version number
 (def MAJOR_VERSION 0)
@@ -127,3 +128,96 @@
   (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256))
 
 (defn keep-alive [] [MSG_OUT_KEEP_ALIVE])
+
+(defn- read-uint16 [in]
+  (c/bytes->uint16 (read-vec?? 2 in)))
+
+(defn- read-uint32 [in]
+  (c/bytes->uint32 (read-vec?? 4 in)))
+
+(def read-timestamp read-uint32)
+
+(defn process-pin-value [in]
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        data (loop [i 0, data []]
+               (if (< i count)
+                 (let [^long n1 (<?? in)
+                       ^long n2 (<?? in)
+                       number (bit-shift-right n1 2)
+                       value (/ (bit-or n2
+                                        (bit-shift-left (bit-and n1 2r11)
+                                                        8))
+                                1023.0)]
+                   (recur
+                     (inc i)
+                     (conj data {:number number
+                                 :value value})))
+                 data))]
+    [timestamp data]))
+
+(defn process-global-value [in]
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        data (loop [i 0, data []]
+               (if (< i count)
+                 (let [number (<?? in)
+                       raw-bytes (read-vec?? 4 in)
+                       value (c/bytes->float raw-bytes)]
+                   (recur
+                     (inc i)
+                     (conj data {:number number
+                                 :value value
+                                 :raw-bytes raw-bytes})))
+                 data))]
+    [timestamp data]))
+
+(defn process-free-ram [in]
+  (let [timestamp (read-timestamp in)
+        arduino (read-uint32 in)
+        uzi (read-uint32 in)]
+    [timestamp {:arduino arduino, :uzi uzi}]))
+
+
+(defn- process-script-state [^long byte]
+  (let [running? (> (bit-and 2r10000000 byte) 0)
+        error-code (bit-and 2r01111111 byte)
+        error-msg (error-msg error-code)]
+    {:running? running?
+     :error? (error? error-code)
+     :error-code error-code
+     :error-msg error-msg}))
+
+(defn process-running-scripts [in]
+  (let [timestamp (read-timestamp in)
+        count (<?? in)
+        scripts (mapv process-script-state
+                      (read-vec?? count in))]
+    [timestamp scripts]))
+
+(defn process-profile [in]
+  (let [^long n1 (<?? in)
+        ^long n2 (<?? in)
+        value (bit-or n2
+                      (bit-shift-left n1 7))
+        report-interval (<?? in)]
+    {:ticks value
+     :interval-ms 100
+     :report-interval report-interval}))
+
+(defn process-coroutine-state [in]
+  (let [index (<?? in)
+        pc (read-uint16 in)
+        fp (<?? in)
+        ^long stack-size (<?? in)
+        stack (read-vec?? (* 4 stack-size) in)]
+    {:index index
+     :pc pc
+     :fp fp
+     :stack stack}))
+
+(defn process-error [in]
+  (let [^long code (<?? in)]
+    (when (> code 0)
+      {:code code
+       :msg (error-msg code)})))
