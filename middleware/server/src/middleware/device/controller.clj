@@ -19,6 +19,9 @@
   (:import (java.net Socket)))
 
 (comment
+
+
+  (string? 1)
   (set! *unchecked-math* :warn-on-boxed)
   (defn m [a b] (+ (* a a) (* b b)))
  (start-profiling)
@@ -323,7 +326,7 @@
       (when (> delta-smooth delta-threshold-max)
         (set-report-interval (+ report-interval report-interval-inc))))))
 
-(defn- process-pin-value [in]
+(defn process-pin-value [in]
   (let [timestamp (read-timestamp in)
         count (<?? in)
         snapshot (atom {:timestamp timestamp, :data {}})]
@@ -344,7 +347,7 @@
     (process-timestamp timestamp)
     @snapshot))
 
-(defn- process-global-value [in]
+(defn process-global-value [in]
   (let [timestamp (read-timestamp in)
         count (<?? in)
         globals (vec (program/all-globals (-> @state :program :running :compiled)))
@@ -366,7 +369,7 @@
     (process-timestamp timestamp)
     @snapshot))
 
-(defn- process-free-ram [in]
+(defn process-free-ram [in]
   (let [timestamp (read-timestamp in)
         arduino (read-uint32 in)
         uzi (read-uint32 in)
@@ -392,7 +395,7 @@
       :error-msg error-msg
       :task? task?}]))
 
-(defn- process-running-scripts [in]
+(defn process-running-scripts [in]
   (let [timestamp (read-timestamp in)
         count (<?? in)
         scripts (into {}
@@ -408,7 +411,7 @@
     (process-timestamp timestamp)
     scripts))
 
-(defn- process-profile [in]
+(defn process-profile [in]
   (let [^long n1 (<?? in)
         ^long n2 (<?? in)
         value (bit-or n2
@@ -422,7 +425,7 @@
     (add-pseudo-var! "__vm-report-interval" report-interval)
     profiler))
 
-(defn- process-coroutine-state [in]
+(defn process-coroutine-state [in]
   (let [index (<?? in)
         pc (read-uint16 in)
         fp (<?? in)
@@ -435,7 +438,7 @@
     (swap! state assoc :debugger debugger)
     debugger))
 
-(defn- process-error [in]
+(defn process-error [in]
   (let [^long error-code (<?? in)]
     (when (> error-code 0)
       (logger/newline)
