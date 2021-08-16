@@ -410,15 +410,16 @@
     ; TODO(Richo): Return value unnecessary, just for testing...
     code))
 
-(defn- process-trace [in]
-  (let [count (<?? in)
-        msg (new String (byte-array (read-vec?? count in)) "UTF-8")]
+(defn process-trace [in]
+  (let [msg (p/process-trace in)]
     (log/info "TRACE:" msg)
+    ; TODO(Richo): Return value unnecessary, just for testing...
     msg))
 
-(defn- process-serial-tunnel [in]
-  (let [value (<?? in)]
+(defn process-serial-tunnel [in]
+  (let [value (p/process-serial-tunnel in)]
     (logger/log "SERIAL: %1" value)
+    ; TODO(Richo): Return value unnecessary, just for testing...
     value))
 
 (defn process-next-message [in]

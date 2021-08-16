@@ -309,3 +309,14 @@
                               "stack"        0 1 2 3
                               4 5 6 7])))
          {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4})))
+
+(deftest process-trace
+  (is (= (dc/process-trace
+          (a/to-chan (remove string?
+                             ["count"       10
+                              "msg"         82 105 99 104 111 32 99 97 112 111])))
+         "Richo capo")))
+
+(deftest process-serial-tunnel
+  (is (= (dc/process-serial-tunnel (a/to-chan [42]))
+         42)))

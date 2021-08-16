@@ -221,3 +221,10 @@
     (when (> code 0)
       {:code code
        :msg (error-msg code)})))
+
+(defn process-trace [in]
+  (let [count (<?? in)]
+    (new String (byte-array (read-vec?? count in)) "UTF-8")))
+
+(defn process-serial-tunnel [in]
+  (<?? in))
