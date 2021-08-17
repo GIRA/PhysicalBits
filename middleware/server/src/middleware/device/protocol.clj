@@ -154,7 +154,9 @@
                      (conj data {:number number
                                  :value value})))
                  data))]
-    [timestamp data]))
+    {:tag :pin-value
+     :timestamp timestamp
+     :data data}))
 
 (defn process-global-value [in]
   (let [timestamp (read-timestamp in)
@@ -170,14 +172,17 @@
                                  :value value
                                  :raw-bytes raw-bytes})))
                  data))]
-    [timestamp data]))
+    {:tag :global-value
+     :timestamp timestamp
+     :data data}))
 
 (defn process-free-ram [in]
   (let [timestamp (read-timestamp in)
         arduino (read-uint32 in)
         uzi (read-uint32 in)]
-    [timestamp {:arduino arduino, :uzi uzi}]))
-
+    {:tag :free-ram
+     :timestamp timestamp
+     :memory {:arduino arduino, :uzi uzi}}))
 
 (defn- process-script-state [^long byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -193,7 +198,9 @@
         count (<?? in)
         scripts (mapv process-script-state
                       (read-vec?? count in))]
-    [timestamp scripts]))
+    {:tag :running-scripts
+     :timestamp timestamp
+     :scripts scripts}))
 
 (defn process-profile [in]
   (let [^long n1 (<?? in)
@@ -201,9 +208,10 @@
         value (bit-or n2
                       (bit-shift-left n1 7))
         report-interval (<?? in)]
-    {:ticks value
-     :interval-ms 100
-     :report-interval report-interval}))
+    {:tag :profile
+     :data {:ticks value
+            :interval-ms 100
+            :report-interval report-interval}}))
 
 (defn process-coroutine-state [in]
   (let [index (<?? in)
@@ -211,20 +219,24 @@
         fp (<?? in)
         ^long stack-size (<?? in)
         stack (read-vec?? (* 4 stack-size) in)]
-    {:index index
-     :pc pc
-     :fp fp
-     :stack stack}))
+    {:tag :coroutine-state
+     :data {:index index
+            :pc pc
+            :fp fp
+            :stack stack}}))
 
 (defn process-error [in]
   (let [^long code (<?? in)]
     (when (> code 0)
-      {:code code
-       :msg (error-msg code)})))
+      {:tag :error
+       :error {:code code
+               :msg (error-msg code)}})))
 
 (defn process-trace [in]
   (let [count (<?? in)]
-    (new String (byte-array (read-vec?? count in)) "UTF-8")))
+    {:tag :trace
+     :msg (new String (byte-array (read-vec?? count in)) "UTF-8")}))
 
 (defn process-serial-tunnel [in]
-  (<?? in))
+  {:tag :serial
+   :data (<?? in)})

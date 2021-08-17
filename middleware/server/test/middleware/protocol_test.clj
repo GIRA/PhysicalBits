@@ -88,37 +88,43 @@
           (a/to-chan (remove string?
                              ["timestamp"  0 0 13 58
                               "count"      0])))
-         [3386 []]))
+         {:tag :running-scripts
+          :timestamp 3386
+          :scripts []}))
   (is (= (p/process-running-scripts
           (a/to-chan (remove string?
                              ["timestamp"  0 0 46 12
                               "count"      1
                               "scripts"    128])))
-         [11788 [{:running? true
-                  :error-code 0
-                  :error-msg "NO_ERROR"
-                  :error? false}]]))
+         {:tag :running-scripts
+          :timestamp 11788
+          :scripts [{:running? true
+                     :error-code 0
+                     :error-msg "NO_ERROR"
+                     :error? false}]}))
   (is (= (p/process-running-scripts
           (a/to-chan (remove string?
                              ["timestamp"    0 0 19 16
                               "count"        4
                               "scripts"      128 8 0 0])))
-         [4880 [{:running? true
-                 :error-code 0
-                 :error-msg "NO_ERROR"
-                 :error? false}
-                {:running? false
-                 :error-code 8
-                 :error-msg "OUT_OF_MEMORY"
-                 :error? true}
-                {:running? false
-                 :error-code 0
-                 :error-msg "NO_ERROR"
-                 :error? false}
-                {:running? false
-                 :error-code 0
-                 :error-msg "NO_ERROR"
-                 :error? false}]])))
+         {:tag :running-scripts
+          :timestamp 4880
+          :scripts [{:running? true
+                     :error-code 0
+                     :error-msg "NO_ERROR"
+                     :error? false}
+                    {:running? false
+                     :error-code 8
+                     :error-msg "OUT_OF_MEMORY"
+                     :error? true}
+                    {:running? false
+                     :error-code 0
+                     :error-msg "NO_ERROR"
+                     :error? false}
+                    {:running? false
+                     :error-code 0
+                     :error-msg "NO_ERROR"
+                     :error? false}]})))
 
 (deftest process-free-ram
   (is (= (p/process-free-ram
@@ -126,7 +132,9 @@
                              ["timestamp"  0 0 13 101
                               "arduino"    248 49 53 88
                               "uzi"        0 0 8 134])))
-         [3429 {:uzi 2182, :arduino 4163974488}])))
+         {:tag :free-ram
+          :timestamp 3429
+          :memory {:uzi 2182, :arduino 4163974488}})))
 
 (deftest process-pin-value
   (is (= (p/process-pin-value
@@ -134,7 +142,9 @@
                                       "count"					1
                                       "n1[0]"					52
                                       "n2[0]"					0])))
-         [14159 [{:number 13 :value 0.0}]])))
+         {:tag :pin-value
+          :timestamp 14159
+          :data [{:number 13 :value 0.0}]})))
 
 (deftest process-global-value
   (is (= (p/process-global-value
@@ -144,27 +154,35 @@
                                       "n1..n4[0]" 			0x42 0x28 0x00 0x00
                                       "number[1]"				4
                                       "n1..n4[1]"				0x42 0x28 0x00 0x00])))
-         [14167 [{:number 3 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}
-                 {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]])))
+         {:tag :global-value
+          :timestamp 14167
+          :data [{:number 3 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}
+                 {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]})))
 
 (deftest process-profile
   (is (= (p/process-profile
           (a/to-chan (remove string? ["n1"				178
                                       "n2"				51
                                       "report-interval"	5])))
-         {:report-interval 5, :ticks 22835, :interval-ms 100})))
+         {:tag :profile
+          :data {:report-interval 5, :ticks 22835, :interval-ms 100}})))
 
 (deftest process-error
   (is (= (p/process-error (a/to-chan [1]))
-         {:code 1 :msg "STACK_OVERFLOW"}))
+         {:tag :error
+          :error {:code 1 :msg "STACK_OVERFLOW"}}))
   (is (= (p/process-error (a/to-chan [2]))
-         {:code 2 :msg "STACK_UNDERFLOW"}))
+         {:tag :error
+          :error {:code 2 :msg "STACK_UNDERFLOW"}}))
   (is (= (p/process-error (a/to-chan [4]))
-         {:code 4 :msg "ACCESS_VIOLATION"}))
+         {:tag :error
+          :error {:code 4 :msg "ACCESS_VIOLATION"}}))
   (is (= (p/process-error (a/to-chan [8]))
-         {:code 8 :msg "OUT_OF_MEMORY"}))
+         {:tag :error
+          :error {:code 8 :msg "OUT_OF_MEMORY"}}))
   (is (= (p/process-error (a/to-chan [9]))
-         {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"})))
+         {:tag :error
+          :error {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"}})))
 
 (deftest process-coroutine-state
   (is (= (p/process-coroutine-state
@@ -175,15 +193,18 @@
                               "stack-size"   2
                               "stack"        0 1 2 3
                               4 5 6 7])))
-         {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4})))
+         {:tag :coroutine-state
+          :data {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}})))
 
 (deftest process-trace
   (is (= (p/process-trace
           (a/to-chan (remove string?
                              ["count"       10
                               "msg"         82 105 99 104 111 32 99 97 112 111])))
-         "Richo capo")))
+         {:tag :trace
+          :msg "Richo capo"})))
 
 (deftest process-serial-tunnel
   (is (= (p/process-serial-tunnel (a/to-chan [42]))
-         42)))
+         {:tag :serial
+          :data 42})))

@@ -238,8 +238,7 @@
     ; TODO(Richo): This message is actually a lie, we really don't know yet if the
     ; program was installed successfully. I think we need to add a confirmation
     ; message coming from the firmware
-    (logger/success "Installed program successfully!")
-    sent))
+    (logger/success "Installed program successfully!")))
 
 (defn start-reporting [] (send (p/start-reporting)))
 (defn stop-reporting [] (send (p/stop-reporting)))
@@ -334,7 +333,7 @@
         (set-report-interval (+ report-interval report-interval-inc))))))
 
 (defn process-pin-value [in]
-  (let [[timestamp data] (p/process-pin-value in)]
+  (let [{:keys [timestamp data]} (p/process-pin-value in)]
     (process-timestamp timestamp)
     (let [pins (into {}
                      (map (fn [pin]
@@ -345,7 +344,7 @@
              :pins {:timestamp timestamp :data pins}))))
 
 (defn process-global-value [in]
-  (let [[timestamp data] (p/process-global-value in)
+  (let [{:keys [timestamp data]} (p/process-global-value in)
         globals (vec (program/all-globals (-> @state :program :running :compiled)))]
     (process-timestamp timestamp)
     (let [globals (into {}
@@ -358,12 +357,12 @@
              {:timestamp timestamp :data globals}))))
 
 (defn process-free-ram [in]
-  (let [[timestamp memory] (p/process-free-ram in)]
+  (let [{:keys [timestamp memory]} (p/process-free-ram in)]
     (process-timestamp timestamp)
     (swap! state assoc :memory memory)))
 
 (defn process-running-scripts [in]
-  (let [[timestamp scripts] (p/process-running-scripts in)
+  (let [{:keys [timestamp scripts]} (p/process-running-scripts in)
         program (-> @state :program :running)
         get-script-name (fn [i] (-> program :compiled :scripts (get i) :name))
         task? (fn [i] (-> program :final-ast :scripts (get i) ast/task?))
@@ -387,29 +386,29 @@
                         (:name script))))))
 
 (defn process-profile [in]
-  (let [profiler (p/process-profile in)]
-    (swap! state assoc :profiler profiler)
-    (add-pseudo-var! "__tps" (* 10 (:ticks profiler)))
-    (add-pseudo-var! "__vm-report-interval" (:report-interval profiler))))
+  (let [{:keys [data]} (p/process-profile in)]
+    (swap! state assoc :profiler data)
+    (add-pseudo-var! "__tps" (* 10 (:ticks data)))
+    (add-pseudo-var! "__vm-report-interval" (:report-interval data))))
 
 (defn process-coroutine-state [in]
   (swap! state assoc
-         :debugger (p/process-coroutine-state in)))
+         :debugger (:data (p/process-coroutine-state in))))
 
 (defn process-error [in]
-  (when-let [{:keys [code msg]} (p/process-error in)]
+  (when-let [{{:keys [code msg]} :error} (p/process-error in)]
     (logger/newline)
     (logger/warning "%1 detected. The program has been stopped" msg)
     (if (p/error-disconnect? code)
       (disconnect))))
 
 (defn process-trace [in]
-  (let [msg (p/process-trace in)]
+  (let [{:keys [msg]} (p/process-trace in)]
     (log/info "TRACE:" msg)))
 
 (defn process-serial-tunnel [in]
-  (let [value (p/process-serial-tunnel in)]
-    (logger/log "SERIAL: %1" value)))
+  (let [{:keys [data]} (p/process-serial-tunnel in)]
+    (logger/log "SERIAL: %1" data)))
 
 (defn process-next-message [in]
   (when-let [cmd (<?? in)]
