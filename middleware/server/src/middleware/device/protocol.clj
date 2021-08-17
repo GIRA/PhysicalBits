@@ -240,3 +240,17 @@
 (defn process-serial-tunnel [in]
   {:tag :serial
    :data (<?? in)})
+
+(defn process-next-message [in]
+  (when-let [cmd (<?? in)]
+    (condp = cmd
+      MSG_IN_PIN_VALUE (process-pin-value in)
+      MSG_IN_GLOBAL_VALUE (process-global-value in)
+      MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
+      MSG_IN_FREE_RAM (process-free-ram in)
+      MSG_IN_PROFILE (process-profile in)
+      MSG_IN_COROUTINE_STATE (process-coroutine-state in)
+      MSG_IN_ERROR (process-error in)
+      MSG_IN_TRACE (process-trace in)
+      MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
+      {:tag :unknown-cmd, :code cmd})))

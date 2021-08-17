@@ -290,14 +290,6 @@
       (<!! (timeout 100))
       (recur))))
 
-(defn- read-uint32 [in]
-  (bytes->uint32 (read-vec?? 4 in)))
-
-(def read-timestamp read-uint32)
-
-(defn- read-uint16 [in]
-  (bytes->uint16 (read-vec?? 2 in)))
-
 (defn- process-timestamp [^long timestamp]
   "Calculating the time since the last snapshot (both in the vm and the middleware)
   and then calculating the difference between these intervals and adding it as
@@ -332,20 +324,19 @@
       (when (> delta-smooth delta-threshold-max)
         (set-report-interval (+ report-interval report-interval-inc))))))
 
-(defn process-pin-value [in]
-  (let [{:keys [timestamp data]} (p/process-pin-value in)]
-    (process-timestamp timestamp)
-    (let [pins (into {}
-                     (map (fn [pin]
-                            (when-let [name (get-pin-name (:number pin))]
-                              [name (assoc pin :name name)]))
-                          data))]
-      (swap! state assoc
-             :pins {:timestamp timestamp :data pins}))))
+(defn process-pin-value [{:keys [timestamp data]}]
+  (process-timestamp timestamp)
+  (let [pins (into {}
+                   (map (fn [pin]
+                          (when-let [name (get-pin-name (:number pin))]
+                            [name (assoc pin :name name)]))
+                        data))]
+    (swap! state assoc
+           :pins {:timestamp timestamp :data pins})))
 
-(defn process-global-value [in]
-  (let [{:keys [timestamp data]} (p/process-global-value in)
-        globals (vec (program/all-globals (-> @state :program :running :compiled)))]
+(defn process-global-value [{:keys [timestamp data]}]
+  (let [globals (vec (program/all-globals
+                      (-> @state :program :running :compiled)))]
     (process-timestamp timestamp)
     (let [globals (into {}
                         (map (fn [{:keys [number] :as global}]
@@ -356,14 +347,12 @@
              :globals
              {:timestamp timestamp :data globals}))))
 
-(defn process-free-ram [in]
-  (let [{:keys [timestamp memory]} (p/process-free-ram in)]
-    (process-timestamp timestamp)
-    (swap! state assoc :memory memory)))
+(defn process-free-ram [{:keys [timestamp memory]}]
+  (process-timestamp timestamp)
+  (swap! state assoc :memory memory))
 
-(defn process-running-scripts [in]
-  (let [{:keys [timestamp scripts]} (p/process-running-scripts in)
-        program (-> @state :program :running)
+(defn process-running-scripts [{:keys [timestamp scripts]}]
+  (let [program (-> @state :program :running)
         get-script-name (fn [i] (-> program :compiled :scripts (get i) :name))
         task? (fn [i] (-> program :final-ast :scripts (get i) ast/task?))
         [old new] (swap-vals! state assoc
@@ -385,44 +374,40 @@
                         (:error-msg script)
                         (:name script))))))
 
-(defn process-profile [in]
-  (let [{:keys [data]} (p/process-profile in)]
-    (swap! state assoc :profiler data)
-    (add-pseudo-var! "__tps" (* 10 (:ticks data)))
-    (add-pseudo-var! "__vm-report-interval" (:report-interval data))))
+(defn process-profile [{:keys [data]}]
+  (swap! state assoc :profiler data)
+  (add-pseudo-var! "__tps" (* 10 (:ticks data)))
+  (add-pseudo-var! "__vm-report-interval" (:report-interval data)))
 
-(defn process-coroutine-state [in]
-  (swap! state assoc
-         :debugger (:data (p/process-coroutine-state in))))
+(defn process-coroutine-state [{:keys [data]}]
+  (swap! state assoc :debugger data))
 
-(defn process-error [in]
-  (when-let [{{:keys [code msg]} :error} (p/process-error in)]
-    (logger/newline)
-    (logger/warning "%1 detected. The program has been stopped" msg)
-    (if (p/error-disconnect? code)
-      (disconnect))))
+(defn process-error [{{:keys [code msg]} :error}]
+  (logger/newline)
+  (logger/warning "%1 detected. The program has been stopped" msg)
+  (if (p/error-disconnect? code)
+    (disconnect)))
 
-(defn process-trace [in]
-  (let [{:keys [msg]} (p/process-trace in)]
-    (log/info "TRACE:" msg)))
+(defn process-trace [{:keys [msg]}]
+  (log/info "TRACE:" msg))
 
-(defn process-serial-tunnel [in]
-  (let [{:keys [data]} (p/process-serial-tunnel in)]
-    (logger/log "SERIAL: %1" data)))
+(defn process-serial-tunnel [{:keys [data]}]
+  (logger/log "SERIAL: %1" data))
 
 (defn process-next-message [in]
-  (when-let [cmd (<?? in)]
-    (condp = cmd
-      p/MSG_IN_PIN_VALUE (process-pin-value in)
-      p/MSG_IN_GLOBAL_VALUE (process-global-value in)
-      p/MSG_IN_RUNNING_SCRIPTS (process-running-scripts in)
-      p/MSG_IN_FREE_RAM (process-free-ram in)
-      p/MSG_IN_PROFILE (process-profile in)
-      p/MSG_IN_COROUTINE_STATE (process-coroutine-state in)
-      p/MSG_IN_ERROR (process-error in)
-      p/MSG_IN_TRACE (process-trace in)
-      p/MSG_IN_SERIAL_TUNNEL (process-serial-tunnel in)
-      (logger/warning "Uzi - Invalid response code: %1" cmd))))
+  (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
+             (p/process-next-message in)]
+    (case tag
+      :pin-value (process-pin-value cmd)
+      :global-value (process-global-value cmd)
+      :running-scripts (process-running-scripts cmd)
+      :free-ram (process-free-ram cmd)
+      :profile (process-profile cmd)
+      :coroutine-state (process-coroutine-state cmd)
+      :error (process-error cmd)
+      :trace (process-trace cmd)
+      :serial (process-serial-tunnel cmd)
+      :unknown-cmd (logger/warning "Uzi - Invalid response code: %1" (:code cmd)))))
 
 (defn- process-input [in]
   (loop []
