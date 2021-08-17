@@ -20,10 +20,6 @@
 
 (comment
 
-
-  (string? 1)
-  (set! *unchecked-math* :warn-on-boxed)
-  (defn m [a b] (+ (* a a) (* b b)))
  (start-profiling)
  (stop-profiling)
 
@@ -60,7 +56,13 @@
 
 (extend-type serial.core.Port
   UziPort
-  (close! [port] (s/close! port))
+  (close! [port]
+          (s/close! port)
+          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
+          ; quickly. I suspect the problem is that I need to wait until all threads are
+          ; finished or maybe I should close the channels and properly clean up the
+          ; resources. However, for now a 1s delay seems to work...
+          (<!! (timeout 1000)))
   (write! [port data] (s/write port data))
   (listen! [port listener-fn]
            (s/listen! port
@@ -69,7 +71,13 @@
 
 (extend-type java.net.Socket
   UziPort
-  (close! [socket] (.close socket))
+  (close! [socket]
+          (.close socket)
+          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
+          ; quickly. I suspect the problem is that I need to wait until all threads are
+          ; finished or maybe I should close the channels and properly clean up the
+          ; resources. However, for now a 1s delay seems to work...
+          (<!! (timeout 1000)))
   (write! [socket data]
           (let [out (.getOutputStream socket)
                 bytes (if (number? data) [data] data)]
@@ -129,7 +137,6 @@
                            (-> % :program :current))))
     (try
       (close! port)
-      (<!! (timeout 1000)) ; TODO(Richo): Wait a second to stabilize port (?)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
     (logger/error "Connection lost!")))
@@ -335,9 +342,7 @@
                               [name (assoc pin :name name)]))
                           data))]
       (swap! state assoc
-             :pins {:timestamp timestamp :data pins})
-      ; TODO(Richo): Return value unnecessary, just for testing...
-      {:timestamp timestamp :data pins})))
+             :pins {:timestamp timestamp :data pins}))))
 
 (defn process-global-value [in]
   (let [[timestamp data] (p/process-global-value in)
@@ -350,16 +355,12 @@
                              data))]
       (swap! state assoc
              :globals
-             {:timestamp timestamp :data globals})
-      ; TODO(Richo): Return value unnecessary, just for testing...
-      {:timestamp timestamp :data globals})))
+             {:timestamp timestamp :data globals}))))
 
 (defn process-free-ram [in]
   (let [[timestamp memory] (p/process-free-ram in)]
     (process-timestamp timestamp)
-    (swap! state assoc :memory memory)
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    memory))
+    (swap! state assoc :memory memory)))
 
 (defn process-running-scripts [in]
   (let [[timestamp scripts] (p/process-running-scripts in)
@@ -383,44 +384,32 @@
                    (:error-code script))
         (logger/warning "%1 detected on script \"%2\". The script has been stopped."
                         (:error-msg script)
-                        (:name script))))
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    (:scripts new)))
+                        (:name script))))))
 
 (defn process-profile [in]
   (let [profiler (p/process-profile in)]
     (swap! state assoc :profiler profiler)
     (add-pseudo-var! "__tps" (* 10 (:ticks profiler)))
-    (add-pseudo-var! "__vm-report-interval" (:report-interval profiler))
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    profiler))
+    (add-pseudo-var! "__vm-report-interval" (:report-interval profiler))))
 
 (defn process-coroutine-state [in]
-  (let [debugger (p/process-coroutine-state in)]
-    (swap! state assoc :debugger debugger)
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    debugger))
+  (swap! state assoc
+         :debugger (p/process-coroutine-state in)))
 
 (defn process-error [in]
   (when-let [{:keys [code msg]} (p/process-error in)]
     (logger/newline)
     (logger/warning "%1 detected. The program has been stopped" msg)
     (if (p/error-disconnect? code)
-      (disconnect))
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    code))
+      (disconnect))))
 
 (defn process-trace [in]
   (let [msg (p/process-trace in)]
-    (log/info "TRACE:" msg)
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    msg))
+    (log/info "TRACE:" msg)))
 
 (defn process-serial-tunnel [in]
   (let [value (p/process-serial-tunnel in)]
-    (logger/log "SERIAL: %1" value)
-    ; TODO(Richo): Return value unnecessary, just for testing...
-    value))
+    (logger/log "SERIAL: %1" value)))
 
 (defn process-next-message [in]
   (when-let [cmd (<?? in)]
@@ -463,14 +452,6 @@
       ; Finally wait 1s and start over
       (<! (timeout 1000))
       (recur))))
-
-(comment
- (def data {"a" 1 "b" 2 "c" 3})
- (count {})
- (select-keys data ["a" "b"])
- (into {} (remove (fn [[key value]] (str/starts-with? "_" key))
-                  data))
- ,)
 
 (defn- extract-socket-data [port-name]
   (try
