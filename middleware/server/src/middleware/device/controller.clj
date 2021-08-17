@@ -345,10 +345,10 @@
              :globals
              {:timestamp timestamp :data globals}))))
 
-(defn process-free-ram [{:keys [timestamp memory]}]
+(defn process-free-ram [{:keys [memory]}]
   (swap! state assoc :memory memory))
 
-(defn process-running-scripts [{:keys [timestamp scripts]}]
+(defn process-running-scripts [{:keys [scripts]}]
   (let [program (-> @state :program :running)
         get-script-name (fn [i] (-> program :compiled :scripts (get i) :name))
         task? (fn [i] (-> program :final-ast :scripts (get i) ast/task?))
