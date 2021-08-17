@@ -3,7 +3,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer [get-current-env] :refer-macros [deftest is testing]])
             [middleware.compiler.compiler :as cc]
-            #?(:clj [middleware.device.controller :as dc])
+            #?(:clj [middleware.device.protocol :as p])
             #?(:cljs [middleware.utils.fs-macros :as m])
             [middleware.compiler.encoder :as en]
             [middleware.compiler.emitter :as emit]
@@ -25,7 +25,8 @@
 
 (defn write-file [program]
   #?(:clj (let [file-name (str output-path (test-name))
-                bytes (dc/run {:compiled program})]
+                bytecodes (en/encode program)
+                bytes (p/run bytecodes)]
             (spit file-name (str/join ", " bytes)))
 
     ; HACK(Richo): Instead of writing the file I'm just read the existing files and
