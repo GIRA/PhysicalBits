@@ -325,7 +325,6 @@
         (set-report-interval (+ report-interval report-interval-inc))))))
 
 (defn process-pin-value [{:keys [timestamp data]}]
-  (process-timestamp timestamp)
   (let [pins (into {}
                    (map (fn [pin]
                           (when-let [name (get-pin-name (:number pin))]
@@ -337,7 +336,6 @@
 (defn process-global-value [{:keys [timestamp data]}]
   (let [globals (vec (program/all-globals
                       (-> @state :program :running :compiled)))]
-    (process-timestamp timestamp)
     (let [globals (into {}
                         (map (fn [{:keys [number] :as global}]
                                (when-let [name (:name (nth globals number {}))]
@@ -348,7 +346,6 @@
              {:timestamp timestamp :data globals}))))
 
 (defn process-free-ram [{:keys [timestamp memory]}]
-  (process-timestamp timestamp)
   (swap! state assoc :memory memory))
 
 (defn process-running-scripts [{:keys [timestamp scripts]}]
@@ -366,7 +363,6 @@
                                                     :name name
                                                     :task? (task? i))]))
                                         scripts)))]
-    (process-timestamp timestamp)
     (doseq [script (filter :error? (sort-by :index (-> new :scripts vals)))]
       (when-not (= (-> old :scripts (get (:name script)) :error-code)
                    (:error-code script))
@@ -397,6 +393,8 @@
 (defn process-next-message [in]
   (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
              (p/process-next-message in)]
+    (when timestamp
+      (process-timestamp timestamp))
     (case tag
       :pin-value (process-pin-value cmd)
       :global-value (process-global-value cmd)
@@ -407,7 +405,8 @@
       :error (process-error cmd)
       :trace (process-trace cmd)
       :serial (process-serial-tunnel cmd)
-      :unknown-cmd (logger/warning "Uzi - Invalid response code: %1" (:code cmd)))))
+      :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
+                                   (:code cmd)))))
 
 (defn- process-input [in]
   (loop []
