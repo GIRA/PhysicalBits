@@ -23,9 +23,8 @@
    (defn test-name []
      (str/join "." (map (comp :name meta) (:testing-vars (get-current-env))))))
 
-(defn write-file [program]
+(defn write-file [bytecodes]
   #?(:clj (let [file-name (str output-path (test-name))
-                bytecodes (en/encode program)
                 bytes (p/run bytecodes)]
             (spit file-name (str/join ", " bytes)))
 
@@ -42,7 +41,7 @@
                                       (str/split (m/read-file* file-name
                                                                "../../firmware/Simulator/SimulatorTest/TestFiles/")
                                                  ",")))
-                actual (en/encode program)]
+                actual bytecodes]
             (is (= expected actual)))))
 
 (defn compile-string [src]
@@ -63,7 +62,7 @@
                                     :locals []
                                     :instructions [(emit/turn-on-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test002TurnOffBytecode
   (let [program (emit/program
@@ -76,7 +75,7 @@
                                     :locals []
                                     :instructions [(emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test003ReadWriteBytecode
   (let [program (emit/program
@@ -90,7 +89,7 @@
                                     :instructions [(emit/read-pin 15)
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test004PushBytecode
   (let [program (emit/program
@@ -105,7 +104,7 @@
                                     :instructions [(emit/push-value 1)
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test005PushWithFloatingPointVariable
   (let [program (emit/program
@@ -120,7 +119,7 @@
                                     :instructions [(emit/push-value 0.2)
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test006PopBytecode
   (let [program (emit/program
@@ -138,7 +137,7 @@
                                                     (emit/push-value 1)
                                                     (emit/write-global "a")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test007PrimBytecode
   (let [program (emit/program
@@ -153,7 +152,7 @@
                                     :instructions [(emit/push-value 13)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test008JZBytecode
   (let [program (emit/program
@@ -170,7 +169,7 @@
                                                     (emit/jmp 1)
                                                     (emit/turn-on-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test009TickingRate
   (let [program (emit/program
@@ -185,7 +184,7 @@
                                     :instructions [(emit/push-value 13)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test010MultipleScriptsWithDifferentTickingRates
   (let [program (emit/program
@@ -209,7 +208,7 @@
                                     :instructions [(emit/read-pin 15)
                                                     (emit/write-pin 9)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test011YieldInstruction
   (let [program (emit/program
@@ -224,7 +223,7 @@
                                                     (emit/prim-call "yield")
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test012YieldInstructionPreservesStack
   (let [program (emit/program
@@ -249,7 +248,7 @@
                                                     (emit/prim-call "add")
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test013YieldInstructionResumesOnNextTick
   (let [program (emit/program
@@ -264,7 +263,7 @@
                                                     (emit/prim-call "yield")
                                                     (emit/turn-off-pin 12)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test014PrimitiveYieldTime
   (let [program (emit/program
@@ -281,7 +280,7 @@
                                                     (emit/prim-call "delayMs")
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test015YieldAfterBackwardsJump
   (let [program (emit/program
@@ -310,7 +309,7 @@
                                                     (emit/read-pin 15)
                                                     (emit/jnz -2)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test016ScriptCallWithoutParametersOrReturnValue
   (let [program (emit/program
@@ -339,7 +338,7 @@
                                                     (emit/push-value 11)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn
   (let [program (emit/program
@@ -373,7 +372,7 @@
                                                     (emit/prim-call "divide")
                                                     (emit/write-pin 11)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test018ScriptTickingWithExplicitReturn
   (let [program (emit/program
@@ -398,7 +397,7 @@
                                                     (emit/push-value 11)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test019ScriptWithYieldBeforeEndOfScript
   (let [program (emit/program
@@ -424,7 +423,7 @@
                                                     (emit/push-value 100)
                                                     (emit/prim-call "delayMs")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test020ScriptCallWithOneParameterAndReturnValue
   (let [program (emit/program
@@ -463,7 +462,7 @@
                                                     (emit/script-call "toggle")
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test021ScriptCallWithOneParameterWithoutReturnValue
   (let [program (emit/program
@@ -499,7 +498,7 @@
                                                     (emit/script-call "toggle")
                                                     (emit/prim-call "pop")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn
   (let [program (emit/program
@@ -537,7 +536,7 @@
                                                     (emit/script-call "toggle")
                                                     (emit/write-pin 11)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn
   (let [program (emit/program
@@ -577,7 +576,7 @@
                                                     (emit/script-call "toggle")
                                                     (emit/write-pin 11)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test024ScriptCallWithTwoParametersWithReturnValue
   (let [program (emit/program
@@ -620,7 +619,7 @@
                                                     (emit/script-call "toggle")
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test025ScriptCallWithRecursiveCall4LevelsDeep
   (let [program (emit/program
@@ -660,7 +659,7 @@
                                                     (emit/read-global "c")
                                                     (emit/write-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test026ScriptTickingThatAlsoCallsItself
   (let [program (emit/program
@@ -724,7 +723,7 @@
                                                     (emit/read-global "result")
                                                     (emit/prim-call "write")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript
   (let [program (emit/program
@@ -765,7 +764,7 @@
                                                     (emit/prim-call "coroutine")
                                                     (emit/prim-call "write")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test028PrimitiveBitwiseAnd
   (let [program (emit/program
@@ -793,7 +792,7 @@
                                                     (emit/prim-call "add")
                                                     (emit/write-global "n")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test029PrimitiveBitwiseOr
   (let [program (emit/program
@@ -820,7 +819,7 @@
                                                     (emit/prim-call "add")
                                                     (emit/write-global "n")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test030PrimitiveLogicalAnd
   (let [program (emit/program
@@ -845,7 +844,7 @@
                                                     (emit/push-value 11)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test031PrimitiveLogicalOr
   (let [program (emit/program
@@ -870,7 +869,7 @@
                                                     (emit/push-value 11)
                                                     (emit/prim-call "toggle")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test032StopScriptAndRestartShouldResetPCAndStuff
   (let [program (emit/program
@@ -904,7 +903,7 @@
                                                     (emit/push-value 500)
                                                     (emit/prim-call "delayMs")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart
   (let [program (emit/program
@@ -931,7 +930,7 @@
                                     :locals []
                                     :instructions [(emit/start "blink13")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test034StartOnTheCurrentTaskShouldJumpToTheBeginning
   (let [program (emit/program
@@ -949,7 +948,7 @@
                                                     (emit/push-value 13)
                                                     (emit/prim-call "turnOff")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test035StartOnAnotherTaskShouldResetToBeginning
   (let [program (emit/program
@@ -979,7 +978,7 @@
                                     :locals []
                                     :instructions [(emit/start "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test036ResumeOnARunningTaskShouldHaveNoEffect
   (let [program (emit/program
@@ -1010,7 +1009,7 @@
                                     :locals []
                                     :instructions [(emit/resume "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC
   (let [program (emit/program
@@ -1037,7 +1036,7 @@
                                     :locals []
                                     :instructions [(emit/resume "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test038ResumeOnStoppedTaskShouldJumpToBeginning
   (let [program (emit/program
@@ -1063,7 +1062,7 @@
                                     :locals []
                                     :instructions [(emit/resume "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test039StartOnStoppedTaskShouldJumpToBeginning
   (let [program (emit/program
@@ -1089,7 +1088,7 @@
                                     :locals []
                                     :instructions [(emit/start "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test040StartOnPausedTaskShouldJumpToBeginning
   (let [program (emit/program
@@ -1115,7 +1114,7 @@
                                     :locals []
                                     :instructions [(emit/start "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test041PausingShouldPreserveTheStack
   (let [program (emit/program
@@ -1155,7 +1154,7 @@
                                     :locals []
                                     :instructions [(emit/resume "main")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test042EmptyScriptShouldNotCrashTheVM
   (let [program (emit/program
@@ -1168,7 +1167,7 @@
                                     :locals []
                                     :instructions [])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test043ForLoop
   (let [program (emit/program
@@ -1200,7 +1199,7 @@
         actual (en/encode program)
         expected (en/encode (compile-string "task for() running { for i = 7 to 11 { turnOn(i); delayS(1); }}"))]
     (is (= actual expected))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test044ReversedForLoop
   (let [program (emit/program
@@ -1233,7 +1232,7 @@
         actual (en/encode program)
         expected (en/encode (compile-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); delayS(1); }}"))]
     (is (= actual expected))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test045ForLoopWithoutConstantStep
   (let [program (emit/program
@@ -1282,7 +1281,7 @@
               		}
               	}"))]
     (is (= actual expected))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test046ReverseForLoopWithoutConstantStep
   (let [program (emit/program
@@ -1331,7 +1330,7 @@
               		}
               	}"))]
     (is (= actual expected))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test047ForLoopShouldOnlyEvaluateStepOncePerIteration
   (let [program (emit/program
@@ -1417,7 +1416,7 @@
               		}
               	}"))]
     (is (= actual expected))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test048MutexShouldGuaranteeACriticalSection
   (let [program (emit/program
@@ -1544,7 +1543,7 @@
               		m.release();
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer
   (let [program (emit/program
@@ -1653,7 +1652,7 @@
               		toggle(D11);
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers
   (let [program (emit/program
@@ -1777,7 +1776,7 @@
 
               	task test() running { write(D11, counter); }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer
   (let [program (emit/program
@@ -1896,7 +1895,7 @@
               		write(D13, c.receive());
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test052ChannelWithMultipleProducersAndOneConsumer
   (let [program (emit/program
@@ -2051,7 +2050,7 @@
 
               	task consumer() running 1/s { write(D11, c.receive()); }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test053ChannelWithMultipleConsumersAndOneProducer
   (let [program (emit/program
@@ -2205,7 +2204,7 @@
               		}
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther
   (let [program (emit/program
@@ -2245,7 +2244,7 @@
               		toggle(pin);
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther
   (let [program (emit/program
@@ -2279,7 +2278,7 @@
               		toggle(pin);
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test056Round
   (let [program (emit/program
@@ -2316,7 +2315,7 @@
               		write(D12, round(0.75));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test057Ceil
   (let [program (emit/program
@@ -2353,7 +2352,7 @@
               		write(D12, ceil(0.75));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test058Floor
   (let [program (emit/program
@@ -2390,7 +2389,7 @@
               		write(D12, floor(0.75));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test059Sqrt
   (let [program (emit/program
@@ -2413,7 +2412,7 @@
               		write(D9, sqrt(0.25));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test060Abs
   (let [program (emit/program
@@ -2450,7 +2449,7 @@
               		write(D10, abs(0.5));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test061NaturalLogarithm
   (let [program (emit/program
@@ -2490,7 +2489,7 @@
               		write(D9, ln(3)); \"1.09\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test062Log10
   (let [program (emit/program
@@ -2530,7 +2529,7 @@
               		write(D9, log10(10)); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test063Exp
   (let [program (emit/program
@@ -2567,7 +2566,7 @@
               		write(D9, exp(0)); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test064Pow10
   (let [program (emit/program
@@ -2604,7 +2603,7 @@
               		write(D9, pow10(0)); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test065IsCloseTo
   (let [program (emit/program
@@ -2667,7 +2666,7 @@
               		write(D10, isCloseTo(Infinity, Infinity));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test066Asin
   (let [program (emit/program
@@ -2707,7 +2706,7 @@
               		write(D9, isCloseTo(asin(-1), -1.570796326794897)); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test067Acos
   (let [program (emit/program
@@ -2747,7 +2746,7 @@
               		write(D9, isCloseTo(acos(0), 1.570796326794897)); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test068Atan
   (let [program (emit/program
@@ -2784,7 +2783,7 @@
               		write(D9, atan(1.58)); \"1.006528137936965\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test069Power
   (let [program (emit/program
@@ -2825,7 +2824,7 @@
               		write(D9, 1**0); \"1\"
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test070IsOn
   (let [program (emit/program
@@ -2855,7 +2854,7 @@
                   }
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test071IsOff
   (let [program (emit/program
@@ -2885,7 +2884,7 @@
                   }
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test072Mod
   (let [program (emit/program
@@ -2949,7 +2948,7 @@
                   a = a + 1;
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test073Constrain
   (let [program (emit/program
@@ -2998,7 +2997,7 @@
                   write(D9, constrain(10, -3, 5) == 5);
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test074RandomInt
   (let [program (emit/program
@@ -3050,7 +3049,7 @@
                   old = a;
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test075Random
   (let [program (emit/program
@@ -3099,7 +3098,7 @@
                   old = a;
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test076IsEven
   (let [program (emit/program
@@ -3142,7 +3141,7 @@
               		write(D9, isEven(0));
               	}"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test077IsOdd
   (let [program (emit/program
@@ -3186,7 +3185,7 @@
                   write(D9, isOdd(3));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test078IsPrime
   (let [program (emit/program
@@ -3229,7 +3228,7 @@
                   write(D9, isPrime(5));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test079IsWhole
   (let [program (emit/program
@@ -3273,7 +3272,7 @@
                   write(D9, isWhole(-10));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test080IsPositive
   (let [program (emit/program
@@ -3317,7 +3316,7 @@
                   write(D9, isPositive(0));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test081IsNegative
   (let [program (emit/program
@@ -3361,7 +3360,7 @@
                   write(D9, isNegative(-1));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test082IsDivisibleBy
   (let [program (emit/program
@@ -3410,7 +3409,7 @@
                   write(D9, isDivisibleBy(64, 8));
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test083DelayS
   (let [program (emit/program
@@ -3427,7 +3426,7 @@
                                                     (emit/prim-call "delayS")
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test084DelayM
   (let [program (emit/program
@@ -3444,7 +3443,7 @@
                                                     (emit/prim-call "delayM")
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test085Minutes
   (let [program (emit/program
@@ -3497,7 +3496,7 @@
                   turnOff(D13);
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test086Seconds
   (let [program (emit/program
@@ -3550,7 +3549,7 @@
                   turnOff(D13);
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test087Millis
   (let [program (emit/program
@@ -3603,7 +3602,7 @@
                   turnOff(D13);
                 }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test088ScriptCallOverridingPrimitive
   (let [program (emit/program
@@ -3647,7 +3646,7 @@
                 delayMs(delay);
               }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test089DebuggerBreakpointHaltsAllScripts
   (let [program (emit/program
@@ -3690,7 +3689,7 @@
                 delayMs(1000);
               }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test090DebuggerBreakpointHaltsAreDeterministic
   (let [program (emit/program
@@ -3753,7 +3752,7 @@
                                                     (emit/push-value 0)
                                                     (emit/prim-call "write")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test091ChangingTheProgramResetsTheVMState
   (let [program (emit/program
@@ -3783,7 +3782,7 @@
                 delayMs(1000);
               }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test092DebuggerSetAllBreakpoints
   (let [program (emit/program
@@ -3799,7 +3798,7 @@
                                                     (emit/turn-off-pin 11)
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test093DebuggerSetAllBreakpointsWithMultipleScripts
   (let [program (emit/program
@@ -3821,7 +3820,7 @@
                                     :instructions [(emit/turn-off-pin 11)
                                                     (emit/turn-off-pin 13)])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test094ProgramWithMultipleImports
   (let [program (emit/program
@@ -4114,7 +4113,7 @@
                 toggle(D13);
               }"))]
     (is (= expected actual))
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test095ScriptWith127Instructions
   (let [program (emit/program
@@ -4256,7 +4255,7 @@
                                                     (emit/prim-call "delayMs")
                                                     (emit/resume "test")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test096ScriptWith128Instructions
   (let [program (emit/program
@@ -4398,7 +4397,7 @@
                                                     (emit/push-value 100)
                                                     (emit/prim-call "delayMs")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test097ScriptWith512Instructions
   (let [program (emit/program
@@ -4924,7 +4923,7 @@
                                                     (emit/push-value 100)
                                                     (emit/prim-call "delayMs")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
 
 (deftest Test098criptWith255Instructions
   (let [program (emit/program
@@ -5193,4 +5192,4 @@
                                                     (emit/prim-call "toggle")
                                                     (emit/resume "test")])])
         actual (en/encode program)]
-    (write-file program)))
+    (write-file actual)))
