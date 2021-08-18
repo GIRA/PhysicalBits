@@ -1,6 +1,6 @@
 (ns middleware.protocol-test
   (:require [clojure.test :refer :all]
-            [clojure.core.async :as a :refer [<! go]]
+            [clojure.core.async :as a :refer [<!!]]
             [middleware.device.protocol :as p]))
 
 (deftest set-global-value
@@ -80,13 +80,13 @@
   (is (= 50 (p/confirm-handshake 42))))
 
 (deftest read-timestamp
-  (go
+  (do
    (let [in (a/to-chan! [0 0 13 58])]
-     (is (= 3386 (<! (p/read-timestamp in)))))))
+     (is (= 3386 (<!! (p/read-timestamp in)))))))
 
 (deftest process-running-scripts
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_RUNNING_SCRIPTS
                                     "timestamp"  0 0 13 58
@@ -94,7 +94,7 @@
           {:tag :running-scripts
            :timestamp 3386
            :scripts []}))
-   (is (= (<! (p/process-next-message
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_RUNNING_SCRIPTS
                                     "timestamp"  0 0 46 12
@@ -106,7 +106,7 @@
                       :error-code 0
                       :error-msg "NO_ERROR"
                       :error? false}]}))
-   (is (= (<! (p/process-next-message
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_RUNNING_SCRIPTS
                                     "timestamp"    0 0 19 16
@@ -132,8 +132,8 @@
                       :error? false}]}))))
 
 (deftest process-free-ram
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_FREE_RAM
                                     "timestamp"  0 0 13 101
@@ -144,8 +144,8 @@
            :memory {:uzi 2182, :arduino 4163974488}}))))
 
 (deftest process-pin-value
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_PIN_VALUE
                                     "timestamp"			0 0 55 79
@@ -157,8 +157,8 @@
            :data [{:number 13 :value 0.0}]}))))
 
 (deftest process-global-value
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_GLOBAL_VALUE
                                     "timestamp"				0 0 55 87
@@ -173,8 +173,8 @@
                   {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]}))))
 
 (deftest process-profile
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_PROFILE
                                     "n1"				178
@@ -184,26 +184,26 @@
            :data {:report-interval 5, :ticks 22835, :interval-ms 100}}))))
 
 (deftest process-error
-  (go
-   (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 1])))
+  (do
+   (is (= (<!! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 1])))
           {:tag :error
            :error {:code 1 :msg "STACK_OVERFLOW"}}))
-   (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 2])))
+   (is (= (<!! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 2])))
           {:tag :error
            :error {:code 2 :msg "STACK_UNDERFLOW"}}))
-   (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 4])))
+   (is (= (<!! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 4])))
           {:tag :error
            :error {:code 4 :msg "ACCESS_VIOLATION"}}))
-   (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 8])))
+   (is (= (<!! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 8])))
           {:tag :error
            :error {:code 8 :msg "OUT_OF_MEMORY"}}))
-   (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 9])))
+   (is (= (<!! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 9])))
           {:tag :error
            :error {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"}}))))
 
 (deftest process-coroutine-state
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_COROUTINE_STATE
                                     "index"        1
@@ -216,8 +216,8 @@
            :data {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}}))))
 
 (deftest process-trace
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! (remove string?
                                    [p/MSG_IN_TRACE
                                     "count"       10
@@ -226,8 +226,8 @@
            :msg "Richo capo"}))))
 
 (deftest process-serial-tunnel
-  (go
-   (is (= (<! (p/process-next-message
+  (do
+   (is (= (<!! (p/process-next-message
                (a/to-chan! [p/MSG_IN_SERIAL_TUNNEL 42])))
           {:tag :serial
            :data 42}))))
