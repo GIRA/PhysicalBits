@@ -5,7 +5,6 @@
             [serial.util :as su]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
-            [middleware.utils.async :refer :all]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer :all]
             [middleware.utils.conversions :refer :all]
@@ -268,11 +267,11 @@
    (write! port (p/request-connection))
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-   (if-let [n1 (<? in 1000)]
+   (if-let [[n1] (a/alts! [in (a/timeout 1000)])]
      (let [n2 (p/confirm-handshake n1)]
        (write! port n2)
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-       (if (= n2 (<? in 1000))
+       (if (= n2 (first (a/alts! [in (a/timeout 1000)])))
          (do
            (logger/success "Connection accepted!")
            true)
@@ -392,7 +391,7 @@
 
 (defn process-next-message [in]
   (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
-             (p/process-next-message in)]
+             (<!! (p/process-next-message in))]
     (when timestamp
       (process-timestamp timestamp))
     (case tag
@@ -477,7 +476,7 @@
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
          (listen! port #(>!! in %))
-         (if-not (<?? (request-connection port in) 15000)
+         (if-not (<!! (request-connection port in))
            (close! port)
            (do ; Connection successful
              (swap! state assoc
