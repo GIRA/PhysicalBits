@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,12.74917491749175,4.597359735973597,30.07260726072607
-MEDIAN,6,3,19
+AVERAGE,12.43910256410256,4.522435897435897,29.49679487179487
+MEDIAN,6,3,17.5
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -232,6 +232,7 @@ middleware.parser-test/function-with-arguments#0,0,0,2
 middleware.parser-test/functions-with-calls-and-globals#0,0,0,2
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#0,6,5,20
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#1,6,5,20
+middleware.parser-test/large-integers-are-parsed-as-floats#0,2,2,11
 middleware.parser-test/motor-usage#0,33,12,61
 middleware.parser-test/operator-precedence#0,0,0,2
 middleware.parser-test/parsing-negative-numbers-larger-than-minus-1#0,2,2,11
@@ -243,7 +244,15 @@ middleware.parser-test/parsing-numbers-in-scientific-notation#12,2,2,9
 middleware.parser-test/parsing-numbers-in-scientific-notation#13,2,2,9
 middleware.parser-test/parsing-numbers-in-scientific-notation#14,2,2,11
 middleware.parser-test/parsing-numbers-in-scientific-notation#15,2,2,11
+middleware.parser-test/parsing-numbers-in-scientific-notation#16,2,2,9
+middleware.parser-test/parsing-numbers-in-scientific-notation#17,2,2,9
+middleware.parser-test/parsing-numbers-in-scientific-notation#18,2,2,11
+middleware.parser-test/parsing-numbers-in-scientific-notation#19,2,2,11
 middleware.parser-test/parsing-numbers-in-scientific-notation#2,2,2,11
+middleware.parser-test/parsing-numbers-in-scientific-notation#20,2,2,9
+middleware.parser-test/parsing-numbers-in-scientific-notation#21,2,2,9
+middleware.parser-test/parsing-numbers-in-scientific-notation#22,2,2,11
+middleware.parser-test/parsing-numbers-in-scientific-notation#23,2,2,11
 middleware.parser-test/parsing-numbers-in-scientific-notation#3,2,2,11
 middleware.parser-test/parsing-numbers-in-scientific-notation#4,2,2,9
 middleware.parser-test/parsing-numbers-in-scientific-notation#5,2,2,9
