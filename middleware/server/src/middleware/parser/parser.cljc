@@ -8,6 +8,13 @@
 (defn- parse-double [str] #?(:clj (Double/parseDouble str)
                              :cljs (js/parseFloat str)))
 
+(defn- parse-number [str]
+  (try
+    (parse-int str)
+    (catch #?(:clj Throwable :cljs :default) _
+      (parse-double str))))
+
+
 ; TODO(Richo): This should probably be in a utils.ast namespace
 (defn- script? [node]
   (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
@@ -29,6 +36,7 @@
    #{"|"}
    #{"&&"}
    #{"||"}])
+
 
 (defn- build-binary-expression [selector left right]
   [selector left right]
@@ -102,7 +110,7 @@
             (ast/block-node stmts))
    :statement-list (fn [[_ stmts]] stmts)
    :statement (fn [[stmt _]] stmt)
-   :integer (comp parse-int str)
+   :integer (comp parse-number str)
    :float (comp parse-double str)
    :number ast/literal-number-node
    :return (fn [[_ value _]]

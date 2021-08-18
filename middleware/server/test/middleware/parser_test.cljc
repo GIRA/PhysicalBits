@@ -1004,3 +1004,15 @@
                                       (ast/literal-number-node -10000.0))]))])
         actual (parse src)]
     (is (equivalent? expected actual))))
+
+(deftest large-integers-are-parsed-as-floats
+  (let [src "task foo() { return 1000000000000; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node 1.0e12))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual))))
