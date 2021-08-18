@@ -140,6 +140,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INCOMING
 
+; TODO(Richo): If the channel is closed it fills with nil, I don't know what would be correct...
 (defn read-vec! [count in]
   (go-loop [^long i count, v []]
     (if (<= i 0)
@@ -261,7 +262,7 @@
    (let [count (<! in)
          bytes (<! (read-vec! count in))]
      {:tag :trace
-      :msg (new String (byte-array bytes) "UTF-8")})))
+      :msg (c/bytes->string bytes)})))
 
 (defn process-serial-tunnel [in]
   (go {:tag :serial
