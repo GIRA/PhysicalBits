@@ -221,7 +221,7 @@ let BlocklyModal = (function () {
       if (value == "Infinity") return true;
       if (value == "-Infinity") return true;
       if (value == "NaN") return true;
-      let regex = /^[0-9]+(\.[0-9]+)?$/;
+      let regex = /^-?[0-9]+(\.[0-9]+)?(\.?[eE][+-]?[0-9]+)?$/;
       return regex.test(value);
     };
 
