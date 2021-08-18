@@ -71,3 +71,8 @@
       (if (= 0 (compare int-val value))
         int-val
         value))))
+
+
+(defn bytes->string [bytes]
+  #?(:clj (new String (byte-array bytes) "UTF-8")
+    :cljs (reduce #(str %1 (String/fromCharCode %2)) "" bytes)))
