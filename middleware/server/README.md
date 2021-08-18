@@ -30,9 +30,11 @@ If everything goes well you should see something like this:
 
 To run tests I find is better to use the [test-refresh](https://github.com/jakemcc/lein-test-refresh) plugin. Execute the following in a separate terminal:
 
-    $ lein test-refresh
+    $ lein test-refresh :changes-only
 
-Now you should have a process running that automatically runs all the tests whenever a source file changes. I also modified the report function to play a short sound as a notification if the tests pass or fail.
+Now you should have a process running that automatically runs the tests whenever a source file changes. By using the `:changes-only` option it will only run the test namespaces where the code has changed, if you want to run *all* the tests, just press `Enter` in the console.
+
+I also modified the report function to play a short sound as a notification if the tests pass or fail.
 
 ### Compilation
 
