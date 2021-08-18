@@ -1003,6 +1003,88 @@
                                     [(ast/return-node
                                       (ast/literal-number-node -10000.0))]))])
         actual (parse src)]
+    (is (equivalent? expected actual)))
+
+  (let [src "task foo() { return 1.E4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node 10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return 1.e4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node 10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return -1.E4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return -1.e4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+
+  (let [src "task foo() { return 1E+4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node 10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return 1e+4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node 10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return -1E+4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -10000.0))]))])
+        actual (parse src)]
+    (is (equivalent? expected actual)))
+  (let [src "task foo() { return -1e+4; }"
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "foo"
+                             :state "once"
+                             :body (ast/block-node
+                                    [(ast/return-node
+                                      (ast/literal-number-node -10000.0))]))])
+        actual (parse src)]
     (is (equivalent? expected actual))))
 
 (deftest large-integers-are-parsed-as-floats

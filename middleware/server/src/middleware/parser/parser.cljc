@@ -14,7 +14,6 @@
     (catch #?(:clj Throwable :cljs :default) _
       (parse-double str))))
 
-
 ; TODO(Richo): This should probably be in a utils.ast namespace
 (defn- script? [node]
   (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
@@ -36,7 +35,6 @@
    #{"|"}
    #{"&&"}
    #{"||"}])
-
 
 (defn- build-binary-expression [selector left right]
   [selector left right]
@@ -280,9 +278,9 @@
 
             ; NOTE(Richo): Scientific notation
             [(pp/optional \-) :digits
-             (pp/optional [\. :digits])
+             (pp/optional \.) (pp/star pp/digit)
              (pp/case-insensitive \e)
-             (pp/optional \-) :digits]
+             (pp/optional (pp/or \- \+)) :digits]
 
             ; NOTE(Richo): Regular float
             [(pp/optional \-) :digits \. :digits]))
