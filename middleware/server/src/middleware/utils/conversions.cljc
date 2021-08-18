@@ -19,10 +19,22 @@
 (defn bytes->uint32
   [#?(:clj [^byte n1 ^byte n2 ^byte n3 ^byte n4]
       :cljs [n1 n2 n3 n4])]
-  (bit-or (bit-shift-left n1 24)
-          (bit-shift-left n2 16)
-          (bit-shift-left n3 8)
-          n4))
+  ; NOTE(Richo): Zero fill bit shift right to force an unsigned 32-bit result.
+  ; This seems to be only necessary in cljs because of javascript bit operations
+  ; returning 32-bit *signed* values.
+  ; https://stackoverflow.com/questions/6798111/bitwise-operations-on-32-bit-unsigned-ints
+  (unsigned-bit-shift-right
+   (bit-or (bit-shift-left n1 24)
+           (bit-shift-left n2 16)
+           (bit-shift-left n3 8)
+           n4)
+   0))
+
+(comment
+ (bytes->uint32 [248 49 53 88])
+(unsigned-bit-shift-left 248 24)
+
+ ,,)
 
 (defn bytes->float [^bytes bytes]
   (uint32->float (bytes->uint32 bytes)))
