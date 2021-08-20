@@ -1,10 +1,10 @@
 (ns middleware.device.controller
   (:refer-clojure :exclude [send compile])
   (:require [clojure.tools.logging :as log]
-            [serial.core :as s]
             [serial.util :as su]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
+            [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer :all]
             [middleware.utils.conversions :refer :all]
@@ -14,8 +14,7 @@
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]
             [middleware.config :as config]
-            [middleware.device.utils.ring-buffer :as rb])
-  (:import (java.net Socket)))
+            [middleware.device.utils.ring-buffer :as rb]))
 
 (comment
 
@@ -47,50 +46,6 @@
 
 (defn millis ^long [] (System/currentTimeMillis))
 (defn constrain [^long val ^long lower ^long upper] (max lower (min upper val)))
-
-(defprotocol UziPort
-  (close! [this])
-  (write! [this data])
-  (listen! [this listener-fn]))
-
-(extend-type serial.core.Port
-  UziPort
-  (close! [port]
-          (s/close! port)
-          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
-          ; quickly. I suspect the problem is that I need to wait until all threads are
-          ; finished or maybe I should close the channels and properly clean up the
-          ; resources. However, for now a 1s delay seems to work...
-          (<!! (timeout 1000)))
-  (write! [port data] (s/write port data))
-  (listen! [port listener-fn]
-           (s/listen! port
-                      (fn [^java.io.InputStream input-stream]
-                        (listener-fn (.read input-stream))))))
-
-(extend-type java.net.Socket
-  UziPort
-  (close! [socket]
-          (.close socket)
-          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
-          ; quickly. I suspect the problem is that I need to wait until all threads are
-          ; finished or maybe I should close the channels and properly clean up the
-          ; resources. However, for now a 1s delay seems to work...
-          (<!! (timeout 1000)))
-  (write! [socket data]
-          (let [out (.getOutputStream socket)
-                bytes (if (number? data) [data] data)]
-            (.write out (byte-array bytes))))
-  (listen! [socket listener-fn]
-           (let [buffer-size 1000
-                 buffer (byte-array buffer-size)
-                 in (.getInputStream socket)]
-             (go-loop []
-               (when-not (.isClosed socket)
-                 (let [bytes-read (.read in buffer 0 buffer-size)]
-                   (dotimes [i bytes-read]
-                            (listener-fn (bit-and (int (nth buffer i)) 16rFF))))
-                 (recur))))))
 
 (def initial-state {:port-name nil
                     :port nil
@@ -135,7 +90,7 @@
                 (assoc-in [:program :current]
                            (-> % :program :current))))
     (try
-      (close! port)
+      (ports/close! port)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
     (logger/error "Connection lost!")))
@@ -143,7 +98,7 @@
 (defn send [bytes]
   (when-let [port (@state :port)]
     (try
-      (write! port bytes)
+      (ports/write! port bytes)
       (catch Throwable e
         (log/error "ERROR WHILE SENDING ->" e)
         (disconnect))))
@@ -264,12 +219,12 @@
 (defn- request-connection [port in]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (write! port (p/request-connection))
+   (ports/write! port (p/request-connection))
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
    (if-let [[n1] (a/alts! [in (a/timeout 1000)])]
      (let [n2 (p/confirm-handshake n1)]
-       (write! port n2)
+       (ports/write! port n2)
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
        (if (= n2 (first (a/alts! [in (a/timeout 1000)])))
          (do
@@ -453,15 +408,11 @@
 (defn- open-port [port-name baud-rate]
   (try
     (logger/newline)
-    (if-let [[^String address ^int port] (extract-socket-data port-name)]
-      (do
-        (logger/log "Connecting on socket...")
-        (logger/log "Opening port: %1" port-name)
-        (Socket. address port))
-      (do
-        (logger/log "Connecting on serial...")
-        (logger/log "Opening port: %1" port-name)
-        (s/open port-name :baud-rate baud-rate)))
+    (logger/log "Opening port: %1" port-name)
+    (or (ports/open-port port-name baud-rate)
+        (do
+          (logger/error "Opening port failed!")
+          nil))
     (catch Exception e
       (logger/error "Opening port failed!")
       (log/error "ERROR WHILE OPENING PORT ->" e) ; TODO(Richo): Exceptions should be logged but not sent to the client
@@ -475,9 +426,9 @@
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
        (let [in (a/chan 1000)]
-         (listen! port #(a/put! in %))
+         (ports/listen! port #(a/put! in %))
          (if-not (<!! (request-connection port in))
-           (close! port)
+           (ports/close! port)
            (do ; Connection successful
              (swap! state assoc
                     :port port

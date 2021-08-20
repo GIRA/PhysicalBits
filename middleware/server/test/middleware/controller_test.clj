@@ -1,12 +1,13 @@
 (ns middleware.controller-test
   (:require [clojure.test :refer :all]
             [middleware.device.controller :as dc]
+            [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
             [middleware.device.utils.ring-buffer :as rb]))
 
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
 (extend-type java.lang.String
-  dc/UziPort
+  ports/UziPort
   (close! [port])
   (write! [port data])
   (listen! [port listener-fn]))
