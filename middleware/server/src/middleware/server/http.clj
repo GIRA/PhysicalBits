@@ -101,7 +101,7 @@
 (defn- get-connection-data [state]
   {:isConnected (:connected? state)
    :portName (:port-name state)
-   :availablePorts (:available-ports state)})
+   :availablePorts (device/available-ports)})
 
 (defn- get-memory-data [state]
   (:memory state))

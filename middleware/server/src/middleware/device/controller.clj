@@ -1,7 +1,7 @@
 (ns middleware.device.controller
   (:refer-clojure :exclude [send compile])
   (:require [clojure.tools.logging :as log]
-            [serial.util :as su]
+            [middleware.device.ports.scanner :as port-scanner]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
@@ -60,8 +60,7 @@
                     :debugger nil
                     :timing {:arduino nil, :middleware nil, :diffs nil}
                     :memory {:arduino nil, :uzi nil}
-                    :program {:current nil, :running nil}
-                    :available-ports []})
+                    :program {:current nil, :running nil}})
 (def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
 
 (defn- add-pseudo-var! [name value]
@@ -77,7 +76,7 @@
   (-> @state :pins (get pin-name) :value))
 
 (defn available-ports []
-  (vec (sort (su/get-port-names))))
+  @port-scanner/available-ports)
 
 (defn connected? []
   (not (nil? (:port @state))))
@@ -93,7 +92,8 @@
       (ports/close! port)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
-    (logger/error "Connection lost!")))
+    (logger/error "Connection lost!")
+    (port-scanner/start!)))
 
 (defn send [bytes]
   (when-let [port (@state :port)]
@@ -430,6 +430,7 @@
          (if-not (<!! (request-connection port in))
            (ports/close! port)
            (do ; Connection successful
+             (port-scanner/stop!)
              (swap! state assoc
                     :port port
                     :port-name port-name
@@ -447,19 +448,3 @@
              (start-reporting)
              (send-pins-reporting)
              (clean-up-reports))))))))
-
-(defonce ^:private port-scanning? (atom false))
-
-(defn stop-port-scan []
-  (reset! port-scanning? false))
-
-(defn start-port-scan []
-  (when (compare-and-set! port-scanning? false true)
-    (go-loop []
-      (when @port-scanning?
-        (when-not (connected?)
-          (swap! state assoc :available-ports (available-ports)))
-        (<! (timeout 1000))
-        (recur)))))
-
-(start-port-scan)

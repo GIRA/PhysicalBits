@@ -9,7 +9,8 @@
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.serial :as serial]
-            [middleware.device.ports.socket :as socket])
+            [middleware.device.ports.socket :as socket]
+            [middleware.device.ports.scanner :as port-scanner])
   (:gen-class))
 
 (defmacro project-data [key]
@@ -59,6 +60,7 @@
 (defn main
   [{:keys [uzi web server-port arduino-port open-browser]}]
   (log/info project-name)
+  (port-scanner/start!)
   (ports/register-port socket/open-port
                        serial/open-port)
   (log/info "Starting server...")
