@@ -18,9 +18,9 @@
                              (let [token (chan)]
                                (go-loop []
                                  (reset! available-ports (get-available-ports))
-                                 (let [[_ port] (alts! [token (timeout 1000)]
+                                 (let [[_ ch] (alts! [token (timeout 1000)]
                                                        :priority true)]
-                                   (when-not (= port token)
+                                   (when-not (= ch token)
                                      (recur))))
                                token))]
     (when old (close! old))))
