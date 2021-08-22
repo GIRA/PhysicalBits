@@ -84,9 +84,3 @@
     (when (:help options)
       (exit 0 (usage summary)))
     (main options)))
-
-(comment
- (-main "-")
-
- ( main)
- ,,)
