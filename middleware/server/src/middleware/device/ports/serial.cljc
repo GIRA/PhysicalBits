@@ -15,14 +15,15 @@
           ; resources. However, for now a 1s delay seems to work...
           (<!! (timeout 1000)))
   (write! [port data] (s/write port data))
-  (listen! [port listener-fn]
-           (s/listen! port
-                      (fn [^java.io.InputStream input-stream]
-                        (listener-fn (.read input-stream))))))
+  (make-in-chan! [port]
+                 (let [in-chan (a/chan 1000)]
+                   (s/listen! port
+                              (fn [^java.io.InputStream input-stream]
+                                (a/put! in-chan (.read input-stream))))
+                   in-chan)))
 
 (defn open-port [port-name baud-rate]
   (try
-    (log/info "Trying to open SERIAL!")
     (s/open port-name :baud-rate baud-rate)
     (catch Throwable ex
       (do (log/error ex) nil))))

@@ -3,7 +3,8 @@
 (defprotocol UziPort
   (close! [this])
   (write! [this data])
-  (listen! [this listener-fn]))
+  (listen! [this listener-fn])
+  (make-in-chan! [this]))
 
 (def constructors (atom []))
 
@@ -11,6 +12,7 @@
   (swap! constructors
          (fn [constructors]
            (vec (distinct (into constructors f))))))
+
 
 (defn open-port [name & args]
   (first (keep #(apply % name args)

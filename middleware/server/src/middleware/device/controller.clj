@@ -425,8 +425,7 @@
    (if (connected?)
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
-       (let [in (a/chan 1000)]
-         (ports/listen! port #(a/put! in %))
+       (let [in (ports/make-in-chan! port)]
          (if-not (<!! (request-connection port in))
            (ports/close! port)
            (do ; Connection successful

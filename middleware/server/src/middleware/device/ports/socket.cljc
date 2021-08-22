@@ -18,16 +18,21 @@
           (let [out (.getOutputStream socket)
                 bytes (if (number? data) [data] data)]
             (.write out (byte-array bytes))))
-  (listen! [socket listener-fn]
-           (let [buffer-size 1000
-                 buffer (byte-array buffer-size)
-                 in (.getInputStream socket)]
-             (go-loop []
-               (when-not (.isClosed socket)
-                 (let [bytes-read (.read in buffer 0 buffer-size)]
-                   (dotimes [i bytes-read]
-                            (listener-fn (bit-and (int (nth buffer i)) 16rFF))))
-                 (recur))))))
+  (make-in-chan! [socket]
+                 (let [in-chan (a/chan 1000)
+                       buffer-size 1000
+                       buffer (byte-array buffer-size)
+                       in (.getInputStream socket)]
+                   (a/thread ; NOTE(Richo): Using a thread because InputStream.read() blocks
+                             ; until data is available.
+                    (loop []
+                      (when-not (.isClosed socket)
+                        (let [bytes-read (.read in buffer 0 buffer-size)]
+                          (dotimes [i bytes-read]
+                                   (>!! in-chan
+                                        (bit-and (int (nth buffer i)) 16rFF))))
+                        (recur))))
+                   in-chan)))
 
 (defn- extract-socket-data [port-name]
   (try
@@ -49,7 +54,6 @@
   (try
     (when-let [[^String address ^int port]
                (extract-socket-data port-name)]
-      (log/info "Trying to open SOCKET!")
       (Socket. address port))
     (catch Throwable ex
       (do (log/error ex) nil))))
