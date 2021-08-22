@@ -24,13 +24,3 @@
                                      (recur))))
                                token))]
     (when old (close! old))))
-
-(comment
-
- (start!)
- (stop!)
-
- (do (stop!)
-   (start!)
-   (stop!))
- )
