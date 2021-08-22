@@ -8,7 +8,9 @@
 (def constructors (atom []))
 
 (defn register-port [& f]
-  (swap! constructors into f))
+  (swap! constructors
+         (fn [constructors]
+           (vec (distinct (into constructors f))))))
 
 (defn open-port [name & args]
   (first (keep #(apply % name args)
