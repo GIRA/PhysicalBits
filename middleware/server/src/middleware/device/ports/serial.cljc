@@ -1,6 +1,6 @@
 (ns middleware.device.ports.serial
   (:require [clojure.tools.logging :as log]
-            [clojure.core.async :as a :refer [<!! >!! go-loop timeout]]
+            [clojure.core.async :as a :refer [<! <!! >!! go-loop timeout]]
             [clojure.string :as str]
             [serial.core :as s]
             [middleware.device.ports.common :as ports]))
@@ -14,8 +14,16 @@
           ; finished or maybe I should close the channels and properly clean up the
           ; resources. However, for now a 1s delay seems to work...
           (<!! (timeout 1000)))
-  (write! [port data] (s/write port data))
+  (make-out-chan! [port]
+                  ; TODO(Richo): Close the channel on disconnect!
+                  (let [out-chan (a/chan 1000)]
+                    (go-loop [] ; TODO(Richo): Should I use a separate thread?
+                      (when-let [data (<! out-chan)]
+                        (s/write port data)
+                        (recur)))
+                    out-chan))
   (make-in-chan! [port]
+                 ; TODO(Richo): Close the channel on disconnect!
                  (let [in-chan (a/chan 1000)]
                    (s/listen! port
                               (fn [^java.io.InputStream input-stream]

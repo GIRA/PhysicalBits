@@ -14,20 +14,28 @@
           ; finished or maybe I should close the channels and properly clean up the
           ; resources. However, for now a 1s delay seems to work...
           (<!! (timeout 1000)))
-  (write! [socket data]
-          (let [out (.getOutputStream socket)
-                bytes (if (number? data) [data] data)]
-            (.write out (byte-array bytes))))
+  (make-out-chan! [socket]
+                  ; TODO(Richo): Close the channel on disconnect!
+                  (let [out-chan (a/chan 1000)
+                        out-stream (.getOutputStream socket)]
+                    (a/thread
+                     (loop []
+                       (when-not (.isClosed socket)
+                         (let [bytes (<!! out-chan)]
+                           (.write out-stream (byte-array bytes)))
+                         (recur))))
+                    out-chan))
   (make-in-chan! [socket]
+                 ; TODO(Richo): Close the channel on disconnect!
                  (let [in-chan (a/chan 1000)
                        buffer-size 1000
                        buffer (byte-array buffer-size)
-                       in (.getInputStream socket)]
+                       in-stream (.getInputStream socket)]
                    (a/thread ; NOTE(Richo): Using a thread because InputStream.read() blocks
                              ; until data is available.
                     (loop []
                       (when-not (.isClosed socket)
-                        (let [bytes-read (.read in buffer 0 buffer-size)]
+                        (let [bytes-read (.read in-stream buffer 0 buffer-size)]
                           (dotimes [i bytes-read]
                                    (>!! in-chan
                                         (bit-and (int (nth buffer i)) 16rFF))))

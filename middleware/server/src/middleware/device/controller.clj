@@ -89,16 +89,16 @@
                 (assoc-in [:program :current]
                            (-> % :program :current))))
     (try
-      (ports/close! port)
+      (ports/disconnect! port)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
     (logger/error "Connection lost!")
     (port-scanner/start!)))
 
 (defn send [bytes]
-  (when-let [port (@state :port)]
+  (when-let [out-chan (-> @state :port :out-chan)]
     (try
-      (ports/write! port bytes)
+      (>!! out-chan bytes)
       (catch Throwable e
         (log/error "ERROR WHILE SENDING ->" e)
         (disconnect))))
@@ -216,15 +216,15 @@
   (send (p/continue)))
 
 ; TODO(Richo): Extract incoming handshake messages?
-(defn- request-connection [port in]
+(defn- request-connection [port in out]
   (go
    (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (ports/write! port (p/request-connection))
+   (>! out (p/request-connection))
    (logger/log "Requesting connection...")
    ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
    (if-let [[n1] (a/alts! [in (a/timeout 1000)])]
      (let [n2 (p/confirm-handshake n1)]
-       (ports/write! port n2)
+       (>! out [n2])
        ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
        (if (= n2 (first (a/alts! [in (a/timeout 1000)])))
          (do
@@ -425,13 +425,16 @@
    (if (connected?)
      (log/error "The board is already connected")
      (when-let [port (open-port port-name baud-rate)]
-       (let [in (ports/make-in-chan! port)]
-         (if-not (<!! (request-connection port in))
+       (let [in (ports/make-in-chan! port)
+             out (ports/make-out-chan! port)]
+         (if-not (<!! (request-connection port in out))
            (ports/close! port)
            (do ; Connection successful
              (port-scanner/stop!)
              (swap! state assoc
-                    :port port
+                    :port {:actual-port port
+                           :out-chan out
+                           :in-chan in}
                     :port-name port-name
                     :connected? true
                     :board board

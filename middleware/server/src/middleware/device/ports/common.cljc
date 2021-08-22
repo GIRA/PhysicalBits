@@ -3,8 +3,8 @@
 (defprotocol UziPort
   (close! [this])
   (write! [this data])
-  (listen! [this listener-fn])
-  (make-in-chan! [this]))
+  (make-in-chan! [this])
+  (make-out-chan! [this]))
 
 (def constructors (atom []))
 
@@ -17,6 +17,9 @@
 (defn open-port [name & args]
   (first (keep #(apply % name args)
                @constructors)))
+
+(defn disconnect! [{:keys [actual-port]}]
+  (close! actual-port))
 
 (comment
  (register-port (fn [s _] (when (= "socket" s) 1))
