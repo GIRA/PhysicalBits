@@ -295,5 +295,6 @@
    (when-let [cmd (<! in)]
      (if-let [dispatch-fn (dispatch-table cmd)]
        (first (a/alts! [(dispatch-fn in)
-                        (a/timeout 1000)]))
+                        (a/timeout 1000)]
+                       :priority true))
        {:tag :unknown-cmd, :code cmd}))))
