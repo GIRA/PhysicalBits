@@ -20,27 +20,6 @@
 
  (start-profiling)
  (stop-profiling)
- (disconnect)
-
- (-> @state :profiler :ticks (* 10))
-
- (-> @state :globals)
- (-> @state :pins)
- (-> @state :reporting)
- (rb/avg (-> @state :timing :diffs))
- (millis)
- (< (get-in @state [:pseudo-vars :data "juan" :ts])
-    (- (-> @state :pseudo-vars :timestamp) 1000))
-
- (millis)
- (add-pseudo-var! "richo" 42)
-
- (-> @state :timing)
- (swap! state update :timing
-        #(assoc %
-                :arduino 1
-                :middleware 2))
- (or (get (get @state :timing) :arduino2) 1)
 
  (set-report-interval 5)
  ,)
@@ -423,46 +402,3 @@
        (start-reporting)
        (send-pins-reporting)
        (clean-up-reports)))))
-
-
-(comment
-
- (<!! (go
-       (let [ch (a/chan 10)
-             t (a/timeout 1000)
-             res (go (a/alt!
-                      t :timeout
-                      ch ([v] v)
-                      :priority true))]
-         (<! (a/timeout 1500))
-         (>! ch "RICHO CAPO!!")
-         (<! res))))
-
- (def result-chan (a/chan))
- (def error-chan (a/chan))
- (def dont-care-chan (a/chan))
-
- (go
-  (a/alt!
-   result-chan ([result] (println! (str "Success: " result)))
-   error-chan ([error] (println! (str "Error: " error)))
-   dont-care-chan (println "Don't care about the value!")))
-
- ;; Given
- (a/put! result-chan "Some result")
-
- ;; Output
- ;; Success: Some result
-
- ;; Given
- (a/put! error-chan "Some error")
-
- ;; Output
- ;; Error: Some error
-
- ;; Given
- (put! dont-care-chan "Some value")
-
-;; Output
-;; Don't care about the value!
- ,,,)
