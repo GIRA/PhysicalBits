@@ -76,11 +76,8 @@
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
-    (try
-      (>!! out bytes)
-      (catch Throwable e
-        (log/error "ERROR WHILE SENDING ->" e)
-        (disconnect!))))
+    (when-not (>!! out bytes)
+      (disconnect!)))
   bytes)
 
 
@@ -376,7 +373,6 @@
          (logger/error "Opening port failed!")
          nil))
      (catch Exception ex
-       ; TODO(Richo): Exceptions should be logged but not sent to the client
        (log/error "ERROR WHILE OPENING PORT ->" ex)))))
 
 (defn connect!
