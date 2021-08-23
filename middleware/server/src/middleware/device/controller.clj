@@ -66,7 +66,7 @@
            #(-> initial-state
                 ; Keep the current program
                 (assoc-in [:program :current]
-                           (-> % :program :current))))
+                          (-> % :program :current))))
     (try
       (ports/disconnect! connection)
       (catch Throwable e
@@ -314,13 +314,15 @@
       :trace (process-trace cmd)
       :serial (process-serial-tunnel cmd)
       :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
-                                   (:code cmd)))))
+                                   (:code cmd)))
+    cmd))
 
 (defn- process-input [{:keys [in]}]
   (loop []
     (when (connected?)
       (try
-        (process-next-message in)
+        (when-not (process-next-message in)
+          (disconnect!))
         (catch Throwable e
           (log/error "ERROR WHILE PROCESSING INPUT ->" e)))
       (recur))))
