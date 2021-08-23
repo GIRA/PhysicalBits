@@ -7,10 +7,8 @@
 
 (def ^:private constructors (atom []))
 
-(defn register-port [& f]
-  (swap! constructors
-         (fn [constructors]
-           (vec (distinct (into constructors f))))))
+(defn register-constructors! [& f]
+  (reset! constructors (vec (distinct f))))
 
 (defn connect! [name & args]
   (when-let [port (first (keep #(apply % name args) @constructors))]
@@ -26,10 +24,3 @@
   (when (compare-and-set! connected? true false)
     ; TODO(Richo): Should I also close the channels?
     (close! port)))
-
-
-(comment
- (def p (connect! "cu.usbmodem14201" 9600))
- usbmodem14101
-
- ,,)

@@ -29,7 +29,7 @@
                          "uzi" true))
 
 (defn setup []
-  (ports/register-port (fn [name] name))
+  (ports/register-constructors! identity)
   (reset! dc/state dc/initial-state)
   ; HACK(Richo): Fake connection
   (swap! dc/state assoc

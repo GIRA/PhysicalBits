@@ -61,8 +61,8 @@
   [{:keys [uzi web server-port arduino-port open-browser]}]
   (log/info project-name)
   (port-scanner/start!)
-  (ports/register-port #'socket/open-port
-                       #'serial/open-port)
+  (ports/register-constructors! #'socket/open-port
+                                #'serial/open-port)
   (log/info "Starting server...")
   (http/start :uzi-libraries uzi
               :web-resources web
