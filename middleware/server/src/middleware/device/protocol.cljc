@@ -143,10 +143,10 @@
 (defn perform-handshake [{:keys [in out]}]
   (go
    (>! out (request-connection))
-   (when-let [[n1] (a/alts! [in (a/timeout 1000)])]
+   (when-let [n1 (<! in)]
      (let [n2 (confirm-handshake n1)]
        (>! out [n2])
-       (= n2 (first (a/alts! [in (a/timeout 1000)])))))))
+       (= n2 (<! in))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INCOMING

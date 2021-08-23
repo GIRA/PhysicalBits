@@ -13,18 +13,23 @@
            (vec (distinct (into constructors f))))))
 
 (defn connect! [name & args]
-  (let [port (first (keep #(apply % name args) @constructors))
-        in-chan (make-in-chan! port)
-        out-chan (make-out-chan! port)]
+  (when-let [port (first (keep #(apply % name args) @constructors))]
     {:port port
      :port-name name
      :connected? (atom true)
-     :out out-chan
-     :in in-chan}))
+     :out (make-out-chan! port)
+     :in (make-in-chan! port)}))
 
 (defn connected? [{:keys [connected?]}] @connected?)
 
-(defn disconnect! [{:keys [actual-port connected?]}]
+(defn disconnect! [{:keys [port connected?]}]
   (when (compare-and-set! connected? true false)
     ; TODO(Richo): Should I also close the channels?
-    (close! actual-port)))
+    (close! port)))
+
+
+(comment
+ (def p (connect! "cu.usbmodem14201" 9600))
+ usbmodem14101
+
+ ,,)

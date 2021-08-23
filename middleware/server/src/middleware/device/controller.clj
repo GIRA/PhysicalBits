@@ -20,6 +20,7 @@
 
  (start-profiling)
  (stop-profiling)
+ (disconnect)
 
  (-> @state :profiler :ticks (* 10))
 
@@ -95,7 +96,7 @@
     (port-scanner/start!)))
 
 (defn send [bytes]
-  (when-let [out (-> @state :connection :out-chan)]
+  (when-let [out (-> @state :connection :out)]
     (try
       (>!! out bytes)
       (catch Throwable e
@@ -379,16 +380,19 @@
          (logger/log "Requesting connection...")
          (let [handshake (p/perform-handshake connection)
                timeout (a/timeout 1000)]
-           (a/alt! handshake ([success?]
-                              (if success?
-                                (logger/success "Connection accepted!")
-                                (logger/error "Connection rejected"))
-                              connection)
-                   timeout (do
-                             (logger/error "Connection timeout")
-                             (ports/disconnect! connection)
-                             nil)
-                   :priority true)))
+           (if (a/alt! handshake ([success?]
+                                  (if success?
+                                    (logger/success "Connection accepted!")
+                                    (logger/error "Connection rejected"))
+                                  success?)
+                       timeout (do
+                                 (logger/error "Connection timeout")
+                                 false)
+                       :priority true)
+             connection
+             (do
+               (ports/disconnect! connection)
+               nil))))
        (do
          (logger/error "Opening port failed!")
          nil))

@@ -99,7 +99,7 @@
   (json-response "OK"))
 
 (defn- get-connection-data [{:keys [connection]}]
-  {:isConnected @(:connected? connection)
+  {:isConnected (when connection @(:connected? connection))
    :portName (:port-name connection)
    :availablePorts (device/available-ports)})
 
