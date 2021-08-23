@@ -1,6 +1,6 @@
 (ns middleware.device.ports.serial
   (:require [clojure.tools.logging :as log]
-            [clojure.core.async :as a :refer [<! <!! >!! go-loop timeout]]
+            [clojure.core.async :as a :refer [<! <!! >!! go timeout]]
             [clojure.string :as str]
             [serial.core :as s]
             [middleware.device.ports.common :as ports]))
@@ -15,19 +15,26 @@
           ; resources. However, for now a 1s delay seems to work...
           (<!! (timeout 1000)))
   (make-out-chan! [port]
-                  ; TODO(Richo): Close the channel on disconnect!
                   (let [out-chan (a/chan 1000)]
-                    (go-loop [] ; TODO(Richo): Should I use a separate thread?
-                      (when-let [data (<! out-chan)]
-                        (s/write port data)
-                        (recur)))
+                    (go
+                      (try
+                        (loop []
+                          (when-let [data (<! out-chan)]
+                            (s/write port data)
+                            (recur)))
+                        (catch Throwable ex
+                          (log/error "ERROR WHILE WRITING OUTPUT (serial) ->" ex)
+                          (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [port]
-                 ; TODO(Richo): Close the channel on disconnect!
                  (let [in-chan (a/chan 1000)]
                    (s/listen! port
                               (fn [^java.io.InputStream input-stream]
-                                (a/put! in-chan (.read input-stream))))
+                                (try
+                                  (a/put! in-chan (.read input-stream))
+                                  (catch Throwable ex
+                                    (log/error "ERROR WHILE READING INPUT (serial) ->" ex)
+                                    (a/close! in-chan)))))
                    in-chan)))
 
 (defn open-port [port-name baud-rate]
