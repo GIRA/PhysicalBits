@@ -1,7 +1,7 @@
 (ns middleware.device.protocol
   (:require [clojure.string :as str]
             [middleware.utils.conversions :as c]
-            [clojure.core.async :as a :refer [<! go-loop go]]))
+            [clojure.core.async :as a :refer [<! >! go-loop go]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CONSTANTS
@@ -127,6 +127,11 @@
 (defn clear-all-breakpoints [] [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0])
 (defn continue [] [MSG_OUT_DEBUG_CONTINUE])
 
+(defn keep-alive [] [MSG_OUT_KEEP_ALIVE])
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; HANDSHAKE
+
 (defn request-connection []
   [MSG_OUT_CONNECTION_REQUEST
    MAJOR_VERSION
@@ -135,7 +140,13 @@
 (defn confirm-handshake [n1]
   (mod (+ MAJOR_VERSION MINOR_VERSION n1) 256))
 
-(defn keep-alive [] [MSG_OUT_KEEP_ALIVE])
+(defn perform-handshake [{:keys [in out]}]
+  (go
+   (>! out (request-connection))
+   (when-let [[n1] (a/alts! [in (a/timeout 1000)])]
+     (let [n2 (confirm-handshake n1)]
+       (>! out [n2])
+       (= n2 (first (a/alts! [in (a/timeout 1000)])))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INCOMING

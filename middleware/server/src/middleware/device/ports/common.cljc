@@ -2,33 +2,29 @@
 
 (defprotocol UziPort
   (close! [this])
-  (write! [this data])
   (make-in-chan! [this])
   (make-out-chan! [this]))
 
-(def constructors (atom []))
+(def ^:private constructors (atom []))
 
 (defn register-port [& f]
   (swap! constructors
          (fn [constructors]
            (vec (distinct (into constructors f))))))
 
+(defn connect! [name & args]
+  (let [port (first (keep #(apply % name args) @constructors))
+        in-chan (make-in-chan! port)
+        out-chan (make-out-chan! port)]
+    {:port port
+     :port-name name
+     :connected? (atom true)
+     :out out-chan
+     :in in-chan}))
 
-(defn open-port [name & args]
-  (first (keep #(apply % name args)
-               @constructors)))
+(defn connected? [{:keys [connected?]}] @connected?)
 
-(defn disconnect! [{:keys [actual-port]}]
-  (close! actual-port))
-
-(comment
- (register-port (fn [s _] (when (= "socket" s) 1))
-                (fn [s _] (when (= "serial" s) 2)))
-
- (reset! constructors [])
- @constructors
-
- (open-port "serial" 9)
- (open-port "socket" 9)
-
- ,,)
+(defn disconnect! [{:keys [actual-port connected?]}]
+  (when (compare-and-set! connected? true false)
+    ; TODO(Richo): Should I also close the channels?
+    (close! actual-port)))

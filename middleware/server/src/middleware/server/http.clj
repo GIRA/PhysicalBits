@@ -36,7 +36,7 @@
    :body    (json/encode data)})
 
 (defn connect-handler [params]
-  (device/connect (params "port"))
+  (device/connect! (params "port"))
   (let [port-name (@device/state :port-name)]
     (json-response {:port-name port-name})))
 
@@ -98,9 +98,9 @@
     (device/stop-profiling))
   (json-response "OK"))
 
-(defn- get-connection-data [state]
-  {:isConnected (:connected? state)
-   :portName (:port-name state)
+(defn- get-connection-data [{:keys [connection]}]
+  {:isConnected @(:connected? connection)
+   :portName (:port-name connection)
    :availablePorts (device/available-ports)})
 
 (defn- get-memory-data [state]

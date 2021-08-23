@@ -1,16 +1,22 @@
 (ns middleware.controller-test
   (:require [clojure.test :refer :all]
+            [clojure.core.async :as a]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
             [middleware.device.utils.ring-buffer :as rb]))
 
+(defn closed-chan []
+  (let [ch (a/chan)]
+    (a/close! ch)
+    ch))
+
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
 (extend-type java.lang.String
   ports/UziPort
-  (close! [port])
-  (write! [port data])
-  (listen! [port listener-fn]))
+  (close! [_])
+  (make-in-chan! [_] (closed-chan))
+  (make-out-chan! [_] (closed-chan)))
 
 (def program (dc/compile "task blink13() running 1/s { toggle(D13); }
 
@@ -23,12 +29,11 @@
                          "uzi" true))
 
 (defn setup []
+  (ports/register-port (fn [name] name))
   (reset! dc/state dc/initial-state)
   ; HACK(Richo): Fake connection
   (swap! dc/state assoc
-         :port "COM4"
-         :port-name "COM4"
-         :connected? true
+         :connection (ports/connect! "FAKE_PORT")
          :board UNO
          :timing {:diffs (rb/make-ring-buffer 10)
                   :arduino nil

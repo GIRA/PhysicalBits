@@ -47,9 +47,7 @@
 (defn millis ^long [] (System/currentTimeMillis))
 (defn constrain [^long val ^long lower ^long upper] (max lower (min upper val)))
 
-(def initial-state {:port-name nil
-                    :port nil
-                    :connected? false
+(def initial-state {:connection nil
                     :board UNO
                     :reporting {:pins #{}, :globals #{}}
                     :pins {}
@@ -79,26 +77,27 @@
   @port-scanner/available-ports)
 
 (defn connected? []
-  (not (nil? (:port @state))))
+  (when-let [connection (-> @state :connection)]
+    (ports/connected? connection)))
 
 (defn disconnect []
-  (when-let [port (@state :port)]
+  (when-let [connection (@state :connection)]
     (swap! state
            #(-> initial-state
                 ; Keep the current program
                 (assoc-in [:program :current]
                            (-> % :program :current))))
     (try
-      (ports/disconnect! port)
+      (ports/disconnect! connection)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
     (logger/error "Connection lost!")
     (port-scanner/start!)))
 
 (defn send [bytes]
-  (when-let [out-chan (-> @state :port :out-chan)]
+  (when-let [out (-> @state :connection :out-chan)]
     (try
-      (>!! out-chan bytes)
+      (>!! out bytes)
       (catch Throwable e
         (log/error "ERROR WHILE SENDING ->" e)
         (disconnect))))
@@ -214,28 +213,6 @@
 (defn send-continue []
   (swap! state assoc :debugger nil)
   (send (p/continue)))
-
-; TODO(Richo): Extract incoming handshake messages?
-(defn- request-connection [port in out]
-  (go
-   (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-   (>! out (p/request-connection))
-   (logger/log "Requesting connection...")
-   ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-   (if-let [[n1] (a/alts! [in (a/timeout 1000)])]
-     (let [n2 (p/confirm-handshake n1)]
-       (>! out [n2])
-       ;(<! (timeout 500)) ; TODO(Richo): Not needed in Mac/Windows
-       (if (= n2 (first (a/alts! [in (a/timeout 1000)])))
-         (do
-           (logger/success "Connection accepted!")
-           true)
-         (do
-           (logger/error "Connection rejected")
-           false)))
-     (do
-       (logger/error "Connection timeout")
-       false))))
 
 (defn- keep-alive-loop []
   (loop []
@@ -362,7 +339,7 @@
       :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
                                    (:code cmd)))))
 
-(defn- process-input [in]
+(defn- process-input [{:keys [in]}]
   (loop []
     (when (connected?)
       (try
@@ -390,63 +367,98 @@
       (<! (timeout 1000))
       (recur))))
 
-(defn- extract-socket-data [port-name]
-  (try
-    (when-let [match (re-matches #"((\d+)\.(\d+)\.(\d+)\.(\d+)|localhost)\:(\d+)"
-                                 (str/trim port-name))]
-      (let [address (nth match 1)
-            port (Integer/parseInt (nth match 6))]
-        (assert (< 0 port 0x10000))
-        (when-not (= address "localhost")
-          (assert (every? #(<= 0 % 255)
-                          (map #(Integer/parseInt %)
-                               (->> match (drop 2) (take 4))))))
-        [address port]))
-    (catch Throwable ex
-      false)))
 
-(defn- open-port [port-name baud-rate]
-  (try
-    (logger/newline)
-    (logger/log "Opening port: %1" port-name)
-    (or (ports/open-port port-name baud-rate)
-        (do
-          (logger/error "Opening port failed!")
-          nil))
-    (catch Exception e
-      (logger/error "Opening port failed!")
-      (log/error "ERROR WHILE OPENING PORT ->" e) ; TODO(Richo): Exceptions should be logged but not sent to the client
-      nil)))
+(defn- request-connection [port-name baud-rate]
+  (go
+   (try
+     (logger/newline)
+     (logger/log "Opening port: %1" port-name)
+     (if-let [connection (ports/connect! port-name baud-rate)]
+       (do
+         (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
+         (logger/log "Requesting connection...")
+         (let [handshake (p/perform-handshake connection)
+               timeout (a/timeout 1000)]
+           (a/alt! handshake ([success?]
+                              (if success?
+                                (logger/success "Connection accepted!")
+                                (logger/error "Connection rejected"))
+                              connection)
+                   timeout (do
+                             (logger/error "Connection timeout")
+                             (ports/disconnect! connection)
+                             nil)
+                   :priority true)))
+       (do
+         (logger/error "Opening port failed!")
+         nil))
+     (catch Exception ex
+       ; TODO(Richo): Exceptions should be logged but not sent to the client
+       (log/error "ERROR WHILE OPENING PORT ->" ex)))))
 
-(defn connect
-  ([] (connect (first (available-ports))))
+(defn connect!
+  ([] (connect! (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
                  :or {board UNO, baud-rate 9600}}]
    (if (connected?)
      (log/error "The board is already connected")
-     (when-let [port (open-port port-name baud-rate)]
-       (let [in (ports/make-in-chan! port)
-             out (ports/make-out-chan! port)]
-         (if-not (<!! (request-connection port in out))
-           (ports/close! port)
-           (do ; Connection successful
-             (port-scanner/stop!)
-             (swap! state assoc
-                    :port {:actual-port port
-                           :out-chan out
-                           :in-chan in}
-                    :port-name port-name
-                    :connected? true
-                    :board board
-                    :timing {:diffs (rb/make-ring-buffer
-                                     (config/get-in [:device :timing-diffs-size] 10))
-                             :arduino nil
-                             :middleware nil}
-                    :reporting {:pins #{}
-                                :globals #{}})
-             (set-report-interval (config/get-in [:device :report-interval-min] 0))
-             (a/thread (keep-alive-loop))
-             (a/thread (process-input in))
-             (start-reporting)
-             (send-pins-reporting)
-             (clean-up-reports))))))))
+     (when-let [connection (<!! (request-connection port-name baud-rate))]
+       (port-scanner/stop!)
+       (swap! state assoc
+              :connection connection
+              :board board
+              :timing {:diffs (rb/make-ring-buffer
+                               (config/get-in [:device :timing-diffs-size] 10))
+                       :arduino nil
+                       :middleware nil}
+              :reporting {:pins #{}
+                          :globals #{}})
+       (set-report-interval (config/get-in [:device :report-interval-min] 0))
+       (a/thread (keep-alive-loop))
+       (a/thread (process-input connection))
+       (start-reporting)
+       (send-pins-reporting)
+       (clean-up-reports)))))
+
+
+(comment
+
+ (<!! (go
+       (let [ch (a/chan 10)
+             t (a/timeout 1000)
+             res (go (a/alt!
+                      t :timeout
+                      ch ([v] v)
+                      :priority true))]
+         (<! (a/timeout 1500))
+         (>! ch "RICHO CAPO!!")
+         (<! res))))
+
+ (def result-chan (a/chan))
+ (def error-chan (a/chan))
+ (def dont-care-chan (a/chan))
+
+ (go
+  (a/alt!
+   result-chan ([result] (println! (str "Success: " result)))
+   error-chan ([error] (println! (str "Error: " error)))
+   dont-care-chan (println "Don't care about the value!")))
+
+ ;; Given
+ (a/put! result-chan "Some result")
+
+ ;; Output
+ ;; Success: Some result
+
+ ;; Given
+ (a/put! error-chan "Some error")
+
+ ;; Output
+ ;; Error: Some error
+
+ ;; Given
+ (put! dont-care-chan "Some value")
+
+;; Output
+;; Don't care about the value!
+ ,,,)

@@ -75,7 +75,7 @@
       (browse-url url)))
   (println)
   (when arduino-port
-    (dc/connect arduino-port)))
+    (dc/connect! arduino-port)))
 
 (defn -main [& args]
   (let [{:keys [errors options summary]} (cli/parse-opts args cli-options)]
