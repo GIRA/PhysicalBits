@@ -84,29 +84,25 @@
 (deftest perform-handshake
   (test-async
    (go
-    (let [out (a/to-chan! [255 0 8
-                           50])
+    (let [out (a/chan (a/dropping-buffer 1))
           in (a/to-chan! [42 50])
           [success?] (a/alts! [(p/perform-handshake {:in in :out out})
                                (a/timeout 10)]
                               :priority true)]
       (is success?))
-    (let [out (a/to-chan! [255 0 8
-                           50])
+    (let [out (a/chan (a/dropping-buffer 1))
           in (a/to-chan! [42 51])
           [success?] (a/alts! [(p/perform-handshake {:in in :out out})
                                (a/timeout 10)]
                               :priority true)]
       (is (not success?)))
-    (let [out (a/to-chan! [255 0 8
-                           50])
+    (let [out (a/chan (a/dropping-buffer 1))
           in (a/to-chan! [42])
           [success?] (a/alts! [(p/perform-handshake {:in in :out out})
                                (a/timeout 10)]
                               :priority true)]
       (is (not success?)))
-    (let [out (a/to-chan! [255 0 8
-                           50])
+    (let [out (a/chan (a/dropping-buffer 1))
           in (a/to-chan! [])
           [success?] (a/alts! [(p/perform-handshake {:in in :out out})
                                (a/timeout 10)]
