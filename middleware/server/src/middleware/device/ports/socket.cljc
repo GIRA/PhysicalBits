@@ -15,31 +15,38 @@
           ; resources. However, for now a 1s delay seems to work...
           (<!! (timeout 1000)))
   (make-out-chan! [socket]
-                  ; TODO(Richo): Close the channel on disconnect!
-                  (let [out-chan (a/chan 1000)
-                        out-stream (.getOutputStream socket)]
+                  (let [out-chan (a/chan 1000)]
                     (a/thread
-                     (loop []
-                       (when-not (.isClosed socket)
-                         (let [bytes (<!! out-chan)]
-                           (.write out-stream (byte-array bytes)))
-                         (recur))))
+                     (try
+                       (let [out-stream (.getOutputStream socket)]
+                         (loop []
+                           (if-not (.isClosed socket)
+                             (when-let [bytes (<!! out-chan)]
+                               (.write out-stream (byte-array bytes))
+                               (recur))
+                             (a/close! out-chan))))
+                       (catch Throwable ex
+                         (log/error "ERROR WHILE WRITING OUTPUT (socket) ->" ex)
+                         (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [socket]
-                 ; TODO(Richo): Close the channel on disconnect!
-                 (let [in-chan (a/chan 1000)
-                       buffer-size 1000
-                       buffer (byte-array buffer-size)
-                       in-stream (.getInputStream socket)]
-                   (a/thread ; NOTE(Richo): Using a thread because InputStream.read() blocks
-                             ; until data is available.
-                    (loop []
-                      (when-not (.isClosed socket)
-                        (let [bytes-read (.read in-stream buffer 0 buffer-size)]
-                          (dotimes [i bytes-read]
-                                   (>!! in-chan
-                                        (bit-and (int (nth buffer i)) 16rFF))))
-                        (recur))))
+                 (let [in-chan (a/chan 1000)]
+                   (a/thread
+                    (try
+                      (let [in-stream (.getInputStream socket)
+                            buffer-size 1000
+                            buffer (byte-array buffer-size)]
+                        (loop []
+                          (if-not (.isClosed socket)
+                            (let [bytes-read (.read in-stream buffer 0 buffer-size)]
+                              (dotimes [i bytes-read]
+                                       (>!! in-chan
+                                            (bit-and (int (nth buffer i)) 16rFF)))
+                              (recur))
+                            (a/close! in-chan))))
+                      (catch Throwable ex
+                        (log/error "ERROR WHILE READING INPUT (socket) ->" ex)
+                        (a/close! in-chan))))
                    in-chan)))
 
 (defn- extract-socket-data [port-name]
