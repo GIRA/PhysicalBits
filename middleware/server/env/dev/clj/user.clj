@@ -8,7 +8,7 @@
   (:use [clojure.tools.namespace.repl :as repl :only [refresh-all]]))
 
 (defn stop []
-  (dc/disconnect)
+  (dc/disconnect!)
   (http/stop)
   (udp/stop)
   (port-scanner/stop!))

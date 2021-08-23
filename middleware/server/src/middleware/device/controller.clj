@@ -60,7 +60,7 @@
   (when-let [connection (-> @state :connection)]
     (ports/connected? connection)))
 
-(defn disconnect []
+(defn disconnect! []
   (when-let [connection (@state :connection)]
     (swap! state
            #(-> initial-state
@@ -80,7 +80,7 @@
       (>!! out bytes)
       (catch Throwable e
         (log/error "ERROR WHILE SENDING ->" e)
-        (disconnect))))
+        (disconnect!))))
   bytes)
 
 
@@ -293,7 +293,7 @@
   (logger/newline)
   (logger/warning "%1 detected. The program has been stopped" msg)
   (if (p/error-disconnect? code)
-    (disconnect)))
+    (disconnect!)))
 
 (defn process-trace [{:keys [msg]}]
   (log/info "TRACE:" msg))
