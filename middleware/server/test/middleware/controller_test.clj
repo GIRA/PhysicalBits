@@ -11,12 +11,13 @@
     (a/close! ch)
     ch))
 
+
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
 (extend-type java.lang.String
   ports/UziPort
   (close! [_])
-  (make-in-chan! [_] (closed-chan))
-  (make-out-chan! [_] (closed-chan)))
+  (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
+  (make-out-chan! [_] (a/chan (a/dropping-buffer 1))))
 
 (def program (dc/compile "task blink13() running 1/s { toggle(D13); }
 
