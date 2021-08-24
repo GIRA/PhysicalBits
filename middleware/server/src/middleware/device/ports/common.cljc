@@ -12,7 +12,11 @@
   (reset! constructors (vec (distinct f))))
 
 (defn connect! [name & args]
-  (when-let [port (first (keep #(apply % name args) @constructors))]
+  (when-let [port (loop [[f & n] @constructors]
+                    (when f
+                      (if-let [port (apply f name args)]
+                        port
+                        (recur n))))]
     {:port port
      :port-name name
      :connected? (atom true)
