@@ -7,13 +7,7 @@
 
 (extend-type serial.core.Port
   ports/UziPort
-  (close! [port]
-          (let [begin (System/nanoTime)]
-            (s/close! port)
-            (log/info "TIME TO CLOSE SERIAL:"
-                      (/ (- (System/nanoTime) begin)
-                         1.0e6)
-                      "ms")))
+  (close! [port] (s/close! port))
   (make-out-chan! [port]
                   (let [out-chan (a/chan 1000)]
                     (go

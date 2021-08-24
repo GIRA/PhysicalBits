@@ -41,7 +41,7 @@
     (json-response {:port-name port-name})))
 
 (defn disconnect-handler [req]
-  (dc/disconnect!)
+  (<!! (dc/disconnect!))
   (json-response "OK"))
 
 (defn compile-handler

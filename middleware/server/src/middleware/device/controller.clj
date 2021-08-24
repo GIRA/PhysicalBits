@@ -61,18 +61,25 @@
     (ports/connected? connection)))
 
 (defn disconnect! []
-  (when-let [connection (@state :connection)]
-    (swap! state
-           #(-> initial-state
-                ; Keep the current program
-                (assoc-in [:program :current]
-                          (-> % :program :current))))
-    (logger/error "Connection lost!")
-    (try
-      (ports/disconnect! connection)
-      (catch Throwable e
-        (log/error "ERROR WHILE DISCONNECTING ->" e)))
-    (port-scanner/start!)))
+  (go
+   (if-let [connection (@state :connection)]
+     (do
+       (swap! state
+              #(-> initial-state
+                   ; Keep the current program
+                   (assoc-in [:program :current]
+                             (-> % :program :current))))
+       (logger/error "Connection lost!")
+       (try
+         (when (ports/disconnect! connection)
+           ; TODO(Richo): I used to think there was some sort of race condition in my
+           ; code that prevented me from being able to quickly disconnect and reconnect.
+           ; However, after further testing it seems to be some OS related issue. So
+           ; just to be safe I'm adding the 1s delay here.
+           (<! (timeout 1000)))
+         (catch Throwable e
+           (log/error "ERROR WHILE DISCONNECTING ->" e)))
+       (port-scanner/start!)))))
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -292,10 +299,11 @@
   (swap! state assoc :debugger data))
 
 (defn process-error [{{:keys [code msg]} :error}]
-  (logger/newline)
-  (logger/warning "%1 detected. The program has been stopped" msg)
-  (if (p/error-disconnect? code)
-    (disconnect!)))
+  (go
+   (logger/newline)
+   (logger/warning "%1 detected. The program has been stopped" msg)
+   (if (p/error-disconnect? code)
+     (<! (disconnect!)))))
 
 (defn process-trace [{:keys [msg]}]
   (log/info "TRACE:" msg))
@@ -316,7 +324,7 @@
        :free-ram (process-free-ram cmd)
        :profile (process-profile cmd)
        :coroutine-state (process-coroutine-state cmd)
-       :error (process-error cmd)
+       :error (<! (process-error cmd))
        :trace (process-trace cmd)
        :serial (process-serial-tunnel cmd)
        :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
@@ -331,7 +339,7 @@
        (if-not (<! (process-next-message in))
          (do
            (logger/log "TIMEOUT!")
-           (disconnect!))
+           (<! (disconnect!)))
          (recur (inc i)))))
    (log/info "BYE PROCESS INPUT (" r ")")))
 

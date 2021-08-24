@@ -1,6 +1,7 @@
 (ns middleware.controller-test
   (:require [clojure.test :refer :all]
-            [clojure.core.async :as a]
+            [clojure.core.async :as a :refer [<! go]]
+            [middleware.test-utils :refer [test-async]]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
@@ -158,10 +159,12 @@
          {:report-interval 5, :ticks 22835, :interval-ms 100})))
 
 (deftest process-error
-  (setup)
-  (is (dc/connected?))
-  (dc/process-error {:error {:msg "DISCONNECT_ERROR", :code 32}})
-  (is (not (dc/connected?))))
+  (test-async
+   (go
+    (setup)
+    (is (dc/connected?))
+    (<! (dc/process-error {:error {:msg "DISCONNECT_ERROR", :code 32}}))
+    (is (not (dc/connected?))))))
 
 (deftest process-coroutine-state
   (setup)

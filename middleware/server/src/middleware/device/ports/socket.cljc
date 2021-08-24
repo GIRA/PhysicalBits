@@ -7,13 +7,7 @@
 
 (extend-type java.net.Socket
   ports/UziPort
-  (close! [socket]
-          (.close socket)
-          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
-          ; quickly. I suspect the problem is that I need to wait until all threads are
-          ; finished or maybe I should close the channels and properly clean up the
-          ; resources. However, for now a 1s delay seems to work...
-          (<!! (timeout 1000)))
+  (close! [socket] (.close socket))
   (make-out-chan! [socket]
                   (let [out-chan (a/chan 1000)]
                     (a/thread
