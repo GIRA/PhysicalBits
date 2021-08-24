@@ -62,24 +62,46 @@
 
 (defn disconnect! []
   (go
-   (if-let [connection (@state :connection)]
-     (do
-       (swap! state
-              #(-> initial-state
-                   ; Keep the current program
-                   (assoc-in [:program :current]
-                             (-> % :program :current))))
+   (let [[{{:keys [connected?] :as conn} :connection}] 
+         (swap-vals! state
+                     #(-> initial-state
+                          ; Keep the current program
+                          (assoc-in [:program :current]
+                                    (-> % :program :current))))]
+     (when connected?
        (logger/error "Connection lost!")
        (try
-         (when (ports/disconnect! connection)
-           ; TODO(Richo): I used to think there was some sort of race condition in my
-           ; code that prevented me from being able to quickly disconnect and reconnect.
-           ; However, after further testing it seems to be some OS related issue. So
-           ; just to be safe I'm adding the 1s delay here.
-           (<! (timeout 1000)))
+         (ports/disconnect! conn)
+         ; TODO(Richo): I used to think there was some sort of race condition in my
+         ; code that prevented me from being able to quickly disconnect and reconnect.
+         ; However, after further testing it seems to be some OS related issue. So
+         ; just to be safe I'm adding the 1s delay here.
+         (<! (timeout 1000))
          (catch Throwable e
            (log/error "ERROR WHILE DISCONNECTING ->" e)))
        (port-scanner/start!)))))
+
+
+(comment
+
+
+ (connect! "localhost:4242")
+ (dotimes [_ 10]
+          (disconnect!))
+ (do
+   (disconnect!)
+   (disconnect!))
+
+ (do
+   (a/<!! )
+   (disconnect!)
+   (a/<!! (connect! "tty.usbmodem14201")))
+
+
+
+ )
+
+
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -337,9 +359,7 @@
      (when (connected?)
        ;(log/info "ACAACA PROCESS INPUT (" r "):" i)
        (if-not (<! (process-next-message in))
-         (do
-           (logger/log "TIMEOUT!")
-           (<! (disconnect!)))
+         (<! (disconnect!))
          (recur (inc i)))))
    (log/info "BYE PROCESS INPUT (" r ")")))
 
@@ -420,15 +440,3 @@
           (clean-up-reports r))
         (start-reporting)
         (send-pins-reporting))))))
-
-
-(comment
-
- (do
-   (a/<!! (connect! "tty.usbmodem14201"))
-   (disconnect!)
-   (a/<!! (connect! "tty.usbmodem14201")))
-
-
-
- )

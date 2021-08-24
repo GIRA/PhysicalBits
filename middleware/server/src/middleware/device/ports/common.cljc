@@ -29,5 +29,4 @@
   (when (compare-and-set! connected? true false)
     (a/close! in)
     (a/close! out)
-    (close! port)
-    true))
+    (close! port)))
