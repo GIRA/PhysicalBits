@@ -36,7 +36,7 @@
    :body    (json/encode data)})
 
 (defn connect-handler [params]
-  (dc/connect! (params "port"))
+  (<!! (dc/connect! (params "port")))
   (let [port-name (@dc/state :port-name)]
     (json-response {:port-name port-name})))
 

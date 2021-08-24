@@ -1,6 +1,6 @@
 (ns middleware.device.ports.socket
   (:require [clojure.tools.logging :as log]
-            [clojure.core.async :as a :refer [<!! >!! go-loop timeout]]
+            [clojure.core.async :as a :refer [<!! >!! timeout]]
             [clojure.string :as str]
             [middleware.device.ports.common :as ports])
   (:import (java.net Socket)))
@@ -72,8 +72,3 @@
       (Socket. address port))
     (catch Throwable ex
       (do (log/error ex) nil))))
-
-(comment
- (Socket. "127.0.0.1" 4242)
- (open-port "127.0.0.1:4242" 57600)
- ,,)

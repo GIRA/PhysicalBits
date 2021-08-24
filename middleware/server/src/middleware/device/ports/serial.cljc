@@ -8,12 +8,12 @@
 (extend-type serial.core.Port
   ports/UziPort
   (close! [port]
-          (s/close! port)
-          ; TODO(Richo): There seems to be some race condition if I disconnect/reconnect
-          ; quickly. I suspect the problem is that I need to wait until all threads are
-          ; finished or maybe I should close the channels and properly clean up the
-          ; resources. However, for now a 1s delay seems to work...
-          (<!! (timeout 1000)))
+          (let [begin (System/nanoTime)]
+            (s/close! port)
+            (log/info "TIME TO CLOSE SERIAL:"
+                      (/ (- (System/nanoTime) begin)
+                         1.0e6)
+                      "ms")))
   (make-out-chan! [port]
                   (let [out-chan (a/chan 1000)]
                     (go
@@ -44,6 +44,8 @@
       (do (log/error ex) nil))))
 
 (comment
- (s/open "127.0.0.1:4242" :baud-rate 57600)
+ (def p (s/open "cu.usbmodem14101" :baud-rate 57600))
+
+ (time (s/close! p))
  (open-port "127.0.0.1:4242" 57600)
  ,,)

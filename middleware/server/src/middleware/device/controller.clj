@@ -3,7 +3,7 @@
   (:require [clojure.tools.logging :as log]
             [middleware.device.ports.scanner :as port-scanner]
             [clojure.string :as str]
-            [clojure.core.async :as a :refer [<! <!! >! >!! go go-loop timeout]]
+            [clojure.core.async :as a :refer [<! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer :all]
@@ -67,16 +67,16 @@
                 ; Keep the current program
                 (assoc-in [:program :current]
                           (-> % :program :current))))
+    (logger/error "Connection lost!")
     (try
       (ports/disconnect! connection)
       (catch Throwable e
         (log/error "ERROR WHILE DISCONNECTING ->" e)))
-    (logger/error "Connection lost!")
     (port-scanner/start!)))
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
-    (when-not (>!! out bytes)
+    (when-not (a/put! out bytes)
       (disconnect!)))
   bytes)
 
@@ -191,12 +191,17 @@
   (swap! state assoc :debugger nil)
   (send (p/continue)))
 
-(defn- keep-alive-loop []
-  (loop []
-    (when (connected?)
-      (send (p/keep-alive))
-      (<!! (timeout 100))
-      (recur))))
+(defn- start-keep-alive-loop [r]
+  (go
+   (loop [i 0]
+     ; TODO(Richo): We shouldn't need to send a keep alive unless
+     ; we haven't send anything in the last 100 ms.
+     (when (connected?)
+       (log/info "KEEP ALIVE (" r "): " i)
+       (send (p/keep-alive))
+       (<! (timeout 100))
+       (recur (inc i))))
+   (log/info "BYE KEEP ALIVE (" r ")")))
 
 (defn- process-timestamp [^long timestamp]
   "Calculating the time since the last snapshot (both in the vm and the middleware)
@@ -299,52 +304,57 @@
   (logger/log "SERIAL: %1" data))
 
 (defn process-next-message [in]
-  (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
-             (<!! (p/process-next-message in))]
-    (when timestamp
-      (process-timestamp timestamp))
-    (case tag
-      :pin-value (process-pin-value cmd)
-      :global-value (process-global-value cmd)
-      :running-scripts (process-running-scripts cmd)
-      :free-ram (process-free-ram cmd)
-      :profile (process-profile cmd)
-      :coroutine-state (process-coroutine-state cmd)
-      :error (process-error cmd)
-      :trace (process-trace cmd)
-      :serial (process-serial-tunnel cmd)
-      :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
-                                   (:code cmd)))
-    cmd))
+  (go
+   (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
+              (<! (p/process-next-message in))]
+     (when timestamp
+       (process-timestamp timestamp))
+     (case tag
+       :pin-value (process-pin-value cmd)
+       :global-value (process-global-value cmd)
+       :running-scripts (process-running-scripts cmd)
+       :free-ram (process-free-ram cmd)
+       :profile (process-profile cmd)
+       :coroutine-state (process-coroutine-state cmd)
+       :error (process-error cmd)
+       :trace (process-trace cmd)
+       :serial (process-serial-tunnel cmd)
+       :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
+                                    (:code cmd)))
+     cmd)))
 
-(defn- process-input [{:keys [in]}]
-  (loop []
-    (when (connected?)
-      (try
-        (when-not (process-next-message in)
-          (disconnect!))
-        (catch Throwable e
-          (log/error "ERROR WHILE PROCESSING INPUT ->" e)))
-      (recur))))
+(defn- start-process-input-loop [{:keys [in]} r]
+  (go
+   (loop [i 0]
+     (when (connected?)
+       ;(log/info "ACAACA PROCESS INPUT (" r "):" i)
+       (if-not (<! (process-next-message in))
+         (do
+           (logger/log "TIMEOUT!")
+           (disconnect!))
+         (recur (inc i)))))
+   (log/info "BYE PROCESS INPUT (" r ")")))
 
-(defn- clean-up-reports []
-  (go-loop []
-    (when (connected?)
-      ; If we have pseudo vars, remove old ones (older than 1s)
-      (if-not (zero? (count (-> @state :pseudo-vars :data)))
-        (if (config/get-in [:device :pseudo-vars?] false)
-          (swap! state update-in [:pseudo-vars :data]
-                 #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
-                        limit (- timestamp 1000)]
-                    (into {} (remove (fn [[_ {^long ts :ts}]] (< ts limit)) %))))
-          (swap! state assoc-in [:pseudo-vars :data] {})))
-      ; Now remove pins/globals that are not being reported anymore
-      (let [reporting (:reporting @state)]
-        (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
-        (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
-      ; Finally wait 1s and start over
-      (<! (timeout 1000))
-      (recur))))
+(defn- clean-up-reports [r]
+  (go
+   (loop []
+     (when (connected?)
+       ; If we have pseudo vars, remove old ones (older than 1s)
+       (if-not (zero? (count (-> @state :pseudo-vars :data)))
+         (if (config/get-in [:device :pseudo-vars?] false)
+           (swap! state update-in [:pseudo-vars :data]
+                  #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
+                         limit (- timestamp 1000)]
+                     (into {} (remove (fn [[_ {^long ts :ts}]] (< ts limit)) %))))
+           (swap! state assoc-in [:pseudo-vars :data] {})))
+       ; Now remove pins/globals that are not being reported anymore
+       (let [reporting (:reporting @state)]
+         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
+         (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+       ; Finally wait 1s and start over
+       (<! (timeout 1000))
+       (recur)))
+   (log/info "BYE CLEAN UP REPORTS! (" r ")")))
 
 
 (defn- request-connection [port-name baud-rate]
@@ -381,22 +391,36 @@
   ([] (connect! (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
                  :or {board UNO, baud-rate 9600}}]
-   (if (connected?)
-     (log/error "The board is already connected")
-     (when-let [connection (<!! (request-connection port-name baud-rate))]
-       (port-scanner/stop!)
-       (swap! state assoc
-              :connection connection
-              :board board
-              :timing {:diffs (rb/make-ring-buffer
-                               (config/get-in [:device :timing-diffs-size] 10))
-                       :arduino nil
-                       :middleware nil}
-              :reporting {:pins #{}
-                          :globals #{}})
-       (set-report-interval (config/get-in [:device :report-interval-min] 0))
-       (a/thread (keep-alive-loop))
-       (a/thread (process-input connection))
-       (start-reporting)
-       (send-pins-reporting)
-       (clean-up-reports)))))
+   (go
+    (if (connected?)
+      (log/error "The board is already connected")
+      (when-let [connection (<! (request-connection port-name baud-rate))]
+        (port-scanner/stop!)
+        (swap! state assoc
+               :connection connection
+               :board board
+               :timing {:diffs (rb/make-ring-buffer
+                                (config/get-in [:device :timing-diffs-size] 10))
+                        :arduino nil
+                        :middleware nil}
+               :reporting {:pins #{}
+                           :globals #{}})
+        (set-report-interval (config/get-in [:device :report-interval-min] 0))
+        (let [r (rand-int 1000)]
+          (start-keep-alive-loop r)
+          (start-process-input-loop connection r)
+          (clean-up-reports r))
+        (start-reporting)
+        (send-pins-reporting))))))
+
+
+(comment
+
+ (do
+   (a/<!! (connect! "tty.usbmodem14201"))
+   (disconnect!)
+   (a/<!! (connect! "tty.usbmodem14201")))
+
+
+
+ )
