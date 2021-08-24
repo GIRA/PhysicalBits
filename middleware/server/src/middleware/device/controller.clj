@@ -70,24 +70,21 @@
                                (nil? connection))
                          state
                          (assoc state :connection :pending))))]
-     (if (= :pending conn)
-       (log/info "PENDING DISCONNECTION!")
-       (when connected?
-         (log/info "DISCONNECTING!")
-         (logger/error "Connection lost!")
-         (try
-           (ports/disconnect! conn)
-           ; TODO(Richo): I used to think there was some sort of race condition in my
-           ; code that prevented me from being able to quickly disconnect and reconnect.
-           ; However, after further testing it seems to be some OS related issue. So
-           ; just to be safe I'm adding the 1s delay here.
-           (<! (timeout 1000))
-           (catch Throwable e
-             (log/error "ERROR WHILE DISCONNECTING ->" e)))
-         (port-scanner/start!)
-         (swap! state (fn [state]
-                        (assoc-in initial-state [:program :current]
-                                  (-> state :program :current)))))))))
+     (when connected?
+       (logger/error "Connection lost!")
+       (try
+         (ports/disconnect! conn)
+         ; TODO(Richo): I used to think there was some sort of race condition in my
+         ; code that prevented me from being able to quickly disconnect and reconnect.
+         ; However, after further testing it seems to be some OS related issue. So
+         ; just to be safe I'm adding the 1s delay here.
+         (<! (timeout 1000))
+         (catch Throwable e
+           (log/error "ERROR WHILE DISCONNECTING ->" e)))
+       (port-scanner/start!)
+       (swap! state (fn [state]
+                      (assoc-in initial-state [:program :current]
+                                (-> state :program :current))))))))
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -164,7 +161,8 @@
   "All pins and globals referenced in the program must be enabled"
   (doseq [global (filter :name (-> program :compiled :globals))]
     (set-global-report (:name global) true))
-  (doseq [{:keys [type number]} (filter ast/pin-literal? (-> program :final-ast ast/all-children))]
+  (doseq [{:keys [type number]} (filter ast/pin-literal?
+                                        (-> program :final-ast ast/all-children))]
     (set-pin-report (str type number) true)))
 
 (defn run [program]
@@ -205,17 +203,15 @@
   (swap! state assoc :debugger nil)
   (send (p/continue)))
 
-(defn- start-keep-alive-loop [r]
+(defn- keep-alive-loop []
   (go
-   (loop [i 0]
+   (loop []
      ; TODO(Richo): We shouldn't need to send a keep alive unless
      ; we haven't send anything in the last 100 ms.
      (when (connected?)
-       (log/info "KEEP ALIVE (" r "): " i)
        (send (p/keep-alive))
        (<! (timeout 100))
-       (recur (inc i))))
-   (log/info "BYE KEEP ALIVE (" r ")")))
+       (recur)))))
 
 (defn- process-timestamp [^long timestamp]
   "Calculating the time since the last snapshot (both in the vm and the middleware)
@@ -331,24 +327,22 @@
        :free-ram (process-free-ram cmd)
        :profile (process-profile cmd)
        :coroutine-state (process-coroutine-state cmd)
-       :error (<! (process-error cmd))
        :trace (process-trace cmd)
        :serial (process-serial-tunnel cmd)
+       :error (<! (process-error cmd)) ; Special case because it calls disconnect!
        :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
                                     (:code cmd)))
      cmd)))
 
-(defn- start-process-input-loop [{:keys [in]} r]
+(defn- process-input-loop [{:keys [in]}]
   (go
-   (loop [i 0]
+   (loop []
      (when (connected?)
-       ;(log/info "ACAACA PROCESS INPUT (" r "):" i)
        (if-not (<! (process-next-message in))
          (<! (disconnect!))
-         (recur (inc i)))))
-   (log/info "BYE PROCESS INPUT (" r ")")))
+         (recur))))))
 
-(defn- clean-up-reports [r]
+(defn- clean-up-reports-loop []
   (go
    (loop []
      (when (connected?)
@@ -366,14 +360,13 @@
          (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
        ; Finally wait 1s and start over
        (<! (timeout 1000))
-       (recur)))
-   (log/info "BYE CLEAN UP REPORTS! (" r ")")))
+       (recur)))))
 
 
 (defn- request-connection [port-name baud-rate]
   (go
    (try
-     (logger/newline)
+     (logger/newline) ; TODO(Richo): Maybe clear the output console before connecting??
      (logger/log "Opening port: %1" port-name)
      (if-let [connection (ports/connect! port-name baud-rate)]
        (do
@@ -400,6 +393,24 @@
      (catch Exception ex
        (log/error "ERROR WHILE OPENING PORT ->" ex)))))
 
+(defn- connection-successful [connection board baud-rate]
+  (port-scanner/stop!)
+  (swap! state assoc
+         :connection connection
+         :board board
+         :timing {:diffs (rb/make-ring-buffer
+                          (config/get-in [:device :timing-diffs-size] 10))
+                  :arduino nil
+                  :middleware nil}
+         :reporting {:pins #{}
+                     :globals #{}})
+  (set-report-interval (config/get-in [:device :report-interval-min] 0))
+  (process-input-loop connection)
+  (clean-up-reports-loop)
+  (keep-alive-loop)
+  (start-reporting)
+  (send-pins-reporting))
+
 (defn connect!
   ([] (connect! (first (available-ports))))
   ([port-name & {:keys [board baud-rate]
@@ -412,27 +423,7 @@
                                 (ports/connected? connection))
                           state
                           (assoc state :connection :pending))))]
-      (if-not (= :pending old-connection)
-        (if (:connected? old-connection)
-          (log/error "The board is already connected")
-          (if-let [connection (<! (request-connection port-name baud-rate))]
-            (do
-              (port-scanner/stop!)
-              (swap! state assoc
-                     :connection connection
-                     :board board
-                     :timing {:diffs (rb/make-ring-buffer
-                                      (config/get-in [:device :timing-diffs-size] 10))
-                              :arduino nil
-                              :middleware nil}
-                     :reporting {:pins #{}
-                                 :globals #{}})
-              (set-report-interval (config/get-in [:device :report-interval-min] 0))
-              (let [r (rand-int 1000)]
-                (start-keep-alive-loop r)
-                (start-process-input-loop connection r)
-                (clean-up-reports r))
-              (start-reporting)
-              (send-pins-reporting))
-            (swap! state assoc :connection nil)))
-        (log/info "PENDING CONNECTION!"))))))
+      (when (nil? old-connection)
+        (if-let [connection (<! (request-connection port-name baud-rate))]
+          (connection-successful connection board baud-rate)
+          (swap! state assoc :connection nil)))))))
