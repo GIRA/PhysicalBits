@@ -6,12 +6,6 @@
             [middleware.device.boards :refer [UNO]]
             [middleware.device.utils.ring-buffer :as rb]))
 
-(defn closed-chan []
-  (let [ch (a/chan)]
-    (a/close! ch)
-    ch))
-
-
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
 (extend-type java.lang.String
   ports/UziPort
