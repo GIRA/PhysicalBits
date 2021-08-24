@@ -1,4 +1,5 @@
-(ns middleware.device.ports.common)
+(ns middleware.device.ports.common
+  (:require [clojure.core.async :as a]))
 
 (defprotocol UziPort
   (close! [this])
@@ -20,7 +21,8 @@
 
 (defn connected? [{:keys [connected?]}] @connected?)
 
-(defn disconnect! [{:keys [port connected?]}]
+(defn disconnect! [{:keys [port in out connected?]}]
   (when (compare-and-set! connected? true false)
-    ; TODO(Richo): Should I also close the channels?
+    (a/close! in)
+    (a/close! out)
     (close! port)))
