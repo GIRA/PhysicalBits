@@ -113,7 +113,9 @@
   (test-async
    (go
     (let [in (a/to-chan! [0 0 13 58])]
-      (is (= 3386 (<! (p/read-timestamp in))))))))
+      (is (= 3386 (<! (p/read-timestamp in)))))
+    (let [in (a/to-chan! [0 0 13])]
+      (is (nil? (<! (p/read-timestamp in))))))))
 
 (deftest process-running-scripts
   (test-async
@@ -161,7 +163,12 @@
                       {:running? false
                        :error-code 0
                        :error-msg "NO_ERROR"
-                       :error? false}]})))))
+                       :error? false}]}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_RUNNING_SCRIPTS
+                                        "timestamp"  0 0 13 58
+                                        "count"      5])))))))))
 
 (deftest process-free-ram
   (test-async
@@ -174,7 +181,13 @@
                                      "uzi"        0 0 8 134]))))
            {:tag :free-ram
             :timestamp 3429
-            :memory {:uzi 2182, :arduino 4163974488}})))))
+            :memory {:uzi 2182, :arduino 4163974488}}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_FREE_RAM
+                                        "timestamp"  0 0 13 101
+                                        "arduino"    248 49 53 88
+                                        "uzi"        0 0 8 ])))))))))
 
 
 (deftest process-pin-value
@@ -189,7 +202,14 @@
                                      "n2[0]"					0]))))
            {:tag :pin-value
             :timestamp 14159
-            :data [{:number 13 :value 0.0}]})))))
+            :data [{:number 13 :value 0.0}]}))
+    (is (nil? (<! (p/process-next-message
+                (a/to-chan! (remove string?
+                                    [p/MSG_IN_PIN_VALUE
+                                     "timestamp"			0 0 55 79
+                                     "count"					1
+                                     "n1[0]"					52
+                                     "n2[0]"					])))))))))
 
 (deftest process-global-value
   (test-async
@@ -206,7 +226,16 @@
            {:tag :global-value
             :timestamp 14167
             :data [{:number 3 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}
-                   {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]})))))
+                   {:number 4 :value 42.0 :raw-bytes [0x42 0x28 0x00 0x00]}]}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_GLOBAL_VALUE
+                                        "timestamp"				0 0 55 87
+                                        "count" 				  2
+                                        "number[0]" 			3
+                                        "n1..n4[0]" 			0x42 0x28 0x00 0x00
+                                        "number[1]"				4
+                                        "n1..n4[1]"				0x42 0x28 0x00])))))))))
 
 (deftest process-profile
   (test-async
@@ -218,7 +247,13 @@
                                      "n2"				51
                                      "report-interval"	5]))))
            {:tag :profile
-            :data {:report-interval 5, :ticks 22835, :interval-ms 100}})))))
+            :data {:report-interval 5, :ticks 22835, :interval-ms 100}}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_PROFILE
+                                        "n1"				178
+                                        "n2"				51
+                                        "report-interval"	])))))))))
 
 (deftest process-error
   (test-async
@@ -237,7 +272,8 @@
             :error {:code 8 :msg "OUT_OF_MEMORY"}}))
     (is (= (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR 9])))
            {:tag :error
-            :error {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"}})))))
+            :error {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"}}))
+    (is (nil? (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR]))))))))
 
 (deftest process-coroutine-state
   (test-async
@@ -252,7 +288,23 @@
                                      "stack"        0 1 2 3
                                      4 5 6 7]))))
            {:tag :coroutine-state
-            :data {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}})))))
+            :data {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_COROUTINE_STATE
+                                        "index"        1
+                                        "pc"           2 3
+                                        "fp"           4
+                                        "stack-size"   2
+                                        "stack"        0 1 2 3
+                                                       4 5 6 ]))))))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_COROUTINE_STATE
+                                        "index"        1
+                                        "pc"           2 3
+                                        "fp"           4
+                                        "stack-size"   ])))))))))
 
 (deftest process-trace
   (test-async
@@ -263,7 +315,12 @@
                                      "count"       10
                                      "msg"         82 105 99 104 111 32 99 97 112 111]))))
            {:tag :trace
-            :msg "Richo capo"})))))
+            :msg "Richo capo"}))
+    (is (nil? (<! (p/process-next-message
+                   (a/to-chan! (remove string?
+                                       [p/MSG_IN_TRACE
+                                        "count"       2
+                                        "msg"         82])))))))))
 
 (deftest process-serial-tunnel
   (test-async
@@ -271,4 +328,11 @@
     (is (= (<! (p/process-next-message
                 (a/to-chan! [p/MSG_IN_SERIAL_TUNNEL 42])))
            {:tag :serial
-            :data 42})))))
+            :data 42}))
+    (is (nil? (<! (p/process-next-message
+                (a/to-chan! [p/MSG_IN_SERIAL_TUNNEL]))))))))
+
+(deftest process-next-message-on-closed-chan
+  (test-async
+   (go
+    (is (nil? (<! (p/process-next-message (a/to-chan! []))))))))
