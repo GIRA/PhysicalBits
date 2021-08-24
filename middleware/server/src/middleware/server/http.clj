@@ -99,7 +99,10 @@
   (json-response "OK"))
 
 (defn- get-connection-data [{:keys [connection]}]
-  {:isConnected (when connection @(:connected? connection))
+  {; TODO(Richo): The server should already receive the data correctly formatted...
+   :isConnected (when (and (not= :pending connection)
+                           (some? connection))
+                  @(:connected? connection))
    :portName (:port-name connection)
    :availablePorts (dc/available-ports)})
 

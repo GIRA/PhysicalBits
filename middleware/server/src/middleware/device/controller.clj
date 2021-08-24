@@ -58,57 +58,42 @@
 
 (defn connected? []
   (when-let [connection (-> @state :connection)]
-    (ports/connected? connection)))
+    (and (not= :pending connection)
+         (ports/connected? connection))))
 
 (defn disconnect! []
   (go
-   (let [[{{:keys [connected?] :as conn} :connection}] 
+   (let [[{{:keys [connected?] :as conn} :connection}]
          (swap-vals! state
-                     #(-> initial-state
-                          ; Keep the current program
-                          (assoc-in [:program :current]
-                                    (-> % :program :current))))]
-     (when connected?
-       (logger/error "Connection lost!")
-       (try
-         (ports/disconnect! conn)
-         ; TODO(Richo): I used to think there was some sort of race condition in my
-         ; code that prevented me from being able to quickly disconnect and reconnect.
-         ; However, after further testing it seems to be some OS related issue. So
-         ; just to be safe I'm adding the 1s delay here.
-         (<! (timeout 1000))
-         (catch Throwable e
-           (log/error "ERROR WHILE DISCONNECTING ->" e)))
-       (port-scanner/start!)))))
-
-
-(comment
-
-
- (connect! "localhost:4242")
- (dotimes [_ 10]
-          (disconnect!))
- (do
-   (disconnect!)
-   (disconnect!))
-
- (do
-   (a/<!! )
-   (disconnect!)
-   (a/<!! (connect! "tty.usbmodem14201")))
-
-
-
- )
-
-
+                     (fn [{:keys [connection] :as state}]
+                       (if (or (= :pending connection)
+                               (nil? connection))
+                         state
+                         (assoc state :connection :pending))))]
+     (if (= :pending conn)
+       (log/info "PENDING DISCONNECTION!")
+       (when connected?
+         (log/info "DISCONNECTING!")
+         (logger/error "Connection lost!")
+         (try
+           (ports/disconnect! conn)
+           ; TODO(Richo): I used to think there was some sort of race condition in my
+           ; code that prevented me from being able to quickly disconnect and reconnect.
+           ; However, after further testing it seems to be some OS related issue. So
+           ; just to be safe I'm adding the 1s delay here.
+           (<! (timeout 1000))
+           (catch Throwable e
+             (log/error "ERROR WHILE DISCONNECTING ->" e)))
+         (port-scanner/start!)
+         (swap! state (fn [state]
+                        (assoc-in initial-state [:program :current]
+                                  (-> state :program :current)))))))))
 
 (defn send [bytes]
   (when-let [out (-> @state :connection :out)]
     (when-not (a/put! out bytes)
       (disconnect!)))
   bytes)
-
 
 (defn- get-global-number [global-name]
   (program/index-of-variable (-> @state :program :running :compiled)
@@ -420,23 +405,34 @@
   ([port-name & {:keys [board baud-rate]
                  :or {board UNO, baud-rate 9600}}]
    (go
-    (if (connected?)
-      (log/error "The board is already connected")
-      (when-let [connection (<! (request-connection port-name baud-rate))]
-        (port-scanner/stop!)
-        (swap! state assoc
-               :connection connection
-               :board board
-               :timing {:diffs (rb/make-ring-buffer
-                                (config/get-in [:device :timing-diffs-size] 10))
-                        :arduino nil
-                        :middleware nil}
-               :reporting {:pins #{}
-                           :globals #{}})
-        (set-report-interval (config/get-in [:device :report-interval-min] 0))
-        (let [r (rand-int 1000)]
-          (start-keep-alive-loop r)
-          (start-process-input-loop connection r)
-          (clean-up-reports r))
-        (start-reporting)
-        (send-pins-reporting))))))
+    (let [[{old-connection :connection}]
+          (swap-vals! state
+                      (fn [{:keys [connection] :as state}]
+                        (if (or (= :pending connection)
+                                (ports/connected? connection))
+                          state
+                          (assoc state :connection :pending))))]
+      (if-not (= :pending old-connection)
+        (if (:connected? old-connection)
+          (log/error "The board is already connected")
+          (if-let [connection (<! (request-connection port-name baud-rate))]
+            (do
+              (port-scanner/stop!)
+              (swap! state assoc
+                     :connection connection
+                     :board board
+                     :timing {:diffs (rb/make-ring-buffer
+                                      (config/get-in [:device :timing-diffs-size] 10))
+                              :arduino nil
+                              :middleware nil}
+                     :reporting {:pins #{}
+                                 :globals #{}})
+              (set-report-interval (config/get-in [:device :report-interval-min] 0))
+              (let [r (rand-int 1000)]
+                (start-keep-alive-loop r)
+                (start-process-input-loop connection r)
+                (clean-up-reports r))
+              (start-reporting)
+              (send-pins-reporting))
+            (swap! state assoc :connection nil)))
+        (log/info "PENDING CONNECTION!"))))))

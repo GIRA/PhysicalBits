@@ -23,7 +23,9 @@
      :out (make-out-chan! port)
      :in (make-in-chan! port)}))
 
-(defn connected? [{:keys [connected?]}] @connected?)
+(defn connected? [connection]
+  (when connection
+    @(:connected? connection)))
 
 (defn disconnect! [{:keys [port in out connected?]}]
   (when (compare-and-set! connected? true false)
