@@ -30,12 +30,6 @@
            n4)
    0))
 
-(comment
- (bytes->uint32 [248 49 53 88])
-(unsigned-bit-shift-left 248 24)
-
- ,,)
-
 (defn bytes->float [^bytes bytes]
   (uint32->float (bytes->uint32 bytes)))
 
@@ -50,7 +44,6 @@
     (bit-and 16rFF
              (inc (bit-xor (Math/abs byte)
                            16rFF)))))
-
 
 #?(:cljs
    ;; HACK(Richo): Ratios are currently not supported in cljs
@@ -71,7 +64,6 @@
       (if (= 0 (compare int-val value))
         int-val
         value))))
-
 
 (defn bytes->string [bytes]
   #?(:clj (new String (byte-array bytes) "UTF-8")
