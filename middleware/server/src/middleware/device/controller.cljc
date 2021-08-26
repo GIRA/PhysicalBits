@@ -1,5 +1,5 @@
 (ns middleware.device.controller
-  (:require [clojure.tools.logging :as log]
+  (:require #?(:clj [clojure.tools.logging :as log])
             [middleware.device.ports.scanner :as port-scanner]
             [clojure.core.async :as a :refer [<! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
@@ -10,20 +10,26 @@
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]
-            [middleware.config :as config]
+            #?(:clj [middleware.config :as config])
             [middleware.device.utils.ring-buffer :as rb]))
 
 (comment
 
  (start-profiling)
  (stop-profiling)
-
+(.getTime (js/Date.))
  (set-report-interval 5)
  ,)
 
-(defn millis ^long [] (System/currentTimeMillis))
+(defn millis ^long []
+  #?(:clj (System/currentTimeMillis)
+     :cljs (.getTime (js/Date.))))
+
 (defn constrain [^long val ^long lower ^long upper] (max lower (min upper val)))
 
+(defn- log-error [msg e]
+  #?(:clj (log/error msg e)
+     :cljs (println "ERROR:" msg e)))
 
 (defn- get-config [path default-value]
   #?(:clj (config/get-in path default-value)
@@ -82,8 +88,8 @@
          ; However, after further testing it seems to be some OS related issue. So
          ; just to be safe I'm adding the 1s delay here.
          (<! (timeout 1000))
-         (catch Throwable e
-           (log/error "ERROR WHILE DISCONNECTING ->" e)))
+         (catch #?(:clj Throwable :cljs :default) e
+           (log-error "ERROR WHILE DISCONNECTING ->" e)))
        (port-scanner/start!)
        (swap! state (fn [state]
                       (assoc-in initial-state [:program :current]
@@ -142,10 +148,10 @@
         (logger/success "Compilation successful!"))
       (swap! state assoc-in [:program :current] program)
       program)
-    (catch Throwable ex
+    (catch #?(:clj Throwable :cljs :default) ex
       (when-not silent?
         (logger/newline)
-        (logger/error (.getMessage ex))
+        (logger/exception ex)
         ; TODO(Richo): Improve the error message for checker errors
         (when-let [{errors :errors} (ex-data ex)]
           (doseq [[^long i {:keys [description node src]}]
@@ -312,7 +318,7 @@
      (<! (disconnect!)))))
 
 (defn process-trace [{:keys [msg]}]
-  (log/info "TRACE:" msg))
+  (logger/log "TRACE:" msg))
 
 (defn process-serial-tunnel [{:keys [data]}]
   (logger/log "SERIAL: %1" data))
@@ -393,8 +399,8 @@
        (do
          (logger/error "Opening port failed!")
          nil))
-     (catch Exception ex
-       (log/error "ERROR WHILE OPENING PORT ->" ex)))))
+     (catch #?(:clj Throwable :cljs :default) ex
+       (log-error "ERROR WHILE OPENING PORT ->" ex)))))
 
 (defn- connection-successful [connection board baud-rate]
   (port-scanner/stop!)

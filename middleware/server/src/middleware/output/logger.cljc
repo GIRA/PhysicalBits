@@ -43,6 +43,10 @@
 (defn error [str & args]
   (append :error str args))
 
+(defn exception [ex]
+  #?(:clj (error (.getMessage ex))
+     :cljs (error (str ex))))
+
 (defn newline []
   (info ""))
 
