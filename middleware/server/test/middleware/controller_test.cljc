@@ -9,7 +9,8 @@
             [middleware.device.utils.ring-buffer :as rb]))
 
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
-(extend-type java.lang.String
+(extend-type #?(:clj java.lang.String
+                :cljs string)
   ports/UziPort
   (close! [_])
   (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
