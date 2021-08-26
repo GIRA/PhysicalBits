@@ -1,8 +1,9 @@
 (ns middleware.device.utils.ring-buffer)
 
 (defn- make-array* [size]
-  ; TODO(Richo): This would probably be faster using a java array, but for now it works
-  (apply vector-of :double (repeat size 0)))
+  ; TODO(Richo): This would probably be faster using a native array, but for now it works
+  #?(:clj (apply vector-of :double (repeat size 0))
+     :cljs (vec (repeat size 0))))
 
 (defn make-ring-buffer [size]
   (atom {:array (make-array* size), :index 0}))
