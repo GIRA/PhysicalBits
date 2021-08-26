@@ -1,13 +1,10 @@
 (ns middleware.device.controller
-  (:refer-clojure :exclude [send compile])
   (:require [clojure.tools.logging :as log]
             [middleware.device.ports.scanner :as port-scanner]
-            [clojure.string :as str]
             [clojure.core.async :as a :refer [<! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
-            [middleware.device.boards :refer :all]
-            [middleware.utils.conversions :refer :all]
+            [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
@@ -92,7 +89,7 @@
                       (assoc-in initial-state [:program :current]
                                 (-> state :program :current))))))))
 
-(defn send [bytes]
+(defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
     (when-not (a/put! out bytes)
       (disconnect!)))
@@ -105,23 +102,23 @@
 
 (defn set-global-value [global-name ^double value]
   (when-let [global-number (get-global-number global-name)]
-    (send (p/set-global-value global-number value))))
+    (send! (p/set-global-value global-number value))))
 
 (defn set-global-report [global-name report?]
   (when-let [global-number (get-global-number global-name)]
     (swap! state update-in [:reporting :globals]
            (if report? conj disj) global-name)
-    (send (p/set-global-report global-number report?))))
+    (send! (p/set-global-report global-number report?))))
 
 (defn set-pin-value [pin-name ^double value]
   (when-let [pin-number (get-pin-number pin-name)]
-    (send (p/set-pin-value pin-number value))))
+    (send! (p/set-pin-value pin-number value))))
 
 (defn set-pin-report [pin-name report?]
   (when-let [pin-number (get-pin-number pin-name)]
     (swap! state update-in [:reporting :pins]
            (if report? conj disj) pin-name)
-    (send (p/set-pin-report pin-number report?))))
+    (send! (p/set-pin-report pin-number report?))))
 
 (defn send-pins-reporting []
   (let [pins (-> @state :reporting :pins)]
@@ -129,7 +126,7 @@
       (set-pin-report pin-name true))))
 
 ; TODO(Richo): This function makes no sense here!
-(defn compile [src type silent? & args]
+(defn compile! [src type silent? & args]
   (try
     (let [compile-fn (case type
                        "json" cc/compile-json-string
@@ -175,24 +172,24 @@
   (swap! state assoc-in [:reporting :globals] #{})
   (swap! state assoc-in [:program :running] program)
   (let [bytecodes (en/encode (:compiled program))
-        sent (send (p/run bytecodes))]
+        sent (send! (p/run bytecodes))]
     (update-reporting program)
     sent))
 
 (defn install [program]
   ; TODO(Richo): Should I store the installed program?
   (let [bytecodes (en/encode (:compiled program))
-        sent (send (p/install bytecodes))]
+        sent (send! (p/install bytecodes))]
     ; TODO(Richo): This message is actually a lie, we really don't know yet if the
     ; program was installed successfully. I think we need to add a confirmation
     ; message coming from the firmware
     (logger/success "Installed program successfully!")))
 
-(defn start-reporting [] (send (p/start-reporting)))
-(defn stop-reporting [] (send (p/stop-reporting)))
+(defn start-reporting [] (send! (p/start-reporting)))
+(defn stop-reporting [] (send! (p/stop-reporting)))
 
-(defn start-profiling [] (send (p/start-profiling)))
-(defn stop-profiling [] (send (p/stop-profiling)))
+(defn start-profiling [] (send! (p/start-profiling)))
+(defn stop-profiling [] (send! (p/stop-profiling)))
 
 (defn set-report-interval [interval]
   (let [interval (int (constrain interval
@@ -201,13 +198,13 @@
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)
-      (send (p/set-report-interval interval)))))
+      (send! (p/set-report-interval interval)))))
 
-(defn set-all-breakpoints [] (send (p/set-all-breakpoints)))
-(defn clear-all-breakpoints [] (send (p/clear-all-breakpoints)))
+(defn set-all-breakpoints [] (send! (p/set-all-breakpoints)))
+(defn clear-all-breakpoints [] (send! (p/clear-all-breakpoints)))
 (defn send-continue []
   (swap! state assoc :debugger nil)
-  (send (p/continue)))
+  (send! (p/continue)))
 
 (defn- keep-alive-loop []
   (go
@@ -215,7 +212,7 @@
      ; TODO(Richo): We shouldn't need to send a keep alive unless
      ; we haven't send anything in the last 100 ms.
      (when (connected?)
-       (send (p/keep-alive))
+       (send! (p/keep-alive))
        (<! (timeout 100))
        (recur)))))
 

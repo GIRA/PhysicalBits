@@ -47,22 +47,22 @@
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (dc/compile src type (= silent "true")
-                            :lib-dir uzi-libraries)]
+  (let [program (dc/compile! src type (= silent "true")
+                             :lib-dir uzi-libraries)]
     (json-response program)))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (dc/compile src type (= silent "true")
-                                :lib-dir uzi-libraries)]
+  (let [program (dc/compile! src type (= silent "true")
+                             :lib-dir uzi-libraries)]
     (dc/run program)
     (json-response program)))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (let [program (dc/compile src type false
-                            :lib-dir uzi-libraries)]
+  (let [program (dc/compile! src type false
+                             :lib-dir uzi-libraries)]
     (dc/install program)
     (json-response program)))
 

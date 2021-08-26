@@ -1,5 +1,6 @@
 (ns middleware.controller-test
-  (:require [clojure.test :refer :all]
+  (:require #?(:clj [clojure.test :refer :all]
+               :cljs [cljs.test :refer-macros [deftest is testing]])
             [clojure.core.async :as a :refer [<! go]]
             [middleware.test-utils :refer [test-async]]
             [middleware.device.controller :as dc]
@@ -14,15 +15,15 @@
   (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
   (make-out-chan! [_] (a/chan (a/dropping-buffer 1))))
 
-(def program (dc/compile "task blink13() running 1/s { toggle(D13); }
+(def program (dc/compile! "task blink13() running 1/s { toggle(D13); }
 
-                          var counter;
-                          var n;
+                           var counter;
+                           var n;
 
-                          task loop() { add(n); }
-                          proc add(v) { counter = inc(v); }
-                          func inc(v) { return v + 1; }"
-                         "uzi" true))
+                           task loop() { add(n); }
+                           proc add(v) { counter = inc(v); }
+                           func inc(v) { return v + 1; }"
+                          "uzi" true))
 
 (defn setup []
   (ports/register-constructors! identity)
@@ -60,7 +61,7 @@
 
 (deftest run-program
   (setup)
-  (let [program (dc/compile "task blink13() running 1/s { toggle(D13); }" "uzi" true)]
+  (let [program (dc/compile! "task blink13() running 1/s { toggle(D13); }" "uzi" true)]
     (dc/run program)
     (is (empty? (-> @dc/state :reporting :globals)))
     (is (= (-> @dc/state :program :running)
