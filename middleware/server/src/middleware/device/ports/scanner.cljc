@@ -1,9 +1,11 @@
 (ns middleware.device.ports.scanner
   (:require [clojure.core.async :refer [chan <! >! go-loop timeout alts! close!]]
-            [serial.util :as su]))
+            #?(:clj [serial.util :as su])))
 
 (defn- get-available-ports []
-  (vec (sort (su/get-port-names))))
+  #?(:clj (vec (sort (su/get-port-names)))
+    ; TODO(Richo): Implement this!
+     :cljs []))
 
 (defonce ^:private cancel-token (atom nil))
 
