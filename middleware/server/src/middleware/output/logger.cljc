@@ -1,6 +1,6 @@
 (ns middleware.output.logger
   (:refer-clojure :exclude [newline])
-  (:require [clojure.tools.logging :as log]
+  (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.string :as str]))
 
 (def ^:private entries* (atom []))
@@ -13,11 +13,16 @@
         (inc i))
       t)))
 
+; TODO(Richo): Find a cross-platform way of logging...
+(defn log* [str]
+  #?(:clj (log/info str)
+     :cljs (println str)))
+
 (defn read-entries! []
   (let [[entries _] (reset-vals! entries* [])]
     (when-not (empty? entries)
-      (doseq [entry entries]
-        (log/info (uzi-format (:text entry) (:args entry)))))
+      (doseq [{:keys [text args]} entries]
+        (log* (uzi-format text args))))
     entries))
 
 (defn- append [msg-type format-str args]
