@@ -15,5 +15,8 @@
   "license": "MIT",
   "devDependencies": {
     "shadow-cljs": "^2.12.5"
+  },
+  "dependencies": {
+    "serialport": "^9.2.0"
   }
 }
