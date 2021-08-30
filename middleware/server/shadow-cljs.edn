@@ -11,6 +11,11 @@
  :builds {:compiler {:target :browser
                      :modules {:main {:init-fn middleware.core/init}}}
 
+          :controller {:target :node-script
+                       :main middleware.controller-core/main
+                       :output-to "out/controller/main.js"
+                       :compiler-options {:optimizations :simple}}
+
           :test {:target :browser-test
                  :test-dir "resources/public/js/test"
                  :ns-regexp "-(test|gen)\\d?$"

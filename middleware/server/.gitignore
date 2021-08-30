@@ -17,5 +17,6 @@ pom.xml.asc
 
 /resources/public/js/test
 /public/js
+/out
 /node_modules
 /.shadow-cljs
