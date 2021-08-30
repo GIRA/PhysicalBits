@@ -1,8 +1,7 @@
 {:source-paths ["env/dev/cljs" "src" "test"]
 
  :dependencies [[proto-repl "0.3.1"]
-                [clj-petitparser "0.1.2-SNAPSHOT"]
-                [cljs-ajax "0.8.3"]]
+                [clj-petitparser "0.1.2-SNAPSHOT"]]
 
  :nrepl {:port 9000
          :middleware []}
