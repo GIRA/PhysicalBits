@@ -14,7 +14,7 @@
           :controller {:target :node-script
                        :main middleware.controller-core/main
                        :output-to "out/controller/main.js"
-                       :compiler-options {:optimizations :simple}}
+                       :compiler-options {:optimizations :advanced}}
 
           :test {:target :browser-test
                  :test-dir "resources/public/js/test"
