@@ -3,6 +3,7 @@
 
 (defprotocol File
   (read [this])
+  (write [this data])
   (absolute-path [this])
   (last-modified [this])
   (exists? [this]))

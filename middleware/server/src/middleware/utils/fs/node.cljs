@@ -6,6 +6,7 @@
 (deftype NodeFile [path]
   common/File
   (read [file] (str (fs/readFileSync (.-path file))))
+  (write [file data] (fs/writeFileSync (.-path file) data))
   (absolute-path [file] (path/resolve (.-path file)))
   (last-modified [file]
                  (if-let [stats (fs/lstatSync (.-path file)
