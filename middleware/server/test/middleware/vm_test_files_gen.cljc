@@ -5,7 +5,7 @@
             [middleware.test-utils :refer [test-name test-async setup-fixture]]
             [middleware.compiler.compiler :as cc]
             [middleware.device.protocol :as p]
-            #?(:cljs [middleware.utils.fs.browser-macros :as m])
+            [middleware.utils.fs.common :as fs]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.emitter :as emit]
             [clojure.string :as str]
@@ -22,21 +22,9 @@
 (def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
 
 (defn write-file [bytecodes]
-  #?(:clj (let [file-name (str output-path (test-name))
-                bytes (p/run bytecodes)]
-            (spit file-name (str/join ", " bytes)))
-
-    ; HACK(Richo): Instead of writing the file I'm just read the existing files and
-    ; comparing the output. This requires to run the clj tests *before* running the cljs tests.
-    :cljs (let [file-name (str output-path (test-name))
-                ; HACK(Richo): I'm reading the files using the fs-macros hack
-                root output-path
-                expected (mapv (fn [s] (js/parseInt s))
-                               (str/split (m/read-file* file-name
-                                                        "../../firmware/Simulator/SimulatorTest/TestFiles/")
-                                          ","))
-                actual (p/run bytecodes)]
-            (is (= expected actual)))))
+ (let [file (fs/file output-path (test-name))
+       bytes (p/run bytecodes)]
+   (fs/write file (str/join ", " bytes))))
 
 (defn compile-string [src]
   #?(:clj (register-program! src))
