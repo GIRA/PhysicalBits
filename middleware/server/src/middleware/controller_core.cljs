@@ -6,7 +6,9 @@
             [middleware.device.ports.serial :as serial]
             [middleware.parser.parser :as p]
             [middleware.compiler.compiler :as c]
-            [middleware.compiler.encoder :as en]))
+            [middleware.compiler.encoder :as en]
+            [middleware.utils.fs.common :as fs]
+            [middleware.utils.fs.node :as node]))
 
 (def rl (.createInterface readline
                           #js {:input js/process.stdin
@@ -19,8 +21,12 @@
     (.question rl q (fn [d] (a/put! c d)))
     c))
 
+(defn init-dependencies []
+  (fs/register-fs! #'node/file)
+  (ports/register-constructors! #'serial/open-port))
+
 (defn main [& [port-name]]
-  (ports/register-constructors! #'serial/open-port)
+  (init-dependencies)
   (println "Richo capo!")
   (go
    (<! (timeout 500))
