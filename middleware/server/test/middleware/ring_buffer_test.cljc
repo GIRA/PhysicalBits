@@ -1,6 +1,6 @@
 (ns middleware.ring-buffer-test
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.device.utils.ring-buffer :as rb]))
 
 (deftest ring-buffer-push!

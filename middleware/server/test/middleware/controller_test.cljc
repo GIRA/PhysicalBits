@@ -1,12 +1,15 @@
 (ns middleware.controller-test
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
-            [middleware.test-utils :refer [test-async]]
+            [middleware.test-utils :refer [test-async setup-fixture]]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
-            [middleware.device.utils.ring-buffer :as rb]))
+            [middleware.device.utils.ring-buffer :as rb]
+            [middleware.utils.fs.common :as fs]))
+
+(use-fixtures :once setup-fixture)
 
 ; HACK(Richo): Quick mock to fake an uzi port that does nothing...
 (extend-type #?(:clj java.lang.String
@@ -16,15 +19,7 @@
   (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
   (make-out-chan! [_] (a/chan (a/dropping-buffer 1))))
 
-(def program (dc/compile! "task blink13() running 1/s { toggle(D13); }
-
-                           var counter;
-                           var n;
-
-                           task loop() { add(n); }
-                           proc add(v) { counter = inc(v); }
-                           func inc(v) { return v + 1; }"
-                          "uzi" true))
+(def program )
 
 (defn setup []
   (ports/register-constructors! identity)
@@ -40,7 +35,16 @@
                      :pins #{}
                      :globals #{}})
   ; HACK(Richo): Fake program
-  (dc/run program))
+  (let [program (dc/compile! "task blink13() running 1/s { toggle(D13); }
+
+                             var counter;
+                             var n;
+
+                             task loop() { add(n); }
+                             proc add(v) { counter = inc(v); }
+                             func inc(v) { return v + 1; }"
+                             "uzi" true)]
+    (dc/run program)))
 
 (deftest set-global-report
   (setup)

@@ -1,11 +1,11 @@
 (ns middleware.vm-test-files-gen
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer [get-current-env] :refer-macros [deftest is testing]])
-            [middleware.test-utils :refer [test-async]]
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.test-utils :refer [test-name test-async setup-fixture]]
             [middleware.compiler.compiler :as cc]
             [middleware.device.protocol :as p]
-            #?(:cljs [middleware.utils.fs-macros :as m])
+            #?(:cljs [middleware.utils.fs.browser-macros :as m])
             [middleware.compiler.encoder :as en]
             [middleware.compiler.emitter :as emit]
             [clojure.string :as str]
@@ -17,13 +17,9 @@
 ; in some cases, they compare the output from the compiler with the handwritten program.
 ; NOTE(Richo): They also provide programs for the CompileStats.csv file
 
-(def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
+(use-fixtures :once setup-fixture)
 
-#?(:cljs
-   ; HACK(Richo): This function should be in compile-stats but I haven't made it
-   ; work in cljs yet...
-   (defn test-name []
-     (str/join "." (map (comp :name meta) (:testing-vars (get-current-env))))))
+(def output-path "../../firmware/Simulator/SimulatorTest/TestFiles/")
 
 (defn write-file [bytecodes]
   #?(:clj (let [file-name (str output-path (test-name))

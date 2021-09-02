@@ -1,12 +1,14 @@
 (ns middleware.linker-test
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
-            [middleware.test-utils :refer [equivalent?]]
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.test-utils :refer [equivalent? setup-fixture]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.linker :as l]
             [middleware.compiler.emitter :as emit]
             [middleware.parser.ast-nodes :as ast]))
+
+(use-fixtures :once setup-fixture)
 
 (def lib-dir "../../uzi/tests")
 

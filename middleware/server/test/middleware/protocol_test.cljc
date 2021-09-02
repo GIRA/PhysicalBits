@@ -1,6 +1,6 @@
 (ns middleware.protocol-test
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer [get-current-env] :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go timeout]]
             [middleware.test-utils :refer [test-async]]
             [middleware.device.protocol :as p]))

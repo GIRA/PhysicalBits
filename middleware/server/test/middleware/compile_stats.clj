@@ -9,10 +9,8 @@
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.code-generator.code-generator :as cg]
-            [middleware.compiler.utils.program :as p]))
-
-(defn test-name []
-  (str/join "." (map (comp :name meta) *testing-vars*)))
+            [middleware.compiler.utils.program :as p]
+            [middleware.test-utils :refer [test-name init-dependencies]]))
 
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
 (def ^:private programs (atom {}))
@@ -46,6 +44,7 @@
 
 (defn- write-compile-stats []
   (when (not (empty? @programs))
+    (init-dependencies)
     (let [cols [:name :instruction-count :global-count :encoded-size]
           rows (sort-by :name (collect-stats @programs))
           aggregate (fn [name f]
