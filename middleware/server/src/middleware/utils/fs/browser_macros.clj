@@ -1,4 +1,4 @@
-(ns middleware.utils.fs-macros
+(ns middleware.utils.fs.browser-macros
   (:require [clojure.java.io :as io]
             [clojure.string :as str]))
 
