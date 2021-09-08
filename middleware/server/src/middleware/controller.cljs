@@ -23,25 +23,10 @@
 (defn disconnect! []
   (chan->promise (dc/disconnect!)))
 
-
 (defn compile [src]
-  (js/Promise.resolve (c/compile-uzi-string src)))
+  (js/Promise.resolve (clj->js (c/compile-uzi-string src))))
 
 (defn run [program]
-  (js/Promise.resolve (dc/run program)))
+  (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
 
 (init-dependencies)
-
-(comment
- (print "Richo capo!")
-
-(dc/connect! "COM4" :reporting? false)
-(dc/disconnect!)
-(dc/start-reporting)
-(js/console.log @dc/state)
-(cljs.pprint/pprint @dc/state)
-
- (def p (js/Promise. (fn [res] (res 42))))
-(js/console.log p)
-(.then p (fn [v] (println (inc v))))
- ,,)
