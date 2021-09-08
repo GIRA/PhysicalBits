@@ -402,7 +402,7 @@
      (catch #?(:clj Throwable :cljs :default) ex
        (log-error "ERROR WHILE OPENING PORT ->" ex)))))
 
-(defn- connection-successful [connection board baud-rate]
+(defn- connection-successful [connection board baud-rate reporting?]
   (port-scanner/stop!)
   (swap! state assoc
          :connection connection
@@ -417,13 +417,14 @@
   (process-input-loop connection)
   (clean-up-reports-loop)
   (keep-alive-loop)
-  (start-reporting)
-  (send-pins-reporting))
+  (when reporting?
+    (start-reporting)
+    (send-pins-reporting)))
 
 (defn connect!
   ([] (connect! (first (available-ports))))
-  ([port-name & {:keys [board baud-rate]
-                 :or {board UNO, baud-rate 9600}}]
+  ([port-name & {:keys [board baud-rate reporting?]
+                 :or {board UNO, baud-rate 9600, reporting? true}}]
    (go
     (let [[{old-connection :connection}]
           (swap-vals! state
@@ -434,5 +435,5 @@
                           (assoc state :connection :pending))))]
       (when (nil? old-connection)
         (if-let [connection (<! (request-connection port-name baud-rate))]
-          (connection-successful connection board baud-rate)
+          (connection-successful connection board baud-rate reporting?)
           (swap! state assoc :connection nil)))))))
