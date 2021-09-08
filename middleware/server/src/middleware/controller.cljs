@@ -15,8 +15,10 @@
   (js/Promise. (fn [res] (a/take! ch res))))
 
 (defn connect! [port-name]
-  (chan->promise (dc/connect! port-name
-                             :reporting? false)))
+  (chan->promise
+   (go
+    (<! (dc/connect! port-name :reporting? false))
+    (some? (dc/connected?)))))
 
 (defn disconnect! []
   (chan->promise (dc/disconnect!)))
@@ -28,3 +30,11 @@
   (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
 
 (init-dependencies)
+
+
+(comment
+ (go (<! (dc/connect! "COM4"))
+     (println "CONNECTED?" (dc/connected?)))
+
+(some? (dc/connected?))
+ ,,)

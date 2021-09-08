@@ -5,21 +5,30 @@
             [middleware.device.ports.common :as ports]))
 
 (defn- log-error [msg e]
-  (println "ERROR:" msg e))
+  (println msg e))
 
 (extend-type SerialPort
   ports/UziPort
-  (close! [port] (.close port))
+  (close! [port] (let [error-msg "ERROR WHILE DISCONNECTING (serial) ->"]
+                   (try
+                     (when (.-isOpen port)
+                       (.close port))
+                     (catch :default ex
+                       (log-error error-msg ex)))))
   (make-out-chan! [port]
-                  (let [out-chan (a/chan 1000)]
+                  (let [error-msg "ERROR WHILE WRITING OUTPUT (serial) ->"
+                        out-chan (a/chan 1000)]
                     (go
                      (try
                        (loop []
                          (when-let [data (<! out-chan)]
-                           (.write port (js/Uint8Array.from data))
+                           (.write port (js/Uint8Array.from data)
+                                   (fn [err]
+                                     (when err
+                                       (a/close! out-chan))))
                            (recur)))
                        (catch :default ex
-                         (log-error "ERROR WHILE WRITING OUTPUT (serial) ->" ex)
+                         (log-error error-msg ex)
                          (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [port]
@@ -31,6 +40,8 @@
 
 (defn open-port [port-name baud-rate]
   (try
-    (SerialPort. port-name {:baudRate baud-rate})
+    (let [port (SerialPort. port-name {:baudRate baud-rate})]
+      (.on port "error" (fn [err] (log-error "ERROR (serial) ->" err)))
+      port)
     (catch :default ex
       (do (log-error "ERROR WHILE OPENING PORT (serial) ->" ex) nil))))
