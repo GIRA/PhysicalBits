@@ -624,7 +624,22 @@ const fs = require('fs');
     MessageBox.confirm("Trabajo terminado",
                        "Presiona aceptar para mandar el trabajo a la cola").then(ok => {
       if (ok) {
-        alert("trabajo en la cola");
+        let program = {
+          src: Uzi.state.program.src,
+          compiled: Uzi.state.program.compiled,
+          bytecodes: middleware.core.encode(Uzi.state.program.compiled),
+        };
+        $.ajax({
+          url: "/submissions",
+          type: "POST",
+          data: {
+            author: {name: "Richo"},
+            program: JSONX.stringify(program)
+          },
+          error: function (err) {
+            MessageBox.alert("ERROR", err.toString());
+          }
+        });
       }
     });
   }
