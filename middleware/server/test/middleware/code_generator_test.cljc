@@ -2,9 +2,12 @@
   (:refer-clojure :exclude [print])
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.code-generator.code-generator :as cg]
-            [middleware.parser.ast-nodes :as ast]))
+            [middleware.parser.ast-nodes :as ast]
+            [middleware.test-utils :refer [setup-fixture]]))
+
+(use-fixtures :once setup-fixture)
 
 (defn print [ast]
   #?(:clj (register-program! ast))

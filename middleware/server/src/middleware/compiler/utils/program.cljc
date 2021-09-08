@@ -4,19 +4,19 @@
 (defn index-of ^long [^java.util.List v e] (.indexOf v e))
 
 (defn- value-size-int [^long value]
-  (if (neg? value)
-    4
-    (or (first (filter (fn [^long size] (< value (Math/pow 2 (* 8 size))))
-                       [1 2 3 4]))
-        4)))
+  (or (first (filter (fn [^long size] (< value (Math/pow 2 (* 8 size))))
+                     [1 2 3 4]))
+      4))
 
 (defn value-size ^long [value]
   "Return the number of bytes necessary to encode this value.
 	If the value is negative or float then the size is 4 bytes. Also, the
 	max number of bytes is 4."
-  (if (float? value)
-    4
-    (value-size-int value)))
+  (if (or (zero? value)
+          (pos-int? value))
+    (value-size-int value)
+    4))
+
 
 ; TODO(Richo): The functions in this namespace rely on the program having its globals
 ; sorted. That means that I need to remember to call this function before using any

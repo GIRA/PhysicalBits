@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [compile])
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.test-utils :refer [setup-fixture]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.program :refer [value-size]]
@@ -11,6 +12,8 @@
 ; NOTE(Richo): You'll notice that most of these tests are not really making any
 ; assertion. They are here for two reasons: (1) exercise the compiler and encoder
 ; so that we catch exceptions early, and (2) provide programs for CompileStats.csv
+
+(use-fixtures :once setup-fixture)
 
 (defn compile [src]
   #?(:clj (register-program! src))

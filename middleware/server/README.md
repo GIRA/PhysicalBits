@@ -8,6 +8,8 @@ These tools were originally prototyped using [Squeak](https://squeak.org/), an o
 
 ## Quick start (Clojure)
 
+### Development
+
 We are using the [leiningen](https://leiningen.org/) for development. Open a REPL by running:
 
     $ lein repl
@@ -24,27 +26,17 @@ If everything goes well you should see something like this:
 
 ![repl](/docs/img/repl.png)
 
+### Testing
+
 To run tests I find is better to use the [test-refresh](https://github.com/jakemcc/lein-test-refresh) plugin. Execute the following in a separate terminal:
 
-    $ lein test-refresh
+    $ lein test-refresh :changes-only
 
-Now you should have a process running that automatically runs all the tests whenever a source file changes. I also modified the report function to play a short sound as a notification if the tests pass or fail.
+Now you should have a process running that automatically runs the tests whenever a source file changes. By using the `:changes-only` option it will only run the test namespaces where the code has changed, if you want to run *all* the tests, just press `Enter` in the console.
 
-## Quick start (ClojureScript)
+I also modified the report function to play a short sound as a notification if the tests pass or fail.
 
-In ClojureScript, we are currently using [shadow-cljs](https://github.com/thheller/shadow-cljs) for development.
-
-    $ npx shadow-cljs watch compiler
-
-Wait until the build is completed. Then open a browser to the url shown in the console (it should be http://localhost:8080).
-
-Connect to the nrepl server as usual. Inside proto-repl evaluate the following:
-
-    $ (shadow.cljs.devtools.api/nrepl-select :compiler)
-
-Now you should be able to evaluate code in the context of the browser.
-
-## Compilation
+### Compilation
 
 To build a jar file you can close the REPL and execute:
 
@@ -64,7 +56,44 @@ The options are:
     -o, --open-browser              Open a browser automatically (optional)
     -h, --help
 
+## Quick start (ClojureScript)
+
+### Development
+
+In ClojureScript, we are currently using [shadow-cljs](https://github.com/thheller/shadow-cljs) for development.
+
+    $ npx shadow-cljs watch compiler
+
+Wait until the build is completed. Then open a browser to the url shown in the console (it should be http://localhost:8080).
+
+Connect to the nrepl server as usual. Inside proto-repl evaluate the following:
+
+    $ (shadow.cljs.devtools.api/nrepl-select :compiler)
+
+Now you should be able to evaluate code in the context of the browser.
+
+### Testing
+
+In order to run the tests on every change you should do the above and then, in a separate terminal:
+
+    $ npx shadow-cljs watch test
+
+After the build is completed you should be able to run the tests in the browser (the url should be http://localhost:8021/). While the browser window is open any change in the source code should run the tests automatically.
+
+### Compilation
+
+To build the ClojureScript version of the compiler you should execute the following:
+
+    $ npx shadow-cljs release compiler
+
+The compiled output should be a single javascript file (`public/js/main.js`) that you can load in the browser.
+
 ## Dependencies
 
-* [Leiningen](https://leiningen.org/)
+For Clojure:
 * [Java](https://openjdk.java.net/)
+* [Leiningen](https://leiningen.org/)
+
+For ClojureScript:
+* [Node.js](https://nodejs.org/)
+* [shadow-cljs](https://github.com/thheller/shadow-cljs)

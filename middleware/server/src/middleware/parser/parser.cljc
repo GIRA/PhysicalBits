@@ -8,6 +8,12 @@
 (defn- parse-double [str] #?(:clj (Double/parseDouble str)
                              :cljs (js/parseFloat str)))
 
+(defn- parse-number [str]
+  (try
+    (parse-int str)
+    (catch #?(:clj Throwable :cljs :default) _
+      (parse-double str))))
+
 ; TODO(Richo): This should probably be in a utils.ast namespace
 (defn- script? [node]
   (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
@@ -102,7 +108,7 @@
             (ast/block-node stmts))
    :statement-list (fn [[_ stmts]] stmts)
    :statement (fn [[stmt _]] stmt)
-   :integer (comp parse-int str)
+   :integer (comp parse-number str)
    :float (comp parse-double str)
    :number ast/literal-number-node
    :return (fn [[_ value _]]
@@ -266,10 +272,18 @@
    :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
    :float (pp/flatten
-           (pp/or "NaN"
-                  "-Infinity"
-                  "Infinity"
-                  [(pp/optional \-) :digits \. :digits]))
+           (pp/or
+            ; NOTE(Richo): Special floats
+            "NaN" "-Infinity" "Infinity"
+
+            ; NOTE(Richo): Scientific notation
+            [(pp/optional \-) :digits
+             (pp/optional \.) (pp/star pp/digit)
+             (pp/case-insensitive \e)
+             (pp/optional (pp/or \- \+)) :digits]
+
+            ; NOTE(Richo): Regular float
+            [(pp/optional \-) :digits \. :digits]))
    :digits (pp/plus pp/digit)
    :integer (pp/flatten [(pp/optional \-) :digits])
    :variable :identifier
@@ -312,7 +326,7 @@
 (defn parse [src] (pp/parse parser src))
 
 (comment
-
+(pp/parse (-> parser :parsers :float) "-1e4")
   (pp/parse (-> parser :parsers :identifier) "richo")
  (re-matches #"(?u)\p{L}" "í")
 

@@ -6,7 +6,13 @@
             [clojure.java.browse :refer [browse-url]]
             [middleware.server.http :as http]
             [middleware.server.udp :as udp]
-            [middleware.device.controller :as dc])
+            [middleware.device.controller :as dc]
+            [middleware.device.ports.common :as ports]
+            [middleware.device.ports.serial :as serial]
+            [middleware.device.ports.socket :as socket]
+            [middleware.device.ports.scanner :as port-scanner]
+            [middleware.utils.fs.common :as fs]
+            [middleware.utils.fs.jio :as jio])
   (:gen-class))
 
 (defmacro project-data [key]
@@ -53,24 +59,34 @@
   (log/info msg)
   (System/exit status))
 
+(defn init-dependencies []
+  (fs/register-fs! #'jio/file)
+  (ports/register-constructors! #'socket/open-port
+                                #'serial/open-port))
+
+(defn main
+  [{:keys [uzi web server-port arduino-port open-browser]}]
+  (init-dependencies)
+  (log/info project-name)
+  (log/info "Starting server...")
+  (http/start :uzi-libraries uzi
+              :web-resources web
+              :server-port server-port)
+  (udp/start)
+  (log/info "Server started on port" server-port)
+  (when open-browser
+    (let [url (str "http://localhost:" server-port)]
+      (log/info "Opening browser on" url)
+      (browse-url url)))
+  (println)
+  (if arduino-port
+    (dc/connect! arduino-port)
+    (port-scanner/start!)))
+
 (defn -main [& args]
   (let [{:keys [errors options summary]} (cli/parse-opts args cli-options)]
     (when errors
       (exit 1 (error-msg errors)))
     (when (:help options)
       (exit 0 (usage summary)))
-    (let [{:keys [uzi web server-port arduino-port open-browser]} options]
-      (log/info project-name)
-      (log/info "Starting server...")
-      (http/start :uzi-libraries uzi
-                  :web-resources web
-                  :server-port server-port)
-      (udp/start)
-      (log/info "Server started on port" server-port)
-      (when open-browser
-        (let [url (str "http://localhost:" server-port)]
-          (log/info "Opening browser on" url)
-          (browse-url url)))
-      (println)
-      (when arduino-port
-        (dc/connect arduino-port)))))
+    (main options)))

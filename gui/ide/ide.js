@@ -818,7 +818,10 @@ const fs = require('fs');
   function disconnect() {
     connecting = true;
     $("#disconnect-button").attr("disabled", "disabled");
-    Uzi.disconnect().finally(() => { connecting = false; });
+    Uzi.disconnect().finally(() => {
+      connecting = false;
+      updateTopBar();
+    });
   }
 
   function evalProgramFn(fn) {

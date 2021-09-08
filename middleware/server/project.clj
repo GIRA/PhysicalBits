@@ -4,7 +4,7 @@
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.10.1"]
-                 [org.clojure/core.async "0.6.532"]
+                 [org.clojure/core.async "1.3.618"]
                  [org.clojure/tools.logging "1.1.0"]
                  [org.clojure/tools.cli "1.0.194"] ; Parse CLI arguments
                  [ch.qos.logback/logback-classic "1.1.3"]
@@ -41,5 +41,6 @@
                            ;:middleware [ultra.plugin/middleware]
                            :plugins [;[venantius/ultra "0.6.0"]
                                      [com.jakemccrary/lein-test-refresh "0.24.1"]]
-                           :global-vars {*unchecked-math* :warn-on-boxed
-                                         *warn-on-reflection* true}}})
+                           :global-vars {;*unchecked-math* :warn-on-boxed
+                                         ;*warn-on-reflection* true
+                                         }}})

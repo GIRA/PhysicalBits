@@ -195,11 +195,14 @@ let Uzi = (function () {
           ast: result["original-ast"]
         };
         resolve(program);
+        var bytecodes = middleware.core.encode(program.compiled);
         var output = [];
         if (!silent) {
           output = [
             {text: ""},
             {type: "info", text: (new Date()).toLocaleString()},
+            {type: "info", text: "Program size (bytes): %1", args: [bytecodes.length]},
+            {type: "info", text: "[%1]", args: [bytecodes.join(" ")]},
             {type: "success", text: "Compilation successful!", args: []}
           ]
         }

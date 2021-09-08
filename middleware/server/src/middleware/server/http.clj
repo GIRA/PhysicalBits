@@ -14,7 +14,7 @@
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [middleware.utils.json :as json]
-            [middleware.device.controller :as device]
+            [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
             [middleware.config :as config])
   (:import [manifold.stream.core IEventSink]))
@@ -36,34 +36,34 @@
    :body    (json/encode data)})
 
 (defn connect-handler [params]
-  (device/connect (params "port"))
-  (let [port-name (@device/state :port-name)]
+  (<!! (dc/connect! (params "port")))
+  (let [port-name (@dc/state :port-name)]
     (json-response {:port-name port-name})))
 
 (defn disconnect-handler [req]
-  (device/disconnect)
+  (<!! (dc/disconnect!))
   (json-response "OK"))
 
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (device/compile src type (= silent "true")
-                                :lib-dir uzi-libraries)]
+  (let [program (dc/compile! src type (= silent "true")
+                             :lib-dir uzi-libraries)]
     (json-response program)))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (device/compile src type (= silent "true")
-                                :lib-dir uzi-libraries)]
-    (device/run program)
+  (let [program (dc/compile! src type (= silent "true")
+                             :lib-dir uzi-libraries)]
+    (dc/run program)
     (json-response program)))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (let [program (device/compile src type false
-                                :lib-dir uzi-libraries)]
-    (device/install program)
+  (let [program (dc/compile! src type false
+                             :lib-dir uzi-libraries)]
+    (dc/install program)
     (json-response program)))
 
 (defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
@@ -76,7 +76,7 @@
       (json-response "Invalid request parameters" 400))
     (doseq [pin-name pins
             report? report]
-      (device/set-pin-report pin-name report?))
+      (dc/set-pin-report pin-name report?))
     (json-response "OK")))
 
 (defn global-report-handler [{:strs [globals report] :or {globals "", report ""}}]
@@ -89,19 +89,22 @@
       (json-response "Invalid request parameters" 400))
     (doseq [global-name globals
             report? report]
-      (device/set-global-report global-name report?))
+      (dc/set-global-report global-name report?))
     (json-response "OK")))
 
 (defn profile-handler [{:strs [enabled]}]
   (if (= "true" enabled)
-    (device/start-profiling)
-    (device/stop-profiling))
+    (dc/start-profiling)
+    (dc/stop-profiling))
   (json-response "OK"))
 
-(defn- get-connection-data [state]
-  {:isConnected (:connected? state)
-   :portName (:port-name state)
-   :availablePorts (:available-ports state)})
+(defn- get-connection-data [{:keys [connection]}]
+  {; TODO(Richo): The server should already receive the data correctly formatted...
+   :isConnected (when (and (not= :pending connection)
+                           (some? connection))
+                  @(:connected? connection))
+   :portName (:port-name connection)
+   :availablePorts (dc/available-ports)})
 
 (defn- get-memory-data [state]
   (:memory state))
@@ -151,7 +154,7 @@
   (logger/read-entries!))
 
 (defn- get-server-state []
-  (let [state @device/state]
+  (let [state @dc/state]
     {:connection (get-connection-data state)
      :memory (get-memory-data state)
      :tasks (get-tasks-data state)
@@ -172,6 +175,8 @@
 ; TODO(Richo): The update-loop could be started/stopped automatically
 (def ^:private update-loop? (atom false))
 
+; TODO(Richo): This loop sucks, it would be better if we could subscribe
+; to the update events coming from the device.
 (defn start-update-loop []
   (when (compare-and-set! update-loop? false true)
     (thread
@@ -212,7 +217,7 @@
 
                         ; Uzi api
                         (GET "/uzi" [] (wrap-websocket uzi-state-handler))
-                        (GET "/uzi/available-ports" [] (json-response {:ports (device/available-ports)}))
+                        (GET "/uzi/available-ports" [] (json-response {:ports (dc/available-ports)}))
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
                         (POST "/uzi/compile" {params :params} (compile-handler uzi-libraries params))

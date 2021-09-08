@@ -1,11 +1,14 @@
 (ns middleware.dead-code-remover-test
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.walk :as w]
+            [middleware.test-utils :refer [setup-fixture]]
             [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.emitter :as emit]))
+
+(use-fixtures :once setup-fixture)
 
 (defn compile-uzi-string [src]
   #?(:clj (register-program! src))

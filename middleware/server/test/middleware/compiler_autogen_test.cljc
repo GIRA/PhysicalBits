@@ -1,11 +1,13 @@
 (ns middleware.compiler-autogen-test
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
-               :cljs [cljs.test :refer-macros [deftest is testing]])
+               :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
-            [middleware.compiler.emitter :as emit]))
+            [middleware.compiler.emitter :as emit]
+            [middleware.test-utils :refer [setup-fixture]]))
 
+(use-fixtures :once setup-fixture)
 
 (defn compile-uzi-string [src]
   #?(:clj (register-program! src))

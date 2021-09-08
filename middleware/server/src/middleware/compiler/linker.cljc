@@ -1,12 +1,12 @@
 (ns middleware.compiler.linker
   (:require [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.utils.fs :as fs]
+            [middleware.utils.fs.common :as fs]
             [middleware.parser.parser :as parser]
             [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
-(defn parse [^java.io.File file]
+(defn parse [file]
   (let [path (fs/absolute-path file)
         last-modified (fs/last-modified file)
         entry (get @parser-cache path)]
