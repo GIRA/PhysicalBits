@@ -3,9 +3,7 @@
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.serial :as serial]
-            [middleware.parser.parser :as p]
-            [middleware.compiler.compiler :as c]
-            [middleware.compiler.encoder :as en]
+            [middleware.compiler.compiler :as cc]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.node :as node]))
 
@@ -24,7 +22,7 @@
   (chan->promise (dc/disconnect!)))
 
 (defn compile [src]
-  (js/Promise.resolve (clj->js (c/compile-uzi-string src))))
+  (js/Promise.resolve (clj->js (cc/compile-uzi-string src))))
 
 (defn run [program]
   (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
