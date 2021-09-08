@@ -11,9 +11,12 @@
  :builds {:compiler {:target :browser
                      :modules {:main {:init-fn middleware.core/init}}}
 
-          :controller {:target :node-script
-                       :main middleware.controller-core/main
-                       :output-to "out/controller/main.js"
+          :controller {:target :node-library
+                       :exports {:connect middleware.controller/connect!
+                                 :disconnect middleware.controller/disconnect!
+                                 :compile middleware.controller/compile
+                                 :run middleware.controller/run}
+                       :output-to "out/controller/controller.js"
                        :compiler-options {:optimizations :advanced}}
 
           :compiler-test {:target :browser-test
