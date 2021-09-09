@@ -4,6 +4,8 @@ const fs = require('fs');
 
 ﻿let IDE = (function () {
 
+  let userName = null;
+
   let codeEditor;
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
@@ -35,9 +37,19 @@ const fs = require('fs');
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
-        .then(hideLoadingScreen);
+        .then(hideLoadingScreen)
+        .then(askForUsername);
     },
   };
+
+  function askForUsername() {
+    MessageBox.prompt("Bienvenido", "Escriba su nombre:").then(value => {
+      userName = value;
+      if (!value) {
+        askForUsername();
+      }
+    }).catch(askForUsername);
+  }
 
   function initializeLayout() {
     return LayoutManager.init(function () {
@@ -633,7 +645,7 @@ const fs = require('fs');
           url: "/submissions",
           type: "POST",
           data: {
-            author: {name: "Richo"},
+            author: {name: userName},
             program: JSONX.stringify(program)
           },
           error: function (err) {
