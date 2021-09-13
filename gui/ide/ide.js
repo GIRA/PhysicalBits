@@ -429,7 +429,7 @@ const fs = require('fs');
   }
 
   function initializeTurnNotifierModal() {
-    $("#turn-notifier-modal").modal();
+    //$("#turn-notifier-modal").modal();
 
 
   }
@@ -643,22 +643,16 @@ const fs = require('fs');
     MessageBox.confirm("Trabajo terminado",
                        "Presiona aceptar para mandar el trabajo a la cola").then(ok => {
       if (ok) {
+        // TODO(Richo): Register students properly so that we can identify them.
+        let author = {name: userName};
         let program = {
           src: Uzi.state.program.src,
           compiled: Uzi.state.program.compiled,
           bytecodes: middleware.core.encode(Uzi.state.program.compiled),
         };
-        $.ajax({
-          url: "/submissions",
-          type: "POST",
-          data: {
-            author: {name: userName},
-            program: JSONX.stringify(program)
-          },
-          error: function (err) {
-            MessageBox.alert("ERROR", err.toString());
-          }
-        });
+        Mendieta.submit(author, program)
+          .then(submission => {})
+          .catch(err => MessageBox.alert("ERROR", err.toString()));
       }
     });
   }

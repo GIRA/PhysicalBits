@@ -462,18 +462,18 @@
         <div class="modal-content">
           <div class="modal-header">
             <h3 class="modal-title">
-              <i id="turn-notifier-icon" class="fas fa-exclamation-circle"></i>
-              <span id="turn-notifier-title" class="ml-2">Es tu turno de usar el robot</span>
+              <i class="fas fa-exclamation-circle"></i>
+              <span class="ml-2">Es tu turno de usar el robot</span>
             </h4>
           </div>
           <div class="modal-body">
             <div class="container-fluid">
               <div class="row h3 font-weight-light">
-                <p id="turn-notifier-message" class="col">Acomodá el robot en su posición de inicio y cuando estés listo presioná el botón "Iniciar".</p>
+                <p class="col">Acomodá el robot en su posición de inicio y cuando estés listo presioná el botón "Iniciar".</p>
               </div>
               <div class="row justify-content-end h2">
                 <div class="col-auto font-weight-light">Tiempo restante:</div>
-                <div class="col-auto font-weight-normal">00:00</div>
+                <div id="turn-notifier-timer" class="col-auto font-weight-normal">00:00</div>
               </div>
             </div>
           </div>
@@ -567,6 +567,7 @@
 
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
+    <script src="mendieta.js" type="text/javascript"></script>
 
     <script>
     function showLoadingScreen() {
