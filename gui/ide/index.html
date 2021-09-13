@@ -455,6 +455,46 @@
       </div>
     </div>
 
+
+    <!-- Turn notifier Modal -->
+    <div class="modal fade" id="turn-notifier-modal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">
+              <i id="turn-notifier-icon" class="fas fa-exclamation-circle"></i>
+              <span id="turn-notifier-title" class="ml-2">Es tu turno de usar el robot</span>
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row h3 font-weight-light">
+                <p id="turn-notifier-message" class="col">Acomodá el robot en su posición de inicio y cuando estés listo presioná el botón "Iniciar".</p>
+              </div>
+              <div class="row justify-content-end h2">
+                <div class="col-auto font-weight-light">Tiempo restante:</div>
+                <div class="col-auto font-weight-normal">00:00</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="turn-notifier-start-button" type="submit" class="btn btn-primary">
+              <i class="fas fa-play mr-1"></i>
+              Iniciar
+            </button>
+            <button id="turn-notifier-pause-button" type="button" class="btn btn-secondary" disabled>
+              <i class="fas fa-pause mr-1"></i>
+              Pausar
+            </button>
+            <button id="turn-notifier-stop-button" type="button" class="btn btn-secondary">
+              <i class="fas fa-stop mr-1"></i>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- DEMO Modal -->
     <div class="modal fade" id="demo-modal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

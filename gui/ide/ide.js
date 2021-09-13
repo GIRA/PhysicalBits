@@ -37,6 +37,7 @@ const fs = require('fs');
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
+        .then(initializeTurnNotifierModal)
         .then(hideLoadingScreen)
         .then(askForUsername);
     },
@@ -425,6 +426,12 @@ const fs = require('fs');
       });
       console.log(locale);
     });
+  }
+
+  function initializeTurnNotifierModal() {
+    $("#turn-notifier-modal").modal();
+
+
   }
 
   function updateVisiblePanelsInOptionsModal() {
