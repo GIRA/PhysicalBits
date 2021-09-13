@@ -1,17 +1,33 @@
 
 let Mendieta = (function () {
 
+  let student = null;
   let socket = null;
   let currentActivity = null;
   let observers = [];
 
-  function submit(author, program) {
+  function registerStudent(data) {
+    return new Promise((res, rej) => {
+      $.ajax({
+        url: "/students",
+        type: "POST",
+        data: data,
+        success: result => {
+          student = result;
+          res(student);
+        },
+        error: rej
+      });
+    });
+  }
+
+  function submit(program) {
     return new Promise((res, rej) => {
       $.ajax({
         url: "/submissions",
         type: "POST",
         data: {
-          author: author,
+          author: student,
           program: JSONX.stringify(program)
         },
         success: res,
@@ -21,6 +37,7 @@ let Mendieta = (function () {
   }
 
   function connectToServer() {
+    // TODO(Richo): Handle server disconnect gracefully
     let url = "ws://" + location.host + "/updates";
     socket = new WebSocket(url);
 
@@ -28,7 +45,7 @@ let Mendieta = (function () {
       console.error(err);
     }
     socket.onopen = function () {
-      console.log("OPEN!");
+      socket.send(student.id);
     }
     socket.onmessage = function (msg) {
       currentActivity = JSON.parse(msg.data);
@@ -48,6 +65,7 @@ let Mendieta = (function () {
   }
 
   return {
+    registerStudent: registerStudent,
     connectToServer: connectToServer,
     onUpdate: onUpdate,
     submit: submit,

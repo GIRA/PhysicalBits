@@ -4,8 +4,6 @@ const fs = require('fs');
 
 ﻿let IDE = (function () {
 
-  let userName = null;
-
   let codeEditor;
   let selectedPort = "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
@@ -39,17 +37,35 @@ const fs = require('fs');
         .then(initializeOptionsModal)
         .then(initializeTurnNotifierModal)
         .then(hideLoadingScreen)
-        .then(askForUsername);
+        .then(connectToMendietaServer);
     },
   };
 
-  function askForUsername() {
-    MessageBox.prompt("Bienvenido", "Escriba su nombre:").then(value => {
-      userName = value;
-      if (!value) {
-        askForUsername();
+  function askForUserName() {
+    return MessageBox.prompt("Bienvenido", "Escriba su nombre:")
+      .then(value => value ? value : askForUserName())
+      .catch(askForUserName);
+  }
+
+  function loadCurrentStudent() {
+    let json = localStorage["mendieta.student"];
+    if (json) {
+      try {
+        let student = JSON.parse(json);
+        return Promise.resolve(student);
+      } catch (err) {
+        console.error(err);
       }
-    }).catch(askForUsername);
+    }
+    return askForUserName()
+      .then(name => ({name: name}));
+  }
+
+  function connectToMendietaServer() {
+    loadCurrentStudent()
+      .then(student => Mendieta.registerStudent(student))
+      .then(student => localStorage["mendieta.student"] = JSON.stringify(student))
+      .then(() => Mendieta.connectToServer());
   }
 
   function initializeLayout() {
@@ -643,15 +659,12 @@ const fs = require('fs');
     MessageBox.confirm("Trabajo terminado",
                        "Presiona aceptar para mandar el trabajo a la cola").then(ok => {
       if (ok) {
-        // TODO(Richo): Register students properly so that we can identify them.
-        let author = {name: userName};
         let program = {
           src: Uzi.state.program.src,
           compiled: Uzi.state.program.compiled,
           bytecodes: middleware.core.encode(Uzi.state.program.compiled),
         };
-        Mendieta.submit(author, program)
-          .then(submission => {})
+        Mendieta.submit(program)
           .catch(err => MessageBox.alert("ERROR", err.toString()));
       }
     });
