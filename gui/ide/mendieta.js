@@ -3,7 +3,6 @@ let Mendieta = (function () {
 
   let student = null;
   let socket = null;
-  let currentActivity = null;
   let observers = [];
 
   function registerStudent(data) {
@@ -36,6 +35,39 @@ let Mendieta = (function () {
     });
   }
 
+  function start(submission) {
+    return new Promise((res, rej) => {
+      $.ajax({
+        url: "/submissions/" + submission.id + "/start",
+        type: "POST",
+        success: res,
+        error: rej
+      });
+    });
+  }
+
+  function pause(submission) {
+    return new Promise((res, rej) => {
+      $.ajax({
+        url: "/submissions/" + submission.id + "/pause",
+        type: "POST",
+        success: res,
+        error: rej
+      });
+    });
+  }
+
+  function stop(submission) {
+    return new Promise((res, rej) => {
+      $.ajax({
+        url: "/submissions/" + submission.id + "/stop",
+        type: "POST",
+        success: res,
+        error: rej
+      });
+    });
+  }
+
   function connectToServer() {
     // TODO(Richo): Handle server disconnect gracefully
     let url = "ws://" + location.host + "/updates";
@@ -48,11 +80,11 @@ let Mendieta = (function () {
       socket.send(student.id);
     }
     socket.onmessage = function (msg) {
-      currentActivity = JSON.parse(msg.data);
+      const data = JSON.parse(msg.data);
       for (let i = 0; i < observers.length; i++) {
         let fn = observers[i];
         try {
-          fn(currentActivity);
+          fn(data);
         } catch (err) {
           console.error(err);
         }
@@ -69,5 +101,8 @@ let Mendieta = (function () {
     connectToServer: connectToServer,
     onUpdate: onUpdate,
     submit: submit,
+    start: start,
+    pause: pause,
+    stop: stop,
   }
 })();
