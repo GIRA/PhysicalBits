@@ -482,9 +482,11 @@ const fs = require('fs');
       $("#turn-notifier-timer").css("color", secondsRemaining < 10 ? "red" : "inherit");
       setTimeout(startCountdownTimer, 1000);
     }
+
     Mendieta.on("submission-update", submission => {
       console.log("SUBMISSION!");
       console.log(submission);
+      console.log(hiding);
 
       $("#turn-notifier-start-button").prop("disabled", submission.state == "RUNNING");
       $("#turn-notifier-pause-button").prop("disabled", submission.state != "RUNNING");
@@ -496,21 +498,25 @@ const fs = require('fs');
         $("#turn-notifier-cancel-button").hide();
       }
 
-      if (submission.state == "READY") {
+      if (submission.state == "READY" || submission.state == "RUNNING" || submission.state == "PAUSED") {
         activeSubmission = submission;
         if (hiding) {
           $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
             hiding = false;
-            $("#turn-notifier-modal").modal();
+            $("#turn-notifier-modal").modal("show");
           });
         } else {
-          $("#turn-notifier-modal").modal();
+          $("#turn-notifier-modal").modal("show");
         }
         startCountdownTimer();
       } else if (submission.state == "COMPLETED" || submission.state == "CANCELED") {
-        activeSubmission = null;
-        hiding = true;
-        $("#turn-notifier-modal").modal("hide");
+        // TODO(Richo): If the activeSubmission is not set but we got here then it must mean one of our pending
+        // submissions got canceled, should we show a message?
+        if (activeSubmission) {
+          activeSubmission = null;
+          hiding = true;
+          $("#turn-notifier-modal").modal("hide");
+        }
       }
     });
   }
