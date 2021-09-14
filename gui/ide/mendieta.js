@@ -3,7 +3,10 @@ let Mendieta = (function () {
 
   let student = null;
   let socket = null;
-  let observers = [];
+  let observers = {
+    "activity-update": [],
+    "submission-update": [],
+  };
 
   function registerStudent(data) {
     return new Promise((res, rej) => {
@@ -80,26 +83,25 @@ let Mendieta = (function () {
       socket.send(student.id);
     }
     socket.onmessage = function (msg) {
-      const data = JSON.parse(msg.data);
-      for (let i = 0; i < observers.length; i++) {
-        let fn = observers[i];
+      const evt = JSON.parse(msg.data);
+      (observers[evt.type] || []).forEach(fn => {
         try {
-          fn(data);
+          fn(evt.data);
         } catch (err) {
           console.error(err);
         }
-      }
+      });
     }
   }
 
-  function onUpdate(fn) {
-    observers.push(fn);
+  function on(key, fn) {
+    observers[key].push(fn);
   }
 
   return {
     registerStudent: registerStudent,
     connectToServer: connectToServer,
-    onUpdate: onUpdate,
+    on: on,
     submit: submit,
     start: start,
     pause: pause,

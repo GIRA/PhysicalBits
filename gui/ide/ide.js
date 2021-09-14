@@ -448,7 +448,7 @@ const fs = require('fs');
     // TODO(Richo): If the modal is showing and the user reloads the page then it won't appear again!
     let activeSubmission = null;
 
-    Mendieta.onUpdate(submission => {
+    Mendieta.on("submission-update", submission => {
       console.log("SUBMISSION!");
       console.log(submission);
 
