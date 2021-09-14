@@ -455,9 +455,9 @@ const fs = require('fs');
       $("#turn-notifier-start-button").prop("disabled", submission.state == "RUNNING");
       $("#turn-notifier-pause-button").prop("disabled", submission.state != "RUNNING");
       $("#turn-notifier-stop-button").prop("disabled", false);
-      $("#turn-notifier-stop-button-label").text(submission.state == "ACTIVE" ? "Cancelar" : "Detener");
+      $("#turn-notifier-stop-button-label").text(submission.state == "READY" ? "Cancelar" : "Detener");
 
-      if (submission.state == "ACTIVE") {
+      if (submission.state == "READY") {
         activeSubmission = submission;
         if (hiding) {
           $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
