@@ -448,6 +448,40 @@ const fs = require('fs');
     // TODO(Richo): If the modal is showing and the user reloads the page then it won't appear again!
     let activeSubmission = null;
 
+    $("#turn-notifier-start-button").on("click", () => Mendieta.start(activeSubmission));
+    $("#turn-notifier-pause-button").on("click", () => Mendieta.pause(activeSubmission));
+    $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
+    $("#turn-notifier-cancel-button").on("click", () => Mendieta.stop(activeSubmission));
+
+    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions
+    let hiding = false;
+    $('#turn-notifier-modal').on('hidden.bs.modal', function (e) {
+      hiding = false;
+    });
+
+    function formatDuration(durationSeconds) {
+      let seconds = Math.floor(durationSeconds % 60);
+      let minutes = Math.floor(durationSeconds / 60);
+      let hours = Math.floor(durationSeconds / 3600);
+      let result = seconds.toString();
+      if (seconds < 10) { result = "0" + result; }
+      result = minutes + ":" + result;
+      if (minutes < 10) { result = "0" + result; }
+      if (hours > 0) {
+        result = hours + ":" + result;
+      }
+      return result;
+    }
+
+    function startCountdownTimer() {
+      if (!activeSubmission) return;
+      let msPassed = Date.now() - activeSubmission.testBeginTime;
+      let msRemaining = activeSubmission.testDuration - msPassed;
+      let secondsRemaining = msRemaining / 1000;
+      $("#turn-notifier-timer").text(formatDuration(secondsRemaining));
+      $("#turn-notifier-timer").css("color", secondsRemaining < 10 ? "red" : "inherit");
+      setTimeout(startCountdownTimer, 1000);
+    }
     Mendieta.on("submission-update", submission => {
       console.log("SUBMISSION!");
       console.log(submission);
@@ -466,28 +500,19 @@ const fs = require('fs');
         activeSubmission = submission;
         if (hiding) {
           $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
+            hiding = false;
             $("#turn-notifier-modal").modal();
           });
         } else {
           $("#turn-notifier-modal").modal();
         }
+        startCountdownTimer();
       } else if (submission.state == "COMPLETED" || submission.state == "CANCELED") {
         activeSubmission = null;
-        $("#turn-notifier-modal").modal("hide");
         hiding = true;
+        $("#turn-notifier-modal").modal("hide");
       }
     });
-
-    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions
-    let hiding = false;
-    $('#turn-notifier-modal').on('hidden.bs.modal', function (e) {
-      hiding = false;
-    });
-
-    $("#turn-notifier-start-button").on("click", () => Mendieta.start(activeSubmission));
-    $("#turn-notifier-pause-button").on("click", () => Mendieta.pause(activeSubmission));
-    $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
-    $("#turn-notifier-cancel-button").on("click", () => Mendieta.stop(activeSubmission));
   }
 
   function updateVisiblePanelsInOptionsModal() {
