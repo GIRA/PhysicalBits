@@ -454,8 +454,13 @@ const fs = require('fs');
 
       $("#turn-notifier-start-button").prop("disabled", submission.state == "RUNNING");
       $("#turn-notifier-pause-button").prop("disabled", submission.state != "RUNNING");
-      $("#turn-notifier-stop-button").prop("disabled", false);
-      $("#turn-notifier-stop-button-label").text(submission.state == "READY" ? "Cancelar" : "Detener");
+      if (submission.state == "READY") {
+        $("#turn-notifier-stop-button").hide();
+        $("#turn-notifier-cancel-button").show();
+      } else {
+        $("#turn-notifier-stop-button").show();
+        $("#turn-notifier-cancel-button").hide();
+      }
 
       if (submission.state == "READY") {
         activeSubmission = submission;
@@ -482,6 +487,7 @@ const fs = require('fs');
     $("#turn-notifier-start-button").on("click", () => Mendieta.start(activeSubmission));
     $("#turn-notifier-pause-button").on("click", () => Mendieta.pause(activeSubmission));
     $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
+    $("#turn-notifier-cancel-button").on("click", () => Mendieta.stop(activeSubmission));
   }
 
   function updateVisiblePanelsInOptionsModal() {
