@@ -445,9 +445,43 @@ const fs = require('fs');
   }
 
   function initializeTurnNotifierModal() {
-    //$("#turn-notifier-modal").modal();
+    // TODO(Richo): If the modal is showing and the user reloads the page then it won't appear again!
+    let activeSubmission = null;
 
+    Mendieta.onUpdate(submission => {
+      console.log("SUBMISSION!");
+      console.log(submission);
 
+      $("#turn-notifier-start-button").prop("disabled", submission.state == "RUNNING");
+      $("#turn-notifier-pause-button").prop("disabled", submission.state != "RUNNING");
+      $("#turn-notifier-stop-button").prop("disabled", false);
+      $("#turn-notifier-stop-button-label").text(submission.state == "ACTIVE" ? "Cancelar" : "Detener");
+
+      if (submission.state == "ACTIVE") {
+        activeSubmission = submission;
+        if (hiding) {
+          $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
+            $("#turn-notifier-modal").modal();
+          });
+        } else {
+          $("#turn-notifier-modal").modal();
+        }
+      } else if (submission.state == "COMPLETED" || submission.state == "CANCELED") {
+        activeSubmission = null;
+        $("#turn-notifier-modal").modal("hide");
+        hiding = true;
+      }
+    });
+
+    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions
+    let hiding = false;
+    $('#turn-notifier-modal').on('hidden.bs.modal', function (e) {
+      hiding = false;
+    });
+
+    $("#turn-notifier-start-button").on("click", () => Mendieta.start(activeSubmission));
+    $("#turn-notifier-pause-button").on("click", () => Mendieta.pause(activeSubmission));
+    $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
   }
 
   function updateVisiblePanelsInOptionsModal() {
