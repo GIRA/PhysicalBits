@@ -35,9 +35,8 @@ const fs = require('fs');
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal)
-        .then(initializeTurnNotifierModal)
         .then(hideLoadingScreen)
-        .then(connectToMendietaServer);
+        .then(initializeMendietaClient);
     },
   };
 
@@ -61,7 +60,8 @@ const fs = require('fs');
       .then(name => ({name: name}));
   }
 
-  function connectToMendietaServer() {
+  function initializeMendietaClient() {    
+    TurnNotifier.init();
     loadCurrentStudent()
       .then(student => Mendieta.registerStudent(student))
       .then(student => localStorage["mendieta.student"] = JSON.stringify(student))
@@ -441,83 +441,6 @@ const fs = require('fs');
         }
       });
       console.log(locale);
-    });
-  }
-
-  function initializeTurnNotifierModal() {
-    // TODO(Richo): If the modal is showing and the user reloads the page then it won't appear again!
-    let activeSubmission = null;
-
-    $("#turn-notifier-start-button").on("click", () => Mendieta.start(activeSubmission));
-    $("#turn-notifier-pause-button").on("click", () => Mendieta.pause(activeSubmission));
-    $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
-    $("#turn-notifier-cancel-button").on("click", () => Mendieta.stop(activeSubmission));
-
-    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions
-    let hiding = false;
-    $('#turn-notifier-modal').on('hidden.bs.modal', function (e) {
-      hiding = false;
-    });
-
-    function formatDuration(durationSeconds) {
-      let seconds = Math.floor(durationSeconds % 60);
-      let minutes = Math.floor(durationSeconds / 60);
-      let hours = Math.floor(durationSeconds / 3600);
-      let result = seconds.toString();
-      if (seconds < 10) { result = "0" + result; }
-      result = minutes + ":" + result;
-      if (minutes < 10) { result = "0" + result; }
-      if (hours > 0) {
-        result = hours + ":" + result;
-      }
-      return result;
-    }
-
-    function startCountdownTimer() {
-      if (!activeSubmission) return;
-      let msPassed = Date.now() - activeSubmission.testBeginTime;
-      let msRemaining = activeSubmission.testDuration - msPassed;
-      let secondsRemaining = msRemaining / 1000;
-      $("#turn-notifier-timer").text(formatDuration(secondsRemaining));
-      $("#turn-notifier-timer").css("color", secondsRemaining < 10 ? "red" : "inherit");
-      setTimeout(startCountdownTimer, 1000);
-    }
-
-    Mendieta.on("submission-update", submission => {
-      console.log("SUBMISSION!");
-      console.log(submission);
-      console.log(hiding);
-
-      $("#turn-notifier-start-button").prop("disabled", submission.state == "RUNNING");
-      $("#turn-notifier-pause-button").prop("disabled", submission.state != "RUNNING");
-      if (submission.state == "READY") {
-        $("#turn-notifier-stop-button").hide();
-        $("#turn-notifier-cancel-button").show();
-      } else {
-        $("#turn-notifier-stop-button").show();
-        $("#turn-notifier-cancel-button").hide();
-      }
-
-      if (submission.state == "READY" || submission.state == "RUNNING" || submission.state == "PAUSED") {
-        activeSubmission = submission;
-        if (hiding) {
-          $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
-            hiding = false;
-            $("#turn-notifier-modal").modal("show");
-          });
-        } else {
-          $("#turn-notifier-modal").modal("show");
-        }
-        startCountdownTimer();
-      } else if (submission.state == "COMPLETED" || submission.state == "CANCELED") {
-        // TODO(Richo): If the activeSubmission is not set but we got here then it must mean one of our pending
-        // submissions got canceled, should we show a message?
-        if (activeSubmission && activeSubmission.id == submission.id) {
-          activeSubmission = null;
-          hiding = true;
-          $("#turn-notifier-modal").modal("hide");
-        }
-      }
     });
   }
 
