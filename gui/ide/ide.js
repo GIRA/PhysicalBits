@@ -512,7 +512,7 @@ const fs = require('fs');
       } else if (submission.state == "COMPLETED" || submission.state == "CANCELED") {
         // TODO(Richo): If the activeSubmission is not set but we got here then it must mean one of our pending
         // submissions got canceled, should we show a message?
-        if (activeSubmission) {
+        if (activeSubmission && activeSubmission.id == submission.id) {
           activeSubmission = null;
           hiding = true;
           $("#turn-notifier-modal").modal("hide");
