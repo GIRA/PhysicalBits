@@ -1,7 +1,8 @@
 let TurnNotifier = (function () {
 
   let activeSubmission = null;
-  let hiding = false; // TODO(Richo): This sucks!
+  let hidingModal = false; // TODO(Richo): This sucks!
+  let countdownTimeout = null;
 
   function formatDuration(durationSeconds) {
     let seconds = Math.floor(durationSeconds % 60);
@@ -17,14 +18,16 @@ let TurnNotifier = (function () {
     return result;
   }
 
-  function startCountdownTimer() {
+  function updateCountdownTimer() {
     if (!activeSubmission) return;
     let msPassed = Date.now() - activeSubmission.testBeginTime;
     let msRemaining = activeSubmission.testDuration - msPassed;
     let secondsRemaining = msRemaining / 1000;
     $("#turn-notifier-timer").text(formatDuration(secondsRemaining));
     $("#turn-notifier-timer").css("color", secondsRemaining < 10 ? "red" : "inherit");
-    setTimeout(startCountdownTimer, 1000);
+
+    console.log("COUNTDOWN!")
+    countdownTimeout = setTimeout(updateCountdownTimer, 1000);
   }
 
   function updateGUI() {
@@ -51,9 +54,9 @@ let TurnNotifier = (function () {
   }
 
   function showModal() {
-    if (hiding) {
+    if (hidingModal) {
       $('#turn-notifier-modal').one('hidden.bs.modal', function (e) {
-        hiding = false;
+        hidingModal = false;
         $("#turn-notifier-modal").modal("show");
       });
     } else {
@@ -62,7 +65,7 @@ let TurnNotifier = (function () {
   }
 
   function hideModal() {
-    hiding = true;
+    hidingModal = true;
     $("#turn-notifier-modal").modal("hide");
   }
 
@@ -73,23 +76,28 @@ let TurnNotifier = (function () {
     $("#turn-notifier-stop-button").on("click", () => Mendieta.stop(activeSubmission));
     $("#turn-notifier-cancel-button").on("click", () => Mendieta.stop(activeSubmission));
 
-    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions
 
+    // TODO(Richo): THIS SUCKS! I need to find a more elegant way of working around the async modal transitions.
+    // Or maybe just not use a modal...
     $('#turn-notifier-modal').on('hidden.bs.modal', function (e) {
-      hiding = false;
+      hidingModal = false;
     });
 
     Mendieta.on("submission-update", submission => {
       if (isActive(submission)) {
+        const previous = activeSubmission;
         activeSubmission = submission;
-        showModal();
-        startCountdownTimer();
+        if (!previous) {
+          showModal();
+          updateCountdownTimer();
+        }
       } else if (isFinished(submission)) {
         // TODO(Richo): If the activeSubmission is not set but we got here then it must mean one of our pending
         // submissions got canceled, should we show a message?
         if (activeSubmission && activeSubmission.id == submission.id) {
           activeSubmission = null;
           hideModal();
+          clearTimeout(countdownTimeout);
         }
       }
       updateGUI();
