@@ -7,9 +7,10 @@
 
 #include <stdio.h>
 #include "Arduino.h"
+#include "Servo.h"
 #include "Simulator.h"
 
-void setup() {
+void test() {
   printf("_____________");
   printf("Testing basic GPIO\n");
   {
@@ -46,14 +47,38 @@ void setup() {
       printf("WRITE: %d\n", buf[i]);
     }
   }
-}
 
-void loop() {
+  printf("_____________");
+  printf("Testing EEPROM\n");
+  {
+    unsigned char value = EEPROM.read(127);
+    printf("%d\n", value);
+    value = 42;
+    EEPROM.write(127, value);
+    value = EEPROM.read(127);
+    printf("%d\n", value);
+  }
 
+
+  printf("_____________");
+  printf("Testing Servo\n");
+  {
+    Servo servos[5];
+    for (int i = 0; i < 5; i++) {
+      int pin = 3 + i;
+      servos[i].attach(pin);
+      servos[i].write(90);
+      printf("%d -> %d\n", i, analogRead(pin));
+      servos[i].detach();
+    }
+  }
 }
 
 int main() {
   printf("hello, world!\n");
+  test();
   setup();
+  loop();
+  printf("bye!\n");
   return 0;
 }
