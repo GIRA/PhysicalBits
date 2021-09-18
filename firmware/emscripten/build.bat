@@ -10,5 +10,9 @@ set src=main.c %sim_files% %uzi_files%
 
 set opts=-I %sim% -I %uzi% -fdeclspec -s LLD_REPORT_UNDEFINED
 
+set exports=_GPIO_getPinValue,_GPIO_setPinValue,_Sketch_setup,_Sketch_loop,_Serial_readInto,_Serial_write,_Sketch_getMillis,_Sketch_setMillis,_EEPROM_read,_EEPROM_write,_EEPROM_size,_Stats_usedMemory,_Stats_coroutineResizeCounter
+
 mkdir out 2> NUL
-em++ %opts% %src% -o out/main.js && node out/main.js
+REM em++ %opts% %src% -o out/main.js && node out/main.js
+@echo on
+em++ %opts% %src% -o out/simulator.html -s EXPORTED_FUNCTIONS=%exports% -s EXPORTED_RUNTIME_METHODS=ccall,cwrap --post-js bindings.js
