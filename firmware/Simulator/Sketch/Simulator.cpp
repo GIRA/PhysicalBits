@@ -1,6 +1,10 @@
 #include "Simulator.h"
 
+#ifdef __EMSCRIPTEN__
+#define EXTERN
+#else
 #define EXTERN extern "C" __declspec(dllexport)
+#endif 
 
 unsigned char __pinModes__[__TOTAL_PINS__];
 unsigned short __pinValues__[__TOTAL_PINS__];
