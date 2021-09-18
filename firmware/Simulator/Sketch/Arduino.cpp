@@ -2,8 +2,6 @@
 // Arduino Console Stub
 //--------------------------------------------------------------------
 
-#if _MSC_VER 
-
 #include "Arduino.h"
 #include <time.h>
 
@@ -237,5 +235,3 @@ size_t CSerial::out_readInto(char* buffer, size_t len)
 	}
 	return i;
 }
-
-#endif

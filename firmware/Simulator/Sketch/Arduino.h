@@ -2,8 +2,6 @@
 // Arduino Console Stub
 //--------------------------------------------------------------------
 
-#if _MSC_VER 
-
 #pragma once
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -113,4 +111,3 @@ extern void setMillis(long);
 
 extern long random(long);
 extern long random(long, long);
-#endif
