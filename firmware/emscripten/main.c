@@ -74,11 +74,50 @@ void test() {
   }
 }
 
+void handshake() {
+  Sketch_setMillis(0);
+  Sketch_setup();
+
+  unsigned char connection_req[3] = {255, 0, 8};
+  Serial_write((char*)connection_req, sizeof(connection_req));
+  Sketch_loop();
+
+  unsigned char hshake;
+  {
+    char buf[10];
+    int read_bytes = Serial_readInto(buf, sizeof(buf));
+    if (read_bytes <= 0) { printf("HANDSHAKE NOT RECEIVED\n"); }
+    hshake = buf[0];
+  }
+
+  unsigned char send = (8+hshake) % 256;
+  unsigned char out_buf[1] = {send};
+  Serial_write((char*)out_buf, sizeof(out_buf));
+  Sketch_loop();
+
+  unsigned char ack;
+  {
+    char buf[10];
+    int read_bytes = Serial_readInto(buf, sizeof(buf));
+    if (read_bytes <= 0) { printf("ACK NOT RECEIVED\n"); }
+    ack = buf[0];
+  }
+
+  if (send != ack) { printf("CONNECTION FAILED!\n"); }
+}
+
 int main() {
   printf("hello, world!\n");
-  test();
-  setup();
-  loop();
+  handshake();
+
+  unsigned char program[] = {0, 0, 5, 1, 0, 128, 1, 13};
+  Serial_write((char*)program, sizeof(program));
+  printf("D13: %d\n", GPIO_getPinValue(13));
+  for (int i = 0; i < 100; i++) {
+    Sketch_setMillis(i * 1000);
+    Sketch_loop();
+    printf("%ld -> D13: %d\n", Sketch_getMillis(), GPIO_getPinValue(13));
+  }
   printf("bye!\n");
   return 0;
 }
