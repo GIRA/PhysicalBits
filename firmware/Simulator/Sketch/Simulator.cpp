@@ -1,11 +1,5 @@
 #include "Simulator.h"
 
-#ifdef __EMSCRIPTEN__
-#define EXTERN
-#else
-#define EXTERN extern "C" __declspec(dllexport)
-#endif 
-
 unsigned char __pinModes__[__TOTAL_PINS__];
 unsigned short __pinValues__[__TOTAL_PINS__];
 
@@ -34,11 +28,6 @@ void __setPinValue(unsigned int pin, unsigned short value)
 	else if (value < 0) actualValue = 0;
 
 	__pinValues__[index] = actualValue;
-}
-
-EXTERN long foo(void)
-{
-	return 42;
 }
 
 
