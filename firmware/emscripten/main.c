@@ -86,7 +86,7 @@ void handshake() {
   {
     char buf[10];
     int read_bytes = Serial_readInto(buf, sizeof(buf));
-    if (read_bytes <= 0) { printf("HANDSHAKE NOT RECEIVED\n"); }
+    if (read_bytes <= 0) { printf("HANDSHAKE NOT RECEIVED\n"); return; }
     hshake = buf[0];
   }
 
@@ -99,13 +99,13 @@ void handshake() {
   {
     char buf[10];
     int read_bytes = Serial_readInto(buf, sizeof(buf));
-    if (read_bytes <= 0) { printf("ACK NOT RECEIVED\n"); }
+    if (read_bytes <= 0) { printf("ACK NOT RECEIVED\n"); return; }
     ack = buf[0];
   }
 
-  if (send != ack) { printf("CONNECTION FAILED!\n"); }
+  if (send != ack) { printf("CONNECTION FAILED!\n"); return; }
 }
-
+/*
 int main() {
   printf("hello, world!\n");
   handshake();
@@ -122,3 +122,4 @@ int main() {
   printf("bye!\n");
   return 0;
 }
+*/
