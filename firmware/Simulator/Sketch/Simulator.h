@@ -6,7 +6,7 @@
 #define __SIMULATOR__
 
 #ifdef __EMSCRIPTEN__
-#define EXTERN
+#define EXTERN extern "C"
 #else
 #define EXTERN extern "C" __declspec(dllexport)
 #endif 
