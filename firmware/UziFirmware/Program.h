@@ -29,7 +29,7 @@ struct Program
 	uint8 getGlobalCount(void);
 
 	void setCoroutineError(Coroutine* coroutine, Error error);
-	void Program::resetCoroutine(Coroutine* coroutine);
+	void resetCoroutine(Coroutine* coroutine);
 
 	Instruction getInstructionAt(int16);
 	void setBreakpointAt(int16 pc, bool val);
