@@ -110,7 +110,8 @@ int main() {
   printf("hello, world!\n");
   handshake();
 
-  unsigned char program[] = {0, 0, 5, 1, 0, 128, 1, 13};
+  //unsigned char program[] = {0, 0, 5, 1, 0, 128, 1, 13};
+  unsigned char program[] = {0, 0, 12, 1, 2, 4, 13, 5, 3, 232, 160, 4, 2, 131, 162};
   Serial_write((char*)program, sizeof(program));
   printf("D13: %d\n", GPIO_getPinValue(13));
   for (int i = 0; i < 100; i++) {
