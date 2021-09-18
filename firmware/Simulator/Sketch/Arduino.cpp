@@ -5,7 +5,6 @@
 #if _MSC_VER 
 
 #include "Arduino.h"
-#include <conio.h>
 #include <time.h>
 
 // INFO(Richo): To simulate calculating the available RAM
@@ -237,23 +236,6 @@ size_t CSerial::out_readInto(char* buffer, size_t len)
 		buffer[i++] = out_read();
 	}
 	return i;
-}
-
-//--------------------------------------------------------------------
-// Main
-//--------------------------------------------------------------------
-
-int main(int, char**)
-{
-	setup();
-	for (;;)
-	{
-		if (_kbhit())
-		{
-			Serial.in_write((char)_getch());
-		}
-		loop();
-	}
 }
 
 #endif
