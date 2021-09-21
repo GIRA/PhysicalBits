@@ -24,18 +24,28 @@ var Sketch = {
   setMillis: Module.cwrap("Sketch_setMillis", null, ["number"]),
 };
 var Serial = {
-  readInto: Module.cwrap("Serial_readInto", "number", ["array", "number"]),
+  readInto: Module.cwrap("Serial_readInto", "number", ["number", "number"]),
   write: Module.cwrap("Serial_write", null, ["array", "number"]),
 
   readAvailable: function () {
-    var buf = new Uint8Array(1024);
-    var bytesRead = Serial.readInto(buf, buf.length);
-    return buf.subarray(0, bytesRead);
+    let buffer;
+    try {
+      buffer = Module._malloc(1024);
+      let bytesRead = Serial.readInto(buffer, 1024);
+      let result = [];
+      for (var i = 0; i < bytesRead; i++) {
+        result.push(Module.HEAPU8[buffer + i]);
+      }
+      return result;
+    } finally {
+      Module._free(buffer);
+    }
   }
 };
 var EEPROM = {
   write: Module.cwrap("EEPROM_write", null, ["number", "number"]),
-  read: Module.cwrap("EEPROM_read", "number", ["number"])
+  read: Module.cwrap("EEPROM_read", "number", ["number"]),
+  size: Module.cwrap("EEPROM_size", "number", []),
 };
 
 function handshake() {
@@ -64,5 +74,6 @@ function test_blink() {
     var now = Date.now() - begin;
     Sketch.setMillis(now);
     Sketch.loop();
+    console.log(GPIO.getPinValue(13));
   }, 100);
 }

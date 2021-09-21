@@ -15,4 +15,4 @@ set exports=_GPIO_getPinValue,_GPIO_setPinValue,_Sketch_setup,_Sketch_loop,_Seri
 mkdir out 2> NUL
 REM em++ %opts% %src% -o out/main.js && node out/main.js
 @echo on
-em++ %opts% %src% -o out/simulator.html -s EXPORTED_FUNCTIONS=%exports% -s EXPORTED_RUNTIME_METHODS=ccall,cwrap --post-js bindings.js
+em++ %opts% %src% -o out/simulator.html -s EXPORTED_FUNCTIONS=%exports%,_malloc,_free -s EXPORTED_RUNTIME_METHODS=ccall,cwrap --post-js bindings.js
