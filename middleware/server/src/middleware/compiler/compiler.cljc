@@ -509,10 +509,10 @@
   (let [ast (-> original-ast
                 ast-utils/assign-internal-ids
                 (linker/resolve-imports lib-dir)
-                (check src)
                 assign-unique-variable-names
                 (assign-pin-values board)
-                (remove-dead-code remove-dead-code?))
+                (remove-dead-code remove-dead-code?)
+                (check src))
         compiled (compile ast (create-context))]
     {:original-ast original-ast
      :final-ast ast

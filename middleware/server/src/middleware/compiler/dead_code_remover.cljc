@@ -62,8 +62,6 @@
   (let [ctx (create-context)]
     (visit ast ctx)
     (assoc ast
-           :imports (mapv #(dissoc % :program)
-                          (:imports ast))
            :globals (filterv #(contains? @(:visited-globals ctx) (:name %))
                              (:globals ast))
            :scripts (filterv #(contains? @(:visited-scripts ctx) (:name %))

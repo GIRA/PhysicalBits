@@ -115,6 +115,7 @@
                                                     {:alias alias :path path})))]
         {:import (assoc imp
                         :isResolved true
+                        ; TODO(Richo): Maybe this would be a good use for metadata?
                         :program imported-ast)
          :program (apply-alias imported-ast alias)})
       (throw (ex-info "File not found"
