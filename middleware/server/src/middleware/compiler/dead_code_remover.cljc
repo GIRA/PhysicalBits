@@ -3,75 +3,76 @@
             [middleware.compiler.utils.ast :as ast-utils]
             [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
-(defmulti ^:private visit-node :__class__)
+(declare ^:private visit-node)
 
 (defnp ^:private visit [node ctx]
-  (visit-node node (update-in ctx [:path] conj node)))
+  (visit-node node (update ctx :path conj node)))
 
-(defnp visit-children [node ctx]
+(defnp ^:private visit-children [node ctx]
   (doseq [child (ast-utils/children node)]
     (visit child ctx)))
 
-(defmethod visit-node "UziProgramNode" [{:keys [scripts]} ctx]
-  (p ::visit-program
-     (doseq [root (filter #(contains? #{"running" "once"} (:state %))
-                          scripts)]
-       (visit root ctx))))
+(defnp ^:private visit-program [{:keys [scripts]} ctx]
+  (doseq [root (filter #(contains? #{"running" "once"} (:state %))
+                       scripts)]
+    (visit root ctx)))
 
-(defnp visit-script [{:keys [name] :as script} ctx]
-  (when (not (contains? @(:visited-scripts ctx) name))
-    (swap! (:visited-scripts ctx) conj name)
+(defnp ^:private visit-script [{:keys [name] :as script} ctx]
+  (when-not (contains? (:scripts @(:visited ctx)) name)
+    (vswap! (:visited ctx) update :scripts conj name)
     (visit-children script ctx)))
-
-(defmethod visit-node "UziTaskNode" [node ctx] (visit-script node ctx))
-(defmethod visit-node "UziFunctionNode" [node ctx] (visit-script node ctx))
-(defmethod visit-node "UziProcedureNode" [node ctx] (visit-script node ctx))
 
 (defnp ^:private get-script-named [name ctx]
   (seek (fn [script] (= name (:name script)))
         (-> ctx :path last :scripts)))
 
-(defnp visit-script-control [{:keys [scripts]} ctx]
-  (doseq [script (map #(get-script-named % ctx)
-                      scripts)]
-    (visit script ctx)))
+(defnp ^:private visit-script-control [{:keys [scripts]} ctx]
+  (let [visited-scripts (:scripts @(:visited ctx))]
+    (doseq [script (map #(get-script-named % ctx)
+                        (remove visited-scripts scripts))]
+      (visit script ctx))))
 
-(defmethod visit-node "UziScriptStartNode" [node ctx] (visit-script-control node ctx))
-(defmethod visit-node "UziScriptStopNode" [node ctx] (visit-script-control node ctx))
-(defmethod visit-node "UziScriptResumeNode" [node ctx] (visit-script-control node ctx))
-(defmethod visit-node "UziScriptPauseNode" [node ctx] (visit-script-control node ctx))
+(defnp ^:private visit-variable [node ctx]
+  (when (ast-utils/global? node (:path ctx))
+    (vswap! (:visited ctx) update :globals conj (:name node)))
+  (visit-children node ctx))
 
-(defmethod visit-node "UziVariableNode" [node ctx]
-  (p ::visit-variable
-     (when (ast-utils/global? node (:path ctx))
-       (swap! (:visited-globals ctx) conj (:name node)))
-     (visit-children node ctx)))
+(defnp ^:private visit-call
+  [{:keys [primitive-name selector] :as node} ctx]
+  (if primitive-name
+    (vswap! (:visited ctx) update :primitives conj selector)
+    (when-not (contains? (:scripts @(:visited ctx)) selector)
+      (visit (get-script-named selector ctx) ctx)))
+  (visit-children node ctx))
 
-(defmethod visit-node "UziCallNode" [node ctx]
-  (p ::visit-call
-     (if (get node :primitive-name)
-       (swap! (:visited-primitives ctx) conj (:selector node))
-       (visit (get-script-named (:selector node) ctx) ctx))
-     (visit-children node ctx)))
+(defn ^:private visit-node [node ctx]
+  (case (ast-utils/node-type node)
+    "UziProgramNode"        (visit-program node ctx)
+    "UziTaskNode"           (visit-script node ctx)
+    "UziFunctionNode"       (visit-script node ctx)
+    "UziProcedureNode"      (visit-script node ctx)
+    "UziScriptStartNode"    (visit-script-control node ctx)
+    "UziScriptStopNode"     (visit-script-control node ctx)
+    "UziScriptResumeNode"   (visit-script-control node ctx)
+    "UziScriptPauseNode"    (visit-script-control node ctx)
+    "UziVariableNode"       (visit-variable node ctx)
+    "UziCallNode"           (visit-call node ctx)
+    (visit-children node ctx)))
 
-(defmethod visit-node :default [node ctx]
-  (p ::visit-default
-     (visit-children node ctx)))
-
-
-(defnp create-context []
+(defnp ^:private create-context []
   {:path (list),
-   :visited-scripts (atom #{}),
-   :visited-globals (atom #{}),
-   :visited-primitives (atom #{})})
+   :visited (volatile! {:scripts #{}
+                        :globals #{}
+                        :primitives #{}})})
 
 (defnp remove-dead-code [ast]
   (let [ctx (create-context)]
     (visit ast ctx)
-    (assoc ast
-           :globals (filterv #(contains? @(:visited-globals ctx) (:name %))
-                             (:globals ast))
-           :scripts (filterv #(contains? @(:visited-scripts ctx) (:name %))
-                             (:scripts ast))
-           :primitives (filterv #(contains? @(:visited-primitives ctx) (:alias %))
-                                (:primitives ast)))))
+    (let [{:keys [globals scripts primitives]} @(:visited ctx)]
+      (assoc ast
+             :globals (filterv #(contains? globals (:name %))
+                               (:globals ast))
+             :scripts (filterv #(contains? scripts (:name %))
+                               (:scripts ast))
+             :primitives (filterv #(contains? primitives (:alias %))
+                                  (:primitives ast))))))

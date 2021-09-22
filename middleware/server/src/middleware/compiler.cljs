@@ -64,12 +64,6 @@
 
 (comment
 
-(def ast (-> (p/parse "task blink() running 1/s {toggle(D13);}")
-              ast-utils/assign-internal-ids
-              (linker/resolve-imports "../../uzi/libraries")))
-
-ast
-
 (profile {}
          (dotimes [_ 50]
                   (compile-full)))
