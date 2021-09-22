@@ -1,21 +1,23 @@
 (ns middleware.compiler.dead-code-remover
-  (:require [middleware.compiler.utils.ast :as ast-utils]))
+  (:require [middleware.compiler.utils.ast :as ast-utils]
+            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
 (defmulti ^:private visit-node :__class__)
 
-(defn- visit [node ctx]
+(defnp ^:private visit [node ctx]
   (visit-node node (update-in ctx [:path] conj node)))
 
-(defn visit-children [node ctx]
+(defnp visit-children [node ctx]
   (doseq [child (ast-utils/children node)]
     (visit child ctx)))
 
 (defmethod visit-node "UziProgramNode" [{:keys [scripts]} ctx]
-  (doseq [root (filter #(contains? #{"running" "once"} (:state %))
-                       scripts)]
-    (visit root ctx)))
+  (p ::visit-program
+     (doseq [root (filter #(contains? #{"running" "once"} (:state %))
+                          scripts)]
+       (visit root ctx))))
 
-(defn visit-script [{:keys [name] :as script} ctx]
+(defnp visit-script [{:keys [name] :as script} ctx]
   (when (not (contains? @(:visited-scripts ctx) name))
     (swap! (:visited-scripts ctx) conj name)
     (visit-children script ctx)))
@@ -24,11 +26,11 @@
 (defmethod visit-node "UziFunctionNode" [node ctx] (visit-script node ctx))
 (defmethod visit-node "UziProcedureNode" [node ctx] (visit-script node ctx))
 
-(defn- get-script-named [name ctx]
+(defnp ^:private get-script-named [name ctx]
   (first (filter (fn [script] (= name (:name script)))
                  (-> ctx :path last :scripts))))
 
-(defn visit-script-control [{:keys [scripts]} ctx]
+(defnp visit-script-control [{:keys [scripts]} ctx]
   (doseq [script (map #(get-script-named % ctx)
                       scripts)]
     (visit script ctx)))
@@ -39,26 +41,30 @@
 (defmethod visit-node "UziScriptPauseNode" [node ctx] (visit-script-control node ctx))
 
 (defmethod visit-node "UziVariableNode" [node ctx]
-  (when (ast-utils/global? node (:path ctx))
-    (swap! (:visited-globals ctx) conj (:name node)))
-  (visit-children node ctx))
+  (p ::visit-variable
+     (when (ast-utils/global? node (:path ctx))
+       (swap! (:visited-globals ctx) conj (:name node)))
+     (visit-children node ctx)))
 
 (defmethod visit-node "UziCallNode" [node ctx]
-  (if (get node :primitive-name)
-    (swap! (:visited-primitives ctx) conj (:selector node))
-    (visit (get-script-named (:selector node) ctx) ctx))
-  (visit-children node ctx))
+  (p ::visit-call
+     (if (get node :primitive-name)
+       (swap! (:visited-primitives ctx) conj (:selector node))
+       (visit (get-script-named (:selector node) ctx) ctx))
+     (visit-children node ctx)))
 
-(defmethod visit-node :default [node ctx] (visit-children node ctx))
+(defmethod visit-node :default [node ctx]
+  (p ::visit-default
+     (visit-children node ctx)))
 
 
-(defn create-context []
+(defnp create-context []
   {:path (list),
    :visited-scripts (atom #{}),
    :visited-globals (atom #{}),
    :visited-primitives (atom #{})})
 
-(defn remove-dead-code [ast]
+(defnp remove-dead-code [ast]
   (let [ctx (create-context)]
     (visit ast ctx)
     (assoc ast
