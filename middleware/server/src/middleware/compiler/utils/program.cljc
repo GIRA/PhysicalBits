@@ -1,11 +1,12 @@
 (ns middleware.compiler.utils.program
-  (:require [middleware.compiler.emitter :as emit]))
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.compiler.emitter :as emit]))
 
 (defn index-of ^long [^java.util.List v e] (.indexOf v e))
 
 (defn- value-size-int [^long value]
-  (or (first (filter (fn [^long size] (< value (Math/pow 2 (* 8 size))))
-                     [1 2 3 4]))
+  (or (seek (fn [^long size] (< value (Math/pow 2 (* 8 size))))
+            [1 2 3 4])
       4))
 
 (defn value-size ^long [value]

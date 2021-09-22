@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj-core]
             [clojure.walk :as w]
+            [middleware.utils.core :refer [seek]]
             [middleware.compiler.primitives :as prims]
             [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
@@ -127,15 +128,15 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
-  (if-let [import (first (clj-core/filter import? path))]
+  (if-let [import (seek import? path)]
     (if-let [{program :program} (meta import)]
       (-> program :scripts)
       (throw (ex-info "Unresolved import" import)))
     (-> path last :scripts)))
 
 (defn script-named [name path]
-  (first (clj-core/filter #(= name (:name %))
-                          (scripts path))))
+  (seek #(= name (:name %))
+        (scripts path)))
 
 (defmulti ^:private children-keys :__class__)
 (defmethod children-keys "UziAssignmentNode" [_] [:left :right])
@@ -275,7 +276,7 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
-  (if-let [import (first (clj-core/filter import? path))]
+  (if-let [import (seek import? path)]
     (if-let [{program :program} (meta import)]
       (-> program :globals)
       (throw (ex-info "Unresolved import" import)))
@@ -293,8 +294,8 @@
 (defn variable-named
   "Returns the variable declaration referenced by this name at this point in the ast"
   [name path]
-  (first (clj-core/filter #(= name (:name %))
-                          (variables-in-scope path))))
+  (seek #(= name (:name %))
+        (variables-in-scope path)))
 
 (defn global?
   "Works for both variable and variable-declaration nodes."

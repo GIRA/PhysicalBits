@@ -1,6 +1,7 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
   (:require #?(:clj [clojure.tools.logging :as log])
+            [middleware.utils.core :refer [seek]]
             [middleware.utils.json :as json]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
@@ -139,8 +140,8 @@
                       arguments
                       (let [script (ast-utils/script-named selector (:path ctx))]
                         (map (fn [{:keys [name]}]
-                               (first (filter #(= name (:key %))
-                                              arguments)))
+                               (seek #(= name (:key %))
+                                     arguments))
                              (:arguments script))))]
     (conj (vec (mapcat #(compile (:value %) ctx)
                        sorted-args))

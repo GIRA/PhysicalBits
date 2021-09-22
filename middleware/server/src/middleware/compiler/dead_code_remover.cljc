@@ -1,5 +1,6 @@
 (ns middleware.compiler.dead-code-remover
-  (:require [middleware.compiler.utils.ast :as ast-utils]
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.compiler.utils.ast :as ast-utils]
             [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
 (defmulti ^:private visit-node :__class__)
@@ -27,8 +28,8 @@
 (defmethod visit-node "UziProcedureNode" [node ctx] (visit-script node ctx))
 
 (defnp ^:private get-script-named [name ctx]
-  (first (filter (fn [script] (= name (:name script)))
-                 (-> ctx :path last :scripts))))
+  (seek (fn [script] (= name (:name script)))
+        (-> ctx :path last :scripts)))
 
 (defnp visit-script-control [{:keys [scripts]} ctx]
   (doseq [script (map #(get-script-named % ctx)

@@ -1,7 +1,8 @@
 ; TODO(Richo): Most of the work here could probably be written using clojure.spec
 (ns middleware.compiler.checker
   (:refer-clojure :exclude [assert])
-  (:require [middleware.compiler.utils.ast :as ast-utils]
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.primitives :as prims]
             [petitparser.token :as t]
             [clojure.data :as data]
@@ -198,7 +199,7 @@
   (assert-block (:falseBranch node) errors))
 
 (defmethod check-node "UziVariableDeclarationNode" [node errors path]
-  (when-let [script (first (filter ast-utils/script? path))]
+  (when-let [script (seek ast-utils/script? path)]
     (when (not (some #(= % node) (:arguments script)))
       (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
         (assert (not (contains? local-names (:name node)))
