@@ -11,14 +11,14 @@
        (contains? node :__class__)))
 
 (defn node-type [node]
-  (get node :__class__))
+  (:__class__ node))
 
 (defn compile-time-constant? [node]
   (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
              (node-type node)))
 
 (defn compile-time-value ^double [node not-constant]
-  (condp = (node-type node)
+  (case (node-type node)
     "UziNumberLiteralNode" (:value node)
     "UziPinLiteralNode" (:value node)
     not-constant))
@@ -116,7 +116,7 @@
              (node-type node)))
 
 (defn script-control-state [node]
-  (condp = (node-type node)
+  (case (node-type node)
     "UziScriptStartNode" "running"
     "UziScriptResumeNode" "running"
     "UziScriptStopNode" "stopped"
@@ -128,40 +128,41 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
-  (if-let [import (seek import? path)]
-    (if-let [{program :program} (meta import)]
+  (if-let [imp (seek import? path)]
+    (if-let [{program :program} (meta imp)]
       (-> program :scripts)
-      (throw (ex-info "Unresolved import" import)))
+      (throw (ex-info "Unresolved import" imp)))
     (-> path last :scripts)))
 
 (defn script-named [name path]
   (seek #(= name (:name %))
         (scripts path)))
 
-(defmulti ^:private children-keys :__class__)
-(defmethod children-keys "UziAssignmentNode" [_] [:left :right])
-(defmethod children-keys "UziBlockNode" [_] [:statements])
-(defmethod children-keys "UziCallNode" [_] [:arguments])
-(defmethod children-keys "UziConditionalNode" [_] [:condition :trueBranch :falseBranch])
-(defmethod children-keys "UziForNode" [_] [:counter :start :stop :step :body])
-(defmethod children-keys "UziForeverNode" [_] [:body])
-(defmethod children-keys "UziImportNode" [_] [:initializationBlock])
-(defmethod children-keys "UziLogicalAndNode" [_] [:left :right])
-(defmethod children-keys "UziLogicalOrNode" [_] [:left :right])
-(defmethod children-keys "UziLoopNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziWhileNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziUntilNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziDoWhileNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziDoUntilNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziProgramNode" [_] [:imports :globals :scripts :primitives])
-(defmethod children-keys "UziRepeatNode" [_] [:times :body])
-(defmethod children-keys "UziReturnNode" [_] [:value])
-(defmethod children-keys "UziTaskNode" [_] [:arguments :tickingRate :body])
-(defmethod children-keys "UziProcedureNode" [_] [:arguments :body])
-(defmethod children-keys "UziFunctionNode" [_] [:arguments :body])
-(defmethod children-keys "UziVariableDeclarationNode" [_] [:value])
-(defmethod children-keys "Association" [_] [:value])
-(defmethod children-keys :default [_] [])
+(defn children-keys [node]
+  (case (node-type node)
+    "UziAssignmentNode" [:left :right]
+    "UziBlockNode" [:statements]
+    "UziCallNode" [:arguments]
+    "UziConditionalNode" [:condition :trueBranch :falseBranch]
+    "UziForNode" [:counter :start :stop :step :body]
+    "UziForeverNode" [:body]
+    "UziImportNode" [:initializationBlock]
+    "UziLogicalAndNode" [:left :right]
+    "UziLogicalOrNode" [:left :right]
+    "UziLoopNode" [:pre :condition :post]
+    "UziWhileNode" [:pre :condition :post]
+    "UziUntilNode" [:pre :condition :post]
+    "UziDoWhileNode" [:pre :condition :post]
+    "UziDoUntilNode" [:pre :condition :post]
+    "UziProgramNode" [:imports :globals :scripts :primitives]
+    "UziRepeatNode" [:times :body]
+    "UziReturnNode" [:value]
+    "UziTaskNode" [:arguments :tickingRate :body]
+    "UziProcedureNode" [:arguments :body]
+    "UziFunctionNode" [:arguments :body]
+    "UziVariableDeclarationNode" [:value]
+    "Association" [:value]
+    []))
 
 (defn valid-keys [node]
   "This function returns the keys for this node which, when evaluated
@@ -170,9 +171,14 @@
               (children-keys node)))
 
 (defn children [ast]
-  (filterv some?
-           (flatten (map (fn [key] (key ast))
-                         (children-keys ast)))))
+  (reduce (fn [acc key]
+            (if-let [node (key ast)]
+              (if (sequential? node)
+                (apply conj acc node)
+                (conj acc node))
+              acc))
+          []
+          (children-keys ast)))
 
 (defn all-children [ast]
   (concat [ast]
@@ -182,7 +188,7 @@
 (defn filter [ast & types]
   (let [type-set (set types)]
     (clj/filter #(type-set (node-type %))
-                     (all-children ast))))
+                (all-children ast))))
 
 (defn- evaluate-pred-clauses [node path clauses]
   "Evaluates each clause in order. The clauses are pairs of pred-fn/expr-fn.
@@ -276,10 +282,10 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
-  (if-let [import (seek import? path)]
-    (if-let [{program :program} (meta import)]
+  (if-let [imp (seek import? path)]
+    (if-let [{program :program} (meta imp)]
       (-> program :globals)
-      (throw (ex-info "Unresolved import" import)))
+      (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
               (clj/filter #(= "UziVariableDeclarationNode" (node-type %))
                           (take-while #(not (= % first))
@@ -301,12 +307,10 @@
   "Works for both variable and variable-declaration nodes."
   [node path]
   (let [globals (-> path last :globals set)]
-    (condp = (node-type node)
-      "UziVariableNode"
-      :>> (fn [_] (let [variable (variable-named (:name node) path)]
-                    (contains? globals variable)))
-      "UziVariableDeclarationNode"
-      :>> (fn [_] (contains? globals node)))))
+    (case (node-type node)
+      "UziVariableNode" (let [variable (variable-named (:name node) path)]
+                          (contains? globals variable))
+      "UziVariableDeclarationNode" (contains? globals node))))
 
 (def local? (complement global?))
 
