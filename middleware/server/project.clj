@@ -33,7 +33,8 @@
 
              :project/dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
                                           [org.clojars.beppu/clj-audio "0.3.0"]
-                                          [criterium "0.4.6"]]
+                                          [criterium "0.4.6"]
+                                          [com.taoensso/tufte "2.2.0"]]
                            :source-paths ["env/dev/clj"]
                            :resource-paths ["env/dev/resources"]
                            :repl-options {:init-ns user

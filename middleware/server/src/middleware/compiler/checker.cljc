@@ -5,7 +5,7 @@
             [middleware.compiler.primitives :as prims]
             [petitparser.token :as t]
             [clojure.data :as data]
-            [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]))
+            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
 (defnp ^:private register-error! [description node errors]
   (swap! errors conj {:node node

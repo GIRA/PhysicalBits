@@ -10,7 +10,7 @@
             [middleware.compiler.checker :as checker]
             [middleware.compiler.dead-code-remover :as dcr]
             [middleware.code-generator.code-generator :as codegen]
-            [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]))
+            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
 (defmulti compile-node :__class__)
 

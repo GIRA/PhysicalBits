@@ -4,10 +4,9 @@
             [middleware.parser.parser :as p]
             [middleware.compiler.compiler :as c]
             [middleware.compiler.encoder :as en]
-            [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]
+            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
             [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.compiler.linker :as linker]
-            ))
+            [middleware.compiler.linker :as linker]))
 
 (defn init []
   (fs/register-fs! #'browser/file)
