@@ -9,7 +9,13 @@
  :dev-http {8080 "public"}
 
  :builds {:compiler {:target :browser
-                     :modules {:main {:init-fn middleware.core/init}}}
+                     :modules {:main {:init-fn middleware.compiler/init}}}
+
+          :compiler-test {:target :browser-test
+                          :test-dir "resources/public/js/test"
+                          :ns-regexp "-test\\d?$"
+                          :devtools {:http-port 8021
+                                     :http-root "resources/public/js/test"}}
 
           :controller {:target :node-library
                        :exports {:connect middleware.controller/connect!
@@ -18,12 +24,6 @@
                                  :run middleware.controller/run}
                        :output-to "out/controller/controller.js"
                        :compiler-options {:optimizations :advanced}}
-
-          :compiler-test {:target :browser-test
-                          :test-dir "resources/public/js/test"
-                          :ns-regexp "-test\\d?$"
-                          :devtools {:http-port 8021
-                                     :http-root "resources/public/js/test"}}
 
           :controller-test {:target :node-test
                             :ns-regexp "-(test|gen)\\d?$"

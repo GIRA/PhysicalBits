@@ -1,10 +1,10 @@
-(ns middleware.core
+(ns middleware.compiler
   (:require [middleware.parser.parser :as p]
             [middleware.compiler.compiler :as c]
             [middleware.compiler.encoder :as en]))
 
 (defn init []
-  (println "Richo capo!"))
+  (println "Compiler loaded successfully!"))
 
 (defn ^:export parse [str]
   (clj->js (p/parse str)))
