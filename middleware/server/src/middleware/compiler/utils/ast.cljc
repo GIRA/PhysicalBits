@@ -3,8 +3,7 @@
   (:require [clojure.core :as clj]
             [clojure.walk :as w]
             [middleware.utils.core :refer [seek]]
-            [middleware.compiler.primitives :as prims]
-            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
+            [middleware.compiler.primitives :as prims]))
 
 (defn node? [node]
   (and (map? node)

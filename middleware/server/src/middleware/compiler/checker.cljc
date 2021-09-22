@@ -5,8 +5,7 @@
             [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.primitives :as prims]
             [petitparser.token :as t]
-            [clojure.data :as data]
-            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
+            [clojure.data :as data]))
 
 (defn ^:private register-error! [description node errors]
   (swap! errors conj {:node node
@@ -308,7 +307,7 @@
 (defn ^:private check [node errors path]
   (let [new-path (conj path node)]
     (check-node node errors new-path)
-    (doseq [child-node (p ::ast-utils/children (ast-utils/children node))]
+    (doseq [child-node (ast-utils/children node)]
       (check child-node errors new-path))))
 
 (defn check-tree [ast]

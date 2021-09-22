@@ -2,8 +2,7 @@
   (:require [middleware.compiler.utils.ast :as ast-utils]
             [middleware.utils.fs.common :as fs]
             [middleware.parser.parser :as parser]
-            [clojure.pprint :refer [pprint]]
-            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
+            [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
