@@ -31,6 +31,7 @@
            "d" (* 1000 60 60 24))
          value))))
 
+; TODO(Richo): Maybe collect the globals while traversing the tree...
 (defnp collect-globals [ast]
   (set (concat
 
@@ -84,6 +85,7 @@
                   (:scripts node))))
 
 
+; TODO(Richo): Maybe collect the locals while traversing the tree...
 (defnp collect-locals [script-body]
   (vec (concat
         ; Collect all variable declarations
