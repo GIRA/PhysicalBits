@@ -9,14 +9,15 @@
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
             [middleware.compiler.dead-code-remover :as dcr]
-            [middleware.code-generator.code-generator :as codegen]))
+            [middleware.code-generator.code-generator :as codegen]
+            [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)]))
 
 (defmulti compile-node :__class__)
 
-(defn- compile [node ctx]
+(defn ^:private compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defn- rate->delay [{:keys [^double value scale] :as node}]
+(defn ^:private rate->delay [{:keys [^double value scale] :as node}]
   (if-not node
     0
     (if (zero? value)
@@ -110,7 +111,7 @@
    :locals (collect-locals body)
    :instructions (compile body ctx)))
 
-(defn- compile-stmt [node ctx]
+(defn ^:private compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
     (if (ast-utils/expression? node)
       (conj instructions (emit/prim-call "pop"))
@@ -210,7 +211,7 @@
 (defmethod compile-node "UziYieldNode" [_ _]
   [(emit/prim-call "yield")])
 
-(defn- compile-if-true-if-false
+(defn ^:private compile-if-true-if-false
   [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
    ctx]
   (let [compiled-condition (compile condition ctx)
@@ -222,7 +223,7 @@
             [(emit/jmp (count compiled-false-branch))]
             compiled-false-branch)))
 
-(defn- compile-if-true
+(defn ^:private compile-if-true
   [{condition :condition, true-branch :trueBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)]
@@ -230,7 +231,7 @@
             [(emit/jz (count compiled-true-branch))]
             compiled-true-branch)))
 
-(defn- compile-if-false
+(defn ^:private compile-if-false
   [{condition :condition, false-branch :falseBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-false-branch (compile false-branch ctx)]
@@ -249,7 +250,7 @@
     (conj compiled-body
           (emit/jmp (* -1 (inc (count compiled-body)))))))
 
-(defn- compile-loop
+(defn ^:private compile-loop
   [{negated? :negated, :keys [pre condition post]} ctx]
   (let [compiled-pre (compile pre ctx)
         compiled-condition (compile condition ctx)
@@ -284,7 +285,7 @@
 (defmethod compile-node "UziDoUntilNode" [node ctx]
   (compile-loop node ctx))
 
-(defn- compile-for-loop-with-constant-step
+(defn ^:private compile-for-loop-with-constant-step
   [{:keys [counter start stop step body]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -326,7 +327,7 @@
                          (count compiled-stop))))])))
 
 
-(defn- compile-for-loop
+(defn ^:private compile-for-loop
   [{:keys [counter start stop step body temp-name]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -437,10 +438,10 @@
   #_(log/error "Unknown node: " (ast-utils/node-type node))
   (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
-(defn- create-context []
+(defn ^:private create-context []
   {:path (list)})
 
-(defn- assign-unique-variable-names [ast]
+(defn ^:private assign-unique-variable-names [ast]
   (let [local-counter (atom 0)
         temp-counter (atom 0)
         reset-counters! (fn []
