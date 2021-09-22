@@ -1,6 +1,6 @@
 (ns middleware.compiler.utils.ast
   (:refer-clojure :exclude [filter])
-  (:require [clojure.core :as clj-core]
+  (:require [clojure.core :as clj]
             [clojure.walk :as w]
             [middleware.utils.core :refer [seek]]
             [middleware.compiler.primitives :as prims]
@@ -166,11 +166,11 @@
 (defn valid-keys [node]
   "This function returns the keys for this node which, when evaluated
    return a non-null value."
-  (clj-core/filter #(not (nil? (node %)))
-                   (children-keys node)))
+  (clj/filter #(some? (node %))
+              (children-keys node)))
 
 (defn children [ast]
-  (filterv (complement nil?)
+  (filterv some?
            (flatten (map (fn [key] (key ast))
                          (children-keys ast)))))
 
@@ -181,7 +181,7 @@
 
 (defn filter [ast & types]
   (let [type-set (set types)]
-    (clj-core/filter #(type-set (node-type %))
+    (clj/filter #(type-set (node-type %))
                      (all-children ast))))
 
 (defn- evaluate-pred-clauses [node path clauses]
@@ -281,10 +281,10 @@
       (-> program :globals)
       (throw (ex-info "Unresolved import" import)))
     (mapcat (fn [[first second]]
-            (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))
-                             (take-while #(not (= % first))
-                                         (children second))))
-          (partition 2 1 path))))
+              (clj/filter #(= "UziVariableDeclarationNode" (node-type %))
+                          (take-while #(not (= % first))
+                                      (children second))))
+            (partition 2 1 path))))
 
 (defn locals-in-scope [path]
   ; NOTE(Richo): We take advantage of the fact that globals can only be defined
