@@ -1,9 +1,12 @@
 (ns middleware.compiler
-  (:require [middleware.parser.parser :as p]
+  (:require [middleware.utils.fs.common :as fs]
+            [middleware.utils.fs.browser :as browser]
+            [middleware.parser.parser :as p]
             [middleware.compiler.compiler :as c]
             [middleware.compiler.encoder :as en]))
 
 (defn init []
+  (fs/register-fs! #'browser/file)
   (println "Compiler loaded successfully!"))
 
 (defn ^:export parse [str]
