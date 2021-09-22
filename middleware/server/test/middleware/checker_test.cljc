@@ -78,7 +78,6 @@
               (pp/parse src)
               src)]
     (-> ast
-        ast-utils/assign-internal-ids
         (linker/resolve-imports "../../uzi/tests")
         checker/check-tree)))
 

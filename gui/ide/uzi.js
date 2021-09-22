@@ -1,5 +1,6 @@
 let Uzi = (function () {
 
+  // TODO(Richo): Make a proper UUID?
   let id = Math.floor(Math.random() * (2**64));
   let host = "";
   let apiURL = "";

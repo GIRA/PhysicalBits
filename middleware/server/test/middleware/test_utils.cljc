@@ -1,5 +1,6 @@
 (ns middleware.test-utils
-  (:require [clojure.data :as data]
+  (:require [clojure.walk :as w]
+            [clojure.data :as data]
             [clojure.core.async :as a]
             [clojure.string :as str]
             #?(:clj [clojure.test :refer [*testing-vars*]]
@@ -8,6 +9,12 @@
             #?(:clj [middleware.utils.fs.jio :as jio])
             #?(:cljs [middleware.utils.fs.browser :as browser])
             #?(:cljs [middleware.utils.fs.node :as node])))
+
+(defn without-internal-ids [f]
+  (w/postwalk #(if (map? %)
+                 (dissoc % :internal-id)
+                 %)
+              f))
 
 ; TODO(Richo): Change implementation for sets and vectors so that it checks equality
 (defn equivalent? [a b]

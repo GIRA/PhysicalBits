@@ -515,7 +515,6 @@
            lib-dir "../../uzi/libraries",
            remove-dead-code? true}}]
   (let [ast (-> original-ast
-                ast-utils/assign-internal-ids
                 (linker/resolve-imports lib-dir)
                 (assign-pin-values board)
                 (remove-dead-code remove-dead-code?)

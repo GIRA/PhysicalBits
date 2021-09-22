@@ -313,19 +313,3 @@
       "UziVariableDeclarationNode" (contains? globals node))))
 
 (def local? (complement global?))
-
-(defn- create-uuid []
-  #?(:clj (.toString (java.util.UUID/randomUUID))
-     :cljs (str (random-uuid))))
-
-(defn assign-internal-ids
-  "This function is important because it will guarantee that all nodes are different
-   when compared with =. Due to clojure's philosophy regarding values, identity, and
-   equality I need to do this to be able to distinguish two otherwise equal nodes.
-   This is particularly crucial for the variables-in-scope function because it relies
-   on = to know when to stop looking for variables.
-   An alternative could be to use identical? instead of = but I feel it would make
-   the code more fragile than simply adding this artificial :internal-id"
-  [ast]
-  (transform ast
-             :default (fn [node _] (assoc node :internal-id (create-uuid)))))

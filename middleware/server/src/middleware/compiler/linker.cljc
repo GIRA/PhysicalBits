@@ -106,7 +106,6 @@
   (let [file (fs/file libs-dir path)]
     (if (fs/exists? file)
       (let [imported-ast (-> (parse file)
-                             ast-utils/assign-internal-ids
                              (apply-initialization-block initializationBlock)
                              (resolve-imports libs-dir
                                               (implicit-imports imp)

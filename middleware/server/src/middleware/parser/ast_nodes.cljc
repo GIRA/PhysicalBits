@@ -1,31 +1,53 @@
 (ns middleware.parser.ast-nodes)
 
+; NOTE(Richo): All nodes are created with a random :internal-id. This is important
+; because it will guarantee that all nodes are different when compared with =.
+; Due to clojure's philosophy regarding values, identity, and equality I need to do
+; this to be able to distinguish two otherwise equal nodes.
+; This is particularly crucial when looking for the variables-in-scope because the
+; current implementation relies on = to know when to stop looking for variables.
+; An alternative could be to use identical? instead of = but I feel it would make
+; the code more fragile than simply adding this artificial :internal-id
+
+(defn- create-uuid []
+  #?(:clj (.toString (java.util.UUID/randomUUID))
+     :cljs (str (random-uuid))))
+
+(defn- node [type & args]
+  (let [base {:__class__ type
+              :internal-id (create-uuid)}]
+    (if args
+      (apply assoc base args)
+      base)))
+
 (defn program-node
   [& {:keys [imports globals scripts primitives]
-      :or {imports [], globals [], scripts [], primitives []}}]
-  {:__class__  "UziProgramNode"
-   :imports    imports,
-   :globals    globals
-   :scripts    scripts
-   :primitives primitives})
+      :or {imports [] globals [] scripts [] primitives []}}]
+  (node "UziProgramNode"
+        :imports    imports
+        :globals    globals
+        :scripts    scripts
+        :primitives primitives))
 
 (defn primitive-node
   ([alias name]
-   {:__class__ "UziPrimitiveDeclarationNode",
-    :alias     alias,
-    :name      name})
+   (node "UziPrimitiveDeclarationNode"
+    :alias     alias
+    :name      name))
   ([name] (primitive-node name name)))
 
 (defn comment-node [text]
-  {:__class__ "UziCommentNode"
-   :value     text})
+  (node "UziCommentNode"
+   :value     text))
 
 (defn block-node
   [statements]
-  {:__class__ "UziBlockNode" :statements statements})
+  (node "UziBlockNode"
+   :statements statements))
 
 (defn import-node
-  ([path] {:__class__ "UziImportNode", :path path})
+  ([path] (node "UziImportNode"
+           :path path))
   ([alias path]
    (assoc (import-node path)
           :alias alias))
@@ -36,103 +58,107 @@
 (defn task-node
   [& {:keys [name arguments tick-rate state body]
       :or   {arguments []}}]
-  {:__class__   "UziTaskNode",
-   :name        name,
-   :arguments   arguments,
-   :body        body,
-   :state       (or state "once"),
-   :tickingRate tick-rate})
+  (node   "UziTaskNode"
+   :name        name
+   :arguments   arguments
+   :body        body
+   :state       (or state "once")
+   :tickingRate tick-rate))
 
 (defn procedure-node
   [& {:keys [name arguments body]
       :or   {arguments []}}]
-  {:__class__   "UziProcedureNode",
-   :name        name,
-   :arguments   arguments,
-   :body        body})
+  (node   "UziProcedureNode"
+   :name        name
+   :arguments   arguments
+   :body        body))
 
 (defn function-node
   [& {:keys [name arguments body]
       :or   {arguments []}}]
-  {:__class__   "UziFunctionNode",
-   :name        name,
-   :arguments   arguments,
-   :body        body})
+  (node   "UziFunctionNode"
+   :name        name
+   :arguments   arguments
+   :body        body))
 
 (defn literal-number-node
   [value]
-  {:__class__ "UziNumberLiteralNode",
-   :value     value})
+  (node "UziNumberLiteralNode"
+   :value     value))
 
 (defn literal-pin-node
   [letter number]
-  {:__class__ "UziPinLiteralNode",
-   :type      letter,
-   :number    number})
+  (node "UziPinLiteralNode"
+   :type      letter
+   :number    number))
 
 (defn assignment-node
   [var expr]
-  {:__class__ "UziAssignmentNode" :left var :right expr})
+  (node "UziAssignmentNode"
+   :left var
+   :right expr))
 
 (defn arg-node
   ([value] (arg-node nil value))
   ([name value]
-   {:__class__ "Association",
+   (node "Association"
     :key       name
-    :value     value}))
+    :value     value)))
 
 (defn ticking-rate-node
   [times scale]
-  {:__class__ "UziTickingRateNode",
-   :value     times,
-   :scale     scale})
+  (node "UziTickingRateNode"
+   :value     times
+   :scale     scale))
 
 (defn variable-declaration-node
   ([name]
    (variable-declaration-node name (literal-number-node 0)))
   ([name expr]
-   {:__class__ "UziVariableDeclarationNode"
+   (node "UziVariableDeclarationNode"
     :name      name
-    :value     expr}))
+    :value     expr)))
 
 (defn variable-node
   [name]
-  {:__class__ "UziVariableNode", :name name})
+  (node "UziVariableNode"
+   :name name))
 
 (defn return-node
   ([] (return-node nil))
-  ([expr] {:__class__ "UziReturnNode", :value expr}))
+  ([expr] (node "UziReturnNode"
+           :value expr)))
 
 (defn call-node
   [selector args]
-  {:__class__ "UziCallNode",
+  (node "UziCallNode"
    :selector  selector
-   :arguments args})
+   :arguments args))
 
 (defn for-node
   [name from to by block]
-  {:__class__ "UziForNode",
-   :counter   (variable-declaration-node name),
-   :start     from,
-   :stop      to,
-   :step      by,
-   :body      block})
+  (node "UziForNode"
+   :counter   (variable-declaration-node name)
+   :start     from
+   :stop      to
+   :step      by
+   :body      block))
 
-; NOTE(Richo): Although we don't *really* need the four while, until, do-while, do-until
-; nodes (because they have the pre, post, and negated properties) I think it is useful
+; NOTE(Richo): Although we don't *really* need the four while until do-while do-until
+; nodes (because they have the pre post and negated properties) I think it is useful
 ; to have them separated into different nodes anyway. Mostly because we want to generate
 ; code from the AST and if we don't have them separated we lose which structure was
-; originally intended by the user. We could infer it, of course, but it is simpler this way.
+; originally intended by the user. We could infer it of course but it is simpler this way.
 (defn- conditional-loop-node
   [type & {:keys [pre condition post negated]
            :or {pre (block-node [])
                 post (block-node [])
                 negated false}}]
-  {:__class__ type,
-   :pre       pre,
-   :condition condition,
-   :post      post,
-   :negated   negated})
+  (node type
+   :pre       pre
+   :condition condition
+   :post      post
+   :negated   negated))
 
 (defn while-node [condition body]
   (conditional-loop-node
@@ -160,55 +186,56 @@
     :condition condition
     :negated true))
 
-(defn yield-node
-  [] {:__class__ "UziYieldNode"})
+(defn yield-node []
+  (node "UziYieldNode"))
 
 (defn forever-node
-  [block] {:__class__ "UziForeverNode",
-           :body      block})
+  [block] (node "UziForeverNode"
+           :body      block))
 
 (defn repeat-node
-  [times block] {:__class__ "UziRepeatNode"
+  [times block] (node "UziRepeatNode"
                  :times     times
-                 :body      block})
+                 :body      block))
 
 (defn conditional-node
   ([condition true-branch]
    (conditional-node condition true-branch (block-node [])))
   ([condition true-branch false-branch]
-   {:__class__   "UziConditionalNode"
+   (node   "UziConditionalNode"
     :condition   condition
     :trueBranch  true-branch
-    :falseBranch false-branch}))
+    :falseBranch false-branch)))
 
 (defn binary-expression-node
   [left op right]
-  {:__class__ "UziCallNode",
-   :selector  op,
-   ;INFO(Tera): i had to add these associations since the binary expression get translated into a call
-   :arguments [{:__class__ "Association",
-                :key       nil,
-                :value     left}
-               {:__class__ "Association",
-                :key       nil,
-                :value     right}]})
+  (node "UziCallNode"
+   :selector  op
+   :arguments [(arg-node left)
+               (arg-node right)]))
 
-(defn logical-and-node [left right] {:__class__ "UziLogicalAndNode",
-                                     :left      left,
-                                     :right     right})
+(defn logical-and-node [left right]
+  (node "UziLogicalAndNode"
+   :left      left
+   :right     right))
 
-(defn logical-or-node [left right] {:__class__ "UziLogicalOrNode",
-                                    :left      left,
-                                    :right     right})
+(defn logical-or-node [left right]
+  (node "UziLogicalOrNode"
+   :left      left
+   :right     right))
 
-(defn start-node [scripts] {:__class__ "UziScriptStartNode",
-                            :scripts   scripts})
+(defn start-node [scripts]
+  (node "UziScriptStartNode"
+   :scripts   scripts))
 
-(defn stop-node [scripts] {:__class__ "UziScriptStopNode",
-                           :scripts   scripts})
+(defn stop-node [scripts]
+  (node "UziScriptStopNode"
+   :scripts   scripts))
 
-(defn pause-node [scripts] {:__class__ "UziScriptPauseNode",
-                            :scripts   scripts})
+(defn pause-node [scripts]
+  (node "UziScriptPauseNode"
+   :scripts   scripts))
 
-(defn resume-node [scripts] {:__class__ "UziScriptResumeNode",
-                             :scripts   scripts})
+(defn resume-node [scripts]
+  (node "UziScriptResumeNode"
+   :scripts   scripts))
