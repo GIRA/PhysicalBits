@@ -181,9 +181,10 @@
           (children-keys ast)))
 
 (defn all-children [ast]
-  (concat [ast]
-          (mapcat all-children
-                  (children ast))))
+  (reduce (fn [acc next]
+            (concat acc (all-children next)))
+          [ast]
+          (children ast)))
 
 (defn filter [ast & types]
   (let [type-set (set types)]
