@@ -128,8 +128,8 @@
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
   (if-let [import (first (clj-core/filter import? path))]
-    (if (:isResolved import)
-      (-> import :program :scripts)
+    (if-let [{program :program} (meta import)]
+      (-> program :scripts)
       (throw (ex-info "Unresolved import" import)))
     (-> path last :scripts)))
 
@@ -276,8 +276,8 @@
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
   (if-let [import (first (clj-core/filter import? path))]
-    (if (:isResolved import)
-      (-> import :program :globals)
+    (if-let [{program :program} (meta import)]
+      (-> program :globals)
       (throw (ex-info "Unresolved import" import)))
     (mapcat (fn [[first second]]
             (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))

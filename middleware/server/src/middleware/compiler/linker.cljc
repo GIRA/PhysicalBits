@@ -113,10 +113,7 @@
                                               (implicit-imports imp)
                                               (conj visited-imports
                                                     {:alias alias :path path})))]
-        {:import (assoc imp
-                        :isResolved true
-                        ; TODO(Richo): Maybe this would be a good use for metadata?
-                        :program imported-ast)
+        {:import (with-meta imp {:program imported-ast})
          :program (apply-alias imported-ast alias)})
       (throw (ex-info "File not found"
                       {:import imp
@@ -140,9 +137,7 @@
    (resolve-imports ast libs-dir (implicit-imports) #{}))
   ([ast libs-dir implicit-imports visited-imports]
    (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir visited-imports))
-                               (concat implicit-imports
-                                       (filter (complement :isResolved)
-                                               (:imports ast))))]
+                               (concat implicit-imports (:imports ast)))]
      (-> ast
          (build-new-program resolved-imports)
          bind-primitives))))
