@@ -443,11 +443,11 @@
   {:path (list)})
 
 (defnp ^:private assign-unique-variable-names [ast]
-  (let [local-counter (atom 0)
-        temp-counter (atom 0)
+  (let [local-counter (volatile! 0)
+        temp-counter (volatile! 0)
         reset-counters! (fn []
-                          (reset! local-counter 0)
-                          (reset! temp-counter 0))
+                          (vreset! local-counter 0)
+                          (vreset! temp-counter 0))
         globals (-> ast :globals set)]
     (ast-utils/transform
      ast
@@ -461,17 +461,17 @@
      (fn [{:keys [step] :as node} _]
        (if (ast-utils/compile-time-constant? step)
          node
-         (assoc node :temp-name (str "@" (swap! temp-counter inc)))))
+         (assoc node :temp-name (str "@" (vswap! temp-counter inc)))))
 
      "UziRepeatNode" ; All repeat-loops declare a temporary variable
      (fn [node _]
-       (assoc node :temp-name (str "@" (swap! temp-counter inc))))
+       (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
      (fn [var _] ; TODO(Richo): Avoid renaming a variable if its name is already unique
        (if (contains? globals var)
          var
-         (assoc var :unique-name (str (:name var) "#" (swap! local-counter inc))))))))
+         (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
 
 (defnp assign-pin-values
  "This function augments all pin literals with a :value that corresponds to their
@@ -510,7 +510,7 @@
   (let [ast (-> original-ast
                 ast-utils/assign-internal-ids
                 (linker/resolve-imports lib-dir)
-                assign-unique-variable-names
+                assign-unique-variable-names ; TODO(Richo): Can we do this after removing dead code?
                 (assign-pin-values board)
                 (remove-dead-code remove-dead-code?)
                 (check src))
