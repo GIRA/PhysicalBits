@@ -442,7 +442,14 @@
 (defnp ^:private create-context []
   {:path (list)})
 
-(defnp ^:private assign-unique-variable-names [ast]
+(defnp ^:private assign-unique-variable-names
+  "This function augments all nodes that could need to declare either a local or temporary
+  variable with a unique name (based on a simple counter) that the compiler can later use
+  to identify this variable.
+  I'm using the following naming conventions:
+  - Temporary variables are named with @ and then the counter
+  - Local variables already have a name, so I just add the # suffix followed by the counter"
+  [ast]
   (let [local-counter (volatile! 0)
         temp-counter (volatile! 0)
         reset-counters! (fn []
@@ -510,9 +517,9 @@
   (let [ast (-> original-ast
                 ast-utils/assign-internal-ids
                 (linker/resolve-imports lib-dir)
-                assign-unique-variable-names ; TODO(Richo): Can we do this after removing dead code?
                 (assign-pin-values board)
                 (remove-dead-code remove-dead-code?)
+                assign-unique-variable-names ; TODO(Richo): Can we do this after removing dead code?
                 (check src))
         compiled (compile ast (create-context))]
     {:original-ast original-ast
