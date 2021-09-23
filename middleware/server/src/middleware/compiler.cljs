@@ -27,11 +27,11 @@
   (clj->js (en/encode (js->clj program :keywordize-keys true))))
 
 
-(defnp compile-empty []
+(defn compile-empty []
   (c/compile-uzi-string ""))
-(defnp compile-blink []
+(defn compile-blink []
   (c/compile-uzi-string "task blink() running 1/s {toggle(D13);}"))
-(defnp compile-full []
+(defn compile-full []
   (c/compile-uzi-string "
   import sonar from 'Sonar.uzi' {
   	trigPin = D4;

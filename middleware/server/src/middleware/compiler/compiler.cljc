@@ -15,10 +15,10 @@
 
 (defmulti compile-node :__class__)
 
-(defnp ^:private compile [node ctx]
+(defn ^:private compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defnp ^:private rate->delay [{:keys [^double value scale] :as node}]
+(defn ^:private rate->delay [{:keys [^double value scale] :as node}]
   (if-not node
     0
     (if (zero? value)
@@ -31,10 +31,10 @@
            "d" (* 1000 60 60 24))
          value))))
 
-(defnp ^:private register-constant! [{globals :globals} value]
+(defn ^:private register-constant! [{globals :globals} value]
   (vswap! globals conj (emit/constant value)))
 
-(defnp ^:private register-global!
+(defn ^:private register-global!
   ([ctx name]
    (register-global! name 0))
   ([{globals :globals} name value]
@@ -52,7 +52,7 @@
      :scripts scripts)))
 
 ; TODO(Richo): Maybe collect the locals while traversing the tree...
-(defnp collect-locals [script-body]
+(defn collect-locals [script-body]
   (vec (concat
         ; Collect all variable declarations
         (map (fn [{:keys [unique-name value]}]
@@ -82,7 +82,7 @@
      :locals (collect-locals body)
      :instructions (compile body ctx))))
 
-(defnp ^:private compile-stmt [node ctx]
+(defn ^:private compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
     (if (ast-utils/expression? node)
       (conj instructions (emit/prim-call "pop"))
@@ -187,7 +187,7 @@
 (defmethod compile-node "UziYieldNode" [_ _]
   [(emit/prim-call "yield")])
 
-(defnp ^:private compile-if-true-if-false
+(defn ^:private compile-if-true-if-false
   [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
    ctx]
   (let [compiled-condition (compile condition ctx)
@@ -199,7 +199,7 @@
             [(emit/jmp (count compiled-false-branch))]
             compiled-false-branch)))
 
-(defnp ^:private compile-if-true
+(defn ^:private compile-if-true
   [{condition :condition, true-branch :trueBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)]
@@ -207,7 +207,7 @@
             [(emit/jz (count compiled-true-branch))]
             compiled-true-branch)))
 
-(defnp ^:private compile-if-false
+(defn ^:private compile-if-false
   [{condition :condition, false-branch :falseBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-false-branch (compile false-branch ctx)]
@@ -226,7 +226,7 @@
     (conj compiled-body
           (emit/jmp (* -1 (inc (count compiled-body)))))))
 
-(defnp ^:private compile-loop
+(defn ^:private compile-loop
   [{negated? :negated, :keys [pre condition post]} ctx]
   (let [compiled-pre (compile pre ctx)
         compiled-condition (compile condition ctx)
@@ -261,7 +261,7 @@
 (defmethod compile-node "UziDoUntilNode" [node ctx]
   (compile-loop node ctx))
 
-(defnp ^:private compile-for-loop-with-constant-step
+(defn ^:private compile-for-loop-with-constant-step
   [{:keys [counter start stop step body]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -303,7 +303,7 @@
                          (count compiled-stop))))])))
 
 
-(defnp ^:private compile-for-loop
+(defn ^:private compile-for-loop
   [{:keys [counter start stop step body temp-name]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -423,11 +423,11 @@
   #_(log/error "Unknown node: " (ast-utils/node-type node))
   (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
-(defnp ^:private create-context []
+(defn ^:private create-context []
   {:path (list)
    :globals (volatile! #{})})
 
-(defnp augment-ast [ast board]
+(defn augment-ast [ast board]
   "This function augments the AST with more information needed for the compiler.
    1) All pin literals are augmented with a :value that corresponds to their
       pin number for the given board. This is useful because it makes pin literals
@@ -473,12 +473,12 @@
          var
          (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
 
-(defnp remove-dead-code [ast & [remove-dead-code?]]
+(defn remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?
     (dcr/remove-dead-code ast)
     ast))
 
-(defnp check [ast src]
+(defn check [ast src]
   ; TODO(Richo): Use the src to improve the error messages
   (let [errors (checker/check-tree ast)]
     (if (empty? errors)
@@ -489,7 +489,7 @@
                       {:src src
                        :errors errors})))))
 
-(defnp compile-tree
+(defn compile-tree
   [original-ast src
    & {:keys [board lib-dir remove-dead-code?]
       :or {board boards/UNO,
@@ -507,11 +507,11 @@
      :compiled compiled}))
 
 ; TODO(Richo): This function should not be in the compiler
-(defnp compile-json-string [str & args]
+(defn compile-json-string [str & args]
   (let [ast (json/decode str)
         src (codegen/print ast)]
     (apply compile-tree ast src args)))
 
 ; TODO(Richo): This function should not be in the compiler
-(defnp compile-uzi-string [str & args]
-  (apply compile-tree (p ::parser/parse (parser/parse str)) str args))
+(defn compile-uzi-string [str & args]
+  (apply compile-tree (parser/parse str) str args))
