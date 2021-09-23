@@ -18,7 +18,6 @@
                                         :content content})
         content))))
 
-
 (defn bind-primitives [ast]
   (let [scripts (set (map :name
                           (:scripts ast)))
@@ -98,7 +97,6 @@
 
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
 
-
 (defn resolve-import
   [{:keys [alias path initializationBlock] :as imp}, libs-dir, visited-imports]
   (when (contains? visited-imports {:alias alias :path path})
@@ -128,7 +126,6 @@
            :globals (vec (concat imported-globals (:globals ast)))
            :scripts (vec (concat imported-scripts (:scripts ast)))
            :primitives (vec (concat imported-prims (:primitives ast))))))
-
 
 (defn resolve-imports
   ([ast libs-dir]

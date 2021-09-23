@@ -10,8 +10,9 @@
 
 (defn init []
   (fs/register-fs! #'browser/file)
-  (tufte/add-basic-println-handler!
-   {:format-pstats-opts {:columns [:n-calls :min :max :mean :mad :clock :total]}})
+  (tufte/add-basic-println-handler! {}
+   ;{:format-pstats-opts {:columns [:n-calls :min :max :mean :mad :clock :total]}}
+   )
   (println "Compiler loaded successfully!"))
 
 (defn ^:export parse [str]
