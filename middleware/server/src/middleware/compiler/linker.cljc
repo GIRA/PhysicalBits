@@ -111,7 +111,7 @@
                                               (implicit-imports imp)
                                               (conj visited-imports
                                                     {:alias alias :path path})))]
-        {:import (with-meta imp {:program imported-ast})
+        {:import (vary-meta imp assoc :program imported-ast)
          :program (apply-alias imported-ast alias)})
       (throw (ex-info "File not found"
                       {:import imp
