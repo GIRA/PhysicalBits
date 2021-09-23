@@ -518,8 +518,8 @@
            remove-dead-code? true}}]
   (let [ast (-> original-ast
                 (linker/resolve-imports lib-dir)
-                (assign-pin-values board)
                 (remove-dead-code remove-dead-code?)
+                (assign-pin-values board)
                 assign-unique-variable-names ; TODO(Richo): Can we do this after removing dead code?
                 (check src))
         compiled (compile ast (create-context))]
