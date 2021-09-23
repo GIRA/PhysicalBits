@@ -31,59 +31,25 @@
            "d" (* 1000 60 60 24))
          value))))
 
-; TODO(Richo): Maybe collect the globals while traversing the tree...
-(defnp collect-globals [ast]
-  (set (concat
+(defnp ^:private register-constant! [{globals :globals} value]
+  (vswap! globals conj (emit/constant value)))
 
-        ; Collect all number literals
-        (map (fn [{:keys [value]}] (emit/constant value))
-             (mapcat #(ast-utils/filter % "UziNumberLiteralNode")
-                     (:scripts ast)))
+(defnp ^:private register-global!
+  ([ctx name]
+   (register-global! name 0))
+  ([{globals :globals} name value]
+   (vswap! globals conj (emit/variable name value))))
 
-        ; Collect all pin literals
-        (map (fn [{:keys [value]}] (emit/constant value))
-             (ast-utils/filter ast "UziPinLiteralNode"))
-
-        ; Collect repeat-loops (they use 0 to initialize temp and 1 to increment times)
-        (mapcat (fn [_] [(emit/constant 0)
-                         (emit/constant 1)])
-                (ast-utils/filter ast "UziRepeatNode"))
-
-        ; Collect for-loops (they use 0 to initialize temp)
-        (map (fn [_] (emit/constant 0))
-             (ast-utils/filter ast "UziForNode"))
-
-        ; Collect logical-or (with short-circuit)
-        (map (fn [_] (emit/constant 1))
-             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
-                     (ast-utils/filter ast "UziLogicalOrNode")))
-
-
-        ; Collect logical-and (with short-circuit)
-        (map (fn [_] (emit/constant 0))
-             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
-                     (ast-utils/filter ast "UziLogicalAndNode")))
-
-        ; Collect all globals
-        (map (fn [{:keys [name value]}] (emit/variable name (ast-utils/compile-time-value value 0)))
-             (:globals ast))
-
-        ; Collect all local values
-        (map (fn [{:keys [value]}] (emit/constant (if (nil? value) 0
-                                                    (ast-utils/compile-time-value value 0))))
-             (mapcat (fn [{:keys [body]}] (ast-utils/filter body "UziVariableDeclarationNode"))
-                     (:scripts ast)))
-
-        ; Collect all ticking rates
-        (map (fn [{:keys [tickingRate]}] (emit/constant (rate->delay tickingRate)))
-             (:scripts ast)))))
 
 (defmethod compile-node "UziProgramNode" [node ctx]
-  (emit/program
-   :globals (collect-globals node)
-   :scripts (mapv #(compile % ctx)
-                  (:scripts node))))
-
+  (doseq [{:keys [name value]} (:globals node)]
+    (register-global! ctx name (ast-utils/compile-time-value value 0)))
+  (let [scripts (mapv #(compile % ctx)
+                      (:scripts node))
+        globals @(:globals ctx)]
+    (emit/program
+     :globals globals
+     :scripts scripts)))
 
 ; TODO(Richo): Maybe collect the locals while traversing the tree...
 (defnp collect-locals [script-body]
@@ -106,13 +72,15 @@
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
    ctx]
-  (emit/script
-   :name task-name,
-   :delay (rate->delay ticking-rate),
-   :running? (contains? #{"running" "once"} state)
-   :once? (= "once" state)
-   :locals (collect-locals body)
-   :instructions (compile body ctx)))
+  (let [delay (rate->delay ticking-rate)]
+    (register-constant! ctx delay)
+    (emit/script
+     :name task-name,
+     :delay delay,
+     :running? (contains? #{"running" "once"} state)
+     :once? (= "once" state)
+     :locals (collect-locals body)
+     :instructions (compile body ctx))))
 
 (defnp ^:private compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
@@ -151,8 +119,9 @@
             (emit/prim-call primitive-name)
             (emit/script-call selector)))))
 
-(defmethod compile-node "UziNumberLiteralNode" [node _]
-  [(emit/push-value (node :value))])
+(defmethod compile-node "UziNumberLiteralNode" [{value :value} ctx]
+  (register-constant! ctx value)
+  [(emit/push-value value)])
 
 (defmethod compile-node "UziVariableNode" [node {:keys [path]}]
   (let [global? (ast-utils/global? node path)
@@ -166,6 +135,7 @@
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
+  (register-constant! ctx (ast-utils/compile-time-value value 0))
   (if (or (nil? value)
           (ast-utils/compile-time-constant? value))
     []
@@ -173,9 +143,11 @@
           (emit/write-local unique-name))))
 
 (defmethod compile-node "UziPinLiteralNode" [{:keys [value]} ctx]
+  (register-constant! ctx value)
   [(emit/push-value value)])
 
 (defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
@@ -185,6 +157,7 @@
    :instructions (compile body ctx)))
 
 (defmethod compile-node "UziFunctionNode" [{:keys [name arguments body]} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
@@ -374,12 +347,17 @@
                          (count compiled-stop))))])))
 
 (defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): This seems to be necessary only if the step is not constant
   (if (ast-utils/compile-time-constant? step)
     (compile-for-loop-with-constant-step node ctx)
     (compile-for-loop node ctx)))
 
 (defmethod compile-node "UziRepeatNode"
   [{:keys [body times temp-name]} ctx]
+  ; We need to register constants 0 and 1 because repeat-loops use 0 to
+  ; initialize "temp" and 1 to increment "times"
+  (register-constant! ctx 0)
+  (register-constant! ctx 1)
   (let [compiled-body (compile body ctx)
         compiled-times (compile times ctx)]
     (concat
@@ -412,11 +390,13 @@
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
       ; We need to short-circuit
-      (concat compiled-left
+      (do
+        (register-constant! ctx 0)
+        (concat compiled-left
               [(emit/jz (inc (count compiled-right)))]
               compiled-right
               [(emit/jmp 1)
-               (emit/push-value 0)])
+               (emit/push-value 0)]))
       ; Primitive call is enough
       (concat compiled-left
               compiled-right
@@ -427,11 +407,13 @@
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
       ; We need to short-circuit
-      (concat compiled-left
+      (do
+        (register-constant! ctx 1)
+        (concat compiled-left
               [(emit/jnz (inc (count compiled-right)))]
               compiled-right
               [(emit/jmp 1)
-               (emit/push-value 1)])
+               (emit/push-value 1)]))
       ; Primitive call is enough
       (concat compiled-left
               compiled-right
@@ -442,7 +424,8 @@
   (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
 (defnp ^:private create-context []
-  {:path (list)})
+  {:path (list)
+   :globals (volatile! #{})})
 
 (defnp augment-ast [ast board]
   "This function augments the AST with more information needed for the compiler.
@@ -531,4 +514,4 @@
 
 ; TODO(Richo): This function should not be in the compiler
 (defnp compile-uzi-string [str & args]
-  (apply compile-tree (parser/parse str) str args))
+  (apply compile-tree (p ::parser/parse (parser/parse str)) str args))
