@@ -444,14 +444,18 @@
 (defnp ^:private create-context []
   {:path (list)})
 
-(defnp ^:private assign-unique-variable-names
-  "This function augments all nodes that could need to declare either a local or temporary
-  variable with a unique name (based on a simple counter) that the compiler can later use
-  to identify this variable.
-  I'm using the following naming conventions:
-  - Temporary variables are named with @ and then the counter
-  - Local variables already have a name, so I just add the # suffix followed by the counter"
-  [ast]
+(defnp augment-ast [ast board]
+  "This function augments the AST with more information needed for the compiler.
+   1) All pin literals are augmented with a :value that corresponds to their
+      pin number for the given board. This is useful because it makes pin literals
+      polymorphic with number literals. And also, we'll need this value later and it
+      would be a pain in the ass to pass around the board every time.
+   2) All nodes that could need to declare either a local or temporary variable
+      are augmented with a unique name (based on a simple counter) that the compiler
+      can later use to identify this variable.
+      I'm using the following naming conventions:
+      - Temporary variables are named with @ and then the counter
+      - Local variables already have a name, so I just add the # suffix followed by the counter"
   (let [local-counter (volatile! 0)
         temp-counter (volatile! 0)
         reset-counters! (fn []
@@ -460,6 +464,10 @@
         globals (-> ast :globals set)]
     (ast-utils/transform
      ast
+
+     "UziPinLiteralNode"
+     (fn [{:keys [type number] :as pin} _]
+       (assoc pin :value (boards/get-pin-number (str type number) board)))
 
      ; Temporary variables are local to their script
      "UziTaskNode" (fn [node _] (reset-counters!) node)
@@ -481,18 +489,6 @@
        (if (contains? globals var)
          var
          (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
-
-(defnp assign-pin-values
- "This function augments all pin literals with a :value that corresponds to their
-  pin number for the given board. This is useful because it makes pin literals
-  polymorphic with number literals. And also, we'll need this value later and it
-  would be a pain in the ass to pass around the board every time"
-  [ast board]
-  (ast-utils/transform
-   ast
-   "UziPinLiteralNode"
-   (fn [{:keys [type number] :as pin} _]
-     (assoc pin :value (boards/get-pin-number (str type number) board)))))
 
 (defnp remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?
@@ -519,8 +515,7 @@
   (let [ast (-> original-ast
                 (linker/resolve-imports lib-dir)
                 (remove-dead-code remove-dead-code?)
-                (assign-pin-values board)
-                assign-unique-variable-names ; TODO(Richo): Can we do this after removing dead code?
+                (augment-ast board)
                 (check src))
         compiled (compile ast (create-context))]
     {:original-ast original-ast
