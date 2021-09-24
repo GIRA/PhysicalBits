@@ -197,11 +197,11 @@
    The optional :default clause will match any node, but only if no previous
    matching clause was found."
   (loop [[pred result-fn & rest] clauses]
-    (if (or (= :default pred)
-            (pred node path))
-      (result-fn node path)
-      (if (empty? rest)
-        node
+    (if-not pred
+      node
+      (if (or (= :default pred)
+              (pred node path))
+        (result-fn node path)
         (recur rest)))))
 
 (defn- replace-children [node keys expr-fn]
@@ -209,14 +209,12 @@
   result of evaluating expr-fn passing the child node as argument."
   (loop [keys keys, result node]
     (let [[first & rest] keys]
-      (if first
+      (if-not first
+        result
         (let [new-result (assoc result
                                 first
                                 (expr-fn (result first)))]
-          (if (empty? rest)
-            new-result
-            (recur rest new-result)))
-        result))))
+          (recur rest new-result))))))
 
 (defn- transformp* [ast path clauses]
   "I made this function because clojure.walk doesn't traverse the tree
