@@ -1,5 +1,6 @@
 let Uzi = (function () {
 
+  // TODO(Richo): Make a proper UUID?
   let id = Math.floor(Math.random() * (2**64));
   let host = "";
   let apiURL = "";
@@ -187,7 +188,7 @@ let Uzi = (function () {
   function compileLocal(src, type, silent) {
     return new Promise((resolve, reject) => {
       try {
-        var result = middleware.core.compile(src, type);
+        var result = middleware.compiler.compile(src, type);
         var program = {
           type: type,
           src: result.src,
@@ -195,7 +196,7 @@ let Uzi = (function () {
           ast: result["original-ast"]
         };
         resolve(program);
-        var bytecodes = middleware.core.encode(program.compiled);
+        var bytecodes = middleware.compiler.encode(program.compiled);
         var output = [];
         if (!silent) {
           output = [
