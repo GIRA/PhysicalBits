@@ -24,6 +24,14 @@ To build, just run:
 
     build.bat
 
-If you want to recompile automatically on changes, run (this uses `nodemon` to watch for changes):
+If you want to recompile automatically on changes, run (this uses [nodemon](https://www.npmjs.com/package/nodemon) to watch for changes):
 
     watch.bat
+
+## Running the compiled program
+
+Even though the build should output an html file to help you get started, I find it full with stuff I don't need so I also added my own `index.html` that just loads the required `<script>` and nothing more.
+
+To run this file is not enough to open it in the browser, you'll need a local webserver to host the files. I'm using [http-server](https://www.npmjs.com/package/http-server), which works great for this stuff.
+
+    http-server.cmd . -c-1 --mimetypes mime.types -o
