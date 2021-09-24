@@ -10,8 +10,7 @@
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
             [middleware.compiler.dead-code-remover :as dcr]
-            [middleware.code-generator.code-generator :as codegen]
-            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
+            [middleware.code-generator.code-generator :as codegen]))
 
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker

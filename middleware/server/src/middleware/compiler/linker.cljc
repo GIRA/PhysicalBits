@@ -2,12 +2,11 @@
   (:require [middleware.compiler.utils.ast :as ast-utils]
             [middleware.utils.fs.common :as fs]
             [middleware.parser.parser :as parser]
-            [clojure.pprint :refer [pprint]]
-            [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
+            [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
-(defnp parse [file]
+(defn parse [file]
   (let [path (fs/absolute-path file)
         last-modified (fs/last-modified file)
         entry (get @parser-cache path)]
@@ -19,7 +18,7 @@
                                         :content content})
         content))))
 
-(defnp bind-primitives [ast]
+(defn bind-primitives [ast]
   (let [scripts (set (map :name
                           (:scripts ast)))
         core-primitives (into {} (map (fn [{:keys [name alias]}] [alias name])
@@ -34,7 +33,7 @@
                        (assoc node
                               :primitive-name (core-primitives selector)))))))
 
-(defnp apply-alias [ast alias]
+(defn apply-alias [ast alias]
   (let [with-alias #(str alias "." %)
          update (fn [key node _] (assoc node key (-> node key with-alias)))
          update-name (partial update :name)
@@ -64,7 +63,7 @@
 
      "UziPrimitiveDeclarationNode" update-alias)))
 
-(defnp apply-initialization-block [ast {:keys [statements] :as init-block}]
+(defn apply-initialization-block [ast {:keys [statements] :as init-block}]
   (let [globals (into {}
                       (map (fn [node] [(-> node :left :name), (-> node :right)])
                            (filter (fn [node]
@@ -88,7 +87,7 @@
                               (assoc script :state (get scripts name state))))
                           (:scripts ast)))))
 
-(defnp implicit-imports
+(defn implicit-imports
   ([] [{:__class__ "UziImportNode" :path "core.uzi"}])
   ([import]
    (filterv #(not= (:path import) (:path %))
@@ -117,7 +116,7 @@
                        :file file
                        :absolute-path (fs/absolute-path file)})))))
 
-(defnp build-new-program [ast resolved-imports]
+(defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)
          imported-globals (mapcat :globals imported-programs)
          imported-scripts (mapcat :scripts imported-programs)
