@@ -427,7 +427,7 @@
   {:path (list)
    :globals (volatile! #{})})
 
-(defnp augment-ast [ast board]
+(defn augment-ast [ast board]
   "This function augments the AST with more information needed for the compiler.
    1) All pin literals are augmented with a :value that corresponds to their
       pin number for the given board. This is useful because it makes pin literals
@@ -473,12 +473,12 @@
          var
          (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
 
-(defnp remove-dead-code [ast & [remove-dead-code?]]
+(defn remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?
     (dcr/remove-dead-code ast)
     ast))
 
-(defnp check [ast src]
+(defn check [ast src]
   ; TODO(Richo): Use the src to improve the error messages
   (let [errors (checker/check-tree ast)]
     (if (empty? errors)
@@ -489,7 +489,7 @@
                       {:src src
                        :errors errors})))))
 
-(defnp resolve-imports [ast lib-dir]
+(defn resolve-imports [ast lib-dir]
   (linker/resolve-imports ast lib-dir))
 
 (defn compile-tree
@@ -503,7 +503,7 @@
                 (remove-dead-code remove-dead-code?)
                 (augment-ast board)
                 (check src))
-        compiled (p ::compile (compile ast (create-context)))]
+        compiled (compile ast (create-context))]
     {:original-ast original-ast
      :final-ast ast
      :src src
@@ -517,4 +517,4 @@
 
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-uzi-string [str & args]
-  (apply compile-tree (p ::parser/parse (parser/parse str)) str args))
+  (apply compile-tree (parser/parse str) str args))
