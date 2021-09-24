@@ -13,6 +13,38 @@
             [middleware.code-generator.code-generator :as codegen]
             [taoensso.tufte :as tufte :refer (defnp p profiled profile)]))
 
+; TODO(Richo): Optimize the linker! Following are the results of running the tufte
+; profiler on the compiler and then inside the linker. As you can see, the linker
+; seems to be taking half the time of the entire process. I still haven't figured
+; out a way of optimizing it without a major rewrite, so I leave this comment here
+; to remind my future self of this.
+; ___________________________________________________________________________________________________________________________________________________________________
+; pId                                                     nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+;
+; :middleware.compiler.compiler/defn_resolve-imports          50       40ms       51ms       74ms       95ms      161ms      161ms     57.8ms  ±24%     2.89s     53%
+; :middleware.parser.parser/parse                             50       14ms       23ms       31ms       34ms       52ms       52ms    23.74ms  ±19%     1.19s     22%
+; :middleware.compiler.compiler/compile                       50        5ms       10ms       12ms       16ms       26ms       26ms     9.96ms  ±21%      498ms     9%
+; :middleware.compiler.compiler/defn_remove-dead-code         50        5ms        9ms       14ms       16ms       17ms       17ms     9.36ms  ±21%      468ms     9%
+; :middleware.compiler.compiler/defn_check                    50        3ms        5ms        8ms       10ms       20ms       20ms     5.44ms  ±34%      272ms     5%
+; :middleware.compiler.compiler/defn_augment-ast              50        1ms        3ms        4ms        4ms        4ms        4ms     2.82ms  ±19%      141ms     3%
+;
+; Accounted                                                                                                                                             5.46s    100%
+; Clock                                                                                                                                                 5.47s    100%
+; ___________________________________________________________________________________________________________________________________________________________________________
+; pId                                                             nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+;
+; :middleware.compiler.linker/defn_apply-alias                       350        0ns        0ns        5ms        6ms        9ms       18ms     1.98ms ±114%      693ms    30%
+; :middleware.compiler.linker/defn_bind-primitives                   400        0ns        1ms        3ms        3ms        4ms        9ms      980μs  ±70%      392ms    17%
+; :middleware.compiler.linker/defn_build-new-program                 400        0ns        0ns        0ns        1ms        1ms        1ms     72.5μs ±186%       29ms     1%
+; :middleware.compiler.linker/defn_apply-initialization-block        350        0ns        0ns        0ns        1ms        1ms        2ms    62.86μs ±188%       22ms     1%
+; :middleware.compiler.linker/defn_implicit-imports_1                350        0ns        0ns        0ns        0ns        0ns        1ms     5.71μs ±199%        2ms     0%
+; :middleware.compiler.linker/defn_parse                             350        0ns        0ns        0ns        0ns        0ns        1ms     2.86μs ±199%        1ms     0%
+; :middleware.compiler.linker/defn_implicit-imports_0                400        0ns        0ns        0ns        0ns        0ns        0ns        0ns ±NaN%        0ns     0%
+;
+; Accounted                                                                                                                                                     1.14s     50%
+; Clock                                                                                                                                                         2.29s    100%
+; ___________________________________________________________________________________________________________________________________________________________________________
+
 (defmulti compile-node :__class__)
 
 (defn ^:private compile [node ctx]
