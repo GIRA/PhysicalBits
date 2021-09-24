@@ -207,14 +207,14 @@
 (defn- replace-children [node keys expr-fn]
   "Updates node by replacing each child on the given keys with the
   result of evaluating expr-fn passing the child node as argument."
-  (loop [keys keys, result node]
-    (let [[first & rest] keys]
-      (if-not first
-        result
-        (let [new-result (assoc result
-                                first
-                                (expr-fn (result first)))]
-          (recur rest new-result))))))
+  (reduce (fn [result key]
+            (let [old (result key)
+                  new (expr-fn old)]
+              (if (= old new)
+                result
+                (assoc result key new))))
+          node
+          keys))
 
 (defn- transformp* [ast path clauses]
   "I made this function because clojure.walk doesn't traverse the tree
