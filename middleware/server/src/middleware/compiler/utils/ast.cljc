@@ -228,14 +228,15 @@
     ; Here we take care of keeping track of the path so that we can pass
     ; it as argument for both the predicates and the transforming functions.
     (node? ast)
-    (let [node (evaluate-pred-clauses ast
-                                      (conj path ast)
+    (let [new-path (conj path ast)
+          node (evaluate-pred-clauses ast
+                                      new-path
                                       clauses)]
       (replace-children node
                         (valid-keys node)
                         (fn [child]
                           (transformp* child
-                                       (conj path node)
+                                       new-path
                                        clauses))))
 
     ; If we find a vector, we simply recursively transform each element
