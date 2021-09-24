@@ -222,6 +222,13 @@
    path of parent nodes, which is very useful.
    This function is private, you should call transformp or transform"
   (cond
+
+    ; If we find a vector, we simply recursively transform each element
+    ; and return a new vector.
+    (vector? ast)
+    (mapv #(transformp* % path clauses)
+          ast)
+
     ; If we find a node, we evaluate each clause in order and if we find
     ; a match we replace the node with the result before recursively
     ; transforming its children.
@@ -239,12 +246,6 @@
                                        new-path
                                        clauses))))
 
-    ; If we find a vector, we simply recursively transform each element
-    ; and return a new vector.
-    (vector? ast)
-    (mapv #(transformp* % path clauses)
-          ast)
-
     ; Anything else is simply returned without any transformation
     :else ast))
 
@@ -259,7 +260,6 @@
    The original node will be replaced with the result of evaluating expr-fn
    before continuing the traversal."
   (transformp* ast (list) clauses))
-
 
 (defn transform [ast & clauses]
   "This function is exactly like transformp but instead of predicates it matches
