@@ -5,6 +5,7 @@
  * found in the LICENSE file.
  */
 
+#include <emscripten.h>
 #include <stdio.h>
 #include "Arduino.h"
 #include "Servo.h"
@@ -105,6 +106,13 @@ void handshake() {
 
   if (send != ack) { printf("CONNECTION FAILED!\n"); return; }
 }
+
+
+int main() {
+  printf("Simulator loaded successfully!\n");
+  EM_ASM( test_blink() );
+}
+
 /*
 int main() {
   printf("hello, world!\n");
