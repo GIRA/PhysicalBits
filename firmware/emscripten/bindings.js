@@ -47,9 +47,25 @@ var EEPROM = {
   read: Module.cwrap("EEPROM_read", "number", ["number"]),
   size: Module.cwrap("EEPROM_size", "number", []),
 };
-var Simulator = {};
+var Simulator = {
+  interval: null,
+  start: function () {
+    Simulator.stop();
+
+    let begin = Date.now();
+    Sketch.setMillis(Date.now() - begin);
+    Sketch.setup();
+    Simulator.interval = setInterval(() => {
+      Sketch.setMillis(Date.now() - begin);
+      Sketch.loop();
+    }, 10);
+  },
+  stop: function () {
+    clearInterval(Simulator.interval);
+  }
+};
 Simulator.ready = new Promise(res => {
-  Simulator.start = res;
+  Simulator.init = res;
 });
 
 function handshake() {

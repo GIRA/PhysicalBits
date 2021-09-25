@@ -110,7 +110,7 @@ void handshake() {
 
 int main() {
   printf("Simulator loaded successfully!\n");
-  EM_ASM( Simulator.start() );
+  EM_ASM( Simulator.init() );
 }
 
 /*
