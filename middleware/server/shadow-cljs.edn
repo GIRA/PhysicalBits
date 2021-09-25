@@ -7,16 +7,16 @@
  :nrepl {:port 9000
          :middleware []}
 
- :dev-http {8080 "public"}
+ :dev-http {8081 ["public"
+                  "public/compiler-test"]}
 
  :builds {:compiler {:target :browser
+                     :output-dir "public/compiler/js"
                      :modules {:main {:init-fn middleware.compiler/init}}}
 
           :compiler-test {:target :browser-test
-                          :test-dir "resources/public/js/test"
-                          :ns-regexp "-test\\d?$"
-                          :devtools {:http-port 8021
-                                     :http-root "resources/public/js/test"}}
+                          :test-dir "public/compiler-test"
+                          :ns-regexp "-test\\d?$"}
 
           :controller {:target :node-library
                        :exports {:connect middleware.controller/connect!
