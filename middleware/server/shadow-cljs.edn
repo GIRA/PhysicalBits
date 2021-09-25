@@ -18,6 +18,10 @@
                           :test-dir "public/compiler-test"
                           :ns-regexp "-test\\d?$"}
 
+          :simulator {:target :browser
+                      :output-dir "public/simulator/js"
+                      :modules {:main {:init-fn middleware.simulator/init}}}
+
           :controller {:target :node-library
                        :exports {:connect middleware.controller/connect!
                                  :disconnect middleware.controller/disconnect!
