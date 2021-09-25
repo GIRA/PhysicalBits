@@ -1,7 +1,7 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,12.43910256410256,4.522435897435897,29.49679487179487
+AVERAGE,12.43910256410256,4.458333333333333,29.43269230769231
 MEDIAN,6,3,17.5
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
@@ -45,11 +45,11 @@ middleware.code-generator-test/empty-script-stopped#0,0,0,2
 middleware.code-generator-test/empty-script-ticking#0,0,1,10
 middleware.code-generator-test/function-with-arguments#0,0,0,2
 middleware.code-generator-test/functions-with-calls-and-globals#0,0,0,2
-middleware.code-generator-test/motor-usage#0,33,12,61
+middleware.code-generator-test/motor-usage#0,33,9,58
 middleware.code-generator-test/multiple-global-declaration#0,0,0,2
 middleware.code-generator-test/primitive-definition#0,8,3,20
 middleware.code-generator-test/procedure-with-argument#0,0,0,2
-middleware.code-generator-test/sonar-and-button#0,31,14,75
+middleware.code-generator-test/sonar-and-button#0,31,12,73
 middleware.code-generator-test/uninitialized-global-declaration#0,0,0,2
 middleware.code-generator-test/uzi-syntax#0,16,12,47
 middleware.code-generator-test2/blink13#0,2,2,12
@@ -66,8 +66,8 @@ middleware.code-generator-test2/function-with-arguments#0,0,0,2
 middleware.code-generator-test2/function-with-arguments#1,0,0,2
 middleware.code-generator-test2/functions-with-calls-and-globals#0,0,0,2
 middleware.code-generator-test2/functions-with-calls-and-globals#1,0,0,2
-middleware.code-generator-test2/motor-usage#0,33,12,61
-middleware.code-generator-test2/motor-usage#1,33,12,61
+middleware.code-generator-test2/motor-usage#0,33,9,58
+middleware.code-generator-test2/motor-usage#1,33,9,58
 middleware.code-generator-test2/operator-precedence#0,0,0,2
 middleware.code-generator-test2/operator-precedence#1,0,0,2
 middleware.code-generator-test2/parsing-negative-numbers-larger-than-minus-1#0,2,2,11
@@ -76,8 +76,8 @@ middleware.code-generator-test2/primitive-definition#0,8,3,20
 middleware.code-generator-test2/primitive-definition#1,8,3,20
 middleware.code-generator-test2/procedure-with-argument#0,0,0,2
 middleware.code-generator-test2/procedure-with-argument#1,0,0,2
-middleware.code-generator-test2/sonar-and-button#0,31,14,75
-middleware.code-generator-test2/sonar-and-button#1,31,14,75
+middleware.code-generator-test2/sonar-and-button#0,31,12,73
+middleware.code-generator-test2/sonar-and-button#1,31,12,73
 middleware.code-generator-test2/uzi-syntax#0,16,12,47
 middleware.code-generator-test2/uzi-syntax#1,16,12,47
 middleware.compiler-autogen-test/Test043ForLoop#0,13,4,29
@@ -233,7 +233,7 @@ middleware.parser-test/functions-with-calls-and-globals#0,0,0,2
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#0,6,5,20
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#1,6,5,20
 middleware.parser-test/large-integers-are-parsed-as-floats#0,2,2,11
-middleware.parser-test/motor-usage#0,33,12,61
+middleware.parser-test/motor-usage#0,33,9,58
 middleware.parser-test/operator-precedence#0,0,0,2
 middleware.parser-test/parsing-negative-numbers-larger-than-minus-1#0,2,2,11
 middleware.parser-test/parsing-numbers-in-scientific-notation#0,2,2,11
@@ -263,7 +263,7 @@ middleware.parser-test/parsing-numbers-in-scientific-notation#9,2,2,11
 middleware.parser-test/primitive-definition#0,8,3,20
 middleware.parser-test/procedure-with-argument#0,0,0,2
 middleware.parser-test/return-should-not-be-confused-with-call#0,4,3,11
-middleware.parser-test/sonar-and-button#0,31,14,75
+middleware.parser-test/sonar-and-button#0,31,12,73
 middleware.parser-test/spaces-1#0,2,2,12
 middleware.parser-test/spaces-2#0,2,2,12
 middleware.parser-test/spaces-3#0,2,2,12

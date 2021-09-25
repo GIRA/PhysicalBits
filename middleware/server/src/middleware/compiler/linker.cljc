@@ -18,7 +18,6 @@
                                         :content content})
         content))))
 
-
 (defn bind-primitives [ast]
   (let [scripts (set (map :name
                           (:scripts ast)))
@@ -35,36 +34,34 @@
                               :primitive-name (core-primitives selector)))))))
 
 (defn apply-alias [ast alias]
-  (if-not alias
-    ast
-    (let [with-alias #(str alias "." %)
-           update (fn [key node _] (assoc node key (-> node key with-alias)))
-           update-name (partial update :name)
-           update-selector (partial update :selector)
-           update-alias (partial update :alias)
-           update-variable (fn [node path]
-                             (if (ast-utils/local? node path)
-                               node
-                               (update :name node path)))
-           update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
-      (ast-utils/transform
-       ast
+  (let [with-alias #(str alias "." %)
+         update (fn [key node _] (assoc node key (-> node key with-alias)))
+         update-name (partial update :name)
+         update-selector (partial update :selector)
+         update-alias (partial update :alias)
+         update-variable (fn [node path]
+                           (if (ast-utils/local? node path)
+                             node
+                             (update :name node path)))
+         update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
+    (ast-utils/transform
+     ast
 
-       "UziVariableDeclarationNode" update-variable
-       "UziVariableNode" update-variable
+     "UziVariableDeclarationNode" update-variable
+     "UziVariableNode" update-variable
 
-       "UziTaskNode" update-name
-       "UziFunctionNode" update-name
-       "UziProcedureNode" update-name
+     "UziTaskNode" update-name
+     "UziFunctionNode" update-name
+     "UziProcedureNode" update-name
 
-       "UziCallNode" update-selector
+     "UziCallNode" update-selector
 
-       "UziScriptStopNode" update-script-list
-       "UziScriptStartNode" update-script-list
-       "UziScriptPauseNode" update-script-list
-       "UziScriptResumeNode" update-script-list
+     "UziScriptStopNode" update-script-list
+     "UziScriptStartNode" update-script-list
+     "UziScriptPauseNode" update-script-list
+     "UziScriptResumeNode" update-script-list
 
-       "UziPrimitiveDeclarationNode" update-alias))))
+     "UziPrimitiveDeclarationNode" update-alias)))
 
 (defn apply-initialization-block [ast {:keys [statements] :as init-block}]
   (let [globals (into {}
@@ -98,7 +95,6 @@
 
 (declare resolve-imports) ; Forward declaration to be able to call it from resolve-import
 
-
 (defn resolve-import
   [{:keys [alias path initializationBlock] :as imp}, libs-dir, visited-imports]
   (when (contains? visited-imports {:alias alias :path path})
@@ -106,16 +102,15 @@
   (let [file (fs/file libs-dir path)]
     (if (fs/exists? file)
       (let [imported-ast (-> (parse file)
-                             ast-utils/assign-internal-ids
                              (apply-initialization-block initializationBlock)
                              (resolve-imports libs-dir
                                               (implicit-imports imp)
                                               (conj visited-imports
                                                     {:alias alias :path path})))]
-        {:import (assoc imp
-                        :isResolved true
-                        :program imported-ast)
-         :program (apply-alias imported-ast alias)})
+        {:import (vary-meta imp assoc :program imported-ast)
+         :program (if alias
+                    (apply-alias imported-ast alias)
+                    imported-ast)})
       (throw (ex-info "File not found"
                       {:import imp
                        :file file
@@ -132,15 +127,12 @@
            :scripts (vec (concat imported-scripts (:scripts ast)))
            :primitives (vec (concat imported-prims (:primitives ast))))))
 
-
 (defn resolve-imports
   ([ast libs-dir]
    (resolve-imports ast libs-dir (implicit-imports) #{}))
   ([ast libs-dir implicit-imports visited-imports]
-   (let [resolved-imports (map (fn [imp] (resolve-import imp libs-dir visited-imports))
-                               (concat implicit-imports
-                                       (filter (complement :isResolved)
-                                               (:imports ast))))]
+   (let [resolved-imports (mapv (fn [imp] (resolve-import imp libs-dir visited-imports))
+                                (concat implicit-imports (:imports ast)))]
      (-> ast
          (build-new-program resolved-imports)
          bind-primitives))))

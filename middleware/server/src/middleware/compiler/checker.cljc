@@ -1,18 +1,19 @@
 ; TODO(Richo): Most of the work here could probably be written using clojure.spec
 (ns middleware.compiler.checker
   (:refer-clojure :exclude [assert])
-  (:require [middleware.compiler.utils.ast :as ast-utils]
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.primitives :as prims]
             [petitparser.token :as t]
             [clojure.data :as data]))
 
-(defn- register-error! [description node errors]
+(defn ^:private register-error! [description node errors]
   (swap! errors conj {:node node
                       :src (if-let [token (get (meta node) :token)]
                              (t/input-value token))
                       :description description}))
 
-(defn- assert [bool description node errors]
+(defn ^:private assert [bool description node errors]
   (when (not bool)
     (register-error! description node errors))
   bool)
@@ -67,7 +68,7 @@
           "Ticking rate expected"
           node errors))
 
-(defn- assert-no-duplicates [coll key-fn msg errors]
+(defn ^:private assert-no-duplicates [coll key-fn msg errors]
   (let [set (atom #{})]
     (doseq [each coll]
       (assert (not (contains? @set (key-fn each)))
@@ -75,12 +76,6 @@
       (swap! set conj (key-fn each)))))
 
 (defmulti check-node (fn [node errors path] (:__class__ node)))
-
-(defn- check [node errors path]
-  (let [new-path (conj path node)]
-    (check-node node errors new-path)
-    (doseq [child-node (ast-utils/children node)]
-      (check child-node errors new-path))))
 
 (defmethod check-node "UziProgramNode" [node errors path]
   (doseq [import (:imports node)]
@@ -106,7 +101,7 @@
   (doseq [prim (:primitives node)]
     (assert-primitive prim errors)))
 
-(defn- check-script [node errors path]
+(defn ^:private check-script [node errors path]
   (assert-no-duplicates (:arguments node)
                         :name
                         "Argument name already specified"
@@ -133,7 +128,7 @@
           "Ticking rate must be a positive value"
           node errors))
 
-(defn- check-primitive-call [node errors path]
+(defn ^:private check-primitive-call [node errors path]
   (let [prim (prims/primitive (:primitive-name node))]
     (assert (some? prim)
             (str "Invalid primitive '" (:selector node) "'")
@@ -148,10 +143,10 @@
                      " (expected: " nargs-expected ")")
                 node errors)))))
 
-(defn- contains-all? [a b]
+(defn ^:private contains-all? [a b]
   (nil? (first (data/diff (set b) (set a)))))
 
-(defn- check-script-call [node errors path]
+(defn ^:private check-script-call [node errors path]
   (let [script (ast-utils/script-named (:selector node) path)]
     (assert script
             "Invalid script"
@@ -203,7 +198,7 @@
   (assert-block (:falseBranch node) errors))
 
 (defmethod check-node "UziVariableDeclarationNode" [node errors path]
-  (when-let [script (first (filter ast-utils/script? path))]
+  (when-let [script (seek ast-utils/script? path)]
     (when (not (some #(= % node) (:arguments script)))
       (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
         (assert (not (contains? local-names (:name node)))
@@ -254,7 +249,7 @@
   (when-let [value (:value node)]
     (assert-expression value errors)))
 
-(defn- check-conditional-loop [node errors path]
+(defn ^:private check-conditional-loop [node errors path]
   (assert-block (:pre node) errors)
   (assert-expression (:condition node) errors)
   (assert-block (:post node) errors))
@@ -271,7 +266,7 @@
 (defmethod check-node "UziDoUntilNode" [node errors path]
   (check-conditional-loop node errors path))
 
-(defn- check-logical-operator [node errors path]
+(defn ^:private check-logical-operator [node errors path]
   (assert-expression (:left node) errors)
   (assert-expression (:right node) errors))
 
@@ -285,7 +280,7 @@
   (assert-variable (:left node) errors)
   (assert-expression (:right node) errors))
 
-(defn- check-script-control [node errors path]
+(defn ^:private check-script-control [node errors path]
   (let [valid-script-names (set (map :name (ast-utils/scripts path)))]
     (doseq [script-name (:scripts node)]
       (assert (contains? valid-script-names script-name)
@@ -308,6 +303,12 @@
   (check-script-control node errors path))
 
 (defmethod check-node :default [_ _ _])
+
+(defn ^:private check [node errors path]
+  (let [new-path (conj path node)]
+    (check-node node errors new-path)
+    (doseq [child-node (ast-utils/children node)]
+      (check child-node errors new-path))))
 
 (defn check-tree [ast]
   (let [errors (atom [])

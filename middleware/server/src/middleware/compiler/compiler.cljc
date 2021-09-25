@@ -1,6 +1,7 @@
 (ns middleware.compiler.compiler
   (:refer-clojure :exclude [compile])
   (:require #?(:clj [clojure.tools.logging :as log])
+            [middleware.utils.core :refer [seek]]
             [middleware.utils.json :as json]
             [middleware.parser.parser :as parser]
             [middleware.device.boards :as boards]
@@ -11,12 +12,44 @@
             [middleware.compiler.dead-code-remover :as dcr]
             [middleware.code-generator.code-generator :as codegen]))
 
+; TODO(Richo): Optimize the linker! Following are the results of running the tufte
+; profiler on the compiler and then inside the linker. As you can see, the linker
+; seems to be taking half the time of the entire process. I still haven't figured
+; out a way of optimizing it without a major rewrite, so I leave this comment here
+; to remind my future self of this.
+; ___________________________________________________________________________________________________________________________________________________________________
+; pId                                                     nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+;
+; :middleware.compiler.compiler/defn_resolve-imports          50       40ms       51ms       74ms       95ms      161ms      161ms     57.8ms  ±24%     2.89s     53%
+; :middleware.parser.parser/parse                             50       14ms       23ms       31ms       34ms       52ms       52ms    23.74ms  ±19%     1.19s     22%
+; :middleware.compiler.compiler/compile                       50        5ms       10ms       12ms       16ms       26ms       26ms     9.96ms  ±21%      498ms     9%
+; :middleware.compiler.compiler/defn_remove-dead-code         50        5ms        9ms       14ms       16ms       17ms       17ms     9.36ms  ±21%      468ms     9%
+; :middleware.compiler.compiler/defn_check                    50        3ms        5ms        8ms       10ms       20ms       20ms     5.44ms  ±34%      272ms     5%
+; :middleware.compiler.compiler/defn_augment-ast              50        1ms        3ms        4ms        4ms        4ms        4ms     2.82ms  ±19%      141ms     3%
+;
+; Accounted                                                                                                                                             5.46s    100%
+; Clock                                                                                                                                                 5.47s    100%
+; ___________________________________________________________________________________________________________________________________________________________________________
+; pId                                                             nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+;
+; :middleware.compiler.linker/defn_apply-alias                       350        0ns        0ns        5ms        6ms        9ms       18ms     1.98ms ±114%      693ms    30%
+; :middleware.compiler.linker/defn_bind-primitives                   400        0ns        1ms        3ms        3ms        4ms        9ms      980μs  ±70%      392ms    17%
+; :middleware.compiler.linker/defn_build-new-program                 400        0ns        0ns        0ns        1ms        1ms        1ms     72.5μs ±186%       29ms     1%
+; :middleware.compiler.linker/defn_apply-initialization-block        350        0ns        0ns        0ns        1ms        1ms        2ms    62.86μs ±188%       22ms     1%
+; :middleware.compiler.linker/defn_implicit-imports_1                350        0ns        0ns        0ns        0ns        0ns        1ms     5.71μs ±199%        2ms     0%
+; :middleware.compiler.linker/defn_parse                             350        0ns        0ns        0ns        0ns        0ns        1ms     2.86μs ±199%        1ms     0%
+; :middleware.compiler.linker/defn_implicit-imports_0                400        0ns        0ns        0ns        0ns        0ns        0ns        0ns ±NaN%        0ns     0%
+;
+; Accounted                                                                                                                                                     1.14s     50%
+; Clock                                                                                                                                                         2.29s    100%
+; ___________________________________________________________________________________________________________________________________________________________________________
+
 (defmulti compile-node :__class__)
 
-(defn- compile [node ctx]
+(defn ^:private compile [node ctx]
   (compile-node node (update-in ctx [:path] conj node)))
 
-(defn- rate->delay [{:keys [^double value scale] :as node}]
+(defn ^:private rate->delay [{:keys [^double value scale] :as node}]
   (if-not node
     0
     (if (zero? value)
@@ -29,59 +62,27 @@
            "d" (* 1000 60 60 24))
          value))))
 
-(defn collect-globals [ast]
-  (set (concat
+(defn ^:private register-constant! [{globals :globals} value]
+  (vswap! globals conj (emit/constant value)))
 
-        ; Collect all number literals
-        (map (fn [{:keys [value]}] (emit/constant value))
-             (mapcat #(ast-utils/filter % "UziNumberLiteralNode")
-                     (:scripts ast)))
+(defn ^:private register-global!
+  ([ctx name]
+   (register-global! name 0))
+  ([{globals :globals} name value]
+   (vswap! globals conj (emit/variable name value))))
 
-        ; Collect all pin literals
-        (map (fn [{:keys [value]}] (emit/constant value))
-             (ast-utils/filter ast "UziPinLiteralNode"))
-
-        ; Collect repeat-loops (they use 0 to initialize temp and 1 to increment times)
-        (mapcat (fn [_] [(emit/constant 0)
-                         (emit/constant 1)])
-                (ast-utils/filter ast "UziRepeatNode"))
-
-        ; Collect for-loops (they use 0 to initialize temp)
-        (map (fn [_] (emit/constant 0))
-             (ast-utils/filter ast "UziForNode"))
-
-        ; Collect logical-or (with short-circuit)
-        (map (fn [_] (emit/constant 1))
-             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
-                     (ast-utils/filter ast "UziLogicalOrNode")))
-
-
-        ; Collect logical-and (with short-circuit)
-        (map (fn [_] (emit/constant 0))
-             (filter (fn [{:keys [right]}] (ast-utils/has-side-effects? right))
-                     (ast-utils/filter ast "UziLogicalAndNode")))
-
-        ; Collect all globals
-        (map (fn [{:keys [name value]}] (emit/variable name (ast-utils/compile-time-value value 0)))
-             (:globals ast))
-
-        ; Collect all local values
-        (map (fn [{:keys [value]}] (emit/constant (if (nil? value) 0
-                                                    (ast-utils/compile-time-value value 0))))
-             (mapcat (fn [{:keys [body]}] (ast-utils/filter body "UziVariableDeclarationNode"))
-                     (:scripts ast)))
-
-        ; Collect all ticking rates
-        (map (fn [{:keys [tickingRate]}] (emit/constant (rate->delay tickingRate)))
-             (:scripts ast)))))
 
 (defmethod compile-node "UziProgramNode" [node ctx]
-  (emit/program
-   :globals (collect-globals node)
-   :scripts (mapv #(compile % ctx)
-                  (:scripts node))))
+  (doseq [{:keys [name value]} (:globals node)]
+    (register-global! ctx name (ast-utils/compile-time-value value 0)))
+  (let [scripts (mapv #(compile % ctx)
+                      (:scripts node))
+        globals @(:globals ctx)]
+    (emit/program
+     :globals globals
+     :scripts scripts)))
 
-
+; TODO(Richo): Maybe collect the locals while traversing the tree...
 (defn collect-locals [script-body]
   (vec (concat
         ; Collect all variable declarations
@@ -102,15 +103,17 @@
 (defmethod compile-node "UziTaskNode"
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
    ctx]
-  (emit/script
-   :name task-name,
-   :delay (rate->delay ticking-rate),
-   :running? (contains? #{"running" "once"} state)
-   :once? (= "once" state)
-   :locals (collect-locals body)
-   :instructions (compile body ctx)))
+  (let [delay (rate->delay ticking-rate)]
+    (register-constant! ctx delay)
+    (emit/script
+     :name task-name,
+     :delay delay,
+     :running? (contains? #{"running" "once"} state)
+     :once? (= "once" state)
+     :locals (collect-locals body)
+     :instructions (compile body ctx))))
 
-(defn- compile-stmt [node ctx]
+(defn ^:private compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
     (if (ast-utils/expression? node)
       (conj instructions (emit/prim-call "pop"))
@@ -138,8 +141,8 @@
                       arguments
                       (let [script (ast-utils/script-named selector (:path ctx))]
                         (map (fn [{:keys [name]}]
-                               (first (filter #(= name (:key %))
-                                              arguments)))
+                               (seek #(= name (:key %))
+                                     arguments))
                              (:arguments script))))]
     (conj (vec (mapcat #(compile (:value %) ctx)
                        sorted-args))
@@ -147,8 +150,9 @@
             (emit/prim-call primitive-name)
             (emit/script-call selector)))))
 
-(defmethod compile-node "UziNumberLiteralNode" [node _]
-  [(emit/push-value (node :value))])
+(defmethod compile-node "UziNumberLiteralNode" [{value :value} ctx]
+  (register-constant! ctx value)
+  [(emit/push-value value)])
 
 (defmethod compile-node "UziVariableNode" [node {:keys [path]}]
   (let [global? (ast-utils/global? node path)
@@ -162,6 +166,7 @@
 
 (defmethod compile-node "UziVariableDeclarationNode"
   [{:keys [unique-name value]} ctx]
+  (register-constant! ctx (ast-utils/compile-time-value value 0))
   (if (or (nil? value)
           (ast-utils/compile-time-constant? value))
     []
@@ -169,9 +174,11 @@
           (emit/write-local unique-name))))
 
 (defmethod compile-node "UziPinLiteralNode" [{:keys [value]} ctx]
+  (register-constant! ctx value)
   [(emit/push-value value)])
 
 (defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
@@ -181,6 +188,7 @@
    :instructions (compile body ctx)))
 
 (defmethod compile-node "UziFunctionNode" [{:keys [name arguments body]} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
    :arguments (mapv (fn [{:keys [unique-name value]}]
@@ -210,7 +218,7 @@
 (defmethod compile-node "UziYieldNode" [_ _]
   [(emit/prim-call "yield")])
 
-(defn- compile-if-true-if-false
+(defn ^:private compile-if-true-if-false
   [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
    ctx]
   (let [compiled-condition (compile condition ctx)
@@ -222,7 +230,7 @@
             [(emit/jmp (count compiled-false-branch))]
             compiled-false-branch)))
 
-(defn- compile-if-true
+(defn ^:private compile-if-true
   [{condition :condition, true-branch :trueBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)]
@@ -230,7 +238,7 @@
             [(emit/jz (count compiled-true-branch))]
             compiled-true-branch)))
 
-(defn- compile-if-false
+(defn ^:private compile-if-false
   [{condition :condition, false-branch :falseBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-false-branch (compile false-branch ctx)]
@@ -249,7 +257,7 @@
     (conj compiled-body
           (emit/jmp (* -1 (inc (count compiled-body)))))))
 
-(defn- compile-loop
+(defn ^:private compile-loop
   [{negated? :negated, :keys [pre condition post]} ctx]
   (let [compiled-pre (compile pre ctx)
         compiled-condition (compile condition ctx)
@@ -284,7 +292,7 @@
 (defmethod compile-node "UziDoUntilNode" [node ctx]
   (compile-loop node ctx))
 
-(defn- compile-for-loop-with-constant-step
+(defn ^:private compile-for-loop-with-constant-step
   [{:keys [counter start stop step body]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -326,7 +334,7 @@
                          (count compiled-stop))))])))
 
 
-(defn- compile-for-loop
+(defn ^:private compile-for-loop
   [{:keys [counter start stop step body temp-name]} ctx]
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
@@ -370,12 +378,17 @@
                          (count compiled-stop))))])))
 
 (defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
+  (register-constant! ctx 0) ; TODO(Richo): This seems to be necessary only if the step is not constant
   (if (ast-utils/compile-time-constant? step)
     (compile-for-loop-with-constant-step node ctx)
     (compile-for-loop node ctx)))
 
 (defmethod compile-node "UziRepeatNode"
   [{:keys [body times temp-name]} ctx]
+  ; We need to register constants 0 and 1 because repeat-loops use 0 to
+  ; initialize "temp" and 1 to increment "times"
+  (register-constant! ctx 0)
+  (register-constant! ctx 1)
   (let [compiled-body (compile body ctx)
         compiled-times (compile times ctx)]
     (concat
@@ -408,11 +421,13 @@
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
       ; We need to short-circuit
-      (concat compiled-left
+      (do
+        (register-constant! ctx 0)
+        (concat compiled-left
               [(emit/jz (inc (count compiled-right)))]
               compiled-right
               [(emit/jmp 1)
-               (emit/push-value 0)])
+               (emit/push-value 0)]))
       ; Primitive call is enough
       (concat compiled-left
               compiled-right
@@ -423,11 +438,13 @@
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
       ; We need to short-circuit
-      (concat compiled-left
+      (do
+        (register-constant! ctx 1)
+        (concat compiled-left
               [(emit/jnz (inc (count compiled-right)))]
               compiled-right
               [(emit/jmp 1)
-               (emit/push-value 1)])
+               (emit/push-value 1)]))
       ; Primitive call is enough
       (concat compiled-left
               compiled-right
@@ -437,18 +454,34 @@
   #_(log/error "Unknown node: " (ast-utils/node-type node))
   (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
-(defn- create-context []
-  {:path (list)})
+(defn ^:private create-context []
+  {:path (list)
+   :globals (volatile! #{})})
 
-(defn- assign-unique-variable-names [ast]
-  (let [local-counter (atom 0)
-        temp-counter (atom 0)
+(defn augment-ast [ast board]
+  "This function augments the AST with more information needed for the compiler.
+   1) All pin literals are augmented with a :value that corresponds to their
+      pin number for the given board. This is useful because it makes pin literals
+      polymorphic with number literals. And also, we'll need this value later and it
+      would be a pain in the ass to pass around the board every time.
+   2) All nodes that could need to declare either a local or temporary variable
+      are augmented with a unique name (based on a simple counter) that the compiler
+      can later use to identify this variable.
+      I'm using the following naming conventions:
+      - Temporary variables are named with @ and then the counter
+      - Local variables already have a name, so I just add the # suffix followed by the counter"
+  (let [local-counter (volatile! 0)
+        temp-counter (volatile! 0)
         reset-counters! (fn []
-                          (reset! local-counter 0)
-                          (reset! temp-counter 0))
+                          (vreset! local-counter 0)
+                          (vreset! temp-counter 0))
         globals (-> ast :globals set)]
     (ast-utils/transform
      ast
+
+     "UziPinLiteralNode"
+     (fn [{:keys [type number] :as pin} _]
+       (assoc pin :value (boards/get-pin-number (str type number) board)))
 
      ; Temporary variables are local to their script
      "UziTaskNode" (fn [node _] (reset-counters!) node)
@@ -459,29 +492,17 @@
      (fn [{:keys [step] :as node} _]
        (if (ast-utils/compile-time-constant? step)
          node
-         (assoc node :temp-name (str "@" (swap! temp-counter inc)))))
+         (assoc node :temp-name (str "@" (vswap! temp-counter inc)))))
 
      "UziRepeatNode" ; All repeat-loops declare a temporary variable
      (fn [node _]
-       (assoc node :temp-name (str "@" (swap! temp-counter inc))))
+       (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
      (fn [var _] ; TODO(Richo): Avoid renaming a variable if its name is already unique
        (if (contains? globals var)
          var
-         (assoc var :unique-name (str (:name var) "#" (swap! local-counter inc))))))))
-
-(defn assign-pin-values
- "This function augments all pin literals with a :value that corresponds to their
-  pin number for the given board. This is useful because it makes pin literals
-  polymorphic with number literals. And also, we'll need this value later and it
-  would be a pain in the ass to pass around the board every time"
-  [ast board]
-  (ast-utils/transform
-   ast
-   "UziPinLiteralNode"
-   (fn [{:keys [type number] :as pin} _]
-     (assoc pin :value (boards/get-pin-number (str type number) board)))))
+         (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
 
 (defn remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?
@@ -499,6 +520,9 @@
                       {:src src
                        :errors errors})))))
 
+(defn resolve-imports [ast lib-dir]
+  (linker/resolve-imports ast lib-dir))
+
 (defn compile-tree
   [original-ast src
    & {:keys [board lib-dir remove-dead-code?]
@@ -506,12 +530,10 @@
            lib-dir "../../uzi/libraries",
            remove-dead-code? true}}]
   (let [ast (-> original-ast
-                ast-utils/assign-internal-ids
-                (linker/resolve-imports lib-dir)
-                (check src)
-                assign-unique-variable-names
-                (assign-pin-values board)
-                (remove-dead-code remove-dead-code?))
+                (resolve-imports lib-dir)
+                (remove-dead-code remove-dead-code?)
+                (augment-ast board)
+                (check src))
         compiled (compile ast (create-context))]
     {:original-ast original-ast
      :final-ast ast

@@ -1,7 +1,8 @@
 (ns middleware.compiler.utils.ast
   (:refer-clojure :exclude [filter])
-  (:require [clojure.core :as clj-core]
+  (:require [clojure.core :as clj]
             [clojure.walk :as w]
+            [middleware.utils.core :refer [seek]]
             [middleware.compiler.primitives :as prims]))
 
 (defn node? [node]
@@ -9,14 +10,14 @@
        (contains? node :__class__)))
 
 (defn node-type [node]
-  (get node :__class__))
+  (:__class__ node))
 
 (defn compile-time-constant? [node]
   (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
              (node-type node)))
 
 (defn compile-time-value ^double [node not-constant]
-  (condp = (node-type node)
+  (case (node-type node)
     "UziNumberLiteralNode" (:value node)
     "UziPinLiteralNode" (:value node)
     not-constant))
@@ -114,7 +115,7 @@
              (node-type node)))
 
 (defn script-control-state [node]
-  (condp = (node-type node)
+  (case (node-type node)
     "UziScriptStartNode" "running"
     "UziScriptResumeNode" "running"
     "UziScriptStopNode" "stopped"
@@ -126,61 +127,68 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
-  (if-let [import (first (clj-core/filter import? path))]
-    (if (:isResolved import)
-      (-> import :program :scripts)
-      (throw (ex-info "Unresolved import" import)))
+  (if-let [imp (seek import? path)]
+    (if-let [{program :program} (meta imp)]
+      (-> program :scripts)
+      (throw (ex-info "Unresolved import" imp)))
     (-> path last :scripts)))
 
 (defn script-named [name path]
-  (first (clj-core/filter #(= name (:name %))
-                          (scripts path))))
+  (seek #(= name (:name %))
+        (scripts path)))
 
-(defmulti ^:private children-keys :__class__)
-(defmethod children-keys "UziAssignmentNode" [_] [:left :right])
-(defmethod children-keys "UziBlockNode" [_] [:statements])
-(defmethod children-keys "UziCallNode" [_] [:arguments])
-(defmethod children-keys "UziConditionalNode" [_] [:condition :trueBranch :falseBranch])
-(defmethod children-keys "UziForNode" [_] [:counter :start :stop :step :body])
-(defmethod children-keys "UziForeverNode" [_] [:body])
-(defmethod children-keys "UziImportNode" [_] [:initializationBlock])
-(defmethod children-keys "UziLogicalAndNode" [_] [:left :right])
-(defmethod children-keys "UziLogicalOrNode" [_] [:left :right])
-(defmethod children-keys "UziLoopNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziWhileNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziUntilNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziDoWhileNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziDoUntilNode" [_] [:pre :condition :post])
-(defmethod children-keys "UziProgramNode" [_] [:imports :globals :scripts :primitives])
-(defmethod children-keys "UziRepeatNode" [_] [:times :body])
-(defmethod children-keys "UziReturnNode" [_] [:value])
-(defmethod children-keys "UziTaskNode" [_] [:arguments :tickingRate :body])
-(defmethod children-keys "UziProcedureNode" [_] [:arguments :body])
-(defmethod children-keys "UziFunctionNode" [_] [:arguments :body])
-(defmethod children-keys "UziVariableDeclarationNode" [_] [:value])
-(defmethod children-keys "Association" [_] [:value])
-(defmethod children-keys :default [_] [])
+(defn children-keys [node]
+  (case (node-type node)
+    "UziAssignmentNode" [:left :right]
+    "UziBlockNode" [:statements]
+    "UziCallNode" [:arguments]
+    "UziConditionalNode" [:condition :trueBranch :falseBranch]
+    "UziForNode" [:counter :start :stop :step :body]
+    "UziForeverNode" [:body]
+    "UziImportNode" [:initializationBlock]
+    "UziLogicalAndNode" [:left :right]
+    "UziLogicalOrNode" [:left :right]
+    "UziLoopNode" [:pre :condition :post]
+    "UziWhileNode" [:pre :condition :post]
+    "UziUntilNode" [:pre :condition :post]
+    "UziDoWhileNode" [:pre :condition :post]
+    "UziDoUntilNode" [:pre :condition :post]
+    "UziProgramNode" [:imports :globals :scripts :primitives]
+    "UziRepeatNode" [:times :body]
+    "UziReturnNode" [:value]
+    "UziTaskNode" [:arguments :tickingRate :body]
+    "UziProcedureNode" [:arguments :body]
+    "UziFunctionNode" [:arguments :body]
+    "UziVariableDeclarationNode" [:value]
+    "Association" [:value]
+    []))
 
 (defn valid-keys [node]
   "This function returns the keys for this node which, when evaluated
    return a non-null value."
-  (clj-core/filter #(not (nil? (node %)))
-                   (children-keys node)))
+  (clj/filter #(some? (node %))
+              (children-keys node)))
 
 (defn children [ast]
-  (filterv (complement nil?)
-           (flatten (map (fn [key] (key ast))
-                         (children-keys ast)))))
+  (reduce (fn [acc key]
+            (if-let [node (key ast)]
+              (if (sequential? node)
+                (apply conj acc node)
+                (conj acc node))
+              acc))
+          []
+          (children-keys ast)))
 
 (defn all-children [ast]
-  (concat [ast]
-          (mapcat all-children
-                  (children ast))))
+  (reduce (fn [acc next]
+            (concat acc (all-children next)))
+          [ast]
+          (children ast)))
 
 (defn filter [ast & types]
   (let [type-set (set types)]
-    (clj-core/filter #(type-set (node-type %))
-                     (all-children ast))))
+    (clj/filter #(type-set (node-type %))
+                (all-children ast))))
 
 (defn- evaluate-pred-clauses [node path clauses]
   "Evaluates each clause in order. The clauses are pairs of pred-fn/expr-fn.
@@ -189,26 +197,24 @@
    The optional :default clause will match any node, but only if no previous
    matching clause was found."
   (loop [[pred result-fn & rest] clauses]
-    (if (or (= :default pred)
-            (pred node path))
-      (result-fn node path)
-      (if (empty? rest)
-        node
+    (if-not pred
+      node
+      (if (or (= :default pred)
+              (pred node path))
+        (result-fn node path)
         (recur rest)))))
 
 (defn- replace-children [node keys expr-fn]
   "Updates node by replacing each child on the given keys with the
   result of evaluating expr-fn passing the child node as argument."
-  (loop [keys keys, result node]
-    (let [[first & rest] keys]
-      (if first
-        (let [new-result (assoc result
-                                first
-                                (expr-fn (result first)))]
-          (if (empty? rest)
-            new-result
-            (recur rest new-result)))
-        result))))
+  (reduce (fn [result key]
+            (let [old (result key)
+                  new (expr-fn old)]
+              (if (= old new)
+                result
+                (assoc result key new))))
+          node
+          keys))
 
 (defn- transformp* [ast path clauses]
   "I made this function because clojure.walk doesn't traverse the tree
@@ -216,27 +222,29 @@
    path of parent nodes, which is very useful.
    This function is private, you should call transformp or transform"
   (cond
-    ; If we find a node, we evaluate each clause in order and if we find
-    ; a match we replace the node with the result before recursively
-    ; transforming its children.
-    ; Here we take care of keeping track of the path so that we can pass
-    ; it as argument for both the predicates and the transforming functions.
-    (node? ast)
-    (let [node (evaluate-pred-clauses ast
-                                      (conj path ast)
-                                      clauses)]
-      (replace-children node
-                        (valid-keys node)
-                        (fn [child]
-                          (transformp* child
-                                       (conj path node)
-                                       clauses))))
 
     ; If we find a vector, we simply recursively transform each element
     ; and return a new vector.
     (vector? ast)
     (mapv #(transformp* % path clauses)
           ast)
+
+    ; If we find a node, we evaluate each clause in order and if we find
+    ; a match we replace the node with the result before recursively
+    ; transforming its children.
+    ; Here we take care of keeping track of the path so that we can pass
+    ; it as argument for both the predicates and the transforming functions.
+    (node? ast)
+    (let [new-path (conj path ast)
+          node (evaluate-pred-clauses ast
+                                      new-path
+                                      clauses)]
+      (replace-children node
+                        (valid-keys node)
+                        (fn [child]
+                          (transformp* child
+                                       new-path
+                                       clauses))))
 
     ; Anything else is simply returned without any transformation
     :else ast))
@@ -252,7 +260,6 @@
    The original node will be replaced with the result of evaluating expr-fn
    before continuing the traversal."
   (transformp* ast (list) clauses))
-
 
 (defn transform [ast & clauses]
   "This function is exactly like transformp but instead of predicates it matches
@@ -274,15 +281,15 @@
   ; scope rules. We need to look inside the imported program if the import has
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
-  (if-let [import (first (clj-core/filter import? path))]
-    (if (:isResolved import)
-      (-> import :program :globals)
-      (throw (ex-info "Unresolved import" import)))
+  (if-let [imp (seek import? path)]
+    (if-let [{program :program} (meta imp)]
+      (-> program :globals)
+      (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
-            (clj-core/filter #(= "UziVariableDeclarationNode" (node-type %))
-                             (take-while #(not (= % first))
-                                         (children second))))
-          (partition 2 1 path))))
+              (clj/filter #(= "UziVariableDeclarationNode" (node-type %))
+                          (take-while #(not (= % first))
+                                      (children second))))
+            (partition 2 1 path))))
 
 (defn locals-in-scope [path]
   ; NOTE(Richo): We take advantage of the fact that globals can only be defined
@@ -292,34 +299,16 @@
 (defn variable-named
   "Returns the variable declaration referenced by this name at this point in the ast"
   [name path]
-  (first (clj-core/filter #(= name (:name %))
-                          (variables-in-scope path))))
+  (seek #(= name (:name %))
+        (variables-in-scope path)))
 
 (defn global?
   "Works for both variable and variable-declaration nodes."
   [node path]
   (let [globals (-> path last :globals set)]
-    (condp = (node-type node)
-      "UziVariableNode"
-      :>> (fn [_] (let [variable (variable-named (:name node) path)]
-                    (contains? globals variable)))
-      "UziVariableDeclarationNode"
-      :>> (fn [_] (contains? globals node)))))
+    (case (node-type node)
+      "UziVariableNode" (let [variable (variable-named (:name node) path)]
+                          (contains? globals variable))
+      "UziVariableDeclarationNode" (contains? globals node))))
 
 (def local? (complement global?))
-
-(defn- create-uuid []
-  #?(:clj (.toString (java.util.UUID/randomUUID))
-     :cljs (str (random-uuid))))
-
-(defn assign-internal-ids
-  "This function is important because it will guarantee that all nodes are different
-   when compared with =. Due to clojure's philosophy regarding values, identity, and
-   equality I need to do this to be able to distinguish two otherwise equal nodes.
-   This is particularly crucial for the variables-in-scope function because it relies
-   on = to know when to stop looking for variables.
-   An alternative could be to use identical? instead of = but I feel it would make
-   the code more fragile than simply adding this artificial :internal-id"
-  [ast]
-  (transform ast
-             :default (fn [node _] (assoc node :internal-id (create-uuid)))))

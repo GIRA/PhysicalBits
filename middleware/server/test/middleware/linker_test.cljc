@@ -2,7 +2,7 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.test-utils :refer [equivalent? setup-fixture]]
+            [middleware.test-utils :refer [equivalent? setup-fixture without-internal-ids]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.linker :as l]
             [middleware.compiler.emitter :as emit]
@@ -16,14 +16,14 @@
   #?(:clj (register-program! src :lib-dir lib-dir))
   (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
 
-(defn- without-prims [ast]
-  (dissoc ast :primitives))
+(defn- without-prims-and-ids [ast]
+  (without-internal-ids (dissoc ast :primitives)))
 
 (defn link [ast]
   "HACK(Richo): I remove the :primitives key because it makes the diff hard to read"
   (-> ast
       (l/resolve-imports lib-dir)
-      without-prims))
+      without-prims-and-ids))
 
 (def core-import (ast/import-node "core.uzi"))
 
@@ -42,7 +42,7 @@
                                      [(ast/arg-node (ast/literal-pin-node "D" 13))
                                       (ast/arg-node
                                         (ast/call-node "test.foo" []))])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "test" "test_1.uzi")]
                     :scripts [(ast/function-node
@@ -80,7 +80,7 @@
                                      [(ast/arg-node (ast/call-node "test2.foo" []))
                                       (ast/arg-node
                                         (ast/call-node "test1.foo" []))])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import
                               (ast/import-node "test1" "test_1.uzi")
@@ -126,7 +126,7 @@
                                           "t2.bar"
                                           [(ast/arg-node
                                              (ast/literal-number-node 1))]))])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t2" "test_3.uzi")]
                     :globals [(ast/variable-declaration-node
@@ -180,7 +180,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/stop-node ["t3.blink13"])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t3" "test_4.uzi")]
                     :scripts [(ast/task-node
@@ -209,7 +209,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/start-node ["t3.blink13"])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t3" "test_4.uzi")]
                     :scripts [(ast/task-node
@@ -238,7 +238,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/call-node "t.stopTask" [])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t" "test_5.uzi")]
                     :scripts [(ast/procedure-node
@@ -270,7 +270,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/call-node "t.startTask" [])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t" "test_6.uzi")]
                     :scripts [(ast/procedure-node
@@ -302,7 +302,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/call-node "t.blink" [])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t" "test_8.uzi")]
                     :scripts [(ast/procedure-node
@@ -344,7 +344,7 @@
                           :name "main"
                           :state "running"
                           :body (ast/block-node [(ast/call-node "t.foo" [])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import (ast/import-node "t" "test_9.uzi")]
                     :scripts [(ast/procedure-node
@@ -382,7 +382,7 @@
                              (ast/assignment-node
                                (ast/variable-node "c")
                                (ast/literal-number-node 30))]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import
                               (ast/import-node
@@ -447,7 +447,7 @@
                              (ast/resume-node ["stopped2"])
                              (ast/stop-node ["running1"])
                              (ast/pause-node ["running2"])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import
                               (ast/import-node
@@ -499,7 +499,7 @@
                           "t"
                           "test_12.uzi"
                           (ast/block-node [(ast/stop-node ["setup"])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import
                               (ast/import-node
@@ -535,7 +535,7 @@
                                           [(ast/arg-node (ast/literal-number-node 3))
                                            (ast/arg-node
                                              (ast/literal-number-node 4))]))])]))])
-        expected (without-prims
+        expected (without-prims-and-ids
                    (ast/program-node
                     :imports [core-import
                               (ast/import-node "a" "test_13.uzi")]

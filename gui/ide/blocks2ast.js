@@ -1,9 +1,25 @@
 let BlocksToAST = (function () {
 
+/*
+; NOTE(Richo): All nodes are created with a random :internal-id. This is important
+; because it will guarantee that all nodes are different when compared with =.
+; Due to clojure's philosophy regarding values, identity, and equality I need to do
+; this to be able to distinguish two otherwise equal nodes.
+; This is particularly crucial when looking for the variables-in-scope because the
+; current implementation relies on = to know when to stop looking for variables.
+; An alternative could be to use identical? instead of = but I feel it would make
+; the code more fragile than simply adding this artificial :internal-id
+*/
+
+	function node(type, attrs) {
+		attrs["__class__"] = type;
+		attrs["internal-id"] = Math.floor(Math.random() * (2**64)); // TODO(Richo): Make a proper UUID!
+		return attrs;
+	}
+
 	let builder = {
 		program: function (id, imports, globals, scripts) {
-			return {
-				__class__: "UziProgramNode",
+			return node("UziProgramNode", {
 				imports: imports,
 				globals: globals.filter(g => g != undefined).map(g => {
 					let name = g.name;
@@ -12,19 +28,17 @@ let BlocksToAST = (function () {
 				}),
 				scripts: scripts,
 				primitives: []
-			};
+			});
 		},
 		import: function (id, alias, path, initBlock) {
-			return {
-				__class__: "UziImportNode",
+			return node("UziImportNode", {
 				alias: alias,
 				path: path,
 				initializationBlock: initBlock
-			};
+			});
 		},
 		task: function (id, name, argumentNames, state, tickingRate, statements) {
-			return {
-				__class__: "UziTaskNode",
+			return node("UziTaskNode", {
 				id: id,
 				name: name,
 				arguments: argumentNames.map(function (varName) {
@@ -33,222 +47,195 @@ let BlocksToAST = (function () {
 				state: state,
 				tickingRate: tickingRate,
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		procedure: function (id, name, argumentNames, statements) {
-			return {
-				__class__: "UziProcedureNode",
+			return node("UziProcedureNode", {
 				id: id,
 				name: name,
 				arguments: argumentNames.map(function (varName) {
 					return builder.variableDeclaration(id, varName);
 				}),
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		function: function (id, name, argumentNames, statements) {
-			return {
-				__class__: "UziFunctionNode",
+			return node("UziFunctionNode", {
 				id: id,
 				name: name,
 				arguments: argumentNames.map(function (varName) {
 					return builder.variableDeclaration(id, varName);
 				}),
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		yield: function (id) {
-			return {
-				__class__: "UziYieldNode",
+			return node("UziYieldNode", {
 				id: id,
-			};
+			});
 		},
 		scriptCall: function (id, selector, args) {
-			return {
-				__class__: "UziCallNode",
+			return node("UziCallNode", {
 				id: id,
 				selector: selector,
 				arguments: args.map(function (arg) {
-					return {
-						__class__: "Association",
+					return node("Association", {
 						key: arg.name,
 						value: arg.value
-					};
+					});
 				})
-			};
+			});
 		},
 		primitiveCall: function (id, selector, args) {
-			return {
-				__class__: "UziCallNode",
+			return node("UziCallNode", {
 				id: id,
 				selector: selector,
 				arguments: args.map(function (value) {
-					return {
-						__class__: "Association",
+					return node("Association", {
 						key: null,
 						value: value
-					};
+					});
 				})
-			};
+			});
 		},
 		block: function (id, statements) {
-			return {
-				__class__: "UziBlockNode",
+			return node("UziBlockNode", {
 				id: id,
 				statements: statements
-			};
+			});
 		},
 		tickingRate: function (id, runningTimes, tickingScale) {
-			return {
-				__class__: "UziTickingRateNode",
+			return node("UziTickingRateNode", {
 				id: id,
 				value: runningTimes,
 				scale: tickingScale
-			};
+			});
 		},
 		forever: function (id, statements) {
-			return {
-				__class__: "UziForeverNode",
+			return node("UziForeverNode", {
 				id: id,
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		variableDeclaration: function (id, name, value) {
-			return {
-				__class__: "UziVariableDeclarationNode",
+			return node("UziVariableDeclarationNode", {
 				id: id,
 				name: name,
 				value: value || builder.number(id, 0)
-			};
+			});
 		},
 		for: function (id, counterName, start, stop, step, statements) {
-			return {
-				__class__: "UziForNode",
+			return node("UziForNode", {
 				id: id,
 				counter: builder.variableDeclaration(id, counterName),
 				start: start,
 				stop: stop,
 				step: step,
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		number: function (id, value) {
-			return {
-				__class__: "UziNumberLiteralNode",
+			return node("UziNumberLiteralNode", {
 				id: id,
 				value: value
-			};
+			});
 		},
 		pin: function (id, type, number) {
-			return {
-				__class__: "UziPinLiteralNode",
+			return node("UziPinLiteralNode", {
 				id: id,
 				type: type,
 				number: number
-			};
+			});
 		},
 		variable: function (id, variableName) {
-			return {
-				__class__: "UziVariableNode",
+			return node("UziVariableNode", {
 				id: id,
 				name: variableName
-			};
+			});
 		},
 		start: function (id, scripts) {
-			return {
-				__class__: "UziScriptStartNode",
+			return node("UziScriptStartNode", {
 				id: id,
 				scripts: scripts
-			};
+			});
 		},
 		stop: function (id, scripts) {
-			return {
-				__class__: "UziScriptStopNode",
+			return node("UziScriptStopNode", {
 				id: id,
 				scripts: scripts
-			};
+			});
 		},
 		resume: function (id, scripts) {
-			return {
-				__class__: "UziScriptResumeNode",
+			return node("UziScriptResumeNode", {
 				id: id,
 				scripts: scripts
-			};
+			});
 		},
 		pause: function (id, scripts) {
-			return {
-				__class__: "UziScriptPauseNode",
+			return node("UziScriptPauseNode", {
 				id: id,
 				scripts: scripts
-			};
+			});
 		},
 		conditional: function (id, condition, trueBranch, falseBranch) {
-			return {
-				__class__: "UziConditionalNode",
+			return node("UziConditionalNode", {
 				id: id,
 				condition: condition,
 				trueBranch: builder.block(id, trueBranch),
 				falseBranch: builder.block(id, falseBranch)
-			};
+			});
 		},
 		repeat: function (id, times, statements) {
-			return {
-				__class__: "UziRepeatNode",
+			return node("UziRepeatNode", {
 				id: id,
 				times: times,
 				body: builder.block(id, statements)
-			};
+			});
 		},
 		while: function (id, condition, statements) {
-			return {
-				__class__: "UziWhileNode",
+			return node("UziWhileNode", {
 				id: id,
 				pre: builder.block(id, []),
 				condition: condition,
 				post: builder.block(id, statements),
 				negated: false
-			};
+			});
 		},
 		until: function (id, condition, statements) {
-			return {
-				__class__: "UziUntilNode",
+			return node("UziUntilNode", {
 				id: id,
 				pre: builder.block(id, []),
 				condition: condition,
 				post: builder.block(id, statements),
 				negated: true
-			};
+			});
 		},
 		assignment: function (id, name, value) {
-			return {
-				__class__: "UziAssignmentNode",
+			return node("UziAssignmentNode", {
 				id: id,
 				left: builder.variable(id, name),
 				right: value
-			};
+			});
 		},
 		return: function (id, value) {
-			return {
-				__class__: "UziReturnNode",
+			return node("UziReturnNode", {
 				id: id,
 				value: value
-			};
+			});
 		},
 		logicalAnd: function (id, left, right) {
-			return {
-				__class__: "UziLogicalAndNode",
+			return node("UziLogicalAndNode", {
 				id: id,
 				left: left,
 				right: right
-			};
+			});
 		},
 		logicalOr: function (id, left, right) {
-			return {
-				__class__: "UziLogicalOrNode",
+			return node("UziLogicalOrNode", {
 				id: id,
 				left: left,
 				right: right
-			};
+			});
 		}
 	};
 

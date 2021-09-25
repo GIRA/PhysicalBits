@@ -78,14 +78,16 @@
               (pp/parse src)
               src)]
     (-> ast
-        ast-utils/assign-internal-ids
         (linker/resolve-imports "../../uzi/tests")
         checker/check-tree)))
 
-(def invalid? check)
-(defn valid? [src]
-  #?(:clj (register-program! src :lib-dir "../../uzi/tests"))
-  (check src))
+#?(:clj (def invalid? check)
+  :cljs (defn invalid? [src] (not (empty? (check src)))))
+
+#?(:clj (defn valid? [src]
+          (register-program! src :lib-dir "../../uzi/tests")
+          (check src))
+  :cljs (defn valid? [src] (empty? (check src))))
 
 (deftest block-should-only-contain-statements
   (is (valid? "task foo() {}"))
