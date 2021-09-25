@@ -13,7 +13,15 @@
 
 (defn init []
   (init-dependencies)
-  (println "Richo capo!"))
+  (println "Controller started successfully!")
+  (.then (.-ready js/Simulator)
+         #(println "READY TO CONNECT!")))
 
 (defn chan->promise [ch]
   (js/Promise. (fn [res] (a/take! ch res))))
+
+(comment
+ (js/test_blink)
+ (.then (.-ready js/Simulator)
+        #(println "READY!"))
+ ,,)
