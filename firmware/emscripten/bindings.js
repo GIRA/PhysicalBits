@@ -47,6 +47,10 @@ var EEPROM = {
   read: Module.cwrap("EEPROM_read", "number", ["number"]),
   size: Module.cwrap("EEPROM_size", "number", []),
 };
+var Simulator = {};
+Simulator.ready = new Promise(res => {
+  Simulator.start = res;
+});
 
 function handshake() {
   Sketch.setMillis(0);
