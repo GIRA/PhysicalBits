@@ -8,7 +8,8 @@
             [middleware.compiler.encoder :as en]
             [middleware.output.logger :as logger]
             [middleware.utils.fs.common :as fs]
-            [middleware.utils.fs.browser :as browser]))
+            [middleware.utils.fs.browser :as browser]
+            [middleware.utils.async :refer-macros [go-try]]))
 
 (defn init-dependencies []
   (fs/register-fs! #'browser/file)
@@ -23,7 +24,10 @@
            (js/Simulator.start))))
 
 (defn chan->promise [ch]
-  (js/Promise. (fn [res] (a/take! ch res))))
+  (js/Promise. (fn [res rej]
+                 (a/take! ch #(if (instance? js/Error %)
+                                (rej %)
+                                (res %))))))
 
 (defn ^:export connect []
   (chan->promise
@@ -35,8 +39,8 @@
   (chan->promise (dc/disconnect!)))
 
 (defn ^:export compile [src type silent? update-fn]
-  (js/Promise.
-   (fn [resolve reject]
+  (chan->promise
+   (go-try
     ; TODO(Richo): This code was copied (and modified slightly) from the controller/compile function!
     (try
       (let [compile-fn (case type
@@ -61,7 +65,7 @@
                      (logger/read-entries!))]
         (update-fn (clj->js {:program program
                              :output (or output [])}))
-        (resolve program))
+        program)
       (catch :default ex
         (when-not silent?
           (logger/read-entries!) ; discard old entries
@@ -79,18 +83,42 @@
                   (logger/error (str "|     Block ID: " id)))))
             (logger/error (str "└─ Compilation failed!")))
           (update-fn (clj->js {:output (logger/read-entries!)})))
-        (reject ex))))))
+        (throw ex))))))
 
 (defn ^:export run [program]
   (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
 
-(defn ^:export install [] "TODO")
+(defn ^:export install [] "ACAACA")
 
 (comment
+
+ (doto (chan->promise
+        (go-try (do
+                  (println "1")
+                  (<! (timeout 1000))
+                  #_(throw "RICHO!")
+                  (throw (ex-info "Richo capo" {})))))
+       (.then (fn [result] (println "SUCCESS!" result)))
+       (.catch (fn [reason] (println "ERROR!" reason))))
+
+
   (go (<! (dc/connect! "sim"))
       (println "CONNECTED?" (dc/connected?)))
 
- (throw-err "RICHO")
+  (def ex
+    (try
+      (throw (ex-info "RICHO" {}))
+      ;(throw "Richo")
+      (catch js/Error ex ex)
+      (catch :default ex (ex-info (str ex) {:error ex}))))
+ (def ex *1)
+ ex
+ (instance? js/Error ex)
+
+(def err (js/Error. "RICHO!"))
+(def err (ex-info "RICHO" {:a 1}))
+ (ex-message err)
+
 
  (def p (ports/connect! "sim"))
  (ports/disconnect! p)
