@@ -4,6 +4,9 @@
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.simulator :as simulator]
             [middleware.compiler.compiler :as cc]
+            [middleware.compiler.utils.program :as program]
+            [middleware.compiler.encoder :as en]
+            [middleware.output.logger :as logger]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.browser :as browser]))
 
@@ -22,24 +25,72 @@
 (defn chan->promise [ch]
   (js/Promise. (fn [res] (a/take! ch res))))
 
-(defn connect! [port-name]
+(defn ^:export connect []
   (chan->promise
    (go
-    (<! (dc/connect! port-name :reporting? false))
+    (<! (dc/connect! "sim"))
     (some? (dc/connected?)))))
 
-(defn disconnect! []
+(defn ^:export disconnect []
   (chan->promise (dc/disconnect!)))
 
-(defn compile [src]
-  (js/Promise.resolve (clj->js (cc/compile-uzi-string src))))
+(defn ^:export compile [src type silent? update-fn]
+  (js/Promise.
+   (fn [resolve reject]
+    ; TODO(Richo): This code was copied (and modified slightly) from the controller/compile function!
+    (try
+      (let [compile-fn (case type
+                         "json" cc/compile-json-string
+                         "uzi" cc/compile-uzi-string)
+            temp-program (-> (compile-fn src)
+                             (update :compiled program/sort-globals)
+                             (assoc :type type))
+            ; TODO(Richo): This sucks, the IDE should take the program without modification.
+            ; Do we really need the final-ast? It would be simpler if we didn't have to make
+            ; this change. Also, this code is duplicated here and in the server...
+            program (-> temp-program
+                        (select-keys [:type :src :compiled])
+                        (assoc :ast (:original-ast temp-program)))
+            bytecodes (en/encode (:compiled program))
+            output (when-not silent?
+                     (logger/read-entries!) ; discard old entries
+                     (logger/newline)
+                     (logger/log "Program size (bytes): %1" (count bytecodes))
+                     (logger/log (str bytecodes))
+                     (logger/success "Compilation successful!")
+                     (logger/read-entries!))]
+        (update-fn (clj->js {:program program
+                             :output (or output [])}))
+        (resolve program))
+      (catch :default ex
+        (when-not silent?
+          (logger/read-entries!) ; discard old entries
+          (logger/newline)
+          (logger/exception ex)
+          ; TODO(Richo): Improve the error message for checker errors
+          (when-let [{errors :errors} (ex-data ex)]
+            (doseq [[^long i {:keys [description node src]}]
+                    (map-indexed (fn [i e] [i e])
+                                 errors)]
+              (logger/error (str "├─ " (inc i) ". " description))
+              (if src
+                (logger/error (str "|     ..." src "..."))
+                (when-let [id (:id node)]
+                  (logger/error (str "|     Block ID: " id)))))
+            (logger/error (str "└─ Compilation failed!")))
+          (update-fn (clj->js {:output (logger/read-entries!)})))
+        (reject ex))))))
 
-(defn run [program]
+(defn ^:export run [program]
   (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
+
+(defn ^:export install [] "TODO")
 
 (comment
   (go (<! (dc/connect! "sim"))
       (println "CONNECTED?" (dc/connected?)))
+
+ (throw-err "RICHO")
 
  (def p (ports/connect! "sim"))
  (ports/disconnect! p)
@@ -48,7 +99,7 @@
                     (println "RECEIVED:" d)))
 
 
- (dc/run (cc/compile-uzi-string "task blink13() running 5/s { toggle(D13); }"))
+ (dc/run (c/compile-uzi-string "task blink13() running 5/s { toggle(D13); }"))
 
  (js/Simulator.start)
   (connect! "sim")

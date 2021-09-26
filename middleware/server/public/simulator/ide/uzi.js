@@ -99,7 +99,7 @@ let Uzi = (function () {
 		compile: function (src, type, silent) {
       if (localFlag) {
         // NOTE(Richo): Instead of going to the server to compile, we do it locally
-        return compileLocal(src, type, silent);
+        return middleware.simulator.compile(src, type, silent, update);
       }
 
       let url = apiURL + "/uzi/compile";
@@ -183,47 +183,6 @@ let Uzi = (function () {
 
   function errorHandler (err) {
     console.log(err);
-  }
-
-  function compileLocal(src, type, silent) {
-    return new Promise((resolve, reject) => {
-      try {
-        var result = middleware.compiler.compile(src, type);
-        var program = {
-          type: type,
-          src: result.src,
-          compiled: result.compiled,
-          ast: result["original-ast"]
-        };
-        resolve(program);
-        var bytecodes = middleware.compiler.encode(program.compiled);
-        var output = [];
-        if (!silent) {
-          output = [
-            {text: ""},
-            {type: "info", text: (new Date()).toLocaleString()},
-            {type: "info", text: "Program size (bytes): %1", args: [bytecodes.length]},
-            {type: "info", text: "[%1]", args: [bytecodes.join(" ")]},
-            {type: "success", text: "Compilation successful!", args: []}
-          ]
-        }
-        update({
-          program: program,
-          output: output
-        });
-      } catch (err) {
-        if (!silent) {
-          update({
-            output: [
-              {text: ""},
-              {type: "info", text: (new Date()).toLocaleString()},
-              {type: "error", text: err.toString()}
-            ]
-          });
-        }
-        reject(err);
-      }
-    });
   }
 
   function reconnect() {
