@@ -1,0 +1,740 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Tasks" custom="TASKS">
+    <block type="task">
+      <field name="scriptName">default</field>
+    </block>
+    <block type="timer">
+      <field name="scriptName">default</field>
+      <field name="runningTimes">1</field>
+      <field name="tickingScale">s</field>
+      <field name="initialState">started</field>
+    </block>
+    <block type="start_task">
+      <field name="scriptName"></field>
+    </block>
+    <block type="stop_task">
+      <field name="scriptName"></field>
+    </block>
+    <block type="resume_task">
+      <field name="scriptName"></field>
+    </block>
+    <block type="pause_task">
+      <field name="scriptName"></field>
+    </block>
+    <block type="run_task">
+      <field name="scriptName"></field>
+    </block>
+  </category>
+  <category name="GPIO">
+    <block type="toggle_pin">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="turn_onoff_pin">
+      <field name="pinState">on</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="is_onoff_pin">
+      <field name="pinState">on</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="write_pin">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+      <value name="pinValue">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="read_pin">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="set_pin_mode">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D4</field>
+        </shadow>
+      </value>
+      <field name="mode">INPUT</field>
+    </block>
+    <block type="pin">
+      <field name="pinNumber">D13</field>
+    </block>
+    <block type="pin_cast">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">13</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Motors">
+    <category name="Servo">
+      <block type="set_servo_degrees">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D3</field>
+          </shadow>
+        </value>
+        <value name="servoValue">
+          <shadow type="number">
+            <field name="value">90</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="get_servo_degrees">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D3</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="DC" custom="DC_MOTORS">
+      <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
+      <block type="move_dcmotor">
+        <field name="motorName"></field>
+        <field name="direction">fwd</field>
+        <value name="speed">
+          <shadow type="number">
+            <field name="value">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="change_speed_dcmotor">
+        <field name="motorName"></field>
+        <value name="speed">
+          <shadow type="number">
+            <field name="value">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="get_speed_dcmotor">
+        <field name="motorName"></field>
+      </block>
+      <block type="stop_dcmotor">
+        <field name="motorName"></field>
+      </block>
+    </category>
+  </category>
+  <category name="Sensors">
+    <category name="Sonar" custom="SONAR">
+      <button text="Configure sonars..." callbackKey="configureSonars"></button>
+      <block type="get_sonar_distance">
+        <field name="sonarName">sonar</field>
+        <field name="unit">cm</field>
+      </block>
+    </category>
+    <category name="Buttons">
+      <block type="button_wait_for_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="action">press</field>
+      </block>
+      <block type="button_wait_for_long_action">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="action">press</field>
+        <field name="unit">ms</field>
+        <value name="time">
+          <shadow type="number">
+            <field name="value">1000</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="button_check_state">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+        <field name="state">press</field>
+      </block>
+      <block type="button_ms_holding">
+        <value name="pinNumber">
+          <shadow type="pin">
+            <field name="pinNumber">D7</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="Joystick" custom="JOYSTICK">
+      <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
+      <block type="get_joystick_x">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_y">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_angle">
+        <field name="joystickName">joystick</field>
+      </block>
+      <block type="get_joystick_magnitude">
+        <field name="joystickName">joystick</field>
+      </block>
+    </category>
+  </category>
+  <category name="Sound">
+    <block type="play_note">
+      <field name="note">220</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="start_note">
+      <field name="note">220</field>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="play_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="start_tone">
+      <value name="tone">
+        <shadow type="number">
+          <field name="value">220</field>
+        </shadow>
+      </value>
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone_wait">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="stop_tone">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D9</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Control">
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="boolean">
+      <field name="value">true</field>
+    </block>
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_operation">
+      <field name="operator">and</field>
+      <value name="left">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_not">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="forever"></block>
+    <block type="repeat_times">
+      <value name="times">
+        <shadow type="number">
+          <field name="value">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="wait">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="elapsed_time">
+      <field name="unit">ms</field>
+    </block>
+    <block type="for">
+      <field name="variableName">i</field>
+      <value name="start">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="stop">
+        <shadow type="number">
+          <field name="value">10</field>
+        </shadow>
+      </value>
+      <value name="step">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="boolean_cast">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Math">
+    <block type="number">
+      <field name="value">0</field>
+    </block>
+    <block type="number_property">
+      <field name="property">even</field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_divisibility">
+      <value name="left">
+        <shadow type="number">
+          <field name="value">10</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">2</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_operation">
+      <field name="operator">sqrt</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">9</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_trig">
+      <field name="operator">sin</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">45</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_constant">
+      <field name="constant">PI</field>
+    </block>
+    <block type="number_round">
+      <field name="operator">round</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">3.1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="math_arithmetic">
+      <field name="operator">ADD</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_modulo">
+      <value name="dividend">
+        <shadow type="number">
+          <field name="value">64</field>
+        </shadow>
+      </value>
+      <value name="divisor">
+        <shadow type="number">
+          <field name="value">10</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_constrain">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">50</field>
+        </shadow>
+      </value>
+      <value name="low">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="high">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_between">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">50</field>
+        </shadow>
+      </value>
+      <value name="low">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="high">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_random_int">
+      <value name="from">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="to">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_random_float"></block>
+    <block type="number_cast">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Variables" custom="VARIABLES">
+    <button text="Configure variables..." callbackKey="configureVariables"></button>
+    <block type="declare_local_variable">
+      <field name="variableName">temp</field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="set_variable">
+      <field name="variableName"></field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="increment_variable">
+      <field name="variableName"></field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="variable">
+      <field name="variableName"></field>
+    </block>
+  </category>
+  <category name="Lists" custom="LISTS">
+    <button text="Configure lists..." callbackKey="configureLists"></button>
+    <block type="list_get">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_set">
+      <field name="listName"></field>
+      <value name="index">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_push">
+      <field name="listName"></field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="list_pop">
+      <field name="listName"></field>
+    </block>
+    <block type="list_clear">
+      <field name="listName"></field>
+    </block>
+    <block type="list_count">
+      <field name="listName"></field>
+    </block>
+    <block type="list_size">
+      <field name="listName"></field>
+    </block>
+    <block type="list_random">
+      <field name="listName"></field>
+    </block>
+    <block type="list_sum">
+      <field name="listName"></field>
+    </block>
+    <block type="list_avg">
+      <field name="listName"></field>
+    </block>
+    <block type="list_max">
+      <field name="listName"></field>
+    </block>
+    <block type="list_min">
+      <field name="listName"></field>
+    </block>
+  </category>
+  <category name="Procedures" custom="PROCEDURES">
+    <block type="proc_definition_0args">
+      <field name="scriptName">default</field>
+    </block>
+    <block type="proc_definition_1args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+    </block>
+    <block type="proc_definition_2args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+    </block>
+    <block type="proc_definition_3args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+      <field name="arg2">arg2</field>
+    </block>
+    <block type="return"></block>
+    <block type="proc_call_0args">
+      <field name="scriptName"></field>
+    </block>
+    <block type="proc_call_1args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="proc_call_2args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="proc_call_3args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg2">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Functions" custom="FUNCTIONS">
+    <block type="func_definition_0args">
+      <field name="scriptName">default</field>
+    </block>
+    <block type="func_definition_1args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+    </block>
+    <block type="func_definition_2args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+    </block>
+    <block type="func_definition_3args">
+      <field name="scriptName">default</field>
+      <field name="arg0">arg0</field>
+      <field name="arg1">arg1</field>
+      <field name="arg2">arg2</field>
+    </block>
+    <block type="return_value">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="func_call_0args">
+      <field name="scriptName"></field>
+    </block>
+    <block type="func_call_1args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="func_call_2args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="func_call_3args">
+      <field name="scriptName"></field>
+      <value name="arg0">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg1">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="arg2">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+</xml>

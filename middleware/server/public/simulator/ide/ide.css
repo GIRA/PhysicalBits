@@ -1,0 +1,242 @@
+  #loading-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 999999;
+  }
+
+  #loading-container img {
+    -webkit-filter: drop-shadow(0 0 0.2rem white);
+    filter: drop-shadow(0 0 0.2rem white);
+  }
+
+  .bouncing-robot {
+    animation-delay: 3s;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+  }
+
+  .bounce-6 {
+    animation-name: bounce-6;
+    animation-timing-function: ease;
+  }
+
+  @keyframes bounce-6 {
+    0%   { transform: scale(1,1)      translateY(0); }
+    10%  { transform: scale(1.1,.9)   translateY(0); }
+    30%  { transform: scale(.9,1.1)   translateY(-100px); }
+    50%  { transform: scale(1.05,.95) translateY(0); }
+    57%  { transform: scale(1,1)      translateY(-7px); }
+    64%  { transform: scale(1,1)      translateY(0); }
+    100% { transform: scale(1,1)      translateY(0); }
+  }
+
+  .progress-container {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    padding: 5em;
+    margin: 0;
+  }
+
+  .progress {
+    background: rgba(255,255,255,0.1);
+    justify-content: flex-start;
+    border-radius: 100px;
+    align-items: center;
+    position: relative;
+    padding: 0 5px;
+    display: flex;
+    height: 10px;
+    width: 500px;
+  }
+
+  .progress-value {
+    animation: load 25s normal 2s forwards;
+    box-shadow: 0 10px 40px -10px #fff;
+    border-radius: 100px;
+    background: #fff;
+    height: 5px;
+    width: 0;
+  }
+
+  .progress-full {
+    box-shadow: 0 10px 40px -10px #fff;
+    border-radius: 100px;
+    background: #fff;
+    height: 5px;
+    width: 100%;
+  }
+
+  @keyframes load {
+    0% { width: 0; }
+    30% { width: 50%; }
+    50% { width: 80%; }
+    100% { width: 95%; }
+  }
+
+  h1, h2 {
+    font-family: 'ChargerRegular';
+    font-weight: normal;
+    font-style: normal;
+    padding: 0;
+    margin: 0;
+  }
+
+  #container {
+    overflow: hidden;
+  }
+
+  #top-bar {
+    padding: 5px 10px 0px;
+    transform: scale(0.85);
+    transform-origin: 0 0;
+    width: 117%;
+  }
+
+  #program-error {
+    font-size: x-large;
+    color: red;
+
+    transform: scale(1.15);
+    animation: 0.52s shake cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    0% {
+      transform: scale(1.15) translate3d(-150px, 0, 0);
+    }
+    10%, 90% {
+      transform: scale(1.15) translate3d(-1px, 0, 0);
+    }
+    20%, 80% {
+      transform: scale(1.15) translate3d(2px, 0, 0);
+    }
+    30%, 50%, 70% {
+      transform: scale(1.15) translate3d(-4px, 0, 0);
+    }
+    40%, 60% {
+      transform: scale(1.15) translate3d(4px, 0, 0);
+    }
+  }
+
+  #controls-panel {
+    transform: scale(0.85);
+    transform-origin: 0 0;
+    width: 117%;
+  }
+
+  #inspector-panel {
+    padding: 10px;
+
+    transform: scale(0.85);
+    transform-origin: 0 0;
+    width: 117%;
+  }
+
+  html, body, .fullscreen {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .dark-theme {
+    background: rgb(0,0,0);
+    color: white;
+  }
+
+  h2 span {
+    padding-right: 10px;
+  }
+
+  body .lm_content{
+    overflow: auto !important;
+  }
+
+  .scrollable {
+    overflow: scroll !important;
+  }
+
+  #inspector-panel .card {
+    border-radius: 0;
+    border: none;
+  }
+
+  #inspector-panel .card table {
+    margin-bottom: 0;
+  }
+
+  #code-editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font-size: 13px;
+  }
+
+  #blocks-editor {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  #blockly {
+    color: black;
+  }
+
+  .blocklySvg {
+    background-color: #444 !important;
+  }
+
+  .blocklyWidgetDiv {
+
+  }
+
+
+  .blocklyToolboxDiv {
+
+  }
+
+  .blocklyFlyout {
+
+  }
+
+  .blocklyFlyoutBackground {
+
+  }
+
+  .lm_goldenlayout {
+    /* HACK(Richo): This removes the background image that comes with goldenlayout's theme */
+    background: inherit !important;
+  }
+
+
+  #output-panel pre {
+    overflow: visible;
+  }
+
+  .allCapsMode {
+    font-variant: small-caps;
+  }
+
+  /* Scrollbar styles */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    opacity:0;
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: lightgray;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    opacity: 1;
+  }
