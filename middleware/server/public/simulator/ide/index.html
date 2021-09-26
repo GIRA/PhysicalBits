@@ -27,7 +27,8 @@
     <meta name="theme-color" content="#ffffff">
 
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <!-- TODO(Richo): This tag prevents correct loading of the wasm code. I need to check if it's really necessary for electron -->
+    <!--<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />-->
   </head>
   <body>
     <div id="container" class="fullscreen dark-theme">
@@ -638,8 +639,11 @@
     <script src="plotter.js" type="text/javascript"></script>
     <script src="blocklymodal.js" type="text/javascript"></script>
 
-    <!-- If this file is loaded, the IDE will run locally
-    <script src="middleware/main.js" type="text/javascript"></script>-->
+    <!-- If this file is loaded, the IDE will run locally-->
+    <script src="middleware/main.js" type="text/javascript"></script>
+
+    <script src="../simulator.js" type="text/javascript"></script>
+    <script src="../js/main.js" type="text/javascript"></script>
 
     <script src="ajax.js" type="text/javascript"></script>
     <script src="uzi.js" type="text/javascript"></script>
