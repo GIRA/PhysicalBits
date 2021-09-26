@@ -44,8 +44,7 @@
   (append :error str args))
 
 (defn exception [ex]
-  #?(:clj (error (.getMessage ex))
-     :cljs (error (str ex))))
+  (error (ex-message ex)))
 
 (defn newline []
   (info ""))
