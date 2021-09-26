@@ -146,6 +146,9 @@
 
 (defn- get-program-data [state]
   (let [program (-> state :program :current)]
+    ; TODO(Richo): This sucks, the IDE should take the program without modification.
+    ; Do we really need the final-ast? It would be simpler if we didn't have to make
+    ; this change.
     (-> program
         (select-keys [:type :src :compiled])
         (assoc :ast (:original-ast program)))))
