@@ -5,7 +5,7 @@ const fs = require('fs');
 ﻿let IDE = (function () {
 
   let codeEditor;
-  let selectedPort = "automatic";
+  let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
   let lastProgram = { code: "", type: "uzi" };
@@ -19,7 +19,7 @@ const fs = require('fs');
   let IDE = {
     init: function () {
       // NOTE(Richo): The following tasks need to be done in order:
-      initializeLayout()
+      return initializeLayout()
         .then(initializeCodePanel)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
@@ -34,8 +34,7 @@ const fs = require('fs');
         .then(initializePlotterPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
-        .then(initializeOptionsModal)
-        .then(hideLoadingScreen);
+        .then(initializeOptionsModal);
     },
   };
 
@@ -366,10 +365,6 @@ const fs = require('fs');
       });
     }
     setTimeout(loop, interval);
-  }
-
-  function hideLoadingScreen() {
-    $("#loading-container").hide();
   }
 
   function initializeBrokenLayoutErrorModal() {
@@ -754,7 +749,7 @@ const fs = require('fs');
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
-      let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
+      let defaultOption = selectedPort == "automatic" || "simulator" ? "" : selectedPort;
       MessageBox.prompt(i18n.translate("Choose port"),
                         i18n.translate("Port name:"),
                         defaultOption).then(value => {
@@ -783,23 +778,27 @@ const fs = require('fs');
   }
 
   function connect() {
-    connecting = true;
-    $("#connect-button").attr("disabled", "disabled");
-    $("#port-dropdown").attr("disabled", "disabled");
-    if (selectedPort == "automatic") {
-      let availablePorts = Uzi.state.connection.availablePorts;
-      if (availablePorts.length == 0) {
-        appendToOutput({text: "No available ports found", type: "error"});
-        connecting = false;
-        updateTopBar();
-      } else {
-        attemptConnection(availablePorts);
-      }
+    if (DEMO && selectedPort != "simulator") {
+      MessageBox.alert("DEMO version", "The functionality you requested is not implemented in the DEMO version. Please download Physical Bits to enjoy all its capabilities");
     } else {
-      Uzi.connect(selectedPort).finally(function () {
-        connecting = false;
-        updateTopBar();
-      });
+      connecting = true;
+      $("#connect-button").attr("disabled", "disabled");
+      $("#port-dropdown").attr("disabled", "disabled");
+      if (selectedPort == "automatic") {
+        let availablePorts = Uzi.state.connection.availablePorts;
+        if (availablePorts.length == 0) {
+          appendToOutput({text: "No available ports found", type: "error"});
+          connecting = false;
+          updateTopBar();
+        } else {
+          attemptConnection(availablePorts);
+        }
+      } else {
+        Uzi.connect(selectedPort).finally(function () {
+          connecting = false;
+          updateTopBar();
+        });
+      }
     }
   }
 
@@ -821,7 +820,10 @@ const fs = require('fs');
   function disconnect() {
     connecting = true;
     $("#disconnect-button").attr("disabled", "disabled");
-    Uzi.disconnect().finally(() => { connecting = false; });
+    Uzi.disconnect().finally(() => {
+      connecting = false;
+      updateTopBar();
+    });
   }
 
   function evalProgramFn(fn) {
@@ -1004,6 +1006,12 @@ const fs = require('fs');
       $("#more-buttons").attr("disabled", "disabled");
       $("#install-button").attr("disabled", "disabled");
       updatePortDropdown();
+    }
+
+
+    if (DEMO) {
+      $("#port-dropdown").attr("disabled", "disabled");
+      setSelectedPort("simulator");
     }
   }
 
