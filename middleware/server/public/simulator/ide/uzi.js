@@ -58,7 +58,7 @@ let Uzi = (function () {
 
     start: function (preferredHost) {
       if (localFlag) {
-        // NOTE(Richo): Early exit, don't attempt to connect at all
+        middleware.simulator.on_update(update);
         return Promise.resolve();
       }
 
@@ -96,7 +96,7 @@ let Uzi = (function () {
 
     disconnect: function () {
       if (Uzi.state.connection.portName == "simulator") {
-        return middleware.simulator.disconnect(update);
+        return middleware.simulator.disconnect();
       }
       let url = apiURL + "/uzi/disconnect";
       let data = { id: id };
@@ -106,7 +106,7 @@ let Uzi = (function () {
 		compile: function (src, type, silent) {
       if (localFlag) {
         // NOTE(Richo): Instead of going to the server to compile, we do it locally
-        return middleware.simulator.compile(src, type, silent, update);
+        return middleware.simulator.compile(src, type, silent);
       }
 
       let url = apiURL + "/uzi/compile";
@@ -120,6 +120,10 @@ let Uzi = (function () {
   	},
 
     run: function (src, type, silent) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.run(src, type, silent);
+      }
+
       let url = apiURL + "/uzi/run";
       let data = {
         id: id,
@@ -131,6 +135,10 @@ let Uzi = (function () {
   	},
 
     install: function (src, type) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.install(src, type);
+      }
+
       let url = apiURL + "/uzi/install";
       let data = {
         id: id,

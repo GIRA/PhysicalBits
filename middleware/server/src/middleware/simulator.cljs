@@ -21,7 +21,7 @@
   (.then (.-ready js/Simulator)
          (fn []
            (println "READY TO CONNECT!")
-           (js/Simulator.start))))
+           (js/Simulator.start 16))))
 
 (defn chan->promise [ch]
   (js/Promise. (fn [res rej]
@@ -106,85 +106,71 @@
                (filter #(not= (% old-state) (% new-state))
                        (keys new-state))))
 
-(def state (atom {}))
+(def update* (atom nil))
 
-(defn trigger-update! [update]
- (let [[old new] (reset-vals! state (get-server-state))
-       diff (get-state-diff old new)]
-   (when-not (empty? diff)
-     (update (clj->js diff)))))
+; TODO(Richo): The update-loop could be started/stopped automatically
+(def ^:private update-loop? (atom false))
+
+; TODO(Richo): This loop sucks, it would be better if we could subscribe
+; to the update events coming from the device.
+(defn start-update-loop! []
+  (when (compare-and-set! update-loop? false true)
+    (go-loop [old-state nil]
+      (when @update-loop?
+        (let [new-state (get-server-state)
+              diff (get-state-diff old-state new-state)]
+          (when-not (empty? diff)
+            (when-let [update-fn @update*]
+              (update-fn (clj->js diff))))
+          (<! (a/timeout 16))
+          (recur new-state))))))
+
+(defn stop-update-loop! []
+  (reset! update-loop? false))
+
+(comment
+ (stop-update-loop!)
+ (start-update-loop!)
+ )
 
 ;;;;;;;;;;;;;;;; END server stuff
+
+(defn ^:export on-update [update-fn]
+  (reset! update* update-fn)
+  (start-update-loop!))
 
 (defn ^:export connect [update-fn]
   (chan->promise
    (go-try
-    ;(logger/flush-entries!)
     (<? (dc/connect! "simulator"))
-    (trigger-update! (fn [s]
-                      (println s)
-                       (update-fn s)))
     (let [port-name (@dc/state :port-name)]
       {:port-name port-name}))))
 
-(defn ^:export disconnect [update-fn]
+
+(defn ^:export disconnect []
   (chan->promise
    (go-try
     (<? (dc/disconnect!))
-    (trigger-update! update-fn)
     "OK")))
 
-(defn ^:export compile [src type silent? update-fn]
+(defn ^:export compile [src type silent?]
   (chan->promise
    (go-try
-    ; TODO(Richo): This code was copied (and modified slightly) from the controller/compile function!
-    (try
-      (let [compile-fn (case type
-                         "json" cc/compile-json-string
-                         "uzi" cc/compile-uzi-string)
-            temp-program (-> (compile-fn src)
-                             (update :compiled program/sort-globals)
-                             (assoc :type type))
-            ; TODO(Richo): This sucks, the IDE should take the program without modification.
-            ; Do we really need the final-ast? It would be simpler if we didn't have to make
-            ; this change. Also, this code is duplicated here and in the server...
-            program (-> temp-program
-                        (select-keys [:type :src :compiled])
-                        (assoc :ast (:original-ast temp-program)))
-            bytecodes (en/encode (:compiled program))
-            output (when-not silent?
-                     (logger/flush-entries!)
-                     (logger/newline)
-                     (logger/log "Program size (bytes): %1" (count bytecodes))
-                     (logger/log (str bytecodes))
-                     (logger/success "Compilation successful!")
-                     (logger/read-entries!))]
-        (update-fn (clj->js {:program program
-                             :output (or output [])}))
-        program)
-      (catch :default ex
-        (when-not silent?
-          (logger/flush-entries!)
-          (logger/newline)
-          (logger/exception ex)
-          ; TODO(Richo): Improve the error message for checker errors
-          (when-let [{errors :errors} (ex-data ex)]
-            (doseq [[^long i {:keys [description node src]}]
-                    (map-indexed (fn [i e] [i e])
-                                 errors)]
-              (logger/error (str "├─ " (inc i) ". " description))
-              (if src
-                (logger/error (str "|     ..." src "..."))
-                (when-let [id (:id node)]
-                  (logger/error (str "|     Block ID: " id)))))
-            (logger/error (str "└─ Compilation failed!")))
-          (update-fn (clj->js {:output (logger/read-entries!)})))
-        (throw ex))))))
+    (clj->js (dc/compile! src type silent?)))))
 
-(defn ^:export run [program]
-  (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
+(defn ^:export run [src type silent?]
+  (chan->promise
+   (go-try
+    (let [program (dc/compile! src type silent?)]
+      (dc/run program)
+      (clj->js program)))))
 
-(defn ^:export install [] "ACAACA")
+(defn ^:export install [src type]
+  (chan->promise
+   (go-try
+     (let [program (dc/compile! src type true)]
+       (dc/install program)
+       (clj->js program)))))
 
 (comment
 

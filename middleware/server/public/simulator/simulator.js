@@ -2514,7 +2514,7 @@ var EEPROM = {
 };
 var Simulator = {
   interval: null,
-  start: function () {
+  start: function (interval) {
     Simulator.stop();
 
     let begin = Date.now();
@@ -2527,7 +2527,7 @@ var Simulator = {
       if (data.length > 0) {
         Serial.notifyListeners(data);
       }
-    }, 10);
+    }, interval);
   },
   stop: function () {
     clearInterval(Simulator.interval);
