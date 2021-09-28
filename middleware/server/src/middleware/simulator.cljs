@@ -122,7 +122,7 @@
           (when-not (empty? diff)
             (when-let [update-fn @update*]
               (update-fn (clj->js diff))))
-          (<! (a/timeout 16))
+          (<! (a/timeout 50))
           (recur new-state))))))
 
 (defn stop-update-loop! []
