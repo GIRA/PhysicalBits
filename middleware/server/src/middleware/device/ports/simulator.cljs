@@ -16,7 +16,7 @@
                        (loop []
                          (when-let [data (<! out-chan)]
                            (js/Serial.write (clj->js data) (count data))
-                           (println "OUT ->" data)
+                           #_(println "OUT ->" data)
                            (recur)))
                        (catch :default ex
                          (log-error "ERROR WHILE WRITING OUTPUT (simulator) ->" ex)
@@ -27,7 +27,7 @@
                    (letfn [(listener [bytes]
                                      (try
                                        (let [data (js->clj bytes)]
-                                         (println "IN ->" data)
+                                         #_(println "IN ->" data)
                                          (dotimes [i (count data)]
                                                   (when-not (a/put! in-chan (nth data i))
                                                     (js/Serial.removeListener listener))))
