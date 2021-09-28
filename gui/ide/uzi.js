@@ -10,9 +10,6 @@ let Uzi = (function () {
     "server-disconnect" : []
   };
 
-  // HACK(Richo): If the middleware is loaded we run locally
-  let localFlag = window.middleware != undefined;
-
 
   let Uzi = {
     /*
@@ -57,9 +54,8 @@ let Uzi = (function () {
     socket: null,
 
     start: function (preferredHost) {
-      if (localFlag) {
-        // NOTE(Richo): Early exit, don't attempt to connect at all
-        return Promise.resolve();
+      if (window.middleware != undefined) {
+        middleware.simulator.on_update(update);
       }
 
       host = preferredHost || "";
@@ -85,21 +81,29 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
+      if (window.middleware && port == "simulator") {
+        return middleware.simulator.connect(update);
+      }
+
       let url = apiURL + "/uzi/connect";
       let data = { id: id, port: port };
       return POST(url, data);
     },
 
     disconnect: function () {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.disconnect();
+      }
+
       let url = apiURL + "/uzi/disconnect";
       let data = { id: id };
       return POST(url, data);
     },
 
 		compile: function (src, type, silent) {
-      if (localFlag) {
+      if (window.middleware) {
         // NOTE(Richo): Instead of going to the server to compile, we do it locally
-        return compileLocal(src, type, silent);
+        return middleware.simulator.compile(src, type, silent);
       }
 
       let url = apiURL + "/uzi/compile";
@@ -113,6 +117,10 @@ let Uzi = (function () {
   	},
 
     run: function (src, type, silent) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.run(src, type, silent);
+      }
+
       let url = apiURL + "/uzi/run";
       let data = {
         id: id,
@@ -124,6 +132,10 @@ let Uzi = (function () {
   	},
 
     install: function (src, type) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.install(src, type);
+      }
+
       let url = apiURL + "/uzi/install";
       let data = {
         id: id,
@@ -134,6 +146,10 @@ let Uzi = (function () {
     },
 
     setPinReport: function (pins, report) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_pin_report(pins, report);
+      }
+
       let url = apiURL + "/uzi/pin-report";
       let data = {
         id: id,
@@ -144,6 +160,10 @@ let Uzi = (function () {
     },
 
     setGlobalReport: function (globals, report) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_global_report(globals, report);
+      }
+
       let url = apiURL + "/uzi/global-report";
       let data = {
         id: id,
@@ -154,6 +174,10 @@ let Uzi = (function () {
     },
 
     setProfile: function (enabled) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_profile(enabled);
+      }
+
       let url = apiURL + "/uzi/profile";
       let data = {
         id: id,
@@ -164,16 +188,6 @@ let Uzi = (function () {
   };
 
   function POST(url, data) {
-    if (localFlag) {
-      update({
-        output: [
-          {text: ""},
-          {type: "info", text: (new Date()).toLocaleString()},
-          {type: "error", text: "Not implemented in the DEMO version"}
-        ]
-      });
-      return Promise.resolve();
-    }
     return ajax.POST(url, data);
   }
 
@@ -183,47 +197,6 @@ let Uzi = (function () {
 
   function errorHandler (err) {
     console.log(err);
-  }
-
-  function compileLocal(src, type, silent) {
-    return new Promise((resolve, reject) => {
-      try {
-        var result = middleware.compiler.compile(src, type);
-        var program = {
-          type: type,
-          src: result.src,
-          compiled: result.compiled,
-          ast: result["original-ast"]
-        };
-        resolve(program);
-        var bytecodes = middleware.compiler.encode(program.compiled);
-        var output = [];
-        if (!silent) {
-          output = [
-            {text: ""},
-            {type: "info", text: (new Date()).toLocaleString()},
-            {type: "info", text: "Program size (bytes): %1", args: [bytecodes.length]},
-            {type: "info", text: "[%1]", args: [bytecodes.join(" ")]},
-            {type: "success", text: "Compilation successful!", args: []}
-          ]
-        }
-        update({
-          program: program,
-          output: output
-        });
-      } catch (err) {
-        if (!silent) {
-          update({
-            output: [
-              {text: ""},
-              {type: "info", text: (new Date()).toLocaleString()},
-              {type: "error", text: err.toString()}
-            ]
-          });
-        }
-        reject(err);
-      }
-    });
   }
 
   function reconnect() {
