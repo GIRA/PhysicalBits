@@ -66,10 +66,11 @@ let Uzi = (function () {
         let i = 0;
         let begin = +new Date();
         function connect() {
+          if (i > 10) return;
           console.log("ATTEMPT: " + (++i));
           console.log("Elapsed time: " + ((+new Date()) - begin));
           updateLoop().then(resolve).catch(err => {
-            setTimeout(connect, 500);
+            setTimeout(connect, 1000);
           });
         }
         connect();
