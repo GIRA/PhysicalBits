@@ -54,9 +54,10 @@ let Uzi = (function () {
     socket: null,
 
     start: function (preferredHost) {
-      if (window.middleware != undefined) {
-        middleware.simulator.on_update(update);
-      }
+      middleware.simulator.on_update(update);
+
+      // HACK(Richo): Early exit, if on DEMO mode we don't bother connecting to the server
+      if (DEMO) return Promise.resolve();
 
       host = preferredHost || "";
       apiURL = host ? "http://" + host : "";
@@ -66,9 +67,13 @@ let Uzi = (function () {
         let i = 0;
         let begin = +new Date();
         function connect() {
-          if (i > 10) return;
+          let elapsedTime = (+new Date()) - begin;
+          if (elapsedTime >= 30000) {
+            console.error("Server not found! Giving up...");
+            return reject();
+          }
           console.log("ATTEMPT: " + (++i));
-          console.log("Elapsed time: " + ((+new Date()) - begin));
+          console.log("Elapsed time: " + elapsedTime);
           updateLoop().then(resolve).catch(err => {
             setTimeout(connect, 1000);
           });
@@ -82,7 +87,7 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
-      if (window.middleware && port == "simulator") {
+      if (port == "simulator") {
         return middleware.simulator.connect(update);
       }
 
@@ -102,7 +107,7 @@ let Uzi = (function () {
     },
 
 		compile: function (src, type, silent) {
-      if (window.middleware) {
+      if (DEMO) {
         // NOTE(Richo): Instead of going to the server to compile, we do it locally
         return middleware.simulator.compile(src, type, silent);
       }

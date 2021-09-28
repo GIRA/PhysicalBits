@@ -29,6 +29,11 @@
     <!-- https://electronjs.org/docs/tutorial/security#csp-meta-tag -->
     <!-- TODO(Richo): This tag prevents correct loading of the wasm code. I need to check if it's really necessary for electron -->
     <!--<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />-->
+
+    <script type="text/javascript">
+      // HACK(Richo): Set this flag to enable DEMO mode.
+      let DEMO = false;
+    </script>
   </head>
   <body>
     <div id="container" class="fullscreen dark-theme">
@@ -647,8 +652,13 @@
     <script src="uzi.js" type="text/javascript"></script>
 
     <script>
+
     function showLoadingScreen() {
       $("#loading-container tbody").css("visibility", "visible");
+    }
+
+    function hideLoadingScreen() {
+      $("#loading-container").hide();
     }
 
     function fullProgressBar() {
@@ -660,12 +670,16 @@
       setTimeout(showLoadingScreen, 500);
       Uzi.start(location.host ? "" : "localhost:3000").then(function () {
         fullProgressBar();
-        IDE.init();
-
-        // HACK(Richo): If the middleware is present we show the DEMO modal
-        if (window.middleware) {
-          $("#demo-modal").modal();
-        }
+        IDE.init().then(hideLoadingScreen).then(() => {
+          if (DEMO) { $("#demo-modal").modal(); }
+        });
+      }).catch(function () {
+        fullProgressBar();
+        hideLoadingScreen();
+        $("#container").remove();
+        MessageBox.alert("UNEXPECTED ERROR", "Server not found! Try again?").then(() => {
+          location.reload();
+        });
       });
     });
     </script>
