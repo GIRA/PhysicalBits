@@ -26,7 +26,22 @@ var Sketch = {
 var Serial = {
   readInto: Module.cwrap("Serial_readInto", "number", ["number", "number"]),
   write: Module.cwrap("Serial_write", null, ["array", "number"]),
-
+  listeners: [],
+  addListener: function (listener) {
+    Serial.listeners.push(listener);
+  },
+  removeListener: function (listener) {
+    Serial.listeners = Serial.listeners.filter(l => l != listener);
+  },
+  notifyListeners: function (data) {
+    Serial.listeners.forEach(listener => {
+      try {
+        listener(data);
+      } catch (err) {
+        console.error("ERROR notifying listeners", err);
+      }
+    });
+  },
   readAvailable: function () {
     let buffer;
     try {
@@ -58,6 +73,10 @@ var Simulator = {
     Simulator.interval = setInterval(() => {
       Sketch.setMillis(Date.now() - begin);
       Sketch.loop();
+      let data = Serial.readAvailable();
+      if (data.length > 0) {
+        Serial.notifyListeners(data);
+      }
     }, 10);
   },
   stop: function () {
