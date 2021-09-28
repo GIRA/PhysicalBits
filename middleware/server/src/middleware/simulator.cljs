@@ -172,7 +172,32 @@
        (dc/install program)
        (clj->js program)))))
 
+(defn ^:export set-pin-report [pins report]
+  (chan->promise
+   (go-try
+    (doseq [pin-name pins
+            report? report]
+      (dc/set-pin-report pin-name report?))
+    "OK")))
+
+(defn ^:export set-global-report [globals report]
+  (chan->promise
+   (go-try
+    (doseq [global-name globals
+            report? report]
+      (dc/set-global-report global-name report?))
+    "OK")))
+
+(defn ^:export set-profile [enabled?]
+  (chan->promise
+   (go-try
+    (if enabled?
+      (dc/start-profiling)
+      (dc/stop-profiling))
+    "OK")))
+
 (comment
+
 
   (def listener (fn [a] (println a)))
   (def listener2 listener)

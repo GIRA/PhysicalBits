@@ -10,9 +10,6 @@ let Uzi = (function () {
     "server-disconnect" : []
   };
 
-  // HACK(Richo): If the middleware is loaded we run locally
-  let localFlag = window.middleware != undefined;
-
 
   let Uzi = {
     /*
@@ -57,7 +54,7 @@ let Uzi = (function () {
     socket: null,
 
     start: function (preferredHost) {
-      if (localFlag) {
+      if (window.middleware != undefined) {
         middleware.simulator.on_update(update);
         return Promise.resolve();
       }
@@ -66,6 +63,8 @@ let Uzi = (function () {
       apiURL = host ? "http://" + host : "";
       wsURL = "ws://" + (host || location.host);
 
+      // TODO(Richo): This will attempt to connect infinite times, maybe we should
+      // put a limit?
       return new Promise((resolve, reject) => {
         let i = 0;
         let begin = +new Date();
@@ -85,7 +84,7 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
-      if (localFlag && port == "simulator") {
+      if (window.middleware && port == "simulator") {
         return middleware.simulator.connect(update);
       }
 
@@ -98,13 +97,14 @@ let Uzi = (function () {
       if (Uzi.state.connection.portName == "simulator") {
         return middleware.simulator.disconnect();
       }
+
       let url = apiURL + "/uzi/disconnect";
       let data = { id: id };
       return POST(url, data);
     },
 
 		compile: function (src, type, silent) {
-      if (localFlag) {
+      if (window.middleware) {
         // NOTE(Richo): Instead of going to the server to compile, we do it locally
         return middleware.simulator.compile(src, type, silent);
       }
@@ -149,6 +149,10 @@ let Uzi = (function () {
     },
 
     setPinReport: function (pins, report) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_pin_report(pins, report);
+      }
+
       let url = apiURL + "/uzi/pin-report";
       let data = {
         id: id,
@@ -159,6 +163,10 @@ let Uzi = (function () {
     },
 
     setGlobalReport: function (globals, report) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_global_report(globals, report);
+      }
+
       let url = apiURL + "/uzi/global-report";
       let data = {
         id: id,
@@ -169,6 +177,10 @@ let Uzi = (function () {
     },
 
     setProfile: function (enabled) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_profile(enabled);
+      }
+
       let url = apiURL + "/uzi/profile";
       let data = {
         id: id,
@@ -179,16 +191,6 @@ let Uzi = (function () {
   };
 
   function POST(url, data) {
-    if (localFlag) {
-      update({
-        output: [
-          {text: ""},
-          {type: "info", text: (new Date()).toLocaleString()},
-          {type: "error", text: "Not implemented in the DEMO version"}
-        ]
-      });
-      return Promise.resolve();
-    }
     return ajax.POST(url, data);
   }
 
