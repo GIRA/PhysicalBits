@@ -75,10 +75,10 @@ var Simulator = {
       while (Sketch.getMillis() < now) {
         Sketch.setMillis(Sketch.getMillis() + 1);
         for (let i = 0; i < 10; i++) { Sketch.loop(); }
-      }
-      let data = Serial.readAvailable();
-      if (data.length > 0) {
-        Serial.notifyListeners(data);
+        let data = Serial.readAvailable();
+        if (data.length > 0) {
+          Serial.notifyListeners(data);
+        }
       }
     }, interval);
   },
