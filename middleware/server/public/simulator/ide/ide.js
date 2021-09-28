@@ -5,7 +5,7 @@ const fs = require('fs');
 ﻿let IDE = (function () {
 
   let codeEditor;
-  let selectedPort = "automatic";
+  let selectedPort = window.middleware ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
   let lastProgram = { code: "", type: "uzi" };
@@ -754,7 +754,7 @@ const fs = require('fs');
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
-      let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
+      let defaultOption = selectedPort == "automatic" || "simulator" ? "" : selectedPort;
       MessageBox.prompt(i18n.translate("Choose port"),
                         i18n.translate("Port name:"),
                         defaultOption).then(value => {

@@ -85,12 +85,19 @@ let Uzi = (function () {
     },
 
     connect: function (port) {
+      if (localFlag && port == "simulator") {
+        return middleware.simulator.connect(update);
+      }
+
       let url = apiURL + "/uzi/connect";
       let data = { id: id, port: port };
       return POST(url, data);
     },
 
     disconnect: function () {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.disconnect(update);
+      }
       let url = apiURL + "/uzi/disconnect";
       let data = { id: id };
       return POST(url, data);

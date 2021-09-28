@@ -25,6 +25,8 @@
         (log* (uzi-format text args))))
     entries))
 
+(defn flush-entries! [] (reset! entries* []))
+
 (defn- append [msg-type format-str args]
   (swap! entries*
          conj {:type msg-type
