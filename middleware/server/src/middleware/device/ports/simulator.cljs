@@ -6,51 +6,39 @@
 (defn- log-error [msg e]
   (println msg e))
 
-(deftype SimulatorPort [open?]
+(deftype SimulatorPort []
   ports/UziPort
-  (close! [port] (reset! open? false))
+  (close! [port])
   (make-out-chan! [port]
-                  (let [error-msg "ERROR WHILE WRITING OUTPUT (simulator) ->"
-                        out-chan (a/chan 1000)]
+                  (let [out-chan (a/chan 1000)]
                     (go
                      (try
                        (loop []
                          (when-let [data (<! out-chan)]
                            (js/Serial.write (clj->js data) (count data))
                            (println "OUT ->" data)
-                           (when @(.-open? port)
-                             (recur))))
+                           (recur)))
                        (catch :default ex
-                         (log-error error-msg ex)
+                         (log-error "ERROR WHILE WRITING OUTPUT (simulator) ->" ex)
                          (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [port]
-                 (let [error-msg "ERROR WHILE READING INPUT (simulator) ->"
-                       in-chan (a/chan 1000)
-                       closed-signal (random-uuid)]
-                   (go
-                    (try
-                      (js/Serial.readAvailable) ; Discard old data
-                      (loop []
-                        (if-some [bytes (js/Serial.readAvailable)]
-                          (let [data (js->clj bytes)]
-                            (println "IN ->" data)
-                            (dotimes [i (count data)]
-                                     (when-not (>! in-chan (nth data i))
-                                       (throw closed-signal))))
-                          (println "READING..."))
-                        (<! (timeout 10))
-                        (when @(.-open? port)
-                          (recur)))
-                      (catch :default ex
-                        (println "ERROR" ex)
-                        (when-not (= ex closed-signal)
-                          (log-error error-msg ex)
-                          (a/close! in-chan)))))
+                 (let [in-chan (a/chan 1000)]
+                   (letfn [(listener [bytes]
+                                     (try
+                                       (let [data (js->clj bytes)]
+                                         (println "IN ->" data)
+                                         (dotimes [i (count data)]
+                                                  (when-not (a/put! in-chan (nth data i))
+                                                    (js/Serial.removeListener listener))))
+                                       (catch :default ex
+                                         (log-error "ERROR WHILE READING INPUT (simulator) ->" ex)
+                                         (a/close! in-chan))))]
+                     (js/Serial.addListener listener))
                    in-chan)))
 
 (defn open-port [port-name baud-rate]
   (try
-    (SimulatorPort. (atom true))
+    (SimulatorPort.)
     (catch :default ex
       (do (log-error "ERROR WHILE OPENING PORT (serial) ->" ex) nil))))
