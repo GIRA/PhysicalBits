@@ -71,8 +71,11 @@ var Simulator = {
     Sketch.setMillis(Date.now() - begin);
     Sketch.setup();
     Simulator.interval = setInterval(() => {
-      Sketch.setMillis(Date.now() - begin);
-      Sketch.loop();
+      let now = Date.now() - begin;
+      while (Sketch.getMillis() < now) {
+        Sketch.setMillis(Sketch.getMillis() + 1);
+        for (let i = 0; i < 10; i++) { Sketch.loop(); }
+      }
       let data = Serial.readAvailable();
       if (data.length > 0) {
         Serial.notifyListeners(data);
