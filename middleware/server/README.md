@@ -62,31 +62,43 @@ The options are:
 
 In ClojureScript, we are currently using [shadow-cljs](https://github.com/thheller/shadow-cljs) for development.
 
-    $ npx shadow-cljs watch compiler
+There are several builds configured for different targets, you can look at the `shadow-cljs.edn` configuration file to see the current available builds. Some builds target the browser, others target node, others are just for testing. In each case, the way of running the code differs slightly. However, I think the best is to start by running a shadow-cljs server:
 
-Wait until the build is completed. Then open a browser to the url shown in the console (it should be http://localhost:8080).
+    $ shadow-cljs server
 
-Connect to the nrepl server as usual. Inside proto-repl evaluate the following:
+This command will start a process that shadow-cljs will use to speed up the startup of future commands. You can run the existing browser builds by opening the browser in the url http://localhost:8081. Also, you can connect the REPL to the server on the port 9000.
 
-    $ (shadow.cljs.devtools.api/nrepl-select :compiler)
+To compile the code you must run (in a different terminal) the `shadow-cljs watch <build>` command. This will trigger the compilation process automatically after any changes to the code. For example, the following command will compile the `simulator` build:
+
+    $ shadow-cljs watch simulator
+
+Wait until compilation finishes and then you can open the browser on the resulting build.
+
+To connect the REPL you use the port 9000. However, once you connected the REPL to the shadow-cljs server you need to select the appropiate build if you want to run code in the actual runtime:
+
+    $ (shadow.cljs.devtools.api/nrepl-select :simulator)
 
 Now you should be able to evaluate code in the context of the browser.
 
+If the build target is node, the same steps apply but instead of opening the browser you need to run the generated code using `node`.
+
 ### Testing
 
-In order to run the tests on every change you should do the above and then, in a separate terminal:
+In order to run the tests on every change you should start the shadow-cljs server as instructed above and then, in a separate terminal:
 
-    $ npx shadow-cljs watch test
+    $ shadow-cljs watch compiler-test
 
-After the build is completed you should be able to run the tests in the browser (the url should be http://localhost:8021/). While the browser window is open any change in the source code should run the tests automatically.
+After the build is completed you should be able to run the tests in the browser (the url should be http://localhost:8081/). While the browser window is open any change in the source code should run the tests automatically.
+
+If the build target is node, instead of opening the browser you need to run the code using `node`.
 
 ### Compilation
 
-To build the ClojureScript version of the compiler you should execute the following:
+In order to compile for production you should execute the `shadow-cljs release <build>` command:
 
-    $ npx shadow-cljs release compiler
+    $ shadow-cljs release simulator
 
-The compiled output should be a single javascript file (`public/js/main.js`) that you can load in the browser.
+The compiled output should be a single javascript file (output folder depends on the build configuration, see `shadow-cljs.edn`) that you can load in the browser or run using node depending on the target.
 
 ## Dependencies
 
