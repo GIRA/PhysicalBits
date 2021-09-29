@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,12.43910256410256,4.458333333333333,29.43269230769231
-MEDIAN,6,3,17.5
+AVERAGE,12.4185303514377,4.453674121405751,29.38338658146965
+MEDIAN,6,3,17
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -167,6 +167,7 @@ middleware.compiler-test/program-with-procedure-call-before-the-end-of-block#0,4
 middleware.compiler-test/program-with-yield-statement#0,6,2,12
 middleware.compiler-test/repeat-loop#0,17,5,37
 middleware.compiler-test/repeat-loop-declares-0-and-1-as-global-constants#0,13,5,32
+middleware.compiler-test/return-with-logical-and-as-value#0,6,3,14
 middleware.compiler-test/return-with-value#0,9,5,33
 middleware.compiler-test/return-without-value#0,3,2,13
 middleware.compiler-test/script-call-with-keyword-arguments#0,10,4,31
