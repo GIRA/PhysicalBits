@@ -224,27 +224,27 @@
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)
         compiled-false-branch (compile false-branch ctx)]
-    (concat compiled-condition
-            [(emit/jz (inc (count compiled-true-branch)))]
-            compiled-true-branch
-            [(emit/jmp (count compiled-false-branch))]
-            compiled-false-branch)))
+    (vec (concat compiled-condition
+                 [(emit/jz (inc (count compiled-true-branch)))]
+                 compiled-true-branch
+                 [(emit/jmp (count compiled-false-branch))]
+                 compiled-false-branch))))
 
 (defn ^:private compile-if-true
   [{condition :condition, true-branch :trueBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)]
-    (concat compiled-condition
-            [(emit/jz (count compiled-true-branch))]
-            compiled-true-branch)))
+    (vec (concat compiled-condition
+                 [(emit/jz (count compiled-true-branch))]
+                 compiled-true-branch))))
 
 (defn ^:private compile-if-false
   [{condition :condition, false-branch :falseBranch} ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-false-branch (compile false-branch ctx)]
-    (concat compiled-condition
-            [(emit/jnz (count compiled-false-branch))]
-            compiled-false-branch)))
+    (vec (concat compiled-condition
+                 [(emit/jnz (count compiled-false-branch))]
+                 compiled-false-branch))))
 
 (defmethod compile-node "UziConditionalNode" [node ctx]
   (cond
@@ -262,25 +262,25 @@
   (let [compiled-pre (compile pre ctx)
         compiled-condition (compile condition ctx)
         compiled-post (compile post ctx)]
-    (concat compiled-pre
-            compiled-condition
-            (if (empty? (:statements post))
-              (let [count (* -1 (+ 1
-                                   (count compiled-pre)
-                                   (count compiled-condition)))]
-                (if negated?
-                  [(emit/jz count)]
-                  [(emit/jnz count)]))
-              (let [count-start (* -1 (+ 2
-                                         (count compiled-pre)
-                                         (count compiled-condition)
-                                         (count compiled-post)))
-                    count-end (inc (count compiled-post))]
-                (concat [(if negated?
-                           (emit/jnz count-end)
-                           (emit/jz count-end))]
-                        compiled-post
-                        [(emit/jmp count-start)]))))))
+    (vec (concat compiled-pre
+                 compiled-condition
+                 (if (empty? (:statements post))
+                   (let [count (* -1 (+ 1
+                                        (count compiled-pre)
+                                        (count compiled-condition)))]
+                     (if negated?
+                       [(emit/jz count)]
+                       [(emit/jnz count)]))
+                   (let [count-start (* -1 (+ 2
+                                              (count compiled-pre)
+                                              (count compiled-condition)
+                                              (count compiled-post)))
+                         count-end (inc (count compiled-post))]
+                     (concat [(if negated?
+                                (emit/jnz count-end)
+                                (emit/jz count-end))]
+                             compiled-post
+                             [(emit/jmp count-start)])))))))
 
 ; TODO(Richo): The following four node types could be merged into one
 (defmethod compile-node "UziWhileNode" [node ctx]
@@ -299,39 +299,39 @@
         compiled-step (compile step ctx)
         compiled-body (compile body ctx)
         counter-name (:unique-name counter)]
-    (concat
-     ; First, we initialize counter
-     compiled-start
-     [(emit/write-local counter-name)
+    (vec (concat
+          ; First, we initialize counter
+          compiled-start
+          [(emit/write-local counter-name)
 
-      ; Then, we compare counter with stop
-      (emit/read-local counter-name)]
-     compiled-stop
+           ; Then, we compare counter with stop
+           (emit/read-local counter-name)]
+          compiled-stop
 
-     ; We can do this statically because we know step is a compile-time constant
-     [(if (> (ast-utils/compile-time-value step 0) 0)
-        (emit/prim-call "lessThanOrEquals")
-        (emit/prim-call "greaterThanOrEquals"))
+          ; We can do this statically because we know step is a compile-time constant
+          [(if (> (ast-utils/compile-time-value step 0) 0)
+             (emit/prim-call "lessThanOrEquals")
+             (emit/prim-call "greaterThanOrEquals"))
 
-      ; If the condition succeeds, we jump to the end (break out of the loop)
-      (emit/jz (+ 4
-                  (count compiled-body)
-                  (count compiled-step)))]
+           ; If the condition succeeds, we jump to the end (break out of the loop)
+           (emit/jz (+ 4
+                       (count compiled-body)
+                       (count compiled-step)))]
 
-     ; We execute the body
-     compiled-body
+          ; We execute the body
+          compiled-body
 
-     ; But before jumping back to the comparison, we increment counter by step
-     [(emit/read-local counter-name)]
-     compiled-step
-     [(emit/prim-call "add")
-      (emit/write-local counter-name)
+          ; But before jumping back to the comparison, we increment counter by step
+          [(emit/read-local counter-name)]
+          compiled-step
+          [(emit/prim-call "add")
+           (emit/write-local counter-name)
 
-      ; And now we jump to the beginning
-      (emit/jmp (* -1 (+ 7
-                         (count compiled-step)
-                         (count compiled-body)
-                         (count compiled-stop))))])))
+           ; And now we jump to the beginning
+           (emit/jmp (* -1 (+ 7
+                              (count compiled-step)
+                              (count compiled-body)
+                              (count compiled-stop))))]))))
 
 
 (defn ^:private compile-for-loop
@@ -341,41 +341,41 @@
         compiled-step (compile step ctx)
         compiled-body (compile body ctx)
         counter-name (:unique-name counter)]
-    (concat
-     ; First, we initialize counter
-     compiled-start
-     [(emit/write-local counter-name)
+    (vec (concat
+          ; First, we initialize counter
+          compiled-start
+          [(emit/write-local counter-name)
 
-      ; This is where the loop begins!
+           ; This is where the loop begins!
 
-      ; Then, we compare counter with stop. The comparison can either be
-      ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
-      (emit/read-local counter-name)]
-     compiled-stop
-     compiled-step
-     [(emit/write-local temp-name)
-      (emit/read-local temp-name)
-      (emit/push-value 0)
-      (emit/jlte 2)
-      (emit/prim-call "lessThanOrEquals")
-      (emit/jmp 1)
-      (emit/prim-call "greaterThanOrEquals")
-      (emit/jz (+ 5 (count compiled-body)))]
+           ; Then, we compare counter with stop. The comparison can either be
+           ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
+           (emit/read-local counter-name)]
+          compiled-stop
+          compiled-step
+          [(emit/write-local temp-name)
+           (emit/read-local temp-name)
+           (emit/push-value 0)
+           (emit/jlte 2)
+           (emit/prim-call "lessThanOrEquals")
+           (emit/jmp 1)
+           (emit/prim-call "greaterThanOrEquals")
+           (emit/jz (+ 5 (count compiled-body)))]
 
-     ; While counter doesn't reach the stop we execute the body
-     compiled-body
+          ; While counter doesn't reach the stop we execute the body
+          compiled-body
 
-     ; Before jumping back to the comparison, we increment counter by step
-     [(emit/read-local counter-name)
-      (emit/read-local temp-name)
-      (emit/prim-call "add")
-      (emit/write-local counter-name)
+          ; Before jumping back to the comparison, we increment counter by step
+          [(emit/read-local counter-name)
+           (emit/read-local temp-name)
+           (emit/prim-call "add")
+           (emit/write-local counter-name)
 
-      ; And now we jump to the beginning
-      (emit/jmp (* -1 (+ 14
-                         (count compiled-body)
-                         (count compiled-step)
-                         (count compiled-stop))))])))
+           ; And now we jump to the beginning
+           (emit/jmp (* -1 (+ 14
+                              (count compiled-body)
+                              (count compiled-step)
+                              (count compiled-stop))))]))))
 
 (defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
   (register-constant! ctx 0) ; TODO(Richo): This seems to be necessary only if the step is not constant
@@ -391,30 +391,30 @@
   (register-constant! ctx 1)
   (let [compiled-body (compile body ctx)
         compiled-times (compile times ctx)]
-    (concat
-     ; First, we set temp = 0
-     [(emit/push-value 0)
-      (emit/write-local temp-name)]
+    (vec (concat
+          ; First, we set temp = 0
+          [(emit/push-value 0)
+           (emit/write-local temp-name)]
 
-     ; This is where the loop begins!
+          ; This is where the loop begins!
 
-     ; Then, we compare temp with times
-     [(emit/read-local temp-name)]
-     compiled-times
-     [(emit/prim-call "lessThan")
-      (emit/jz (+ 5 (count compiled-body)))]
+          ; Then, we compare temp with times
+          [(emit/read-local temp-name)]
+          compiled-times
+          [(emit/prim-call "lessThan")
+           (emit/jz (+ 5 (count compiled-body)))]
 
-     ; While temp is less than the expected times we execute the body
-     compiled-body
+          ; While temp is less than the expected times we execute the body
+          compiled-body
 
-     ; Before jumping back to the comparison, we increment temp
-     [(emit/read-local temp-name)
-      (emit/push-value 1)
-      (emit/prim-call "add")
-      (emit/write-local temp-name)
-      (emit/jmp (* -1 (+ 8
-                         (count compiled-body)
-                         (count compiled-times))))])))
+          ; Before jumping back to the comparison, we increment temp
+          [(emit/read-local temp-name)
+           (emit/push-value 1)
+           (emit/prim-call "add")
+           (emit/write-local temp-name)
+           (emit/jmp (* -1 (+ 8
+                              (count compiled-body)
+                              (count compiled-times))))]))))
 
 (defmethod compile-node "UziLogicalAndNode" [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
@@ -423,15 +423,15 @@
       ; We need to short-circuit
       (do
         (register-constant! ctx 0)
-        (concat compiled-left
-              [(emit/jz (inc (count compiled-right)))]
-              compiled-right
-              [(emit/jmp 1)
-               (emit/push-value 0)]))
+        (vec (concat compiled-left
+                     [(emit/jz (inc (count compiled-right)))]
+                     compiled-right
+                     [(emit/jmp 1)
+                      (emit/push-value 0)])))
       ; Primitive call is enough
-      (concat compiled-left
-              compiled-right
-              [(emit/prim-call "logicalAnd")]))))
+      (vec (concat compiled-left
+                   compiled-right
+                   [(emit/prim-call "logicalAnd")])))))
 
 (defmethod compile-node "UziLogicalOrNode" [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
@@ -440,15 +440,15 @@
       ; We need to short-circuit
       (do
         (register-constant! ctx 1)
-        (concat compiled-left
-              [(emit/jnz (inc (count compiled-right)))]
-              compiled-right
-              [(emit/jmp 1)
-               (emit/push-value 1)]))
+        (vec (concat compiled-left
+                     [(emit/jnz (inc (count compiled-right)))]
+                     compiled-right
+                     [(emit/jmp 1)
+                      (emit/push-value 1)])))
       ; Primitive call is enough
-      (concat compiled-left
-              compiled-right
-              [(emit/prim-call "logicalOr")]))))
+      (vec (concat compiled-left
+                   compiled-right
+                   [(emit/prim-call "logicalOr")])))))
 
 (defmethod compile-node :default [node ctx]
   #_(log/error "Unknown node: " (ast-utils/node-type node))
@@ -549,3 +549,41 @@
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-uzi-string [str & args]
   (apply compile-tree (parser/parse str) str args))
+
+(comment
+
+ (def src "var a = 0;
+
+task default() running 1/s {
+	a = isBetween(value: 0, min: 1, max: 100);
+}")
+ (do
+ (def src "func foo() { return 1 && 2; }
+task loop() { foo(); }")
+ (def program (compile-uzi-string src))
+ (:compiled program))
+
+
+ (parser/parse src)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ,,,)
