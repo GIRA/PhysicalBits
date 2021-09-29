@@ -2220,3 +2220,65 @@
         actual (compile ast)]
     (is (equivalent? expected actual))
     (is (= (:globals expected) (:globals actual)))))
+
+(deftest return-with-logical-and-as-value
+  (let [ast (ast/program-node
+             :scripts [(ast/function-node
+                       :name "foo"
+                       :body (ast/block-node
+                              [(ast/return-node
+                                (ast/logical-and-node
+                                 (ast/literal-number-node 1)
+                                 (ast/literal-number-node 2)))]))
+                       (ast/task-node
+                        :name "loop"
+                        :state "once"
+                        :body (ast/block-node
+                               [(ast/call-node "foo" [])]))])
+        expected (emit/program
+                  :globals #{(emit/constant 0)
+                             (emit/constant 2)
+                             (emit/constant 1)}
+                  :scripts [(emit/script
+                             :name "foo"
+                             :instructions [(emit/push-value 1)
+                                            (emit/push-value 2)
+                                            (emit/prim-call "logicalAnd")
+                                            (emit/prim-call "retv")])
+                            (emit/script
+                             :name "loop"
+                             :once? true
+                             :running? true
+                             :instructions [(emit/script-call "foo")
+                                            (emit/prim-call "pop")])])
+        actual (compile ast)]
+    (is (= expected actual))))
+
+(comment
+  {:__class__ "UziProgram",
+  :scripts [{:once? false,
+             :running? false,
+             :locals [],
+             :__class__ "UziScript",
+             :arguments [],
+             :name "foo",
+             :instructions [],
+             :delay {:__class__ "UziVariable", :value 0}}
+            {:once? true,
+             :running? true,
+             :locals [],
+             :__class__ "UziScript",
+             :arguments [],
+             :name "loop",
+             :instructions [{:__class__ "UziScriptCallInstruction",
+                             :argument "foo"}
+                            {:__class__ "UziPrimitiveCallInstruction",
+                             :argument {:__class__ "UziPrimitive",
+                                        :name "pop"}}],
+             :delay {:__class__ "UziVariable", :value 0}}],
+  :globals #{{:__class__ "UziVariable", :value 0}
+             {:__class__ "UziVariable", :value 2}
+             {:__class__ "UziVariable", :value 1}}}
+
+
+ ,,,)
