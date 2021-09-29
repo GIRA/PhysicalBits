@@ -84,7 +84,7 @@ long random(long howbig)
 		return 0;
 	}
 
-	double rnd = (double)rand() / 0x7FFF;
+	double rnd = (double)rand() / RAND_MAX;
 	long result = (long)(rnd * (double)howbig);
 	return result;
 }
