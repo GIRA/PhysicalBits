@@ -10,9 +10,10 @@
 #include "Arduino.h"
 #include "Servo.h"
 #include "Simulator.h"
-
+#include <time.h>
 
 int main() {
+  srand(time(0)); // NOTE(Richo): Set random seed to current time
   printf("Simulator loaded successfully!\n");
   EM_ASM( Simulator.init() );
 }
