@@ -18,7 +18,7 @@ InstalledDir: D:/emsdk/upstream/bin
 
 ## Build instructions
 
-I made a batch script that invokes the emscripten compiler. It's not perfect but it works ok. It outputs three files (.html, .js, and .wasm) to the `out/` folder.
+I made a batch script that invokes the emscripten compiler. It's not perfect but it works ok. It outputs two files (simulator.js and simulator.wasm) to the `../../gui/ide/` folder.
 
 To build, just run:
 
@@ -30,7 +30,7 @@ If you want to recompile automatically on changes, run (this uses [nodemon](http
 
 ## Running the compiled program
 
-Even though the build should output an html file to help you get started, I find it full with stuff I don't need so I also added my own `index.html` that just loads the required `<script>` and nothing more.
+The build.bat script will generate files in the `../../gui/ide` folder, so that testing with the actual physical bits environment is easier. However, if you want to test the compilation separately you can modify the `out` variable so that it points to a local `out/` folder and then you can use the `index.html` file for testing.
 
 To run this file is not enough to open it in the browser, you'll need a local webserver to host the files. I'm using [http-server](https://www.npmjs.com/package/http-server), which works great for this stuff.
 
