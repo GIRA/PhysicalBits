@@ -8,7 +8,8 @@
          :middleware []}
 
  :dev-http {8081 ["public"
-                  "public/compiler-test"]}
+                  "public/compiler-test"
+                  "../../gui"]}
 
  :builds {:compiler {:target :browser
                      :output-dir "public/compiler/js"
