@@ -2517,12 +2517,11 @@ var Simulator = {
   start: function (interval) {
     Simulator.stop();
 
-    let begin = Date.now();
-    Sketch.setMillis(Date.now() - begin);
+    Sketch.setMillis(0);
     Sketch.setup();
     Simulator.interval = setInterval(() => {
-      let now = Date.now() - begin;
-      while (Sketch.getMillis() < now) {
+      let stop = Sketch.getMillis() + interval;
+      while (Sketch.getMillis() < stop) {
         Sketch.setMillis(Sketch.getMillis() + 1);
         for (let i = 0; i < 10; i++) { Sketch.loop(); }
         let data = Serial.readAvailable();
