@@ -12,7 +12,8 @@ set opts=-I %sim% -I %uzi% -fdeclspec -s LLD_REPORT_UNDEFINED
 
 set exports=_GPIO_getPinValue,_GPIO_setPinValue,_Sketch_setup,_Sketch_loop,_Serial_readInto,_Serial_write,_Sketch_getMillis,_Sketch_setMillis,_EEPROM_read,_EEPROM_write,_EEPROM_size,_Stats_usedMemory,_Stats_coroutineResizeCounter
 
-REM mkdir out 2> NUL && set out=out/simulator.js
+REM mkdir out 2> NUL
+REM set out=out/simulator.js
 set out=../../gui/ide/simulator.js
 
 @echo on
