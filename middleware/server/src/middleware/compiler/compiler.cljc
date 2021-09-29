@@ -47,7 +47,11 @@
 (defmulti compile-node :__class__)
 
 (defn ^:private compile [node ctx]
-  (compile-node node (update-in ctx [:path] conj node)))
+  (let [result (compile-node node (update-in ctx [:path] conj node))]
+    (when (and (sequential? result)
+               (not (vector? result)))
+      (throw (ex-info "Sequential and not vector!" {:node node :result result})))
+    result))
 
 (defn ^:private rate->delay [{:keys [^double value scale] :as node}]
   (if-not node
