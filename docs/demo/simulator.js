@@ -1897,6 +1897,14 @@ var ASM_CONSTS = {
   function _setTempRet0(val) {
       setTempRet0(val);
     }
+
+  function _time(ptr) {
+      var ret = (Date.now()/1000)|0;
+      if (ptr) {
+        HEAP32[((ptr)>>2)] = ret;
+      }
+      return ret;
+    }
 var ASSERTIONS = true;
 
 
@@ -1933,26 +1941,12 @@ var asmLibraryArg = {
   "emscripten_memcpy_big": _emscripten_memcpy_big,
   "emscripten_resize_heap": _emscripten_resize_heap,
   "fd_write": _fd_write,
-  "setTempRet0": _setTempRet0
+  "setTempRet0": _setTempRet0,
+  "time": _time
 };
 var asm = createWasm();
 /** @type {function(...*):?} */
 var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__wasm_call_ctors");
-
-/** @type {function(...*):?} */
-var _Serial_write = Module["_Serial_write"] = createExportWrapper("Serial_write");
-
-/** @type {function(...*):?} */
-var _Serial_readInto = Module["_Serial_readInto"] = createExportWrapper("Serial_readInto");
-
-/** @type {function(...*):?} */
-var _Sketch_setMillis = Module["_Sketch_setMillis"] = createExportWrapper("Sketch_setMillis");
-
-/** @type {function(...*):?} */
-var _Sketch_setup = Module["_Sketch_setup"] = createExportWrapper("Sketch_setup");
-
-/** @type {function(...*):?} */
-var _Sketch_loop = Module["_Sketch_loop"] = createExportWrapper("Sketch_loop");
 
 /** @type {function(...*):?} */
 var _main = Module["_main"] = createExportWrapper("main");
@@ -1964,7 +1958,22 @@ var _GPIO_getPinValue = Module["_GPIO_getPinValue"] = createExportWrapper("GPIO_
 var _GPIO_setPinValue = Module["_GPIO_setPinValue"] = createExportWrapper("GPIO_setPinValue");
 
 /** @type {function(...*):?} */
+var _Sketch_setup = Module["_Sketch_setup"] = createExportWrapper("Sketch_setup");
+
+/** @type {function(...*):?} */
+var _Sketch_loop = Module["_Sketch_loop"] = createExportWrapper("Sketch_loop");
+
+/** @type {function(...*):?} */
+var _Serial_readInto = Module["_Serial_readInto"] = createExportWrapper("Serial_readInto");
+
+/** @type {function(...*):?} */
+var _Serial_write = Module["_Serial_write"] = createExportWrapper("Serial_write");
+
+/** @type {function(...*):?} */
 var _Sketch_getMillis = Module["_Sketch_getMillis"] = createExportWrapper("Sketch_getMillis");
+
+/** @type {function(...*):?} */
+var _Sketch_setMillis = Module["_Sketch_setMillis"] = createExportWrapper("Sketch_setMillis");
 
 /** @type {function(...*):?} */
 var _EEPROM_read = Module["_EEPROM_read"] = createExportWrapper("EEPROM_read");
