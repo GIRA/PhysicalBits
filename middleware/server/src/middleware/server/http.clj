@@ -147,5 +147,8 @@
 (defn stop []
   (when-let [^java.io.Closeable s @server]
     (core/stop-update-loop!)
+    (doseq [socket @clients]
+      (ws/close! socket))
+    (reset! clients #{})
     (reset! server nil)
     (.close s)))
