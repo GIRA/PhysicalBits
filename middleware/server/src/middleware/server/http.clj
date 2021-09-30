@@ -10,13 +10,11 @@
             [ring.util.response :refer [redirect]]
             [compojure.route :as route]
             [aleph.http :as http]
-            [clojure.java.io :as io]
             [manifold.stream :as ws]
             [manifold.deferred :as d]
             [middleware.core :as core]
             [middleware.utils.json :as json]
             [middleware.device.controller :as dc]
-            [middleware.output.logger :as logger]
             [middleware.config :as config])
   (:import [manifold.stream.core IEventSink]))
 

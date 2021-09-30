@@ -4,10 +4,6 @@
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.simulator :as simulator]
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.utils.program :as program]
-            [middleware.compiler.encoder :as en]
-            [middleware.output.logger :as logger]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.browser :as browser]
             [middleware.utils.async :refer-macros [go-try <?]]))
