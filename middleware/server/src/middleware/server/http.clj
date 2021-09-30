@@ -13,6 +13,7 @@
             [clojure.java.io :as io]
             [manifold.stream :as ws]
             [manifold.deferred :as d]
+            [middleware.core :as core]
             [middleware.utils.json :as json]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
@@ -20,6 +21,7 @@
   (:import [manifold.stream.core IEventSink]))
 
 (def server (atom nil))
+(def clients (atom #{}))
 
 (defn wrap-websocket [handler]
   (fn [req]
@@ -98,122 +100,10 @@
     (dc/stop-profiling))
   (json-response "OK"))
 
-(defn- get-connection-data [{:keys [connection]}]
-  {; TODO(Richo): The server should already receive the data correctly formatted...
-   :isConnected (when (and (not= :pending connection)
-                           (some? connection))
-                  @(:connected? connection))
-   :portName (:port-name connection)
-   :availablePorts (dc/available-ports)})
-
-(defn- get-memory-data [state]
-  (:memory state))
-
-(defn- get-tasks-data [state]
-  (mapv (fn [s] {:scriptName (:name s)
-                 :isRunning (:running? s)
-                 :isError (:error? s)})
-        (filter :task? (-> state :scripts vals))))
-
-(defn- get-pins-data [state]
-  {:timestamp (-> state :pins :timestamp)
-   :available (mapv (fn [pin-name]
-                      {:name pin-name
-                       :reporting (contains? (-> state :reporting :pins)
-                                             pin-name)})
-                    (-> state :board :pin-names))
-   :elements (filterv (fn [pin] (contains? (-> state :reporting :pins)
-                                           (:name pin)))
-                      (-> state :pins :data vals))})
-
-(defn- get-globals-data [state]
-  {:timestamp (-> state :globals :timestamp)
-   :available (mapv (fn [{global-name :name}]
-                      {:name global-name
-                       :reporting (contains? (-> state :reporting :globals)
-                                             global-name)})
-                    (filter :name
-                            (-> state :program :running :compiled :globals)))
-   :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                              (:name global)))
-                      (-> state :globals :data vals))})
-
-(defn- get-pseudo-vars-data [state]
-  {:timestamp (-> state :pseudo-vars :timestamp)
-   :available (mapv (fn [[name _]] {:name name :reporting true})
-                    (-> state :pseudo-vars :data))
-   :elements (-> state :pseudo-vars :data vals)})
-
-(defn- get-program-data [state]
-  (let [program (-> state :program :current)]
-    ; TODO(Richo): This sucks, the IDE should take the program without modification.
-    ; Do we really need the final-ast? It would be simpler if we didn't have to make
-    ; this change.
-    (-> program
-        (select-keys [:type :src :compiled])
-        (assoc :ast (:original-ast program)))))
-
-(defn- get-output-data []
-  (logger/read-entries!))
-
-(defn- get-server-state []
-  (let [state @dc/state]
-    {:connection (get-connection-data state)
-     :memory (get-memory-data state)
-     :tasks (get-tasks-data state)
-     :output (get-output-data)
-     :pins (get-pins-data state)
-     :globals (get-globals-data state)
-     :pseudo-vars (get-pseudo-vars-data state)
-     :program (get-program-data state)}))
-
-(defn- get-state-diff [old-state new-state]
-  (select-keys new-state
-               (filter #(not= (% old-state) (% new-state))
-                       (keys new-state))))
-
-(def ^:private updates (a/chan))
-(def ^:private updates-pub (a/pub updates :type))
-
-; TODO(Richo): The update-loop could be started/stopped automatically
-(def ^:private update-loop? (atom false))
-
-; TODO(Richo): This loop sucks, it would be better if we could subscribe
-; to the update events coming from the device.
-(defn start-update-loop []
-  (when (compare-and-set! update-loop? false true)
-    (thread
-     (loop [old-state nil]
-       (when @update-loop?
-         (let [new-state (get-server-state)
-               diff (get-state-diff old-state new-state)]
-           (when-not (empty? diff)
-             (>!! updates {:type :update, :state (json/encode diff)}))
-           (<!! (a/timeout (config/get-in [:http :interval] 100)))
-           (recur new-state)))))))
-
-(defn stop-update-loop []
-  (reset! update-loop? false))
-
-(comment
- (stop-update-loop)
- (start-update-loop)
- ,)
-
 (defn uzi-state-handler [^IEventSink socket req]
-  (let [in-chan (a/chan)
-        topic :update]
-    (ws/on-closed socket
-                  (fn []
-                    (a/unsub updates-pub topic in-chan)
-                    (a/close! in-chan)))
-    (ws/put! socket (json/encode (get-server-state)))
-    (a/sub updates-pub topic in-chan)
-    (a/go-loop []
-      (when-not (ws/closed? socket)
-        (let [{device-state :state} (a/<! in-chan)]
-          (ws/put! socket device-state)
-          (recur))))))
+ (swap! clients conj socket)
+ (ws/on-closed socket #(swap! clients disj socket))
+ (ws/put! socket (json/encode (core/get-server-state))))
 
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
@@ -244,13 +134,19 @@
                      server-port 3000}}]
   (when (and (nil? @server)
              (config/get-in [:http :enabled?] true))
-    (start-update-loop)
+    (reset! core/update*
+            (fn [diff]
+             (let [data (json/encode diff)]
+               (doseq [socket @clients]
+                 (when-not (ws/closed? socket)
+                   (ws/put! socket data))))))
+    (core/start-update-loop!)
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]
       (reset! server s))))
 
 (defn stop []
   (when-let [^java.io.Closeable s @server]
-    (stop-update-loop)
+    (core/stop-update-loop!)
     (reset! server nil)
     (.close s)))
