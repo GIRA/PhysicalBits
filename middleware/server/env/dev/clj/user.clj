@@ -24,7 +24,10 @@
   (stop)
   (repl/refresh))
 
-(defn millis [] (System/currentTimeMillis))
-
 (defn open-browser []
   (browse-url "http://localhost:3000"))
+
+(defn init []
+  (main/init-dependencies))
+
+(init)
