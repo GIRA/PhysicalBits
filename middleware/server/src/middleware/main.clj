@@ -83,12 +83,6 @@
     (dc/connect! arduino-port)
     (port-scanner/start!)))
 
-(comment
-
- (fs/file "." "project.clj")
-
- ,,)
-
 (defn -main [& args]
   (let [{:keys [errors options summary]} (cli/parse-opts args cli-options)]
     (when errors
