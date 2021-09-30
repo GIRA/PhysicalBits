@@ -31,8 +31,7 @@
                                 (res %))))))
 
 (defn ^:export on-update [update-fn]
-  (reset! core/update* (comp update-fn clj->js))
-  (core/start-update-loop!))
+  (core/start-update-loop! (comp update-fn clj->js)))
 
 (defn ^:export connect [update-fn]
   (chan->promise

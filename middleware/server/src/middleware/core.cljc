@@ -3,9 +3,6 @@
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]))
 
-; TODO(Richo): Maybe use some core.async pub/sub mechanism?
-(def update* (atom nil))
-
 ; TODO(Richo): The update-loop could be started/stopped automatically
 (def ^:private update-loop? (atom false))
 
@@ -85,22 +82,16 @@
 
 ; TODO(Richo): This loop sucks, it would be better if we could subscribe
 ; to the update events coming from the device.
-(defn start-update-loop! []
+(defn start-update-loop! [update-fn]
   (when (compare-and-set! update-loop? false true)
     (go-loop [old-state nil]
       (when @update-loop?
         (let [new-state (get-server-state)
               diff (get-state-diff old-state new-state)]
           (when-not (empty? diff)
-            (when-let [update-fn @update*]
-              (update-fn diff)))
+            (update-fn diff))
           (<! (a/timeout 50))
           (recur new-state))))))
 
 (defn stop-update-loop! []
   (reset! update-loop? false))
-
-(comment
- (stop-update-loop!)
- (start-update-loop!)
- )

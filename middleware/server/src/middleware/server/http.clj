@@ -139,8 +139,7 @@
                      server-port 3000}}]
   (when (and (nil? @server)
              (config/get-in [:http :enabled?] true))
-    (reset! core/update* (comp notify-clients! json/encode))
-    (core/start-update-loop!)
+    (core/start-update-loop! (comp notify-clients! json/encode))
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]
       (reset! server s))))
