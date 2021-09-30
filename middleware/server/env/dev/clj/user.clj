@@ -4,7 +4,7 @@
             [middleware.server.http :as http :refer [server]]
             [middleware.server.udp :as udp]
             [clojure.java.browse :refer [browse-url]]
-            [middleware.core :as core])
+            [middleware.main :as main])
   (:use [clojure.tools.namespace.repl :as repl :only [refresh-all]]))
 
 (defn stop []
@@ -14,11 +14,11 @@
   (port-scanner/stop!))
 
 (defn start []
-  (core/main {:uzi "../../uzi/libraries"
-              :web "../../gui"
-              :server-port 3000
-              :arduino-port nil
-              :open-browser nil}))
+  (main/start {:uzi "../../uzi/libraries"
+               :web "../../gui"
+               :server-port 3000
+               :arduino-port nil
+               :open-browser nil}))
 
 (defn reload []
   (stop)

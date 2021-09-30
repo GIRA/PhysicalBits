@@ -13,7 +13,7 @@
                  [aleph "0.4.6"]
                  [cheshire "5.9.0"]
                  [clj-petitparser "0.1.2-SNAPSHOT"]]
-  :main ^:skip-aot middleware.core
+  :main ^:skip-aot middleware.main
   :target-path "target/%s"
 
   :profiles {:uberjar {:aot :all
