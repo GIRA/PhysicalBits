@@ -23,6 +23,11 @@
 (def server (atom nil))
 (def clients (atom #{}))
 
+(defn notify-clients! [data]
+  (doseq [socket @clients]
+    (when-not (ws/closed? socket)
+      (ws/put! socket data))))
+
 (defn wrap-websocket [handler]
   (fn [req]
     (-> (d/let-flow [socket (http/websocket-connection req)]
@@ -36,6 +41,11 @@
   {:status  (or status 200)
    :headers {"Content-Type" "application/hal+json; charset=utf-8"}
    :body    (json/encode data)})
+
+(defn update-handler [^IEventSink socket req]
+  (swap! clients conj socket)
+  (ws/on-closed socket #(swap! clients disj socket))
+  (ws/put! socket (json/encode (core/get-server-state))))
 
 (defn connect-handler [params]
   (<!! (dc/connect! (params "port")))
@@ -100,16 +110,11 @@
     (dc/stop-profiling))
   (json-response "OK"))
 
-(defn uzi-state-handler [^IEventSink socket req]
- (swap! clients conj socket)
- (ws/on-closed socket #(swap! clients disj socket))
- (ws/put! socket (json/encode (core/get-server-state))))
-
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
 
                         ; Uzi api
-                        (GET "/uzi" [] (wrap-websocket uzi-state-handler))
+                        (GET "/uzi" [] (wrap-websocket update-handler))
                         (GET "/uzi/available-ports" [] (json-response {:ports (dc/available-ports)}))
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
@@ -134,12 +139,7 @@
                      server-port 3000}}]
   (when (and (nil? @server)
              (config/get-in [:http :enabled?] true))
-    (reset! core/update*
-            (fn [diff]
-             (let [data (json/encode diff)]
-               (doseq [socket @clients]
-                 (when-not (ws/closed? socket)
-                   (ws/put! socket data))))))
+    (reset! core/update* (comp notify-clients! json/encode))
     (core/start-update-loop!)
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]
