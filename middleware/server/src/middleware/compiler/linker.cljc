@@ -111,7 +111,8 @@
          :program (if alias
                     (apply-alias imported-ast alias)
                     imported-ast)})
-      (throw (ex-info "File not found"
+      (throw (ex-info ; TODO(Richo): Improve this error message so that we can translate it
+                      (str "File not found: " path)
                       {:import imp
                        :file file
                        :absolute-path (fs/absolute-path file)})))))
