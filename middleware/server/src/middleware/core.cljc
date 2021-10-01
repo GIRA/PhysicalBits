@@ -93,5 +93,39 @@
           (<! (a/timeout 50))
           (recur new-state))))))
 
+(defn _new_start-update-loop! [update-fn]
+  (when (compare-and-set! update-loop? false true)
+    (let [changes (atom #{})
+          dc-updates (a/chan)]
+      (a/tap dc/updates dc-updates)
+      (go-loop []
+        (when-let [type (<! dc-updates)]
+          (swap! changes conj type)
+          (recur)))
+      (go-loop []
+        (when @update-loop?
+          (let [[pending-changes _] (reset-vals! changes #{})
+                output (get-output-data)]
+            (if-not (empty? pending-changes)
+              (let [state @dc/state]
+                (update-fn (reduce (fn [update type]
+                                     (merge update
+                                            (case type
+                                              :connection (get-connection-data state)
+                                              :program (get-program-data state)
+                                              :pin-value (get-pins-data state)
+                                              :global-value (get-globals-data state)
+                                              :running-scripts (get-tasks-data state)
+                                              :free-ram (get-memory-data state)
+                                              nil)))
+                                   (if (empty? output)
+                                     {}
+                                     {:output output})
+                                   pending-changes)))
+              (when-not (empty? output)
+                (update-fn {:output output})))
+            (<! (timeout 50))
+            (recur)))))))
+
 (defn stop-update-loop! []
   (reset! update-loop? false))
