@@ -8,6 +8,34 @@
             [middleware.utils.fs.browser :as browser]
             [middleware.utils.async :refer-macros [go-try <?]]))
 
+(comment
+ (println "Richo")
+
+ (def c (a/chan))
+ (def m (a/mult c))
+
+ (go-loop [i 0]
+   (when (< i 100)
+     ;(println "Putting" i)
+     (>! c i)
+     (recur (inc i))))
+
+ (doseq [c-name ["C1" "C2" "C3"]]
+   (let [c* (a/chan)]
+     (a/tap m c*)
+     (go-loop []
+       (if-let [data (<! c*)]
+         (do
+           (println c-name "->" data)
+           (recur))
+         (println "Bye from" c-name)))))
+
+ (a/put! c "RICHO CAPO")
+
+ (a/close! c)
+ ,)
+
+
 (defn init-dependencies []
   (fs/register-fs! #'browser/file)
   (ports/register-constructors! #'simulator/open-port))
