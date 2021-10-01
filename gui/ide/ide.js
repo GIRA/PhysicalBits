@@ -342,6 +342,7 @@ const fs = require('fs');
   function initializeOutputPanel() {
     Uzi.on("update", function () {
       Uzi.state.output.forEach(appendToOutput);
+      Uzi.state.output = [];
     });
 
     i18n.on("change", function () {
