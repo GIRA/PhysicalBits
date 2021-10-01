@@ -1,7 +1,7 @@
 (ns middleware.device.controller
   (:require #?(:clj [clojure.tools.logging :as log])
             [middleware.device.ports.scanner :as port-scanner]
-            [clojure.core.async :as a :refer [<! go go-loop timeout]]
+            [clojure.core.async :as a :refer [<! >! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
@@ -17,8 +17,11 @@
 
  (start-profiling)
  (stop-profiling)
-(.getTime (js/Date.))
+ (.getTime (js/Date.))
  (set-report-interval 5)
+
+ @state
+
  ,)
 
 (defn millis ^long []
@@ -48,7 +51,10 @@
                     :timing {:arduino nil, :middleware nil, :diffs nil}
                     :memory {:arduino nil, :uzi nil}
                     :program {:current nil, :running nil}})
-(def state (atom initial-state)) ; TODO(Richo): Make it survive reloads
+(def state (atom initial-state))
+
+(def update-chan (a/chan 100))
+(def updates (a/mult update-chan))
 
 (defn- add-pseudo-var! [name value]
   (if (get-config [:device :pseudo-vars?] false)
@@ -93,7 +99,8 @@
        (port-scanner/start!)
        (swap! state (fn [state]
                       (assoc-in initial-state [:program :current]
-                                (-> state :program :current))))))))
+                                (-> state :program :current))))
+       (>! update-chan :connection)))))
 
 (defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -147,6 +154,7 @@
         (logger/log (str bytecodes))
         (logger/success "Compilation successful!"))
       (swap! state assoc-in [:program :current] program)
+      (a/put! update-chan :program)
       program)
     (catch #?(:clj Throwable :cljs :default) ex
       (when-not silent?
@@ -211,6 +219,19 @@
 (defn send-continue []
   (swap! state assoc :debugger nil)
   (send! (p/continue)))
+
+(comment
+ (send-continue)
+ (clear-all-breakpoints)
+ (set-all-breakpoints)
+ (go-loop [c 0]
+   (when (< c 100)
+     (send-continue)
+     (<! (timeout 100))
+     (recur (inc c))))
+ (a/close! *1)
+
+ ,,)
 
 (defn- keep-alive-loop []
   (go
@@ -341,6 +362,7 @@
        :error (<! (process-error cmd)) ; Special case because it calls disconnect!
        :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
                                     (:code cmd)))
+     (when tag (>! update-chan tag))
      cmd)))
 
 (defn- process-input-loop [{:keys [in]}]
@@ -436,4 +458,5 @@
       (when (nil? old-connection)
         (if-let [connection (<! (request-connection port-name baud-rate))]
           (connection-successful connection board baud-rate reporting?)
-          (swap! state assoc :connection nil)))))))
+          (swap! state assoc :connection nil))
+        (>! update-chan :connection))))))
