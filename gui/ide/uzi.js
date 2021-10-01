@@ -23,6 +23,11 @@ let Uzi = (function () {
         availablePorts: [],
       },
       output: [],
+      tasks: [],
+      memory: {
+        arduino: null,
+        uzi: null,
+      },
       pins: {
         available: [
           {name: "D2", reporting: false},
