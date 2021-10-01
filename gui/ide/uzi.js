@@ -244,21 +244,17 @@ let Uzi = (function () {
     return new Promise((resolve, reject) => {
       try {
         let socket = new WebSocket(wsURL + "/uzi");
-        let msgReceived = false;
         socket.onerror = function (err) {
           reject(err);
         };
         socket.onopen = function () {
           Uzi.serverAvailable = true;
+          resolve();
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
               let data = JSONX.parse(msg);
               update(data);
-              if (!msgReceived) {
-                msgReceived = true;
-                resolve();
-              }
             } catch (e) {
               console.error(e);
             }
