@@ -235,7 +235,7 @@ let Uzi = (function () {
       try {
         fn(Uzi.state, previousState);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     });
   }
@@ -260,7 +260,7 @@ let Uzi = (function () {
                 resolve();
               }
             } catch (e) {
-              console.log(e);
+              console.error(e);
             }
           };
           socket.onclose = function(evt) {
