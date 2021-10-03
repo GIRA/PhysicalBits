@@ -1,11 +1,13 @@
 (ns middleware.output.logger
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
+            [clojure.core.async :as a]
             [clojure.string :as str]))
 
-(def ^:private entries* (atom []))
+(def update-chan (a/chan))
+(def updates (a/mult update-chan))
 
-(defn- uzi-format [text args]
+(defn- uzi-format [{:keys [text args]}]
   (loop [t text, i 0]
     (if-let [val (get args i)]
       (recur
@@ -18,20 +20,12 @@
   #?(:clj (log/info str)
      :cljs (println str)))
 
-(defn read-entries! []
-  (let [[entries _] (reset-vals! entries* [])]
-    (when-not (empty? entries)
-      (doseq [{:keys [text args]} entries]
-        (log* (uzi-format text args))))
-    entries))
-
-(defn flush-entries! [] (reset! entries* []))
-
 (defn- append [msg-type format-str args]
-  (swap! entries*
-         conj {:type msg-type
+  (let [entry {:type msg-type
                :text format-str
-               :args (mapv str args)}))
+               :args (mapv str args)}]
+    (a/put! update-chan entry)
+    (log* (uzi-format entry))))
 
 (defn info [str & args]
   (append :info str args))
