@@ -1,10 +1,7 @@
 (ns middleware.core
-  (:require [clojure.core.async :as a :refer [go go-loop <! timeout]]
+  (:require [clojure.core.async :as a :refer [go go-loop <! >! timeout]]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]))
-
-; TODO(Richo): The update-loop could be started/stopped automatically
-(def ^:private update-loop? (atom false))
 
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
@@ -61,71 +58,61 @@
                   (select-keys [:type :src :compiled])
                   (assoc :ast (:original-ast program))))})
 
-(defn- get-output-data []
-  {:output (logger/read-entries!)})
+(def ^:private device-event-handlers
+  {:connection #'get-connection-data
+   :program #'get-program-data
+   :pin-value #'get-pins-data
+   :global-value #'get-globals-data
+   :running-scripts #'get-tasks-data
+   :free-ram #'get-memory-data})
 
-(defn get-server-state []
-  (let [state @dc/state]
-    (merge (get-connection-data state)
-           (get-memory-data state)
-           (get-tasks-data state)
-           (get-output-data)
-           (get-pins-data state)
-           (get-globals-data state)
-           (get-pseudo-vars-data state)
-           (get-program-data state))))
+(defn get-server-state
+  ([] (get-server-state
+       {:device-events (keys device-event-handlers)
+        :logger-entries []}))
+  ([{:keys [device-events logger-entries]}]
+   (let [device-state @dc/state
+         result (reduce (fn [update type]
+                          (if-let [handler (device-event-handlers type)]
+                            (merge update (handler device-state))
+                            update))
+                        {}
+                        device-events)]
+     (if-not (empty? logger-entries)
+       (assoc result :output logger-entries)
+       result))))
 
-(defn- get-state-diff [old-state new-state]
-  (select-keys new-state
-               (filter #(not= (% old-state) (% new-state))
-                       (keys new-state))))
+(def ^:private update-signal (atom nil))
 
-; TODO(Richo): This loop sucks, it would be better if we could subscribe
-; to the update events coming from the device.
 (defn start-update-loop! [update-fn]
-  (when (compare-and-set! update-loop? false true)
-    (go-loop [old-state nil]
-      (when @update-loop?
-        (let [new-state (get-server-state)
-              diff (get-state-diff old-state new-state)]
-          (when-not (empty? diff)
-            (update-fn diff))
-          (<! (a/timeout 50))
-          (recur new-state))))))
-
-(defn _new_start-update-loop! [update-fn]
-  (when (compare-and-set! update-loop? false true)
-    (let [changes (atom #{})
-          dc-updates (a/chan)]
-      (a/tap dc/updates dc-updates)
-      (go-loop []
-        (when-let [type (<! dc-updates)]
-          (swap! changes conj type)
-          (recur)))
-      (go-loop []
-        (when @update-loop?
-          (let [[pending-changes _] (reset-vals! changes #{})
-                output (get-output-data)]
-            (if-not (empty? pending-changes)
-              (let [state @dc/state]
-                (update-fn (reduce (fn [update type]
-                                     (merge update
-                                            (case type
-                                              :connection (get-connection-data state)
-                                              :program (get-program-data state)
-                                              :pin-value (get-pins-data state)
-                                              :global-value (get-globals-data state)
-                                              :running-scripts (get-tasks-data state)
-                                              :free-ram (get-memory-data state)
-                                              nil)))
-                                   (if (empty? output)
-                                     {}
-                                     {:output output})
-                                   pending-changes)))
-              (when-not (empty? output)
-                (update-fn {:output output})))
-            (<! (timeout 50))
-            (recur)))))))
+  (when (compare-and-set! update-signal
+                          nil (a/chan (a/dropping-buffer 1)))
+    (let [awake @update-signal
+          pending (atom {:device-events #{}
+                         :logger-entries []})
+          dc-updates (a/tap dc/updates (a/chan))
+          logger-updates (a/tap logger/updates (a/chan))
+          chan->key {dc-updates :device-events
+                     logger-updates :logger-entries}]
+      (go
+       (loop []
+         (let [[val ch] (a/alts! (keys chan->key))]
+           (when val
+             (swap! pending update (chan->key ch) conj val)
+             (when (>! awake true)
+               (recur))))))
+      (go
+       (loop []
+         (when (<! awake)
+           (let [[changes _] (reset-vals! pending {:device-events #{}
+                                                   :logger-entries []})
+                 update-data (get-server-state changes)]
+             (update-fn update-data)
+             (<! (timeout 50))
+             (recur))))
+       (doseq [ch (keys chan->key)]
+         (a/close! ch))))))
 
 (defn stop-update-loop! []
-  (reset! update-loop? false))
+  (let [[ch _] (reset-vals! update-signal nil)]
+    (when ch (a/close! ch))))
