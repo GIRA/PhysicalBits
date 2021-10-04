@@ -1,5 +1,5 @@
 (ns middleware.core
-  (:require [clojure.core.async :as a :refer [go go-loop <! >! timeout]]
+  (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]))
 
@@ -66,53 +66,58 @@
    :running-scripts #'get-tasks-data
    :free-ram #'get-memory-data})
 
-(defn get-server-state
-  ([] (get-server-state
-       {:device-events (keys device-event-handlers)
-        :logger-entries []}))
-  ([{:keys [device-events logger-entries]}]
-   (let [device-state @dc/state
-         result (reduce (fn [update type]
-                          (if-let [handler (device-event-handlers type)]
-                            (merge update (handler device-state))
-                            update))
-                        {}
-                        device-events)]
-     (if-not (empty? logger-entries)
-       (assoc result :output logger-entries)
-       result))))
+(defn get-device-state [device-events]
+  (let [device-state @dc/state]
+    (reduce (fn [update type]
+              (if-let [handler (device-event-handlers type)]
+                (merge update (handler device-state))
+                update))
+            {}
+            device-events)))
 
-(def ^:private update-signal (atom nil))
+(defn get-server-state
+  ([]
+   (get-server-state {:device (keys device-event-handlers)}))
+  ([{:keys [device logger]}]
+   (merge {}
+          (when logger {:output (vec logger)})
+          (when device (get-device-state (set device))))))
+
+(defn reduce-until-timeout!
+  "Take from channel ch while data is available (without blocking/parking) until
+  the timeout or no more data is immediately available"
+  [f init ch t]
+  (go (loop [ret init]
+        (let [[val _] (a/alts! [t (go (a/poll! ch))])]
+          (if val
+            (recur (f ret val))
+            ret)))))
+
+(def ^:private updates (atom nil))
 
 (defn start-update-loop! [update-fn]
-  (when (compare-and-set! update-signal
-                          nil (a/chan (a/dropping-buffer 1)))
-    (let [awake @update-signal
-          pending (atom {:device-events #{}
-                         :logger-entries []})
-          dc-updates (a/tap dc/updates (a/chan))
-          logger-updates (a/tap logger/updates (a/chan))
-          chan->key {dc-updates :device-events
-                     logger-updates :logger-entries}]
-      (go
-       (loop []
-         (let [[val ch] (a/alts! (keys chan->key))]
-           (when val
-             (swap! pending update (chan->key ch) conj val)
-             (when (>! awake true)
-               (recur))))))
-      (go
-       (loop []
-         (when (<! awake)
-           (let [[changes _] (reset-vals! pending {:device-events #{}
-                                                   :logger-entries []})
-                 update-data (get-server-state changes)]
-             (update-fn update-data)
-             (<! (timeout 50))
-             (recur))))
-       (doseq [ch (keys chan->key)]
-         (a/close! ch))))))
+  (when (compare-and-set! updates nil :pending)
+    (let [device-updates (a/tap dc/updates
+                                (a/chan 1 (map (partial vector :device))))
+          logger-updates (a/tap logger/updates
+                                (a/chan 1 (map (partial vector :logger))))
+          update-sources [device-updates logger-updates]
+          updates* (reset! updates (a/merge update-sources))]
+      (go (loop []
+            (when-some [update (<! updates*)] ; Park until first update
+              (let [t (a/timeout 50)]
+                (<! (a/timeout 10)) ; Wait a bit before collecting data
+                (->> (<! (reduce-until-timeout! conj [update] updates* t))
+                     (group-by first)
+                     (reduce-kv #(assoc %1 %2 (map second %3)) {})
+                     get-server-state
+                     update-fn)
+                (<! t) ; Wait remaining timeout
+                (recur))))
+          (doseq [ch update-sources]
+            (a/close! ch))))))
 
 (defn stop-update-loop! []
-  (let [[ch _] (reset-vals! update-signal nil)]
-    (when ch (a/close! ch))))
+  (let [[ch _] (reset-vals! updates nil)]
+    (when (and ch (not= :pending ch))
+      (a/close! ch))))
