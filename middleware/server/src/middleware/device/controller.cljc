@@ -63,7 +63,8 @@
              #(-> %
                   (assoc-in [:pseudo-vars :timestamp] now)
                   (assoc-in [:pseudo-vars :data name]
-                            {:name name, :value value, :ts now}))))))
+                            {:name name, :value value, :ts now})))
+      (a/put! update-chan :pseudo-vars))))
 
 (defn get-pin-value [pin-name]
   (-> @state :pins (get pin-name) :value))
@@ -353,10 +354,11 @@
        (let [reporting (:reporting @state)]
          (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
          (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+       ; Trigger the update event
+       (a/onto-chan! update-chan [:pins :globals :pseudo-vars] false)
        ; Finally wait 1s and start over
        (<! (timeout 1000))
        (recur)))))
-
 
 (defn- request-connection [port-name baud-rate]
   (go

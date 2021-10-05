@@ -96,7 +96,8 @@
    :pin-value #'get-pins-data
    :global-value #'get-globals-data
    :running-scripts #'get-tasks-data
-   :free-ram #'get-memory-data})
+   :free-ram #'get-memory-data
+   :pseudo-vars #'get-pseudo-vars-data})
 
 (defn- get-device-state [state device-events]
   (reduce (fn [update type]
