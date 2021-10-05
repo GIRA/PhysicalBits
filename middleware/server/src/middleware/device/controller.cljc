@@ -5,7 +5,6 @@
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
-            [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.compiler.utils.ast :as ast]
             [middleware.compiler.utils.program :as program]
