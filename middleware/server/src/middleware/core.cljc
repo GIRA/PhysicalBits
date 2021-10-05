@@ -1,5 +1,6 @@
 (ns middleware.core
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
+            [middleware.utils.async :refer [go-try <?]]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
             [middleware.compiler.compiler :as cc]
@@ -10,17 +11,17 @@
 (def ^:private program-chan (a/chan (a/sliding-buffer 1)))
 
 (defn connect! [port]
-  (go
-   (<! (dc/connect! port))
+  (go-try
+   (<? (dc/connect! port))
    (-> @dc/state :connection :port-name)))
 
 (defn disconnect! []
-  (go
-   (<! (dc/disconnect!))
+  (go-try
+   (<? (dc/disconnect!))
    (nil? (dc/connected?))))
 
 (defn compile! [src type silent? & args]
-  (go
+  (go-try
    (try
      (let [compile-fn (case type
                         "json" cc/compile-json-string
@@ -53,27 +54,32 @@
        (throw ex)))))
 
 (defn compile-and-run! [src type silent? & args]
-  (go (let [program (<! (apply compile! src type silent? args))]
-        (dc/run program)
-        program)))
+  (go-try
+   (let [program (<? (apply compile! src type silent? args))]
+     (dc/run program)
+     program)))
 
 (defn compile-and-install! [src type & args]
-  (go (let [program (<! (apply compile! src type false args))]
-        (dc/install program)
-        program)))
+  (go-try
+   (let [program (<? (apply compile! src type false args))]
+     (dc/install program)
+     program)))
 
 (defn set-pin-report! [pins]
-  (go (doseq [[pin-name report?] pins]
-        (dc/set-pin-report pin-name report?))))
+  (go-try
+   (doseq [[pin-name report?] pins]
+     (dc/set-pin-report pin-name report?))))
 
 (defn set-global-report! [globals]
-  (go (doseq [[global-name report?] globals]
-        (dc/set-global-report global-name report?))))
+  (go-try
+   (doseq [[global-name report?] globals]
+     (dc/set-global-report global-name report?))))
 
 (defn set-profile! [enabled?]
-  (go (if enabled?
-        (dc/start-profiling)
-        (dc/stop-profiling))))
+  (go-try
+   (if enabled?
+     (dc/start-profiling)
+     (dc/stop-profiling))))
 
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
@@ -155,7 +161,7 @@
           (when device (get-device-state @dc/state (set device)))
           (when program (get-program-state @program-atom)))))
 
-(defn reduce-until-timeout!
+(defn reduce-until-timeout! ; TODO(Richo): Move to utils.async
   "Take from channel ch while data is available (without blocking/parking) until
   the timeout or no more data is immediately available.
   Results are accumulated using the reducer function f and the initial value init."

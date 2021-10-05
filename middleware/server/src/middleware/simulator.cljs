@@ -5,7 +5,7 @@
             [middleware.device.ports.simulator :as simulator]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.browser :as browser]
-            [middleware.utils.async :refer-macros [go-try <?]]))
+            [middleware.utils.async :refer [go-try <?]]))
 
 (defn init-dependencies []
   (fs/register-fs! #'browser/file)
@@ -19,7 +19,7 @@
            (println "READY TO CONNECT!")
            (js/Simulator.start 16))))
 
-(defn chan->promise [ch]
+(defn chan->promise [ch] ; TODO(Richo): Move to utils.async
   (js/Promise. (fn [res rej]
                  (a/take! ch #(if (instance? js/Error %)
                                 (rej %)

@@ -1,5 +1,6 @@
 (ns middleware.server.http
-  (:require [clojure.core.async :as a :refer [<!! >!! thread]]
+  (:require [clojure.core.async :as a :refer [>!! thread]]
+            [middleware.utils.async :refer [<??]]
             [clojure.string :as str]
             [compojure.core :as compojure :refer [GET POST]]
             [ring.middleware.params :refer [wrap-params]]
@@ -45,26 +46,26 @@
   (ws/put! socket (json/encode (core/get-server-state))))
 
 (defn connect-handler [params]
-  (json-response (<!! (core/connect! (params "port")))))
+  (json-response (<?? (core/connect! (params "port")))))
 
 (defn disconnect-handler [req]
-  (json-response (<!! (core/disconnect!))))
+  (json-response (<?? (core/disconnect!))))
 
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (json-response (<!! (core/compile! src type (= silent "true")
+  (json-response (<?? (core/compile! src type (= silent "true")
                                      :lib-dir uzi-libraries))))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (json-response (<!! (core/compile-and-run! src type (= silent "true")
+  (json-response (<?? (core/compile-and-run! src type (= silent "true")
                                              :lib-dir uzi-libraries))))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (json-response (<!! (core/compile-and-install! src type
+  (json-response (<?? (core/compile-and-install! src type
                                                  :lib-dir uzi-libraries))))
 
 (defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
@@ -75,7 +76,7 @@
                              (str/split report #",")))]
     (if-not (= (count pins) (count report))
       (json-response "Invalid request parameters" 400)
-      (json-response (<!! (core/set-pin-report! (map vector pins report)))))))
+      (json-response (<?? (core/set-pin-report! (map vector pins report)))))))
 
 (defn global-report-handler [{:strs [globals report] :or {globals "", report ""}}]
   (let [globals (filterv (complement empty?)
@@ -85,10 +86,10 @@
                              (str/split report #",")))]
     (if-not (= (count globals) (count report))
       (json-response "Invalid request parameters" 400)
-      (json-response (<!! (core/set-global-report! (map vector globals report)))))))
+      (json-response (<?? (core/set-global-report! (map vector globals report)))))))
 
 (defn profile-handler [{:strs [enabled]}]
-  (json-response (<!! (core/set-profile! (= "true" enabled)))))
+  (json-response (<?? (core/set-profile! (= "true" enabled)))))
 
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
