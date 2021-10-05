@@ -14,7 +14,6 @@
             [manifold.deferred :as d]
             [middleware.core :as core]
             [middleware.utils.json :as json]
-            [middleware.device.controller :as dc]
             [middleware.config :as config])
   (:import [manifold.stream.core IEventSink]))
 
@@ -96,7 +95,6 @@
 
                         ; Uzi api
                         (GET "/uzi" [] (wrap-websocket update-handler))
-                        (GET "/uzi/available-ports" [] (json-response {:ports (dc/available-ports)}))
                         (POST "/uzi/connect" {params :params} (connect-handler params))
                         (POST "/uzi/disconnect" req (disconnect-handler req))
                         (POST "/uzi/compile" {params :params} (compile-handler uzi-libraries params))

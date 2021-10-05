@@ -1,7 +1,6 @@
 (ns middleware.simulator
   (:require [clojure.core.async :as a :refer [go go-loop <! timeout]]
             [middleware.core :as core]
-            [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.simulator :as simulator]
             [middleware.utils.fs.common :as fs]
