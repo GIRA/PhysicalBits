@@ -100,8 +100,7 @@
 
 (defmethod encode-instruction "UziScriptCallInstruction"
   [instr script program]
-  (let [index (p/index-of (map :name (:scripts program))
-                          (:argument instr))]
+  (let [index (p/index-of-script program (:argument instr))]
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:script-index index})
@@ -111,8 +110,7 @@
                  index)]))))
 
 (defn- encode-script-control [^long code instr script program]
-  (let [index (p/index-of (map :name (:scripts program))
-                          (:argument instr))]
+  (let [index (p/index-of-script program (:argument instr))]
     (if (> index 16r7F)
       (throw-not-implemented instr script program
                              {:script-index index})

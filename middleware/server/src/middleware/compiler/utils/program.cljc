@@ -1,7 +1,6 @@
 (ns middleware.compiler.utils.program
-  (:require [middleware.compiler.emitter :as emit]))
-
-(defn index-of ^long [^java.util.List v e] (.indexOf v e))
+  (:require [middleware.utils.core :refer [index-of]]
+            [middleware.compiler.emitter :as emit]))
 
 (def default-globals
   "These values are *always* first in the global list, whether they
@@ -36,6 +35,10 @@
   (index-of (map :name (concat (:arguments script)
                                (:locals script)))
             (:name variable)))
+
+(defn index-of-script [program script-name]
+  (index-of (map :name (:scripts program))
+            script-name))
 
 (defn instructions [program]
   (mapcat :instructions (:scripts program)))
