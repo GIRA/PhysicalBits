@@ -57,8 +57,8 @@
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (dc/compile! src type (= silent "true")
-                             :lib-dir uzi-libraries)]
+  (let [program (core/compile! src type (= silent "true")
+                               :lib-dir uzi-libraries)]
     (json-response program)))
 
 (defn run-handler

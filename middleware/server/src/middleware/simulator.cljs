@@ -46,7 +46,7 @@
 (defn ^:export compile [src type silent?]
   (chan->promise
    (go-try
-    (clj->js (dc/compile! src type silent?)))))
+    (clj->js (core/compile! src type silent?)))))
 
 (defn ^:export run [src type silent?]
   (chan->promise

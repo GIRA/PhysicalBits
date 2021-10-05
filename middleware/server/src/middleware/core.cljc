@@ -1,7 +1,49 @@
 (ns middleware.core
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [middleware.device.controller :as dc]
-            [middleware.output.logger :as logger]))
+            [middleware.output.logger :as logger]
+            [middleware.compiler.compiler :as cc]
+            [middleware.compiler.encoder :as en]
+            [middleware.compiler.utils.program :as program]))
+
+; TODO(Richo): Rename these maybe?
+(def ^:private program-atom (atom nil))
+(def ^:private program-chan (a/chan (a/sliding-buffer 1)))
+
+(defn compile! [src type silent? & args]
+  (try
+    (let [compile-fn (case type
+                       "json" cc/compile-json-string
+                       "uzi" cc/compile-uzi-string)
+          program (-> (apply compile-fn src args)
+                      (update :compiled program/sort-globals)
+                      (assoc :type type))
+          bytecodes (en/encode (:compiled program))]
+      (when-not silent?
+        (logger/newline)
+        (logger/log "Program size (bytes): %1" (count bytecodes))
+        (logger/log (str bytecodes))
+        (logger/success "Compilation successful!"))
+      (reset! program-atom program)
+      (a/put! program-chan true)
+      program)
+    (catch #?(:clj Throwable :cljs :default) ex
+      (when-not silent?
+        (logger/newline)
+        (logger/exception ex)
+        ; TODO(Richo): Improve the error message for checker errors
+        (when-let [{errors :errors} (ex-data ex)]
+          (doseq [[^long i {:keys [description node src]}]
+                  (map-indexed (fn [i e] [i e])
+                               errors)]
+            (logger/error (str "├─ " (inc i) ". " description))
+            (if src
+              (logger/error (str "|     ..." src "..."))
+              (when-let [id (:id node)]
+                (logger/error (str "|     Block ID: " id)))))
+          (logger/error (str "└─ Compilation failed!"))))
+      (throw ex))))
+
 
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
@@ -49,18 +91,8 @@
                                   (-> state :pseudo-vars :data))
                  :elements (-> state :pseudo-vars :data vals)}})
 
-(defn- get-program-data [state]
-  {:program (let [program (-> state :program :current)]
-              ; TODO(Richo): This sucks, the IDE should take the program without modification.
-              ; Do we really need the final-ast? It would be simpler if we didn't have to make
-              ; this change.
-              (-> program
-                  (select-keys [:type :src :compiled])
-                  (assoc :ast (:original-ast program))))})
-
 (def ^:private device-event-handlers
   {:connection #'get-connection-data
-   :program #'get-program-data
    :pin-value #'get-pins-data
    :global-value #'get-globals-data
    :running-scripts #'get-tasks-data
@@ -74,12 +106,24 @@
           {}
           device-events))
 
+(defn- get-program-state [program]
+  ; TODO(Richo): This sucks, the IDE should take the program without modification.
+  ; Do we really need the final-ast? It would be simpler if we didn't have to make
+  ; this change.
+  {:program (-> program
+                (select-keys [:type :src :compiled])
+                (assoc :ast (:original-ast program)))})
+
 (defn get-server-state
-  ([] (get-server-state {:device (keys device-event-handlers)}))
-  ([{:keys [device logger]}]
+  ; TODO(Richo): The empty args overload is only needed to initialize the clients
+  ; when they first connect. I don't know if this is actually necessary, though...
+  ([] (get-server-state {:device (keys device-event-handlers)
+                         :program true}))
+  ([{:keys [device logger program]}]
    (merge {}
           (when logger {:output (vec logger)})
-          (when device (get-device-state @dc/state (set device))))))
+          (when device (get-device-state @dc/state (set device)))
+          (when program (get-program-state @program-atom)))))
 
 (defn reduce-until-timeout!
   "Take from channel ch while data is available (without blocking/parking) until
@@ -100,7 +144,9 @@
                                 (a/chan 1 (map (partial vector :device))))
           logger-updates (a/tap logger/updates
                                 (a/chan 1 (map (partial vector :logger))))
-          update-sources [device-updates logger-updates]
+          program-updates (a/pipe program-chan
+                                  (a/chan 1 (map (partial vector :program))))
+          update-sources [device-updates logger-updates program-updates]
           updates* (reset! updates (a/merge update-sources))]
       (go (loop []
             (when-some [update (<! updates*)] ; Park until first update
