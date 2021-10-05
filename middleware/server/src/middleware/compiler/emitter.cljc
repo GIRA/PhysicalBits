@@ -1,10 +1,36 @@
 (ns middleware.compiler.emitter
-  (:require [middleware.utils.conversions :as c]))
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.utils.conversions :as c]))
+
+(defn- value-size-int [^long value]
+  (or (seek (fn [^long size] (< value (Math/pow 2 (* 8 size))))
+            [1 2 3 4])
+      4))
+
+(defn- value-size ^long [value]
+  "Return the number of bytes necessary to encode this value.
+  	If the value is negative or float then the size is 4 bytes. Also, the
+  	max number of bytes is 4."
+  (if (or (zero? value)
+          (pos-int? value))
+    (value-size-int value)
+    4))
+
+(defn- sort-globals [globals]
+  (sort (fn [{a-name :name, ^double a-value :value, ^long a-size :size}
+             {b-name :name, ^double b-value :value, ^long b-size :size}]
+          (if (= a-size b-size)
+            (if (= a-value b-value)
+              (compare (or a-name "")
+                       (or b-name ""))
+              (< a-value b-value))
+            (< a-size b-size)))
+        globals))
 
 (defn program [& {:keys [globals scripts]
                   :or {globals [] scripts []}}]
   {:__class__ "UziProgram"
-   :globals globals
+   :globals (-> globals sort-globals vec)
    :scripts scripts})
 
 (def ^:private simplify
@@ -13,12 +39,18 @@
 
 (defn variable
   ([name] (variable name 0))
-  ([name value] {:__class__ "UziVariable"
-                 :name name
-                 :value (simplify (or value 0))}))
+  ([name value]
+   (let [actual-value (simplify (or value 0))]
+     {:__class__ "UziVariable"
+      :name name
+      :value actual-value
+      :size (value-size actual-value)})))
 
 (defn constant [value]
-  {:__class__ "UziVariable" :value (simplify (or value 0))})
+  (let [actual-value (simplify (or value 0))]
+    {:__class__ "UziVariable"
+     :value actual-value
+     :size (value-size actual-value)}))
 
 (defn script
   [& {:keys [name arguments delay running? once? locals instructions]

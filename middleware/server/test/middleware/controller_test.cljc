@@ -4,7 +4,6 @@
             [clojure.core.async :as a :refer [<! go]]
             [middleware.test-utils :refer [test-async setup-fixture]]
             [middleware.compiler.compiler :as cc]
-            [middleware.compiler.utils.program :as program]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
@@ -37,16 +36,15 @@
                      :pins #{}
                      :globals #{}})
   ; HACK(Richo): Fake program
-  (let [program (-> (cc/compile-uzi-string
-                     "task blink13() running 1/s { toggle(D13); }
+  (let [program (cc/compile-uzi-string
+                 "task blink13() running 1/s { toggle(D13); }
 
-                      var counter;
-                      var n;
+                  var counter;
+                  var n;
 
-                      task loop() { add(n); }
-                      proc add(v) { counter = inc(v); }
-                      func inc(v) { return v + 1; }")
-                    (update :compiled program/sort-globals))]
+                  task loop() { add(n); }
+                  proc add(v) { counter = inc(v); }
+                  func inc(v) { return v + 1; }")]
     (dc/run program)))
 
 (deftest set-global-report
@@ -69,8 +67,7 @@
 
 (deftest run-program
   (setup)
-  (let [program (-> (cc/compile-uzi-string "task blink13() running 1/s { toggle(D13); }")
-                    (update :compiled program/sort-globals))]
+  (let [program (cc/compile-uzi-string "task blink13() running 1/s { toggle(D13); }")]
     (dc/run program)
     (is (empty? (-> @dc/state :reporting :globals)))
     (is (= (-> @dc/state :program :running)

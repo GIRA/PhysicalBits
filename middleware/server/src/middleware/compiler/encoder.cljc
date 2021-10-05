@@ -5,11 +5,10 @@
 
 (defn- globals-to-encode [program]
   "We need to exclude the default-globals from the encoding"
-  (let [constants-to-exclude (set p/default-globals)]
-    (filter (complement constants-to-exclude)
-            (:globals program))))
+  (remove (set p/default-globals)
+          (:globals program)))
 
-(defn- encode-global [^double value ^long size]
+(defn- encode-global [{:keys [^double value ^long size]}]
   "If the size equals 4 we have to encode it as a float"
   (let [^long actual-value (if (= 4 size)
                              (float->uint32 value)
@@ -31,14 +30,13 @@
      11 -> 4 bytes"
   (concat [(bit-or (bit-shift-left (count group) 2)
                    (dec size))]
-          (mapcat #(encode-global % size)
-                  group)))
+          (mapcat encode-global group)))
 
 (defn encode-globals [program]
   "The globals are grouped by size before encoding. We use 6 bits to
    specify each group size, so we are limited to 63 variables per group."
-  (let [to-encode (map :value (globals-to-encode program))
-        groups (group-by p/value-size to-encode)]
+  (let [to-encode (globals-to-encode program)
+        groups (group-by :size to-encode)]
     (concat [(count to-encode)]
             (mapcat (fn [size]
                       (mapcat #(encode-global-group size %)
@@ -253,6 +251,5 @@
 
 (defn encode [program]
   (-> program
-      p/sort-globals
       encode-program
       vec))

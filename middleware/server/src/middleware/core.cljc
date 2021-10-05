@@ -3,8 +3,7 @@
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
             [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]
-            [middleware.compiler.utils.program :as program]))
+            [middleware.compiler.encoder :as en]))
 
 ; TODO(Richo): Rename these maybe?
 (def ^:private program-atom (atom nil))
@@ -27,7 +26,6 @@
                         "json" cc/compile-json-string
                         "uzi" cc/compile-uzi-string)
            program (-> (apply compile-fn src args)
-                       (update :compiled program/sort-globals)
                        (assoc :type type))
            bytecodes (en/encode (:compiled program))]
        (when-not silent?
