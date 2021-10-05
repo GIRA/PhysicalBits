@@ -66,26 +66,25 @@
    :running-scripts #'get-tasks-data
    :free-ram #'get-memory-data})
 
-(defn get-device-state [device-events]
-  (let [device-state @dc/state]
-    (reduce (fn [update type]
-              (if-let [handler (device-event-handlers type)]
-                (merge update (handler device-state))
-                update))
-            {}
-            device-events)))
+(defn- get-device-state [state device-events]
+  (reduce (fn [update type]
+            (if-let [handler (device-event-handlers type)]
+              (merge update (handler state))
+              update))
+          {}
+          device-events))
 
 (defn get-server-state
-  ([]
-   (get-server-state {:device (keys device-event-handlers)}))
+  ([] (get-server-state {:device (keys device-event-handlers)}))
   ([{:keys [device logger]}]
    (merge {}
           (when logger {:output (vec logger)})
-          (when device (get-device-state (set device))))))
+          (when device (get-device-state @dc/state (set device))))))
 
 (defn reduce-until-timeout!
   "Take from channel ch while data is available (without blocking/parking) until
-  the timeout or no more data is immediately available"
+  the timeout or no more data is immediately available.
+  Results are accumulated using the reducer function f and the initial value init."
   [f init ch t]
   (go (loop [ret init]
         (let [[val _] (a/alts! [t (go (a/poll! ch))])]
@@ -105,14 +104,14 @@
           updates* (reset! updates (a/merge update-sources))]
       (go (loop []
             (when-some [update (<! updates*)] ; Park until first update
-              (let [t (a/timeout 50)]
+              (let [timeout (a/timeout 50)]
                 (<! (a/timeout 10)) ; Wait a bit before collecting data
-                (->> (<! (reduce-until-timeout! conj [update] updates* t))
+                (->> (<! (reduce-until-timeout! conj [update] updates* timeout))
                      (group-by first)
                      (reduce-kv #(assoc %1 %2 (map second %3)) {})
                      get-server-state
                      update-fn)
-                (<! t) ; Wait remaining timeout
+                (<! timeout) ; Wait remaining timeout
                 (recur))))
           (doseq [ch update-sources]
             (a/close! ch))))))
