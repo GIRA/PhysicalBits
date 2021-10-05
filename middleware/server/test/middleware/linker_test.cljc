@@ -6,7 +6,8 @@
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.linker :as l]
             [middleware.compiler.emitter :as emit]
-            [middleware.parser.ast-nodes :as ast]))
+            [middleware.parser.ast-nodes :as ast]
+            [middleware.compiler.utils.ast :as ast-utils]))
 
 (use-fixtures :once setup-fixture)
 
@@ -17,7 +18,11 @@
   (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
 
 (defn- without-prims-and-ids [ast]
-  (without-internal-ids (dissoc ast :primitives)))
+ (-> ast
+     (dissoc :primitives)
+     (ast-utils/transform "UziCallNode"
+                          (fn [node _] (dissoc node :primitive-name)))
+     without-internal-ids))
 
 (defn link [ast]
   "HACK(Richo): I remove the :primitives key because it makes the diff hard to read"

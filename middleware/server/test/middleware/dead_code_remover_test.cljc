@@ -3,7 +3,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.walk :as w]
-            [middleware.test-utils :refer [setup-fixture]]
+            [middleware.test-utils :refer [setup-fixture equivalent?]]
             [middleware.compiler.utils.ast :as ast-utils]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.emitter :as emit]))
@@ -33,7 +33,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  task alive1() running { toggle(D13); }\r\n\t                task dead() stopped { toggle(D12); }\r\n                  task alive2() { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   start-task-should-mark-the-script-as-alive
@@ -54,7 +54,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                \t\ttask alive() running { toggle(D13); start dead; }\r\n                \t\ttask dead() stopped { toggle(D12); }\r\n                \t\ttask reallyDead() stopped { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   stop-task-should-mark-the-script-as-alive
@@ -75,7 +75,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n              \t\ttask alive() running { toggle(D13); stop dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   pause-task-should-mark-the-script-as-alive
@@ -96,7 +96,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n              \t\ttask alive() running { toggle(D13); pause dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   resume-task-should-mark-the-script-as-alive
@@ -117,7 +117,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n              \t\ttask alive() running { toggle(D13); resume dead; }\r\n              \t\ttask dead() stopped { toggle(D12); }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   the-visit-order-should-not-matter
@@ -137,7 +137,7 @@
                                               (emit/start "dead")])])
         actual (compile-uzi-string
                  "\r\n                  task dead() stopped { toggle(D12); }\r\n              \t\ttask alive() running { toggle(D13); start dead; }\r\n              \t\ttask reallyDead() stopped { toggle(D11); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   circular-refs-should-not-be-a-problem
@@ -159,14 +159,14 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  task foo() running { toggle(D13); start bar; }\r\n                  task bar() stopped { start foo; toggle(D12); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   stopped-script-that-starts-itself-should-not-count
   (let [expected (emit/program :globals #{} :scripts [])
         actual (compile-uzi-string
                  "task bar() stopped { start bar; toggle(D12); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   unused-globals-should-be-removed
@@ -180,7 +180,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { toggle(D13); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   unused-globals-should-be-removed-even-if-they-have-references-from-dead-script
@@ -194,7 +194,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { toggle(D13); }\r\n                  task test() stopped { a = 100; }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   used-globals-should-not-be-removed
@@ -208,7 +208,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                var a = 0;\r\n                var b = 1;\r\n                task blink13() running 1/s { toggle(b); }\r\n                task test() stopped { a = b + 1; }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   unused-globals-should-be-removed-even-if-they-are-hidden-by-a-local
@@ -223,7 +223,7 @@
                                               (emit/prim-call "toggle")])])
         actual (compile-uzi-string
                  "\r\n                  var a = 0;\r\n                  task blink13() running 1/s { var a = D13; toggle(a); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   calling-a-script-should-mark-it-as-alive
@@ -251,7 +251,7 @@
                                               (emit/prim-call "pop")])])
         actual (compile-uzi-string
                  "\r\n                  import m from 'DCMotor.uzi';\r\n                  task loop() running { m.forward(1); }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   a-more-complete-example
@@ -284,7 +284,7 @@
                                               (emit/prim-call "turnOff")])])
         actual (compile-uzi-string
                  "\r\n                  \"This is just an example of code that uses all the available syntax\r\n                  in the language.\"\r\n                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                  import foo from 'DCMotor.uzi';\r\n                  import bar from 'Sonar.uzi' {\r\n                    trigPin = 100;\r\n                    echoPin = 200;\r\n                    start reading;\r\n                    stop reading;\r\n                    resume reading;\r\n                    pause reading;\r\n                  }\r\n\r\n                  var a = 10;\r\n                  var b = 0.5;\r\n                  var c;\r\n\r\n                  task blink13() running 2/s { toggle(D13); }\r\n                  task blink12() running 1/s { toggle(D12); }\r\n\r\n                  task setup() {\r\n                    if a { turnOn(D11); }\r\n                    else { turnOff(D11); }\r\n                  }\r\n\r\n                  func fact(n) {\r\n                    if n == 0 { return 1; }\r\n                    return n * fact(n - 1);\r\n                  }\r\n\r\n                  proc foo_bar_baz(a, b, c) {\r\n                    var d = a * b + c;\r\n                    repeat d { toggle(A2); }\r\n                    forever {\r\n                      start blink13, blink12;\r\n                      stop blink13;\r\n                      yield;\r\n                      pause blink12, blink13;\r\n                      resume blink12; yield;\r\n                      return;\r\n                    }\r\n                    while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                    until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                    while 1 >= 0; \"Body is optional\"\r\n                    until 0 <= 1; \"Body is optional\"\r\n                    do { toggle(D9); } while 1 > 0;\r\n                    do { toggle(D8); } until 0 < 1;\r\n                    for i = 0 to 10 by 1 {\r\n                      toggle(A0);\r\n                      delayMs(i * 100);\r\n                    }\r\n                    var e = foo.getSpeed();\r\n                    foo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                    bar.init(trig: a, echo: b, maxDist: c);\r\n                  }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   a-more-complete-example-2
@@ -507,7 +507,7 @@
                                               (emit/prim-call "pop")])])
         actual (compile-uzi-string
                  "\r\n                      \"This is just an example of code that uses all the available syntax\r\n                      in the language.\"\r\n                      \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                      import foo from 'DCMotor.uzi';\r\n                      import bar from 'Sonar.uzi' {\r\n                        trigPin = 100;\r\n                        echoPin = 200;\r\n                        stop reading;\r\n                        start reading;\r\n                        pause reading;\r\n                        resume reading;\r\n                      }\r\n\r\n                      var a = 10;\r\n                      var b = 0.5;\r\n                      var c;\r\n\r\n                      task blink13() running 2/s { toggle(D13); }\r\n                      task blink12() running 1/s { toggle(D12); }\r\n\r\n                      task setup() {\r\n                          if a { turnOn(D11); }\r\n                          else { turnOff(D11); }\r\n                          foo_bar_baz(a, b, c);\r\n                      }\r\n\r\n                      func fact(n) {\r\n                          if n == 0 { return 1; }\r\n                          return n * fact(n - 1);\r\n                      }\r\n\r\n                      proc foo_bar_baz(a, b, c) {\r\n                          var d = a * b + c;\r\n                          repeat d { toggle(A2); }\r\n                          forever {\r\n                              start blink13, blink12;\r\n                              stop blink13;\r\n                              yield;\r\n                              pause blink12, blink13;\r\n                              resume blink12; yield;\r\n                              return;\r\n                          }\r\n                          while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                          until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                          while 1 >= 0; \"Body is optional\"\r\n                          until 0 <= 1; \"Body is optional\"\r\n                          do { toggle(D9); } while 1 > 0;\r\n                          do { toggle(D8); } until 0 < 1;\r\n                          for i = 0 to 10 by 1 {\r\n                              toggle(A0);\r\n                              delayMs(i * 100);\r\n                          }\r\n                      \tvar e = foo.getSpeed();\r\n                      \tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                      \tbar.init(trig: a, echo: b, maxDist: c);\r\n                      }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
 
 (deftest
   a-more-complete-example-3
@@ -730,4 +730,4 @@
                                               (emit/prim-call "pop")])])
         actual (compile-uzi-string
                  "\r\n                  \"This is just an example of code that uses all the available syntax\r\n                  in the language.\"\r\n                  \"I wrote it to help me create a syntax highlighter for the \"\"Ace\"\" editor\"\r\n\r\n                  import foo from 'DCMotor.uzi';\r\n                  import bar from 'Sonar.uzi' {\r\n                    trigPin = 100;\r\n                    echoPin = 200;\r\n                    stop reading;\r\n                    start reading;\r\n                    pause reading;\r\n                    resume reading;\r\n                  }\r\n\r\n                  var a = 10;\r\n                  var b = 0.5;\r\n                  var c;\r\n\r\n                  task blink13() running 2/s { toggle(D13); }\r\n                  task blink12() running 1/s { toggle(D12); }\r\n\r\n                  task setup() {\r\n                      if a { turnOn(D11); }\r\n                      else { turnOff(D11); }\r\n                      foo_bar_baz(1, 2, 3);\r\n                  }\r\n\r\n                  func fact(n) {\r\n                      if n == 0 { return 1; }\r\n                      return n * fact(n - 1);\r\n                  }\r\n\r\n                  proc foo_bar_baz(a, b, c) {\r\n                      var d = a * b + c;\r\n                      repeat d { toggle(A2); }\r\n                      forever {\r\n                          start blink13, blink12;\r\n                          stop blink13;\r\n                          yield;\r\n                          pause blink12, blink13;\r\n                          resume blink12; yield;\r\n                          return;\r\n                      }\r\n                      while 1 && 0 { toggle(D10); delayMs(1000); }\r\n                      until 0 || 0 { toggle(D10); delayMs(1000); }\r\n                      while 1 >= 0; \"Body is optional\"\r\n                      until 0 <= 1; \"Body is optional\"\r\n                      do { toggle(D9); } while 1 > 0;\r\n                      do { toggle(D8); } until 0 < 1;\r\n                      for i = 0 to 10 by 1 {\r\n                          toggle(A0);\r\n                          delayMs(i * 100);\r\n                      }\r\n                  \tvar e = foo.getSpeed();\r\n                  \tfoo.init(fact(1 * -2 + -3.5), a + b/d, 0);\r\n                  \tbar.init(trig: a, echo: b, maxDist: c);\r\n                  }")]
-    (is (= expected actual))))
+    (is (equivalent? expected actual))))
