@@ -25,9 +25,9 @@
      (let [compile-fn (case type
                         "json" cc/compile-json-string
                         "uzi" cc/compile-uzi-string)
-           program (-> (apply compile-fn src args)
-                       (assoc :type type))
-           bytecodes (en/encode (:compiled program))]
+           program (vary-meta (apply compile-fn src args)
+                              assoc :type type)
+           bytecodes (en/encode program)]
        (when-not silent?
          (logger/newline)
          (logger/log "Program size (bytes): %1" (count bytecodes))
@@ -111,7 +111,7 @@
                                  :reporting (contains? (-> state :reporting :globals)
                                                        global-name)})
                               (filter :name
-                                      (-> state :program :running :compiled :globals)))
+                                      (-> state :program :running :globals)))
              :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
                                                         (:name global)))
                                 (-> state :globals :data vals))}})
@@ -139,12 +139,11 @@
           device-events))
 
 (defn- get-program-state [program]
-  ; TODO(Richo): This sucks, the IDE should take the program without modification.
-  ; Do we really need the final-ast? It would be simpler if we didn't have to make
-  ; this change.
-  {:program (-> program
-                (select-keys [:type :src :compiled])
-                (assoc :ast (:original-ast program)))})
+  (let [{type :type src :source ast :original-ast} (meta program)]
+    {:program {:type type
+               :src src
+               :ast ast
+               :compiled program}}))
 
 (defn get-server-state
   ; TODO(Richo): The empty args overload is only needed to initialize the clients

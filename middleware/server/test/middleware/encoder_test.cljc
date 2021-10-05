@@ -3,6 +3,7 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [clojure.string :as str]
             [middleware.test-utils :refer [setup-fixture]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
@@ -16,12 +17,20 @@
 
 (defn compile [src]
   #?(:clj (register-program! src))
-  (:compiled (cc/compile-uzi-string src)))
+  (cc/compile-uzi-string src))
+
+(defn check-bytecodes [bytecodes src]
+  ; HACK(Richo): Basic check to make sure we're actually producing some bytecodes
+  (if (empty? (str/trim src))
+    (is (= [0 0] bytecodes))
+    (is (not= [0 0] bytecodes)))
+  bytecodes)
 
 (defn encode [src]
   (-> src
       compile
-      en/encode))
+      en/encode
+      (check-bytecodes src)))
 
 (deftest empty-program
   (encode ""))

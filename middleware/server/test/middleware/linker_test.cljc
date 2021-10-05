@@ -15,7 +15,7 @@
 
 (defn compile-uzi-string [src]
   #?(:clj (register-program! src :lib-dir lib-dir))
-  (:compiled (cc/compile-uzi-string src :lib-dir lib-dir)))
+  (cc/compile-uzi-string src :lib-dir lib-dir))
 
 (defn- without-prims-and-ids [ast]
  (-> ast

@@ -109,7 +109,7 @@
   bytes)
 
 (defn- get-global-number [global-name]
-  (program/index-of-variable (-> @state :program :running :compiled)
+  (program/index-of-variable (-> @state :program :running)
                              global-name
                              nil))
 
@@ -140,23 +140,25 @@
 
 (defn- update-reporting [program]
   "All pins and globals referenced in the program must be enabled"
-  (doseq [global (filter :name (-> program :compiled :globals))]
+  (doseq [global (filter :name (-> program :globals))]
     (set-global-report (:name global) true))
   (doseq [{:keys [type number]} (filter ast/pin-literal?
-                                        (-> program :final-ast ast/all-children))]
+                                        (-> (meta program)
+                                            :final-ast
+                                            ast/all-children))]
     (set-pin-report (str type number) true)))
 
 (defn run [program]
   (swap! state assoc-in [:reporting :globals] #{})
   (swap! state assoc-in [:program :running] program)
-  (let [bytecodes (en/encode (:compiled program))
+  (let [bytecodes (en/encode program)
         sent (send! (p/run bytecodes))]
     (update-reporting program)
     sent))
 
 (defn install [program]
   ; TODO(Richo): Should I store the installed program?
-  (let [bytecodes (en/encode (:compiled program))
+  (let [bytecodes (en/encode program)
         sent (send! (p/install bytecodes))]
     ; TODO(Richo): This message is actually a lie, we really don't know yet if the
     ; program was installed successfully. I think we need to add a confirmation
@@ -252,7 +254,7 @@
 
 (defn process-global-value [{:keys [timestamp data]}]
   (let [globals (vec (program/all-globals
-                      (-> @state :program :running :compiled)))]
+                      (-> @state :program :running)))]
     (let [globals (into {}
                         (map (fn [{:keys [number] :as global}]
                                (when-let [name (:name (nth globals number {}))]
@@ -267,8 +269,8 @@
 
 (defn process-running-scripts [{:keys [scripts]}]
   (let [program (-> @state :program :running)
-        get-script-name (fn [i] (-> program :compiled :scripts (get i) :name))
-        task? (fn [i] (-> program :final-ast :scripts (get i) ast/task?))
+        get-script-name (fn [i] (-> program :scripts (get i) :name))
+        task? (fn [i] (-> (meta program) :final-ast :scripts (get i) ast/task?))
         [old new] (swap-vals! state assoc
                               :scripts
                               (into {} (map-indexed

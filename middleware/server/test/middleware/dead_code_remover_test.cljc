@@ -12,7 +12,7 @@
 
 (defn compile-uzi-string [src]
   #?(:clj (register-program! src))
-  (:compiled (cc/compile-uzi-string src)))
+  (cc/compile-uzi-string src))
 
 (deftest
   stopped-task-with-no-refs-should-be-removed

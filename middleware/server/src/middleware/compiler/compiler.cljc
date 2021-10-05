@@ -539,10 +539,11 @@
                 (augment-ast board)
                 (check src))
         compiled (compile ast (create-context))]
-    {:original-ast original-ast
-     :final-ast ast
-     :src src
-     :compiled compiled}))
+    (vary-meta compiled
+               assoc
+               :source src
+               :original-ast original-ast
+               :final-ast ast)))
 
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-json-string [str & args]

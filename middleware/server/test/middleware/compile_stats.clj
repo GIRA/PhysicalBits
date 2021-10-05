@@ -32,9 +32,9 @@
                      ast-or-src
                      (cg/print ast-or-src))
                program (apply cc/compile-uzi-string src args)]
-           {:instruction-count (count (p/instructions (:compiled program)))
-            :global-count (count (:globals (:compiled program)))
-            :encoded-size (count (en/encode (:compiled program)))
+           {:instruction-count (count (p/instructions program))
+            :global-count (count (:globals program))
+            :encoded-size (count (en/encode program))
             :name name}))
        (apply concat (vals programs))))
 
