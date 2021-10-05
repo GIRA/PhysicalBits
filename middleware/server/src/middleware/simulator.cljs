@@ -32,56 +32,42 @@
 (defn ^:export connect [update-fn]
   (chan->promise
    (go-try
-    (<? (dc/connect! "simulator"))
-    (let [port-name (@dc/state :port-name)]
-      {:port-name port-name}))))
+    (<? (core/connect! "simulator")))))
 
 
 (defn ^:export disconnect []
   (chan->promise
    (go-try
-    (<? (dc/disconnect!))
-    "OK")))
+    (<? (core/disconnect!)))))
 
 (defn ^:export compile [src type silent?]
   (chan->promise
    (go-try
-    (clj->js (core/compile! src type silent?)))))
+    (clj->js (<? (core/compile! src type silent?))))))
 
 (defn ^:export run [src type silent?]
   (chan->promise
    (go-try
-    (let [program (core/compile! src type silent?)]
-      (dc/run program)
-      (clj->js program)))))
+    (clj->js (<? (core/compile-and-run! src type silent?))))))
 
 (defn ^:export install [src type]
   (chan->promise
    (go-try
-     (let [program (core/compile! src type true)]
-       (dc/install program)
-       (clj->js program)))))
+     (clj->js (<? (core/compile-and-install! src type))))))
 
 (defn ^:export set-pin-report [pins report]
   (chan->promise
    (go-try
-    (doseq [pin-name pins
-            report? report]
-      (dc/set-pin-report pin-name report?))
-    "OK")))
+    ; TODO(Richo): Assert pins and report are the same size
+    (<? (core/set-pin-report! (map vector pins report))))))
 
 (defn ^:export set-global-report [globals report]
   (chan->promise
    (go-try
-    (doseq [global-name globals
-            report? report]
-      (dc/set-global-report global-name report?))
-    "OK")))
+    ; TODO(Richo): Assert globals and report are the same size
+    (<? (core/set-global-report! (map vector globals report))))))
 
 (defn ^:export set-profile [enabled?]
   (chan->promise
    (go-try
-    (if enabled?
-      (dc/start-profiling)
-      (dc/stop-profiling))
-    "OK")))
+    (<? (core/set-profile! enabled?)))))

@@ -46,35 +46,27 @@
   (ws/put! socket (json/encode (core/get-server-state))))
 
 (defn connect-handler [params]
-  (<!! (dc/connect! (params "port")))
-  (let [port-name (@dc/state :port-name)]
-    (json-response {:port-name port-name})))
+  (json-response (<!! (core/connect! (params "port")))))
 
 (defn disconnect-handler [req]
-  (<!! (dc/disconnect!))
-  (json-response "OK"))
+  (json-response (<!! (core/disconnect!))))
 
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (core/compile! src type (= silent "true")
-                               :lib-dir uzi-libraries)]
-    (json-response program)))
+  (json-response (<!! (core/compile! src type (= silent "true")
+                                     :lib-dir uzi-libraries))))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (core/compile! src type (= silent "true")
-                             :lib-dir uzi-libraries)]
-    (dc/run program)
-    (json-response program)))
+  (json-response (<!! (core/compile-and-run! src type (= silent "true")
+                                             :lib-dir uzi-libraries))))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (let [program (core/compile! src type false
-                             :lib-dir uzi-libraries)]
-    (dc/install program)
-    (json-response program)))
+  (json-response (<!! (core/compile-and-install! src type
+                                                 :lib-dir uzi-libraries))))
 
 (defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
   (let [pins (filterv (complement empty?)
@@ -82,12 +74,9 @@
         report (mapv #(= % "true")
                      (filter (complement empty?)
                              (str/split report #",")))]
-    (when-not (= (count pins) (count report))
-      (json-response "Invalid request parameters" 400))
-    (doseq [pin-name pins
-            report? report]
-      (dc/set-pin-report pin-name report?))
-    (json-response "OK")))
+    (if-not (= (count pins) (count report))
+      (json-response "Invalid request parameters" 400)
+      (json-response (<!! (core/set-pin-report! (map vector pins report)))))))
 
 (defn global-report-handler [{:strs [globals report] :or {globals "", report ""}}]
   (let [globals (filterv (complement empty?)
@@ -95,18 +84,12 @@
         report (mapv #(= % "true")
                      (filter (complement empty?)
                              (str/split report #",")))]
-    (when-not (= (count globals) (count report))
-      (json-response "Invalid request parameters" 400))
-    (doseq [global-name globals
-            report? report]
-      (dc/set-global-report global-name report?))
-    (json-response "OK")))
+    (if-not (= (count globals) (count report))
+      (json-response "Invalid request parameters" 400)
+      (json-response (<!! (core/set-global-report! (map vector globals report)))))))
 
 (defn profile-handler [{:strs [enabled]}]
-  (if (= "true" enabled)
-    (dc/start-profiling)
-    (dc/stop-profiling))
-  (json-response "OK"))
+  (json-response (<!! (core/set-profile! (= "true" enabled)))))
 
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))

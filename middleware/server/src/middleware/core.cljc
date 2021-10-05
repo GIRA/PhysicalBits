@@ -10,40 +10,73 @@
 (def ^:private program-atom (atom nil))
 (def ^:private program-chan (a/chan (a/sliding-buffer 1)))
 
-(defn compile! [src type silent? & args]
-  (try
-    (let [compile-fn (case type
-                       "json" cc/compile-json-string
-                       "uzi" cc/compile-uzi-string)
-          program (-> (apply compile-fn src args)
-                      (update :compiled program/sort-globals)
-                      (assoc :type type))
-          bytecodes (en/encode (:compiled program))]
-      (when-not silent?
-        (logger/newline)
-        (logger/log "Program size (bytes): %1" (count bytecodes))
-        (logger/log (str bytecodes))
-        (logger/success "Compilation successful!"))
-      (reset! program-atom program)
-      (a/put! program-chan true)
-      program)
-    (catch #?(:clj Throwable :cljs :default) ex
-      (when-not silent?
-        (logger/newline)
-        (logger/exception ex)
-        ; TODO(Richo): Improve the error message for checker errors
-        (when-let [{errors :errors} (ex-data ex)]
-          (doseq [[^long i {:keys [description node src]}]
-                  (map-indexed (fn [i e] [i e])
-                               errors)]
-            (logger/error (str "├─ " (inc i) ". " description))
-            (if src
-              (logger/error (str "|     ..." src "..."))
-              (when-let [id (:id node)]
-                (logger/error (str "|     Block ID: " id)))))
-          (logger/error (str "└─ Compilation failed!"))))
-      (throw ex))))
+(defn connect! [port]
+  (go
+   (<! (dc/connect! port))
+   (-> @dc/state :connection :port-name)))
 
+(defn disconnect! []
+  (go
+   (<! (dc/disconnect!))
+   (nil? (dc/connected?))))
+
+(defn compile! [src type silent? & args]
+  (go
+   (try
+     (let [compile-fn (case type
+                        "json" cc/compile-json-string
+                        "uzi" cc/compile-uzi-string)
+           program (-> (apply compile-fn src args)
+                       (update :compiled program/sort-globals)
+                       (assoc :type type))
+           bytecodes (en/encode (:compiled program))]
+       (when-not silent?
+         (logger/newline)
+         (logger/log "Program size (bytes): %1" (count bytecodes))
+         (logger/log (str bytecodes))
+         (logger/success "Compilation successful!"))
+       (reset! program-atom program)
+       (a/put! program-chan true)
+       program)
+     (catch #?(:clj Throwable :cljs :default) ex
+       (when-not silent?
+         (logger/newline)
+         (logger/exception ex)
+         ; TODO(Richo): Improve the error message for checker errors
+         (when-let [{errors :errors} (ex-data ex)]
+           (doseq [[^long i {:keys [description node src]}]
+                   (map-indexed (fn [i e] [i e])
+                                errors)]
+             (logger/error (str "├─ " (inc i) ". " description))
+             (if src
+               (logger/error (str "|     ..." src "..."))
+               (when-let [id (:id node)]
+                 (logger/error (str "|     Block ID: " id)))))
+           (logger/error (str "└─ Compilation failed!"))))
+       (throw ex)))))
+
+(defn compile-and-run! [src type silent? & args]
+  (go (let [program (<! (apply compile! src type silent? args))]
+        (dc/run program)
+        program)))
+
+(defn compile-and-install! [src type & args]
+  (go (let [program (<! (apply compile! src type false args))]
+        (dc/install program)
+        program)))
+
+(defn set-pin-report! [pins]
+  (go (doseq [[pin-name report?] pins]
+        (dc/set-pin-report pin-name report?))))
+
+(defn set-global-report! [globals]
+  (go (doseq [[global-name report?] globals]
+        (dc/set-global-report global-name report?))))
+
+(defn set-profile! [enabled?]
+  (go (if enabled?
+        (dc/start-profiling)
+        (dc/stop-profiling))))
 
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
