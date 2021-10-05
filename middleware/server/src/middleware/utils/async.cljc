@@ -1,9 +1,12 @@
-; NOTE(Richo): This code comes from https://github.com/alexanderkiel/async-error
+(ns middleware.utils.async
+  #?(:clj (:require [clojure.core.async])
+     :cljs (:require-macros [middleware.utils.async])))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; NOTE(Richo): The following code comes from Alexander Kiel's library async-error
+; (https://github.com/alexanderkiel/async-error).
 ; I decided to include the source code here instead of as a dependency because I
 ; wanted to change it slightly in order to handle throwing any object in cljs.
-(ns middleware.utils.async
-  #?(:clj
-     (:require [clojure.core.async])))
 
 ;; ---- Helpers Taken from Prismatic Schema -----------------------------------
 
@@ -48,13 +51,13 @@
      [& body]
      `(if-cljs
         (cljs.core.async/go
-          (try
-            ~@body
-            (catch :default e#
-              (if (instance? js/Error e#)
-                e#
-                (js/Error. "ERROR" (cljs.core/js-obj "cause" e#))))))
+         (try
+           ~@body
+           (catch :default e#
+             (if (instance? js/Error e#)
+               e#
+               (js/Error. "ERROR" (cljs.core/js-obj "cause" e#))))))
         (clojure.core.async/go
-          (try
-            ~@body
-            (catch Throwable t# t#))))))
+         (try
+           ~@body
+           (catch Throwable t# t#))))))
