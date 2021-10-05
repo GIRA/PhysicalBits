@@ -28,6 +28,7 @@
                                      (try
                                        (let [data (js->clj bytes)]
                                          #_(println "IN ->" data)
+                                        ; TODO(Richo): Maybe use onto-chan! instead of iterating?
                                          (dotimes [i (count data)]
                                                   (when-not (a/put! in-chan (nth data i))
                                                     (js/Serial.removeListener listener))))
