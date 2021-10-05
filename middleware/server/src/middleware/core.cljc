@@ -117,6 +117,11 @@
             (a/close! ch))))))
 
 (defn stop-update-loop! []
+  ; TODO(Richo): If we try to stop while the value is :pending, we won't close the channels!!
+  ; TODO(Richo): On second thought, I think we're safe because if the value is :pending, then
+  ; the channel is not initialized yet and it will be set shortly after. Which means this won't
+  ; have any effect. I think that's fine, stop is a NOP if the update-loop hasn't started yet.
+  ; However, I will leave this comment here until I'm sure this is correct.
   (let [[ch _] (reset-vals! updates nil)]
     (when (and ch (not= :pending ch))
       (a/close! ch))))
