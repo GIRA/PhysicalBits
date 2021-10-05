@@ -25,8 +25,7 @@
      (let [compile-fn (case type
                         "json" cc/compile-json-string
                         "uzi" cc/compile-uzi-string)
-           program (vary-meta (apply compile-fn src args)
-                              assoc :type type)
+           program (apply compile-fn src args)
            bytecodes (en/encode program)]
        (when-not silent?
          (logger/newline)

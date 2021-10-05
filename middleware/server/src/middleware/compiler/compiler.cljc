@@ -549,8 +549,10 @@
 (defn compile-json-string [str & args]
   (let [ast (json/decode str)
         src (codegen/print ast)]
-    (apply compile-tree ast src args)))
+    (vary-meta (apply compile-tree ast src args)
+               assoc :type :json)))
 
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-uzi-string [str & args]
-  (apply compile-tree (parser/parse str) str args))
+  (vary-meta (apply compile-tree (parser/parse str) str args)
+             assoc :type :uzi))
