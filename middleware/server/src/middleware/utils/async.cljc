@@ -1,6 +1,26 @@
 (ns middleware.utils.async
-  #?(:clj (:require [clojure.core.async])
-     :cljs (:require-macros [middleware.utils.async])))
+  (:require [clojure.core.async :as a :refer [go]])
+  #?(:cljs (:require-macros [middleware.utils.async])))
+
+#?(:cljs
+   (defn chan->promise [ch]
+     "Returns a javascript promise that will either resolve to the first available
+     value taken from ch or reject if the value was an error"
+     (js/Promise. (fn [res rej]
+                    (a/take! ch #(if (instance? js/Error %)
+                                   (rej %)
+                                   (res %)))))))
+
+(defn reduce-until-timeout!
+  "Take from channel ch while data is available (without blocking/parking) until
+   the timeout is closed or no more data is immediately available.
+   Results are accumulated using the reducer function f and the initial value init."
+  [f init ch t]
+  (go (loop [ret init]
+        (let [[val _] (a/alts! [t (go (a/poll! ch))])]
+          (if val
+            (recur (f ret val))
+            ret)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; NOTE(Richo): The following code comes from Alexander Kiel's library async-error

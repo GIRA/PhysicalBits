@@ -1,6 +1,6 @@
 (ns middleware.core
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
-            [middleware.utils.async :refer [go-try <?]]
+            [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
             [middleware.compiler.compiler :as cc]
@@ -161,17 +161,6 @@
           (when device (get-device-state @dc/state (set device)))
           (when program (get-program-state @program-atom)))))
 
-(defn reduce-until-timeout! ; TODO(Richo): Move to utils.async
-  "Take from channel ch while data is available (without blocking/parking) until
-  the timeout or no more data is immediately available.
-  Results are accumulated using the reducer function f and the initial value init."
-  [f init ch t]
-  (go (loop [ret init]
-        (let [[val _] (a/alts! [t (go (a/poll! ch))])]
-          (if val
-            (recur (f ret val))
-            ret)))))
-
 (def ^:private updates (atom nil))
 
 (defn start-update-loop! [update-fn]
@@ -188,7 +177,7 @@
             (when-some [update (<! updates*)] ; Park until first update
               (let [timeout (a/timeout 50)]
                 (<! (a/timeout 10)) ; Wait a bit before collecting data
-                (->> (<! (reduce-until-timeout! conj [update] updates* timeout))
+                (->> (<! (aa/reduce-until-timeout! conj [update] updates* timeout))
                      (group-by first)
                      (reduce-kv #(assoc %1 %2 (map second %3)) {})
                      get-server-state
