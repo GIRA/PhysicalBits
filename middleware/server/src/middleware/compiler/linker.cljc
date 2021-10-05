@@ -82,7 +82,8 @@
                             (assoc global :value (get globals name value)))
                           (:globals ast))
            :scripts (mapv (fn [{:keys [name state] :as script}]
-                            (if (= "once" state)
+                            (if (or (nil? state)
+                                    (= "once" state))
                               script
                               (assoc script :state (get scripts name state))))
                           (:scripts ast)))))
