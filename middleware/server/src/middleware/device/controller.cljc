@@ -138,42 +138,6 @@
     (doseq [pin-name pins]
       (set-pin-report pin-name true))))
 
-; TODO(Richo): This function makes no sense here!
-(defn compile! [src type silent? & args]
-  (try
-    (let [compile-fn (case type
-                       "json" cc/compile-json-string
-                       "uzi" cc/compile-uzi-string)
-          program (-> (apply compile-fn src args)
-                      (update :compiled program/sort-globals)
-                      (assoc :type type))
-          bytecodes (en/encode (:compiled program))]
-      (when-not silent?
-        (logger/newline)
-        (logger/log "Program size (bytes): %1" (count bytecodes))
-        (logger/log (str bytecodes))
-        (logger/success "Compilation successful!"))
-      (swap! state assoc-in [:program :current] program)
-      (a/put! update-chan :program)
-      program)
-    (catch #?(:clj Throwable :cljs :default) ex
-      (when-not silent?
-        (logger/newline)
-        (logger/exception ex)
-        ; TODO(Richo): Improve the error message for checker errors
-        (when-let [{errors :errors} (ex-data ex)]
-          (doseq [[^long i {:keys [description node src]}]
-                  (map-indexed (fn [i e] [i e])
-                               errors)]
-            (logger/error (str "├─ " (inc i) ". " description))
-            (if src
-              (logger/error (str "|     ..." src "..."))
-              (when-let [id (:id node)]
-                (logger/error (str "|     Block ID: " id)))))
-          (logger/error (str "└─ Compilation failed!"))))
-      (throw ex))))
-
-
 (defn- update-reporting [program]
   "All pins and globals referenced in the program must be enabled"
   (doseq [global (filter :name (-> program :compiled :globals))]

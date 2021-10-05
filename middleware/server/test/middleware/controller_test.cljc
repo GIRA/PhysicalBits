@@ -3,6 +3,8 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
             [middleware.test-utils :refer [test-async setup-fixture]]
+            [middleware.compiler.compiler :as cc]
+            [middleware.compiler.utils.program :as program]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]
@@ -35,15 +37,16 @@
                      :pins #{}
                      :globals #{}})
   ; HACK(Richo): Fake program
-  (let [program (dc/compile! "task blink13() running 1/s { toggle(D13); }
+  (let [program (-> (cc/compile-uzi-string
+                     "task blink13() running 1/s { toggle(D13); }
 
-                             var counter;
-                             var n;
+                      var counter;
+                      var n;
 
-                             task loop() { add(n); }
-                             proc add(v) { counter = inc(v); }
-                             func inc(v) { return v + 1; }"
-                             "uzi" true)]
+                      task loop() { add(n); }
+                      proc add(v) { counter = inc(v); }
+                      func inc(v) { return v + 1; }")
+                    (update :compiled program/sort-globals))]
     (dc/run program)))
 
 (deftest set-global-report
@@ -66,7 +69,8 @@
 
 (deftest run-program
   (setup)
-  (let [program (dc/compile! "task blink13() running 1/s { toggle(D13); }" "uzi" true)]
+  (let [program (-> (cc/compile-uzi-string "task blink13() running 1/s { toggle(D13); }")
+                    (update :compiled program/sort-globals))]
     (dc/run program)
     (is (empty? (-> @dc/state :reporting :globals)))
     (is (= (-> @dc/state :program :running)
@@ -77,6 +81,7 @@
   (dc/set-report-interval 50)
   (is (= 50 (-> @dc/state :reporting :interval))))
 
+; TODO(Richo): The following test logs an error message, we should consider disabling logging
 (deftest process-running-scripts
   (setup)
   (dc/process-running-scripts
@@ -164,6 +169,7 @@
   (is (= (-> @dc/state :profiler)
          {:report-interval 5, :ticks 22835, :interval-ms 100})))
 
+; TODO(Richo): The following test logs an error message, we should consider disabling logging
 (deftest process-error
   (test-async
    (go

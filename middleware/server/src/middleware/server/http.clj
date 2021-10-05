@@ -64,14 +64,14 @@
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (let [program (dc/compile! src type (= silent "true")
+  (let [program (core/compile! src type (= silent "true")
                              :lib-dir uzi-libraries)]
     (dc/run program)
     (json-response program)))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (let [program (dc/compile! src type false
+  (let [program (core/compile! src type false
                              :lib-dir uzi-libraries)]
     (dc/install program)
     (json-response program)))

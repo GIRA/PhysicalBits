@@ -51,14 +51,14 @@
 (defn ^:export run [src type silent?]
   (chan->promise
    (go-try
-    (let [program (dc/compile! src type silent?)]
+    (let [program (core/compile! src type silent?)]
       (dc/run program)
       (clj->js program)))))
 
 (defn ^:export install [src type]
   (chan->promise
    (go-try
-     (let [program (dc/compile! src type true)]
+     (let [program (core/compile! src type true)]
        (dc/install program)
        (clj->js program)))))
 
