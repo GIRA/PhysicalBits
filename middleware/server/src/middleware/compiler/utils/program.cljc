@@ -40,7 +40,7 @@
     (assoc program :globals (vec sorted-globals))))
 
 (def default-globals
-  "This values are *always* first in the global list, whether they
+  "These values are *always* first in the global list, whether they
    are used or not. The VM knows about this already so we don't need
    to encode them."
   (map emit/constant [0 1 -1]))
