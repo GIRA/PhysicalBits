@@ -20,8 +20,6 @@
   (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
   (make-out-chan! [_] (a/chan (a/dropping-buffer 1))))
 
-(def program )
-
 (defn setup []
   (ports/register-constructors! identity)
   (reset! dc/state dc/initial-state)
