@@ -2,18 +2,11 @@
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.core.async :as a]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [middleware.utils.core :refer [uzi-format]]))
 
 (def update-chan (a/chan))
 (def updates (a/mult update-chan))
-
-(defn- uzi-format [{:keys [text args]}]
-  (loop [t text, i 0]
-    (if-let [val (get args i)]
-      (recur
-        (str/replace t (str "%" (inc i)) val)
-        (inc i))
-      t)))
 
 ; TODO(Richo): Find a cross-platform way of logging...
 (defn log* [str]
@@ -25,7 +18,7 @@
                :text format-str
                :args (mapv str args)}]
     (a/put! update-chan entry)
-    (log* (uzi-format entry))))
+    (log* (apply uzi-format (:text entry) (:args entry)))))
 
 (defn info [str & args]
   (append :info str args))

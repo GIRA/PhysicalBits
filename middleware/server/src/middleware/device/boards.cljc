@@ -1,4 +1,5 @@
-(ns middleware.device.boards)
+(ns middleware.device.boards
+  (:require [middleware.utils.core :refer [index-of]]))
 
 (def UNO {:name "Arduino UNO"
           :pin-names ["D2" "D3" "D4" "D5" "D6" "D7" "D8" "D9" "D10" "D11" "D12" "D13"
@@ -16,7 +17,7 @@
   (memoize (fn [pin-number & [board]]
              (let [board (or board UNO)
                    ^java.util.List pin-numbers (board :pin-numbers)
-                   index (.indexOf pin-numbers pin-number)]
+                   index (index-of pin-numbers pin-number)]
                (if-not (= -1 index)
                  (nth (board :pin-names) index)
                  nil)))))
@@ -25,7 +26,7 @@
   (memoize (fn [pin-name & [board]]
              (let [board (or board UNO)
                    ^java.util.List pin-names (board :pin-names)
-                   index (.indexOf pin-names pin-name)]
+                   index (index-of pin-names pin-name)]
                (if-not (= -1 index)
                  (nth (board :pin-numbers) index)
                  nil)))))

@@ -2,6 +2,67 @@
   (:require [criterium.core :refer [bench with-progress-reporting]]))
 
 (comment
+
+ (def v (vec (range 0 100)))
+ (nth (map inc v) 12 nil)
+ (nth v 120)
+
+ (with-progress-reporting (bench (reduce + 0 v)))
+"Evaluation count : 20696940 in 60 samples of 344949 calls.
+             Execution time mean : 3.085101 µs
+    Execution time std-deviation : 433.058990 ns
+   Execution time lower quantile : 2.734087 µs ( 2.5%)
+   Execution time upper quantile : 4.433880 µs (97.5%)
+                   Overhead used : 11.013935 ns
+
+Found 6 outliers in 60 samples (10.0000 %)
+	low-severe	 2 (3.3333 %)
+	low-mild	 4 (6.6667 %)
+ Variance from outliers : 82.4155 % Variance is severely inflated by outliers"
+
+ (with-progress-reporting
+   (bench (loop [i 0, acc 0]
+            (if-let [val (get v i)]
+              (recur
+                (inc i)
+                (+ acc val))
+              acc))))
+"Evaluation count : 17386500 in 60 samples of 289775 calls.
+             Execution time mean : 3.532437 µs
+    Execution time std-deviation : 217.695749 ns
+   Execution time lower quantile : 3.311638 µs ( 2.5%)
+   Execution time upper quantile : 4.040414 µs (97.5%)
+                   Overhead used : 11.013935 ns
+
+Found 5 outliers in 60 samples (8.3333 %)
+	low-severe	 3 (5.0000 %)
+	low-mild	 2 (3.3333 %)
+ Variance from outliers : 46.7315 % Variance is moderately inflated by outliers
+"
+
+(with-progress-reporting
+  (bench (loop [i 0, acc 0]
+           (if-let [val (nth v i nil)]
+             (recur
+               (inc i)
+               (+ acc val))
+             acc))))
+"Evaluation count : 22580340 in 60 samples of 376339 calls.
+             Execution time mean : 2.723621 µs
+    Execution time std-deviation : 424.689886 ns
+   Execution time lower quantile : 2.430304 µs ( 2.5%)
+   Execution time upper quantile : 3.792985 µs (97.5%)
+                   Overhead used : 11.013935 ns
+
+Found 4 outliers in 60 samples (6.6667 %)
+	low-severe	 3 (5.0000 %)
+	low-mild	 1 (1.6667 %)
+ Variance from outliers : 85.8622 % Variance is severely inflated by outliers"
+
+
+ )
+
+(comment
  (require '[middleware.parser.parser :as new-parser])
 
  (def sources (mapv slurp
