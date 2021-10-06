@@ -9,13 +9,13 @@
 
 (defn print [node] (print-node node))
 
-(defn print-optative-block [block]
+(defn print-optional-block [block]
   (if (empty? (:statements block))
     ";"
     (str " " (print-node block))))
 
 (defn- remove-empty [& colls]
-  (filter (complement empty?) colls))
+  (remove empty? colls))
 
 (defmethod print-node "UziProgramNode" [node]
   (str/join (flatten
@@ -38,7 +38,7 @@
   (uzi-format "import %1 from '%2'%3"
               (:alias node)
               (:path node)
-              (print-optative-block (:initializationBlock node))))
+              (print-optional-block (:initializationBlock node))))
 
 (defmethod print-node "UziVariableDeclarationNode" [node]
   (if (:value node)
@@ -86,13 +86,14 @@
   (if (empty? (:statements node))
     "{}"
     (uzi-format "{\n%1}"
-                (add-indent-level (str/join "\n"
-                                            (map (fn [expr]
-                                                   (if (or (str/ends-with? expr "}")
-                                                           (str/ends-with? expr ";"))
-                                                     expr
-                                                     (str expr ";")))
-                                                 (map print-node (:statements node))))))))
+                (add-indent-level
+                 (str/join "\n"
+                           (map (fn [expr]
+                                  (if (or (str/ends-with? expr "}")
+                                          (str/ends-with? expr ";"))
+                                    expr
+                                    (str expr ";")))
+                                (map print-node (:statements node))))))))
 
 (defn print-operator-expression [node]
   (if (= 1 (-> node :arguments count))
@@ -139,7 +140,7 @@
 (defmethod print-node "UziWhileNode" [node]
   (uzi-format "while %1%2"
               (print-node (:condition node))
-              (print-optative-block (:post node))))
+              (print-optional-block (:post node))))
 
 (defmethod print-node "UziDoWhileNode" [node]
   (uzi-format "do %1 while(%2)"
@@ -149,7 +150,7 @@
 (defmethod print-node "UziUntilNode" [node]
   (uzi-format "until %1%2"
               (print-node (:condition node))
-              (print-optative-block (:post node))))
+              (print-optional-block (:post node))))
 
 (defmethod print-node "UziDoUntilNode" [node]
   (uzi-format "do %1 until(%2)"

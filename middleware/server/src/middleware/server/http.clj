@@ -69,21 +69,17 @@
                                                  :lib-dir uzi-libraries))))
 
 (defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
-  (let [pins (filterv (complement empty?)
-                      (str/split pins #","))
-        report (mapv #(= % "true")
-                     (filter (complement empty?)
-                             (str/split report #",")))]
+  (let [pins (remove empty? (str/split pins #","))
+        report (map (partial = "true")
+                    (remove empty? (str/split report #",")))]
     (if-not (= (count pins) (count report))
       (json-response "Invalid request parameters" 400)
       (json-response (<?? (core/set-pin-report! (map vector pins report)))))))
 
 (defn global-report-handler [{:strs [globals report] :or {globals "", report ""}}]
-  (let [globals (filterv (complement empty?)
-                         (str/split globals #","))
-        report (mapv #(= % "true")
-                     (filter (complement empty?)
-                             (str/split report #",")))]
+  (let [globals (remove empty? (str/split globals #","))
+        report (map (partial = "true")
+                    (remove empty? (str/split report #",")))]
     (if-not (= (count globals) (count report))
       (json-response "Invalid request parameters" 400)
       (json-response (<?? (core/set-global-report! (map vector globals report)))))))

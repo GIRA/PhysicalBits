@@ -110,8 +110,8 @@
   (let [delay (rate->delay ticking-rate)]
     (register-constant! ctx delay)
     (emit/script
-     :name task-name,
-     :delay delay,
+     :name task-name
+     :delay delay
      :running? (contains? #{"running" "once"} state)
      :once? (= "once" state)
      :locals (collect-locals body)
@@ -455,7 +455,6 @@
                    [(emit/prim-call "logicalOr")])))))
 
 (defmethod compile-node :default [node ctx]
-  #_(log/error "Unknown node: " (ast-utils/node-type node))
   (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
 
 (defn ^:private create-context []

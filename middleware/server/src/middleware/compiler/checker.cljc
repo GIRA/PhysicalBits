@@ -7,6 +7,8 @@
             [petitparser.token :as t]
             [clojure.data :as data]))
 
+; TODO(Richo): Improve error descriptions so that they can be translated, maybe
+; just storing the description as a format-string with the argument data?
 (defn ^:private register-error! [description node errors]
   (swap! errors conj {:node node
                       :src (if-let [token (get (meta node) :token)]
@@ -69,11 +71,11 @@
           node errors))
 
 (defn ^:private assert-no-duplicates [coll key-fn msg errors]
-  (let [set (atom #{})]
+  (let [set (volatile! #{})]
     (doseq [each coll]
       (assert (not (contains? @set (key-fn each)))
               msg each errors)
-      (swap! set conj (key-fn each)))))
+      (vswap! set conj (key-fn each)))))
 
 (defmulti check-node (fn [node errors path] (:__class__ node)))
 
