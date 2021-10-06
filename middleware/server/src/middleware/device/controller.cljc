@@ -182,6 +182,17 @@
   (send! (p/continue)))
 
 (comment
+
+ (connect! "COM4")
+ (connected?)
+
+ (-> @state :globals)
+ (send-continue)
+ (-> @state :debugger)
+
+ (map-indexed (fn [v i] [v i])
+              (program/instructions (-> @state :program :running)))
+
  (send-continue)
  (clear-all-breakpoints)
  (set-all-breakpoints)
