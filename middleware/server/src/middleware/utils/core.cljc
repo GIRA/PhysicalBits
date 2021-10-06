@@ -1,4 +1,5 @@
 (ns middleware.utils.core
+  (:refer-clojure :exclude [format])
   (:require [clojure.string :as str]))
 
 (defn seek [pred coll]
@@ -8,10 +9,19 @@
   "Returns -1 if not found"
   (.indexOf v e))
 
-(defn uzi-format [text & args]
+(defn format [text & args]
+  "Simple string formatting function. It doesn't support any fancy features
+  (but works in cljs)"
   (loop [t text, i 0]
     (if-let [val (nth args i nil)]
       (recur
         (str/replace t (str "%" (inc i)) (str val))
         (inc i))
       t)))
+
+(defn millis ^long []
+  #?(:clj (System/currentTimeMillis)
+    :cljs (.getTime (js/Date.))))
+
+(defn clamp [^long val ^long lower ^long upper]
+  (max lower (min upper val)))

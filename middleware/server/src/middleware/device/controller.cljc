@@ -10,7 +10,8 @@
             [middleware.compiler.utils.program :as program]
             [middleware.output.logger :as logger]
             #?(:clj [middleware.config :as config])
-            [middleware.device.utils.ring-buffer :as rb]))
+            [middleware.device.utils.ring-buffer :as rb]
+            [middleware.utils.core :refer [millis clamp]]))
 
 (comment
 
@@ -22,12 +23,6 @@
  @state
 
  ,)
-
-(defn millis ^long []
-  #?(:clj (System/currentTimeMillis)
-     :cljs (.getTime (js/Date.))))
-
-(defn constrain [^long val ^long lower ^long upper] (max lower (min upper val)))
 
 (defn- log-error [msg e]
   #?(:clj (log/error msg e)
@@ -172,9 +167,9 @@
 (defn stop-profiling [] (send! (p/stop-profiling)))
 
 (defn set-report-interval [interval]
-  (let [interval (int (constrain interval
-                                 (get-config [:device :report-interval-min] 0)
-                                 (get-config [:device :report-interval-max] 100)))]
+  (let [interval (int (clamp interval
+                             (get-config [:device :report-interval-min] 0)
+                             (get-config [:device :report-interval-max] 100)))]
     (when-not (= (-> @state :reporting :interval)
                  interval)
       (swap! state assoc-in [:reporting :interval] interval)

@@ -3,7 +3,7 @@
   (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.core.async :as a]
             [clojure.string :as str]
-            [middleware.utils.core :refer [uzi-format]]))
+            [middleware.utils.core :as u]))
 
 (def update-chan (a/chan))
 (def updates (a/mult update-chan))
@@ -18,7 +18,7 @@
                :text format-str
                :args (mapv str args)}]
     (a/put! update-chan entry)
-    (log* (apply uzi-format (:text entry) (:args entry)))))
+    (log* (apply u/format (:text entry) (:args entry)))))
 
 (defn info [str & args]
   (append :info str args))
