@@ -25,3 +25,15 @@
 
 (defn clamp [^long val ^long lower ^long upper]
   (max lower (min upper val)))
+
+(defn parse-int [str] #?(:clj (Integer/parseInt str)
+                          :cljs (js/parseInt str)))
+
+(defn parse-double [str] #?(:clj (Double/parseDouble str)
+                           :cljs (js/parseFloat str)))
+
+(defn parse-number [str]
+  (try
+    (parse-int str)
+    (catch #?(:clj Throwable :cljs :default) _
+      (parse-double str))))
