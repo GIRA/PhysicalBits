@@ -1,16 +1,8 @@
 (ns middleware.compilation.parser
   (:require [middleware.ast.nodes :as ast]
+            [middleware.ast.utils :as ast-utils]
             [middleware.utils.core :refer [parse-number parse-double]]
             [petitparser.core :as pp]))
-
-; TODO(Richo): This should probably be in a utils.ast namespace
-(defn- script? [node]
-  (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
-             (:__class__ node)))
-(defn- variable-declaration? [node]
-  (= "UziVariableDeclarationNode" (:__class__ node)))
-(defn- primitive? [node]
-  (= "UziPrimitiveDeclarationNode" (:__class__ node)))
 
 (def precedence-table
   [#{"**"}
@@ -66,9 +58,9 @@
   {:program (fn [[_ imports members _]]
               (ast/program-node
                :imports imports
-               :globals (filterv variable-declaration? members)
-               :scripts (filterv script? members)
-               :primitives (filterv primitive? members)))
+               :globals (filterv ast-utils/variable-declaration? members)
+               :scripts (filterv ast-utils/script? members)
+               :primitives (filterv ast-utils/primitive-declaration? members)))
    :import (fn [[_ _ [alias] path [_ init-block]]]
              (if alias
                (if init-block
