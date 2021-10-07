@@ -1,27 +1,9 @@
 (ns middleware.compilation.parser
   (:require [middleware.ast.nodes :as ast]
-            [petitparser.core :as pp]))
-
-(defn- parse-int [str] #?(:clj (Integer/parseInt str)
-                          :cljs (js/parseInt str)))
-
-(defn- parse-double [str] #?(:clj (Double/parseDouble str)
-                             :cljs (js/parseFloat str)))
-
-(defn- parse-number [str]
-  (try
-    (parse-int str)
-    (catch #?(:clj Throwable :cljs :default) _
-      (parse-double str))))
-
-; TODO(Richo): This should probably be in a utils.ast namespace
-(defn- script? [node]
-  (contains? #{"UziTaskNode" "UziProcedureNode" "UziFunctionNode"}
-             (:__class__ node)))
-(defn- variable-declaration? [node]
-  (= "UziVariableDeclarationNode" (:__class__ node)))
-(defn- primitive? [node]
-  (= "UziPrimitiveDeclarationNode" (:__class__ node)))
+            [middleware.ast.utils :as ast-utils]
+            [middleware.utils.core :refer [parse-number parse-double]]
+            [petitparser.core :as pp]
+            [petitparser.token :as t]))
 
 (def precedence-table
   [#{"**"}
@@ -43,24 +25,32 @@
     "||" (ast/logical-or-node left right)
     (ast/binary-expression-node left selector right)))
 
+(defn- merge-tokens [& nodes]
+  (let [tokens (sort-by t/start (keep (comp :token meta) nodes))
+        source (-> tokens first t/source)
+        start (-> tokens first t/start)
+        count (- (apply max (map t/stop tokens))
+                 start)
+        value (vec nodes)]
+    (t/make-token source start count value)))
+
 (defn- fix-precedence [nodes operators]
   (if (< (count nodes) 3)
     nodes
-    (let [result (atom [])
-          left (atom (first nodes))]
+    (let [result (volatile! [])
+          left (volatile! (first nodes))]
       (doseq [[op right] (partition-all 2 (drop 1 nodes))]
         (if (or (nil? operators)
                 (contains? operators op))
-          (let [expr (build-binary-expression op @left right)]
-            ; TODO(Richo): Add token!
-            (reset! left expr))
+          (let [expr (build-binary-expression op @left right)
+                token (merge-tokens @left op right)]
+            (vreset! left (vary-meta expr assoc :token token)))
           (do
-            (swap! result conj @left op)
-            (reset! left right))))
-      (swap! result conj @left)
+            (vswap! result conj @left op)
+            (vreset! left right))))
+      (vswap! result conj @left)
       @result)))
 
-; TODO(Richo): Refactor this, maybe with a threaded macro or something...
 (defn- reduce-binary-expresions [left operations]
   (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
         ; we have (1 + 2 + 3)
@@ -77,9 +67,9 @@
   {:program (fn [[_ imports members _]]
               (ast/program-node
                :imports imports
-               :globals (filterv variable-declaration? members)
-               :scripts (filterv script? members)
-               :primitives (filterv primitive? members)))
+               :globals (filterv ast-utils/variable-declaration? members)
+               :scripts (filterv ast-utils/script? members)
+               :primitives (filterv ast-utils/primitive-declaration? members)))
    :import (fn [[_ _ [alias] path [_ init-block]]]
              (if alias
                (if init-block
@@ -314,10 +304,10 @@
         grammar (update-keys grammar rules pp/token)
         transformations (update-keys transformations rules
                                      (fn [f]
-                                       (fn [{:keys [parsed-value] :as token}]
-                                         (let [result (f parsed-value)]
-                                           (if (map? result)
-                                             (with-meta result {:token token})
+                                       (fn [token]
+                                         (let [result (f (t/parsed-value token))]
+                                           (if (ast-utils/node? result)
+                                             (vary-meta result assoc :token token)
                                              result)))))]
     (pp/compose grammar transformations)))
 
