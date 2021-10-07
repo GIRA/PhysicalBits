@@ -3,9 +3,9 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compiler.utils.ast :as ast-utils]
+            [middleware.ast.nodes :as ast]
+            [middleware.ast.utils :as ast-utils]
             [middleware.parser.parser :as pp]
-            [middleware.parser.ast-nodes :as ast]
             [middleware.compiler.linker :as linker]
             [middleware.compiler.checker :as checker]
             [middleware.test-utils :refer [setup-fixture]]))

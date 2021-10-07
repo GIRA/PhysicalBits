@@ -9,7 +9,7 @@
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.encoder :as en]
             [middleware.code-generator.code-generator :as cg]
-            [middleware.compiler.utils.program :as p]
+            [middleware.program.utils :as p]
             [middleware.test-utils :refer [test-name init-dependencies]]))
 
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")

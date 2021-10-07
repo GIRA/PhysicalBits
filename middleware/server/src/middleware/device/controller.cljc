@@ -6,8 +6,8 @@
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
             [middleware.compiler.encoder :as en]
-            [middleware.compiler.utils.ast :as ast]
-            [middleware.compiler.utils.program :as program]
+            [middleware.ast.utils :as ast]
+            [middleware.program.utils :as program]
             [middleware.output.logger :as logger]
             #?(:clj [middleware.config :as config])
             [middleware.device.utils.ring-buffer :as rb]

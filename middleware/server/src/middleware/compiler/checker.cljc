@@ -2,8 +2,8 @@
 (ns middleware.compiler.checker
   (:refer-clojure :exclude [assert])
   (:require [middleware.utils.core :refer [seek]]
-            [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.compiler.primitives :as prims]
+            [middleware.ast.utils :as ast-utils]
+            [middleware.ast.primitives :as prims]
             [petitparser.token :as t]
             [clojure.data :as data]))
 

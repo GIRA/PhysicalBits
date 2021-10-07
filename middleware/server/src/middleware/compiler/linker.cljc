@@ -1,5 +1,5 @@
 (ns middleware.compiler.linker
-  (:require [middleware.compiler.utils.ast :as ast-utils]
+  (:require [middleware.ast.utils :as ast-utils]
             [middleware.utils.fs.common :as fs]
             [middleware.parser.parser :as parser]
             [clojure.pprint :refer [pprint]]))

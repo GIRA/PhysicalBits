@@ -5,9 +5,9 @@
             [middleware.test-utils :refer [equivalent? setup-fixture without-internal-ids]]
             [middleware.compiler.compiler :as cc]
             [middleware.compiler.linker :as l]
-            [middleware.compiler.emitter :as emit]
-            [middleware.parser.ast-nodes :as ast]
-            [middleware.compiler.utils.ast :as ast-utils]))
+            [middleware.program.emitter :as emit]
+            [middleware.ast.nodes :as ast]
+            [middleware.ast.utils :as ast-utils]))
 
 (use-fixtures :once setup-fixture)
 

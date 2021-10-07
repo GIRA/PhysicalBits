@@ -1,4 +1,4 @@
-(ns middleware.compiler.emitter
+(ns middleware.program.emitter
   (:require [middleware.utils.core :refer [seek]]
             [middleware.utils.conversions :as c]))
 

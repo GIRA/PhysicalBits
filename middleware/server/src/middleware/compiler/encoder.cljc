@@ -1,7 +1,7 @@
 (ns middleware.compiler.encoder
   (:require [middleware.utils.conversions :refer [float->uint32 two's-complement]]
-            [middleware.compiler.primitives :as prims]
-            [middleware.compiler.utils.program :as p]))
+            [middleware.ast.primitives :as prims]
+            [middleware.program.utils :as p]))
 
 (defn- globals-to-encode [program]
   "We need to exclude the default-globals from the encoding"

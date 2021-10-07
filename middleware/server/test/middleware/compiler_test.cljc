@@ -6,10 +6,10 @@
             [middleware.test-utils :refer [equivalent? setup-fixture without-internal-ids]]
             [clojure.string :as str]
             [clojure.walk :as w]
-            [middleware.compiler.utils.ast :as ast-utils]
+            [middleware.ast.nodes :as ast]
+            [middleware.ast.utils :as ast-utils]
             [middleware.compiler.compiler :as cc]
-            [middleware.compiler.emitter :as emit]
-            [middleware.parser.ast-nodes :as ast]))
+            [middleware.program.emitter :as emit]))
 
 (use-fixtures :once setup-fixture)
 

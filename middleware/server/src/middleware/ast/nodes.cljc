@@ -1,4 +1,4 @@
-(ns middleware.parser.ast-nodes)
+(ns middleware.ast.nodes)
 
 ; NOTE(Richo): All nodes are created with a random :internal-id. This is important
 ; because it will guarantee that all nodes are different when compared with =.
@@ -8,6 +8,8 @@
 ; current implementation relies on = to know when to stop looking for variables.
 ; An alternative could be to use identical? instead of = but I feel it would make
 ; the code more fragile than simply adding this artificial :internal-id
+; TODO(Richo): This :internal-id nonsense sucks! I need to think of a better way
+; of handling this...
 
 (defn- create-uuid []
   #?(:clj (.toString (java.util.UUID/randomUUID))

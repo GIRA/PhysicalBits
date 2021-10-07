@@ -7,7 +7,7 @@
             [middleware.device.protocol :as p]
             [middleware.utils.fs.common :as fs]
             [middleware.compiler.encoder :as en]
-            [middleware.compiler.emitter :as emit]
+            [middleware.program.emitter :as emit]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! go timeout]]))
 

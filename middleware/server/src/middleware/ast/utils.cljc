@@ -1,9 +1,9 @@
-(ns middleware.compiler.utils.ast
+(ns middleware.ast.utils
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj]
             [clojure.walk :as w]
             [middleware.utils.core :refer [seek]]
-            [middleware.compiler.primitives :as prims]))
+            [middleware.ast.primitives :as prims]))
 
 (defn node? [node]
   (and (map? node)
