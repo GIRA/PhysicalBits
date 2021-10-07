@@ -3,7 +3,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.test-utils :refer [test-name equivalent? setup-fixture without-internal-ids]]
-            [middleware.parser.parser :as pp]
+            [middleware.compilation.parser :as pp]
             [middleware.ast.nodes :as ast]))
 
 (use-fixtures :once setup-fixture)

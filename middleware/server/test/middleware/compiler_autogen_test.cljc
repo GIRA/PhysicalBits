@@ -2,8 +2,8 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]
+            [middleware.compilation.compiler :as cc]
+            [middleware.compilation.encoder :as en]
             [middleware.program.emitter :as emit]
             [middleware.test-utils :refer [setup-fixture]]))
 

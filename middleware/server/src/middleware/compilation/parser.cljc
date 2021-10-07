@@ -1,4 +1,4 @@
-(ns middleware.parser.parser
+(ns middleware.compilation.parser
   (:require [middleware.ast.nodes :as ast]
             [petitparser.core :as pp]))
 

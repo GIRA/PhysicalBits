@@ -1,4 +1,4 @@
-(ns middleware.compiler.encoder
+(ns middleware.compilation.encoder
   (:require [middleware.utils.conversions :refer [float->uint32 two's-complement]]
             [middleware.ast.primitives :as prims]
             [middleware.program.utils :as p]))

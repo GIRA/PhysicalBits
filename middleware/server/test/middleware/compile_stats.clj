@@ -6,9 +6,9 @@
             [clojure.java.io :as io]
             [clojure.core.async :as a :refer [go <!!]]
             [middleware.sound-notification :as sound]
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]
-            [middleware.code-generator.code-generator :as cg]
+            [middleware.compilation.compiler :as cc]
+            [middleware.compilation.encoder :as en]
+            [middleware.compilation.codegen :as cg]
             [middleware.program.utils :as p]
             [middleware.test-utils :refer [test-name init-dependencies]]))
 

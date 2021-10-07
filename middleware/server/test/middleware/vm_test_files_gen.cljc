@@ -3,10 +3,10 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.test-utils :refer [test-name test-async setup-fixture]]
-            [middleware.compiler.compiler :as cc]
+            [middleware.compilation.compiler :as cc]
             [middleware.device.protocol :as p]
             [middleware.utils.fs.common :as fs]
-            [middleware.compiler.encoder :as en]
+            [middleware.compilation.encoder :as en]
             [middleware.program.emitter :as emit]
             [clojure.string :as str]
             [clojure.core.async :as a :refer [<! go timeout]]))

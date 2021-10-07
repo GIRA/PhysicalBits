@@ -3,8 +3,8 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.code-generator.code-generator :as cg]
-            [middleware.parser.parser :as pp]
+            [middleware.compilation.codegen :as cg]
+            [middleware.compilation.parser :as pp]
             [middleware.test-utils :refer [setup-fixture without-internal-ids]]))
 
 (use-fixtures :once setup-fixture)

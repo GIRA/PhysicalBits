@@ -1,7 +1,7 @@
-(ns middleware.compiler.linker
+(ns middleware.compilation.linker
   (:require [middleware.ast.utils :as ast-utils]
             [middleware.utils.fs.common :as fs]
-            [middleware.parser.parser :as parser]
+            [middleware.compilation.parser :as parser]
             [clojure.pprint :refer [pprint]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.

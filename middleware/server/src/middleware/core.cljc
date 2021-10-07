@@ -3,8 +3,8 @@
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.device.controller :as dc]
             [middleware.output.logger :as logger]
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]))
+            [middleware.compilation.compiler :as cc]
+            [middleware.compilation.encoder :as en]))
 
 ; TODO(Richo): Rename these maybe?
 (def ^:private program-atom (atom nil))

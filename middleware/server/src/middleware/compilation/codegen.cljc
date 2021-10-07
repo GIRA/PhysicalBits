@@ -1,4 +1,4 @@
-(ns middleware.code-generator.code-generator
+(ns middleware.compilation.codegen
   (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]
             [middleware.utils.core :as u]))

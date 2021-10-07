@@ -3,7 +3,7 @@
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.serial :as serial]
-            [middleware.compiler.compiler :as cc]
+            [middleware.compilation.compiler :as cc]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.node :as node]))
 

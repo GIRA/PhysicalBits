@@ -1,4 +1,4 @@
-(ns middleware.compiler.dead-code-remover
+(ns middleware.compilation.dead-code-remover
   (:require [middleware.utils.core :refer [seek]]
             [middleware.ast.utils :as ast-utils]))
 

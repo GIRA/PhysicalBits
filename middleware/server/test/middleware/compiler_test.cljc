@@ -8,7 +8,7 @@
             [clojure.walk :as w]
             [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
-            [middleware.compiler.compiler :as cc]
+            [middleware.compilation.compiler :as cc]
             [middleware.program.emitter :as emit]))
 
 (use-fixtures :once setup-fixture)
