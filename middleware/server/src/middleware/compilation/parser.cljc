@@ -27,21 +27,20 @@
 (defn- fix-precedence [nodes operators]
   (if (< (count nodes) 3)
     nodes
-    (let [result (atom [])
-          left (atom (first nodes))]
+    (let [result (volatile! [])
+          left (volatile! (first nodes))]
       (doseq [[op right] (partition-all 2 (drop 1 nodes))]
         (if (or (nil? operators)
                 (contains? operators op))
           (let [expr (build-binary-expression op @left right)]
-            ; TODO(Richo): Add token!
-            (reset! left expr))
+            ; TODO(Richo): Add tokens! Binary expressions still don't have their tokens!!
+            (vreset! left expr))
           (do
-            (swap! result conj @left op)
-            (reset! left right))))
-      (swap! result conj @left)
+            (vswap! result conj @left op)
+            (vreset! left right))))
+      (vswap! result conj @left)
       @result)))
 
-; TODO(Richo): Refactor this, maybe with a threaded macro or something...
 (defn- reduce-binary-expresions [left operations]
   (let [; First, flatten the token value so that instead of (1 ((+ 2) (+ 3)))
         ; we have (1 + 2 + 3)
