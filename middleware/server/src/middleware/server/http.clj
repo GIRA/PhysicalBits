@@ -15,7 +15,7 @@
             [manifold.deferred :as d]
             [middleware.core :as core]
             [middleware.utils.json :as json]
-            [middleware.config :as config])
+            [middleware.utils.config :as config])
   (:import [manifold.stream.core IEventSink]))
 
 (def server (atom nil))

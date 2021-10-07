@@ -9,7 +9,7 @@
             [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
             [middleware.output.logger :as logger]
-            #?(:clj [middleware.config :as config])
+            #?(:clj [middleware.utils.config :as config])
             [middleware.device.utils.ring-buffer :as rb]
             [middleware.utils.core :refer [millis clamp]]))
 

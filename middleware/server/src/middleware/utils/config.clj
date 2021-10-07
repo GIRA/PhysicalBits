@@ -1,4 +1,4 @@
-(ns middleware.config
+(ns middleware.utils.config
   (:refer-clojure :exclude [get get-in])
   (:require [clojure.core :as clj]
             [clojure.java.io :as io]
