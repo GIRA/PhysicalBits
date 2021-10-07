@@ -2,7 +2,8 @@
   (:require [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
             [middleware.utils.core :refer [parse-number parse-double]]
-            [petitparser.core :as pp]))
+            [petitparser.core :as pp]
+            [petitparser.token :as t]))
 
 (def precedence-table
   [#{"**"}
@@ -24,6 +25,15 @@
     "||" (ast/logical-or-node left right)
     (ast/binary-expression-node left selector right)))
 
+(defn- merge-tokens [& nodes]
+  (let [tokens (sort-by t/start (keep (comp :token meta) nodes))
+        source (-> tokens first t/source)
+        start (-> tokens first t/start)
+        count (- (apply max (map t/stop tokens))
+                 start)
+        value (vec nodes)]
+    (t/make-token source start count value)))
+
 (defn- fix-precedence [nodes operators]
   (if (< (count nodes) 3)
     nodes
@@ -32,9 +42,9 @@
       (doseq [[op right] (partition-all 2 (drop 1 nodes))]
         (if (or (nil? operators)
                 (contains? operators op))
-          (let [expr (build-binary-expression op @left right)]
-            ; TODO(Richo): Add tokens! Binary expressions still don't have their tokens!!
-            (vreset! left expr))
+          (let [expr (build-binary-expression op @left right)
+                token (merge-tokens @left op right)]
+            (vreset! left (vary-meta expr assoc :token token)))
           (do
             (vswap! result conj @left op)
             (vreset! left right))))
@@ -294,10 +304,10 @@
         grammar (update-keys grammar rules pp/token)
         transformations (update-keys transformations rules
                                      (fn [f]
-                                       (fn [{:keys [parsed-value] :as token}]
-                                         (let [result (f parsed-value)]
-                                           (if (map? result)
-                                             (with-meta result {:token token})
+                                       (fn [token]
+                                         (let [result (f (t/parsed-value token))]
+                                           (if (ast-utils/node? result)
+                                             (vary-meta result assoc :token token)
                                              result)))))]
     (pp/compose grammar transformations)))
 

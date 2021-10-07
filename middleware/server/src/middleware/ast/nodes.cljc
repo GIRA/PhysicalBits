@@ -103,9 +103,12 @@
 (defn arg-node
   ([value] (arg-node nil value))
   ([name value]
-   (node "Association"
-    :key       name
-    :value     value)))
+   (let [result (node "Association"
+                      :key       name
+                      :value     value)]
+     (if-let [token (-> value meta :token)]
+       (vary-meta result assoc :token token)
+       result))))
 
 (defn ticking-rate-node
   [times scale]
