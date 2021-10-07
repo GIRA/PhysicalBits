@@ -1,8 +1,8 @@
 (ns middleware.core
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [middleware.utils.async :as aa :refer [go-try <?]]
+            [middleware.utils.logger :as logger]
             [middleware.device.controller :as dc]
-            [middleware.output.logger :as logger]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
 

@@ -8,9 +8,9 @@
             [middleware.compilation.encoder :as en]
             [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
-            [middleware.output.logger :as logger]
-            #?(:clj [middleware.utils.config :as config])
             [middleware.device.utils.ring-buffer :as rb]
+            [middleware.utils.logger :as logger]
+            #?(:clj [middleware.utils.config :as config])            
             [middleware.utils.core :refer [millis clamp]]))
 
 (comment

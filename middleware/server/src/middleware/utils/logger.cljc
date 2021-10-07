@@ -1,4 +1,4 @@
-(ns middleware.output.logger
+(ns middleware.utils.logger
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.core.async :as a]
