@@ -1,11 +1,11 @@
 (ns middleware.compiler
   (:require [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.browser :as browser]
-            [middleware.parser.parser :as p]
-            [middleware.compiler.compiler :as c]
-            [middleware.compiler.encoder :as en]
-            [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.compiler.linker :as linker]))
+            [middleware.compilation.parser :as p]
+            [middleware.compilation.compiler :as c]
+            [middleware.compilation.encoder :as en]
+            [middleware.compilation.linker :as linker]
+            [middleware.ast.utils :as ast-utils]))
 
 (defn init []
   (fs/register-fs! #'browser/file)

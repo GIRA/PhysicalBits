@@ -3,7 +3,7 @@
             [clojure.tools.logging :as log]
             [middleware.utils.json :as json]
             [middleware.device.controller :as device]
-            [middleware.config :as config])
+            [middleware.utils.config :as config])
   (:import (java.net InetAddress DatagramPacket DatagramSocket)))
 
 (def server (atom nil))

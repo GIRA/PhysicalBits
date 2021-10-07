@@ -4,9 +4,9 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.walk :as w]
             [middleware.test-utils :refer [setup-fixture equivalent?]]
-            [middleware.compiler.utils.ast :as ast-utils]
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.emitter :as emit]))
+            [middleware.ast.utils :as ast-utils]
+            [middleware.compilation.compiler :as cc]
+            [middleware.program.emitter :as emit]))
 
 (use-fixtures :once setup-fixture)
 

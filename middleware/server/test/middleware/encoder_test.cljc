@@ -5,9 +5,9 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.string :as str]
             [middleware.test-utils :refer [setup-fixture]]
-            [middleware.compiler.compiler :as cc]
-            [middleware.compiler.encoder :as en]
-            [middleware.compiler.emitter :as emit]))
+            [middleware.compilation.compiler :as cc]
+            [middleware.compilation.encoder :as en]
+            [middleware.program.emitter :as emit]))
 
 ; NOTE(Richo): You'll notice that most of these tests are not really making any
 ; assertion. They are here for two reasons: (1) exercise the compiler and encoder

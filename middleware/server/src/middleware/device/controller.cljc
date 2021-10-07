@@ -5,12 +5,12 @@
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
-            [middleware.compiler.encoder :as en]
-            [middleware.compiler.utils.ast :as ast]
-            [middleware.compiler.utils.program :as program]
-            [middleware.output.logger :as logger]
-            #?(:clj [middleware.config :as config])
+            [middleware.compilation.encoder :as en]
+            [middleware.ast.utils :as ast]
+            [middleware.program.utils :as program]
             [middleware.device.utils.ring-buffer :as rb]
+            [middleware.utils.logger :as logger]
+            #?(:clj [middleware.utils.config :as config])            
             [middleware.utils.core :refer [millis clamp]]))
 
 (comment

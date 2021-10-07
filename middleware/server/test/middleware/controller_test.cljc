@@ -3,7 +3,7 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
             [middleware.test-utils :refer [test-async setup-fixture]]
-            [middleware.compiler.compiler :as cc]
+            [middleware.compilation.compiler :as cc]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
             [middleware.device.boards :refer [UNO]]

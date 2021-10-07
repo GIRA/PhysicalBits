@@ -1,6 +1,6 @@
-(ns middleware.compiler.utils.program
+(ns middleware.program.utils
   (:require [middleware.utils.core :refer [index-of]]
-            [middleware.compiler.emitter :as emit]))
+            [middleware.program.emitter :as emit]))
 
 (def default-globals
   "These values are *always* first in the global list, whether they

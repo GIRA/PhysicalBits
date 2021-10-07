@@ -1,4 +1,4 @@
-(ns middleware.compiler.primitives)
+(ns middleware.ast.primitives)
 
 ; TODO(Richo): This data should be written directly in the source code but the language
 ; doesn't allow a more useful syntax for defining primitives (yet).

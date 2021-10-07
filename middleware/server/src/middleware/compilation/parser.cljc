@@ -1,5 +1,5 @@
-(ns middleware.parser.parser
-  (:require [middleware.parser.ast-nodes :as ast]
+(ns middleware.compilation.parser
+  (:require [middleware.ast.nodes :as ast]
             [petitparser.core :as pp]))
 
 (defn- parse-int [str] #?(:clj (Integer/parseInt str)

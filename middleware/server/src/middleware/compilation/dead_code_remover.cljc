@@ -1,6 +1,6 @@
-(ns middleware.compiler.dead-code-remover
+(ns middleware.compilation.dead-code-remover
   (:require [middleware.utils.core :refer [seek]]
-            [middleware.compiler.utils.ast :as ast-utils]))
+            [middleware.ast.utils :as ast-utils]))
 
 (declare ^:private visit-node)
 
