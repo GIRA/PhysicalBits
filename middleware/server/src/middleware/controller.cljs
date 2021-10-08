@@ -1,40 +1,38 @@
 (ns middleware.controller
   (:require [clojure.core.async :as a :refer [go go-loop <! timeout]]
-            [middleware.device.controller :as dc]
+            [middleware.utils.async :refer [go-try <? chan->promise]]
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.serial :as serial]
-            [middleware.compilation.compiler :as cc]
             [middleware.utils.fs.common :as fs]
-            [middleware.utils.fs.node :as node]))
+            [middleware.utils.fs.node :as node]
+            [middleware.core :as core]))
 
 (defn init-dependencies []
   (fs/register-fs! #'node/file)
   (ports/register-constructors! #'serial/open-port))
 
-(defn chan->promise [ch]
-  (js/Promise. (fn [res] (a/take! ch res))))
+(defn on-update [update-fn]
+  (core/start-update-loop! (comp update-fn clj->js)))
 
 (defn connect! [port-name]
   (chan->promise
-   (go
-    (<! (dc/connect! port-name :reporting? false))
-    (some? (dc/connected?)))))
+   (go-try
+    (<? (core/connect! port-name :reporting? false))
+    (some? (core/connected?)))))
 
 (defn disconnect! []
-  (chan->promise (dc/disconnect!)))
+  (chan->promise
+   (go-try
+    (<? (core/disconnect!)))))
 
 (defn compile [src]
-  (js/Promise.resolve (clj->js (cc/compile-uzi-string src))))
+  (chan->promise
+   (go-try
+    (clj->js (<? (core/compile! src "uzi" true))))))
 
 (defn run [program]
-  (js/Promise.resolve (dc/run (js->clj program :keywordize-keys true))))
+  (chan->promise
+   (go-try
+    (<? (core/run! (js->clj program :keywordize-keys true))))))
 
 (init-dependencies)
-
-
-(comment
- (go (<! (dc/connect! "COM4"))
-     (println "CONNECTED?" (dc/connected?)))
-
-(some? (dc/connected?))
- ,,)
