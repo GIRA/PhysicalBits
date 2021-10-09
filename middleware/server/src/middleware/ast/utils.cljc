@@ -287,7 +287,7 @@
       (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
               (clj/filter variable-declaration?
-                          (take-while #(not (= % first))
+                          (take-while (complement (partial identical? first))
                                       (children second))))
             (partition 2 1 path))))
 
@@ -305,10 +305,10 @@
 (defn global?
   "Works for both variable and variable-declaration nodes."
   [node path]
-  (let [globals (-> path last :globals set)]
+  (let [globals (-> path last :globals)
+        global? #(seek (partial identical? %) globals)]
     (case (node-type node)
-      "UziVariableNode" (let [variable (variable-named (:name node) path)]
-                          (contains? globals variable))
-      "UziVariableDeclarationNode" (contains? globals node))))
+      "UziVariableNode" (global? (variable-named (:name node) path))
+      "UziVariableDeclarationNode" (global? node))))
 
 (def local? (complement global?))
