@@ -66,7 +66,6 @@ const fs = require('fs');
           */
           if (userInteraction) {
             let currentProgram = getBlocklyCode();
-            // TODO(Richo): This comparison is always true now because of the internal ids!!
             if (currentProgram !== lastProgram) {
               lastProgram = currentProgram;
 
