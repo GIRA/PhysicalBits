@@ -1,23 +1,7 @@
 (ns middleware.ast.nodes)
 
-; NOTE(Richo): All nodes are created with a random :internal-id. This is important
-; because it will guarantee that all nodes are different when compared with =.
-; Due to clojure's philosophy regarding values, identity, and equality I need to do
-; this to be able to distinguish two otherwise equal nodes.
-; This is particularly crucial when looking for the variables-in-scope because the
-; current implementation relies on = to know when to stop looking for variables.
-; An alternative could be to use identical? instead of = but I feel it would make
-; the code more fragile than simply adding this artificial :internal-id
-; TODO(Richo): This :internal-id nonsense sucks! I need to think of a better way
-; of handling this...
-
-(defn- create-uuid []
-  #?(:clj (.toString (java.util.UUID/randomUUID))
-     :cljs (str (random-uuid))))
-
 (defn- node [type & args]
-  (let [base {:__class__ type
-              :internal-id (create-uuid)}]
+  (let [base {:__class__ type}]
     (if args
       (apply assoc base args)
       base)))

@@ -1,19 +1,7 @@
 let BlocksToAST = (function () {
 
-/*
-; NOTE(Richo): All nodes are created with a random :internal-id. This is important
-; because it will guarantee that all nodes are different when compared with =.
-; Due to clojure's philosophy regarding values, identity, and equality I need to do
-; this to be able to distinguish two otherwise equal nodes.
-; This is particularly crucial when looking for the variables-in-scope because the
-; current implementation relies on = to know when to stop looking for variables.
-; An alternative could be to use identical? instead of = but I feel it would make
-; the code more fragile than simply adding this artificial :internal-id
-*/
-
 	function node(type, attrs) {
 		attrs["__class__"] = type;
-		attrs["internal-id"] = Math.floor(Math.random() * (2**64)); // TODO(Richo): Make a proper UUID!
 		return attrs;
 	}
 
