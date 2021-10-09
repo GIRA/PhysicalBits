@@ -128,7 +128,7 @@
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
   (if-let [imp (seek import? path)]
-    (if-let [{program :program} (meta imp)]
+    (if-let [program (-> imp meta :program)]
       (-> program :scripts)
       (throw (ex-info "Unresolved import" imp)))
     (-> path last :scripts)))
@@ -282,7 +282,7 @@
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
   (if-let [imp (seek import? path)]
-    (if-let [{program :program} (meta imp)]
+    (if-let [program (-> imp meta :program)]
       (-> program :globals)
       (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
