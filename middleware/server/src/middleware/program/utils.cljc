@@ -42,3 +42,13 @@
 
 (defn instructions [program]
   (mapcat :instructions (:scripts program)))
+
+(defn script-for-pc [{:keys [scripts]} pc]
+  (loop [[script & rest] scripts
+         start 0]
+    (when script
+      (let [stop (+ start (-> script :instructions count))]
+        (if (and (>= pc start)
+                 (< pc stop))
+          script
+          (recur rest stop))))))
