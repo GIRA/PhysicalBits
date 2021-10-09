@@ -210,7 +210,7 @@
   (reduce (fn [result key]
             (let [old (result key)
                   new (expr-fn old)]
-              (if (= old new)
+              (if (identical? old new)
                 result
                 (assoc result key new))))
           node
