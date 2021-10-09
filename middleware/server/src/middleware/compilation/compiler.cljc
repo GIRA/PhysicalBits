@@ -477,8 +477,7 @@
         temp-counter (volatile! 0)
         reset-counters! (fn []
                           (vreset! local-counter 0)
-                          (vreset! temp-counter 0))
-        globals (-> ast :globals set)]
+                          (vreset! temp-counter 0))]
     (ast-utils/transform
      ast
 
@@ -502,8 +501,8 @@
        (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
 
      "UziVariableDeclarationNode"
-     (fn [var _] ; TODO(Richo): Avoid renaming a variable if its name is already unique
-       (if (contains? globals var)
+     (fn [var path] ; TODO(Richo): Avoid renaming a variable if its name is already unique
+       (if (ast-utils/global? var path)
          var
          (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
 
