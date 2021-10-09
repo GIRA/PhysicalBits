@@ -201,11 +201,10 @@
 
 (defmethod check-node "UziVariableDeclarationNode" [node errors path]
   (when-let [script (seek ast-utils/script? path)]
-    (when (not (some #(= % node) (:arguments script)))
-      (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
-        (assert (not (contains? local-names (:name node)))
+    (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
+      (assert (not (contains? local-names (:name node)))
               "Variable already declared"
-              node errors))))
+              node errors)))
   (when-let [value (:value node)]
     (assert-expression value errors)))
 
