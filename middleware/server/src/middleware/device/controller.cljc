@@ -10,7 +10,7 @@
             [middleware.program.utils :as program]
             [middleware.device.utils.ring-buffer :as rb]
             [middleware.utils.logger :as logger]
-            #?(:clj [middleware.utils.config :as config])            
+            #?(:clj [middleware.utils.config :as config])
             [middleware.utils.core :refer [millis clamp]]))
 
 (comment
@@ -181,10 +181,50 @@
   (swap! state assoc :debugger nil)
   (send! (p/continue)))
 
-(comment
+"readFrom: program stack: stack pc: pc fp: fp
+	""Recursively interprets the stack and returns an array of stack frames, ordered
+	from top to bottom""
+	| frame rest script val |
+	stack ifNil: [^ #()].
+	stack ifEmpty: [^ #()].
+	(script := program scriptForPC: pc) ifNil: [^ #()].
 
- (connect! "COM4")
+	^ Array streamContents: [:stream |
+		frame := UziStackFrame
+			program: program
+			script: script
+			pc: pc
+			fp: fp
+			stack: stack.
+		stream nextPut: frame.
+		val := stack basicAt: 2 + fp + script variables size.
+		rest := (self
+			readFrom: program
+			stack: (stack copyFrom: 1 to: fp)
+			pc: (val bitAnd: 16rFFFF)
+			fp: ((val >> 16) bitAnd: 16rFFFF)).
+		stream nextPutAll: rest]"
+
+
+(defn stack-frames [{:keys [stack pc fp]}]
+  (when-not (empty? stack)
+    (let [program (-> @state :program :running)]
+      (when-let [script (program/script-for-pc program pc)]
+        (let [frame {:program program ; Do we need the program? Seems redundant...
+                     :script script
+                     :pc pc
+                     :fp fp
+                     :stack stack}]
+          )))))
+
+(comment
+  (:name (program/script-for-pc program 18))
+  (def program (-> @state :program :running))
+ (empty? nil)
+
+ (connect! "tty.usbmodem14101")
  (connected?)
+ (disconnect!)
 
  (-> @state :globals)
  (send-continue)
