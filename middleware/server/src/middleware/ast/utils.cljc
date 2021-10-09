@@ -235,10 +235,10 @@
     ; Here we take care of keeping track of the path so that we can pass
     ; it as argument for both the predicates and the transforming functions.
     (node? ast)
-    (let [new-path (conj path ast)
-          node (evaluate-pred-clauses ast
-                                      new-path
-                                      clauses)]
+    (let [node (evaluate-pred-clauses ast
+                                      path
+                                      clauses)
+          new-path (conj path node)]
       (replace-children node
                         (valid-keys node)
                         (fn [child]
