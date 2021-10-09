@@ -286,7 +286,7 @@
       (-> program :globals)
       (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
-              (clj/filter #(= "UziVariableDeclarationNode" (node-type %))
+              (clj/filter variable-declaration?
                           (take-while #(not (= % first))
                                       (children second))))
             (partition 2 1 path))))
