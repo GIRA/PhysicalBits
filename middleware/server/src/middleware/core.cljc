@@ -1,4 +1,5 @@
 (ns middleware.core
+  (:refer-clojure :exclude [run!])
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
@@ -10,15 +11,17 @@
 (def ^:private program-atom (atom nil))
 (def ^:private program-chan (a/chan (a/sliding-buffer 1)))
 
-(defn connect! [port]
+(defn connect! [port & args]
   (go-try
-   (<? (dc/connect! port))
+   (<? (apply dc/connect! port args))
    (-> @dc/state :connection :port-name)))
 
 (defn disconnect! []
   (go-try
    (<? (dc/disconnect!))
    (nil? (dc/connected?))))
+
+(def connected? dc/connected?)
 
 (defn compile! [src type silent? & args]
   (go-try
@@ -58,6 +61,9 @@
    (let [program (<? (apply compile! src type silent? args))]
      (dc/run program)
      program)))
+
+(defn run! [program]
+  (go-try (dc/run program)))
 
 (defn compile-and-install! [src type & args]
   (go-try

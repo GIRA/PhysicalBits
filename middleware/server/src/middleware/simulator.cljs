@@ -27,7 +27,6 @@
    (go-try
     (<? (core/connect! "simulator")))))
 
-
 (defn ^:export disconnect []
   (chan->promise
    (go-try

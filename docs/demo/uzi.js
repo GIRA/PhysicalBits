@@ -23,6 +23,11 @@ let Uzi = (function () {
         availablePorts: [],
       },
       output: [],
+      tasks: [],
+      memory: {
+        arduino: null,
+        uzi: null,
+      },
       pins: {
         available: [
           {name: "D2", reporting: false},
@@ -230,7 +235,7 @@ let Uzi = (function () {
       try {
         fn(Uzi.state, previousState);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     });
   }
@@ -239,23 +244,19 @@ let Uzi = (function () {
     return new Promise((resolve, reject) => {
       try {
         let socket = new WebSocket(wsURL + "/uzi");
-        let msgReceived = false;
         socket.onerror = function (err) {
           reject(err);
         };
         socket.onopen = function () {
           Uzi.serverAvailable = true;
+          resolve();
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
               let data = JSONX.parse(msg);
               update(data);
-              if (!msgReceived) {
-                msgReceived = true;
-                resolve();
-              }
             } catch (e) {
-              console.log(e);
+              console.error(e);
             }
           };
           socket.onclose = function(evt) {

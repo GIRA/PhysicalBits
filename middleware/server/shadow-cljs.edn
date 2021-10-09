@@ -24,7 +24,8 @@
                       :modules {:main {:init-fn middleware.simulator/init}}}
 
           :controller {:target :node-library
-                       :exports {:connect middleware.controller/connect!
+                       :exports {:on-update middleware.controller/on-update
+                                 :connect middleware.controller/connect!
                                  :disconnect middleware.controller/disconnect!
                                  :compile middleware.controller/compile
                                  :run middleware.controller/run}

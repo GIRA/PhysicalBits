@@ -128,7 +128,7 @@
   ; been resolved, and fail if it wasn't. The only scripts we can access are
   ; the imported program scripts.
   (if-let [imp (seek import? path)]
-    (if-let [{program :program} (meta imp)]
+    (if-let [program (-> imp meta :program)]
       (-> program :scripts)
       (throw (ex-info "Unresolved import" imp)))
     (-> path last :scripts)))
@@ -210,7 +210,7 @@
   (reduce (fn [result key]
             (let [old (result key)
                   new (expr-fn old)]
-              (if (= old new)
+              (if (identical? old new)
                 result
                 (assoc result key new))))
           node
@@ -235,10 +235,10 @@
     ; Here we take care of keeping track of the path so that we can pass
     ; it as argument for both the predicates and the transforming functions.
     (node? ast)
-    (let [new-path (conj path ast)
-          node (evaluate-pred-clauses ast
-                                      new-path
-                                      clauses)]
+    (let [node (evaluate-pred-clauses ast
+                                      path
+                                      clauses)
+          new-path (conj path node)]
       (replace-children node
                         (valid-keys node)
                         (fn [child]
@@ -282,12 +282,12 @@
   ; been resolved, and fail if it wasn't. The only variables we can access are
   ; the imported program globals.
   (if-let [imp (seek import? path)]
-    (if-let [{program :program} (meta imp)]
+    (if-let [program (-> imp meta :program)]
       (-> program :globals)
       (throw (ex-info "Unresolved import" imp)))
     (mapcat (fn [[first second]]
-              (clj/filter #(= "UziVariableDeclarationNode" (node-type %))
-                          (take-while #(not (= % first))
+              (clj/filter variable-declaration?
+                          (take-while (complement (partial identical? first))
                                       (children second))))
             (partition 2 1 path))))
 
@@ -305,10 +305,10 @@
 (defn global?
   "Works for both variable and variable-declaration nodes."
   [node path]
-  (let [globals (-> path last :globals set)]
+  (let [globals (-> path last :globals)
+        global? #(seek (partial identical? %) globals)]
     (case (node-type node)
-      "UziVariableNode" (let [variable (variable-named (:name node) path)]
-                          (contains? globals variable))
-      "UziVariableDeclarationNode" (contains? globals node))))
+      "UziVariableNode" (global? (variable-named (:name node) path))
+      "UziVariableDeclarationNode" (global? node))))
 
 (def local? (complement global?))
