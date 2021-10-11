@@ -274,7 +274,10 @@
         :data {:index index
                :pc pc
                :fp fp
-               :stack stack}}))))
+               ; NOTE(Richo): We partition by 4 because each stack item is a
+               ; single-precision float and then we reverse it so that the
+               ; bottom of the stack comes first.
+               :stack (reverse (partition-all 4 stack))}}))))
 
 (defn process-error [in]
   (go

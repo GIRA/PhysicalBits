@@ -288,7 +288,7 @@
                                      "stack"        0 1 2 3
                                      4 5 6 7]))))
            {:tag :coroutine-state
-            :data {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4}}))
+            :data {:index 1, :pc 515, :stack [[4 5 6 7][0 1 2 3]], :fp 4}}))
     (is (nil? (<! (p/process-next-message
                    (a/to-chan! (remove string?
                                        [p/MSG_IN_COROUTINE_STATE
