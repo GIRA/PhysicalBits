@@ -11,7 +11,8 @@
             [middleware.device.utils.ring-buffer :as rb]
             [middleware.utils.logger :as logger]
             #?(:clj [middleware.utils.config :as config])
-            [middleware.utils.core :refer [millis clamp]]))
+            [middleware.utils.core :refer [millis clamp]]
+            [middleware.utils.conversions :as conversions]))
 
 (comment
 
@@ -206,23 +207,54 @@
 		stream nextPutAll: rest]"
 
 
-(defn stack-frames [{:keys [stack pc fp]}]
+(defn stack-frames [program {:keys [stack pc fp]}]
   (when-not (empty? stack)
-    (let [program (-> @state :program :running)]
-      (when-let [script (program/script-for-pc program pc)]
-        (let [frame {:program program ; Do we need the program? Seems redundant...
-                     :script script
-                     :pc pc
-                     :fp fp
-                     :stack stack}]
-          )))))
+    (when-let [script (program/script-for-pc program pc)]
+      (let [variables (concat (-> script :arguments)
+                              (-> script :locals))
+            frame {;:program program ; Do we need the program? Seems redundant...
+                   :script script
+                   :pc pc
+                   :fp fp
+                   :stack stack
+                   :locals (into {}
+                                 (map-indexed (fn [index {var-name :name}]
+                                                [var-name
+                                                 (conversions/bytes->float
+                                                  (nth stack (+ index fp)))])
+                                              variables))}
+            val (conversions/bytes->uint32
+                 (nth stack (+ fp (count variables))))]
+        (lazy-seq
+         (cons frame
+               (stack-frames program
+                             {:stack (take fp stack)
+                              :pc (bit-and 0xFFFF val)
+                              :fp (bit-and 0xFFFF (bit-shift-right val 16))})))))))
 
 (comment
-  (:name (program/script-for-pc program 18))
-  (def program (-> @state :program :running))
- (empty? nil)
 
- (connect! "tty.usbmodem14101")
+ (:name (program/script-for-pc program 5))
+
+ (stack-frames (-> @state :program :running)
+               (-> @state :debugger))
+
+ (do
+   (def program (-> @state :program :running))
+   (def stack (-> @state :debugger :stack))
+   (def pc (-> @state :debugger :pc))
+   (def fp (-> @state :debugger :fp))
+   (def script (program/script-for-pc program pc))
+   (def val (->> stack
+                 (drop (* 4 (+ fp
+                               (-> script :arguments count)
+                               (-> script :locals count))))
+                 (take 4)
+                 conversions/bytes->uint32)))
+
+
+ (connect! "COM4")
+ (connect! "127.0.0.1:4242")
  (connected?)
  (disconnect!)
 
