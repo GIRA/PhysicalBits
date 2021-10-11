@@ -10,12 +10,6 @@
             #?(:cljs [middleware.utils.fs.browser :as browser])
             #?(:cljs [middleware.utils.fs.node :as node])))
 
-(defn without-internal-ids [f]
-  (w/postwalk #(if (map? %)
-                 (dissoc % :internal-id)
-                 %)
-              f))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (declare equivalent?)
 

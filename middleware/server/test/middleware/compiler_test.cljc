@@ -3,7 +3,7 @@
   #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.test-utils :refer [equivalent? setup-fixture without-internal-ids]]
+            [middleware.test-utils :refer [equivalent? setup-fixture]]
             [clojure.string :as str]
             [clojure.walk :as w]
             [middleware.ast.nodes :as ast]
@@ -138,21 +138,20 @@
 
 (deftest
   ast-transform-test
-  (let [original (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "empty"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "toggle"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])
-                                       (ast/call-node
-                                        "turnOn"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 12))])]))]))
+  (let [original (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "empty"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])
+                                     (ast/call-node
+                                      "turnOn"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 12))])]))])
         expected (w/prewalk
                   (fn [node] (if (and (map? node)
                                       (not (ast-utils/task? node))
@@ -160,21 +159,20 @@
                                       (not (ast-utils/number-literal? node)))
                                (assoc node :__foo__ 5)
                                node))
-                  (without-internal-ids
-                    (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "EMPTY"
-                                :tick-rate (ast/ticking-rate-node 1 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "TOGGLE"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 14))])
-                                        (ast/call-node
-                                         "TURNON"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 13))])]))])))
+                  (ast/program-node
+                   :scripts [(ast/task-node
+                              :name "EMPTY"
+                              :tick-rate (ast/ticking-rate-node 1 "s")
+                              :state "running"
+                              :body (ast/block-node
+                                     [(ast/call-node
+                                       "TOGGLE"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 14))])
+                                      (ast/call-node
+                                       "TURNON"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 13))])]))]))
         actual (ast-utils/transform
                  original
                  "UziTaskNode"
@@ -189,36 +187,34 @@
 
 (deftest
   ast-transform-without-default-clause
-  (let [original (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "empty"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "toggle"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])
-                                       (ast/call-node
-                                        "turnOn"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 12))])]))]))
-        expected (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "EMPTY"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "TOGGLE"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 14))])
-                                       (ast/call-node
-                                        "TURNON"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])]))]))
+  (let [original (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "empty"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])
+                                     (ast/call-node
+                                      "turnOn"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 12))])]))])
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "EMPTY"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "TOGGLE"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 14))])
+                                     (ast/call-node
+                                      "TURNON"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])]))])
         actual (ast-utils/transform
                  original
                  "UziTaskNode"
@@ -231,21 +227,20 @@
 
 (deftest
   ast-transform-pred-test
-  (let [original (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "empty"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "toggle"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])
-                                       (ast/call-node
-                                        "turnOn"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 12))])]))]))
+  (let [original (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "empty"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])
+                                     (ast/call-node
+                                      "turnOn"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 12))])]))])
         expected (w/prewalk
                   (fn [node] (if (and (map? node)
                                       (not (ast-utils/task? node))
@@ -253,21 +248,20 @@
                                       (not (ast-utils/number-literal? node)))
                                (assoc node :__foo__ 5)
                                node))
-                  (without-internal-ids
-                    (ast/program-node
-                     :scripts [(ast/task-node
-                                :name "EMPTY"
-                                :tick-rate (ast/ticking-rate-node 1 "s")
-                                :state "running"
-                                :body (ast/block-node
-                                       [(ast/call-node
-                                         "TOGGLE"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 14))])
-                                        (ast/call-node
-                                         "TURNON"
-                                         [(ast/arg-node
-                                           (ast/literal-number-node 13))])]))])))
+                  (ast/program-node
+                   :scripts [(ast/task-node
+                              :name "EMPTY"
+                              :tick-rate (ast/ticking-rate-node 1 "s")
+                              :state "running"
+                              :body (ast/block-node
+                                     [(ast/call-node
+                                       "TOGGLE"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 14))])
+                                      (ast/call-node
+                                       "TURNON"
+                                       [(ast/arg-node
+                                         (ast/literal-number-node 13))])]))]))
         actual (ast-utils/transformp
                  original
 
@@ -286,36 +280,34 @@
 
 (deftest
   ast-transform-pred-without-default-clause
-  (let [original (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "empty"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "toggle"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])
-                                       (ast/call-node
-                                        "turnOn"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 12))])]))]))
-        expected (without-internal-ids
-                   (ast/program-node
-                    :scripts [(ast/task-node
-                               :name "EMPTY"
-                               :tick-rate (ast/ticking-rate-node 1 "s")
-                               :state "running"
-                               :body (ast/block-node
-                                      [(ast/call-node
-                                        "TOGGLE"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 14))])
-                                       (ast/call-node
-                                        "TURNON"
-                                        [(ast/arg-node
-                                          (ast/literal-number-node 13))])]))]))
+  (let [original (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "empty"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "toggle"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])
+                                     (ast/call-node
+                                      "turnOn"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 12))])]))])
+        expected (ast/program-node
+                  :scripts [(ast/task-node
+                             :name "EMPTY"
+                             :tick-rate (ast/ticking-rate-node 1 "s")
+                             :state "running"
+                             :body (ast/block-node
+                                    [(ast/call-node
+                                      "TOGGLE"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 14))])
+                                     (ast/call-node
+                                      "TURNON"
+                                      [(ast/arg-node
+                                        (ast/literal-number-node 13))])]))])
         actual (ast-utils/transformp
                  original
 
