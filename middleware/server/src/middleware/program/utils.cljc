@@ -43,6 +43,10 @@
 (defn instructions [program]
   (mapcat :instructions (:scripts program)))
 
+(defn pcs [program]
+  (range (reduce + 0 (map (comp count :instructions)
+                          (:scripts program)))))
+
 (defn script-for-pc [{:keys [scripts]} pc]
   (loop [[script & rest] scripts
          start 0]
