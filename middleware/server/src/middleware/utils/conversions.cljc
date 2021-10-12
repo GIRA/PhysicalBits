@@ -38,6 +38,10 @@
   (bit-or (bit-shift-left msb 8)
           lsb))
 
+(defn uint16->bytes [n]
+  [(bit-shift-right (bit-and n 16rFF00) 8)
+   (bit-and n 16rFF)])
+
 (defn two's-complement [^long byte]
   (if (>= byte 0)
     byte

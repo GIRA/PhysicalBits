@@ -99,19 +99,11 @@
    (if report? 1 0)])
 
 (defn run [bytecodes]
-  (let [msb (bit-shift-right (bit-and (count bytecodes)
-                                      16rFF00)
-                             8)
-        lsb (bit-and (count bytecodes)
-                     16rFF)]
+  (let [[msb lsb] (c/uint16->bytes (count bytecodes))]
     (concat [MSG_OUT_SET_PROGRAM msb lsb] bytecodes)))
 
 (defn install [bytecodes]
-  (let [msb (bit-shift-right (bit-and (count bytecodes)
-                                      16rFF00)
-                             8)
-        lsb (bit-and (count bytecodes)
-                     16rFF)]
+  (let [[msb lsb] (c/uint16->bytes (count bytecodes))]
     (concat [MSG_OUT_SAVE_PROGRAM msb lsb] bytecodes)))
 
 (defn start-reporting [] [MSG_OUT_START_REPORTING])
