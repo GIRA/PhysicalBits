@@ -326,6 +326,62 @@ const fs = require('fs');
       }
     });
 
+
+  	let breakpoints = [];
+  	let markers = [];
+  	function getValidLineForBreakpoint(line) {
+      return line;
+      // TODO(Richo)
+  		let valid = Uzi.program.validBreakpoints;
+  		for (let i = line; i < valid.length; i++) {
+  			if (valid[i] != null) return i;
+  		}
+  		return null;
+  	}
+
+  	function sendBreakpoints() {
+      console.log("SEND BREAKPOINTS!");
+      return;
+
+      // TODO(Richo)
+  		let actualBreakpoints = breakpoints.map(function (line) {
+  			return Uzi.program.validBreakpoints[line];
+  		}).filter(function (bp) { return bp != null; });
+  		UziDebugger.setBreakpoints(actualBreakpoints);
+  	}
+
+    function highlight(interval) {
+  		markers.forEach(function (each) { codeEditor.session.removeMarker(each); });
+  		if (interval == null) {
+  			markers = [];
+  		} else {
+  			let doc = codeEditor.session.getDocument();
+  			let start = doc.indexToPosition(interval[0] - 1);
+  			let end = doc.indexToPosition(interval[1]);
+  			let range = new ace.Range(start.row, start.column, end.row, end.column);
+  			markers = [];
+  			markers.push(codeEditor.session.addMarker(range, "debugger_ActiveLine", "line", true));
+  			markers.push(codeEditor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
+  		}
+    }
+
+    window.highlight = highlight;
+
+		$(".ace_gutter").on("click", function (e) {
+      var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+
+			if (breakpoints.includes(line)) {
+				var index = breakpoints.indexOf(line);
+				if (index > -1) { breakpoints.splice(index, 1); }
+				codeEditor.session.clearBreakpoint(line);
+			} else {
+				breakpoints.push(line);
+				codeEditor.session.setBreakpoint(line, "breakpoint");
+			}
+			codeEditor.gotoLine(line + 1);
+			sendBreakpoints();
+		});
+
     Uzi.on("update", function (state, previousState) {
       if (focus) return; // Don't change the code while the user is editing!
       if (state.program.type == "uzi") return; // Ignore textual programs
