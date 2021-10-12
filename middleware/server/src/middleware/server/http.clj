@@ -87,6 +87,24 @@
 (defn profile-handler [{:strs [enabled]}]
   (json-response (<?? (core/set-profile! (= "true" enabled)))))
 
+(defn debugger-break-handler []
+  (json-response (<?? (core/debugger-break!))))
+
+(defn debugger-continue-handler []
+  (json-response (<?? (core/debugger-continue!))))
+
+(defn debugger-step-over-handler []
+  (json-response (<?? (core/debugger-step-over!))))
+
+(defn debugger-step-into-handler []
+  (json-response (<?? (core/debugger-step-into!))))
+
+(defn debugger-step-out-handler []
+  (json-response (<?? (core/debugger-step-out!))))
+
+(defn debugger-step-next-handler []
+  (json-response (<?? (core/debugger-step-next!))))
+
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
 
@@ -100,6 +118,12 @@
                         (POST "/uzi/pin-report" {params :params} (pin-report-handler params))
                         (POST "/uzi/global-report" {params :params} (global-report-handler params))
                         (POST "/uzi/profile" {params :params} (profile-handler params))
+                        (POST "/uzi/debugger/break" _ (debugger-break-handler))
+                        (POST "/uzi/debugger/continue" _ (debugger-continue-handler))
+                        (POST "/uzi/debugger/step-over" _ (debugger-step-over-handler))
+                        (POST "/uzi/debugger/step-into" _ (debugger-step-into-handler))
+                        (POST "/uzi/debugger/step-out" _ (debugger-step-out-handler))
+                        (POST "/uzi/debugger/step-next" _ (debugger-step-next-handler))
 
                         (route/not-found "No such page."))
 
