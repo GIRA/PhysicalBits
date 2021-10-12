@@ -195,6 +195,56 @@ let Uzi = (function () {
         enabled: enabled
       };
       return POST(url, data);
+    },
+
+    debugger: {
+      break: function () {
+        let url = apiURL + "/uzi/debugger/break";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      continue: function () {
+        let url = apiURL + "/uzi/debugger/continue";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepOver: function () {
+        let url = apiURL + "/uzi/debugger/step-over";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepInto: function () {
+        let url = apiURL + "/uzi/debugger/step-into";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepOut: function () {
+        let url = apiURL + "/uzi/debugger/step-out";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepNext: function () {
+        let url = apiURL + "/uzi/debugger/step-next";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      }
     }
   };
 
