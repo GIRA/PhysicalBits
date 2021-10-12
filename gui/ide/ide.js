@@ -32,6 +32,7 @@ const fs = require('fs');
         .then(initializeInspectorPanel)
         .then(initializeOutputPanel)
         .then(initializePlotterPanel)
+        .then(initializeDebuggerPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal);
@@ -356,6 +357,11 @@ const fs = require('fs');
   function initializePlotterPanel() {
     Plotter.init();
     Uzi.on("update", Plotter.update);
+  }
+
+  function initializeDebuggerPanel() {
+    Debugger.init();
+    Uzi.on("update", Debugger.update);
   }
 
   function initializeAutorun() {
