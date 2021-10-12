@@ -178,16 +178,6 @@
       (swap! state assoc-in [:reporting :interval] interval)
       (send! (p/set-report-interval interval)))))
 
-
-(defn set-user-breakpoints! [pcs]
-  (swap! state assoc-in [:debugger :breakpoints :user] (set pcs)))
-
-(defn set-system-breakpoints! [pcs]
-  (swap! state assoc-in [:debugger :breakpoints :system] (set pcs)))
-
-(defn clear-system-breakpoints! []
-  (swap! state assoc-in [:debugger :breakpoints :system] #{}))
-
 (defn send-breakpoints! []
   (let [bpts (apply set/union (-> @state :debugger :breakpoints vals))
         pcs (program/pcs (-> @state :program :running))]
@@ -198,22 +188,35 @@
         (send! (p/set-breakpoints bpts)))
       (do
         (send! (p/set-all-breakpoints))
-        (send! (p/clear-breakpoints (remove bpts pcs)))))))
+        (send! (p/clear-breakpoints (remove bpts pcs)))))
+    (a/put! update-chan :coroutine-state)))
+
+(defn set-user-breakpoints! [pcs]
+  (swap! state assoc-in [:debugger :breakpoints :user] (set pcs))
+  (send-breakpoints!))
+
+(defn set-system-breakpoints! [pcs]
+  (swap! state assoc-in [:debugger :breakpoints :system] (set pcs))
+  (send-breakpoints!))
+
+(defn clear-system-breakpoints! []
+  (swap! state assoc-in [:debugger :breakpoints :system] #{})
+  (send-breakpoints!))
 
 (defn reset-debugger! []
   (swap! state assoc :debugger (-> initial-state :debugger)))
 
+(defn break! []
+  (set-system-breakpoints! (program/pcs (-> @state :program :running))))
+
 (defn send-continue! []
-  (send! (p/continue)))
+  (swap! state assoc-in [:debugger :vm] nil)
+  (send! (p/continue))
+  (a/put! update-chan :coroutine-state))
 
 (defn continue! []
   (clear-system-breakpoints!)
-  (send-breakpoints!)
   (send-continue!))
-
-(defn break! []
-  (set-system-breakpoints! (program/pcs (-> @state :program :running)))
-  (send-breakpoints!))
 
 (defn step-next! []
   (break!)

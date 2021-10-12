@@ -87,6 +87,24 @@
      (dc/start-profiling)
      (dc/stop-profiling))))
 
+(defn debugger-break! []
+  (go-try (dc/break!)))
+
+(defn debugger-continue! []
+  (go-try (dc/continue!)))
+
+(defn debugger-step-over! []
+  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+
+(defn debugger-step-into! []
+  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+
+(defn debugger-step-out! []
+  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+
+(defn debugger-step-next! []
+  (go-try (dc/step-next!)))
+
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
                 :isConnected (when (and (not= :pending connection)
@@ -138,8 +156,7 @@
                    program (-> state :program :running)
                    stack-frames (dc/stack-frames program vm-state)]
                {:index index
-                :pc pc
-                :fp fp
+                :isHalted (some? pc)
                 :stackFrames (mapv (fn [{:keys [script pc fp locals]}]
                                       {:scriptName (:name script)
                                        :pc pc
