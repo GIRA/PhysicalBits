@@ -179,5 +179,5 @@
                                       :pc 515
                                       :stack [0 1 2 3 4 5 6 7]
                                       :fp 4}})
-  (is (= (-> @dc/state :debugger)
+  (is (= (-> @dc/state :debugger :vm)
          {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4})))

@@ -1,5 +1,6 @@
 (ns middleware.device.controller
   (:require #?(:clj [clojure.tools.logging :as log])
+            [clojure.set :as set]
             [middleware.device.ports.scanner :as port-scanner]
             [clojure.core.async :as a :refer [<! >! go go-loop timeout]]
             [middleware.device.ports.common :as ports]
@@ -42,7 +43,8 @@
                     :pseudo-vars {:timestamp nil, :data {}}
                     :scripts []
                     :profiler nil
-                    :debugger nil
+                    :debugger {:vm nil
+                               :breakpoints {:user #{}, :system #{}}}
                     :timing {:arduino nil, :middleware nil, :diffs nil}
                     :memory {:arduino nil, :uzi nil}
                     :program {:current nil, :running nil}})
@@ -176,35 +178,46 @@
       (swap! state assoc-in [:reporting :interval] interval)
       (send! (p/set-report-interval interval)))))
 
-(defn set-all-breakpoints [] (send! (p/set-all-breakpoints)))
-(defn clear-all-breakpoints [] (send! (p/clear-all-breakpoints)))
-(defn send-continue []
-  (swap! state assoc :debugger nil)
+
+(defn set-user-breakpoints! [pcs]
+  (swap! state assoc-in [:debugger :breakpoints :user] (set pcs)))
+
+(defn set-system-breakpoints! [pcs]
+  (swap! state assoc-in [:debugger :breakpoints :system] (set pcs)))
+
+(defn clear-system-breakpoints! []
+  (swap! state assoc-in [:debugger :breakpoints :system] #{}))
+
+(defn send-breakpoints! []
+  (let [bpts (apply set/union (-> @state :debugger :breakpoints vals))
+        pcs (program/pcs (-> @state :program :running))]
+    (if (< (count bpts)
+           (count pcs))
+      (do
+        (send! (p/clear-all-breakpoints))
+        (send! (p/set-breakpoints bpts)))
+      (do
+        (send! (p/set-all-breakpoints))
+        (send! (p/clear-breakpoints (remove bpts pcs)))))))
+
+(defn reset-debugger! []
+  (swap! state assoc :debugger (-> initial-state :debugger)))
+
+(defn send-continue! []
   (send! (p/continue)))
 
-"readFrom: program stack: stack pc: pc fp: fp
-	""Recursively interprets the stack and returns an array of stack frames, ordered
-	from top to bottom""
-	| frame rest script val |
-	stack ifNil: [^ #()].
-	stack ifEmpty: [^ #()].
-	(script := program scriptForPC: pc) ifNil: [^ #()].
+(defn continue! []
+  (clear-system-breakpoints!)
+  (send-breakpoints!)
+  (send-continue!))
 
-	^ Array streamContents: [:stream |
-		frame := UziStackFrame
-			program: program
-			script: script
-			pc: pc
-			fp: fp
-			stack: stack.
-		stream nextPut: frame.
-		val := stack basicAt: 2 + fp + script variables size.
-		rest := (self
-			readFrom: program
-			stack: (stack copyFrom: 1 to: fp)
-			pc: (val bitAnd: 16rFFFF)
-			fp: ((val >> 16) bitAnd: 16rFFFF)).
-		stream nextPutAll: rest]"
+(defn break! []
+  (set-system-breakpoints! (program/pcs (-> @state :program :running)))
+  (send-breakpoints!))
+
+(defn step-next! []
+  (break!)
+  (send-continue!))
 
 
 (defn stack-frames [program {:keys [stack pc fp]}]
@@ -234,46 +247,27 @@
 
 (comment
 
- (:name (program/script-for-pc program 5))
-
- (stack-frames (-> @state :program :running)
-               (-> @state :debugger))
-
- (do
-   (def program (-> @state :program :running))
-   (def stack (-> @state :debugger :stack))
-   (def pc (-> @state :debugger :pc))
-   (def fp (-> @state :debugger :fp))
-   (def script (program/script-for-pc program pc))
-   (def val (->> stack
-                 (drop (* 4 (+ fp
-                               (-> script :arguments count)
-                               (-> script :locals count))))
-                 (take 4)
-                 conversions/bytes->uint32)))
-
-
  (connect! "COM4")
  (connect! "127.0.0.1:4242")
  (connected?)
  (disconnect!)
 
+ (break!)
+ (step-next!)
+ (-> @state :debugger)
+ (stack-frames (-> @state :program :running)
+               (-> @state :debugger :vm))
+ (continue!)
+ (reset-debugger!)
+
+ (set-user-breakpoints! [9 12])
+ (send-breakpoints!)
  (-> @state :globals)
  (send-continue)
  (-> @state :debugger)
 
  (map-indexed (fn [v i] [v i])
               (program/instructions (-> @state :program :running)))
-
- (send-continue)
- (clear-all-breakpoints)
- (set-all-breakpoints)
- (go-loop [c 0]
-   (when (< c 100)
-     (send-continue)
-     (<! (timeout 100))
-     (recur (inc c))))
- (a/close! *1)
 
  ,,)
 
@@ -373,7 +367,7 @@
   (add-pseudo-var! "__vm-report-interval" (:report-interval data)))
 
 (defn process-coroutine-state [{:keys [data]}]
-  (swap! state assoc :debugger data))
+  (swap! state assoc-in [:debugger :vm] data))
 
 (defn process-error [{{:keys [code msg]} :error}]
   (go
