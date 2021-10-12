@@ -133,13 +133,31 @@
                                   (-> state :pseudo-vars :data))
                  :elements (-> state :pseudo-vars :data vals)}})
 
+(defn- get-debugger-data [state]
+  {:debugger (let [{:keys [index pc fp stack] :as vm-state} (-> state :debugger :vm)
+                   program (-> state :program :running)
+                   stack-frames (dc/stack-frames program vm-state)]
+               {:index index
+                :pc pc
+                :fp fp
+                :stackFrames (mapv (fn [{:keys [script pc fp locals]}]
+                                      {:scriptName (:name script)
+                                       :pc pc
+                                       :fp fp
+                                       :locals (mapv (fn [[key value]]
+                                                       {:name key
+                                                        :value value})
+                                                     locals)})
+                                    stack-frames)})})
+
 (def ^:private device-event-handlers
   {:connection #'get-connection-data
    :pin-value #'get-pins-data
    :global-value #'get-globals-data
    :running-scripts #'get-tasks-data
    :free-ram #'get-memory-data
-   :pseudo-vars #'get-pseudo-vars-data})
+   :pseudo-vars #'get-pseudo-vars-data
+   :coroutine-state #'get-debugger-data})
 
 (defn- get-device-state [state device-events]
   (reduce (fn [update type]
