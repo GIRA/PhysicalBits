@@ -117,6 +117,15 @@
 
 (defn set-all-breakpoints [] [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 1])
 (defn clear-all-breakpoints [] [MSG_OUT_DEBUG_SET_BREAKPOINTS_ALL 0])
+
+(defn set-breakpoints [breakpoints]
+  (concat [MSG_OUT_DEBUG_SET_BREAKPOINTS 1 (count breakpoints)]
+          (mapcat c/uint16->bytes breakpoints)))
+
+(defn clear-breakpoints [breakpoints]
+  (concat [MSG_OUT_DEBUG_SET_BREAKPOINTS 0 (count breakpoints)]
+          (mapcat c/uint16->bytes breakpoints)))
+
 (defn continue [] [MSG_OUT_DEBUG_CONTINUE])
 
 (defn keep-alive [] [MSG_OUT_KEEP_ALIVE])

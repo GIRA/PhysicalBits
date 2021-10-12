@@ -69,6 +69,14 @@
 (deftest clear-all-breakpoints
   (is (= [14 0] (p/clear-all-breakpoints))))
 
+(deftest set-breakpoints
+  (is (= [13 1 3 0 1 0 2 0 3]
+         (p/set-breakpoints [1 2 3]))))
+
+(deftest clear-breakpoints
+  (is (= [13 0 3 0 1 0 2 0 3]
+         (p/clear-breakpoints [1 2 3]))))
+
 (deftest send-continue
   (is (= [12] (p/continue))))
 
