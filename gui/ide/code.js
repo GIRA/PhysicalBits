@@ -10,13 +10,38 @@ let UziCode = (function () {
 
   function init() {
 
-		editor = ace.edit("code-editor");
-		editor.setTheme("ace/theme/ambiance");
-		editor.getSession().setMode("ace/mode/uzi");
+    editor = ace.edit("code-editor");
+    editor.setTheme("ace/theme/ambiance");
+    editor.getSession().setMode("ace/mode/uzi");
 
     editor.on("focus", function () { focus = true; });
     editor.on("blur", function () { focus = false; });
-    editor.on("change", function () { trigger("change", focus); });
+    editor.on("change", function (e) {
+      trigger("change", focus);
+
+      let start = e.start.row;
+      let delta = e.lines.length - 1;
+      if (e.action == "insert") {
+        delta *= 1;
+      } else if (e.action == "remove") {
+        delta *= -1;
+      } else {
+        debugger;
+      }
+
+      /*
+      TODO(Richo): Here we should update the validBreakpoints list to insert
+      null in every inserted line. Otherwise everything gets out of sync...
+      */
+
+      let bpts = breakpoints.filter(function (bp) { return bp > start; });
+      breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
+      bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
+      editor.session.clearBreakpoints();
+      breakpoints.forEach(function (line) {
+        editor.session.setBreakpoint(line, "breakpoint");
+      });
+    });
 
 		$(".ace_gutter").on("click", function (e) {
       var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
@@ -43,6 +68,11 @@ let UziCode = (function () {
       if (src == undefined) return;
       if (editor.getValue() !== src) {
         editor.setValue(src, 1);
+
+        // TODO(Richo): How do we preserve the breakpoints after a program update?
+        breakpoints = [];
+        editor.session.clearBreakpoints();
+        markers.forEach(function (each) { editor.session.removeMarker(each); });
       }
     });
   }
@@ -123,5 +153,7 @@ let UziCode = (function () {
     setProgram: setProgram,
     getProgram: getProgram,
     clearEditor: clearEditor,
+
+    getBreakpoints: () => breakpoints,
   }
 })();
