@@ -248,12 +248,42 @@
                               :pc (bit-and 0xFFFF val)
                               :fp (bit-and 0xFFFF (bit-shift-right val 16))})))))))
 
+(defn instruction-groups [program]
+  (let [groups (volatile! [])
+        current (volatile! [])]
+    (loop [pc 0
+           [script & rest] (:scripts program)]
+      (when script
+        (let [instructions (vec (:instructions script))]
+          (dotimes [i (count instructions)]
+                   (let [instr (nth instructions i)]
+                     (vswap! current conj [(+ pc i) instr])
+                     (when (program/statement? instr)
+                       (let [start (apply min (map first @current))
+                             instrs (map second @current)]
+                         (vswap! groups conj {:start start
+                                              :instructions instrs
+                                              :script script}))
+                       (vreset! current []))))
+          (recur
+            (+ pc (count instructions))
+            rest))))
+    @groups))
+
 (comment
 
  (connect! "COM4")
  (connect! "127.0.0.1:4242")
  (connected?)
  (disconnect!)
+
+ (-> program meta :source)
+ (def program (-> @state :program :running))
+ (def groups (instruction-groups program))
+
+ (map #(select-keys % [:start :instructions])
+      groups)
+(count groups)
 
  (break!)
  (step-next!)
@@ -270,7 +300,7 @@
  (-> @state :debugger)
 
  (map-indexed (fn [v i] [v i])
-              (program/instructions (-> @state :program :running)))
+              (program/instructions program))
 
  ,,)
 
