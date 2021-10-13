@@ -1,5 +1,6 @@
 (ns middleware.program.utils
   (:require [middleware.utils.core :refer [index-of]]
+            [middleware.ast.primitives :as prims]
             [middleware.program.emitter :as emit]))
 
 (def default-globals
@@ -56,3 +57,46 @@
                  (< pc stop))
           script
           (recur rest stop))))))
+
+(defn branch? [instr]
+  (contains? #{"UziJMPInstruction" "UziJZInstruction"
+               "UziJNZInstruction" "UziJLTEInstruction"}
+             (:__class__ instr)))
+
+(defn unconditional-branch? [instr]
+  (= "UziJMPInstruction" (:__class__ instr)))
+
+(defn return? [instr]
+  (and (= "UziPrimitiveCallInstruction" (:__class__ instr))
+       (contains? #{"ret" "retv"} (-> instr :argument :name))))
+
+(defn script-call? [instr]
+  (= "UziScriptCallInstruction" (:__class__ instr)))
+
+(defn statement? [instr]
+  (case (:__class__ instr)
+    ; Expressions (leave a value in the stack)
+    "UziPushInstruction" false
+    "UziReadLocalInstruction" false
+    "UziScriptCallInstruction" false
+    "UziReadInstruction" false
+
+    ; Statements (don't leave a value on the stack)
+    "UziJMPInstruction" true
+    "UziJZInstruction" true
+    "UziJNZInstruction" true
+    "UziJLTEInstruction" true
+    "UziPopInstruction" true
+    "UziStartScriptInstruction" true
+    "UziStopScriptInstruction" true
+    "UziPauseScriptInstruction" true
+    "UziResumeScriptInstruction" true
+    "UziWriteLocalInstruction" true
+    "UziWriteInstruction" true
+    "UziTurnOnInstruction" true
+    "UziTurnOffInstruction" true
+
+    ; Special case (depends on the primitive)
+    "UziPrimitiveCallInstruction"
+    (let [prim (prims/primitive (-> instr :argument :name))]
+      (not= 1 (:stack-transition prim)))))
