@@ -98,5 +98,6 @@
 
     ; Special case (depends on the primitive)
     "UziPrimitiveCallInstruction"
-    (let [prim (prims/primitive (-> instr :argument :name))]
-      (not= 1 (:stack-transition prim)))))
+    (let [prim (prims/primitive (-> instr :argument :name))
+          [_ after] (:stack-transition prim)]
+      (not= 1 after))))
