@@ -4,7 +4,6 @@ const fs = require('fs');
 
 ﻿let IDE = (function () {
 
-  let codeEditor;
   let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
@@ -308,90 +307,13 @@ const fs = require('fs');
   }
 
   function initializeCodePanel() {
-		codeEditor = ace.edit("code-editor");
-		codeEditor.setTheme("ace/theme/ambiance");
-		codeEditor.getSession().setMode("ace/mode/uzi");
-
-    let focus = false;
-    codeEditor.on("focus", function () { focus = true; });
-    codeEditor.on("blur", function () { focus = false; });
-    codeEditor.on("change", function () {
+    UziCode.init();
+    UziCode.on("change", function (focus) {
       saveToLocalStorage();
-
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
-
         scheduleAutorun(false, "CODE CHANGE!");
-      }
-    });
-
-
-  	let breakpoints = [];
-  	let markers = [];
-  	function getValidLineForBreakpoint(line) {
-      return line;
-      // TODO(Richo)
-  		let valid = Uzi.program.validBreakpoints;
-  		for (let i = line; i < valid.length; i++) {
-  			if (valid[i] != null) return i;
-  		}
-  		return null;
-  	}
-
-  	function sendBreakpoints() {
-      console.log("SEND BREAKPOINTS!");
-      return;
-
-      // TODO(Richo)
-  		let actualBreakpoints = breakpoints.map(function (line) {
-  			return Uzi.program.validBreakpoints[line];
-  		}).filter(function (bp) { return bp != null; });
-  		UziDebugger.setBreakpoints(actualBreakpoints);
-  	}
-
-    function highlight(interval) {
-  		markers.forEach(function (each) { codeEditor.session.removeMarker(each); });
-  		if (interval == null) {
-  			markers = [];
-  		} else {
-  			let doc = codeEditor.session.getDocument();
-  			let start = doc.indexToPosition(interval[0] - 1);
-  			let end = doc.indexToPosition(interval[1]);
-  			let range = new ace.Range(start.row, start.column, end.row, end.column);
-  			markers = [];
-  			markers.push(codeEditor.session.addMarker(range, "debugger_ActiveLine", "line", true));
-  			markers.push(codeEditor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
-  		}
-    }
-
-    window.highlight = highlight;
-
-		$(".ace_gutter").on("click", function (e) {
-      var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
-
-			if (breakpoints.includes(line)) {
-				var index = breakpoints.indexOf(line);
-				if (index > -1) { breakpoints.splice(index, 1); }
-				codeEditor.session.clearBreakpoint(line);
-			} else {
-				breakpoints.push(line);
-				codeEditor.session.setBreakpoint(line, "breakpoint");
-			}
-			codeEditor.gotoLine(line + 1);
-			sendBreakpoints();
-		});
-
-    Uzi.on("update", function (state, previousState) {
-      if (focus) return; // Don't change the code while the user is editing!
-      if (state.program.type == "uzi") return; // Ignore textual programs
-      if (codeEditor.getValue() !== "" &&
-          state.program.src == previousState.program.src) return;
-
-      let src = state.program.src;
-      if (src == undefined) return;
-      if (codeEditor.getValue() !== src) {
-        codeEditor.setValue(src, 1);
       }
     });
   }
@@ -522,11 +444,7 @@ const fs = require('fs');
 
   function resizePanels() {
     UziBlock.resizeWorkspace();
-
-    if (codeEditor) {
-      codeEditor.resize(true);
-    }
-
+    UziCode.resizeEditor();
     Plotter.resize();
   }
 
@@ -664,8 +582,7 @@ const fs = require('fs');
       }
 
       if (ui.code != undefined) {
-        codeEditor.setValue(ui.code);
-        dirtyCode = true;
+        dirtyCode = UziCode.setProgram(ui.code);
       }
 
       if (ui.ports != undefined) {
@@ -708,15 +625,14 @@ const fs = require('fs');
     }
 
     if (code != undefined) {
-      codeEditor.setValue(code);
-      dirtyCode = true;
+      dirtyCode = UziCode.setProgram(code);
     }
 
     if (!dirtyBlocks) {
       UziBlock.getWorkspace().clear();
     }
     if (!dirtyCode) {
-      codeEditor.setValue("");
+      UziCode.clearEditor();
     }
   }
 
@@ -738,7 +654,7 @@ const fs = require('fs');
       } catch (err) {
         errorHandler(err);
     		UziBlock.getWorkspace().clear();
-        codeEditor.setValue("");
+        UziCode.clearEditor();
         $("#file-name").text("");
         scheduleAutorun(true, "OPEN PROJECT!");
       }
@@ -1042,7 +958,7 @@ const fs = require('fs');
 
   function getTextualCode() {
     try {
-      return codeEditor.getValue();
+      return UziCode.getProgram();
     } catch (err) {
       console.log(err);
       return "";
