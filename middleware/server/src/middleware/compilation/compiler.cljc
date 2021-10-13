@@ -46,12 +46,18 @@
 
 (defmulti compile-node :__class__)
 
+(defn ^:private with-node [result node]
+  "Updates result's metadata with the node (if not present already)"
+  (vary-meta result update :node #(or % node)))
+
 (defn ^:private compile [node ctx]
-  (let [result (compile-node node (update-in ctx [:path] conj node))]
+  (let [result (compile-node node (update ctx :path conj node))]
     (when (and (sequential? result)
                (not (vector? result)))
       (throw (ex-info "Sequential and not vector!" {:node node :result result})))
-    result))
+    (if-not (sequential? result)
+      (with-node result node)
+      (mapv #(with-node % node) result))))
 
 (defn ^:private rate->delay [{:keys [^double value scale] :as node}]
   (if-not node
