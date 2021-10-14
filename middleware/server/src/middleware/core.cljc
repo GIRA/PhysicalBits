@@ -1,6 +1,7 @@
 (ns middleware.core
   (:refer-clojure :exclude [run!])
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
+            [clojure.string :as str]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
             [middleware.device.controller :as dc]
@@ -162,8 +163,9 @@
                                        :pc pc
                                        :fp fp
                                        :interval (dc/interval-at-pc program pc)
-                                       :locals (mapv (fn [[key value]]
-                                                       {:name key
+                                       :locals (mapv (fn [{:keys [name value]}]
+                                                       ; TODO(Richo): Check variable collision
+                                                       {:name (first (str/split name #"#"))
                                                         :value value})
                                                      locals)})
                                     stack-frames)})})

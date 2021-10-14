@@ -233,12 +233,11 @@
                    :pc pc
                    :fp fp
                    :stack stack
-                   :locals (into {}
-                                 (map-indexed (fn [index {var-name :name}]
-                                                [var-name
-                                                 (conversions/bytes->float
-                                                  (nth stack (+ index fp)))])
-                                              variables))}
+                   :locals (vec (map-indexed (fn [index {var-name :name}]
+                                               {:name var-name
+                                                :value (conversions/bytes->float
+                                                        (nth stack (+ index fp)))})
+                                             variables))}
             val (conversions/bytes->uint32
                  (nth stack (+ fp (count variables))))]
         (lazy-seq
@@ -305,8 +304,13 @@
  (break!)
  (step-next!)
  (-> @state :debugger)
- (stack-frames (-> @state :program :running)
-               (-> @state :debugger :vm))
+ (def sf (stack-frames (-> @state :program :running)
+                       (-> @state :debugger :vm)))
+
+ (-> sf first :locals)
+sf
+
+(sort ["b#1" "a#2"])
  (continue!)
  (reset-debugger!)
 
