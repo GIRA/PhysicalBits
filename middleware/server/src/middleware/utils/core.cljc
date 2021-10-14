@@ -2,8 +2,12 @@
   (:refer-clojure :exclude [format])
   (:require [clojure.string :as str]))
 
-(defn seek [pred coll]
-  (reduce #(when (pred %2) (reduced %2)) nil coll))
+(defn seek
+  ([pred coll]
+   (reduce #(when (pred %2) (reduced %2)) nil coll))
+  ([pred coll default-value]
+   (or (reduce #(when (pred %2) (reduced %2)) nil coll)
+       default-value)))
 
 (defn index-of ^long [^java.util.List v e]
   "Returns -1 if not found"
