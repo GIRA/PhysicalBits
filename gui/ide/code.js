@@ -59,22 +59,39 @@ let UziCode = (function () {
 		});
 
     Uzi.on("update", function (state, previousState) {
-      if (focus) return; // Don't change the code while the user is editing!
-      if (state.program.type == "uzi") return; // Ignore textual programs
-      if (editor.getValue() !== "" &&
-          state.program.src == previousState.program.src) return;
-
-      let src = state.program.src;
-      if (src == undefined) return;
-      if (editor.getValue() !== src) {
-        editor.setValue(src, 1);
-
-        // TODO(Richo): How do we preserve the breakpoints after a program update?
-        breakpoints = [];
-        editor.session.clearBreakpoints();
-        markers.forEach(function (each) { editor.session.removeMarker(each); });
-      }
+      handleDebuggerUpdate(state);
+      handleProgramUpdate(state, previousState);
     });
+  }
+
+  function handleProgramUpdate(state, previousState) {
+    if (focus) return; // Don't change the code while the user is editing!
+    if (state.program.type == "uzi") return; // Ignore textual programs
+    if (editor.getValue() !== "" &&
+        state.program.src == previousState.program.src) return;
+
+    let src = state.program.src;
+    if (src == undefined) return;
+    if (editor.getValue() !== src) {
+      editor.setValue(src, 1);
+
+      // TODO(Richo): How do we preserve the breakpoints after a program update?
+      breakpoints = [];
+      editor.session.clearBreakpoints();
+      markers.forEach(function (each) { editor.session.removeMarker(each); });
+    }
+  }
+
+  function handleDebuggerUpdate(state) {
+    try {
+      let interval = null;
+      if (state.debugger.stackFrames.length > 0) {
+        interval = state.debugger.stackFrames[0].interval;
+      }
+      highlight(interval);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
 	function getValidLineForBreakpoint(line) {
@@ -104,7 +121,7 @@ let UziCode = (function () {
 			markers = [];
 		} else {
 			let doc = editor.session.getDocument();
-			let start = doc.indexToPosition(interval[0] - 1);
+			let start = doc.indexToPosition(interval[0]);
 			let end = doc.indexToPosition(interval[1]);
 			let range = new ace.Range(start.row, start.column, end.row, end.column);
 			markers = [];
