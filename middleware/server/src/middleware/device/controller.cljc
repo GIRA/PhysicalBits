@@ -270,6 +270,15 @@
             rest))))
     @groups))
 
+(defn interval-at-pc [program pc]
+  ; TODO(Richo): Calculate the interval for the entire instruction group?
+  (when-let [token (-> (program/instruction-at-pc program pc)
+                       meta :node
+                       meta :token)]
+    [(:start token)
+     (+ (:start token)
+        (:count token))]))
+
 (comment
 
  (connect! "COM4")
@@ -277,13 +286,21 @@
  (connected?)
  (disconnect!)
 
- (-> program meta :source)
+ (spit "source.uzi" (-> program meta :source))
  (def program (-> @state :program :running))
  (def groups (instruction-groups program))
 
  (map #(select-keys % [:start :instructions])
       groups)
 (count groups)
+
+  (require '[petitparser.token :as t])
+ (let [token (-> (program/instruction-at-pc program 5)
+                 meta
+                 :node
+                 meta
+                 :token
+                 t/input-value)])
 
  (break!)
  (step-next!)
