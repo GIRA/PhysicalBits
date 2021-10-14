@@ -161,6 +161,7 @@
                                       {:scriptName (:name script)
                                        :pc pc
                                        :fp fp
+                                       :interval (dc/interval-at-pc program pc)
                                        :locals (mapv (fn [[key value]]
                                                        {:name key
                                                         :value value})
