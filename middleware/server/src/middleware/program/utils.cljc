@@ -1,5 +1,7 @@
 (ns middleware.program.utils
-  (:require [middleware.utils.core :refer [index-of]]
+  (:require [clojure.string :as str]
+            [petitparser.token :as t]
+            [middleware.utils.core :refer [seek index-of]]
             [middleware.ast.primitives :as prims]
             [middleware.program.emitter :as emit]))
 
@@ -60,6 +62,33 @@
 
 (defn instruction-at-pc [program pc]
   (nth (instructions program) pc))
+
+(defn loc->pc [program]
+  "Returns an map from each line of code to its first available pc."
+  (when-let [source (-> program meta :source)]
+    (let [tokens (map-indexed (fn [index instr]
+                                [index (-> instr meta :node meta :token)])
+                              (instructions program))]
+      (loop [loc 0
+             start 0
+             [line & rest] (str/split source #"\n")
+             result {}]
+        (if line
+          (let [count (count line)
+                stop (+ start count)
+                [pc] (seek (fn [[_ token]]
+                             (and token
+                                  (>= (t/start token) start)
+                                  (<= (t/stop token) stop)))
+                           tokens)]
+            (recur
+              (inc loc)
+              (inc stop)
+              rest
+              (if pc
+                (assoc result index pc)
+                result)))
+          result)))))
 
 (defn branch? [instr]
   (contains? #{"UziJMPInstruction" "UziJZInstruction"
