@@ -1,5 +1,6 @@
 (ns middleware.compilation.parser
-  (:require [middleware.ast.nodes :as ast]
+  (:require [middleware.utils.core :refer [seek]]
+            [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
             [middleware.utils.core :refer [parse-number parse-double]]
             [petitparser.core :as pp]
@@ -299,6 +300,19 @@
 (defn- update-keys [map keys f]
   (reduce (fn [m k] (update m k f)) map keys))
 
+(defn- trim-token [token]
+  (let [non-whitespace? #(not (pp/whitespace? (nth (t/source token) % \space)))
+        new-start (seek non-whitespace?
+                        (range (t/start token) (t/stop token))
+                        (t/stop token))
+        new-stop (seek (comp non-whitespace? dec)
+                       (range (t/stop token) new-start -1)
+                       new-start)
+        new-count (- new-stop new-start)]
+    (assoc token
+           :start new-start
+           :count new-count)))
+
 (defn- compose-with-tokens [grammar transformations]
   (let [rules (keys transformations)
         grammar (update-keys grammar rules pp/token)
@@ -307,7 +321,8 @@
                                        (fn [token]
                                          (let [result (f (t/parsed-value token))]
                                            (if (ast-utils/node? result)
-                                             (vary-meta result assoc :token token)
+                                             (vary-meta result
+                                                        assoc :token (trim-token token))
                                              result)))))]
     (pp/compose grammar transformations)))
 
