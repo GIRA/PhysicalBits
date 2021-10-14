@@ -63,6 +63,131 @@
     ; Finally, we should have a single expression in our results
     (first result-3)))
 
+(def grammar
+  {:start (pp/end :program)
+   :program [:ws?
+             (pp/star :import)
+             (pp/star (pp/or :variable-declaration
+                             :primitive
+                             :script
+                             :ws))
+             :ws?]
+   :import ["import" :ws
+            (pp/optional [:identifier :ws "from" :ws])
+            :import-path (pp/or :endl [:ws? :block]) :ws?]
+   :import-path ["'" (pp/flatten (pp/star (pp/negate "'"))) "'"]
+   :variable-declaration ["var" :ws :variable (pp/optional [:ws? \= :ws? :expr :ws?]) :endl :ws?]
+   :primitive ["prim" :ws
+               (pp/optional [(pp/or :binary-selector :identifier) :ws \: :ws])
+               :identifier :endl]
+   :script (pp/or :task :function :procedure)
+   :task ["task" :ws
+          :identifier :ws?
+          :params-list :ws?
+          :task-state :ws?
+          (pp/optional :ticking-rate) :ws?
+          :block]
+   :function ["func" :ws :identifier :ws? :params-list :ws? :block]
+   :procedure ["proc" :ws :identifier :ws? :params-list :ws? :block]
+   :identifier (pp/flatten
+                (pp/separated-by [(pp/or \_ pp/letter)
+                                  (pp/star (pp/or \_ pp/word))]
+                                 \.))
+   :params-list [\(
+                 :ws?
+                 (pp/optional
+                  (pp/separated-by :argument
+                                   [:ws? \, :ws?]))
+                 :ws?
+                 \)]
+   :argument :identifier
+   :task-state (pp/optional (pp/or "running" "stopped"))
+   :ticking-rate [(pp/or :float :integer)
+                  :ws? "/" :ws?
+                  (pp/or "s" "m" "h" "d")]
+   :block ["{" :statement-list "}"]
+   :statement-list [:ws? (pp/star :statement)]
+   :statement [(pp/or :variable-declaration :assignment :return :conditional
+                      :start-task :stop-task :pause-task :resume-task
+                      :while :do-while :until :do-until :repeat :forever :for
+                      :yield :expression-statement)
+               :ws?]
+   :assignment [:variable :ws? \= :ws? :expr :endl]
+   :return ["return" (pp/optional :separated-expr) :endl]
+   :conditional ["if" :separated-expr :ws? :block (pp/optional [:ws? "else" :ws? :block])]
+   :start-task ["start" :ws :script-list :endl]
+   :stop-task ["stop" :ws :script-list :endl]
+   :pause-task ["pause" :ws :script-list :endl]
+   :resume-task ["resume" :ws :script-list :endl]
+   :script-list (pp/separated-by :script-reference
+                                 [:ws? \, :ws?])
+   :while ["while" :separated-expr :ws? (pp/or :block :endl) :ws?]
+   :do-while ["do" :ws? :block :ws? "while" :separated-expr :endl]
+   :until ["until" :separated-expr :ws? (pp/or :block :endl) :ws?]
+   :do-until ["do" :ws? :block :ws? "until" :separated-expr :endl]
+   :repeat ["repeat" :separated-expr :ws? :block]
+   :forever ["forever" :ws? :block]
+   :for ["for" :ws :variable :ws? \= :ws? :expr :ws
+         "to" :separated-expr
+         (pp/optional [:ws "by" :separated-expr])
+         :ws? :block]
+   :yield ["yield" :endl]
+   :expression-statement [:expr :endl]
+   :endl [:ws? \;]
+   :separated-expr (pp/or [:ws :expr]
+                          [:ws? :sub-expr])
+   :sub-expr [\(
+              :ws? :expr :ws?
+              \)]
+   :expr (pp/or :binary-expr :non-binary-expr )
+   :non-binary-expr (pp/or :unary :literal :call :variable :sub-expr)
+   :binary-expr [:non-binary-expr :ws?
+                 (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
+   :binary-selector (pp/flatten
+                     (pp/plus
+                      (pp/predicate
+                       (fn [chr] ; TODO(Richo): Maybe avoid regex? Measure performance!
+                         (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
+                                  (str chr)))
+                       "Not binary")))
+   :literal (pp/or :constant :number)
+   :constant [(pp/or "D" "A") :integer]
+   :number (pp/or :float :integer)
+   :float (pp/flatten
+           (pp/or
+            ; NOTE(Richo): Special floats
+            "NaN" "-Infinity" "Infinity"
+
+            ; NOTE(Richo): Scientific notation
+            [(pp/optional \-) :digits
+             (pp/optional \.) (pp/star pp/digit)
+             (pp/case-insensitive \e)
+             (pp/optional (pp/or \- \+)) :digits]
+
+            ; NOTE(Richo): Regular float
+            [(pp/optional \-) :digits \. :digits]))
+   :digits (pp/plus pp/digit)
+   :integer (pp/flatten [(pp/optional \-) :digits])
+   :variable :identifier
+   :unary :not
+   :not [\! :ws? :non-binary-expr]
+   :call [:script-reference :ws? :arg-list]
+   :script-reference :identifier
+   :arg-list [\(
+              :ws?
+              (pp/optional
+               (pp/separated-by :named-arg
+                                [:ws? \, :ws?]))
+              :ws?
+              \)]
+   :named-arg [(pp/optional [:identifier :ws? \: :ws?])
+               :expr]
+
+   ; TODO(Richo): Don't lose the comments
+   :ws (pp/plus (pp/or pp/space :comment))
+   :ws? (pp/optional :ws)
+   :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
+
 (def transformations
   {:program (fn [[_ imports members _]]
               (ast/program-node
@@ -170,131 +295,6 @@
                   (ast/primitive-node alias name)
                   (ast/primitive-node name)))
    })
-
-(def grammar
-  {:start (pp/end :program)
-   :program [:ws?
-             (pp/star :import)
-             (pp/star (pp/or :variable-declaration
-                              :primitive
-                              :script
-                              :ws))
-             :ws?]
-   :import ["import" :ws
-            (pp/optional [:identifier :ws "from" :ws])
-            :import-path (pp/or :endl [:ws? :block]) :ws?]
-   :import-path ["'" (pp/flatten (pp/star (pp/negate "'"))) "'"]
-   :variable-declaration ["var" :ws :variable (pp/optional [:ws? \= :ws? :expr :ws?]) :endl :ws?]
-   :primitive ["prim" :ws
-               (pp/optional [(pp/or :binary-selector :identifier) :ws \: :ws])
-               :identifier :endl]
-   :script (pp/or :task :function :procedure)
-   :task ["task" :ws
-          :identifier :ws?
-          :params-list :ws?
-          :task-state :ws?
-          (pp/optional :ticking-rate) :ws?
-          :block]
-   :function ["func" :ws :identifier :ws? :params-list :ws? :block]
-   :procedure ["proc" :ws :identifier :ws? :params-list :ws? :block]
-   :identifier (pp/flatten
-                (pp/separated-by [(pp/or \_ pp/letter)
-                                  (pp/star (pp/or \_ pp/word))]
-                                 \.))
-   :params-list [\(
-                 :ws?
-                 (pp/optional
-                  (pp/separated-by :argument
-                                   [:ws? \, :ws?]))
-                 :ws?
-                 \)]
-   :argument :identifier
-   :task-state (pp/optional (pp/or "running" "stopped"))
-   :ticking-rate [(pp/or :float :integer)
-                  :ws? "/" :ws?
-                  (pp/or "s" "m" "h" "d")]
-   :block ["{" :statement-list "}"]
-   :statement-list [:ws? (pp/star :statement)]
-   :statement [(pp/or :variable-declaration :assignment :return :conditional
-                     :start-task :stop-task :pause-task :resume-task
-                     :while :do-while :until :do-until :repeat :forever :for
-                     :yield :expression-statement)
-               :ws?]
-   :assignment [:variable :ws? \= :ws? :expr :endl]
-   :return ["return" (pp/optional :separated-expr) :endl]
-   :conditional ["if" :separated-expr :ws? :block (pp/optional [:ws? "else" :ws? :block])]
-   :start-task ["start" :ws :script-list :endl]
-   :stop-task ["stop" :ws :script-list :endl]
-   :pause-task ["pause" :ws :script-list :endl]
-   :resume-task ["resume" :ws :script-list :endl]
-   :script-list (pp/separated-by :script-reference
-                                 [:ws? \, :ws?])
-   :while ["while" :separated-expr :ws? (pp/or :block :endl) :ws?]
-   :do-while ["do" :ws? :block :ws? "while" :separated-expr :endl]
-   :until ["until" :separated-expr :ws? (pp/or :block :endl) :ws?]
-   :do-until ["do" :ws? :block :ws? "until" :separated-expr :endl]
-   :repeat ["repeat" :separated-expr :ws? :block]
-   :forever ["forever" :ws? :block]
-   :for ["for" :ws :variable :ws? \= :ws? :expr :ws
-         "to" :separated-expr
-         (pp/optional [:ws "by" :separated-expr])
-         :ws? :block]
-   :yield ["yield" :endl]
-   :expression-statement [:expr :endl]
-   :endl [:ws? \;]
-   :separated-expr (pp/or [:ws :expr]
-                          [:ws? :sub-expr])
-   :sub-expr [\(
-              :ws? :expr :ws?
-              \)]
-   :expr (pp/or :binary-expr :non-binary-expr )
-   :non-binary-expr (pp/or :unary :literal :call :variable :sub-expr)
-   :binary-expr [:non-binary-expr :ws?
-                 (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
-   :binary-selector (pp/flatten
-                     (pp/plus
-                      (pp/predicate
-                       (fn [chr] ; TODO(Richo): Maybe avoid regex? Measure performance!
-                         (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
-                                  (str chr)))
-                       "Not binary")))
-   :literal (pp/or :constant :number)
-   :constant [(pp/or "D" "A") :integer]
-   :number (pp/or :float :integer)
-   :float (pp/flatten
-           (pp/or
-            ; NOTE(Richo): Special floats
-            "NaN" "-Infinity" "Infinity"
-
-            ; NOTE(Richo): Scientific notation
-            [(pp/optional \-) :digits
-             (pp/optional \.) (pp/star pp/digit)
-             (pp/case-insensitive \e)
-             (pp/optional (pp/or \- \+)) :digits]
-
-            ; NOTE(Richo): Regular float
-            [(pp/optional \-) :digits \. :digits]))
-   :digits (pp/plus pp/digit)
-   :integer (pp/flatten [(pp/optional \-) :digits])
-   :variable :identifier
-   :unary :not
-   :not [\! :ws? :non-binary-expr]
-   :call [:script-reference :ws? :arg-list]
-   :script-reference :identifier
-   :arg-list [\(
-              :ws?
-              (pp/optional
-               (pp/separated-by :named-arg
-                                [:ws? \, :ws?]))
-              :ws?
-              \)]
-   :named-arg [(pp/optional [:identifier :ws? \: :ws?])
-               :expr]
-
-   ; TODO(Richo): Don't lose the comments
-   :ws (pp/plus (pp/or pp/space :comment))
-   :ws? (pp/optional :ws)
-   :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
 
 (defn- update-keys [map keys f]
   (reduce (fn [m k] (update m k f)) map keys))
