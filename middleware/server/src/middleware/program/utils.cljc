@@ -58,6 +58,9 @@
           script
           (recur rest stop))))))
 
+(defn instruction-at-pc [program pc]
+  (nth (instructions program) pc))
+
 (defn branch? [instr]
   (contains? #{"UziJMPInstruction" "UziJZInstruction"
                "UziJNZInstruction" "UziJLTEInstruction"}
