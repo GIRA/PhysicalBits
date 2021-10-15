@@ -90,6 +90,37 @@
                 result)))
           result)))))
 
+(defn line-indices [string]
+  (loop [[line & rest] (str/split string #"\n")
+         start 0
+         indices (transient [])]
+    (if line
+      (let [count (count line)
+            stop (+ start count)]
+        (recur
+          rest
+          (inc stop)
+          (conj! indices [start stop])))
+      (persistent! indices))))
+
+(defn intersects? [[a1 a2] [b1 b2]]
+  (or (and (>= a1 b1) (<= a1 b2))
+      (and (>= a2 b1) (<= a2 b2))
+      (and (>= b1 a1) (<= b1 a2))
+      (and (>= b2 a1) (<= b2 a2))))
+
+(defn pc->loc [program]
+  (when-let [source (-> program meta :source)]
+    (let [lines (map-indexed vector (line-indices source))
+          instructions (instructions program)]
+      (zipmap (range (count instructions))
+              (map (fn [instr]
+                     (when-let [token (-> instr meta :node meta :token)]
+                       (first (seek (fn [[idx line-range]]
+                                      (intersects? [(t/start token) (t/stop token)]
+                                                   line-range))
+                                    lines))))
+                   instructions)))))
 (defn branch? [instr]
   (contains? #{"UziJMPInstruction" "UziJZInstruction"
                "UziJNZInstruction" "UziJLTEInstruction"}
