@@ -4,6 +4,7 @@
             [clojure.string :as str]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
+            [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
@@ -106,6 +107,12 @@
 (defn debugger-step-next! []
   (go-try (dc/step-next!)))
 
+(defn set-breakpoints! [breakpoints]
+  (go-try
+   (let [loc->pc (program/loc->pc (-> @dc/state :program :running))]
+     ; TODO(Richo): If loc->pc returns nil try the next loc?
+     (dc/set-user-breakpoints! (keep loc->pc breakpoints)))))
+
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
                 :isConnected (when (and (not= :pending connection)
@@ -154,10 +161,13 @@
 
 (defn- get-debugger-data [state]
   {:debugger (let [{:keys [index pc fp stack] :as vm-state} (-> state :debugger :vm)
+                   breakpoints (-> state :debugger :breakpoints :user)
                    program (-> state :program :running)
                    stack-frames (dc/stack-frames program vm-state)]
                {:index index
                 :isHalted (some? pc)
+                :breakpoints (let [pc->loc (program/pc->loc program)]
+                               (mapv pc->loc breakpoints))
                 :stackFrames (mapv (fn [{:keys [script pc fp locals]}]
                                       {:scriptName (:name script)
                                        :pc pc
