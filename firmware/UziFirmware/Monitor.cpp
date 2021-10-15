@@ -110,7 +110,7 @@ void Monitor::acceptConnection()
 
 	minReportInterval = 0;
 	reportInterval = 25;
-	sent = false;
+	sentVMState = false;
 	state = CONNECTED;
 
 	executeKeepAlive();
@@ -193,9 +193,9 @@ void Monitor::sendReport(GPIO* io, Program* program)
 
 void Monitor::sendVMState(Program* program, VM* vm)
 {
-	if (vm->halted && !sent)
+	if (vm->halted && !sentVMState)
 	{
-		sent = true;
+		sentVMState = true;
 		sendCoroutineState(program, vm->haltedScript);
 
 		/*
@@ -403,7 +403,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SET_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
-		sent = false;
+		sentVMState = false;
 		executeSetProgram(program, io);
 		break;
 	case MSG_IN_SET_VALUE:
@@ -424,7 +424,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SAVE_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
-		sent = false;
+		sentVMState = false;
 		executeSaveProgram(program, io);
 		break;
 	case MSG_IN_PROFILE:
@@ -604,7 +604,7 @@ void Monitor::executeSetGlobalReport(Program* program)
 void Monitor::executeDebugContinue(VM* vm)
 {
 	vm->halted = false;
-	sent = false;
+	sentVMState = false;
 }
 
 void Monitor::executeDebugSetBreakpoints(Program* program)

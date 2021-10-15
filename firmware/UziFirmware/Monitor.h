@@ -44,7 +44,7 @@ private:
 	uint32 lastTimeProfile = 0;
 	uint16 tickCount = 0;
 
-	bool sent : 1; // TODO(Richo)
+	bool sentVMState : 1;
 	uint8 reportInterval : 7;
 	bool profiling : 1;
 	uint8 minReportInterval : 7;
