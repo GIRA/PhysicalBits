@@ -15,7 +15,8 @@
             [manifold.deferred :as d]
             [middleware.core :as core]
             [middleware.utils.json :as json]
-            [middleware.utils.config :as config])
+            [middleware.utils.config :as config]
+            [middleware.utils.core :refer [parse-int]])
   (:import [manifold.stream.core IEventSink]))
 
 (def server (atom nil))
@@ -105,6 +106,10 @@
 (defn debugger-step-next-handler []
   (json-response (<?? (core/debugger-step-next!))))
 
+(defn debugger-set-breakpoints [{:strs [breakpoints] :or {breakpoints ""}}]
+  (let [breakpoints (map parse-int (remove empty? (str/split breakpoints #",")))]
+    (json-response (<?? (core/set-breakpoints! breakpoints)))))
+
 (defn- create-handler [uzi-libraries web-resources]
   (-> (compojure/routes (GET "/" [] (redirect "ide/index.html"))
 
@@ -124,6 +129,7 @@
                         (POST "/uzi/debugger/step-into" _ (debugger-step-into-handler))
                         (POST "/uzi/debugger/step-out" _ (debugger-step-out-handler))
                         (POST "/uzi/debugger/step-next" _ (debugger-step-next-handler))
+                        (POST "/uzi/debugger/set-breakpoints" {params :params} (debugger-set-breakpoints params))
 
                         (route/not-found "No such page."))
 
