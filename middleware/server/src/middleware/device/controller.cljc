@@ -15,17 +15,6 @@
             [middleware.utils.core :refer [millis clamp]]
             [middleware.utils.conversions :as conversions]))
 
-(comment
-
- (start-profiling)
- (stop-profiling)
- (.getTime (js/Date.))
- (set-report-interval 5)
-
- @state
-
- ,)
-
 (defn- log-error [msg e]
   #?(:clj (log/error msg e)
      :cljs (println "ERROR:" msg e)))
@@ -146,9 +135,16 @@
                                             ast/all-children))]
     (set-pin-report (str type number) true)))
 
+
+(defn reset-debugger! []
+  (let [[old] (swap-vals! state assoc :debugger (-> initial-state :debugger))]
+    (if (-> old :debugger :vm)
+      (a/put! update-chan :coroutine-state))))
+
 (defn run [program]
   (swap! state assoc-in [:reporting :globals] #{})
   (swap! state assoc-in [:program :running] program)
+  (reset-debugger!)
   (let [bytecodes (en/encode program)
         sent (send! (p/run bytecodes))]
     (update-reporting program)
