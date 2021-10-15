@@ -87,7 +87,7 @@
        (swap! state (fn [state]
                       (assoc-in initial-state [:program :current]
                                 (-> state :program :current))))
-       (>! update-chan :connection)))))
+       (a/onto-chan! update-chan [:connection :coroutine-state] false)))))
 
 (defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
