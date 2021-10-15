@@ -1,8 +1,8 @@
+let breakpoints = [];
 let UziCode = (function () {
 
   let editor;
   let focus = false;
-	let breakpoints = [];
 	let markers = [];
   let observers = {
     "change": []
@@ -89,6 +89,12 @@ let UziCode = (function () {
         interval = state.debugger.stackFrames[0].interval;
       }
       highlight(interval);
+
+      breakpoints = state.debugger.breakpoints;
+      editor.session.clearBreakpoints();
+      breakpoints.forEach(function (line) {
+        editor.session.setBreakpoint(line, "breakpoint");
+      });
     } catch (err) {
       console.log(err);
     }
@@ -105,14 +111,8 @@ let UziCode = (function () {
 	}
 
 	function sendBreakpoints() {
-    console.log("SEND BREAKPOINTS!");
-    return;
-
-    // TODO(Richo)
-		let actualBreakpoints = breakpoints.map(function (line) {
-			return Uzi.program.validBreakpoints[line];
-		}).filter(function (bp) { return bp != null; });
-		UziDebugger.setBreakpoints(actualBreakpoints);
+    console.log(breakpoints);
+    Uzi.debugger.setBreakpoints(breakpoints);
 	}
 
   function highlight(interval) {

@@ -198,6 +198,15 @@ let Uzi = (function () {
     },
 
     debugger: {
+      setBreakpoints: function (breakpoints) {
+        let url = apiURL + "/uzi/debugger/set-breakpoints";
+        let data = {
+          id: id,
+          breakpoints: Array.from(breakpoints).join(","),
+        };
+        return POST(url, data);
+      },
+
       break: function () {
         let url = apiURL + "/uzi/debugger/break";
         let data = {
