@@ -110,6 +110,7 @@ void Monitor::acceptConnection()
 
 	minReportInterval = 0;
 	reportInterval = 25;
+	sent = false;
 	state = CONNECTED;
 
 	executeKeepAlive();
@@ -402,6 +403,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SET_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
+		sent = false;
 		executeSetProgram(program, io);
 		break;
 	case MSG_IN_SET_VALUE:
@@ -422,6 +424,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 	case MSG_IN_SAVE_PROGRAM:
 		// TODO(Richo): Refactor this. I added it because the VM state must be reset if the program changes!
 		vm->reset();
+		sent = false;
 		executeSaveProgram(program, io);
 		break;
 	case MSG_IN_PROFILE:
