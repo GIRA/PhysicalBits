@@ -28,7 +28,7 @@
 #define MSG_OUT_PROFILE                                     2
 #define MSG_OUT_GLOBAL_VALUE                                3
 #define MSG_OUT_TRACE                                       4
-#define MSG_OUT_COROUTINE_STATE                             5
+#define MSG_OUT_DEBUGGER		                            5
 #define MSG_OUT_TICKING_SCRIPTS                             6
 #define MSG_OUT_FREE_RAM                                    7
 #define MSG_OUT_SERIAL_TUNNEL                               8
@@ -219,7 +219,7 @@ void Monitor::sendCoroutineState(Program* program, Script* script)
 			sendError(coroutine->getError());
 			program->resetCoroutine(coroutine); // TODO(Richo): Why?
 		}
-		serial->write(MSG_OUT_COROUTINE_STATE);
+		serial->write(MSG_OUT_DEBUGGER);
 		serial->write(scriptIndex);
 		int16 pc = coroutine->getPC();
 		uint8 val1 = pc >> 8 & 0xFF; // MSB

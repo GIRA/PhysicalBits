@@ -188,7 +188,7 @@
    :running-scripts #'get-tasks-data
    :free-ram #'get-memory-data
    :pseudo-vars #'get-pseudo-vars-data
-   :coroutine-state #'get-debugger-data})
+   :debugger #'get-debugger-data})
 
 (defn- get-device-state [state device-events]
   (reduce (fn [update type]

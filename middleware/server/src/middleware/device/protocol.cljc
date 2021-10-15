@@ -34,7 +34,7 @@
 (def MSG_IN_PROFILE 2)
 (def MSG_IN_GLOBAL_VALUE 3)
 (def MSG_IN_TRACE 4)
-(def MSG_IN_COROUTINE_STATE 5)
+(def MSG_IN_DEBUGGER 5)
 (def MSG_IN_RUNNING_SCRIPTS 6)
 (def MSG_IN_FREE_RAM 7)
 (def MSG_IN_SERIAL_TUNNEL 8)
@@ -262,7 +262,7 @@
                :interval-ms 100
                :report-interval report-interval}}))))
 
-(defn process-coroutine-state [in]
+(defn process-debugger [in]
   (go
    (let [index (<! in)
          pc (<! (read-uint16 in))
@@ -271,7 +271,7 @@
          stack (when stack-size
                  (<! (read-vec! (* 4 stack-size) in)))]
      (when stack
-       {:tag :coroutine-state
+       {:tag :debugger
         :data {:index index
                :pc pc
                :fp fp
@@ -308,7 +308,7 @@
    MSG_IN_RUNNING_SCRIPTS process-running-scripts
    MSG_IN_FREE_RAM process-free-ram
    MSG_IN_PROFILE process-profile
-   MSG_IN_COROUTINE_STATE process-coroutine-state
+   MSG_IN_DEBUGGER process-debugger
    MSG_IN_ERROR process-error
    MSG_IN_TRACE process-trace
    MSG_IN_SERIAL_TUNNEL process-serial-tunnel})

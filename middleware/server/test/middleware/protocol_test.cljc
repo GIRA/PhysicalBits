@@ -283,23 +283,23 @@
             :error {:code 9 :msg "STACK_OVERFLOW & OUT_OF_MEMORY"}}))
     (is (nil? (<! (p/process-next-message (a/to-chan! [p/MSG_IN_ERROR]))))))))
 
-(deftest process-coroutine-state
+(deftest process-debugger
   (test-async
    (go
     (is (= (<! (p/process-next-message
                 (a/to-chan! (remove string?
-                                    [p/MSG_IN_COROUTINE_STATE
+                                    [p/MSG_IN_DEBUGGER
                                      "index"        1
                                      "pc"           2 3
                                      "fp"           4
                                      "stack-size"   2
                                      "stack"        0 1 2 3
                                      4 5 6 7]))))
-           {:tag :coroutine-state
+           {:tag :debugger
             :data {:index 1, :pc 515, :stack [[4 5 6 7][0 1 2 3]], :fp 4}}))
     (is (nil? (<! (p/process-next-message
                    (a/to-chan! (remove string?
-                                       [p/MSG_IN_COROUTINE_STATE
+                                       [p/MSG_IN_DEBUGGER
                                         "index"        1
                                         "pc"           2 3
                                         "fp"           4
@@ -308,7 +308,7 @@
                                                        4 5 6 ]))))))
     (is (nil? (<! (p/process-next-message
                    (a/to-chan! (remove string?
-                                       [p/MSG_IN_COROUTINE_STATE
+                                       [p/MSG_IN_DEBUGGER
                                         "index"        1
                                         "pc"           2 3
                                         "fp"           4

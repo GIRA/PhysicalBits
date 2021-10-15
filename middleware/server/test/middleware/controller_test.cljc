@@ -173,11 +173,11 @@
     (<! (dc/process-error {:error {:msg "DISCONNECT_ERROR", :code 32}}))
     (is (not (dc/connected?))))))
 
-(deftest process-coroutine-state
+(deftest process-debugger
   (setup)
-  (dc/process-coroutine-state {:data {:index 1
-                                      :pc 515
-                                      :stack [0 1 2 3 4 5 6 7]
-                                      :fp 4}})
+  (dc/process-debugger {:data {:index 1
+                               :pc 515
+                               :stack [0 1 2 3 4 5 6 7]
+                               :fp 4}})
   (is (= (-> @dc/state :debugger :vm)
          {:index 1, :pc 515, :stack [0 1 2 3 4 5 6 7], :fp 4})))

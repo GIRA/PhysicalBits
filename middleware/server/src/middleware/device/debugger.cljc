@@ -17,7 +17,7 @@
       (do
         (send! (p/set-all-breakpoints))
         (send! (p/clear-breakpoints (remove bpts pcs)))))
-    (a/put! update-chan :coroutine-state)))
+    (a/put! update-chan :debugger)))
 
 (defn set-user-breakpoints! [pcs]
   (swap! state assoc-in [:debugger :breakpoints :user] (set pcs))
@@ -37,7 +37,7 @@
 (defn send-continue! []
   (swap! state assoc-in [:debugger :vm] nil)
   (send! (p/continue))
-  (a/put! update-chan :coroutine-state))
+  (a/put! update-chan :debugger))
 
 (defn continue! []
   (clear-system-breakpoints!)

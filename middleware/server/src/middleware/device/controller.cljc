@@ -87,7 +87,7 @@
        (swap! state (fn [state]
                       (assoc-in initial-state [:program :current]
                                 (-> state :program :current))))
-       (a/onto-chan! update-chan [:connection :coroutine-state] false)))))
+       (a/onto-chan! update-chan [:connection :debugger] false)))))
 
 (defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -139,7 +139,7 @@
 (defn reset-debugger! []
   (let [[old] (swap-vals! state assoc :debugger (-> initial-state :debugger))]
     (if (-> old :debugger :vm)
-      (a/put! update-chan :coroutine-state))))
+      (a/put! update-chan :debugger))))
 
 (defn run [program]
   (swap! state assoc-in [:reporting :globals] #{})
@@ -269,7 +269,7 @@
   (add-pseudo-var! "__tps" (* 10 (:ticks data)))
   (add-pseudo-var! "__vm-report-interval" (:report-interval data)))
 
-(defn process-coroutine-state [{:keys [data]}]
+(defn process-debugger [{:keys [data]}]
   (swap! state assoc-in [:debugger :vm] data))
 
 (defn process-error [{{:keys [code msg]} :error}]
@@ -297,7 +297,7 @@
        :running-scripts (process-running-scripts cmd)
        :free-ram (process-free-ram cmd)
        :profile (process-profile cmd)
-       :coroutine-state (process-coroutine-state cmd)
+       :debugger (process-debugger cmd)
        :trace (process-trace cmd)
        :serial (process-serial-tunnel cmd)
        :error (<! (process-error cmd)) ; Special case because it calls disconnect!
