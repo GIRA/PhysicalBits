@@ -86,7 +86,7 @@
               (inc stop)
               rest
               (if pc
-                (assoc result index pc)
+                (assoc result loc pc)
                 result)))
           result)))))
 
