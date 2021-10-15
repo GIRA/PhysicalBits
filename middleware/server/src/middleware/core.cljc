@@ -6,6 +6,7 @@
             [middleware.utils.logger :as logger]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
+            [middleware.device.debugger :as debugger]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
 
@@ -90,10 +91,10 @@
      (dc/stop-profiling))))
 
 (defn debugger-break! []
-  (go-try (dc/break!)))
+  (go-try (debugger/break!)))
 
 (defn debugger-continue! []
-  (go-try (dc/continue!)))
+  (go-try (debugger/continue!)))
 
 (defn debugger-step-over! []
   (throw (ex-info "NOT IMPLEMENTED YET" {})))
@@ -105,13 +106,13 @@
   (throw (ex-info "NOT IMPLEMENTED YET" {})))
 
 (defn debugger-step-next! []
-  (go-try (dc/step-next!)))
+  (go-try (debugger/step-next!)))
 
 (defn set-breakpoints! [breakpoints]
   (go-try
    (let [loc->pc (program/loc->pc (-> @dc/state :program :running))]
      ; TODO(Richo): If loc->pc returns nil try the next loc?
-     (dc/set-user-breakpoints! (keep loc->pc breakpoints)))))
+     (debugger/set-user-breakpoints! (keep loc->pc breakpoints)))))
 
 (defn- get-connection-data [{:keys [connection]}]
   {:connection {; TODO(Richo): The server should already receive the data correctly formatted...
@@ -163,7 +164,7 @@
   {:debugger (let [{:keys [index pc fp stack] :as vm-state} (-> state :debugger :vm)
                    breakpoints (-> state :debugger :breakpoints :user)
                    program (-> state :program :running)
-                   stack-frames (dc/stack-frames program vm-state)]
+                   stack-frames (debugger/stack-frames program vm-state)]
                {:index index
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
@@ -172,7 +173,7 @@
                                       {:scriptName (:name script)
                                        :pc pc
                                        :fp fp
-                                       :interval (dc/interval-at-pc program pc)
+                                       :interval (debugger/interval-at-pc program pc)
                                        :locals (mapv (fn [{:keys [name value]}]
                                                        ; TODO(Richo): Check variable collision
                                                        {:name (first (str/split name #"#"))
