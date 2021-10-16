@@ -63,33 +63,6 @@
 (defn instruction-at-pc [program pc]
   (nth (instructions program) pc))
 
-(defn loc->pc [program]
-  "Returns an map from each line of code to its first available pc."
-  (when-let [source (-> program meta :source)]
-    (let [tokens (map-indexed (fn [index instr]
-                                [index (-> instr meta :node meta :token)])
-                              (instructions program))]
-      (loop [loc 0
-             start 0
-             [line & rest] (str/split source #"\n")
-             result {}]
-        (if line
-          (let [count (count line)
-                stop (+ start count)
-                [pc] (seek (fn [[_ token]]
-                             (and token
-                                  (>= (t/start token) start)
-                                  (<= (t/stop token) stop)))
-                           tokens)]
-            (recur
-              (inc loc)
-              (inc stop)
-              rest
-              (if pc
-                (assoc result loc pc)
-                result)))
-          result)))))
-
 (defn line-indices [string]
   (loop [[line & rest] (str/split string #"\n")
          start 0
@@ -109,7 +82,25 @@
       (and (>= b1 a1) (<= b1 a2))
       (and (>= b2 a1) (<= b2 a2))))
 
+(defn loc->pc [program]
+  "Returns a map from each line of code to its first available pc."
+  (when-let [source (-> program meta :source)]
+    (let [lines (line-indices source)
+          tokens (map-indexed (fn [idx instr]
+                                [idx
+                                 (when-let [token (-> instr meta :node meta :token)]
+                                   (t/start token))])
+                              (instructions program))]
+      (zipmap (range (count lines))
+              (map (fn [[start]]
+                     (first (seek (fn [[pc token-start]]
+                                    (and token-start
+                                         (>= token-start start)))
+                                  tokens)))
+                   lines)))))
+
 (defn pc->loc [program]
+  "Returns a map from each pc to its line of code"
   (when-let [source (-> program meta :source)]
     (let [lines (map-indexed vector (line-indices source))
           instructions (instructions program)]
