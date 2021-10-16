@@ -1,7 +1,7 @@
 (ns middleware.program.utils
   (:require [clojure.string :as str]
             [petitparser.token :as t]
-            [middleware.utils.core :refer [seek index-of]]
+            [middleware.utils.core :as utils :refer [index-of]]
             [middleware.ast.primitives :as prims]
             [middleware.program.emitter :as emit]))
 
@@ -63,29 +63,11 @@
 (defn instruction-at-pc [program pc]
   (nth (instructions program) pc))
 
-(defn line-indices [string]
-  (loop [[line & rest] (str/split string #"\n")
-         start 0
-         indices (transient [])]
-    (if line
-      (let [count (count line)
-            stop (+ start count)]
-        (recur
-          rest
-          (inc stop)
-          (conj! indices [start stop])))
-      (persistent! indices))))
-
-(defn intersects? [[a1 a2] [b1 b2]]
-  (or (and (>= a1 b1) (<= a1 b2))
-      (and (>= a2 b1) (<= a2 b2))
-      (and (>= b1 a1) (<= b1 a2))
-      (and (>= b2 a1) (<= b2 a2))))
-
 (defn loc->pc [program]
-  "Returns a map from each line of code to its first available pc."
+  "Returns a map from each line of code to its first available pc.
+   Returns nil if the program metadata doesn't include source."
   (when-let [source (-> program meta :source)]
-    (let [lines (line-indices source)
+    (let [lines (utils/line-indices source)
           tokens (map-indexed (fn [idx instr]
                                 [idx
                                  (when-let [token (-> instr meta :node meta :token)]
@@ -93,25 +75,28 @@
                               (instructions program))]
       (zipmap (range (count lines))
               (map (fn [[start]]
-                     (first (seek (fn [[pc token-start]]
-                                    (and token-start
-                                         (>= token-start start)))
-                                  tokens)))
+                     (first (utils/seek (fn [[pc token-start]]
+                                          (and token-start
+                                               (>= token-start start)))
+                                        tokens)))
                    lines)))))
 
 (defn pc->loc [program]
-  "Returns a map from each pc to its line of code"
+  "Returns a map from each pc to its first line of code.
+   Returns nil if the program metadata doesn't include source."
   (when-let [source (-> program meta :source)]
-    (let [lines (map-indexed vector (line-indices source))
+    (let [lines (map-indexed vector (utils/line-indices source))
           instructions (instructions program)]
       (zipmap (range (count instructions))
               (map (fn [instr]
                      (when-let [token (-> instr meta :node meta :token)]
-                       (first (seek (fn [[idx line-range]]
-                                      (intersects? [(t/start token) (t/stop token)]
-                                                   line-range))
+                       (first (utils/seek (fn [[idx line-range]]
+                                      (utils/overlapping-ranges?
+                                       [(t/start token) (t/stop token)]
+                                       line-range))
                                     lines))))
                    instructions)))))
+
 (defn branch? [instr]
   (contains? #{"UziJMPInstruction" "UziJZInstruction"
                "UziJNZInstruction" "UziJLTEInstruction"}

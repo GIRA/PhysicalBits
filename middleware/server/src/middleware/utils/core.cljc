@@ -41,3 +41,22 @@
     (parse-int str)
     (catch #?(:clj Throwable :cljs :default) _
       (parse-double str))))
+
+(defn line-indices [string]
+  (loop [[line & rest] (str/split string #"\n")
+         start 0
+         indices (transient [])]
+    (if line
+      (let [count (count line)
+            stop (+ start count)]
+        (recur
+          rest
+          (inc stop)
+          (conj! indices [start stop])))
+      (persistent! indices))))
+
+(defn overlapping-ranges? [[a1 a2] [b1 b2]]
+  (or (and (>= a1 b1) (<= a1 b2))
+      (and (>= a2 b1) (<= a2 b2))
+      (and (>= b1 a1) (<= b1 a2))
+      (and (>= b2 a1) (<= b2 a2))))
