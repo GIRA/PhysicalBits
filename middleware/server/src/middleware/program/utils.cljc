@@ -68,8 +68,8 @@
    Returns nil if the program metadata doesn't include source."
   (when-let [source (-> program meta :source)]
     (let [lines (utils/line-indices source)
-          tokens (map-indexed (fn [idx instr]
-                                [idx
+          tokens (map-indexed (fn [pc instr]
+                                [pc
                                  (when-let [token (-> instr meta :node meta :token)]
                                    (t/start token))])
                               (instructions program))]
