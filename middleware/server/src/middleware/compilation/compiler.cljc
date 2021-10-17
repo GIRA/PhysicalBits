@@ -552,7 +552,7 @@
 ; TODO(Richo): This function should not be in the compiler
 (defn compile-json-string [str & args]
   (let [ast (json/decode str)
-        src (codegen/print ast)]
+        src (codegen/generate-code ast)]
     (vary-meta (apply compile-tree ast src args)
                assoc :type :json)))
 

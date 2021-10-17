@@ -11,7 +11,7 @@
 
 (defn print [ast]
   #?(:clj (register-program! ast))
-  (cg/print ast))
+  (cg/generate-code ast))
 
 (deftest
   empty-program

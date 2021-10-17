@@ -30,7 +30,7 @@
   (map (fn [{:keys [name ast-or-src args]}]
          (let [src (if (string? ast-or-src)
                      ast-or-src
-                     (cg/print ast-or-src))
+                     (cg/generate-code ast-or-src))
                program (apply cc/compile-uzi-string src args)]
            {:instruction-count (count (p/instructions program))
             :global-count (count (:globals program))

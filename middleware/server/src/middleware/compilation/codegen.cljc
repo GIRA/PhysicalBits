@@ -1,18 +1,19 @@
 (ns middleware.compilation.codegen
   (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]
+            [middleware.utils.string-writer :as sw]
             [middleware.utils.core :as u]))
 
 ; TODO(Richo): Concatenating strings seems very inefficient
 
 (defmulti print-node :__class__)
 
-(defn print [node] (print-node node))
+(defn- print [node] (print-node node))
 
 (defn print-optional-block [block]
   (if (empty? (:statements block))
     ";"
-    (str " " (print-node block))))
+    (str " " (print block))))
 
 (defn- remove-empty [& colls]
   (remove empty? colls))
@@ -21,10 +22,10 @@
   (str/join (flatten
              (interpose "\n\n"
                         (remove-empty
-                         (interpose "\n" (map print-node (:imports node)))
-                         (interpose "\n" (map print-node (:globals node)))
-                         (interpose "\n" (map print-node (:primitives node)))
-                         (interpose "\n\n" (map print-node (:scripts node))))))))
+                         (interpose "\n" (map print (:imports node)))
+                         (interpose "\n" (map print (:globals node)))
+                         (interpose "\n" (map print (:primitives node)))
+                         (interpose "\n\n" (map print (:scripts node))))))))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [node]
   (u/format "prim %1;"
@@ -44,7 +45,7 @@
   (if (:value node)
     (u/format "var %1 = %2;"
               (:name node)
-              (print-node (:value node)))
+              (print (:value node)))
     (u/format "var %1;"
               (:name node))))
 
@@ -58,20 +59,20 @@
   (u/format "task %1()%2%3 %4"
             (:name node)
             (if (= "once" (:state node)) "" (str " " (:state node)))
-            (if (nil? (:tickingRate node)) "" (print-node (:tickingRate node)))
-            (print-node (:body node))))
+            (if (nil? (:tickingRate node)) "" (print (:tickingRate node)))
+            (print (:body node))))
 
 (defmethod print-node "UziFunctionNode" [node]
   (u/format "func %1(%2) %3"
             (:name node)
             (str/join ", " (map :name (:arguments node)))
-            (print-node (:body node))))
+            (print (:body node))))
 
 (defmethod print-node "UziProcedureNode" [node]
   (u/format "proc %1(%2) %3"
             (:name node)
             (str/join ", " (map :name (:arguments node)))
-            (print-node (:body node))))
+            (print (:body node))))
 
 (defmethod print-node "UziTickingRateNode" [node]
   (u/format " %1/%2" (:value node) (:scale node)))
@@ -93,19 +94,19 @@
                                         (str/ends-with? expr ";"))
                                   expr
                                   (str expr ";")))
-                              (map print-node (:statements node))))))))
+                              (map print (:statements node))))))))
 
 (defn print-operator-expression [node]
   (if (= 1 (-> node :arguments count))
     ;unary
     (u/format "(%1%2)"
               (:selector node)
-              (print-node (first (:arguments node))))
+              (print (first (:arguments node))))
     ;binary
     (u/format "(%1 %2 %3)"
-              (print-node (first (:arguments node)))
+              (print (first (:arguments node)))
               (:selector node)
-              (print-node (second (:arguments node))))))
+              (print (second (:arguments node))))))
 
 (defmethod print-node "UziCallNode" [node]
   (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+"
@@ -113,71 +114,71 @@
     ;non-operator
     (u/format "%1(%2)"
               (:selector node)
-              (str/join ", " (map print-node (:arguments node))))
+              (str/join ", " (map print (:arguments node))))
     (print-operator-expression node)))
 
 (defmethod print-node "Association" [node]
   (str (if (nil? (:key node)) "" (str (:key node) ": "))
-       (print-node (:value node))))
+       (print (:value node))))
 
 (defmethod print-node "UziVariableNode" [node] (:name node))
 
 (defmethod print-node "UziReturnNode" [node]
   (if (nil? (:value node))
     "return"
-    (u/format "return %1" (print-node (:value node)))))
+    (u/format "return %1" (print (:value node)))))
 
 (defmethod print-node "UziYieldNode" [node] "yield")
 
 (defmethod print-node "UziForNode" [node]
   (u/format "for %1 = %2 to %3 by %4 %5"
             (:name (:counter node))
-            (print-node (:start node))
-            (print-node (:stop node))
-            (print-node (:step node))
-            (print-node (:body node))))
+            (print (:start node))
+            (print (:stop node))
+            (print (:step node))
+            (print (:body node))))
 
 (defmethod print-node "UziWhileNode" [node]
   (u/format "while %1%2"
-            (print-node (:condition node))
+            (print (:condition node))
             (print-optional-block (:post node))))
 
 (defmethod print-node "UziDoWhileNode" [node]
   (u/format "do %1 while(%2)"
-            (print-node (:pre node))
-            (print-node (:condition node))))
+            (print (:pre node))
+            (print (:condition node))))
 
 (defmethod print-node "UziUntilNode" [node]
   (u/format "until %1%2"
-            (print-node (:condition node))
+            (print (:condition node))
             (print-optional-block (:post node))))
 
 (defmethod print-node "UziDoUntilNode" [node]
   (u/format "do %1 until(%2)"
-            (print-node (:pre node))
-            (print-node (:condition node))))
+            (print (:pre node))
+            (print (:condition node))))
 
 (defmethod print-node "UziForeverNode" [node]
   (u/format "forever %1"
-            (print-node (:body node))))
+            (print (:body node))))
 
 (defmethod print-node "UziRepeatNode" [node]
   (u/format "repeat %1 %2"
-            (print-node (:times node))
-            (print-node (:body node))))
+            (print (:times node))
+            (print (:body node))))
 
 (defmethod print-node "UziConditionalNode" [node]
   (let [trueBranch (u/format "if %1 %2"
-                             (print-node (:condition node))
-                             (print-node (:trueBranch node)))]
+                             (print (:condition node))
+                             (print (:trueBranch node)))]
     (if (empty? (-> node :falseBranch :statements))
       trueBranch
-      (str trueBranch " else " (print-node (:falseBranch node))))))
+      (str trueBranch " else " (print (:falseBranch node))))))
 
 (defmethod print-node "UziAssignmentNode" [node]
   (u/format "%1 = %2"
-            (print-node (:left node))
-            (print-node (:right node))))
+            (print (:left node))
+            (print (:right node))))
 
 (defmethod print-node "UziScriptStartNode" [node]
   (u/format "start %1"
@@ -197,13 +198,15 @@
 
 (defmethod print-node "UziLogicalAndNode" [node]
   (u/format "(%1 && %2)"
-            (print-node (:left node))
-            (print-node (:right node))))
+            (print (:left node))
+            (print (:right node))))
 
 (defmethod print-node "UziLogicalOrNode" [node]
   (u/format "(%1 || %2)"
-            (print-node (:left node))
-            (print-node (:right node))))
+            (print (:left node))
+            (print (:right node))))
 
 (defmethod print-node :default [node]
   (throw (ex-info "Not Implemented node reached: " {:node node})))
+
+(defn generate-code [node] (print node))
