@@ -1,14 +1,21 @@
 (ns middleware.compilation.codegen
   (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]
+            [petitparser.token :as t]
             [middleware.ast.utils :as ast-utils]
             [middleware.utils.string-writer :as sw
              :refer [append! append-line! append-indent! inc-indent!]]
             [middleware.utils.core :as u]))
 
+(def ^:dynamic *intervals*)
+
 (defmulti print-node :__class__)
 
-(defn- print [node] (print-node node))
+(defn- print [node]
+  (let [start (sw/position sw/*writer*)]
+    (print-node node)
+    (vswap! *intervals*
+            assoc node [start (sw/position sw/*writer*)])))
 
 (defn- print-with-semicolon [node]
   (print node)
@@ -253,7 +260,20 @@
 (defmethod print-node :default [node]
   (throw (ex-info "Not Implemented node reached: " {:node node})))
 
+(defn generate-code-and-tokens [ast]
+  (binding [sw/*writer* (sw/make-writer)
+            *intervals* (volatile! {})]
+    (print ast)
+    (let [src (sw/contents)
+          intervals @*intervals*
+          ast (ast-utils/transform
+               ast
+               :default (fn [each _]
+                          (if-let [[start stop] (get intervals each)]
+                            (vary-meta each assoc
+                                       :token (t/make-token src start (- stop start) nil))
+                            each)))]
+      [src ast])))
+
 (defn generate-code [node]
-  (binding [sw/*writer* (sw/make-writer)]
-    (print node)
-    (sw/contents)))
+  (first (generate-code-and-tokens node)))
