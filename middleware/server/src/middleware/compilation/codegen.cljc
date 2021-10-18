@@ -10,43 +10,39 @@
 
 (defn- print [node] (print-node node))
 
+(defn- print-with-semicolon [node]
+  (print node)
+  (append! ";"))
+
+(defn- do-separated [action-fn separator-fn coll]
+  "Executes action-fn for every item in coll, executing separator-fn in between
+  each item. Both action-fn and separator-fn should have side effects.
+  Returns nil. "
+  (doseq [[i e] (map-indexed vector coll)]
+    (when (pos? i) (separator-fn))
+    (action-fn e)))
+
+(defmethod print-node "UziProgramNode"
+  [{:keys [imports globals primitives scripts]}]
+  (doseq [action (interpose ::newline
+                            (remove nil?
+                                    [(when-not (empty? imports) ::imports)
+                                     (when-not (empty? globals) ::globals)
+                                     (when-not (empty? primitives) ::primitives)
+                                     (when-not (empty? scripts) ::scripts)]))]
+    (case action
+      ::newline (append! "\n\n")
+      ::imports (do-separated print append-line! imports)
+      ::globals (do-separated print-with-semicolon append-line! globals)
+      ::primitives (do-separated print append-line! primitives)
+      ::scripts (do-separated print (partial append! "\n\n") scripts))))
+
 (defn print-optional-block [block]
   (if (empty? (:statements block))
     (append! ";")
     (do
       (append! " ")
       (print block))))
-
-(defmethod print-node "UziProgramNode"
-  [{:keys [imports globals primitives scripts]}]
-  (let [print-imports #(doseq [[i imp] (map-indexed vector imports)]
-                         (when (pos? i) (append-line!))
-                         (print imp))
-        print-globals #(doseq [[i global] (map-indexed vector globals)]
-                         (when (pos? i) (append-line!))
-                         (print global)
-                         (append! ";"))
-        print-primitives #(doseq [[i prim] (map-indexed vector primitives)]
-                            (when (pos? i) (append-line!))
-                            (print prim))
-        print-scripts #(doseq [[i script] (map-indexed vector scripts)]
-                         (when (pos? i) (append! "\n\n"))
-                         (print script))]
-    (doseq [[i action]
-            (map-indexed vector
-                         (remove nil?
-                                 [(when-not (empty? imports) print-imports)
-                                  (when-not (empty? globals) print-globals)
-                                  (when-not (empty? primitives) print-primitives)
-                                  (when-not (empty? scripts) print-scripts)]))]
-      (when (pos? i) (append! "\n\n"))
-      (action))))
-
-(defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]}]
-  (append! (u/format "prim %1;"
-                     (if (= alias name)
-                       alias
-                       (u/format "%1 : %2" alias name)))))
 
 (defmethod print-node "UziImportNode" [node]
   (append! (u/format "import %1 from '%2'"
@@ -61,11 +57,11 @@
       (append! " = ")
       (print value))))
 
-(defmethod print-node "UziNumberLiteralNode" [node]
-  (append! (str (:value node))))
-
-(defmethod print-node "UziPinLiteralNode" [node]
-  (append! (str (:type node) (:number node))))
+(defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]}]
+  (append! (u/format "prim %1;"
+                     (if (= alias name)
+                       alias
+                       (u/format "%1 : %2" alias name)))))
 
 (defmethod print-node "UziTaskNode" [{:keys [name state tickingRate body]}]
   (append-indent!)
@@ -109,6 +105,12 @@
                       (append-line!)))
       (append-indent!)
       (append! "}"))))
+
+(defmethod print-node "UziNumberLiteralNode" [node]
+  (append! (str (:value node))))
+
+(defmethod print-node "UziPinLiteralNode" [node]
+  (append! (str (:type node) (:number node))))
 
 (defmethod print-node "UziCallNode" [{:keys [selector arguments]}]
   (if-not (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" selector)
