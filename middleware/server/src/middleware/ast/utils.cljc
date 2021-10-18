@@ -109,6 +109,14 @@
           true)))
     (not (expression? node))))
 
+(defn control-structure? [node]
+  (contains? #{"UziConditionalNode" "UziForNode"
+               "UziForeverNode" "UziLoopNode"
+               "UziWhileNode" "UziUntilNode"
+               "UziDoWhileNode" "UziDoUntilNode"
+               "UziRepeatNode"}
+             (node-type node)))
+
 (defn script-control? [node]
   (contains? #{"UziScriptStopNode" "UziScriptStartNode"
                "UziScriptPauseNode" "UziScriptResumeNode"}

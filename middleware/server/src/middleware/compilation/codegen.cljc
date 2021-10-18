@@ -1,10 +1,10 @@
 (ns middleware.compilation.codegen
   (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]
-            [middleware.utils.string-writer :as sw]
+            [middleware.ast.utils :as ast-utils]
+            [middleware.utils.string-writer :as sw
+             :refer [append! append-line! append-indent! inc-indent!]]
             [middleware.utils.core :as u]))
-
-; TODO(Richo): Concatenating strings seems very inefficient
 
 (defmulti print-node :__class__)
 
@@ -12,201 +12,246 @@
 
 (defn print-optional-block [block]
   (if (empty? (:statements block))
-    ";"
-    (str " " (print block))))
+    (append! ";")
+    (do
+      (append! " ")
+      (print block))))
 
-(defn- remove-empty [& colls]
-  (remove empty? colls))
+(defmethod print-node "UziProgramNode"
+  [{:keys [imports globals primitives scripts]}]
+  (let [print-imports #(doseq [[i imp] (map-indexed vector imports)]
+                         (when (pos? i) (append-line!))
+                         (print imp))
+        print-globals #(doseq [[i global] (map-indexed vector globals)]
+                         (when (pos? i) (append-line!))
+                         (print global)
+                         (append! ";"))
+        print-primitives #(doseq [[i prim] (map-indexed vector primitives)]
+                            (when (pos? i) (append-line!))
+                            (print prim))
+        print-scripts #(doseq [[i script] (map-indexed vector scripts)]
+                         (when (pos? i) (append! "\n\n"))
+                         (print script))]
+    (doseq [[i action]
+            (map-indexed vector
+                         (remove nil?
+                                 [(when-not (empty? imports) print-imports)
+                                  (when-not (empty? globals) print-globals)
+                                  (when-not (empty? primitives) print-primitives)
+                                  (when-not (empty? scripts) print-scripts)]))]
+      (when (pos? i) (append! "\n\n"))
+      (action))))
 
-(defmethod print-node "UziProgramNode" [node]
-  (str/join (flatten
-             (interpose "\n\n"
-                        (remove-empty
-                         (interpose "\n" (map print (:imports node)))
-                         (interpose "\n" (map print (:globals node)))
-                         (interpose "\n" (map print (:primitives node)))
-                         (interpose "\n\n" (map print (:scripts node))))))))
-
-(defmethod print-node "UziPrimitiveDeclarationNode" [node]
-  (u/format "prim %1;"
-            (if (= (:alias node) (:name node))
-              (:alias node)
-              (u/format "%1 : %2"
-                        (:alias node)
-                        (:name node)))))
+(defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]}]
+  (append! (u/format "prim %1;"
+                     (if (= alias name)
+                       alias
+                       (u/format "%1 : %2" alias name)))))
 
 (defmethod print-node "UziImportNode" [node]
-  (u/format "import %1 from '%2'%3"
-            (:alias node)
-            (:path node)
-            (print-optional-block (:initializationBlock node))))
+  (append! (u/format "import %1 from '%2'"
+                     (:alias node)
+                     (:path node)))
+  (print-optional-block (:initializationBlock node)))
 
-(defmethod print-node "UziVariableDeclarationNode" [node]
-  (if (:value node)
-    (u/format "var %1 = %2;"
-              (:name node)
-              (print (:value node)))
-    (u/format "var %1;"
-              (:name node))))
+(defmethod print-node "UziVariableDeclarationNode" [{:keys [name value]}]
+  (append! (u/format "var %1" name))
+  (when value
+    (do
+      (append! " = ")
+      (print value))))
 
 (defmethod print-node "UziNumberLiteralNode" [node]
-  (str (:value node)))
+  (append! (str (:value node))))
 
 (defmethod print-node "UziPinLiteralNode" [node]
-  (str (:type node) (:number node)))
+  (append! (str (:type node) (:number node))))
 
-(defmethod print-node "UziTaskNode" [node]
-  (u/format "task %1()%2%3 %4"
-            (:name node)
-            (if (= "once" (:state node)) "" (str " " (:state node)))
-            (if (nil? (:tickingRate node)) "" (print (:tickingRate node)))
-            (print (:body node))))
+(defmethod print-node "UziTaskNode" [{:keys [name state tickingRate body]}]
+  (append-indent!)
+  (append! (u/format "task %1()" name))
+  (when (not= "once" state)
+    (append! (str " " state)))
+  (when tickingRate
+    (append! " ")
+    (print tickingRate))
+  (append! " ")
+  (print body))
 
-(defmethod print-node "UziFunctionNode" [node]
-  (u/format "func %1(%2) %3"
-            (:name node)
-            (str/join ", " (map :name (:arguments node)))
-            (print (:body node))))
+(defmethod print-node "UziFunctionNode" [{:keys [name arguments body]}]
+  (append-indent!)
+  (append! (u/format "func %1(%2)" name (str/join ", " (map :name arguments))))
+  (append! " ")
+  (print body))
 
-(defmethod print-node "UziProcedureNode" [node]
-  (u/format "proc %1(%2) %3"
-            (:name node)
-            (str/join ", " (map :name (:arguments node)))
-            (print (:body node))))
+(defmethod print-node "UziProcedureNode" [{:keys [name arguments body]}]
+  (append-indent!)
+  (append! (u/format "proc %1(%2)" name (str/join ", " (map :name arguments))))
+  (append! " ")
+  (print body))
 
 (defmethod print-node "UziTickingRateNode" [node]
-  (u/format " %1/%2" (:value node) (:scale node)))
+  (append! (u/format "%1/%2" (:value node) (:scale node))))
 
-(defn add-indent-level [lines]
-  (str/join (map (fn [line] (str "\t" line "\n"))
-                 (filter (fn [line] (and (not= "\n" line)
-                                         (not= "" line)))
-                         (str/split-lines lines)))))
+(defn needs-semicolon? [node]
+  (not (ast-utils/control-structure? node)))
 
-(defmethod print-node "UziBlockNode" [node]
-  (if (empty? (:statements node))
-    "{}"
-    (u/format "{\n%1}"
-              (add-indent-level
-               (str/join "\n"
-                         (map (fn [expr]
-                                (if (or (str/ends-with? expr "}")
-                                        (str/ends-with? expr ";"))
-                                  expr
-                                  (str expr ";")))
-                              (map print (:statements node))))))))
+(defmethod print-node "UziBlockNode" [{:keys [statements]}]
+  (if (empty? statements)
+    (append! "{}")
+    (do
+      (append-line! "{")
+      (inc-indent! #(doseq [stmt statements]
+                      (append-indent!)
+                      (print stmt)
+                      (when (needs-semicolon? stmt)
+                        (append! ";"))
+                      (append-line!)))
+      (append-indent!)
+      (append! "}"))))
 
-(defn print-operator-expression [node]
-  (if (= 1 (-> node :arguments count))
-    ;unary
-    (u/format "(%1%2)"
-              (:selector node)
-              (print (first (:arguments node))))
-    ;binary
-    (u/format "(%1 %2 %3)"
-              (print (first (:arguments node)))
-              (:selector node)
-              (print (second (:arguments node))))))
+(defmethod print-node "UziCallNode" [{:keys [selector arguments]}]
+  (if-not (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" selector)
+    ; Regular call
+    (do
+      (append! selector)
+      (append! "(")
+      (doseq [arg (interpose ::separator arguments)]
+        (if (= ::separator arg)
+          (append! ", ")
+          (print arg)))
+      (append! ")"))
 
-(defmethod print-node "UziCallNode" [node]
-  (if (nil? (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+"
-                        (:selector node)))
-    ;non-operator
-    (u/format "%1(%2)"
-              (:selector node)
-              (str/join ", " (map print (:arguments node))))
-    (print-operator-expression node)))
+    (if (= 1 (count arguments))
+      ; Unary
+      (do
+        (append! "(")
+        (append! selector)
+        (print (first arguments))
+        (append! ")"))
 
-(defmethod print-node "Association" [node]
-  (str (if (nil? (:key node)) "" (str (:key node) ": "))
-       (print (:value node))))
+      ; Binary
+      (do
+        (append! "(")
+        (print (first arguments))
+        (append! " ")
+        (append! selector)
+        (append! " ")
+        (print (second arguments))
+        (append! ")")))))
 
-(defmethod print-node "UziVariableNode" [node] (:name node))
+(defmethod print-node "Association" [{:keys [key value]}]
+  (when key
+    (append! key)
+    (append! ": "))
+  (print value))
 
-(defmethod print-node "UziReturnNode" [node]
-  (if (nil? (:value node))
-    "return"
-    (u/format "return %1" (print (:value node)))))
+(defmethod print-node "UziVariableNode" [node]
+  (append! (:name node)))
 
-(defmethod print-node "UziYieldNode" [node] "yield")
+(defmethod print-node "UziReturnNode" [{:keys [value]}]
+  (append! "return")
+  (when value
+    (append! " ")
+    (print value)))
 
-(defmethod print-node "UziForNode" [node]
-  (u/format "for %1 = %2 to %3 by %4 %5"
-            (:name (:counter node))
-            (print (:start node))
-            (print (:stop node))
-            (print (:step node))
-            (print (:body node))))
+(defmethod print-node "UziYieldNode" [node]
+  (append! "yield"))
 
-(defmethod print-node "UziWhileNode" [node]
-  (u/format "while %1%2"
-            (print (:condition node))
-            (print-optional-block (:post node))))
+(defmethod print-node "UziForNode"
+  [{:keys [counter start stop step body]}]
+  (append! (u/format "for %1 = " (:name counter)))
+  (print start)
+  (append! " to ")
+  (print stop)
+  (append! " by ")
+  (print step)
+  (append! " ")
+  (print body))
 
-(defmethod print-node "UziDoWhileNode" [node]
-  (u/format "do %1 while(%2)"
-            (print (:pre node))
-            (print (:condition node))))
+(defmethod print-node "UziWhileNode" [{:keys [condition post]}]
+  (append! "while ")
+  (print condition)
+  (print-optional-block post))
 
-(defmethod print-node "UziUntilNode" [node]
-  (u/format "until %1%2"
-            (print (:condition node))
-            (print-optional-block (:post node))))
+(defmethod print-node "UziDoWhileNode" [{:keys [pre condition]}]
+  (append! "do ")
+  (print pre)
+  (append! " while(")
+  (print condition)
+  (append! ");"))
 
-(defmethod print-node "UziDoUntilNode" [node]
-  (u/format "do %1 until(%2)"
-            (print (:pre node))
-            (print (:condition node))))
+(defmethod print-node "UziUntilNode" [{:keys [condition post]}]
+  (append! "until ")
+  (print condition)
+  (print-optional-block post))
+
+(defmethod print-node "UziDoUntilNode" [{:keys [pre condition]}]
+  (append! "do ")
+  (print pre)
+  (append! " until(")
+  (print condition)
+  (append! ");"))
 
 (defmethod print-node "UziForeverNode" [node]
-  (u/format "forever %1"
-            (print (:body node))))
+  (append! "forever ")
+  (print (:body node)))
 
-(defmethod print-node "UziRepeatNode" [node]
-  (u/format "repeat %1 %2"
-            (print (:times node))
-            (print (:body node))))
+(defmethod print-node "UziRepeatNode" [{:keys [times body]}]
+  (append! "repeat ")
+  (print times)
+  (append! " ")
+  (print body))
 
-(defmethod print-node "UziConditionalNode" [node]
-  (let [trueBranch (u/format "if %1 %2"
-                             (print (:condition node))
-                             (print (:trueBranch node)))]
-    (if (empty? (-> node :falseBranch :statements))
-      trueBranch
-      (str trueBranch " else " (print (:falseBranch node))))))
+(defmethod print-node "UziConditionalNode"
+  [{:keys [condition trueBranch falseBranch]}]
+  (append! "if ")
+  (print condition)
+  (append! " ")
+  (print trueBranch)
+  (when-not (empty? (:statements falseBranch))
+    (append! " else ")
+    (print falseBranch)))
 
-(defmethod print-node "UziAssignmentNode" [node]
-  (u/format "%1 = %2"
-            (print (:left node))
-            (print (:right node))))
+(defmethod print-node "UziAssignmentNode" [{:keys [left right]}]
+  (print left)
+  (append! " = ")
+  (print right))
 
 (defmethod print-node "UziScriptStartNode" [node]
-  (u/format "start %1"
-            (str/join ", " (:scripts node))))
+  (append! (u/format "start %1"
+                     (str/join ", " (:scripts node)))))
 
 (defmethod print-node "UziScriptStopNode" [node]
-  (u/format "stop %1"
-            (str/join ", " (:scripts node))))
+  (append! (u/format "stop %1"
+                     (str/join ", " (:scripts node)))))
 
 (defmethod print-node "UziScriptPauseNode" [node]
-  (u/format "pause %1"
-            (str/join ", " (:scripts node))))
+  (append! (u/format "pause %1"
+                     (str/join ", " (:scripts node)))))
 
 (defmethod print-node "UziScriptResumeNode" [node]
-  (u/format "resume %1"
-            (str/join ", " (:scripts node))))
+  (append! (u/format "resume %1"
+                     (str/join ", " (:scripts node)))))
 
-(defmethod print-node "UziLogicalAndNode" [node]
-  (u/format "(%1 && %2)"
-            (print (:left node))
-            (print (:right node))))
+(defmethod print-node "UziLogicalAndNode" [{:keys [left right]}]
+  (append! "(")
+  (print left)
+  (append! " && ")
+  (print right)
+  (append! ")"))
 
-(defmethod print-node "UziLogicalOrNode" [node]
-  (u/format "(%1 || %2)"
-            (print (:left node))
-            (print (:right node))))
+(defmethod print-node "UziLogicalOrNode" [{:keys [left right]}]
+  (append! "(")
+  (print left)
+  (append! " || ")
+  (print right)
+  (append! ")"))
 
 (defmethod print-node :default [node]
   (throw (ex-info "Not Implemented node reached: " {:node node})))
 
-(defn generate-code [node] (print node))
+(defn generate-code [node]
+  (binding [sw/*writer* (sw/make-writer)]
+    (print node)
+    (sw/contents)))
