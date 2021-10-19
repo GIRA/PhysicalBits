@@ -17,8 +17,9 @@
 (use-fixtures :once setup-fixture)
 
 (defn compile [src]
-  #?(:clj (register-program! src))
-  (cc/compile-tree (p/parse src)))
+  (let [ast (p/parse src)]
+    #?(:clj (register-program! ast))
+    (cc/compile-tree ast)))
 
 (defn check-bytecodes [bytecodes src]
   ; HACK(Richo): Basic check to make sure we're actually producing some bytecodes

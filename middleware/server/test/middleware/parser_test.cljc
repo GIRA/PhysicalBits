@@ -11,9 +11,10 @@
 (def exclusions #{'custom-operator-precedence})
 
 (defn parse [src]
-  #?(:clj (if-not (contains? exclusions (symbol (test-name)))
-          (register-program! src)))
-  (pp/parse src))
+  (let [ast (pp/parse src)]
+    #?(:clj (if-not (contains? exclusions (symbol (test-name)))
+              (register-program! ast)))
+    ast))
 
 (deftest return-should-not-be-confused-with-call
   (let [src "task foo() { return (3) + 4; }"

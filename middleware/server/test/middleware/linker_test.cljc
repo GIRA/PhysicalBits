@@ -15,8 +15,9 @@
 (def lib-dir "../../uzi/tests")
 
 (defn compile-string [src]
-  #?(:clj (register-program! src :lib-dir lib-dir))
-  (cc/compile-tree (p/parse src) :lib-dir lib-dir))
+  (let [ast (p/parse src)]
+    #?(:clj (register-program! ast :lib-dir lib-dir))
+    (cc/compile-tree ast :lib-dir lib-dir)))
 
 (defn- without-prims [ast]
  (-> ast

@@ -29,10 +29,9 @@
 
 (defn- collect-stats [programs]
   (map (fn [{:keys [name ast-or-src args]}]
-         (let [src (if (string? ast-or-src)
-                     ast-or-src
-                     (cg/generate-code ast-or-src))
-               ast (p/parse src)
+         (let [ast (if (string? ast-or-src)
+                     (p/parse ast-or-src)
+                     ast-or-src)
                program (apply cc/compile-tree ast args)]
            {:instruction-count (count (program/instructions program))
             :global-count (count (:globals program))

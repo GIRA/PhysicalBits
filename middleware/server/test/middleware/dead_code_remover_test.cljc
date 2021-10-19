@@ -12,8 +12,9 @@
 (use-fixtures :once setup-fixture)
 
 (defn compile-string [src]
-  #?(:clj (register-program! src))
-  (cc/compile-tree (p/parse src)))
+  (let [ast (p/parse src)]
+    #?(:clj (register-program! ast))
+    (cc/compile-tree ast)))
 
 (deftest
   stopped-task-with-no-refs-should-be-removed

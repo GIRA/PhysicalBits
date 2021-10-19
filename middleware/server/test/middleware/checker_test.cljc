@@ -73,20 +73,23 @@
                         :errors errors#}))
           result#))))
 
+(defn parse [ast-or-src]
+  (if (string? ast-or-src)
+    (pp/parse ast-or-src)
+    ast-or-src))
+
 (defn check [src]
-  (let [ast (if (string? src)
-              (pp/parse src)
-              src)]
-    (-> ast
-        (linker/resolve-imports "../../uzi/tests")
-        checker/check-tree)))
+  (-> (parse src)
+      (linker/resolve-imports "../../uzi/tests")
+      checker/check-tree))
 
 #?(:clj (def invalid? check)
   :cljs (defn invalid? [src] (not (empty? (check src)))))
 
 #?(:clj (defn valid? [src]
-          (register-program! src :lib-dir "../../uzi/tests")
-          (check src))
+          (let [ast (parse src)]
+            (register-program! ast :lib-dir "../../uzi/tests")
+            (check ast)))
   :cljs (defn valid? [src] (empty? (check src))))
 
 (deftest block-should-only-contain-statements
