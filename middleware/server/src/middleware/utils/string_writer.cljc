@@ -6,7 +6,8 @@
 (defn make-writer []
   {:contents (volatile! []) ; TODO(Richo): Maybe use a native string builder or somethin?
    :position (volatile! 0)
-   :indent-level (volatile! 0)})
+   :indent-level (volatile! 0)
+   :intervals (volatile! {})})
 
 (defn contents
   ([] (contents *writer*))
@@ -15,6 +16,10 @@
 (defn position
   ([] (position *writer*))
   ([writer] @(:position writer)))
+
+(defn intervals
+  ([] (intervals *writer*))
+  ([writer] @(:intervals writer)))
 
 (defn append!
   ([string] (append! *writer* string))
@@ -48,3 +53,12 @@
        (f)
        (finally (vreset! (:indent-level writer) old-level)))
      writer)))
+
+(defn save-interval!
+  ([obj f] (save-interval! *writer* obj f))
+  ([writer obj f]
+   (let [start (position writer)
+         result (f obj)
+         stop (position writer)]
+     (vswap! (:intervals writer) assoc obj [start stop])
+     result)))

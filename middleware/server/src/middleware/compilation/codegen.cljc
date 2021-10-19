@@ -7,15 +7,10 @@
              :refer [append! append-line! append-indent! inc-indent!]]
             [middleware.utils.core :as u]))
 
-(def ^:dynamic *intervals*)
-
 (defmulti print-node :__class__)
 
 (defn- print [node]
-  (let [start (sw/position sw/*writer*)]
-    (print-node node)
-    (vswap! *intervals*
-            assoc node [start (sw/position sw/*writer*)])))
+  (sw/save-interval! node print-node))
 
 (defn- print-with-semicolon [node]
   (print node)
@@ -258,14 +253,13 @@
   (append! ")"))
 
 (defmethod print-node :default [node]
-  (throw (ex-info "Not Implemented node reached: " {:node node})))
+  (throw (ex-info "Unknown node" {:node node})))
 
 (defn generate-tokens [ast]
-  (binding [sw/*writer* (sw/make-writer)
-            *intervals* (volatile! {})]
+  (binding [sw/*writer* (sw/make-writer)]
     (print ast)
     (let [src (sw/contents)
-          intervals @*intervals*]
+          intervals (sw/intervals)]
       (ast-utils/transform
        ast
        :default (fn [each _]
