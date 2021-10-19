@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [print])
   (:require [clojure.string :as str]
             [petitparser.token :as t]
+            [middleware.compilation.parser :as parser]
             [middleware.ast.utils :as ast-utils]
             [middleware.utils.code-writer :as cw]))
 
@@ -45,8 +46,8 @@
   (if (empty? (:statements block))
     (cw/append! writer ";")
     (doto writer
-      (cw/append! " ")
-      (print block))))
+          (cw/append! " ")
+          (print block))))
 
 (defmethod print-node "UziImportNode"
   [{:keys [alias path initializationBlock]} writer]
@@ -115,28 +116,33 @@
 (defmethod print-node "UziPinLiteralNode" [node writer]
   (cw/append! writer (str (:type node) (:number node))))
 
+(defn binary? [selector]
+  "Returns true if the selector is a binary operator.
+  All the characters in selector *must* be binary"
+  (every? parser/binary? selector))
+
 (defmethod print-node "UziCallNode" [{:keys [selector arguments]} writer]
-  (if-not (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" selector)
+  (if-not (binary? selector)
     ; Regular call
     (doto writer
-      (cw/append! selector "(")
-      (print-seq arguments :separated-by ", ")
-      (cw/append! ")"))
+          (cw/append! selector "(")
+          (print-seq arguments :separated-by ", ")
+          (cw/append! ")"))
 
     (if (= 1 (count arguments))
       ; Unary
       (doto writer
-        (cw/append! "(" selector)
-        (print (first arguments))
-        (cw/append! ")"))
+            (cw/append! "(" selector)
+            (print (first arguments))
+            (cw/append! ")"))
 
       ; Binary
       (doto writer
-        (cw/append! "(")
-        (print (first arguments))
-        (cw/append! " " selector " ")
-        (print (second arguments))
-        (cw/append! ")")))))
+            (cw/append! "(")
+            (print (first arguments))
+            (cw/append! " " selector " ")
+            (print (second arguments))
+            (cw/append! ")")))))
 
 (defmethod print-node "Association" [{:keys [key value]} writer]
   (when key

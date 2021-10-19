@@ -19,6 +19,10 @@
    #{"&&"}
    #{"||"}])
 
+(defn binary? [chr] ; TODO(Richo): Maybe avoid regex? Measure performance!
+  (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
+           (str chr)))
+
 (defn- build-binary-expression [selector left right]
   [selector left right]
   (case selector
@@ -144,13 +148,7 @@
    :non-binary-expr (pp/or :unary :literal :call :variable :sub-expr)
    :binary-expr [:non-binary-expr :ws?
                  (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
-   :binary-selector (pp/flatten
-                     (pp/plus
-                      (pp/predicate
-                       (fn [chr] ; TODO(Richo): Maybe avoid regex? Measure performance!
-                         (re-find #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]"
-                                  (str chr)))
-                       "Not binary")))
+   :binary-selector (pp/flatten (pp/plus (pp/predicate binary? "Not binary")))
    :literal (pp/or :constant :number)
    :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
