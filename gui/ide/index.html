@@ -95,7 +95,7 @@
       <div id="layout-container"></div>
     </div>
     <div id="hidden-panels" style="display: none;">
-      <div id="controls-panel" class="container">
+      <div id="controls-panel" class="container small-panel">
         <form>
           <div class="form-group">
             <label for="port-dropdown" style="margin: 10px 0px 0px" lang="en">Port name:</label>
@@ -133,7 +133,7 @@
           </div>
         </form>
       </div>
-      <div id="inspector-panel" class="container">
+      <div id="inspector-panel" class="container small-panel">
         <div style="font-size: small;">
           <div class="card bg-dark text-white mt-2" style="flex-direction: row;">
             <div class="card-header" style="width: 7em;">
@@ -232,37 +232,59 @@
           <canvas id="plotter-canvas" width="100px" height="100px"></canvas>
         </div>
       </div>
-      <div id="debugger-panel" class="container">
-        <div id="debugger-buttons" class="btn-group btn-group-sm" role="toolbar" aria-label="...">
-          <button id="debugger-break-button" type="button" class="btn btn-primary">
-            <i class="fas fa-pause mr-1"></i>
-            Pause
-          </button>
-          <button id="debugger-continue-button" type="button" class="btn btn-primary">
-            <i class="fas fa-play mr-1"></i>
-            Continue
-          </button>
-          <button id="debugger-step-over-button" type="button" class="btn btn-primary">
-            <i class="fas fa-share mr-1"></i>
-            Over
-          </button>
-          <button id="debugger-step-into-button" type="button" class="btn btn-primary">
-            <i class="fas fa-level-down-alt mr-1"></i>
-            Into
-          </button>
-          <button id="debugger-step-out-button" type="button" class="btn btn-primary">
-            <i class="fas fa-level-up-alt mr-1"></i>
-            Out
-          </button>
-          <button id="debugger-step-next-button" type="button" class="btn btn-primary">
-            <i class="fas fa-step-forward mr-1"></i>
-            Next
-          </button>
+      <div id="debugger-panel" class="fullscreen">
+        <div id="debugger-buttons" class="small-panel p-1 text-center">
+          <div class="btn-group btn-group-sm" role="toolbar" aria-label="...">
+            <button id="debugger-break-button" type="button" class="btn btn-primary">
+              <i class="fas fa-pause mr-1"></i>
+              Pause
+            </button>
+            <button id="debugger-continue-button" type="button" class="btn btn-primary">
+              <i class="fas fa-play mr-1"></i>
+              Continue
+            </button>
+            <button id="debugger-step-over-button" type="button" class="btn btn-primary">
+              <i class="fas fa-share mr-1"></i>
+              Over
+            </button>
+            <button id="debugger-step-into-button" type="button" class="btn btn-primary">
+              <i class="fas fa-level-down-alt mr-1"></i>
+              Into
+            </button>
+            <button id="debugger-step-out-button" type="button" class="btn btn-primary">
+              <i class="fas fa-level-up-alt mr-1"></i>
+              Out
+            </button>
+            <button id="debugger-step-next-button" type="button" class="btn btn-primary">
+              <i class="fas fa-step-forward mr-1"></i>
+              Next
+            </button>
+          </div>
         </div>
 
+        <div class="fullscreen" style="height: calc(100% - 40px);">
+          <div class="split fullscreen">
+            <div id="split-0" class="scrollable">
+              <pre id="debugger-output" class="text-white"></pre>
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi accumsan diam nec diam ornare, in sodales tellus fringilla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut ligula leo, lobortis et sodales sed, pharetra aliquam nulla. Praesent ex enim, facilisis ut enim egestas, feugiat placerat est. Praesent condimentum et nulla eu consectetur. Nam vitae turpis vulputate, semper ex vitae, blandit arcu. Fusce rhoncus rutrum purus id pellentesque. Vivamus pulvinar nisi vel viverra facilisis. Vivamus iaculis egestas leo, sed venenatis ante pellentesque at. Curabitur ultrices elit ac velit varius, vulputate bibendum nunc bibendum. Nullam at volutpat nibh. Praesent malesuada efficitur tempor. Proin porttitor aliquam ipsum, a interdum felis.
 
-        <pre id="debugger-output" class="text-white"></pre>
+                Suspendisse laoreet ex in imperdiet hendrerit. Pellentesque ultricies euismod auctor. Cras semper bibendum tellus a tincidunt. Proin condimentum et nisl quis suscipit. Suspendisse diam ante, tincidunt nec bibendum ac, malesuada congue justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam nec ullamcorper dolor. Praesent fringilla nibh varius, rhoncus magna at, efficitur velit.
 
+                Fusce euismod velit quis libero gravida ullamcorper.
+              </p>
+            </div>
+            <div id="split-1" class="scrollable">
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi accumsan diam nec diam ornare, in sodales tellus fringilla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut ligula leo, lobortis et sodales sed, pharetra aliquam nulla. Praesent ex enim, facilisis ut enim egestas, feugiat placerat est. Praesent condimentum et nulla eu consectetur. Nam vitae turpis vulputate, semper ex vitae, blandit arcu. Fusce rhoncus rutrum purus id pellentesque. Vivamus pulvinar nisi vel viverra facilisis. Vivamus iaculis egestas leo, sed venenatis ante pellentesque at. Curabitur ultrices elit ac velit varius, vulputate bibendum nunc bibendum. Nullam at volutpat nibh. Praesent malesuada efficitur tempor. Proin porttitor aliquam ipsum, a interdum felis.
+
+                Suspendisse laoreet ex in imperdiet hendrerit. Pellentesque ultricies euismod auctor. Cras semper bibendum tellus a tincidunt. Proin condimentum et nisl quis suscipit. Suspendisse diam ante, tincidunt nec bibendum ac, malesuada congue justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam nec ullamcorper dolor. Praesent fringilla nibh varius, rhoncus magna at, efficitur velit.
+
+                Fusce euismod velit quis libero gravida ullamcorper.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -661,6 +683,8 @@
   	<!-- ACE -->
   	<script src="libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
+    <!-- Split.js -->
+    <script src="libs/Split.js/split.min.js"></script>
 
     <script src="polyfills.js" type="text/javascript"></script>
     <script src="utils.js" type="text/javascript"></script>

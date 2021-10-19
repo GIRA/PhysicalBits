@@ -1,6 +1,10 @@
 let Debugger = (function () {
 
   function init() {
+    Split(['#split-0', '#split-1'], {
+      gutterSize: 5,
+    });
+
     $("#debugger-break-button").on("click", sendBreak);
     $("#debugger-continue-button").on("click", sendContinue);
     $("#debugger-step-over-button").on("click", stepOver);
