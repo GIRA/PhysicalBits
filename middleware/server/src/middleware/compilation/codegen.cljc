@@ -3,14 +3,14 @@
   (:require [clojure.string :as str]
             [petitparser.token :as t]
             [middleware.ast.utils :as ast-utils]
-            [middleware.utils.string-writer :as sw
+            [middleware.utils.code-writer :as cw
              :refer [append! append-line! append-indent! inc-indent!]]
             [middleware.utils.core :as u]))
 
 (defmulti print-node :__class__)
 
 (defn- print [node]
-  (sw/save-interval! node print-node))
+  (cw/save-interval! node print-node))
 
 (defn- print-with-semicolon [node]
   (print node)
@@ -256,10 +256,10 @@
   (throw (ex-info "Unknown node" {:node node})))
 
 (defn generate-tokens [ast]
-  (binding [sw/*writer* (sw/make-writer)]
+  (binding [cw/*writer* (cw/make-writer)]
     (print ast)
-    (let [src (sw/contents)
-          intervals (sw/intervals)]
+    (let [src (cw/contents)
+          intervals (cw/intervals)]
       (ast-utils/transform
        ast
        :default (fn [each _]
