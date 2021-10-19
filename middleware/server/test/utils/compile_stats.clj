@@ -1,17 +1,17 @@
-(ns middleware.compile-stats
+(ns utils.compile-stats
   (:refer-clojure :exclude [compile])
   (:require [clojure.test :refer :all]
             [clojure.data :as data]
             [clojure.string :as str]
             [clojure.java.io :as io]
             [clojure.core.async :as a :refer [go <!!]]
-            [middleware.sound-notification :as sound]
+            [utils.sound-notification :as sound]
+            [utils.tests :refer [test-name init-dependencies]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]
             [middleware.compilation.codegen :as cg]
-            [middleware.program.utils :as program]
-            [middleware.test-utils :refer [test-name init-dependencies]]))
+            [middleware.program.utils :as program]))
 
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
 (def ^:private programs (atom {}))

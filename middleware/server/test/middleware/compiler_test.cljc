@@ -2,8 +2,8 @@
   (:refer-clojure :exclude [compile])
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compile-stats :refer [register-program!]]
-            [middleware.test-utils :refer [equivalent? setup-fixture]]
+            [utils.compile-stats :refer [register-program!]]
+            [utils.tests :refer [setup-fixture equivalent?]]
             [clojure.string :as str]
             [clojure.walk :as w]
             [middleware.ast.nodes :as ast]

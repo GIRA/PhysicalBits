@@ -2,7 +2,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go timeout]]
-            [middleware.test-utils :refer [test-async]]
+            [utils.tests :refer [test-async]]
             [middleware.device.protocol :as p]))
 
 (deftest set-global-value

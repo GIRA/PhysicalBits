@@ -1,9 +1,9 @@
 (ns middleware.dead-code-remover-test
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compile-stats :refer [register-program!]]
             [clojure.walk :as w]
-            [middleware.test-utils :refer [setup-fixture equivalent?]]
+            [utils.compile-stats :refer [register-program!]]
+            [utils.tests :refer [setup-fixture equivalent?]]
             [middleware.ast.utils :as ast-utils]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]

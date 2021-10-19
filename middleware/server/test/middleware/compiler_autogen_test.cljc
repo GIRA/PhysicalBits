@@ -1,12 +1,12 @@
 (ns middleware.compiler-autogen-test
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compile-stats :refer [register-program!]]
+            [utils.compile-stats :refer [register-program!]]
+            [utils.tests :refer [setup-fixture]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]
-            [middleware.program.emitter :as emit]
-            [middleware.test-utils :refer [setup-fixture]]))
+            [middleware.program.emitter :as emit]))
 
 (use-fixtures :once setup-fixture)
 

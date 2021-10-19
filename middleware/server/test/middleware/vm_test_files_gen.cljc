@@ -1,8 +1,8 @@
 (ns middleware.vm-test-files-gen
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.compile-stats :refer [register-program!]]
-            [middleware.test-utils :refer [test-name test-async setup-fixture]]
+            [utils.compile-stats :refer [register-program!]]
+            [utils.tests :refer [setup-fixture test-name]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.device.protocol :as protocol]

@@ -1,14 +1,14 @@
 (ns middleware.checker-test
   (:refer-clojure :exclude [compile])
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [utils.tests :refer [setup-fixture]]
+            [utils.compile-stats :refer [register-program!]]            
             [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
             [middleware.compilation.parser :as pp]
             [middleware.compilation.linker :as linker]
-            [middleware.compilation.checker :as checker]
-            [middleware.test-utils :refer [setup-fixture]]))
+            [middleware.compilation.checker :as checker]))
 
 (use-fixtures :once setup-fixture)
 

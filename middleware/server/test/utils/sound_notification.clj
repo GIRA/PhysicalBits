@@ -1,6 +1,5 @@
-(ns middleware.sound-notification
+(ns utils.sound-notification
   (:require [clojure.test :refer :all]
-            ;[clojure.tools.logging :as log]
             [clj-audio.core :refer :all]
             [clojure.java.io :as io]
             [clojure.core.async :refer [go]]))

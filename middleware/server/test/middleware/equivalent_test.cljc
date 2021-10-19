@@ -1,7 +1,7 @@
 (ns middleware.equivalent-test
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [middleware.test-utils :refer [equivalent?]]))
+            [utils.tests :refer [equivalent?]]))
 
 (deftest equivalent?-matches-simple-values
   (is (equivalent? 1 1))

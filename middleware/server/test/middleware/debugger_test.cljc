@@ -2,10 +2,10 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
+            [utils.tests :refer [setup-fixture test-async]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
-            [middleware.device.debugger :as debugger]
-            [middleware.test-utils :refer [test-async setup-fixture]]))
+            [middleware.device.debugger :as debugger]))
 
 (use-fixtures :once setup-fixture)
 

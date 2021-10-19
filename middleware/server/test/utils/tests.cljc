@@ -1,4 +1,4 @@
-(ns middleware.test-utils
+(ns utils.tests
   (:require [clojure.walk :as w]
             [clojure.data :as data]
             [clojure.core.async :as a]
