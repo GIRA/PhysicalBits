@@ -3,7 +3,8 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [utils.compile-stats :refer [register-program!]]
-            [utils.tests :refer [setup-fixture equivalent?]]
+            [utils.tests :refer [setup-fixture]]
+            [utils.equivalent :refer [equivalent?]]
             [clojure.string :as str]
             [clojure.walk :as w]
             [middleware.ast.nodes :as ast]

@@ -2,7 +2,8 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [utils.compile-stats :refer [register-program!]]
-            [utils.tests :refer [setup-fixture equivalent?]]
+            [utils.tests :refer [setup-fixture]]
+            [utils.equivalent :refer [equivalent?]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.linker :as l]

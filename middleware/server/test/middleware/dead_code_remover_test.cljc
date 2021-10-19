@@ -3,7 +3,8 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.walk :as w]
             [utils.compile-stats :refer [register-program!]]
-            [utils.tests :refer [setup-fixture equivalent?]]
+            [utils.tests :refer [setup-fixture]]
+            [utils.equivalent :refer [equivalent?]]
             [middleware.ast.utils :as ast-utils]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
