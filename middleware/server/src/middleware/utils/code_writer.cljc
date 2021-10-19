@@ -14,16 +14,17 @@
 
 (defn intervals [writer] @(:intervals writer))
 
-(defn append! [writer string]
-  (vswap! (:contents writer) conj string)
-  (vswap! (:position writer) (partial + (count string)))
-  writer)
+(defn append!
+  ([writer string]
+   (vswap! (:contents writer) conj string)
+   (vswap! (:position writer) (partial + (count string)))
+   writer)
+  ([writer string & more] (append! writer (apply str string more))))
 
 (defn append-line!
   ([writer] (append! writer "\n"))
   ([writer string]
-   (append! writer string)
-   (append! writer "\n")))
+   (append! writer string "\n")))
 
 (defn append-indent! [writer]
   (let [level @(:indent-level writer)]

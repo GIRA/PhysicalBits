@@ -3,9 +3,7 @@
   (:require [clojure.string :as str]
             [petitparser.token :as t]
             [middleware.ast.utils :as ast-utils]
-            [middleware.utils.code-writer :as cw
-             :refer [append! append-line! append-indent! inc-indent!]]
-            [middleware.utils.core :as u]))
+            [middleware.utils.code-writer :as cw]))
 
 (defmulti print-node :__class__)
 
@@ -53,27 +51,25 @@
 (defmethod print-node "UziImportNode"
   [{:keys [alias path initializationBlock]} writer]
   (doto writer
-        (cw/append! (u/format "import %1 from '%2'" alias path))
+        (cw/append! "import " alias " from '" path "'")
         (print-optional-block initializationBlock)))
 
 (defmethod print-node "UziVariableDeclarationNode" [{:keys [name value]} writer]
-  (cw/append! writer (u/format "var %1" name))
+  (cw/append! writer "var " name)
   (when value
     (cw/append! writer " = ")
     (print writer value)))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]} writer]
-  (cw/append! writer
-              (u/format "prim %1"
-                        (if (= alias name)
-                          alias
-                          (u/format "%1 : %2" alias name)))))
+  (cw/append! writer "prim " (if (= alias name)
+                               alias
+                               (str alias " : " name))))
 
 (defmethod print-node "UziTaskNode" [{:keys [name state tickingRate body]} writer]
   (cw/append-indent! writer)
-  (cw/append! writer (u/format "task %1()" name))
+  (cw/append! writer "task " name "()")
   (when (not= "once" state)
-    (cw/append! writer (str " " state)))
+    (cw/append! writer " " state))
   (when tickingRate
     (cw/append! writer " ")
     (print writer tickingRate))
@@ -83,23 +79,17 @@
 (defmethod print-node "UziFunctionNode" [{:keys [name arguments body]} writer]
   (doto writer
         (cw/append-indent!)
-        (cw/append! (u/format "func %1(%2)"
-                              name
-                              (str/join ", " (map :name arguments))))
-        (cw/append! " ")
+        (cw/append! "func " name "(" (str/join ", " (map :name arguments)) ") ")
         (print body)))
 
 (defmethod print-node "UziProcedureNode" [{:keys [name arguments body]} writer]
   (doto writer
         (cw/append-indent!)
-        (cw/append! (u/format "proc %1(%2)"
-                              name
-                              (str/join ", " (map :name arguments))))
-        (cw/append! " ")
+        (cw/append! "proc " name "(" (str/join ", " (map :name arguments)) ") ")
         (print body)))
 
 (defmethod print-node "UziTickingRateNode" [node writer]
-  (cw/append! writer (u/format "%1/%2" (:value node) (:scale node))))
+  (cw/append! writer (:value node) "/" (:scale node)))
 
 (defn needs-semicolon? [node]
   (not (ast-utils/control-structure? node)))
@@ -108,16 +98,16 @@
   (if (empty? statements)
     (cw/append! writer "{}")
     (doto writer
-      (cw/append-line! "{")
-      (cw/inc-indent! (fn [writer]
-                        (doseq [stmt statements]
-                          (cw/append-indent! writer)
-                          (print writer stmt)
-                          (when (needs-semicolon? stmt)
-                            (cw/append! writer ";"))
-                          (cw/append-line! writer))))
-      (cw/append-indent!)
-      (cw/append! "}"))))
+          (cw/append-line! "{")
+          (cw/inc-indent! (fn [writer]
+                            (doseq [stmt statements]
+                              (cw/append-indent! writer)
+                              (print writer stmt)
+                              (when (needs-semicolon? stmt)
+                                (cw/append! writer ";"))
+                              (cw/append-line! writer))))
+          (cw/append-indent!)
+          (cw/append! "}"))))
 
 (defmethod print-node "UziNumberLiteralNode" [node writer]
   (cw/append! writer (str (:value node))))
@@ -129,16 +119,14 @@
   (if-not (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" selector)
     ; Regular call
     (doto writer
-      (cw/append! selector)
-      (cw/append! "(")
+      (cw/append! selector "(")
       (print-seq arguments :separated-by ", ")
       (cw/append! ")"))
 
     (if (= 1 (count arguments))
       ; Unary
       (doto writer
-        (cw/append! "(")
-        (cw/append! selector)
+        (cw/append! "(" selector)
         (print (first arguments))
         (cw/append! ")"))
 
@@ -146,16 +134,13 @@
       (doto writer
         (cw/append! "(")
         (print (first arguments))
-        (cw/append! " ")
-        (cw/append! selector)
-        (cw/append! " ")
+        (cw/append! " " selector " ")
         (print (second arguments))
         (cw/append! ")")))))
 
 (defmethod print-node "Association" [{:keys [key value]} writer]
   (when key
-    (cw/append! writer key)
-    (cw/append! writer ": "))
+    (cw/append! writer key ": "))
   (print writer value))
 
 (defmethod print-node "UziVariableNode" [node writer]
@@ -173,7 +158,7 @@
 (defmethod print-node "UziForNode"
   [{:keys [counter start stop step body]} writer]
   (doto writer
-        (cw/append! (u/format "for %1 = " (:name counter)))
+        (cw/append! "for " (:name counter) " = ")
         (print start)
         (cw/append! " to ")
         (print stop)
@@ -240,20 +225,16 @@
         (print right)))
 
 (defmethod print-node "UziScriptStartNode" [node writer]
-  (cw/append! writer
-              (u/format "start %1" (str/join ", " (:scripts node)))))
+  (cw/append! writer "start " (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptStopNode" [node writer]
-  (cw/append! writer
-              (u/format "stop %1" (str/join ", " (:scripts node)))))
+  (cw/append! writer "stop " (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptPauseNode" [node writer]
-  (cw/append! writer
-              (u/format "pause %1" (str/join ", " (:scripts node)))))
+  (cw/append! writer "pause " (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziScriptResumeNode" [node writer]
-  (cw/append! writer
-              (u/format "resume %1" (str/join ", " (:scripts node)))))
+  (cw/append! writer "resume " (str/join ", " (:scripts node))))
 
 (defmethod print-node "UziLogicalAndNode" [{:keys [left right]} writer]
   (doto writer
@@ -283,8 +264,8 @@
        ast
        :default (fn [each _]
                   (if-let [[start stop] (get intervals each)]
-                    (vary-meta each assoc
-                               :token (t/make-token src start (- stop start) nil))
+                    (let [token (t/make-token src start (- stop start) nil)]
+                      (vary-meta each assoc :token token))
                     each))))))
 
 (defn generate-code [node]
