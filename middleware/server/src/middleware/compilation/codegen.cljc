@@ -12,32 +12,36 @@
 (defn- print [writer node]
   (cw/save-interval! writer node #(print-node % writer)))
 
-(defn- do-separated [action-fn separator-fn coll]
-  "Executes action-fn for every item in coll, executing separator-fn in between
-  each item. Both action-fn and separator-fn should have side effects.
-  Returns nil. "
-  (doseq [[i e] (map-indexed vector coll)]
-    (when (pos? i) (separator-fn))
-    (action-fn e)))
+(defn- print-seq [writer coll & {:keys [followed-by separated-by]}]
+  "Iterates over coll executing the print function for each item.
+  If followed-by is set to some value, it appends it *after* each item.
+  If separated-by is set to some value, it appends it *between* each item."
+  (if-let [sep separated-by]
+    (doseq [[i e] (map-indexed vector coll)]
+      (when (pos? i)
+        (cw/append! writer sep))
+      (print writer e)
+      (when followed-by
+        (cw/append! writer followed-by)))
+    (doseq [e coll]
+      (print writer e)
+      (when followed-by
+        (cw/append! writer followed-by)))))
 
 (defmethod print-node "UziProgramNode"
   [{:keys [imports globals primitives scripts]} writer]
-  (let [print-regular (partial print writer)
-        print-with-semicolon #(doto writer (print %) (cw/append! ";"))
-        print-newline #(cw/append-line! writer)
-        print-doubleline #(cw/append! writer "\n\n")]
-    (doseq [action (interpose ::newline
-                              (remove nil?
-                                      [(when-not (empty? imports) ::imports)
-                                       (when-not (empty? globals) ::globals)
-                                       (when-not (empty? primitives) ::primitives)
-                                       (when-not (empty? scripts) ::scripts)]))]
-      (case action
-        ::newline (print-doubleline)
-        ::imports (do-separated print-regular print-newline imports)
-        ::globals (do-separated print-with-semicolon print-newline globals)
-        ::primitives (do-separated print-regular print-newline primitives)
-        ::scripts (do-separated print-regular print-doubleline scripts)))))
+  (doseq [action (interpose ::newline
+                            (remove nil?
+                                    [(when-not (empty? imports) ::imports)
+                                     (when-not (empty? globals) ::globals)
+                                     (when-not (empty? primitives) ::primitives)
+                                     (when-not (empty? scripts) ::scripts)]))]
+    (case action
+      ::newline (cw/append! writer "\n\n")
+      ::imports (print-seq writer imports :separated-by "\n")
+      ::globals (print-seq writer globals :followed-by ";" :separated-by "\n")
+      ::primitives (print-seq writer primitives :followed-by ";" :separated-by "\n")
+      ::scripts (print-seq writer scripts :separated-by "\n\n"))))
 
 (defn print-optional-block [writer block]
   (if (empty? (:statements block))
@@ -60,7 +64,7 @@
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]} writer]
   (cw/append! writer
-              (u/format "prim %1;"
+              (u/format "prim %1"
                         (if (= alias name)
                           alias
                           (u/format "%1 : %2" alias name)))))
@@ -124,14 +128,11 @@
 (defmethod print-node "UziCallNode" [{:keys [selector arguments]} writer]
   (if-not (re-matches #"[^a-zA-Z0-9\s\[\]\(\)\{\}\"\':#_;,]+" selector)
     ; Regular call
-    (do
-      (cw/append! writer selector)
-      (cw/append! writer "(")
-      (doseq [arg (interpose ::separator arguments)]
-        (if (= ::separator arg)
-          (cw/append! writer ", ")
-          (print writer arg)))
-      (cw/append! writer ")"))
+    (doto writer
+      (cw/append! selector)
+      (cw/append! "(")
+      (print-seq arguments :separated-by ", ")
+      (cw/append! ")"))
 
     (if (= 1 (count arguments))
       ; Unary
