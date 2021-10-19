@@ -2,14 +2,18 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
+            [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.device.debugger :as debugger]
             [middleware.test-utils :refer [test-async setup-fixture]]))
 
 (use-fixtures :once setup-fixture)
 
+(defn compile-string [src]
+  (cc/compile-tree (p/parse src)))
+
 (deftest instruction-groups
-  (let [program (cc/compile-uzi-string "
+  (let [program (compile-string "
                   task blink13() running 1/s {
                   	toggle(D13);
                   }

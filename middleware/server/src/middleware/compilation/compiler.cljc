@@ -2,15 +2,12 @@
   (:refer-clojure :exclude [compile])
   (:require #?(:clj [clojure.tools.logging :as log])
             [middleware.utils.core :refer [seek]]
-            [middleware.utils.json :as json]
-            [middleware.compilation.parser :as parser]
             [middleware.device.boards :as boards]
             [middleware.ast.utils :as ast-utils]
             [middleware.program.emitter :as emit]
             [middleware.compilation.linker :as linker]
             [middleware.compilation.checker :as checker]
-            [middleware.compilation.dead-code-remover :as dcr]
-            [middleware.compilation.codegen :as codegen]))
+            [middleware.compilation.dead-code-remover :as dcr]))
 
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker
@@ -520,8 +517,7 @@
 (defn check [ast src]
   ; TODO(Richo): Use the src to improve the error messages
   (let [errors (checker/check-tree ast)]
-    (if (empty? errors)
-      ast
+    (when-not (empty? errors)
       (throw (ex-info (str (count errors)
                            " error" (if (= 1 (count errors)) "" "s")
                            " found!")
@@ -532,30 +528,18 @@
   (linker/resolve-imports ast lib-dir))
 
 (defn compile-tree
-  [original-ast src
-   & {:keys [board lib-dir remove-dead-code?]
-      :or {board boards/UNO,
-           lib-dir "../../uzi/libraries",
-           remove-dead-code? true}}]
+  [original-ast & {:keys [board lib-dir remove-dead-code?]
+                   :or {board boards/UNO,
+                        lib-dir "../../uzi/libraries",
+                        remove-dead-code? true}}]
   (let [ast (-> original-ast
                 (resolve-imports lib-dir)
                 (remove-dead-code remove-dead-code?)
-                (augment-ast board)
-                (check src))
-        compiled (compile ast (create-context))]
-    (vary-meta compiled
+                (augment-ast board))
+        src (-> ast meta :token :source)]
+    (check ast src)
+    (vary-meta (compile ast (create-context))
                assoc
                :source src
                :original-ast original-ast
                :final-ast ast)))
-
-; TODO(Richo): This function should not be in the compiler
-(defn compile-json-string [str & args]
-  (let [[src ast] (-> str json/decode codegen/generate-code-and-tokens)]
-    (vary-meta (apply compile-tree ast src args)
-               assoc :type :json)))
-
-; TODO(Richo): This function should not be in the compiler
-(defn compile-uzi-string [str & args]
-  (vary-meta (apply compile-tree (parser/parse str) str args)
-             assoc :type :uzi))

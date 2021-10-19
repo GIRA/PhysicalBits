@@ -260,20 +260,19 @@
 (defmethod print-node :default [node]
   (throw (ex-info "Not Implemented node reached: " {:node node})))
 
-(defn generate-code-and-tokens [ast]
+(defn generate-tokens [ast]
   (binding [sw/*writer* (sw/make-writer)
             *intervals* (volatile! {})]
     (print ast)
     (let [src (sw/contents)
-          intervals @*intervals*
-          ast (ast-utils/transform
-               ast
-               :default (fn [each _]
-                          (if-let [[start stop] (get intervals each)]
-                            (vary-meta each assoc
-                                       :token (t/make-token src start (- stop start) nil))
-                            each)))]
-      [src ast])))
+          intervals @*intervals*]
+      (ast-utils/transform
+       ast
+       :default (fn [each _]
+                  (if-let [[start stop] (get intervals each)]
+                    (vary-meta each assoc
+                               :token (t/make-token src start (- stop start) nil))
+                    each))))))
 
 (defn generate-code [node]
-  (first (generate-code-and-tokens node)))
+  (-> (generate-tokens node) meta :token :source))

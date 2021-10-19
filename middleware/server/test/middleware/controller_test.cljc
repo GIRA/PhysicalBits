@@ -3,6 +3,7 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.core.async :as a :refer [<! go]]
             [middleware.test-utils :refer [test-async setup-fixture]]
+            [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.device.controller :as dc]
             [middleware.device.ports.common :as ports]
@@ -20,6 +21,9 @@
   (make-in-chan! [_] (a/to-chan! (iterate inc 0)))
   (make-out-chan! [_] (a/chan (a/dropping-buffer 1))))
 
+(defn compile-string [src]
+  (cc/compile-tree (p/parse src)))
+
 (defn setup []
   (ports/register-constructors! identity)
   (reset! dc/state dc/initial-state)
@@ -34,7 +38,7 @@
                      :pins #{}
                      :globals #{}})
   ; HACK(Richo): Fake program
-  (let [program (cc/compile-uzi-string
+  (let [program (compile-string
                  "task blink13() running 1/s { toggle(D13); }
 
                   var counter;
@@ -65,7 +69,7 @@
 
 (deftest run-program
   (setup)
-  (let [program (cc/compile-uzi-string "task blink13() running 1/s { toggle(D13); }")]
+  (let [program (compile-string "task blink13() running 1/s { toggle(D13); }")]
     (dc/run program)
     (is (empty? (-> @dc/state :reporting :globals)))
     (is (= (-> @dc/state :program :running)

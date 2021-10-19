@@ -6,10 +6,11 @@
             [clojure.java.io :as io]
             [clojure.core.async :as a :refer [go <!!]]
             [middleware.sound-notification :as sound]
+            [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]
             [middleware.compilation.codegen :as cg]
-            [middleware.program.utils :as p]
+            [middleware.program.utils :as program]
             [middleware.test-utils :refer [test-name init-dependencies]]))
 
 (def compile-stats-path "../../firmware/Simulator/SimulatorTest/TestFiles/CompileStats.csv")
@@ -31,8 +32,9 @@
          (let [src (if (string? ast-or-src)
                      ast-or-src
                      (cg/generate-code ast-or-src))
-               program (apply cc/compile-uzi-string src args)]
-           {:instruction-count (count (p/instructions program))
+               ast (p/parse src)
+               program (apply cc/compile-tree ast args)]
+           {:instruction-count (count (program/instructions program))
             :global-count (count (:globals program))
             :encoded-size (count (en/encode program))
             :name name}))

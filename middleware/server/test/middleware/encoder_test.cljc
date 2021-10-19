@@ -5,6 +5,7 @@
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [clojure.string :as str]
             [middleware.test-utils :refer [setup-fixture]]
+            [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]
             [middleware.program.emitter :as emit]))
@@ -17,7 +18,7 @@
 
 (defn compile [src]
   #?(:clj (register-program! src))
-  (cc/compile-uzi-string src))
+  (cc/compile-tree (p/parse src)))
 
 (defn check-bytecodes [bytecodes src]
   ; HACK(Richo): Basic check to make sure we're actually producing some bytecodes

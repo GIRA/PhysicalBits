@@ -15,7 +15,7 @@
 
 (defn compile [ast]
   #?(:clj (register-program! ast))
-  (cc/compile-tree ast ""))
+  (cc/compile-tree ast))
 
 (defn- NaN? [n] (not (== n n)))
 

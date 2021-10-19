@@ -2,11 +2,14 @@
   (:refer-clojure :exclude [run!])
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [clojure.string :as str]
+            [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
             [middleware.device.debugger :as debugger]
+            [middleware.compilation.parser :as p]
+            [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
 
@@ -26,12 +29,22 @@
 
 (def connected? dc/connected?)
 
+(defn compile-json-string [str & args]
+  (let [ast (-> str json/decode cg/generate-tokens)]
+    (vary-meta (apply cc/compile-tree ast args)
+               assoc :type :json)))
+
+(defn compile-uzi-string [str & args]
+  (let [ast (p/parse str)]
+    (vary-meta (apply cc/compile-tree ast args)
+               assoc :type :uzi)))
+
 (defn compile! [src type silent? & args]
   (go-try
    (try
      (let [compile-fn (case type
-                        "json" cc/compile-json-string
-                        "uzi" cc/compile-uzi-string)
+                        "json" compile-json-string
+                        "uzi" compile-uzi-string)
            program (apply compile-fn src args)
            bytecodes (en/encode program)]
        (when-not silent?

@@ -3,6 +3,7 @@
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
             [middleware.test-utils :refer [equivalent? setup-fixture]]
+            [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.linker :as l]
             [middleware.program.emitter :as emit]
@@ -13,9 +14,9 @@
 
 (def lib-dir "../../uzi/tests")
 
-(defn compile-uzi-string [src]
+(defn compile-string [src]
   #?(:clj (register-program! src :lib-dir lib-dir))
-  (cc/compile-uzi-string src :lib-dir lib-dir))
+  (cc/compile-tree (p/parse src) :lib-dir lib-dir))
 
 (defn- without-prims [ast]
  (-> ast
@@ -620,5 +621,5 @@
                                               (emit/write-local "b#1")
                                               (emit/read-local "a#2")
                                               (emit/write-local "b#1")])])
-        actual (compile-uzi-string "import t from 'test_15.uzi';")]
+        actual (compile-string "import t from 'test_15.uzi';")]
     (is (equivalent? expected actual))))
