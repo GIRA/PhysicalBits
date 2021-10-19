@@ -1,8 +1,8 @@
 (ns middleware.code-generator-test
   (:refer-clojure :exclude [print])
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [middleware.compilation.codegen :as cg]
             [middleware.ast.nodes :as ast]
             [middleware.test-utils :refer [setup-fixture]]))
@@ -10,7 +10,7 @@
 (use-fixtures :once setup-fixture)
 
 (defn print [ast]
-  #?(:clj (register-program! ast))
+  (register-program! ast)
   (cg/generate-code ast))
 
 (deftest

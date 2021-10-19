@@ -1,7 +1,7 @@
 (ns middleware.linker-test
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [middleware.test-utils :refer [equivalent? setup-fixture]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
@@ -16,7 +16,7 @@
 
 (defn compile-string [src]
   (let [ast (p/parse src)]
-    #?(:clj (register-program! ast :lib-dir lib-dir))
+    (register-program! ast :lib-dir lib-dir)
     (cc/compile-tree ast :lib-dir lib-dir)))
 
 (defn- without-prims [ast]

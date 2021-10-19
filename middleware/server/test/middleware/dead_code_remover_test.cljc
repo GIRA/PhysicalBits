@@ -1,7 +1,7 @@
 (ns middleware.dead-code-remover-test
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [clojure.walk :as w]
             [middleware.test-utils :refer [setup-fixture equivalent?]]
             [middleware.ast.utils :as ast-utils]
@@ -13,7 +13,7 @@
 
 (defn compile-string [src]
   (let [ast (p/parse src)]
-    #?(:clj (register-program! ast))
+    (register-program! ast)
     (cc/compile-tree ast)))
 
 (deftest

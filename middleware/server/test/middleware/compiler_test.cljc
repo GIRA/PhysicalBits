@@ -1,8 +1,8 @@
 (ns middleware.compiler-test
   (:refer-clojure :exclude [compile])
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [middleware.test-utils :refer [equivalent? setup-fixture]]
             [clojure.string :as str]
             [clojure.walk :as w]
@@ -14,7 +14,7 @@
 (use-fixtures :once setup-fixture)
 
 (defn compile [ast]
-  #?(:clj (register-program! ast))
+  (register-program! ast)
   (cc/compile-tree ast))
 
 (defn- NaN? [n] (not (== n n)))

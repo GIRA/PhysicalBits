@@ -1,7 +1,7 @@
 (ns middleware.parser-test
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [middleware.test-utils :refer [test-name equivalent? setup-fixture]]
             [middleware.compilation.parser :as pp]
             [middleware.ast.nodes :as ast]))
@@ -12,8 +12,8 @@
 
 (defn parse [src]
   (let [ast (pp/parse src)]
-    #?(:clj (if-not (contains? exclusions (symbol (test-name)))
-              (register-program! ast)))
+    (if-not (contains? exclusions (symbol (test-name)))
+      (register-program! ast))
     ast))
 
 (deftest return-should-not-be-confused-with-call

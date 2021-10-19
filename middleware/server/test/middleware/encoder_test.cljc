@@ -1,8 +1,8 @@
 (ns middleware.encoder-test
   (:refer-clojure :exclude [compile])
-  #?(:clj (:use [middleware.compile-stats]))
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
+            [middleware.compile-stats :refer [register-program!]]
             [clojure.string :as str]
             [middleware.test-utils :refer [setup-fixture]]
             [middleware.compilation.parser :as p]
@@ -18,7 +18,7 @@
 
 (defn compile [src]
   (let [ast (p/parse src)]
-    #?(:clj (register-program! ast))
+    (register-program! ast)
     (cc/compile-tree ast)))
 
 (defn check-bytecodes [bytecodes src]
