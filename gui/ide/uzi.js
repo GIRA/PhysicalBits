@@ -288,11 +288,12 @@ let Uzi = (function () {
 
   function update(data) {
     let previousState = deepClone(Uzi.state);
-    Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
+    let keys = new Set(Object.keys(data));
+    keys.forEach(key => Uzi.state[key] = data[key]);
 
     observers["update"].forEach(function (fn) {
       try {
-        fn(Uzi.state, previousState);
+        fn(Uzi.state, previousState, keys);
       } catch (err) {
         console.error(err);
       }
