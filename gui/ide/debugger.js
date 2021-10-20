@@ -87,6 +87,7 @@ let Debugger = (function () {
       $td.click(() => {
         selectedStackFrame = i;
         updateDebugger(state);
+        UziCode.handleDebuggerUpdate(state); // HACK(Richo): We probably shoulnd't be calling this directly!
       });
       $tr.append($td);
       $body.append($tr);
@@ -119,5 +120,7 @@ let Debugger = (function () {
   return {
     init: init,
     update: update,
+
+    getSelectedStackFrameIndex: () => selectedStackFrame,
   }
 })();

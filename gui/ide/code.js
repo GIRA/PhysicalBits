@@ -1,8 +1,8 @@
-let breakpoints = [];
 let UziCode = (function () {
 
   let editor;
   let focus = false;
+  let breakpoints = [];
 	let markers = [];
   let observers = {
     "change": []
@@ -58,9 +58,13 @@ let UziCode = (function () {
 			sendBreakpoints();
 		});
 
-    Uzi.on("update", function (state, previousState) {
-      handleDebuggerUpdate(state);
-      handleProgramUpdate(state, previousState);
+    Uzi.on("update", function (state, previousState, keys) {
+      if (keys.has("debugger")) {
+        handleDebuggerUpdate(state);
+      }
+      if (keys.has("program")) {
+        handleProgramUpdate(state, previousState);
+      }
     });
   }
 
@@ -86,7 +90,9 @@ let UziCode = (function () {
     try {
       let interval = null;
       if (state.debugger.stackFrames.length > 0) {
-        interval = state.debugger.stackFrames[0].interval;
+        // HACK(Richo): Maybe we don't want to call the debugger directly?
+        let index = Debugger.getSelectedStackFrameIndex();
+        interval = state.debugger.stackFrames[index].interval;
       }
       highlight(interval);
 
@@ -171,6 +177,7 @@ let UziCode = (function () {
     getProgram: getProgram,
     clearEditor: clearEditor,
 
+    handleDebuggerUpdate: handleDebuggerUpdate,
     getBreakpoints: () => breakpoints,
   }
 })();
