@@ -1,7 +1,7 @@
 let Debugger = (function () {
 
   function init() {
-    Split(['#split-0', '#split-1'], {
+    Split(['#debugger-call-stack', '#debugger-locals', '#debugger-raw-stack'], {
       gutterSize: 5,
     });
 
@@ -55,6 +55,7 @@ let Debugger = (function () {
     if (state.debugger.isHalted) {
       enableButtons();
       $("#debugger-break-button").attr("disabled", "disabled");
+      LayoutManager.showDebugger();
     } else {
       disableButtons();
       $("#debugger-break-button").attr("disabled", null);

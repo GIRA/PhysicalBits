@@ -152,6 +152,7 @@
   }
 
   .scrollable {
+    overflow-x: auto !important;
     overflow-y: scroll !important;
   }
 
