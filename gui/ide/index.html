@@ -266,74 +266,33 @@
           <div class="split fullscreen">
             <div id="debugger-call-stack" class="" style="font-size: small;">
               <div class="card bg-dark text-white fullscreen">
-                <div class="card-header">
+                <div class="card-header px-4 py-2">
                   <div lang="en">Call stack</div>
                 </div>
                 <div class="card-body scrollable" style="padding: 0;">
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi accumsan diam nec diam ornare, in sodales tellus fringilla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut ligula leo, lobortis et sodales sed, pharetra aliquam nulla. Praesent ex enim, facilisis ut enim egestas, feugiat placerat est. Praesent condimentum et nulla eu consectetur. Nam vitae turpis vulputate, semper ex vitae, blandit arcu. Fusce rhoncus rutrum purus id pellentesque. Vivamus pulvinar nisi vel viverra facilisis. Vivamus iaculis egestas leo, sed venenatis ante pellentesque at. Curabitur ultrices elit ac velit varius, vulputate bibendum nunc bibendum. Nullam at volutpat nibh. Praesent malesuada efficitur tempor. Proin porttitor aliquam ipsum, a interdum felis.
-
-                    Suspendisse laoreet ex in imperdiet hendrerit. Pellentesque ultricies euismod auctor. Cras semper bibendum tellus a tincidunt. Proin condimentum et nisl quis suscipit. Suspendisse diam ante, tincidunt nec bibendum ac, malesuada congue justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam nec ullamcorper dolor. Praesent fringilla nibh varius, rhoncus magna at, efficitur velit.
-
-                    Fusce euismod velit quis libero gravida ullamcorper.
-                  </p>
+                  <table id="debugger-call-stack-table" class="table table-sm table-dark table-hover" style="cursor: pointer; font-family: monospace;"></table>
                 </div>
               </div>
-              <!--
-              <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi accumsan diam nec diam ornare, in sodales tellus fringilla. Interdum et malesuada fames ac ante ipsum primis in faucibus. Ut ligula leo, lobortis et sodales sed, pharetra aliquam nulla. Praesent ex enim, facilisis ut enim egestas, feugiat placerat est. Praesent condimentum et nulla eu consectetur. Nam vitae turpis vulputate, semper ex vitae, blandit arcu. Fusce rhoncus rutrum purus id pellentesque. Vivamus pulvinar nisi vel viverra facilisis. Vivamus iaculis egestas leo, sed venenatis ante pellentesque at. Curabitur ultrices elit ac velit varius, vulputate bibendum nunc bibendum. Nullam at volutpat nibh. Praesent malesuada efficitur tempor. Proin porttitor aliquam ipsum, a interdum felis.
-
-                Suspendisse laoreet ex in imperdiet hendrerit. Pellentesque ultricies euismod auctor. Cras semper bibendum tellus a tincidunt. Proin condimentum et nisl quis suscipit. Suspendisse diam ante, tincidunt nec bibendum ac, malesuada congue justo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam nec ullamcorper dolor. Praesent fringilla nibh varius, rhoncus magna at, efficitur velit.
-
-                Fusce euismod velit quis libero gravida ullamcorper.
-              </p>
-              -->
             </div>
             <div id="debugger-locals" class="" style="font-size: small;">
               <div class="card bg-dark text-white fullscreen">
-                <div class="card-header">
+                <div class="card-header px-4 py-2">
                   <div lang="en">Locals</div>
                 </div>
                 <div class="card-body scrollable" style="padding: 0;">
-                  <table class="table table-sm table-dark table-striped table-hover">
-                    <tbody>
-                      <tr>
-                        <td lang="en" class="pl-4">Arduino</td>
-                        <td id="arduino-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                      <tr>
-                        <td lang="en" class="pl-4">Program</td>
-                        <td id="uzi-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                      <tr>
-                        <td lang="en" class="pl-4">Program</td>
-                        <td id="uzi-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                      <tr>
-                        <td lang="en" class="pl-4">Program</td>
-                        <td id="uzi-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                      <tr>
-                        <td lang="en" class="pl-4">Program</td>
-                        <td id="uzi-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                      <tr>
-                        <td lang="en" class="pl-4">Program</td>
-                        <td id="uzi-memory" class="text-right">?</td>
-                        <td class="">bytes</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <table id="debugger-locals-table" class="table table-sm table-dark table-striped table-hover"></table>
                 </div>
               </div>
             </div>
-            <div id="debugger-raw-stack" class="scrollable">
-              <pre id="debugger-output" class="text-white"></pre>
+            <div id="debugger-raw-stack" class="" style="font-size: small;">
+              <div class="card bg-dark text-white fullscreen">
+                <div class="card-header px-4 py-2">
+                  <div lang="en">Program</div>
+                </div>
+                <div class="card-body scrollable" style="padding: 0;">
+                  <pre id="debugger-output" class="text-white"></pre>
+                </div>
+              </div>
             </div>
           </div>
         </div>

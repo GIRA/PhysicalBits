@@ -1,5 +1,7 @@
 let Debugger = (function () {
 
+  let selectedStackFrame = 0;
+
   function init() {
     Split(['#debugger-call-stack', '#debugger-locals', '#debugger-raw-stack'], {
       gutterSize: 5,
@@ -44,23 +46,74 @@ let Debugger = (function () {
   }
 
   function enableButtons() {
-  $("#debugger-buttons button").attr("disabled", null);
+    $("#debugger-buttons button").attr("disabled", null);
+    $("#debugger-break-button").attr("disabled", "disabled");
   }
 
   function disableButtons() {
-  $("#debugger-buttons button").attr("disabled", "disabled");
+    $("#debugger-buttons button").attr("disabled", "disabled");
+    $("#debugger-break-button").attr("disabled", null);
   }
 
-  function update(state) {
+  function update(state, previous, keys) {
+    if (!keys.has("debugger")) return;
+
+    selectedStackFrame = 0;
+    updateDebugger(state);
     if (state.debugger.isHalted) {
       enableButtons();
-      $("#debugger-break-button").attr("disabled", "disabled");
       LayoutManager.showDebugger();
     } else {
       disableButtons();
-      $("#debugger-break-button").attr("disabled", null);
     }
     $("#debugger-output").text(JSON.stringify(state.debugger, null, 2));
+  }
+
+  function updateDebugger(state) {
+    updateCallStack(state);
+    updateLocals(state);
+  }
+
+  function updateCallStack(state) {
+    $("#debugger-call-stack-table").html("");
+    if (!state.debugger.isHalted) return;
+
+    let $body = $("<tbody>");
+    state.debugger.stackFrames.forEach((stackFrame, i) => {
+      let $tr = $("<tr>");
+      if (i == selectedStackFrame) { $tr.addClass("bg-primary"); }
+      let name = stackFrame.scriptName + "(" + stackFrame.arguments.map(arg => arg.name + ": " + arg.value).join(", ") + ")";
+      let $td = $("<td>").addClass("px-4").text(name);
+      $td.click(() => {
+        selectedStackFrame = i;
+        updateDebugger(state);
+      });
+      $tr.append($td);
+      $body.append($tr);
+    });
+    $("#debugger-call-stack-table").append($body);
+  }
+
+  function updateLocals(state) {
+    $("#debugger-locals-table").html("");
+    if (!state.debugger.isHalted) return;
+
+    let stackFrame = state.debugger.stackFrames[selectedStackFrame];
+    if (!stackFrame) return;
+    let $body = $("<tbody>");
+    stackFrame.arguments.forEach(v => {
+      let $tr = $("<tr>");
+      $tr.append($("<td>").addClass("px-4").text(v.name));
+      $tr.append($("<td>").addClass("px-4 text-right").text(v.value));
+      $body.append($tr);
+    });
+    stackFrame.locals.forEach(v => {
+      let $tr = $("<tr>");
+      $tr.append($("<td>").addClass("px-4").text(v.name));
+      $tr.append($("<td>").addClass("px-4 text-right").text(v.value));
+      $body.append($tr);
+    });
+    $("#debugger-locals-table").append($body);
   }
 
   return {
