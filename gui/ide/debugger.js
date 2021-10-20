@@ -90,8 +90,8 @@ let Debugger = (function () {
       let $td = $("<td>").addClass("px-4").text(name);
       $td.click(() => {
         selectedStackFrame = i;
+        UziCode.handleDebuggerUpdate(state, selectedStackFrame); // HACK(Richo): We probably shoulnd't be calling this directly!
         updateDebugger(state);
-        UziCode.handleDebuggerUpdate(state); // HACK(Richo): We probably shoulnd't be calling this directly!
       });
       $tr.append($td);
       $body.append($tr);

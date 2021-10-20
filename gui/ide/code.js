@@ -60,7 +60,7 @@ let UziCode = (function () {
 
     Uzi.on("update", function (state, previousState, keys) {
       if (keys.has("debugger")) {
-        handleDebuggerUpdate(state);
+        handleDebuggerUpdate(state, 0);
       }
       if (keys.has("program")) {
         handleProgramUpdate(state, previousState);
@@ -86,13 +86,11 @@ let UziCode = (function () {
     }
   }
 
-  function handleDebuggerUpdate(state) {
+  function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
       let interval = null;
       if (state.debugger.stackFrames.length > 0) {
-        // HACK(Richo): Maybe we don't want to call the debugger directly?
-        let index = Debugger.getSelectedStackFrameIndex();
-        interval = state.debugger.stackFrames[index].interval;
+        interval = state.debugger.stackFrames[stackFrameIndex].interval;
       }
       highlight(interval);
 
