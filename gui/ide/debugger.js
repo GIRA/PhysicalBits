@@ -47,26 +47,30 @@ let Debugger = (function () {
 
   function enableButtons() {
     $("#debugger-buttons button").attr("disabled", null);
-    $("#debugger-break-button").attr("disabled", "disabled");
   }
 
   function disableButtons() {
     $("#debugger-buttons button").attr("disabled", "disabled");
-    $("#debugger-break-button").attr("disabled", null);
   }
 
   function update(state, previous, keys) {
     if (!keys.has("debugger")) return;
 
     selectedStackFrame = 0;
+    updateButtons(state);
     updateDebugger(state);
+    LayoutManager.showDebugger();
+    $("#debugger-output").text(JSON.stringify(state.debugger, null, 2));
+  }
+
+  function updateButtons(state) {
     if (state.debugger.isHalted) {
       enableButtons();
-      LayoutManager.showDebugger();
+      $("#debugger-break-button").attr("disabled", "disabled");
     } else {
       disableButtons();
+      $("#debugger-break-button").attr("disabled", null);
     }
-    $("#debugger-output").text(JSON.stringify(state.debugger, null, 2));
   }
 
   function updateDebugger(state) {
