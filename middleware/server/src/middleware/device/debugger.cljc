@@ -51,20 +51,25 @@
 (defn stack-frames [program {:keys [stack pc fp]}]
   (when-not (empty? stack)
     (when-let [script (program/script-for-pc program pc)]
-      (let [variables (concat (-> script :arguments)
-                              (-> script :locals))
+      (let [arguments (-> script :arguments)
+            locals (-> script :locals)
             frame {;:program program ; Do we need the program? Seems redundant...
                    :script script
                    :pc pc
                    :fp fp
                    :stack stack
+                   :arguments (vec (map-indexed (fn [index {var-name :name}]
+                                                  {:name var-name
+                                                   :value (conversions/bytes->float
+                                                           (nth stack (+ index fp)))})
+                                                arguments))
                    :locals (vec (map-indexed (fn [index {var-name :name}]
                                                {:name var-name
                                                 :value (conversions/bytes->float
-                                                        (nth stack (+ index fp)))})
-                                             variables))}
+                                                        (nth stack (+ (count arguments) index fp)))})
+                                             locals))}
             val (conversions/bytes->uint32
-                 (nth stack (+ fp (count variables))))]
+                 (nth stack (+ fp (count arguments) (count locals))))]
         (lazy-seq
          (cons frame
                (stack-frames program
