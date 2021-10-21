@@ -199,6 +199,10 @@ let Uzi = (function () {
 
     debugger: {
       setBreakpoints: function (breakpoints) {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_set_breakpoints(breakpoints);
+        }
+
         let url = apiURL + "/uzi/debugger/set-breakpoints";
         let data = {
           id: id,
@@ -208,6 +212,10 @@ let Uzi = (function () {
       },
 
       break: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_break();
+        }
+
         let url = apiURL + "/uzi/debugger/break";
         let data = {
           id: id
@@ -216,6 +224,10 @@ let Uzi = (function () {
       },
 
       continue: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_continue();
+        }
+
         let url = apiURL + "/uzi/debugger/continue";
         let data = {
           id: id
@@ -224,6 +236,10 @@ let Uzi = (function () {
       },
 
       stepOver: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_over();
+        }
+
         let url = apiURL + "/uzi/debugger/step-over";
         let data = {
           id: id
@@ -232,6 +248,10 @@ let Uzi = (function () {
       },
 
       stepInto: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_into();
+        }
+
         let url = apiURL + "/uzi/debugger/step-into";
         let data = {
           id: id
@@ -240,6 +260,10 @@ let Uzi = (function () {
       },
 
       stepOut: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_out();
+        }
+
         let url = apiURL + "/uzi/debugger/step-out";
         let data = {
           id: id
@@ -248,6 +272,10 @@ let Uzi = (function () {
       },
 
       stepNext: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_next();
+        }
+
         let url = apiURL + "/uzi/debugger/step-next";
         let data = {
           id: id
