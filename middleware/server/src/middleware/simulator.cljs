@@ -63,3 +63,38 @@
   (chan->promise
    (go-try
     (<? (core/set-profile! enabled?)))))
+
+(defn ^:export debugger-set-breakpoints [breakpoints]
+  (chan->promise
+   (go-try
+    (<? (core/set-breakpoints! breakpoints)))))
+
+(defn ^:export debugger-break []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-break!)))))
+
+(defn ^:export debugger-continue []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-continue!)))))
+
+(defn ^:export debugger-step-over []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-step-over!)))))
+
+(defn ^:export debugger-step-into []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-step-into!)))))
+
+(defn ^:export debugger-step-out []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-step-out!)))))
+
+(defn ^:export debugger-step-next []
+  (chan->promise
+   (go-try
+    (<? (core/debugger-step-next!)))))
