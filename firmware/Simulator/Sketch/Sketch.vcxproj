@@ -80,6 +80,11 @@
       <SDLCheck>true</SDLCheck>
       <StructMemberAlignment>1Byte</StructMemberAlignment>
     </ClCompile>
+    <PostBuildEvent>
+      <Command>chdir "$(SolutionDir)..\emscripten"
+build.bat</Command>
+      <Message>Execute the emscripten build</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
