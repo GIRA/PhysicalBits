@@ -4,6 +4,7 @@
             [middleware.program.utils :as program]
             [middleware.device.protocol :as p]
             [middleware.utils.conversions :as conversions]
+            [middleware.utils.core :refer [seek]]
             [middleware.device.controller :as dc :refer [initial-state state update-chan send!]]))
 
 (defn- send-breakpoints! []
@@ -108,6 +109,48 @@
      (+ (:start token)
         (:count token))]))
 
+(defn instruction-group-at-pc [program pc]
+  (let [groups (instruction-groups program)]
+    (seek (fn [{:keys [start instructions]}]
+            (let [stop (+ start (count instructions))]
+              (and (>= pc start)
+                   (<= pc stop))))
+          groups)))
+
+(defn- trivial? [{:keys [instructions]}] ; TODO(Richo): Better name please!
+  (and (program/unconditional-branch? (last instructions))
+       (not-any? program/script-call? instructions)))
+
+(defn- call? [{:keys [instructions]}]
+  (some? (some program/script-call? instructions)))
+
+(defn- return? [{:keys [instructions]}]
+  (some? (some program/return? instructions)))
+
+(defn- branch? [{:keys [instructions] :as ig}]
+  (and (not (trivial? ig))
+       (program/branch? (last instructions))))
+
+(defn branch-instruction [{:keys [instructions]}])
+
+(defn- step-over-trivial [ig])
+(defn- step-over-call [ig])
+(defn- step-over-return [ig])
+(defn- step-over-branch [ig])
+(defn- step-over-regular [ig])
+
+(defn step-over-breakpoints []
+  (let [program (-> @state :program :running)
+        pc (-> @state :debugger :vm :pc)]
+    (if-let [ig (instruction-group-at-pc program pc)]
+      (cond
+        (trivial? ig) (step-over-trivial ig)
+        (call? ig) (step-over-call ig)
+        (return? ig) (step-over-return ig)
+        (branch? ig) (step-over-branch ig)
+        :else (step-over-regular ig))
+      [])))
+
 (comment
 
  (connect! "COM4")
@@ -115,11 +158,23 @@
  (dc/connected?)
  (disconnect!)
 
+ (instruction-group-at-pc (-> @state :program :running)
+                          (-> @state :debugger :vm :pc))
+
  (break!)
  (step-next!)
  (-> @state :debugger)
  (def sf (stack-frames (-> @state :program :running)
                        (-> @state :debugger :vm)))
+ (def ig (instruction-groups (-> @state :program :running)))
+ (mapv #(dissoc % :script) ig)
+ (mapv (fn [g] (-> g
+                   (dissoc :script)
+                   (assoc :trivial? (trivial? g))
+                   (assoc :call? (call? g))
+                   (assoc :return? (return? g))
+                   (assoc :branch? (branch? g))))
+       ig)
 
  (continue!)
  (dc/reset-debugger!)
