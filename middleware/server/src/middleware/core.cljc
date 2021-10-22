@@ -110,13 +110,13 @@
   (go-try (debugger/continue!)))
 
 (defn debugger-step-over! []
-  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+  (go-try (debugger/step-over!)))
 
 (defn debugger-step-into! []
-  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+  (go-try (debugger/step-into!)))
 
 (defn debugger-step-out! []
-  (throw (ex-info "NOT IMPLEMENTED YET" {})))
+  (go-try (debugger/step-out!)))
 
 (defn debugger-step-next! []
   (go-try (debugger/step-next!)))

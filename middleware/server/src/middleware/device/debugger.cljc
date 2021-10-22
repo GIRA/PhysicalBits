@@ -54,11 +54,17 @@
     (when-let [script (program/script-for-pc program pc)]
       (let [arguments (-> script :arguments)
             locals (-> script :locals)
-            frame {;:program program ; Do we need the program? Seems redundant...
-                   :script script
+            var-count (+ (count arguments)
+                         (count locals))
+            next-data (conversions/bytes->uint32
+                       (nth stack (+ fp var-count)))
+            next-pc (bit-and 0xFFFF next-data)
+            next-fp (bit-and 0xFFFF (bit-shift-right next-data 16))
+            frame {:script script
                    :pc pc
                    :fp fp
                    :stack stack
+                   :return next-pc
                    :arguments (vec (map-indexed (fn [index {var-name :name}]
                                                   {:name var-name
                                                    :value (conversions/bytes->float
@@ -68,15 +74,13 @@
                                                {:name var-name
                                                 :value (conversions/bytes->float
                                                         (nth stack (+ (count arguments) index fp)))})
-                                             locals))}
-            val (conversions/bytes->uint32
-                 (nth stack (+ fp (count arguments) (count locals))))]
+                                             locals))}]
         (lazy-seq
          (cons frame
                (stack-frames program
                              {:stack (take fp stack)
-                              :pc (bit-and 0xFFFF val)
-                              :fp (bit-and 0xFFFF (bit-shift-right val 16))})))))))
+                              :pc next-pc
+                              :fp next-fp})))))))
 
 (defn instruction-groups [program]
   (let [groups (volatile! [])
@@ -89,11 +93,14 @@
                    (let [instr (nth instructions i)]
                      (vswap! current conj [(+ pc i) instr])
                      (when (program/statement? instr)
-                       (let [start (apply min (map first @current))
-                             instrs (map second @current)]
+                       (let [instrs (map second @current)
+                             start (apply min (map first @current))
+                             stop (+ start (count instrs) -1)
+                             pcs (range start (inc stop))]
                          (vswap! groups conj {:start start
+                                              :stop stop
                                               :instructions instrs
-                                              :script script}))
+                                              :pcs pcs}))
                        (vreset! current []))))
           (recur
             (+ pc (count instructions))
@@ -109,13 +116,11 @@
      (+ (:start token)
         (:count token))]))
 
-(defn instruction-group-at-pc [program pc]
-  (let [groups (instruction-groups program)]
-    (seek (fn [{:keys [start instructions]}]
-            (let [stop (+ start (count instructions))]
-              (and (>= pc start)
-                   (<= pc stop))))
-          groups)))
+(defn instruction-group-at-pc [groups pc]
+  (seek (fn [{:keys [start stop]}]
+          (and (>= pc start)
+               (<= pc stop)))
+        groups))
 
 (defn- trivial? [{:keys [instructions]}] ; TODO(Richo): Better name please!
   (and (program/unconditional-branch? (last instructions))
@@ -131,27 +136,94 @@
   (and (not (trivial? ig))
        (program/branch? (last instructions))))
 
-(defn branch-instruction [{:keys [instructions]}])
+(defn next-instruction-group [groups {:keys [stop]}]
+  (instruction-group-at-pc groups (+ 1 stop)))
 
-(defn- step-over-trivial [ig])
-(defn- step-over-call [ig])
-(defn- step-over-return [ig])
-(defn- step-over-branch [ig])
-(defn- step-over-regular [ig])
+(defn branch-instruction [groups {:keys [stop instructions]}]
+  (instruction-group-at-pc groups
+                           (-> instructions last :argument inc (+ stop))))
 
-(defn step-over-breakpoints []
-  (let [program (-> @state :program :running)
-        pc (-> @state :debugger :vm :pc)]
-    (if-let [ig (instruction-group-at-pc program pc)]
-      (cond
-        (trivial? ig) (step-over-trivial ig)
-        (call? ig) (step-over-call ig)
-        (return? ig) (step-over-return ig)
-        (branch? ig) (step-over-branch ig)
-        :else (step-over-regular ig))
+(declare step-over)
+
+(defn- step-over-return [vm program groups ig]
+  [(-> (stack-frames program vm) first :return)])
+
+(defn- step-over-regular [vm program groups ig]
+  (if-let [next (next-instruction-group groups ig)]
+    (if (trivial? next)
+      (step-over vm program groups next)
+      (:pcs next))
+    (step-over-return vm program groups ig)))
+
+(defn- step-over-branch [vm program groups ig]
+  (concat (step-over-regular vm program groups ig)
+          (when-let [branch (branch-instruction groups ig)]
+            (if (trivial? branch)
+              (step-over vm program groups branch)
+              (:pcs branch)))))
+
+(defn- step-over-trivial [vm program groups ig]
+  (if-let [branch (branch-instruction groups ig)]
+    (:pcs branch)
+    (step-over-regular vm program groups ig)))
+
+(defn- step-over-call [vm program groups ig]
+  (step-over-regular vm program groups ig))
+
+(defn- step-over [vm program groups ig]
+  (cond
+    (trivial? ig) (step-over-trivial vm program groups ig)
+    (call? ig) (step-over-call vm program groups ig)
+    (return? ig) (step-over-return vm program groups ig)
+    (branch? ig) (step-over-branch vm program groups ig)
+    :else (step-over-regular vm program groups ig)))
+
+(defn step-over-breakpoints [vm program]
+  (let [groups (instruction-groups program)
+        pc (:pc vm)]
+    (if-let [ig (instruction-group-at-pc groups pc)]
+      (step-over vm program groups ig)
       [])))
 
+(defn step-over! []
+  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
+  (let [bpts (step-over-breakpoints (-> @state :debugger :vm)
+                                    (-> @state :program :running))]
+    (set-system-breakpoints! bpts)
+    (send-continue!)))
+
+(defn- step-into-breakpoints [vm program]
+  [])
+
+(defn step-into! []
+  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
+  (let [bpts (step-into-breakpoints (-> @state :debugger :vm)
+                                    (-> @state :program :running))]
+    (set-system-breakpoints! bpts)
+    (send-continue!)))
+
+(defn- step-out-breakpoints [vm program]
+  [])
+
+(defn step-out! []
+  (clear-system-breakpoints!)
+  (let [bpts (step-out-breakpoints (-> @state :debugger :vm)
+                                    (-> @state :program :running))]
+    (set-system-breakpoints! bpts)
+    (send-continue!)))
+
 (comment
+
+ (do
+   (def program (-> @state :program :running))
+   (def vm (-> @state :debugger :vm))
+   (def pc (:pc vm))
+   (def groups (instruction-groups program))
+   (def ig (instruction-group-at-pc groups pc))
+   (def next (next-instruction-group groups ig)))
+
+  (step-over-breakpoints vm program)
+ (next-instruction-group groups (instruction-group-at-pc groups pc))
 
  (connect! "COM4")
  (connect! "127.0.0.1:4242")
