@@ -100,7 +100,8 @@
                          (vswap! groups conj {:start start
                                               :stop stop
                                               :instructions instrs
-                                              :pcs pcs}))
+                                              :pcs pcs
+                                              :script script}))
                        (vreset! current []))))
           (recur
             (+ pc (count instructions))
@@ -136,12 +137,15 @@
   (and (not (trivial? ig))
        (program/branch? (last instructions))))
 
-(defn next-instruction-group [groups {:keys [stop]}]
-  (instruction-group-at-pc groups (+ 1 stop)))
+(defn next-instruction-group [groups {:keys [stop script]}]
+  (when-let [next (instruction-group-at-pc groups (+ 1 stop))]
+    (when (= script (:script next))
+      next)))
 
-(defn branch-instruction [groups {:keys [stop instructions]}]
-  (instruction-group-at-pc groups
-                           (-> instructions last :argument inc (+ stop))))
+(defn branch-instruction [groups {:keys [stop instructions script]}]
+  (when-let [branch (instruction-group-at-pc groups
+                                             (-> instructions last :argument inc (+ stop)))]
+    (when (= script (:script branch)))))
 
 (declare step-over)
 
@@ -192,8 +196,35 @@
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
+
+(defn- call-instruction [{:keys [start instructions]} pc]
+  (seek program/script-call?
+        (map second
+             (filter (fn [[pc* _]] (>= pc* pc))
+                     (map-indexed (fn [i instr] [(+ start i)
+                                                 instr])
+                                  instructions)))))
+
+(defn- step-into-call [vm program groups ig]
+  (if-let [call (call-instruction ig (:pc vm))]
+    (if-let [target (seek (fn [g] (= (-> g :script :name)
+                                     (:argument call)))
+                          groups)]
+      [(:start target)]
+      (step-over-regular vm program groups ig))
+    (step-over-regular vm program groups ig)))
+
+(defn- step-into [vm program groups ig]
+  (if (call? ig)
+    (step-into-call vm program groups ig)
+    (step-over vm program groups ig)))
+
 (defn- step-into-breakpoints [vm program]
-  [])
+  (let [groups (instruction-groups program)
+        pc (:pc vm)]
+    (if-let [ig (instruction-group-at-pc groups pc)]
+      (step-into vm program groups ig)
+      [])))
 
 (defn step-into! []
   (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
@@ -202,8 +233,15 @@
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
+(defn- step-out [vm program groups ig]
+  (step-over-return vm program groups ig))
+
 (defn- step-out-breakpoints [vm program]
-  [])
+  (let [groups (instruction-groups program)
+        pc (:pc vm)]
+    (if-let [ig (instruction-group-at-pc groups pc)]
+      (step-out vm program groups ig)
+      [])))
 
 (defn step-out! []
   (clear-system-breakpoints!)
@@ -222,7 +260,8 @@
    (def ig (instruction-group-at-pc groups pc))
    (def next (next-instruction-group groups ig)))
 
-  (step-over-breakpoints vm program)
+ (step-over-breakpoints vm program)
+ (step-into-breakpoints vm program)
  (next-instruction-group groups (instruction-group-at-pc groups pc))
 
  (connect! "COM4")
