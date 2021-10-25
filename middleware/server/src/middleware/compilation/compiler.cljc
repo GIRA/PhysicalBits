@@ -122,8 +122,10 @@
 
 (defn ^:private compile-stmt [node ctx]
   (let [instructions (compile node ctx)]
+    ; NOTE(Richo): If the node is an expression we need to append a pop instruction to
+    ; leave the stack in the correct state (remember: this functions compiles statements!)
     (if (ast-utils/expression? node)
-      (conj instructions (emit/prim-call "pop"))
+      (conj instructions (with-node (emit/prim-call "pop") node))
       instructions)))
 
 (defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
