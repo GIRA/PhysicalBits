@@ -148,15 +148,6 @@
     (when (= script (:script branch))
       branch)))
 
-(comment
- (def stop (:stop ig))
- (def instructions (:instructions ig))
- (def script (:script ig))
-
- (def branch (instruction-group-at-pc groups
-                                      (-> instructions last :argument inc (+ stop))))
- )
-
 (declare step-over)
 
 (defn- step-over-return [vm program groups ig]
@@ -192,24 +183,6 @@
                                                  instr])
                                   instructions)))))
 
-; TODO(Richo): Step into no funciona con este programa:
-"
-task blink13() running 1000/s {
-	toggle(D13);
-	toggle(D12);
-	toggle(D11);
-}
-
-proc toggle(pin) {
-	if isOn(pin) {
-		turnOff(pin);
-	} else {
-		turnOn(pin);
-	}
-}
-"
-
-
 (defn- step-into-call [vm program groups ig]
   (if-let [call (call-instruction ig (:pc vm))]
     (if-let [target (seek (fn [g] (= (-> g :script :name)
@@ -219,7 +192,6 @@ proc toggle(pin) {
       (step-over-regular vm program groups ig))
     (step-over-regular vm program groups ig)))
 
-
 (defn step-over [vm program groups ig]
   (cond
     (trivial? ig) (step-over-trivial vm program groups ig)
@@ -227,11 +199,6 @@ proc toggle(pin) {
     (return? ig) (step-over-return vm program groups ig)
     (branch? ig) (step-over-branch vm program groups ig)
     :else (step-over-regular vm program groups ig)))
-
-(comment
- (def ig next)
- (def next (next-instruction-group groups ig))
- )
 
 (defn step-into [vm program groups ig]
   (if (call? ig)
