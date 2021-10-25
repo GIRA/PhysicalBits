@@ -147,6 +147,15 @@
                                              (-> instructions last :argument inc (+ stop)))]
     (when (= script (:script branch)))))
 
+(comment
+ (def stop (:stop ig))
+ (def instructions (:instructions ig))
+ (def script (:script ig))
+
+ (def branch (instruction-group-at-pc groups
+                                      (-> instructions last :argument inc (+ stop))))
+ )
+
 (declare step-over)
 
 (defn- step-over-return [vm program groups ig]
@@ -169,33 +178,10 @@
 (defn- step-over-trivial [vm program groups ig]
   (if-let [branch (branch-instruction groups ig)]
     (:pcs branch)
-    (step-over-regular vm program groups ig)))
+    (step-over-return vm program groups ig)))
 
 (defn- step-over-call [vm program groups ig]
   (step-over-regular vm program groups ig))
-
-(defn- step-over [vm program groups ig]
-  (cond
-    (trivial? ig) (step-over-trivial vm program groups ig)
-    (call? ig) (step-over-call vm program groups ig)
-    (return? ig) (step-over-return vm program groups ig)
-    (branch? ig) (step-over-branch vm program groups ig)
-    :else (step-over-regular vm program groups ig)))
-
-(defn step-over-breakpoints [vm program]
-  (let [groups (instruction-groups program)
-        pc (:pc vm)]
-    (if-let [ig (instruction-group-at-pc groups pc)]
-      (step-over vm program groups ig)
-      [])))
-
-(defn step-over! []
-  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
-  (let [bpts (step-over-breakpoints (-> @state :debugger :vm)
-                                    (-> @state :program :running))]
-    (set-system-breakpoints! bpts)
-    (send-continue!)))
-
 
 (defn- call-instruction [{:keys [start instructions]} pc]
   (seek program/script-call?
@@ -204,6 +190,24 @@
                      (map-indexed (fn [i instr] [(+ start i)
                                                  instr])
                                   instructions)))))
+
+; TODO(Richo): Step into no funciona con este programa:
+"
+task blink13() running 1000/s {
+	toggle(D13);
+	toggle(D12);
+	toggle(D11);
+}
+
+proc toggle(pin) {
+	if isOn(pin) {
+		turnOff(pin);
+	} else {
+		turnOn(pin);
+	}
+}
+"
+
 
 (defn- step-into-call [vm program groups ig]
   (if-let [call (call-instruction ig (:pc vm))]
@@ -214,43 +218,63 @@
       (step-over-regular vm program groups ig))
     (step-over-regular vm program groups ig)))
 
-(defn- step-into [vm program groups ig]
+
+(defn step-over [vm program groups ig]
+  (cond
+    (trivial? ig) (step-over-trivial vm program groups ig)
+    (call? ig) (step-over-call vm program groups ig)
+    (return? ig) (step-over-return vm program groups ig)
+    (branch? ig) (step-over-branch vm program groups ig)
+    :else (step-over-regular vm program groups ig)))
+
+(comment
+ (def ig next)
+ (def next (next-instruction-group groups ig))
+ )
+
+(defn step-into [vm program groups ig]
   (if (call? ig)
     (step-into-call vm program groups ig)
     (step-over vm program groups ig)))
 
-(defn- step-into-breakpoints [vm program]
-  (let [groups (instruction-groups program)
-        pc (:pc vm)]
-    (if-let [ig (instruction-group-at-pc groups pc)]
-      (step-into vm program groups ig)
-      [])))
+(defn step-out [vm program groups ig]
+  (step-over-return vm program groups ig))
 
-(defn step-into! []
+(defn estimate-breakpoints
+  ([step-fn]
+   (let [state @state]
+     (estimate-breakpoints step-fn
+                           (-> state :debugger :vm)
+                           (-> state :program :running))))
+  ([step-fn vm program]
+   (try
+     (let [groups (instruction-groups program)
+           pc (:pc vm)]
+       (if-let [ig (instruction-group-at-pc groups pc)]
+         (step-fn vm program groups ig)
+         []))
+     (catch #?(:clj Throwable :cljs :default) _ []))))
+
+(defn step-over! []
   (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
-  (let [bpts (step-into-breakpoints (-> @state :debugger :vm)
-                                    (-> @state :program :running))]
+  (let [bpts (estimate-breakpoints step-over)]
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
-(defn- step-out [vm program groups ig]
-  (step-over-return vm program groups ig))
-
-(defn- step-out-breakpoints [vm program]
-  (let [groups (instruction-groups program)
-        pc (:pc vm)]
-    (if-let [ig (instruction-group-at-pc groups pc)]
-      (step-out vm program groups ig)
-      [])))
+(defn step-into! []
+  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
+  (let [bpts (estimate-breakpoints step-into)]
+    (set-system-breakpoints! bpts)
+    (send-continue!)))
 
 (defn step-out! []
   (clear-system-breakpoints!)
-  (let [bpts (step-out-breakpoints (-> @state :debugger :vm)
-                                    (-> @state :program :running))]
+  (let [bpts (estimate-breakpoints step-out)]
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
 (comment
+ (-> @state :debugger)
 
  (do
    (def program (-> @state :program :running))
@@ -260,14 +284,16 @@
    (def ig (instruction-group-at-pc groups pc))
    (def next (next-instruction-group groups ig)))
 
- (step-over-breakpoints vm program)
- (step-into-breakpoints vm program)
+ (estimate-breakpoints step-over vm program)
+ (estimate-breakpoints step-into vm program)
  (next-instruction-group groups (instruction-group-at-pc groups pc))
+ (mapv #(dissoc % :script) groups)
+
 
  (connect! "COM4")
- (connect! "127.0.0.1:4242")
+ (dc/connect! "127.0.0.1:4242")
  (dc/connected?)
- (disconnect!)
+ (dc/disconnect!)
 
  (instruction-group-at-pc (-> @state :program :running)
                           (-> @state :debugger :vm :pc))
@@ -278,14 +304,14 @@
  (def sf (stack-frames (-> @state :program :running)
                        (-> @state :debugger :vm)))
  (def ig (instruction-groups (-> @state :program :running)))
- (mapv #(dissoc % :script) ig)
+
  (mapv (fn [g] (-> g
                    (dissoc :script)
                    (assoc :trivial? (trivial? g))
                    (assoc :call? (call? g))
                    (assoc :return? (return? g))
                    (assoc :branch? (branch? g))))
-       ig)
+       groups)
 
  (continue!)
  (dc/reset-debugger!)
