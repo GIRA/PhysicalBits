@@ -145,7 +145,8 @@
 (defn branch-instruction [groups {:keys [stop instructions script]}]
   (when-let [branch (instruction-group-at-pc groups
                                              (-> instructions last :argument inc (+ stop)))]
-    (when (= script (:script branch)))))
+    (when (= script (:script branch))
+      branch)))
 
 (comment
  (def stop (:stop ig))
