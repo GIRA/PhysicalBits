@@ -76,6 +76,7 @@ let Debugger = (function () {
   function updateDebugger(state) {
     updateCallStack(state);
     updateLocals(state);
+    updateRawStack(state);
   }
 
   function updateCallStack(state) {
@@ -119,6 +120,24 @@ let Debugger = (function () {
       $body.append($tr);
     });
     $("#debugger-locals-table").append($body);
+  }
+
+  function updateRawStack(state) {
+    $("#debugger-raw-stack-table").html("");
+    if (!state.debugger.isHalted) return;
+
+    let $body = $("<tbody>");
+    let stack = state.debugger.stack;
+    for (let i = stack.length - 1; i >= 0; i--) {
+      let $tr = $("<tr>");
+      $tr.append($("<th>").addClass("px-2 text-right").text(i + "."));
+      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][0]));
+      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][1]));
+      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][2]));
+      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][3]));
+      $body.append($tr);
+    }
+    $("#debugger-raw-stack-table").append($body);
   }
 
   return {
