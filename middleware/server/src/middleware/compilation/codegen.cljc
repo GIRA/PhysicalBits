@@ -11,6 +11,15 @@
 (defn- print [writer node]
   (cw/save-interval! writer node #(print-node % writer)))
 
+(defn- print-stmt [writer node]
+  (let [needs-semicolon? (not (ast-utils/control-structure? node))]
+    (cw/save-interval!
+     writer node
+     (fn [node]
+       (print-node node writer)
+       (when needs-semicolon?
+         (cw/append! writer ";"))))))
+
 (defn- print-seq [writer coll & {:keys [followed-by separated-by]}]
   "Iterates over coll executing the print function for each item.
   If followed-by is set to some value, it appends it *after* each item.
@@ -92,9 +101,6 @@
 (defmethod print-node "UziTickingRateNode" [node writer]
   (cw/append! writer (:value node) "/" (:scale node)))
 
-(defn needs-semicolon? [node]
-  (not (ast-utils/control-structure? node)))
-
 (defmethod print-node "UziBlockNode" [{:keys [statements]} writer]
   (if (empty? statements)
     (cw/append! writer "{}")
@@ -103,9 +109,7 @@
           (cw/inc-indent! (fn [writer]
                             (doseq [stmt statements]
                               (cw/append-indent! writer)
-                              (print writer stmt)
-                              (when (needs-semicolon? stmt)
-                                (cw/append! writer ";"))
+                              (print-stmt writer stmt)
                               (cw/append-line! writer))))
           (cw/append-indent!)
           (cw/append! "}"))))
