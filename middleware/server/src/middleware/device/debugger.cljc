@@ -157,7 +157,7 @@
   (if-let [next (next-instruction-group groups ig)]
     (if (trivial? next)
       (step-over vm program groups next)
-      (:pcs next))
+      [(:start next)])
     (step-over-return vm program groups ig)))
 
 (defn- step-over-branch [vm program groups ig]
@@ -165,11 +165,11 @@
           (when-let [branch (branch-instruction groups ig)]
             (if (trivial? branch)
               (step-over vm program groups branch)
-              (:pcs branch)))))
+              [(:start branch)]))))
 
 (defn- step-over-trivial [vm program groups ig]
   (if-let [branch (branch-instruction groups ig)]
-    (:pcs branch)
+    [(:start branch)]
     (step-over-return vm program groups ig)))
 
 (defn- step-over-call [vm program groups ig]
