@@ -224,19 +224,16 @@
      (catch #?(:clj Throwable :cljs :default) _ []))))
 
 (defn step-over! []
-  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
   (let [bpts (estimate-breakpoints step-over)]
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
 (defn step-into! []
-  (clear-system-breakpoints!) ; TODO(Richo): I don't think this is necessary
   (let [bpts (estimate-breakpoints step-into)]
     (set-system-breakpoints! bpts)
     (send-continue!)))
 
 (defn step-out! []
-  (clear-system-breakpoints!)
   (let [bpts (estimate-breakpoints step-out)]
     (set-system-breakpoints! bpts)
     (send-continue!)))
