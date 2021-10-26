@@ -108,20 +108,25 @@
             rest))))
     @groups))
 
-(defn interval-at-pc [program pc]
-  ; TODO(Richo): Calculate the interval for the entire instruction group?
-  (when-let [token (-> (program/instruction-at-pc program pc)
-                       meta :node
-                       meta :token)]
-    [(:start token)
-     (+ (:start token)
-        (:count token))]))
-
 (defn instruction-group-at-pc [groups pc]
   (seek (fn [{:keys [start stop]}]
           (and (>= pc start)
                (<= pc stop)))
         groups))
+
+(defn interval-at-pc [program pc]
+  (let [get-token (fn [instr] (-> instr meta :node meta :token))]
+    (if-some [tokens (seq (map get-token
+                               (-> program
+                                   instruction-groups
+                                   (instruction-group-at-pc pc)
+                                   :instructions)))]
+      [(apply min (map :start tokens))
+       (apply max (map #(+ (:start %) (:count %)) tokens))]
+      (when-let [token (get-token (program/instruction-at-pc program pc))]
+        [(:start token)
+         (+ (:start token)
+            (:count token))]))))
 
 (defn- trivial? [{:keys [instructions]}] ; TODO(Richo): Better name please!
   (and (program/unconditional-branch? (last instructions))
