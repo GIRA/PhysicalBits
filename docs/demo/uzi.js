@@ -195,6 +195,93 @@ let Uzi = (function () {
         enabled: enabled
       };
       return POST(url, data);
+    },
+
+    debugger: {
+      setBreakpoints: function (breakpoints) {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_set_breakpoints(breakpoints);
+        }
+
+        let url = apiURL + "/uzi/debugger/set-breakpoints";
+        let data = {
+          id: id,
+          breakpoints: Array.from(breakpoints).join(","),
+        };
+        return POST(url, data);
+      },
+
+      break: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_break();
+        }
+
+        let url = apiURL + "/uzi/debugger/break";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      continue: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_continue();
+        }
+
+        let url = apiURL + "/uzi/debugger/continue";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepOver: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_over();
+        }
+
+        let url = apiURL + "/uzi/debugger/step-over";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepInto: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_into();
+        }
+
+        let url = apiURL + "/uzi/debugger/step-into";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepOut: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_out();
+        }
+
+        let url = apiURL + "/uzi/debugger/step-out";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      },
+
+      stepNext: function () {
+        if (Uzi.state.connection.portName == "simulator") {
+          return middleware.simulator.debugger_step_next();
+        }
+
+        let url = apiURL + "/uzi/debugger/step-next";
+        let data = {
+          id: id
+        };
+        return POST(url, data);
+      }
     }
   };
 
@@ -229,11 +316,12 @@ let Uzi = (function () {
 
   function update(data) {
     let previousState = deepClone(Uzi.state);
-    Object.keys(data).forEach(key => Uzi.state[key] = data[key]);
+    let keys = new Set(Object.keys(data));
+    keys.forEach(key => Uzi.state[key] = data[key]);
 
     observers["update"].forEach(function (fn) {
       try {
-        fn(Uzi.state, previousState);
+        fn(Uzi.state, previousState, keys);
       } catch (err) {
         console.error(err);
       }

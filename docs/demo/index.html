@@ -95,7 +95,7 @@
       <div id="layout-container"></div>
     </div>
     <div id="hidden-panels" style="display: none;">
-      <div id="controls-panel" class="container">
+      <div id="controls-panel" class="container small-panel">
         <form>
           <div class="form-group">
             <label for="port-dropdown" style="margin: 10px 0px 0px" lang="en">Port name:</label>
@@ -133,7 +133,7 @@
           </div>
         </form>
       </div>
-      <div id="inspector-panel" class="container">
+      <div id="inspector-panel" class="container small-panel">
         <div style="font-size: small;">
           <div class="card bg-dark text-white mt-2" style="flex-direction: row;">
             <div class="card-header" style="width: 7em;">
@@ -230,6 +230,72 @@
         </div>
         <div class="fullscreen">
           <canvas id="plotter-canvas" width="100px" height="100px"></canvas>
+        </div>
+      </div>
+      <div id="debugger-panel" class="fullscreen">
+        <div id="debugger-buttons" class="small-panel p-1 text-center">
+          <div class="btn-group btn-group-sm" role="toolbar" aria-label="...">
+            <button id="debugger-break-button" type="button" class="btn btn-primary">
+              <i class="fas fa-pause mr-1"></i>
+              Pause
+            </button>
+            <button id="debugger-continue-button" type="button" class="btn btn-primary" disabled>
+              <i class="fas fa-play mr-1"></i>
+              Continue
+            </button>
+            <button id="debugger-step-over-button" type="button" class="btn btn-primary" disabled>
+              <i class="fas fa-share mr-1"></i>
+              Over
+            </button>
+            <button id="debugger-step-into-button" type="button" class="btn btn-primary" disabled>
+              <i class="fas fa-level-down-alt mr-1"></i>
+              Into
+            </button>
+            <button id="debugger-step-out-button" type="button" class="btn btn-primary" disabled>
+              <i class="fas fa-level-up-alt mr-1"></i>
+              Out
+            </button>
+            <button id="debugger-step-next-button" type="button" class="btn btn-primary" disabled>
+              <i class="fas fa-step-forward mr-1"></i>
+              Next
+            </button>
+          </div>
+        </div>
+
+        <div class="fullscreen" style="height: calc(100% - 40px);">
+          <div class="split fullscreen">
+            <div id="debugger-call-stack" class="" style="font-size: small;">
+              <div class="card bg-dark text-white fullscreen">
+                <div class="card-header px-4 py-2">
+                  <div lang="en">Call stack</div>
+                </div>
+                <div class="card-body scrollable" style="padding: 0;">
+                  <table id="debugger-call-stack-table" class="table table-sm table-dark table-hover" style="cursor: pointer; font-family: monospace;"></table>
+                </div>
+              </div>
+            </div>
+            <div id="debugger-locals" class="" style="font-size: small;">
+              <div class="card bg-dark text-white fullscreen">
+                <div class="card-header px-4 py-2">
+                  <div lang="en">Locals</div>
+                </div>
+                <div class="card-body scrollable" style="padding: 0;">
+                  <table id="debugger-locals-table" class="table table-sm table-dark table-striped table-hover"></table>
+                </div>
+              </div>
+            </div>
+            <div id="debugger-raw-stack" class="" style="font-size: small;">
+              <div class="card bg-dark text-white fullscreen">
+                <div class="card-header px-4 py-2">
+                  <div lang="en">Stack</div>
+                </div>
+                <div class="card-body scrollable" style="padding: 0;">
+                  <pre id="debugger-output" class="text-white" style="display: none;"></pre>
+                  <table id="debugger-raw-stack-table" class="table table-sm table-dark table-hover" style="font-family: monospace;"></table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -629,6 +695,8 @@
   	<!-- ACE -->
   	<script src="libs/ace/ace.js" type="text/javascript" charset="utf-8"></script>
 
+    <!-- Split.js -->
+    <script src="libs/Split.js/split.min.js"></script>
 
     <script src="polyfills.js" type="text/javascript"></script>
     <script src="utils.js" type="text/javascript"></script>
@@ -640,9 +708,11 @@
     <script src="ast2blocks.js" type="text/javascript"></script>
     <script src="blocks2ast.js" type="text/javascript"></script>
     <script src="blocks.js" type="text/javascript"></script>
+    <script src="code.js" type="text/javascript"></script>
     <script src="ide.js" type="text/javascript"></script>
     <script src="layout.js" type="text/javascript"></script>
     <script src="plotter.js" type="text/javascript"></script>
+    <script src="debugger.js" type="text/javascript"></script>
     <script src="blocklymodal.js" type="text/javascript"></script>
 
     <script src="simulator.js" type="text/javascript"></script>

@@ -4,7 +4,6 @@ const fs = require('fs');
 
 ﻿let IDE = (function () {
 
-  let codeEditor;
   let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
   let dirtyBlocks, dirtyCode;
@@ -32,6 +31,7 @@ const fs = require('fs');
         .then(initializeInspectorPanel)
         .then(initializeOutputPanel)
         .then(initializePlotterPanel)
+        .then(initializeDebuggerPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
         .then(initializeOptionsModal);
@@ -307,34 +307,13 @@ const fs = require('fs');
   }
 
   function initializeCodePanel() {
-		codeEditor = ace.edit("code-editor");
-		codeEditor.setTheme("ace/theme/ambiance");
-		codeEditor.getSession().setMode("ace/mode/uzi");
-
-    let focus = false;
-    codeEditor.on("focus", function () { focus = true; });
-    codeEditor.on("blur", function () { focus = false; });
-    codeEditor.on("change", function () {
+    UziCode.init();
+    UziCode.on("change", function (focus) {
       saveToLocalStorage();
-
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
-
         scheduleAutorun(false, "CODE CHANGE!");
-      }
-    });
-
-    Uzi.on("update", function (state, previousState) {
-      if (focus) return; // Don't change the code while the user is editing!
-      if (state.program.type == "uzi") return; // Ignore textual programs
-      if (codeEditor.getValue() !== "" &&
-          state.program.src == previousState.program.src) return;
-
-      let src = state.program.src;
-      if (src == undefined) return;
-      if (codeEditor.getValue() !== src) {
-        codeEditor.setValue(src, 1);
       }
     });
   }
@@ -356,6 +335,11 @@ const fs = require('fs');
   function initializePlotterPanel() {
     Plotter.init();
     Uzi.on("update", Plotter.update);
+  }
+
+  function initializeDebuggerPanel() {
+    Debugger.init();
+    Uzi.on("update", Debugger.update);
   }
 
   function initializeAutorun() {
@@ -460,11 +444,7 @@ const fs = require('fs');
 
   function resizePanels() {
     UziBlock.resizeWorkspace();
-
-    if (codeEditor) {
-      codeEditor.resize(true);
-    }
-
+    UziCode.resizeEditor();
     Plotter.resize();
   }
 
@@ -602,8 +582,7 @@ const fs = require('fs');
       }
 
       if (ui.code != undefined) {
-        codeEditor.setValue(ui.code);
-        dirtyCode = true;
+        dirtyCode = UziCode.setProgram(ui.code);
       }
 
       if (ui.ports != undefined) {
@@ -646,15 +625,14 @@ const fs = require('fs');
     }
 
     if (code != undefined) {
-      codeEditor.setValue(code);
-      dirtyCode = true;
+      dirtyCode = UziCode.setProgram(code);
     }
 
     if (!dirtyBlocks) {
       UziBlock.getWorkspace().clear();
     }
     if (!dirtyCode) {
-      codeEditor.setValue("");
+      UziCode.clearEditor();
     }
   }
 
@@ -676,7 +654,7 @@ const fs = require('fs');
       } catch (err) {
         errorHandler(err);
     		UziBlock.getWorkspace().clear();
-        codeEditor.setValue("");
+        UziCode.clearEditor();
         $("#file-name").text("");
         scheduleAutorun(true, "OPEN PROJECT!");
       }
@@ -980,7 +958,7 @@ const fs = require('fs');
 
   function getTextualCode() {
     try {
-      return codeEditor.getValue();
+      return UziCode.getProgram();
     } catch (err) {
       console.log(err);
       return "";

@@ -60,6 +60,14 @@ let LayoutManager = (function () {
     "componentState": { "id": "#plotter-panel" },
     "title": "Plotter"
   };
+  let debuggerConfig = {
+    "id": "debugger",
+    "type": "component",
+    "height": 30,
+    "componentName": "DOM",
+    "componentState": { "id": "#debugger-panel" },
+    "title": "Debugger"
+  };
 
   let layout;
   let onStateChanged = function () { /* DO NOTHING */ }
@@ -138,10 +146,33 @@ let LayoutManager = (function () {
     }
   }
 
+  function showDebugger() {
+    if (layout.root.getItemsById("debugger").length > 0) return;
+
+    let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
+    let path = [siblingPanel];
+    do {
+      path.unshift(path[0].parent);
+    } while (path[0].type == "stack");
+    let parent = path[0];
+    if (parent.type == "column") {
+      parent.addChild(debuggerConfig);
+    } else {
+      let siblingConfig = path[1].config;
+      siblingConfig.height = 100 - debuggerConfig.height;
+      parent.replaceChild(path[1], {
+        type: "column",
+        width: siblingConfig.width,
+        content: [siblingConfig, debuggerConfig]
+      });
+    }
+  }
+
   return {
     init: init,
     reset: reset,
     showPlotter: showPlotter,
+    showDebugger: showDebugger,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,
