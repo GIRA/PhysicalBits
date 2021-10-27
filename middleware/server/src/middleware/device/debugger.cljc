@@ -219,9 +219,9 @@
 (defn step-over [vm program groups ig]
   (cond
     (trivial? ig) (step-over-trivial vm program groups ig)
+    (branch? ig) (step-over-branch vm program groups ig)
     (call? ig) (step-over-call vm program groups ig)
     (return? ig) (step-over-return vm program groups ig)
-    (branch? ig) (step-over-branch vm program groups ig)
     :else (step-over-regular vm program groups ig)))
 
 (defn step-into [vm program groups ig]
