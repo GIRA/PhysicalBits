@@ -71,7 +71,8 @@
           tokens (map-indexed (fn [pc instr]
                                 [pc
                                  (when-let [token (-> instr meta :node meta :token)]
-                                   (t/start token))])
+                                   (when (= source (t/source token))
+                                     (t/start token)))])
                               (instructions program))]
       (zipmap (range (count lines))
               (map (fn [[start]]
@@ -90,11 +91,12 @@
       (zipmap (range (count instructions))
               (map (fn [instr]
                      (when-let [token (-> instr meta :node meta :token)]
-                       (first (utils/seek (fn [[idx line-range]]
-                                      (utils/overlapping-ranges?
-                                       [(t/start token) (t/stop token)]
-                                       line-range))
-                                    lines))))
+                       (when (= source (:source token))
+                         (first (utils/seek (fn [[idx line-range]]
+                                              (utils/overlapping-ranges?
+                                               [(t/start token) (t/stop token)]
+                                               line-range))
+                                            lines)))))
                    instructions)))))
 
 (defn branch? [instr]
