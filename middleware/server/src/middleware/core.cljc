@@ -189,22 +189,14 @@
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
                                (mapv pc->loc breakpoints))
-                :stack stack
-                :stackFrames (mapv (fn [{:keys [script pc fp arguments locals]}]
+                :stackFrames (mapv (fn [{:keys [script pc fp arguments locals stack]}]
                                       {:scriptName (:name script)
                                        :pc pc
                                        :fp fp
                                        :interval (debugger/interval-at-pc program pc)
-                                       :arguments (mapv (fn [{:keys [name value]}]
-                                                          ; TODO(Richo): Check variable collision
-                                                          {:name (first (str/split name #"#"))
-                                                           :value value})
-                                                        arguments)
-                                       :locals (mapv (fn [{:keys [name value]}]
-                                                       ; TODO(Richo): Check variable collision
-                                                       {:name (first (str/split name #"#"))
-                                                        :value value})
-                                                     locals)})
+                                       :arguments arguments
+                                       :locals locals
+                                       :stack stack})
                                     stack-frames)})})
 
 (def ^:private device-event-handlers

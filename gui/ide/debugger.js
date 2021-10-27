@@ -126,16 +126,27 @@ let Debugger = (function () {
     $("#debugger-raw-stack-table").html("");
     if (!state.debugger.isHalted) return;
 
+    let $head = $("<thead>");
+    $head.append($("<tr>")
+      .append($("<th>").addClass("text-right").text("#"))
+      .append($("<th>").addClass("text-right").text("HEX"))
+      .append($("<th>").addClass("text-right").text("Value")));
+    $("#debugger-raw-stack-table").append($head);
+
     let $body = $("<tbody>");
-    let stack = state.debugger.stack;
-    for (let i = stack.length - 1; i >= 0; i--) {
-      let $tr = $("<tr>");
-      $tr.append($("<th>").addClass("px-2 text-right").text(i + "."));
-      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][0]));
-      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][1]));
-      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][2]));
-      $tr.append($("<td>").addClass("px-2 text-right").text(stack[i][3]));
-      $body.append($tr);
+    let stackIndex = state.debugger.stackFrames.slice(selectedStackFrame).reduce((acc, sf) => acc + sf.stack.length, 0);
+    for (let j = selectedStackFrame; j < state.debugger.stackFrames.length; j++) {
+      let stack = state.debugger.stackFrames[j].stack;
+      for (let i = stack.length - 1; i >= 0; i--) {
+        let raw = stack[i]["raw-value"].map(n => n.toString(16).padStart(2, '0').toUpperCase()).join(" ");
+        let description = stack[i]["description"];
+
+        let $tr = $("<tr>");
+        $tr.append($("<th>").addClass("text-right").text(--stackIndex));
+        $tr.append($("<td>").addClass("text-right").text(raw));
+        $tr.append($("<td>").addClass("text-right").text(description));
+        $body.append($tr);
+      }
     }
     $("#debugger-raw-stack-table").append($body);
   }

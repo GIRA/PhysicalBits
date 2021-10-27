@@ -1,5 +1,6 @@
 (ns middleware.device.debugger
   (:require [clojure.set :as set]
+            [clojure.string :as str]
             [clojure.core.async :as a :refer [<! >! go go-loop timeout]]
             [middleware.program.utils :as program]
             [middleware.device.protocol :as p]
@@ -48,30 +49,47 @@
   (break!)
   (send-continue!))
 
+(defn var-display-name [name]
+  (first (str/split name #"#")))
 
 (defn stack-frames [program {:keys [stack pc fp]}]
   (when-not (empty? stack)
     (when-let [script (program/script-for-pc program pc)]
       (let [arguments (-> script :arguments)
             locals (-> script :locals)
-            var-count (+ (count arguments)
-                         (count locals))
+            variables (vec (concat arguments locals))
+            var-count (count variables)
             next-data (conversions/bytes->uint32
                        (nth stack (+ fp var-count)))
             next-pc (bit-and 0xFFFF next-data)
             next-fp (bit-and 0xFFFF (bit-shift-right next-data 16))
             frame {:script script
+                   :source (-> script meta :node meta :token :source)
                    :pc pc
                    :fp fp
-                   :stack stack
+                   :stack (map-indexed (fn [i val]
+                                         {:raw-value val
+                                          :description (cond
+                                                         (< i var-count)
+                                                         (str (var-display-name (:name (nth variables i)))
+                                                              ": " (conversions/bytes->float val))
+
+                                                         (> i var-count)
+                                                         (str (conversions/bytes->float val))
+
+                                                         :else (str "PC: " next-pc
+                                                                    ", FP: " (if (= 0xFFFF next-fp)
+                                                                               -1
+                                                                               next-fp)))})
+                                       (drop fp stack))
                    :return next-pc
                    :arguments (vec (map-indexed (fn [index {var-name :name}]
-                                                  {:name var-name
+                                                  {:name (var-display-name var-name)
                                                    :value (conversions/bytes->float
                                                            (nth stack (+ index fp)))})
                                                 arguments))
                    :locals (vec (map-indexed (fn [index {var-name :name}]
-                                               {:name var-name
+                                               {:name (var-display-name var-name)
                                                 :value (conversions/bytes->float
                                                         (nth stack (+ (count arguments) index fp)))})
                                              locals))}]
