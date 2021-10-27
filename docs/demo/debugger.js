@@ -59,7 +59,9 @@ let Debugger = (function () {
     selectedStackFrame = 0;
     updateButtons(state);
     updateDebugger(state);
-    LayoutManager.showDebugger();
+    if (state.debugger.isHalted) {
+      LayoutManager.showDebugger();
+    }
     $("#debugger-output").text(JSON.stringify(state.debugger, null, 2));
   }
 
