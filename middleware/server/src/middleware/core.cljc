@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [run!])
   (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
             [clojure.string :as str]
+            [middleware.utils.core :refer [index-of]]
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
@@ -177,7 +178,8 @@
   {:debugger (let [{:keys [index pc fp stack] :as vm-state} (-> state :debugger :vm)
                    breakpoints (-> state :debugger :breakpoints :user)
                    program (-> state :program :running)
-                   stack-frames (debugger/stack-frames program vm-state)]
+                   stack-frames (debugger/stack-frames program vm-state)
+                   sources (vec (distinct (map :source stack-frames)))]
                {
                 ; TODO(Richo): Added just for debugging
                 :_breakpoints {:usr (-> @dc/state :debugger :breakpoints :user sort)
@@ -189,14 +191,16 @@
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
                                (mapv pc->loc breakpoints))
-                :stackFrames (mapv (fn [{:keys [script pc fp arguments locals stack]}]
+                :sources sources
+                :stackFrames (mapv (fn [{:keys [script pc fp arguments locals stack source]}]
                                       {:scriptName (:name script)
                                        :pc pc
                                        :fp fp
                                        :interval (debugger/interval-at-pc program pc)
                                        :arguments arguments
                                        :locals locals
-                                       :stack stack})
+                                       :stack stack
+                                       :source (index-of sources source)})
                                     stack-frames)})})
 
 (def ^:private device-event-handlers

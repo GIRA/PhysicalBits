@@ -2,6 +2,7 @@ let UziCode = (function () {
 
   let editor;
   let focus = false;
+  let updating = false;
   let breakpoints = [];
 	let markers = [];
   let observers = {
@@ -17,6 +18,7 @@ let UziCode = (function () {
     editor.on("focus", function () { focus = true; });
     editor.on("blur", function () { focus = false; });
     editor.on("change", function (e) {
+      if (updating) return;
       trigger("change", focus);
 
       let start = e.start.row;
@@ -59,11 +61,18 @@ let UziCode = (function () {
 		});
 
     Uzi.on("update", function (state, previousState, keys) {
-      if (keys.has("debugger")) {
-        handleDebuggerUpdate(state, 0);
-      }
-      if (keys.has("program")) {
-        handleProgramUpdate(state, previousState);
+      updating = true;
+      try {
+        if (keys.has("debugger")) {
+          handleDebuggerUpdate(state, 0);
+        }
+        if (keys.has("program")) {
+          handleProgramUpdate(state, previousState);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        updating = false;
       }
     });
   }
@@ -88,17 +97,27 @@ let UziCode = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
-      let interval = null;
-      if (state.debugger.stackFrames.length > 0) {
-        interval = state.debugger.stackFrames[stackFrameIndex].interval;
+      if (!state.debugger.isHalted) {
+        editor.setValue(state.program.src, 1);
       }
+
+      let interval = null;
+      let src = state.program.src;
+      if (state.debugger.stackFrames.length > 0) {
+        let stackFrame = state.debugger.stackFrames[stackFrameIndex];
+        src = state.debugger.sources[stackFrame.source];
+        interval = stackFrame.interval;
+      }
+      editor.setValue(src, 1);
       highlight(interval);
 
       breakpoints = state.debugger.breakpoints;
       editor.session.clearBreakpoints();
-      breakpoints.forEach(function (line) {
-        editor.session.setBreakpoint(line, "breakpoint");
-      });
+      if (src == state.program.src) {
+        breakpoints.forEach(function (line) {
+          editor.session.setBreakpoint(line, "breakpoint");
+        });
+      }
     } catch (err) {
       console.log(err);
     }
