@@ -15,7 +15,7 @@ The first thing you need to do is __make sure that the firmware is correctly upl
 
 ### Visual C++ 2010 Redistributable Package (Windows only)
 
-If you're on __Windows__, you might need to install the [Visual C++ 2010 Redistributable Package](https://www.microsoft.com/en-US/download/details.aspx?id=14632)
+If you're on __Windows__, you might need to install the [Visual C++ 2010 Redistributable Package](https://www.microsoft.com/en-us/download/details.aspx?id=26999)
 
 ### Serial port permissions (Linux only)
 
