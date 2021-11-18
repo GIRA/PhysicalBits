@@ -12,6 +12,7 @@ pom.xml.asc
 .hg/
 .idea
 /plugin.iml
+/.calva
 
 /log
 
