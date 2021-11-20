@@ -1,7 +1,7 @@
 (ns user
   (:require [middleware.device.ports.scanner :as port-scanner]
-            [middleware.device.controller :as dc :refer [state]]
-            [middleware.server.http :as http :refer [server]]
+            [middleware.device.controller :as dc]
+            [middleware.server.http :as http]
             [middleware.server.udp :as udp]
             [clojure.java.browse :refer [browse-url]]
             [middleware.main :as main])
@@ -31,3 +31,8 @@
   (main/init-dependencies))
 
 (init)
+
+(comment
+  (reload)
+  (refresh-all)
+  ,,,)
