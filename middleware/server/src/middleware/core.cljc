@@ -1,7 +1,6 @@
 (ns middleware.core
   (:refer-clojure :exclude [run!])
-  (:require [clojure.core.async :as a :refer [go go-loop <! >!]]
-            [clojure.string :as str]
+  (:require [clojure.core.async :as a :refer [go <!]]
             [middleware.utils.core :refer [index-of]]
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
@@ -13,6 +12,8 @@
             [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
+
+(def ^:private updates (atom nil))
 
 ; TODO(Richo): Rename these maybe?
 (def ^:private program-atom (atom nil))
@@ -203,7 +204,7 @@
                                        :source (index-of sources source)})
                                     stack-frames)})})
 
-(def ^:private device-event-handlers
+(def ^:private device-update-handlers
   {:connection #'get-connection-data
    :pin-value #'get-pins-data
    :global-value #'get-globals-data
@@ -214,7 +215,7 @@
 
 (defn- get-device-state [state device-events]
   (reduce (fn [update type]
-            (if-let [handler (device-event-handlers type)]
+            (if-let [handler (device-update-handlers type)]
               (merge update (handler state))
               update))
           {}
@@ -227,28 +228,30 @@
                :ast ast
                :compiled program}}))
 
+(defn- get-logger-state [logger]
+  {:output (vec logger)})
+
 (defn get-server-state
-  ; TODO(Richo): The empty args overload is only needed to initialize the clients
+  ; TODO(Richo): The empty args overload is only used to initialize the clients
   ; when they first connect. I don't know if this is actually necessary, though...
-  ([] (get-server-state {:device (keys device-event-handlers)
+  ([] (get-server-state {:device (keys device-update-handlers)
                          :program true}))
   ([{:keys [device logger program]}]
    (merge {}
-          (when logger {:output (vec logger)})
+          (when logger (get-logger-state logger))
           (when device (get-device-state @dc/state (set device)))
           (when program (get-program-state @program-atom)))))
 
-(def ^:private updates (atom nil))
+(defn kv-chan 
+  "Returns a channel that associates everything we put into it with a key"
+  [key]  
+  (a/chan 1 (map (partial vector key))))
 
 (defn start-update-loop! [update-fn]
   (when (compare-and-set! updates nil :pending)
-    (let [device-updates (a/tap dc/updates
-                                (a/chan 1 (map (partial vector :device))))
-          logger-updates (a/tap logger/updates
-                                (a/chan 1 (map (partial vector :logger))))
-          program-updates (a/pipe program-chan
-                                  (a/chan 1 (map (partial vector :program))))
-          update-sources [device-updates logger-updates program-updates]
+    (let [update-sources [(a/tap dc/updates (kv-chan :device))
+                          (a/tap logger/updates (kv-chan :logger))
+                          (a/pipe program-chan (kv-chan :program))]
           updates* (reset! updates (a/merge update-sources))]
       (go (loop []
             (when-some [update (<! updates*)] ; Park until first update

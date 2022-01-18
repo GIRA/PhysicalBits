@@ -1,8 +1,7 @@
 (ns middleware.device.controller
   (:require #?(:clj [clojure.tools.logging :as log])
-            [clojure.set :as set]
             [middleware.device.ports.scanner :as port-scanner]
-            [clojure.core.async :as a :refer [<! >! go go-loop timeout]]
+            [clojure.core.async :as a :refer [<! >! go timeout]]
             [middleware.device.ports.common :as ports]
             [middleware.device.protocol :as p]
             [middleware.device.boards :refer [UNO get-pin-number get-pin-name]]
@@ -12,8 +11,7 @@
             [middleware.device.utils.ring-buffer :as rb]
             [middleware.utils.logger :as logger]
             #?(:clj [middleware.utils.config :as config])
-            [middleware.utils.core :refer [millis clamp]]
-            [middleware.utils.conversions :as conversions]))
+            [middleware.utils.core :refer [millis clamp]]))
 
 (defn- log-error [msg e]
   #?(:clj (log/error msg e)
@@ -126,7 +124,7 @@
       (set-pin-report pin-name true))))
 
 (defn- update-reporting [program]
-  "All pins and globals referenced in the program must be enabled"
+  ; NOTE(Richo): All pins and globals referenced in the program must be enabled
   (doseq [global (filter :name (-> program :globals))]
     (set-global-report (:name global) true))
   (doseq [{:keys [type number]} (filter ast/pin-literal?
@@ -157,7 +155,8 @@
     ; TODO(Richo): This message is actually a lie, we really don't know yet if the
     ; program was installed successfully. I think we need to add a confirmation
     ; message coming from the firmware
-    (logger/success "Installed program successfully!")))
+    (logger/success "Installed program successfully!")
+    sent))
 
 (defn start-reporting [] (send! (p/start-reporting)))
 (defn stop-reporting [] (send! (p/stop-reporting)))
@@ -185,10 +184,10 @@
        (recur)))))
 
 (defn- process-timestamp [^long timestamp]
-  "Calculating the time since the last snapshot (both in the vm and the middleware)
-  and then calculating the difference between these intervals and adding it as
-  pseudo variable so that I can observe it in the inspector. Its value should always
-  be close to 0. If not, we try increasing the report interval."
+  ; NOTE(Richo): Calculating the time since the last snapshot (both in the vm and the 
+  ; middleware) and then calculating the difference between these intervals and adding 
+  ; it as pseudo variable so that I can observe it in the inspector. Its value should 
+  ; always be close to 0. If not, we try increasing the report interval.
   (let [arduino-time timestamp
         middleware-time (millis)
         timing (-> @state :timing)
@@ -366,7 +365,7 @@
      (catch #?(:clj Throwable :cljs :default) ex
        (log-error "ERROR WHILE OPENING PORT ->" ex)))))
 
-(defn- connection-successful [connection board baud-rate reporting?]
+(defn- connection-successful [connection board reporting?]
   (port-scanner/stop!)
   (swap! state assoc
          :connection connection
@@ -399,6 +398,6 @@
                           (assoc state :connection :pending))))]
       (when (nil? old-connection)
         (if-let [connection (<! (request-connection port-name baud-rate))]
-          (connection-successful connection board baud-rate reporting?)
+          (connection-successful connection board reporting?)
           (swap! state assoc :connection nil))
         (>! update-chan :connection))))))

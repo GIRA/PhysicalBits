@@ -1,12 +1,12 @@
 (ns middleware.device.debugger
   (:require [clojure.set :as set]
             [clojure.string :as str]
-            [clojure.core.async :as a :refer [<! >! go go-loop timeout]]
+            [clojure.core.async :as a]
             [middleware.program.utils :as program]
             [middleware.device.protocol :as p]
             [middleware.utils.conversions :as conversions]
             [middleware.utils.core :refer [seek]]
-            [middleware.device.controller :as dc :refer [initial-state state update-chan send!]]))
+            [middleware.device.controller :as dc :refer [state update-chan send!]]))
 
 (defn- send-breakpoints! []
   (let [bpts (apply set/union (-> @state :debugger :breakpoints vals))
@@ -174,7 +174,7 @@
 
 (declare step-over)
 
-(defn- step-over-return [vm program groups ig]
+(defn- step-over-return [vm program _groups _ig]
   [(-> (stack-frames program vm) first :return)])
 
 (defn- step-over-regular [vm program groups ig]
@@ -279,7 +279,7 @@
  (mapv #(dissoc % :script) groups)
 
 
- (connect! "COM4")
+ (dc/connect! "COM4")
  (dc/connect! "127.0.0.1:4242")
  (dc/connected?)
  (dc/disconnect!)
@@ -308,7 +308,7 @@
  (set-user-breakpoints! [9 12])
  (send-breakpoints!)
  (-> @state :globals)
- (send-continue)
+ (send-continue!)
  (-> @state :debugger)
 
  (map-indexed (fn [v i] [v i])
