@@ -21,3 +21,4 @@ pom.xml.asc
 /out
 /node_modules
 /.shadow-cljs
+/.calva

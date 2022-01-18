@@ -3,3 +3,6 @@
 
 /releases
 /temp
+
+/.clj-kondo
+/.lsp
