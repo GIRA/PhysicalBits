@@ -1,7 +1,5 @@
 /.vs
 .DS_Store
-/.clj-kondo
-/.lsp
 
 /releases
 /temp
