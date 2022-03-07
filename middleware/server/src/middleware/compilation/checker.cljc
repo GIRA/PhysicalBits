@@ -5,7 +5,7 @@
             [middleware.ast.utils :as ast-utils]
             [middleware.ast.primitives :as prims]
             [petitparser.token :as t]
-            [clojure.data :as data]))
+            [clojure.set :as set]))
 
 ; TODO(Richo): Improve error descriptions so that they can be translated, maybe
 ; just storing the description as a format-string with the argument data?
@@ -146,7 +146,7 @@
                 node errors)))))
 
 (defn ^:private contains-all? [a b]
-  (nil? (first (data/diff (set b) (set a)))))
+  (set/subset? (set b) (set a)))
 
 (defn ^:private check-script-call [node errors path]
   (let [script (ast-utils/script-named (:selector node) path)]
