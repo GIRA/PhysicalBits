@@ -74,7 +74,7 @@ To compile the code you must run (in a different terminal) the `shadow-cljs watc
 
 Wait until compilation finishes and then you can open the browser on the resulting build.
 
-To connect the REPL you use the port 9000. However, once you connected the REPL to the shadow-cljs server you need to select the appropiate build if you want to run code in the actual runtime:
+To connect the REPL you use the port 9000. However, once you connected the REPL to the shadow-cljs server you need to select the appropiate build if you want to run code in the actual runtime. If you're using VS Code with the Calva extension this step is done automatically when you select the build, otherwise run:
 
     $ (shadow.cljs.devtools.api/nrepl-select :simulator)
 

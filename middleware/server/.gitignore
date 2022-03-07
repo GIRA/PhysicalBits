@@ -17,8 +17,8 @@ pom.xml.asc
 /log
 
 /public/compiler/js
-/public/compiler-test
 /public/simulator/js
+/public/test
 /out
 /node_modules
 /.shadow-cljs

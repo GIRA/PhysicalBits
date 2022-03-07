@@ -8,22 +8,21 @@
          :middleware []}
 
  :dev-http {8081 ["public"
-                  "public/compiler-test"
+                  "public/test"
                   "../../gui"]}
 
  :builds {:compiler {:target :browser
                      :output-dir "public/compiler/js"
                      :modules {:main {:init-fn middleware.compiler/init}}}
 
-          :compiler-test {:target :browser-test
-                          :test-dir "public/compiler-test"
-                          :ns-regexp "-test\\d?$"}
-
-          :simulator {:target :browser
+          :simulator {; NOTE(Richo): This build is used in the GUI in order to compile
+                      ; as well as interact with the wasm simulator.
+                      :target :browser
                       :output-dir "public/simulator/js"
                       :modules {:main {:init-fn middleware.simulator/init}}}
 
-          :controller {:target :node-library
+          :controller {; NOTE(Richo): This build is is used by mendieta
+                       :target :node-library
                        :exports {:on-update middleware.controller/on-update
                                  :connect middleware.controller/connect!
                                  :disconnect middleware.controller/disconnect!
@@ -32,7 +31,16 @@
                        :output-to "out/controller/controller.js"
                        :compiler-options {:optimizations :advanced}}
 
-          :controller-test {:target :node-test
-                            :ns-regexp "-(test|gen)\\d?$"
-                            :output-to "out/controller/tests.js"
-                            :autorun true}}}
+          :browser-test {; NOTE(Richo): This build runs the tests in the browser. Since
+                         ; we don't have write access to the filesystem (yet), these tests
+                         ; don't generate vm test files.
+                         :target :browser-test
+                         :test-dir "public/test"
+                         :ns-regexp "-test\\d?$"}
+
+          :node-test {; NOTE(Richo): This build runs the tests in node. The only 
+                      ; difference is these tests include the vm test files generation
+                      :target :node-test
+                      :ns-regexp "-(test|gen)\\d?$"
+                      :output-to "out/controller/tests.js"
+                      :autorun true}}}
