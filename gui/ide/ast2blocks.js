@@ -373,28 +373,56 @@ let ASTToBlocks = (function () {
 	function initProcedureCall(node, json, ctx) {
 		let types = ["proc_call_0args", "proc_call_1args",
 								"proc_call_2args", "proc_call_3args"];
-		if (json.arguments.length > 3) {
+		let script = ctx.scriptNamed(json.selector);
+		if (script.arguments.length > 3) {
 			throw "Max number of arguments for call blocks is 3";
 		}
-		node.setAttribute("type", types[json.arguments.length]);
+		node.setAttribute("type", types[script.arguments.length]);
 		appendField(node, "scriptName", json.selector);
-		let script = ctx.scriptNamed(json.selector);
-		json.arguments.forEach(function (arg, index) {
-			appendValue(node, "arg" + index, arg.value, ctx);
+		// NOTE(Richo): We need to collect the call args by their name. We know
+		// that they either all have names or none have, so it should be safe to
+		// check each one and if the name is not found just ask the script by index
+		let call_args = {};
+		json.arguments.forEach((arg, index) => {
+			if (arg.key != null) {
+				call_args[arg.key] = arg;
+			} else {
+				call_args[script.arguments[index].name] = arg;
+			}
+		});
+		script.arguments.forEach((arg, index) => {
+			let name = arg.name;
+			let call_arg = call_args[name];
+			let value = call_arg != null ? call_arg.value : arg.value;
+			appendValue(node, "arg" + index, value, ctx);
 		});
 	}
 
 	function initFunctionCall(node, json, ctx) {
 		let types = ["func_call_0args", "func_call_1args",
 								"func_call_2args", "func_call_3args"];
-		if (json.arguments.length > 3) {
+		let script = ctx.scriptNamed(json.selector);
+		if (script.arguments.length > 3) {
 			throw "Max number of arguments for call blocks is 3";
 		}
-		node.setAttribute("type", types[json.arguments.length]);
+		node.setAttribute("type", types[script.arguments.length]);
 		appendField(node, "scriptName", json.selector);
-		let script = ctx.scriptNamed(json.selector);
-		json.arguments.forEach(function (arg, index) {
-			appendValue(node, "arg" + index, arg.value, ctx);
+		// NOTE(Richo): We need to collect the call args by their name. We know
+		// that they either all have names or none have, so it should be safe to
+		// check each one and if the name is not found just ask the script by index
+		let call_args = {};
+		json.arguments.forEach((arg, index) => {
+			if (arg.key != null) {
+				call_args[arg.key] = arg;
+			} else {
+				call_args[script.arguments[index].name] = arg;
+			}
+		});
+		script.arguments.forEach((arg, index) => {
+			let name = arg.name;
+			let call_arg = call_args[name];
+			let value = call_arg != null ? call_arg.value : arg.value;
+			appendValue(node, "arg" + index, value, ctx);
 		});
 	}
 
