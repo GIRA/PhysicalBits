@@ -144,17 +144,21 @@
 
 (defmethod compile-node "UziCallNode"
   [{:keys [selector arguments primitive-name] :as node} ctx]
-  (let [positional-args? (or primitive-name
+  (let [script (ast-utils/script-named selector (:path ctx))
+        positional-args? (or primitive-name
                              (every? #(nil? (:key %)) arguments))
         sorted-args (if positional-args?
-                      arguments
-                      (let [script (ast-utils/script-named selector (:path ctx))]
-                        (map (fn [{:keys [name]}]
-                               (seek #(= name (:key %))
-                                     arguments))
-                             (:arguments script))))]
-    (conj (vec (mapcat #(compile (:value %) ctx)
-                       sorted-args))
+                      (if script
+                        (map-indexed (fn [idx {:keys [value]}]
+                                       (get-in arguments [idx :value] value))
+                                     (:arguments script))
+                        (map :value arguments))
+                      (map (fn [{:keys [name value]}]
+                             (if-let [arg (seek #(= name (:key %)) arguments)]
+                               (:value arg)
+                               value))
+                           (:arguments script)))]
+    (conj (vec (mapcat #(compile % ctx) sorted-args))
           (if primitive-name
             (emit/prim-call primitive-name)
             (emit/script-call selector)))))

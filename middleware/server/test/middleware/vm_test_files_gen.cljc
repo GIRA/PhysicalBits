@@ -5177,3 +5177,37 @@
                                                     (emit/resume "test")])])
         actual (en/encode program)]
     (write-file actual)))
+
+(deftest Test099CallingAScriptWithLessArgumentsThanRequired
+  (let [src "func foo(a, b, c) { return; }
+             task main() running 1/s {
+	             toggle(D13);
+	             foo(1, 2);
+             }"
+        program (emit/program
+                 :globals #{(emit/constant 0)
+                            (emit/constant 1)
+                            (emit/constant 2)
+                            (emit/constant 13)
+                            (emit/constant 1000)}
+                 :scripts [(emit/script
+                            :name "foo"
+                            :arguments [(emit/variable "a#1")
+                                        (emit/variable "b#2")
+                                        (emit/variable "c#3")]
+                            :instructions [(emit/prim-call "ret")])
+                           (emit/script
+                            :name "main"
+                            :delay 1000
+                            :running? true
+                            :instructions [(emit/push-value 13)
+                                           (emit/prim-call "toggle")
+                                           (emit/push-value 1)
+                                           (emit/push-value 2)
+                                           (emit/push-value 0)
+                                           (emit/script-call "foo")
+                                           (emit/prim-call "pop")])])
+        actual (en/encode program)
+        expected (en/encode (compile-string src))]
+    (is (= actual expected))
+    (write-file actual)))

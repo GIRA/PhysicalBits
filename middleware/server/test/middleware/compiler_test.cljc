@@ -2221,12 +2221,12 @@
 (deftest return-with-logical-and-as-value
   (let [ast (ast/program-node
              :scripts [(ast/function-node
-                       :name "foo"
-                       :body (ast/block-node
-                              [(ast/return-node
-                                (ast/logical-and-node
-                                 (ast/literal-number-node 1)
-                                 (ast/literal-number-node 2)))]))
+                        :name "foo"
+                        :body (ast/block-node
+                               [(ast/return-node
+                                 (ast/logical-and-node
+                                  (ast/literal-number-node 1)
+                                  (ast/literal-number-node 2)))]))
                        (ast/task-node
                         :name "loop"
                         :state "once"
@@ -2247,6 +2247,80 @@
                              :once? true
                              :running? true
                              :instructions [(emit/script-call "foo")
+                                            (emit/prim-call "pop")])])
+        actual (compile ast)]
+    (is (equivalent? expected actual))))
+
+(deftest script-call-can-provide-less-positional-arguments-than-required
+  (let [ast (ast/program-node
+             :scripts [(ast/function-node
+                        :name "foo"
+                        :arguments [(ast/variable-declaration-node "a")
+                                    (ast/variable-declaration-node "b")
+                                    (ast/variable-declaration-node "c")]
+                        :body (ast/block-node
+                               [(ast/return-node)]))
+                       (ast/task-node
+                        :name "main"
+                        :body (ast/block-node
+                               [(ast/call-node "foo"
+                                               [(ast/arg-node (ast/literal-number-node 1))
+                                                (ast/arg-node (ast/literal-number-node 2))])]))])
+        expected (emit/program
+                  :globals #{(emit/constant 0)
+                             (emit/constant 1)
+                             (emit/constant 2)}
+                  :scripts [(emit/script
+                             :name "foo"
+                             :arguments [(emit/variable "a#1")
+                                         (emit/variable "b#2")
+                                         (emit/variable "c#3")]
+                             :instructions [(emit/prim-call "ret")])
+                            (emit/script
+                             :name "main"
+                             :once? true
+                             :running? true
+                             :instructions [(emit/push-value 1)
+                                            (emit/push-value 2)
+                                            (emit/push-value 0)
+                                            (emit/script-call "foo")
+                                            (emit/prim-call "pop")])])
+        actual (compile ast)]
+    (is (equivalent? expected actual))))
+
+(deftest script-call-can-provide-less-named-arguments-than-required
+  (let [ast (ast/program-node
+             :scripts [(ast/function-node
+                        :name "foo"
+                        :arguments [(ast/variable-declaration-node "a")
+                                    (ast/variable-declaration-node "b")
+                                    (ast/variable-declaration-node "c")]
+                        :body (ast/block-node
+                               [(ast/return-node)]))
+                       (ast/task-node
+                        :name "main"
+                        :body (ast/block-node
+                               [(ast/call-node "foo"
+                                               [(ast/arg-node "c" (ast/literal-number-node 1))
+                                                (ast/arg-node "a" (ast/literal-number-node 2))])]))])
+        expected (emit/program
+                  :globals #{(emit/constant 0)
+                             (emit/constant 1)
+                             (emit/constant 2)}
+                  :scripts [(emit/script
+                             :name "foo"
+                             :arguments [(emit/variable "a#1")
+                                         (emit/variable "b#2")
+                                         (emit/variable "c#3")]
+                             :instructions [(emit/prim-call "ret")])
+                            (emit/script
+                             :name "main"
+                             :once? true
+                             :running? true
+                             :instructions [(emit/push-value 2)
+                                            (emit/push-value 0)
+                                            (emit/push-value 1)
+                                            (emit/script-call "foo")
                                             (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))

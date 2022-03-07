@@ -2406,5 +2406,29 @@ namespace SimulatorTest
                 Assert.IsTrue(count < 3, "D13 should blink (iteration: {0})", i);
             }
         }
+
+
+
+        [TestMethod]
+        public void Test099CallingAScriptWithLessArgumentsThanRequired()
+        {
+            sketch.WriteSerial(ReadFile(nameof(Test099CallingAScriptWithLessArgumentsThanRequired)));
+
+            sketch.SetMillis(0);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            sketch.Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
     }
 }

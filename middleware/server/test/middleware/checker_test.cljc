@@ -682,6 +682,12 @@
           foo(1, 2, c: 3);
         }")))
 
+(deftest script-call-can-provide-less-arguments-than-required
+  (is (valid? "func foo(a,b,c) { return a * b + c; }
+               task main() { foo(1, 2); }"))
+  (is (valid? "func foo(a,b,c) { return a * b + c; }
+               task main() { foo(c: 1, a: 2); }")))
+
 (deftest program-with-primitive-declaration
   (is (valid? "prim add;"))
   (is (invalid? "prim unaPrimitivaQueNoExisteEnElSpec;")))
