@@ -11,11 +11,7 @@
                   "public/test"
                   "../../gui"]}
 
- :builds {:compiler {:target :browser
-                     :output-dir "public/compiler/js"
-                     :modules {:main {:init-fn middleware.compiler/init}}}
-
-          :simulator {; NOTE(Richo): This build is used in the GUI in order to compile
+ :builds {:simulator {; NOTE(Richo): This build is used in the GUI in order to compile
                       ; as well as interact with the wasm simulator.
                       :target :browser
                       :output-dir "public/simulator/js"
