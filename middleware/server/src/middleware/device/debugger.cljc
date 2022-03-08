@@ -8,45 +8,41 @@
             [middleware.utils.core :refer [seek]]
             [middleware.device.controller :as dc :refer [state update-chan send!]]))
 
-(defn preserve-breakpoints! [f]
-  (let [bpts (-> @state :debugger :breakpoints :user)]
-    (f)
-    (swap! state assoc-in [:debugger :breakpoints :user] bpts)
-    (let [pcs (program/pcs (-> @state :program :running))]
-      (if (< (count bpts)
-             (count pcs))
-        (do
-          (send! (p/clear-all-breakpoints))
-          (send! (p/set-breakpoints bpts)))
-        (do
-          (send! (p/set-all-breakpoints))
-          (send! (p/clear-breakpoints (remove bpts pcs))))))
-    (send! (p/continue))))
-
-(defn send-breakpoints! []
-  (let [bpts (apply set/union (-> @state :debugger :breakpoints vals))
-        pcs (program/pcs (-> @state :program :running))]
-    (if (< (count bpts)
+(defn send-breakpoints! [breakpoints]
+  (let [pcs (program/pcs (-> @state :program :running))]
+    (if (< (count breakpoints)
            (count pcs))
       (do
         (send! (p/clear-all-breakpoints))
-        (send! (p/set-breakpoints bpts)))
+        (send! (p/set-breakpoints breakpoints)))
       (do
         (send! (p/set-all-breakpoints))
-        (send! (p/clear-breakpoints (remove bpts pcs)))))
-    (a/put! update-chan :debugger)))
+        (send! (p/clear-breakpoints (remove breakpoints pcs)))))))
+
+(defn send-all-breakpoints! []
+  (send-breakpoints! (apply set/union (-> @state :debugger :breakpoints vals))))
+
+(defn preserve-breakpoints! [action]
+  (let [breakpoints (-> @state :debugger :breakpoints :user)]
+    (action)
+    (swap! state assoc-in [:debugger :breakpoints :user] breakpoints)
+    (send-breakpoints! breakpoints)
+    (send! (p/continue))))
 
 (defn set-user-breakpoints! [pcs]
   (swap! state assoc-in [:debugger :breakpoints :user] (set pcs))
-  (send-breakpoints!))
+  (send-all-breakpoints!)
+  (a/put! update-chan :debugger))
 
 (defn set-system-breakpoints! [pcs]
   (swap! state assoc-in [:debugger :breakpoints :system] (set pcs))
-  (send-breakpoints!))
+  (send-all-breakpoints!)
+  (a/put! update-chan :debugger))
 
 (defn clear-system-breakpoints! []
   (swap! state assoc-in [:debugger :breakpoints :system] #{})
-  (send-breakpoints!))
+  (send-all-breakpoints!)
+  (a/put! update-chan :debugger))
 
 (defn break! []
   (set-system-breakpoints! (program/pcs (-> @state :program :running))))
@@ -321,7 +317,7 @@
  (dc/reset-debugger!)
 
  (set-user-breakpoints! [9 12])
- (send-breakpoints!)
+ (send-all-breakpoints!)
  (-> @state :globals)
  (send-continue!)
  (-> @state :debugger)
