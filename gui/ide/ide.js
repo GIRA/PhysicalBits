@@ -2,7 +2,7 @@ const electron = require('electron');
 const { dialog } = electron ? electron.remote : {};
 const fs = require('fs');
 
-﻿let IDE = (function () {
+let IDE = (function () {
 
   let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
