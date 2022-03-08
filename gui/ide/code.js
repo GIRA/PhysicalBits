@@ -98,7 +98,10 @@ let UziCode = (function () {
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
       if (!state.debugger.isHalted) {
-        editor.setValue(state.program.src, 1);
+        let src = state.program.src;
+        if (editor.getValue() !== src) {
+          editor.setValue(src, 1);
+        }
       }
 
       let interval = null;
@@ -108,7 +111,10 @@ let UziCode = (function () {
         src = state.debugger.sources[stackFrame.source];
         interval = stackFrame.interval;
       }
-      editor.setValue(src, 1);
+      
+      if (editor.getValue() !== src) {
+        editor.setValue(src, 1);
+      }
       highlight(interval);
 
       breakpoints = state.debugger.breakpoints;
