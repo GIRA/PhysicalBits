@@ -8,7 +8,22 @@
             [middleware.utils.core :refer [seek]]
             [middleware.device.controller :as dc :refer [state update-chan send!]]))
 
-(defn- send-breakpoints! []
+(defn preserve-breakpoints! [f]
+  (let [bpts (-> @state :debugger :breakpoints :user)]
+    (f)
+    (swap! state assoc-in [:debugger :breakpoints :user] bpts)
+    (let [pcs (program/pcs (-> @state :program :running))]
+      (if (< (count bpts)
+             (count pcs))
+        (do
+          (send! (p/clear-all-breakpoints))
+          (send! (p/set-breakpoints bpts)))
+        (do
+          (send! (p/set-all-breakpoints))
+          (send! (p/clear-breakpoints (remove bpts pcs))))))
+    (send! (p/continue))))
+
+(defn send-breakpoints! []
   (let [bpts (apply set/union (-> @state :debugger :breakpoints vals))
         pcs (program/pcs (-> @state :program :running))]
     (if (< (count bpts)

@@ -77,11 +77,12 @@
 (defn compile-and-run! [src type silent? & args]
   (go-try
    (let [program (<? (apply compile! src type silent? args))]
-     (dc/run program)
+     (debugger/preserve-breakpoints! #(dc/run program))
      program)))
 
 (defn run! [program]
-  (go-try (dc/run program)))
+  (go-try 
+   (debugger/preserve-breakpoints! #(dc/run program))))
 
 (defn compile-and-install! [src type & args]
   (go-try
@@ -110,6 +111,7 @@
 
 (defn debugger-continue! []
   (go-try (debugger/continue!)))
+
 
 (defn debugger-step-over! []
   (go-try (debugger/step-over!)))
