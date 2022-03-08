@@ -405,6 +405,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		vm->reset();
 		sentVMState = false;
 		executeSetProgram(program, io);
+		vm->halted = true;
 		break;
 	case MSG_IN_SET_VALUE:
 		executeSetValue(io);
