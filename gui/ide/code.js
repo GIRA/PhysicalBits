@@ -46,6 +46,7 @@ let UziCode = (function () {
     });
 
 		$(".ace_gutter").on("click", function (e) {
+      if (editor.getValue() !== Uzi.state.program.src) return;
       var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
 
 			if (breakpoints.includes(line)) {
