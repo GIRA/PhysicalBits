@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj]
             [clojure.walk :as w]
-            [middleware.utils.core :refer [seek]]
+            [middleware.utils.core :refer [seek random-uuid]]
             [middleware.ast.primitives :as prims]))
 
 (defn node? [node]
@@ -320,3 +320,6 @@
       "UziVariableDeclarationNode" (global? node))))
 
 (def local? (complement global?))
+
+(defn generate-ids [ast]
+  (transform ast :default (fn [node _] (assoc node :id (str (random-uuid))))))
