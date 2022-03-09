@@ -2480,7 +2480,7 @@ let UziBlock = (function () {
                 console.log(block.id);
                 let loc = Uzi.state.program["block->token"][block.id][2];
                 if (loc) {
-                  block.setWarningText("BREAKPOINT ON LINE: " + loc);
+                  block.setWarningText("BREAKPOINT ON LINE: " + (loc + 1));
                   UziCode.toggleBreakpoint(loc);
                 }
               },
