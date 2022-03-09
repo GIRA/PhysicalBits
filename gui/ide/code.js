@@ -18,8 +18,9 @@ let UziCode = (function () {
     editor.on("focus", function () { focus = true; });
     editor.on("blur", function () { focus = false; });
     editor.on("change", function (e) {
-      if (updating) return;
       trigger("change", focus);
+      
+      if (updating) return;
 
       let start = e.start.row;
       let delta = e.lines.length - 1;

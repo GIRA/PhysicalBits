@@ -316,6 +316,7 @@ let IDE = (function () {
     UziCode.init();
     UziCode.on("change", function (focus) {
       saveToLocalStorage();
+      
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
