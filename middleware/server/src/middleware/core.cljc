@@ -14,6 +14,25 @@
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
 
+
+(comment
+  
+  (def program (-> @dc/state :program :running))
+
+  (def ast (-> program meta :original-ast))
+  (->> (ast/all-children ast)
+       (map :id)
+       frequencies)
+  
+  (require '[petitparser.token :as t])
+
+  (t/input-value (get (ast/id->token ast) "28fb36f5-d743-45c6-9983-0385a0ef3c2e"))
+
+  "28fb36f5-d743-45c6-9983-0385a0ef3c2e"
+  
+  
+  ,,,)
+
 (def ^:private updates (atom nil))
 
 ; TODO(Richo): Rename these maybe?
@@ -236,7 +255,8 @@
     {:program {:type type
                :src src
                :ast ast
-               :compiled program}}))
+               :compiled program
+               :block->token (ast/id->range ast)}}))
 
 (defn- get-logger-state [logger]
   {:output (vec logger)})
