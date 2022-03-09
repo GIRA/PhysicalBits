@@ -201,6 +201,13 @@
                                        :pc pc
                                        :fp fp
                                        :interval (debugger/interval-at-pc program pc)
+                                       :blocks (mapv (fn [pc]
+                                                       (get-in (meta (program/instruction-at-pc program pc))
+                                                               [:node :id]))
+                                                     (-> program
+                                                         (debugger/instruction-groups)
+                                                         (debugger/instruction-group-at-pc pc)
+                                                         :pcs))
                                        :arguments arguments
                                        :locals locals
                                        :stack stack
