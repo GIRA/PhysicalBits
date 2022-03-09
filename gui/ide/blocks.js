@@ -4,6 +4,7 @@ let UziBlock = (function () {
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
   let userInteraction = false;
+  let selectedBlock = null;
   let motors = [];
   let sonars = [];
   let joysticks = [];
@@ -11,6 +12,7 @@ let UziBlock = (function () {
   let lists = [];
   let observers = {
     "change" : [],
+    "select": []
   };
 
   let uziSyntax = false;
@@ -2146,7 +2148,19 @@ let UziBlock = (function () {
       workspace.addChangeListener(function (evt) {
         if (evt.type == Blockly.Events.UI) {
           userInteraction = true;
-          return; // Ignore these events
+          
+          if (evt.element == "selected") {
+            if (selectedBlock != evt.newValue) {
+              selectedBlock = evt.newValue;
+              trigger("select", evt.newValue);
+            }
+          } else if (evt.element == "click") {
+            if (selectedBlock != evt.blockId) {
+              selectedBlock = evt.blockId;
+              trigger("select", evt.blockId);
+            }
+          }
+          return;
         }
 
         /*
@@ -2465,6 +2479,7 @@ let UziBlock = (function () {
                 let block = Blockly.ContextMenu.currentBlock;
                 //block.setColour("#dd0000");
                 console.log(block.id);
+                //UziCode.select(Uzi.state.program["block->token"][block.id]);
               },
           };
           options.push(option);
@@ -3237,5 +3252,6 @@ let UziBlock = (function () {
     },
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
+    getSelectedBlock: () => selectedBlock,
   }
 })();
