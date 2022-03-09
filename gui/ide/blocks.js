@@ -2148,7 +2148,7 @@ let UziBlock = (function () {
       workspace.addChangeListener(function (evt) {
         if (evt.type == Blockly.Events.UI) {
           userInteraction = true;
-          
+
           if (evt.element == "selected") {
             if (selectedBlock != evt.newValue) {
               selectedBlock = evt.newValue;
@@ -2477,9 +2477,12 @@ let UziBlock = (function () {
               text: i18n.translate('Toggle Breakpoint'),
               callback: function(e) {
                 let block = Blockly.ContextMenu.currentBlock;
-                //block.setColour("#dd0000");
                 console.log(block.id);
-                //UziCode.select(Uzi.state.program["block->token"][block.id]);
+                let loc = Uzi.state.program["block->token"][block.id][2];
+                if (loc) {
+                  block.setWarningText("BREAKPOINT ON LINE: " + loc);
+                  UziCode.toggleBreakpoint(loc);
+                }
               },
           };
           options.push(option);

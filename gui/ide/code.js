@@ -49,17 +49,7 @@ let UziCode = (function () {
 		$(".ace_gutter").on("click", function (e) {
       if (editor.getValue() !== Uzi.state.program.src) return;
       var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
-
-			if (breakpoints.includes(line)) {
-				var index = breakpoints.indexOf(line);
-				if (index > -1) { breakpoints.splice(index, 1); }
-				editor.session.clearBreakpoint(line);
-			} else {
-				breakpoints.push(line);
-				editor.session.setBreakpoint(line, "breakpoint");
-			}
-			editor.gotoLine(line + 1);
-			sendBreakpoints();
+      toggleBreakpoint(line);
 		});
 
     Uzi.on("update", function (state, previousState, keys) {
@@ -77,6 +67,20 @@ let UziCode = (function () {
         updating = false;
       }
     });
+  }
+  
+
+  function toggleBreakpoint(line) {
+    if (breakpoints.includes(line)) {
+      var index = breakpoints.indexOf(line);
+      if (index > -1) { breakpoints.splice(index, 1); }
+      editor.session.clearBreakpoint(line);
+    } else {
+      breakpoints.push(line);
+      editor.session.setBreakpoint(line, "breakpoint");
+    }
+    editor.gotoLine(line + 1);
+    sendBreakpoints();
   }
 
   function handleProgramUpdate(state, previousState) {
@@ -216,6 +220,8 @@ let UziCode = (function () {
 
     handleDebuggerUpdate: handleDebuggerUpdate,
     select: select,
+
+    toggleBreakpoint: toggleBreakpoint,
     getBreakpoints: () => breakpoints,
     getEditor: () => editor,
   }
