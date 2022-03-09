@@ -64,6 +64,7 @@
   (first (str/split name #"#")))
 
 (defn stack-frames [program {:keys [stack pc fp]}]
+  "Recursively parses the stack data and returns a sequence of stack-frames"
   (when-not (empty? stack)
     (when-let [script (program/script-for-pc program pc)]
       (let [arguments (-> script :arguments)
@@ -112,6 +113,11 @@
                               :fp next-fp})))))))
 
 (defn instruction-groups [program]
+  "An instruction group is sequence of contiguous instructions in which
+   the last instruction is a statement (as defined in program/statement?).
+   This grouping is useful to implement step-by-step execution because we
+   mostly care about stepping over statements, instructions in between
+   don't really matter much and we can safely bypass them."
   (let [groups (volatile! [])
         current (volatile! [])]
     (loop [pc 0
@@ -158,7 +164,7 @@
          (+ (:start token)
             (:count token))]))))
 
-(defn- trivial? [{:keys [instructions]}] ; TODO(Richo): Better name please!
+(defn- trivial? [{:keys [instructions]}] ; TODO(Richo): Better name please! Maybe just jmp?
   (and (program/unconditional-branch? (last instructions))
        (not-any? program/script-call? instructions)))
 
@@ -243,7 +249,7 @@
 (defn step-out [vm program groups ig]
   (step-over-return vm program groups ig))
 
-(defn estimate-breakpoints
+(defn estimate-breakpoints ; TODO(Richo): Write tests for this function!
   ([step-fn]
    (let [state @state]
      (estimate-breakpoints step-fn
