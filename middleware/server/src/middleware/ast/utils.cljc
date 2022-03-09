@@ -3,7 +3,7 @@
   (:require [clojure.core :as clj]
             [clojure.walk :as w]
             [petitparser.token :as t]
-            [middleware.utils.core :refer [seek random-uuid]]
+            [middleware.utils.core :refer [seek random-uuid] :as u]
             [middleware.ast.primitives :as prims]))
 
 (defn node? [node]
@@ -347,12 +347,27 @@
                 [id [(t/start token) (t/stop token)]])))
        (into {})))
 
+(defn id->loc [ast]
+  (when-let [source (-> ast meta :token :source)]
+    (let [lines (map-indexed vector (u/line-indices source))]
+      (->> (id->token ast)
+           (map (fn [[id token]]
+                  (when (and token 
+                             (= source (t/source token)))
+                    (when-let [[line-idx] (seek (fn [[idx line-range]]
+                                                  (u/overlapping-ranges?
+                                                   [(t/start token) (t/stop token)]
+                                                   line-range))
+                                                lines)]
+                      [id line-idx]))))
+           (into {})))))
+
 (comment
   (require '[middleware.compilation.parser :as p])
 
   (def src "task foo() { forever { toggle(D13); }}")
   (def src
-"import motor from 'DCMotor.uzi' {
+    "import motor from 'DCMotor.uzi' {
 	enablePin = D10;
 	forwardPin = D9;
 	reversePin = D8;
@@ -369,14 +384,18 @@ task loop() {
 }")
   (def ast (-> src p/parse generate-ids))
 
+  (def source (-> ast meta :token :source))
+
+  (merge-with conj
+              (id->range ast)
+              (id->loc ast))
+
   (let [token-map (id->token ast)]
     (->> (all-children ast)
          (map (fn [node]
                 [(node-type node)
                  (:id node)
-                 (t/input-value (token-map (:id node)))
-                ]))
-         ))
+                 (t/input-value (token-map (:id node)))]))))
 
   (->> (all-children ast)
        (map :id)
