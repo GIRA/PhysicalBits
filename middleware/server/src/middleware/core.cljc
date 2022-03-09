@@ -5,6 +5,7 @@
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
+            [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
             [middleware.device.debugger :as debugger]
@@ -37,7 +38,7 @@
                assoc :type :json)))
 
 (defn compile-uzi-string [str & args]
-  (let [ast (p/parse str)]
+  (let [ast (-> str p/parse ast/generate-ids)]
     (vary-meta (apply cc/compile-tree ast args)
                assoc :type :uzi)))
 
