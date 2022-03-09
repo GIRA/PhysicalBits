@@ -2457,6 +2457,18 @@ let UziBlock = (function () {
     for (let key in spec) {
       let blockSpec = spec[key];
       Blockly.Blocks[key] = {
+        customContextMenu: function(options) {
+          var option = {
+              enabled: true,
+              text: i18n.translate('Toggle Breakpoint'),
+              callback: function(e) {
+                let block = Blockly.ContextMenu.currentBlock;
+                //block.setColour("#dd0000");
+                console.log(block.id);
+              },
+          };
+          options.push(option);
+        }, 
         init: function () {
           try {
             let msg = blocklyTranslate(blockSpec.text);
@@ -2498,6 +2510,8 @@ let UziBlock = (function () {
   }
 
   function initBlock (block, msg, inputFields) {
+    //block.contextMenu = false;
+
     // if the translation msg contains line breaks, then
     // each part is created on separate rows
     let lineSeparator = "\n";
