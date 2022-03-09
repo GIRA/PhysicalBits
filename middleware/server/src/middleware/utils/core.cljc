@@ -1,5 +1,5 @@
 (ns middleware.utils.core
-  (:refer-clojure :exclude [format])
+  (:refer-clojure :exclude [format random-uuid])
   (:require [clojure.string :as str]))
 
 (defn seek
