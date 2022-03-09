@@ -256,7 +256,9 @@
                :src src
                :ast ast
                :compiled program
-               :block->token (ast/id->range ast)}}))
+               :block->token (merge-with conj
+                                         (ast/id->range ast)
+                                         (ast/id->loc ast))}}))
 
 (defn- get-logger-state [logger]
   {:output (vec logger)})
