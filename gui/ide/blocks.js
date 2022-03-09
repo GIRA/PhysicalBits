@@ -3041,12 +3041,26 @@ let UziBlock = (function () {
         let stackFrame = state.debugger.stackFrames[stackFrameIndex];
         blocks = stackFrame.blocks;
       }
-      if (blocks.length > 0) {      
+      if (blocks.length > 0) {        
+        centerOnBlock(blocks[blocks.length - 1]);
         blocks.forEach(id => workspace.highlightBlock(id, true));
       }
     } catch (err) {
       console.log(err);
     }
+  }
+
+  function centerOnBlock(id) {
+    // NOTE(Richo): Code taken from
+    // https://github.com/google/blockly/issues/1013#issuecomment-290713644
+    let block = workspace.getBlockById(id);
+    block.select();      // *block* is the block to scroll into view.
+    var mWs = workspace;
+    var xy = block.getRelativeToSurfaceXY();	// Scroll the workspace so that the block's top left corner
+    var m = mWs.getMetrics();				        	// is in the (0.2; 0.3) part of the viewport.
+    mWs.scrollbar.set(
+      xy.x * mWs.scale - m.contentLeft - m.viewWidth  * 0.4,
+      xy.y * mWs.scale - m.contentTop  - m.viewHeight * 0.4);
   }
 
   return {
