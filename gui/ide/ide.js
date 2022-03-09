@@ -56,6 +56,9 @@ let IDE = (function () {
       .then(function () {
         let lastProgram = undefined;
 
+        UziBlock.on("select", (block) => {
+          UziCode.select(Uzi.state.program["block->token"][block]); 
+        });
         UziBlock.on("change", function (userInteraction) {
           saveToLocalStorage();
 
