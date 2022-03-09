@@ -13,6 +13,12 @@ let Debugger = (function () {
     $("#debugger-step-into-button").on("click", stepInto);
     $("#debugger-step-out-button").on("click", stepOut);
     $("#debugger-step-next-button").on("click", stepNext);
+    
+    LayoutManager.on("close", id => {
+      if (id == "#debugger-panel") {
+        sendContinue();
+      }
+    });
   }
 
   function sendBreak() {

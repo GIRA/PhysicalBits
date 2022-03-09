@@ -71,6 +71,10 @@ let LayoutManager = (function () {
 
   let layout;
   let onStateChanged = function () { /* DO NOTHING */ }
+  
+  let observers = {
+    "close" : [],
+  };
 
   function init(callback) {
     if (callback) { onStateChanged = callback; }
@@ -82,6 +86,20 @@ let LayoutManager = (function () {
 
   function reset() {
     setLayoutConfig(defaultLayoutConfig);
+  }
+  
+  function on (evt, callback) {
+    observers[evt].push(callback);
+  }
+
+  function trigger(evt, args) {
+    observers[evt].forEach(function (fn) {
+      try {
+        fn(args);
+      } catch (err) {
+        console.log(err);
+      }
+    });
   }
 
   function getLayoutConfig() { return layout.toConfig(); }
@@ -95,6 +113,7 @@ let LayoutManager = (function () {
       container.getElement().append($el);
       container.on('destroy', function () {
         $("#hidden-panels").append($el);
+        trigger("close", state.id);
       });
     });
 
@@ -171,6 +190,7 @@ let LayoutManager = (function () {
   return {
     init: init,
     reset: reset,
+    on: on,
     showPlotter: showPlotter,
     showDebugger: showDebugger,
     isBroken: isBroken,
