@@ -2,6 +2,7 @@
   (:refer-clojure :exclude [filter])
   (:require [clojure.core :as clj]
             [clojure.walk :as w]
+            [petitparser.token :as t]
             [middleware.utils.core :refer [seek random-uuid]]
             [middleware.ast.primitives :as prims]))
 
@@ -323,3 +324,73 @@
 
 (defn generate-ids [ast]
   (transform ast :default (fn [node _] (assoc node :id (str (random-uuid))))))
+
+(defn id->token [ast]
+  (->> (all-children ast)
+       (map (fn [node] [(:id node) (-> node meta :token)]))
+       ;; NOTE(Richo): Ids could be repeated because I was lazy when writing the blocks->ast
+       ;; code and sometimes if I needed to generate a node but didn't have a corresponding
+       ;; block I simply reused the parent's id. Of course this is a problem if I want to map
+       ;; from blocks to tokens. The easiest is to just ignore duplicates and always use the
+       ;; first block since its (probably?) the parent block.
+       ;; Anyway, all this is to explain why I used (reduce ...) instead of just (into {})
+       (reduce (fn [m [id token]]
+                 (if-not (contains? m id)
+                   (assoc m id token)
+                   m))
+               {})))
+
+(defn id->range [ast]
+  (->> (id->token ast)
+       (map (fn [[id token]]
+              (when token
+                [id [(t/start token) (t/stop token)]])))
+       (into {})))
+
+(comment
+  (require '[middleware.compilation.parser :as p])
+
+  (def src "task foo() { forever { toggle(D13); }}")
+  (def src
+"import motor from 'DCMotor.uzi' {
+	enablePin = D10;
+	forwardPin = D9;
+	reversePin = D8;
+}
+
+task loop() {
+	motor.forward(speed: 1);
+	forever {
+		turnOn(D13);
+		delayMs(0);
+		turnOff(D13);
+		delayMs(1000);
+	}
+}")
+  (def ast (-> src p/parse generate-ids))
+
+  (let [token-map (id->token ast)]
+    (->> (all-children ast)
+         (map (fn [node]
+                [(node-type node)
+                 (:id node)
+                 (t/input-value (token-map (:id node)))
+                ]))
+         ))
+
+  (->> (all-children ast)
+       (map :id)
+       frequencies)
+  (vec (id->range ast))
+  (map (fn [[id token]]
+         (when token
+           [id [(t/start token) (t/stop token)]]))
+       (id->token ast))
+
+  (into {}
+        [[:a 1] [:b 2] nil [:c 3]])
+
+  (map
+   (all-children ast))
+
+  )
