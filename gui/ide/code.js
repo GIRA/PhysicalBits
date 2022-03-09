@@ -160,6 +160,18 @@ let UziCode = (function () {
 		}
   }
 
+  function select(interval) {
+    if (interval == null || interval.length < 2) {
+      editor.clearSelection();
+    } else {
+      let doc = editor.session.getDocument();
+      let start = doc.indexToPosition(interval[0]);
+      let end = doc.indexToPosition(interval[1]);
+      let range = new ace.Range(start.row, start.column, end.row, end.column);
+      editor.selection.setSelectionRange(range);
+    }
+  }
+
   function resizeEditor() {
     if (editor) {// TODO(Richo): Is this condition necessary??
       editor.resize(true);
@@ -202,6 +214,8 @@ let UziCode = (function () {
     clearEditor: clearEditor,
 
     handleDebuggerUpdate: handleDebuggerUpdate,
+    select: select,
     getBreakpoints: () => breakpoints,
+    getEditor: () => editor,
   }
 })();
