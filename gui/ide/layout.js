@@ -70,6 +70,7 @@ let LayoutManager = (function () {
   };
 
   let layout;
+  let panels = new Map();
   let onStateChanged = function () { /* DO NOTHING */ }
   
   let observers = {
@@ -106,6 +107,7 @@ let LayoutManager = (function () {
 
   function setLayoutConfig(config) {
     if (layout) { layout.destroy(); }
+    panels.clear();
 
     layout = new GoldenLayout(config, "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
@@ -115,6 +117,7 @@ let LayoutManager = (function () {
         $("#hidden-panels").append($el);
         trigger("close", state.id);
       });
+      panels[state.id] = container;
     });
 
     function updateSize() {
@@ -130,6 +133,10 @@ let LayoutManager = (function () {
     layout.on('stateChanged', onStateChanged);
     layout.init();
     updateSize();
+  }
+
+  function getPanel(id) {
+    return panels[id];
   }
 
   function isBroken() {
@@ -187,6 +194,11 @@ let LayoutManager = (function () {
     }
   }
 
+  function closePanel(id) {
+    let panel = getPanel(id);
+    if (panel) { panel.close(); }
+  }
+
   return {
     init: init,
     reset: reset,
@@ -196,6 +208,8 @@ let LayoutManager = (function () {
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,
+    getPanel: getPanel,
+    closePanel: closePanel,
   };
 
 })();
