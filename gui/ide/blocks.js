@@ -3033,6 +3033,22 @@ let UziBlock = (function () {
     return (interestingBlocks[block.type] || []).map(f => block.getField(f));
   }
 
+  function handleDebuggerUpdate(state, stackFrameIndex) {
+    try {
+      workspace.highlightBlock(null);
+      let blocks = [];
+      if (state.debugger.isHalted && state.debugger.stackFrames.length > 0) {
+        let stackFrame = state.debugger.stackFrames[stackFrameIndex];
+        blocks = stackFrame.blocks;
+      }
+      if (blocks.length > 0) {      
+        blocks.forEach(id => workspace.highlightBlock(id, true));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return {
     init: init,
     on: on,
@@ -3192,5 +3208,6 @@ let UziBlock = (function () {
       }
     },
     getUsedVariables: getUsedVariables,
+    handleDebuggerUpdate: handleDebuggerUpdate,
   }
 })();

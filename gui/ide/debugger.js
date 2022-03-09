@@ -94,6 +94,7 @@ let Debugger = (function () {
       $td.click(() => {
         selectedStackFrame = i;
         UziCode.handleDebuggerUpdate(state, selectedStackFrame); // HACK(Richo): We probably shoulnd't be calling this directly!
+        UziBlock.handleDebuggerUpdate(state, selectedStackFrame); // HACK(Richo): We probably shoulnd't be calling this directly!
         updateDebugger(state);
       });
       $tr.append($td);

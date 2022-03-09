@@ -78,7 +78,10 @@ let IDE = (function () {
         });
 
         // TODO(Richo)
-        Uzi.on("update", function (state, previousState) {
+        Uzi.on("update", function (state, previousState, keys) {          
+          if (keys.has("debugger")) {
+            UziBlock.handleDebuggerUpdate(state, 0);
+          }
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
           let blocklyProgram = ASTToBlocks.generate(state.program.ast);
