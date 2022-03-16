@@ -2581,10 +2581,11 @@ let UziBlock = (function () {
               callback: function(e) {
                 let block = Blockly.ContextMenu.currentBlock;
                 console.log(block.id);
+                // TODO(Richo): Trigger an event on block??
                 let loc = Uzi.state.program["block->token"][block.id][2];
                 if (loc) {
                   block.setWarningText("BREAKPOINT ON LINE: " + (loc + 1));
-                  UziCode.toggleBreakpoint(loc);
+                  Debugger.toggleBreakpoint(loc);
                 }
               },
           };
@@ -3170,11 +3171,13 @@ let UziBlock = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
+      // TODO(Richo): Refresh breakpoints!
+
       workspace.highlightBlock(null);
       let blocks = [];
       if (state.debugger.isHalted && state.debugger.stackFrames.length > 0) {
         let stackFrame = state.debugger.stackFrames[stackFrameIndex];
-        blocks = stackFrame.blocks;
+        blocks = stackFrame.blocks.filter(id => id != null); // Only valid blocks please!
       }
       if (blocks.length > 0) {        
         centerOnBlock(blocks[blocks.length - 1]);
@@ -3186,9 +3189,11 @@ let UziBlock = (function () {
   }
 
   function centerOnBlock(id) {
-    // NOTE(Richo): Code taken from
+    // NOTE(Richo): Code taken and adapted from
     // https://github.com/google/blockly/issues/1013#issuecomment-290713644
     let block = workspace.getBlockById(id);
+    if (block == null) return;
+
     block.select();      // *block* is the block to scroll into view.
     var mWs = workspace;
     var xy = block.getRelativeToSurfaceXY();	// Scroll the workspace so that the block's top left corner

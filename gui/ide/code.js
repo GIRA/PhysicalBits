@@ -3,7 +3,6 @@ let UziCode = (function () {
   let editor;
   let focus = false;
   let updating = false;
-  let breakpoints = [];
 	let markers = [];
   let observers = {
     "change": []
@@ -36,7 +35,7 @@ let UziCode = (function () {
       TODO(Richo): Here we should update the validBreakpoints list to insert
       null in every inserted line. Otherwise everything gets out of sync...
       */
-
+      let breakpoints = Debugger.getBreakpoints();
       let bpts = breakpoints.filter(function (bp) { return bp > start; });
       breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
       bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
@@ -44,20 +43,23 @@ let UziCode = (function () {
       breakpoints.forEach(function (line) {
         editor.session.setBreakpoint(line, "breakpoint");
       });
+      Debugger.setBreakpoints(breakpoints);
     });
 
 		$(".ace_gutter").on("click", function (e) {
       if (editor.getValue() !== Uzi.state.program.src) return;
-      var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
-      toggleBreakpoint(line);
+      var line = Debugger.getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+      if (Debugger.toggleBreakpoint(line)) {        
+        editor.session.setBreakpoint(line, "breakpoint");
+      } else {
+        editor.session.clearBreakpoint(line);        
+      }
+      editor.gotoLine(line + 1);
 		});
 
     Uzi.on("update", function (state, previousState, keys) {
       updating = true;
       try {
-        if (keys.has("debugger")) {
-          handleDebuggerUpdate(state, 0);
-        }
         if (keys.has("program")) {
           handleProgramUpdate(state, previousState);
         }
@@ -67,22 +69,10 @@ let UziCode = (function () {
         updating = false;
       }
     });
+
+    Debugger.on("change", handleDebuggerUpdate);
   }
   
-
-  function toggleBreakpoint(line) {
-    if (breakpoints.includes(line)) {
-      var index = breakpoints.indexOf(line);
-      if (index > -1) { breakpoints.splice(index, 1); }
-      editor.session.clearBreakpoint(line);
-    } else {
-      breakpoints.push(line);
-      editor.session.setBreakpoint(line, "breakpoint");
-    }
-    editor.gotoLine(line + 1);
-    sendBreakpoints();
-  }
-
   function handleProgramUpdate(state, previousState) {
     if (focus) return; // Don't change the code while the user is editing!
     if (state.program.type == "uzi") return; // Ignore textual programs
@@ -134,21 +124,6 @@ let UziCode = (function () {
       console.log(err);
     }
   }
-
-	function getValidLineForBreakpoint(line) {
-    return line;
-    // TODO(Richo)
-		let valid = Uzi.program.validBreakpoints;
-		for (let i = line; i < valid.length; i++) {
-			if (valid[i] != null) return i;
-		}
-		return null;
-	}
-
-	function sendBreakpoints() {
-    console.log(breakpoints);
-    Uzi.debugger.setBreakpoints(breakpoints);
-	}
 
   function highlight(interval) {
 		markers.forEach((each) => { editor.session.removeMarker(each); });
@@ -221,8 +196,6 @@ let UziCode = (function () {
     handleDebuggerUpdate: handleDebuggerUpdate,
     select: select,
 
-    toggleBreakpoint: toggleBreakpoint,
-    getBreakpoints: () => breakpoints,
     getEditor: () => editor,
   }
 })();
