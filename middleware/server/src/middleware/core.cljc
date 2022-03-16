@@ -211,6 +211,7 @@
                                :step-into (debugger/estimate-breakpoints debugger/step-into)
                                :step-out (debugger/estimate-breakpoints debugger/step-out)}
                 :index index
+                :pc pc
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
                                (mapv pc->loc breakpoints))
