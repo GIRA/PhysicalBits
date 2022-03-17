@@ -15,15 +15,11 @@ let UziCode = (function () {
     editor.setTheme("ace/theme/ambiance");
     editor.getSession().setMode("ace/mode/uzi");
 
-    editor.selection.on("changeCursor", function (e, selection) {
-      let doc = editor.session.getDocument();
-
-      let col = selection.cursor.column;
-      let row = selection.cursor.row;
-      let idx = doc.positionToIndex({row: row, column: col});
-      trigger("cursor", idx);
-    })
-    editor.on("focus", function () { focus = true; });
+    editor.selection.on("changeCursor", handleCursorChange)
+    editor.on("focus", function () { 
+      focus = true; 
+      handleCursorChange();
+    });
     editor.on("blur", function () { focus = false; });
     editor.on("change", function (e) {
       trigger("change", focus);
@@ -80,6 +76,16 @@ let UziCode = (function () {
     });
 
     Debugger.on("change", handleDebuggerUpdate);
+  }
+
+  function handleCursorChange() {
+    if (!focus) return;
+    let doc = editor.session.getDocument();
+
+    let col = editor.selection.cursor.column;
+    let row = editor.selection.cursor.row;
+    let idx = doc.positionToIndex({row: row, column: col});
+    trigger("cursor", idx);
   }
   
   function handleProgramUpdate(state, previousState) {
