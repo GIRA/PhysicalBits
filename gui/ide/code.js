@@ -5,7 +5,8 @@ let UziCode = (function () {
   let updating = false;
 	let markers = [];
   let observers = {
-    "change": []
+    "change": [],
+    "cursor": []
   };
 
   function init() {
@@ -14,6 +15,14 @@ let UziCode = (function () {
     editor.setTheme("ace/theme/ambiance");
     editor.getSession().setMode("ace/mode/uzi");
 
+    editor.selection.on("changeCursor", function (e, selection) {
+      let doc = editor.session.getDocument();
+
+      let col = selection.cursor.column;
+      let row = selection.cursor.row;
+      let idx = doc.positionToIndex({row: row, column: col});
+      trigger("cursor", idx);
+    })
     editor.on("focus", function () { focus = true; });
     editor.on("blur", function () { focus = false; });
     editor.on("change", function (e) {
@@ -141,6 +150,7 @@ let UziCode = (function () {
   }
 
   function select(interval) {
+    if (focus) return;
     if (interval == null || interval.length < 2) {
       editor.clearSelection();
     } else {

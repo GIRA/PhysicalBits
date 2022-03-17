@@ -3172,6 +3172,14 @@ let UziBlock = (function () {
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
       // TODO(Richo): Refresh breakpoints!
+      let breakpoints = new Set(state.debugger.breakpoints);
+      console.log(breakpoints);
+      workspace.getAllBlocks().forEach(block => {
+        // TODO(Richo): If the loc for this block has a breakpoint set then
+        // add the breakpoint to the block, otherwise remove it.
+        // Also, just add one breakpoint for each line (the first). After adding
+        // the breakpoint remove it from the set
+      });
 
       workspace.highlightBlock(null);
       let blocks = [];
@@ -3201,6 +3209,29 @@ let UziBlock = (function () {
     mWs.scrollbar.set(
       xy.x * mWs.scale - m.contentLeft - m.viewWidth  * 0.4,
       xy.y * mWs.scale - m.contentTop  - m.viewHeight * 0.4);
+  }
+
+  function selectByIndex(idx) {
+    if (!workspace) return;
+    
+    let min_length = null;
+    let id = null;
+    Object.entries(Uzi.state.program["block->token"]).forEach(entry => {
+      let block = entry[0];
+      let t = entry[1];
+      if (idx >= t[0] && idx <= t[1]) {
+        let l = t[1] - t[0];
+        if (min_length == null || l < min_length) {
+          min_length = l;
+          id = block;
+        }
+      }
+    });
+
+    let block = workspace.getBlockById(id);
+    if (block == null) return;
+
+    block.select();
   }
 
   return {
@@ -3364,5 +3395,6 @@ let UziBlock = (function () {
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,
+    selectByIndex: selectByIndex,
   }
 })();

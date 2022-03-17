@@ -311,6 +311,9 @@ let IDE = (function () {
 
   function initializeCodePanel() {
     UziCode.init();
+    UziCode.on("cursor", idx => {
+      UziBlock.selectByIndex(idx);
+    })
     UziCode.on("change", function (focus) {
       saveToLocalStorage();
       
