@@ -3214,23 +3214,31 @@ let UziBlock = (function () {
   function selectByIndex(idx) {
     if (!workspace) return;
     
-    let min_length = null;
+    let candidates = [];
     let id = null;
     Object.entries(Uzi.state.program["block->token"]).forEach(entry => {
       let block = entry[0];
       let t = entry[1];
-      if (idx >= t[0] && idx <= t[1]) {
-        let l = t[1] - t[0];
-        if (min_length == null || l < min_length) {
-          min_length = l;
-          id = block;
+      if (block != "") {
+        if (idx >= t[0] && idx <= t[1]) {
+          candidates.push({
+            token: t,
+            length: t[1] - t[0],
+            block: block,
+          })
         }
       }
     });
+    candidates.sort((a, b) => a.length - b.length);
 
-    let block = workspace.getBlockById(id);
+    let block = null;
+    for (let i = 0; i < candidates.length; i++) {
+      block = workspace.getBlockById(candidates[i].block);
+      if (block != null) break;
+    }
     if (block == null) return;
 
+    console.log(block.type);
     block.select();
   }
 
