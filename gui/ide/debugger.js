@@ -183,23 +183,19 @@ let Debugger = (function () {
   }
 
   function toggleBreakpoint(line) {
-    let result; // True if the breakpoint was added, false otherwise
     if (!breakpoints.includes(line)) {
       breakpoints.push(line);
-      result = true;
     } else {
       var index = breakpoints.indexOf(line);
       if (index > -1) { breakpoints.splice(index, 1); }
-      result = false;
     }
     sendBreakpoints();
-    return result;
   }
   
 
 	function sendBreakpoints() {
     console.log(breakpoints);
-    Uzi.debugger.setBreakpoints(breakpoints);
+    return Uzi.debugger.setBreakpoints(breakpoints)
 	}
   
   

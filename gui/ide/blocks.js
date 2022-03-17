@@ -2582,11 +2582,9 @@ let UziBlock = (function () {
               text: i18n.translate('Toggle Breakpoint'),
               callback: function(e) {
                 let block = Blockly.ContextMenu.currentBlock;
-                console.log(block.id);
                 // TODO(Richo): Trigger an event on block??
                 let loc = Uzi.state.program["block->token"][block.id][2];
                 if (loc) {
-                  block.setWarningText("BREAKPOINT ON LINE: " + (loc + 1));
                   Debugger.toggleBreakpoint(loc);
                 }
               },
