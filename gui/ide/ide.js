@@ -257,6 +257,8 @@ let IDE = (function () {
         defaultElement: {name: "variable", value: "0"},
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Variable name")},
+          // TODO(Richo): Variables can also be pins, not only numbers! This is a problem if 
+          // I make a global variable from the code editor because it won't be stored correctly
           {id: "value", type: "number", name: i18n.translate("Initial value (if global)")},
         ],
         rows: variables.map(each => {

@@ -52,6 +52,9 @@ let UziCode = (function () {
     });
 
 		$(".ace_gutter").on("click", function (e) {
+      // TODO(Richo): Sometimes the editor and the src get out of sync when they shouldn't
+      // I still don't know why! But it bothers when setting breakpoints and in some other 
+      // places as well (like when selecting blocks from the code editor)
       if (editor.getValue() !== Uzi.state.program.src) return;
       var line = Debugger.getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
       Debugger.toggleBreakpoint(line);
