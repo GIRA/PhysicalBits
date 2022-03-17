@@ -3173,14 +3173,24 @@ let UziBlock = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
-      // TODO(Richo): Refresh breakpoints!
       let breakpoints = new Set(state.debugger.breakpoints);
-      console.log(breakpoints);
       workspace.getAllBlocks().forEach(block => {
-        // TODO(Richo): If the loc for this block has a breakpoint set then
-        // add the breakpoint to the block, otherwise remove it.
+        // NOTE(Richo): If the loc for this block has a breakpoint set then
+        // add the warning text to the block, otherwise remove it.
         // Also, just add one breakpoint for each line (the first). After adding
-        // the breakpoint remove it from the set
+        // the breakpoint remove it from the set so future blocks don't use it
+        let token = Uzi.state.program["block->token"][block.id];
+        if (token) {
+          let loc = token[2];
+          if (breakpoints.has(loc)) {
+            breakpoints.delete(loc);
+            block.setWarningText("BREAKPOINT ON LINE: " + (loc + 1));
+          } else {
+            block.setWarningText(null);
+          }
+        } else {
+          block.setWarningText(null);
+        }
       });
 
       workspace.highlightBlock(null);
