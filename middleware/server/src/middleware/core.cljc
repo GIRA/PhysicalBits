@@ -5,6 +5,7 @@
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
+            [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
             [middleware.device.debugger :as debugger]
@@ -12,6 +13,25 @@
             [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
+
+
+(comment
+  
+  (def program (-> @dc/state :program :running))
+
+  (def ast (-> program meta :original-ast))
+  (->> (ast/all-children ast)
+       (map :id)
+       frequencies)
+  
+  (require '[petitparser.token :as t])
+
+  (t/input-value (get (ast/id->token ast) "28fb36f5-d743-45c6-9983-0385a0ef3c2e"))
+
+  "28fb36f5-d743-45c6-9983-0385a0ef3c2e"
+  
+  
+  ,,,)
 
 (def ^:private updates (atom nil))
 
@@ -37,7 +57,7 @@
                assoc :type :json)))
 
 (defn compile-uzi-string [str & args]
-  (let [ast (p/parse str)]
+  (let [ast (-> str p/parse ast/generate-ids)]
     (vary-meta (apply cc/compile-tree ast args)
                assoc :type :uzi)))
 
@@ -77,11 +97,12 @@
 (defn compile-and-run! [src type silent? & args]
   (go-try
    (let [program (<? (apply compile! src type silent? args))]
-     (dc/run program)
+     (debugger/preserve-breakpoints! #(dc/run program))
      program)))
 
 (defn run! [program]
-  (go-try (dc/run program)))
+  (go-try 
+   (debugger/preserve-breakpoints! #(dc/run program))))
 
 (defn compile-and-install! [src type & args]
   (go-try
@@ -110,6 +131,7 @@
 
 (defn debugger-continue! []
   (go-try (debugger/continue!)))
+
 
 (defn debugger-step-over! []
   (go-try (debugger/step-over!)))
@@ -189,6 +211,7 @@
                                :step-into (debugger/estimate-breakpoints debugger/step-into)
                                :step-out (debugger/estimate-breakpoints debugger/step-out)}
                 :index index
+                :pc pc
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
                                (mapv pc->loc breakpoints))
@@ -198,6 +221,13 @@
                                        :pc pc
                                        :fp fp
                                        :interval (debugger/interval-at-pc program pc)
+                                       :blocks (mapv (fn [pc]
+                                                       (get-in (meta (program/instruction-at-pc program pc))
+                                                               [:node :id]))
+                                                     (-> program
+                                                         (debugger/instruction-groups)
+                                                         (debugger/instruction-group-at-pc pc)
+                                                         :pcs))
                                        :arguments arguments
                                        :locals locals
                                        :stack stack
@@ -226,7 +256,10 @@
     {:program {:type type
                :src src
                :ast ast
-               :compiled program}}))
+               :compiled program
+               :block->token (merge-with conj
+                                         (ast/id->range ast)
+                                         (ast/id->loc ast))}}))
 
 (defn- get-logger-state [logger]
   {:output (vec logger)})

@@ -1,6 +1,26 @@
 let Debugger = (function () {
 
   let selectedStackFrame = 0;
+  let breakpoints = [];
+  
+  // TODO(Richo): These observer stuff is duplicated everywhere. REFACTOR!
+  let observers = {
+    "change": [],
+  };
+  
+  function on (evt, callback) {
+    observers[evt].push(callback);
+  }
+
+  function trigger(evt, args) {
+    observers[evt].forEach(function (fn) {
+      try {
+        fn.apply(this, args);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
 
   function init() {
     Split(['#debugger-call-stack', '#debugger-locals', '#debugger-raw-stack'], {
@@ -13,6 +33,12 @@ let Debugger = (function () {
     $("#debugger-step-into-button").on("click", stepInto);
     $("#debugger-step-out-button").on("click", stepOut);
     $("#debugger-step-next-button").on("click", stepNext);
+    
+    LayoutManager.on("close", id => {
+      if (id == "#debugger-panel") {
+        sendContinue();
+      }
+    });
   }
 
   function sendBreak() {
@@ -56,7 +82,10 @@ let Debugger = (function () {
   function update(state, previous, keys) {
     if (!keys.has("debugger")) return;
 
-    selectedStackFrame = 0;
+    if (state.debugger.pc != previous.debugger.pc) {
+      selectedStackFrame = 0;
+    }
+    breakpoints = state.debugger.breakpoints;
     updateButtons(state);
     updateDebugger(state);
     if (state.debugger.isHalted) {
@@ -79,6 +108,7 @@ let Debugger = (function () {
     updateCallStack(state);
     updateLocals(state);
     updateRawStack(state);
+    trigger("change", [state, selectedStackFrame]);
   }
 
   function updateCallStack(state) {
@@ -93,7 +123,6 @@ let Debugger = (function () {
       let $td = $("<td>").addClass("px-4").text(name);
       $td.click(() => {
         selectedStackFrame = i;
-        UziCode.handleDebuggerUpdate(state, selectedStackFrame); // HACK(Richo): We probably shoulnd't be calling this directly!
         updateDebugger(state);
       });
       $tr.append($td);
@@ -153,10 +182,46 @@ let Debugger = (function () {
     $("#debugger-raw-stack-table").append($body);
   }
 
+  function toggleBreakpoint(line) {
+    let result; // True if the breakpoint was added, false otherwise
+    if (!breakpoints.includes(line)) {
+      breakpoints.push(line);
+      result = true;
+    } else {
+      var index = breakpoints.indexOf(line);
+      if (index > -1) { breakpoints.splice(index, 1); }
+      result = false;
+    }
+    sendBreakpoints();
+    return result;
+  }
+  
+
+	function sendBreakpoints() {
+    console.log(breakpoints);
+    Uzi.debugger.setBreakpoints(breakpoints);
+	}
+  
+  
+	function getValidLineForBreakpoint(line) {
+    return line;
+    // TODO(Richo)
+		let valid = Uzi.program.validBreakpoints;
+		for (let i = line; i < valid.length; i++) {
+			if (valid[i] != null) return i;
+		}
+		return null;
+	}
+
   return {
     init: init,
     update: update,
+    on: on,
 
     getSelectedStackFrameIndex: () => selectedStackFrame,
+    getBreakpoints: () => breakpoints,
+    setBreakpoints: bpts => breakpoints = bpts,
+    toggleBreakpoint: toggleBreakpoint,
+    getValidLineForBreakpoint: getValidLineForBreakpoint,
   }
 })();

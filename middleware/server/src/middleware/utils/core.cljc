@@ -1,5 +1,5 @@
 (ns middleware.utils.core
-  (:refer-clojure :exclude [format])
+  (:refer-clojure :exclude [format random-uuid])
   (:require [clojure.string :as str]))
 
 (defn seek
@@ -60,3 +60,7 @@
       (and (>= a2 b1) (<= a2 b2))
       (and (>= b1 a1) (<= b1 a2))
       (and (>= b2 a1) (<= b2 a2))))
+
+(defn random-uuid  []
+  #?(:clj (java.util.UUID/randomUUID)
+     :cljs (cljs.core/random-uuid)))

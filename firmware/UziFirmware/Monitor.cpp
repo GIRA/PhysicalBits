@@ -2,7 +2,7 @@
 
 /* VERSION NUMBER */
 #define MAJOR_VERSION                                       0
-#define MINOR_VERSION                                       8
+#define MINOR_VERSION                                       9
 
 /* INCOMING */
 #define MSG_IN_CONNECTION_REQUEST                         255
@@ -405,6 +405,7 @@ void Monitor::executeCommand(Program** program, GPIO* io, VM* vm)
 		vm->reset();
 		sentVMState = false;
 		executeSetProgram(program, io);
+		vm->halted = true;
 		break;
 	case MSG_IN_SET_VALUE:
 		executeSetValue(io);

@@ -2,7 +2,7 @@ const electron = require('electron');
 const { dialog } = electron ? electron.remote : {};
 const fs = require('fs');
 
-﻿let IDE = (function () {
+let IDE = (function () {
 
   let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
@@ -56,6 +56,9 @@ const fs = require('fs');
       .then(function () {
         let lastProgram = undefined;
 
+        UziBlock.on("select", (block) => {
+          UziCode.select(Uzi.state.program["block->token"][block]); 
+        });
         UziBlock.on("change", function (userInteraction) {
           saveToLocalStorage();
 
@@ -77,8 +80,8 @@ const fs = require('fs');
           }
         });
 
-        // TODO(Richo)
-        Uzi.on("update", function (state, previousState) {
+        Debugger.on("change", UziBlock.handleDebuggerUpdate);
+        Uzi.on("update", function (state, previousState, keys) {          
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
           let blocklyProgram = ASTToBlocks.generate(state.program.ast);
@@ -308,8 +311,12 @@ const fs = require('fs');
 
   function initializeCodePanel() {
     UziCode.init();
+    UziCode.on("cursor", idx => {
+      UziBlock.selectByIndex(idx);
+    })
     UziCode.on("change", function (focus) {
       saveToLocalStorage();
+      
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;

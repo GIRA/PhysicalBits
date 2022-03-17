@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,154,27,283
-AVERAGE,12.4185303514377,4.453674121405751,29.38338658146965
-MEDIAN,6,3,17
+AVERAGE,12.35534591194969,4.437106918238994,29.22955974842767
+MEDIAN,6,3,17.5
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -29,6 +29,8 @@ middleware.checker-test/repeat-times-should-be-an-expression#0,15,5,31
 middleware.checker-test/repeat-times-should-be-an-expression#1,13,4,28
 middleware.checker-test/return-value-should-either-be-nil-or-an-expression#0,0,0,2
 middleware.checker-test/return-value-should-either-be-nil-or-an-expression#1,0,0,2
+middleware.checker-test/script-call-can-provide-less-arguments-than-required#0,11,3,23
+middleware.checker-test/script-call-can-provide-less-arguments-than-required#1,11,3,23
 middleware.checker-test/script-call-should-either-provide-named-or-anonymous-arguments-but-not-both#0,11,4,24
 middleware.checker-test/script-call-should-either-provide-named-or-anonymous-arguments-but-not-both#1,11,4,24
 middleware.checker-test/script-control-nodes-should-refer-to-existing-scripts#0,3,2,11
@@ -170,6 +172,8 @@ middleware.compiler-test/repeat-loop-declares-0-and-1-as-global-constants#0,13,5
 middleware.compiler-test/return-with-logical-and-as-value#0,6,3,14
 middleware.compiler-test/return-with-value#0,9,5,33
 middleware.compiler-test/return-without-value#0,3,2,13
+middleware.compiler-test/script-call-can-provide-less-named-arguments-than-required#0,6,3,15
+middleware.compiler-test/script-call-can-provide-less-positional-arguments-than-required#0,6,3,15
 middleware.compiler-test/script-call-with-keyword-arguments#0,10,4,31
 middleware.compiler-test/script-overriding-primitive#0,6,2,14
 middleware.compiler-test/task-control-nodes#0,8,3,20
@@ -316,3 +320,4 @@ middleware.vm-test-files-gen/Test088ScriptCallOverridingPrimitive#0,14,3,33
 middleware.vm-test-files-gen/Test089DebuggerBreakpointHaltsAllScripts#0,10,4,23
 middleware.vm-test-files-gen/Test091ChangingTheProgramResetsTheVMState#0,8,3,17
 middleware.vm-test-files-gen/Test094ProgramWithMultipleImports#0,135,27,251
+middleware.vm-test-files-gen/Test099CallingAScriptWithLessArgumentsThanRequired#0,8,5,22

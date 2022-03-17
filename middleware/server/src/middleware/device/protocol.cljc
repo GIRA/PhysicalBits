@@ -8,7 +8,7 @@
 
 ; Version number
 (def MAJOR_VERSION 0)
-(def MINOR_VERSION 8)
+(def MINOR_VERSION 9)
 
 ; Outgoing
 (def MSG_OUT_CONNECTION_REQUEST 255)

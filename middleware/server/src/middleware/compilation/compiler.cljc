@@ -543,7 +543,10 @@
                 (remove-dead-code remove-dead-code?)
                 (augment-ast board))
         src (-> ast meta :token :source)]
-    (check ast src)
+    (check ast src) ; TODO(Richo): This check should be done first as well, otherwise we
+                    ; could write invalid programs that compile just fine because the invalid
+                    ; code gets deleted before the check. This is a problem when considering
+                    ; the code->block generation (we won't be able to build the blocks correctly)
     (vary-meta (compile ast (create-context))
                assoc
                :source src

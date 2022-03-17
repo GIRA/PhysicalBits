@@ -70,7 +70,12 @@ let LayoutManager = (function () {
   };
 
   let layout;
+  let panels = new Map();
   let onStateChanged = function () { /* DO NOTHING */ }
+  
+  let observers = {
+    "close" : [],
+  };
 
   function init(callback) {
     if (callback) { onStateChanged = callback; }
@@ -83,11 +88,26 @@ let LayoutManager = (function () {
   function reset() {
     setLayoutConfig(defaultLayoutConfig);
   }
+  
+  function on (evt, callback) {
+    observers[evt].push(callback);
+  }
+
+  function trigger(evt, args) {
+    observers[evt].forEach(function (fn) {
+      try {
+        fn(args);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }
 
   function getLayoutConfig() { return layout.toConfig(); }
 
   function setLayoutConfig(config) {
     if (layout) { layout.destroy(); }
+    panels.clear();
 
     layout = new GoldenLayout(config, "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
@@ -95,7 +115,9 @@ let LayoutManager = (function () {
       container.getElement().append($el);
       container.on('destroy', function () {
         $("#hidden-panels").append($el);
+        trigger("close", state.id);
       });
+      panels[state.id] = container;
     });
 
     function updateSize() {
@@ -111,6 +133,10 @@ let LayoutManager = (function () {
     layout.on('stateChanged', onStateChanged);
     layout.init();
     updateSize();
+  }
+
+  function getPanel(id) {
+    return panels[id];
   }
 
   function isBroken() {
@@ -168,14 +194,22 @@ let LayoutManager = (function () {
     }
   }
 
+  function closePanel(id) {
+    let panel = getPanel(id);
+    if (panel) { panel.close(); }
+  }
+
   return {
     init: init,
     reset: reset,
+    on: on,
     showPlotter: showPlotter,
     showDebugger: showDebugger,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,
+    getPanel: getPanel,
+    closePanel: closePanel,
   };
 
 })();

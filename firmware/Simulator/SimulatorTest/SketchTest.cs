@@ -18,8 +18,9 @@ namespace SimulatorTest
 
         private const byte RQ_CONNECTION_REQUEST = 255;
         private const byte MAJOR_VERSION = 0;
-        private const byte MINOR_VERSION = 8;
+        private const byte MINOR_VERSION = 9;
         private const byte KEEP_ALIVE = 7;
+        private const byte DEBUG_CONTINUE = 12;
 
         public TestContext TestContext { get; set; }
 
@@ -36,6 +37,13 @@ namespace SimulatorTest
         private void Loop(int n = 10)
         {
             for (int i = 0; i < n; i++) { sketch.Loop(); }
+        }
+
+        private void LoadProgram(byte[] bytes)
+        {
+            sketch.WriteSerial(bytes);
+            sketch.Loop(); // Execute 1 loop to load the program
+            sketch.WriteSerial(new byte[] { DEBUG_CONTINUE });
         }
 
         [ClassInitialize]
@@ -171,7 +179,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test001TurnOnBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test001TurnOnBytecode)));
+            LoadProgram(ReadFile(nameof(Test001TurnOnBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -180,7 +188,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test002TurnOffBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test002TurnOffBytecode)));
+            LoadProgram(ReadFile(nameof(Test002TurnOffBytecode)));
             sketch.SetPinValue(13, 1023);
             Assert.AreEqual(1023, sketch.GetPinValue(13));
             sketch.Loop();
@@ -190,7 +198,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test003ReadWriteBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test003ReadWriteBytecode)));
+            LoadProgram(ReadFile(nameof(Test003ReadWriteBytecode)));
             /*
             INFO(Richo):
             The choice of 120 as expected value is not casual. Since analogRead() and
@@ -208,7 +216,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test004PushBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test004PushBytecode)));
+            LoadProgram(ReadFile(nameof(Test004PushBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -217,7 +225,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test005PushWithFloatingPointVariable()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test005PushWithFloatingPointVariable)));
+            LoadProgram(ReadFile(nameof(Test005PushWithFloatingPointVariable)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(Math.Round(0.2 * 1023), sketch.GetPinValue(13));
@@ -226,7 +234,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test006PopBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test006PopBytecode)));
+            LoadProgram(ReadFile(nameof(Test006PopBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop(); // The first loop sets the var to 1
             Assert.AreEqual(0, sketch.GetPinValue(13));
@@ -237,7 +245,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test007PrimBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test007PrimBytecode)));
+            LoadProgram(ReadFile(nameof(Test007PrimBytecode)));
             Assert.AreEqual(0, sketch.GetPinValue(13));
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -248,7 +256,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test008JZBytecode()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test008JZBytecode)));
+            LoadProgram(ReadFile(nameof(Test008JZBytecode)));
             sketch.SetPinValue(13, 0);
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
@@ -259,7 +267,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test009TickingRate()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test009TickingRate)));
+            LoadProgram(ReadFile(nameof(Test009TickingRate)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -281,7 +289,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test010MultipleScriptsWithDifferentTickingRates()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test010MultipleScriptsWithDifferentTickingRates)));
+            LoadProgram(ReadFile(nameof(Test010MultipleScriptsWithDifferentTickingRates)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -312,7 +320,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test011YieldInstruction()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test011YieldInstruction)));
+            LoadProgram(ReadFile(nameof(Test011YieldInstruction)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -330,7 +338,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test012YieldInstructionPreservesStack()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test012YieldInstructionPreservesStack)));
+            LoadProgram(ReadFile(nameof(Test012YieldInstructionPreservesStack)));
 
             sketch.SetMillis(0);
             sketch.Loop();
@@ -349,7 +357,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test013YieldInstructionResumesOnNextTick()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test013YieldInstructionResumesOnNextTick)));
+            LoadProgram(ReadFile(nameof(Test013YieldInstructionResumesOnNextTick)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -371,7 +379,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test014PrimitiveYieldTime()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test014PrimitiveYieldTime)));
+            LoadProgram(ReadFile(nameof(Test014PrimitiveYieldTime)));
 
             sketch.SetMillis(100);
             sketch.Loop();
@@ -401,7 +409,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test015YieldAfterBackwardsJump()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test015YieldAfterBackwardsJump)));
+            LoadProgram(ReadFile(nameof(Test015YieldAfterBackwardsJump)));
 
             sketch.SetMillis(500);
             sketch.Loop();
@@ -439,7 +447,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test016ScriptCallWithoutParametersOrReturnValue()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test016ScriptCallWithoutParametersOrReturnValue)));
+            LoadProgram(ReadFile(nameof(Test016ScriptCallWithoutParametersOrReturnValue)));
 
             /*
              * INFO(Richo): This loop allows me to detect stack overflow
@@ -462,7 +470,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn)));
+            LoadProgram(ReadFile(nameof(Test017ScriptCallWithoutParametersWithReturnValueAndExplicitReturn)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -500,7 +508,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test018ScriptTickingWithExplicitReturn()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test018ScriptTickingWithExplicitReturn)));
+            LoadProgram(ReadFile(nameof(Test018ScriptTickingWithExplicitReturn)));
 
             /*
              * INFO(Richo): This loop allows me to detect stack overflow
@@ -521,7 +529,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test019ScriptWithYieldBeforeEndOfScript()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test019ScriptWithYieldBeforeEndOfScript)));
+            LoadProgram(ReadFile(nameof(Test019ScriptWithYieldBeforeEndOfScript)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -546,7 +554,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test020ScriptCallWithOneParameterAndReturnValue()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test020ScriptCallWithOneParameterAndReturnValue)));
+            LoadProgram(ReadFile(nameof(Test020ScriptCallWithOneParameterAndReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -564,7 +572,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test021ScriptCallWithOneParameterWithoutReturnValue()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test021ScriptCallWithOneParameterWithoutReturnValue)));
+            LoadProgram(ReadFile(nameof(Test021ScriptCallWithOneParameterWithoutReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -582,7 +590,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn)));
+            LoadProgram(ReadFile(nameof(Test022ScriptCallWithOneParameterWithoutReturnValueWithExplicitReturn)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -600,7 +608,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn)));
+            LoadProgram(ReadFile(nameof(Test023ScriptCallWithTwoParametersWithoutReturnValueWithExplicitReturn)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -618,7 +626,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test024ScriptCallWithTwoParametersWithReturnValue()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test024ScriptCallWithTwoParametersWithReturnValue)));
+            LoadProgram(ReadFile(nameof(Test024ScriptCallWithTwoParametersWithReturnValue)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -636,7 +644,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test025ScriptCallWithRecursiveCall4LevelsDeep()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test025ScriptCallWithRecursiveCall4LevelsDeep)));
+            LoadProgram(ReadFile(nameof(Test025ScriptCallWithRecursiveCall4LevelsDeep)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -649,7 +657,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test026ScriptTickingThatAlsoCallsItself()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test026ScriptTickingThatAlsoCallsItself)));
+            LoadProgram(ReadFile(nameof(Test026ScriptTickingThatAlsoCallsItself)));
 
             sketch.SetMillis(500);
             sketch.Loop();
@@ -716,7 +724,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript)));
+            LoadProgram(ReadFile(nameof(Test027PrimitiveCoroutineShouldReturnTheIndexOfTheActiveScript)));
 
             Assert.AreEqual(0, sketch.GetPinValue(11));
 
@@ -739,7 +747,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test028PrimitiveBitwiseAnd()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test028PrimitiveBitwiseAnd)));
+            LoadProgram(ReadFile(nameof(Test028PrimitiveBitwiseAnd)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -778,7 +786,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test029PrimitiveBitwiseOr()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test029PrimitiveBitwiseOr)));
+            LoadProgram(ReadFile(nameof(Test029PrimitiveBitwiseOr)));
 
             /*
              * INFO(Richo): These numbers represent the value of the pin D11 after each iteration
@@ -817,7 +825,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test030PrimitiveLogicalAnd()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test030PrimitiveLogicalAnd)));
+            LoadProgram(ReadFile(nameof(Test030PrimitiveLogicalAnd)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -832,7 +840,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test031PrimitiveLogicalOr()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test031PrimitiveLogicalOr)));
+            LoadProgram(ReadFile(nameof(Test031PrimitiveLogicalOr)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -847,7 +855,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test032StopScriptAndRestartShouldResetPCAndStuff()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test032StopScriptAndRestartShouldResetPCAndStuff)));
+            LoadProgram(ReadFile(nameof(Test032StopScriptAndRestartShouldResetPCAndStuff)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -866,7 +874,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart)));
+            LoadProgram(ReadFile(nameof(Test033StopCurrentScriptShouldStopImmediatelyAndPCShouldReturnToTheStart)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -880,7 +888,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test034StartOnTheCurrentTaskShouldJumpToTheBeginning()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test034StartOnTheCurrentTaskShouldJumpToTheBeginning)));
+            LoadProgram(ReadFile(nameof(Test034StartOnTheCurrentTaskShouldJumpToTheBeginning)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -893,7 +901,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test035StartOnAnotherTaskShouldResetToBeginning()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test035StartOnAnotherTaskShouldResetToBeginning)));
+            LoadProgram(ReadFile(nameof(Test035StartOnAnotherTaskShouldResetToBeginning)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -906,7 +914,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test036ResumeOnARunningTaskShouldHaveNoEffect()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test036ResumeOnARunningTaskShouldHaveNoEffect)));
+            LoadProgram(ReadFile(nameof(Test036ResumeOnARunningTaskShouldHaveNoEffect)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -919,7 +927,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC)));
+            LoadProgram(ReadFile(nameof(Test037ResumeOnAPausedTaskShouldContinueFromItsCurrentPC)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -932,7 +940,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test038ResumeOnStoppedTaskShouldJumpToBeginning()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test038ResumeOnStoppedTaskShouldJumpToBeginning)));
+            LoadProgram(ReadFile(nameof(Test038ResumeOnStoppedTaskShouldJumpToBeginning)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -945,7 +953,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test039StartOnStoppedTaskShouldJumpToBeginning()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test039StartOnStoppedTaskShouldJumpToBeginning)));
+            LoadProgram(ReadFile(nameof(Test039StartOnStoppedTaskShouldJumpToBeginning)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -958,7 +966,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test040StartOnPausedTaskShouldJumpToBeginning()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test040StartOnPausedTaskShouldJumpToBeginning)));
+            LoadProgram(ReadFile(nameof(Test040StartOnPausedTaskShouldJumpToBeginning)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -971,7 +979,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test041PausingShouldPreserveTheStack()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test041PausingShouldPreserveTheStack)));
+            LoadProgram(ReadFile(nameof(Test041PausingShouldPreserveTheStack)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -987,14 +995,14 @@ namespace SimulatorTest
         [TestMethod]
         public void Test042EmptyScriptShouldNotCrashTheVM()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test042EmptyScriptShouldNotCrashTheVM)));
+            LoadProgram(ReadFile(nameof(Test042EmptyScriptShouldNotCrashTheVM)));
             sketch.Loop();
         }
 
         [TestMethod]
         public void Test043ForLoop()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test043ForLoop)));
+            LoadProgram(ReadFile(nameof(Test043ForLoop)));
 
             for (int i = 7; i <= 11; i++)
             {
@@ -1013,7 +1021,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test044ReversedForLoop()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test044ReversedForLoop)));
+            LoadProgram(ReadFile(nameof(Test044ReversedForLoop)));
 
             for (int i = 11; i >= 7; i--)
             {
@@ -1032,7 +1040,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test045ForLoopWithoutConstantStep()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test045ForLoopWithoutConstantStep)));
+            LoadProgram(ReadFile(nameof(Test045ForLoopWithoutConstantStep)));
 
             for (int i = 7; i <= 11; i++)
             {
@@ -1051,7 +1059,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test046ReverseForLoopWithoutConstantStep()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test046ReverseForLoopWithoutConstantStep)));
+            LoadProgram(ReadFile(nameof(Test046ReverseForLoopWithoutConstantStep)));
 
             for (int i = 11; i >= 7; i--)
             {
@@ -1070,7 +1078,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test047ForLoopShouldOnlyEvaluateStepOncePerIteration()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test047ForLoopShouldOnlyEvaluateStepOncePerIteration)));
+            LoadProgram(ReadFile(nameof(Test047ForLoopShouldOnlyEvaluateStepOncePerIteration)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1088,7 +1096,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test048MutexShouldGuaranteeACriticalSection()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test048MutexShouldGuaranteeACriticalSection)));
+            LoadProgram(ReadFile(nameof(Test048MutexShouldGuaranteeACriticalSection)));
             /*
                 D13 should blink every second.
                 D11 should follow the pattern:
@@ -1124,7 +1132,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer)));
+            LoadProgram(ReadFile(nameof(Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer)));
             /*
                 D13 should blink every second.
                 D11 should always be off.
@@ -1147,7 +1155,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers)));
+            LoadProgram(ReadFile(nameof(Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers)));
             /*
                 D13 should blink every second.
                 D11 should always be 0.5.
@@ -1170,7 +1178,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer)));
+            LoadProgram(ReadFile(nameof(Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer)));
             /*
                 D13 should blink every second.
                 D11 should always be opposite of D13
@@ -1193,7 +1201,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test052ChannelWithMultipleProducersAndOneConsumer()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test052ChannelWithMultipleProducersAndOneConsumer)));
+            LoadProgram(ReadFile(nameof(Test052ChannelWithMultipleProducersAndOneConsumer)));
             /*
                 D13 should blink every second.
                 D11 should follow the pattern:
@@ -1224,7 +1232,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test053ChannelWithMultipleConsumersAndOneProducer()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test053ChannelWithMultipleConsumersAndOneProducer)));
+            LoadProgram(ReadFile(nameof(Test053ChannelWithMultipleConsumersAndOneProducer)));
             /*
                 D10, D11, D12, and D13 should follow the pattern:
                 0 s -> D10: 0.00, D11: 0.00, D12: 0.00, D13: 0.00
@@ -1273,7 +1281,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
+            LoadProgram(ReadFile(nameof(Test054VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1289,7 +1297,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
+            LoadProgram(ReadFile(nameof(Test055VariablesWithTheSameNameInDifferentScopesShouldNotInterfereWithEachOther)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1305,7 +1313,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test056Round()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test056Round)));
+            LoadProgram(ReadFile(nameof(Test056Round)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1318,7 +1326,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test057Ceil()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test057Ceil)));
+            LoadProgram(ReadFile(nameof(Test057Ceil)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1331,7 +1339,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test058Floor()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test058Floor)));
+            LoadProgram(ReadFile(nameof(Test058Floor)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1344,7 +1352,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test059Sqrt()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test059Sqrt)));
+            LoadProgram(ReadFile(nameof(Test059Sqrt)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1355,7 +1363,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test060Abs()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test060Abs)));
+            LoadProgram(ReadFile(nameof(Test060Abs)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1368,7 +1376,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test061NaturalLogarithm()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test061NaturalLogarithm)));
+            LoadProgram(ReadFile(nameof(Test061NaturalLogarithm)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1381,7 +1389,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test062Log10()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test062Log10)));
+            LoadProgram(ReadFile(nameof(Test062Log10)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1394,7 +1402,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test063Exp()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test063Exp)));
+            LoadProgram(ReadFile(nameof(Test063Exp)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1407,7 +1415,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test064Pow10()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test064Pow10)));
+            LoadProgram(ReadFile(nameof(Test064Pow10)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1420,7 +1428,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test065IsCloseTo()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test065IsCloseTo)));
+            LoadProgram(ReadFile(nameof(Test065IsCloseTo)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1434,7 +1442,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test066Asin()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test066Asin)));
+            LoadProgram(ReadFile(nameof(Test066Asin)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1447,7 +1455,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test067Acos()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test067Acos)));
+            LoadProgram(ReadFile(nameof(Test067Acos)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1460,7 +1468,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test068Atan()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test068Atan)));
+            LoadProgram(ReadFile(nameof(Test068Atan)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1473,7 +1481,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test069Power()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test069Power)));
+            LoadProgram(ReadFile(nameof(Test069Power)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1486,7 +1494,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test070IsOn()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test070IsOn)));
+            LoadProgram(ReadFile(nameof(Test070IsOn)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1500,7 +1508,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test071IsOff()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test071IsOff)));
+            LoadProgram(ReadFile(nameof(Test071IsOff)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1514,7 +1522,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test072Mod()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test072Mod)));
+            LoadProgram(ReadFile(nameof(Test072Mod)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start OFF");
             Assert.AreEqual(0, sketch.GetPinValue(12), "D12 should start OFF");
@@ -1567,7 +1575,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test073Constrain()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test073Constrain)));
+            LoadProgram(ReadFile(nameof(Test073Constrain)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1580,7 +1588,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test074RandomInt()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test074RandomInt)));
+            LoadProgram(ReadFile(nameof(Test074RandomInt)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1594,7 +1602,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test075Random()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test075Random)));
+            LoadProgram(ReadFile(nameof(Test075Random)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1608,7 +1616,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test076IsEven()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test076IsEven)));
+            LoadProgram(ReadFile(nameof(Test076IsEven)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1621,7 +1629,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test077IsOdd()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test077IsOdd)));
+            LoadProgram(ReadFile(nameof(Test077IsOdd)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1634,7 +1642,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test078IsPrime()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test078IsPrime)));
+            LoadProgram(ReadFile(nameof(Test078IsPrime)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1647,7 +1655,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test079IsWhole()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test079IsWhole)));
+            LoadProgram(ReadFile(nameof(Test079IsWhole)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1660,7 +1668,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test080IsPositive()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test080IsPositive)));
+            LoadProgram(ReadFile(nameof(Test080IsPositive)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1673,7 +1681,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test081IsNegative()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test081IsNegative)));
+            LoadProgram(ReadFile(nameof(Test081IsNegative)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1686,7 +1694,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test082IsDivisibleBy()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test082IsDivisibleBy)));
+            LoadProgram(ReadFile(nameof(Test082IsDivisibleBy)));
 
             sketch.SetMillis(1000);
             sketch.Loop();
@@ -1699,7 +1707,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test083DelayS()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test083DelayS)));
+            LoadProgram(ReadFile(nameof(Test083DelayS)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
 
@@ -1719,7 +1727,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test084DelayM()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test084DelayM)));
+            LoadProgram(ReadFile(nameof(Test084DelayM)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
 
@@ -1739,7 +1747,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test085Minutes()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test085Minutes)));
+            LoadProgram(ReadFile(nameof(Test085Minutes)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
 
@@ -1803,7 +1811,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test086Seconds()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test086Seconds)));
+            LoadProgram(ReadFile(nameof(Test086Seconds)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
 
@@ -1867,7 +1875,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test087Millis()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test087Millis)));
+            LoadProgram(ReadFile(nameof(Test087Millis)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should be off");
 
@@ -1932,7 +1940,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test088ScriptCallOverridingPrimitive()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test088ScriptCallOverridingPrimitive)));
+            LoadProgram(ReadFile(nameof(Test088ScriptCallOverridingPrimitive)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -1950,7 +1958,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test089DebuggerBreakpointHaltsAllScripts()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test089DebuggerBreakpointHaltsAllScripts)));
+            LoadProgram(ReadFile(nameof(Test089DebuggerBreakpointHaltsAllScripts)));
 
             // NOTE(Richo): First, we verify that the program does what it's supposed to do.
             for (int i = 0; i < 100; i++)
@@ -2051,7 +2059,7 @@ namespace SimulatorTest
                 sketch.Loop();
             };
 
-            sketch.WriteSerial(ReadFile(nameof(Test090DebuggerBreakpointHaltsAreDeterministic)));
+            LoadProgram(ReadFile(nameof(Test090DebuggerBreakpointHaltsAreDeterministic)));
 
             int time = 0;
             sketch.SetMillis(time);
@@ -2165,7 +2173,7 @@ namespace SimulatorTest
                 sketch.Loop();
             };
 
-            sketch.WriteSerial(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
+            LoadProgram(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
 
             int time = 0;
             sketch.SetMillis(time);
@@ -2202,7 +2210,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): Now we send the program again. Execution should restart.
-            sketch.WriteSerial(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
+            LoadProgram(ReadFile(nameof(Test091ChangingTheProgramResetsTheVMState)));
             sketch.Loop();
             try
             {
@@ -2233,7 +2241,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test092DebuggerSetAllBreakpoints()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test092DebuggerSetAllBreakpoints)));
+            LoadProgram(ReadFile(nameof(Test092DebuggerSetAllBreakpoints)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start off");
             Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should start off");
@@ -2273,7 +2281,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test093DebuggerSetAllBreakpointsWithMultipleScripts()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test093DebuggerSetAllBreakpointsWithMultipleScripts)));
+            LoadProgram(ReadFile(nameof(Test093DebuggerSetAllBreakpointsWithMultipleScripts)));
 
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should start off");
             Assert.AreEqual(0, sketch.GetPinValue(11), "D11 should start off");
@@ -2313,7 +2321,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test094ProgramWithMultipleImports()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test094ProgramWithMultipleImports)));
+            LoadProgram(ReadFile(nameof(Test094ProgramWithMultipleImports)));
 
             for (int i = 0; i < 100; i++)
             {
@@ -2327,7 +2335,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test095ScriptWith127Instructions()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test095ScriptWith127Instructions)));
+            LoadProgram(ReadFile(nameof(Test095ScriptWith127Instructions)));
 
             int millis = 0;
             for (int i = 0; i < 31; i++)
@@ -2353,7 +2361,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test096ScriptWith128Instructions()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test096ScriptWith128Instructions)));
+            LoadProgram(ReadFile(nameof(Test096ScriptWith128Instructions)));
 
             int last = sketch.GetPinValue(13);
             int count = 0;
@@ -2372,7 +2380,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test097ScriptWith512Instructions()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test097ScriptWith512Instructions)));
+            LoadProgram(ReadFile(nameof(Test097ScriptWith512Instructions)));
 
             int last = sketch.GetPinValue(13);
             int count = 0;
@@ -2391,7 +2399,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test098criptWith255Instructions()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test098criptWith255Instructions)));
+            LoadProgram(ReadFile(nameof(Test098criptWith255Instructions)));
 
             int last = sketch.GetPinValue(13);
             int count = 0;
@@ -2412,7 +2420,7 @@ namespace SimulatorTest
         [TestMethod]
         public void Test099CallingAScriptWithLessArgumentsThanRequired()
         {
-            sketch.WriteSerial(ReadFile(nameof(Test099CallingAScriptWithLessArgumentsThanRequired)));
+            LoadProgram(ReadFile(nameof(Test099CallingAScriptWithLessArgumentsThanRequired)));
 
             sketch.SetMillis(0);
             sketch.Loop();
