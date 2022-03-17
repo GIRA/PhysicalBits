@@ -361,3 +361,104 @@
     (is (= [7 8 9] (debugger/estimate-breakpoints step-over vm program)))
     (is (= [7 8 9] (debugger/estimate-breakpoints step-into vm program)))
     (is (= [0] (debugger/estimate-breakpoints step-out vm program)))))
+
+(deftest estimate-breakpoints-7
+  (let [program (compile-string "
+                                var pin_2 = 0;
+                                var pin_1 = 11;
+                                
+                                proc toggle(pin) {
+                                	if isOn(pin) {
+                                		turnOn(pin);
+                                	} else {
+                                		turnOff(pin);
+                                	}
+                                }
+                                
+                                func isOn(pin) {
+                                	return (read(pin) > 0.5);
+                                }
+                                
+                                proc turnOn(pin) {
+                                	write(pin, 1);
+                                }
+                                
+                                proc turnOff(pin) {
+                                	write(pin, 0);
+                                }
+                                
+                                proc loop() {
+                                	pin_2 = 0;
+                                	while (pin_2 < 13) { \" <--- BREAKPOINT HERE \"
+                                		turnOn(pin_2);
+                                		delayS(1);
+                                		turnOff(pin_2);
+                                		delayMs(500);
+                                		pin_2 = (pin_2 + 1);
+                                	}
+                                	toggle(pin_1);
+                                }
+                                
+                                task main() {
+                                	forever {
+                                		loop();
+                                	}
+                                }")
+        vm {:fp 1,
+            :index 5,
+            :pc 23,
+            :stack '((255 255 0 45) (0 0 0 46))}]
+    (is (= [27 28 29 42 43 44] (debugger/estimate-breakpoints step-over vm program)))
+    (is (= [27 28 29 42 43 44] (debugger/estimate-breakpoints step-into vm program)))
+    (is (= [46] (debugger/estimate-breakpoints step-out vm program)))))
+
+(deftest estimate-breakpoints-8
+  (let [program (compile-string "
+                                 var pin_2 = 0;
+                                 var pin_1 = 13;
+                                 
+                                 proc toggle(pin) {
+                                 	if isOn(pin) {
+                                 		turnOff(pin);
+                                 	} else {
+                                 		turnOn(pin);
+                                 	}
+                                 }
+                                 
+                                 func isOn(pin) {
+                                 	return (read(pin) > 0.5);
+                                 }
+                                 
+                                 proc turnOn(pin) {
+                                 	write(pin, 1);
+                                 }
+                                 
+                                 proc turnOff(pin) {
+                                 	write(pin, 0);
+                                 }
+                                 
+                                 proc loop() {
+                                 	for i = 0 to 12 by 1 { \" <--- BREAKPOINT HERE \"
+                                 	    pin_2 = i;
+                                 		turnOn(pin_2);
+                                 		delayS(0.1);
+                                 		turnOff(pin_2);
+                                 		delayMs(5);
+                                 	}
+                                 	toggle(pin_1);
+                                 }
+                                 
+                                 task main() {
+                                 	forever {
+                                 		loop();
+                                 	}
+                                 }")
+        vm {:fp 1,
+            :index 5,
+            :pc 21,
+            :stack '((255 255 0 47)
+                     (0 0 0 0)
+                     (0 0 0 48))}]
+    (is (= [23 24 25 26] (debugger/estimate-breakpoints step-over vm program)))
+    (is (= [23 24 25 26] (debugger/estimate-breakpoints step-into vm program)))
+    (is (= [48] (debugger/estimate-breakpoints step-out vm program)))))
