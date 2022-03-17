@@ -94,6 +94,8 @@ let UziBlock = (function () {
       color: colors.CONTROL,
       supportsBreakpoints: true,
     },
+    // TODO(Richo): Make special version of the return blocks that accept bottom connections,
+    // otherwise code with statements after a return won't be translatable to blocks...
 
     // Imports
     import: {
