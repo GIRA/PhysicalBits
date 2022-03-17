@@ -3211,18 +3211,16 @@ let UziBlock = (function () {
       xy.y * mWs.scale - m.contentTop  - m.viewHeight * 0.4);
   }
 
-  function selectByIndex(idx) {
-    if (!workspace) return;
-    
+  function findBlockByCodeIndex(idx) {
+    // TODO(Richo): This implementation sucks!
+
     let candidates = [];
-    let id = null;
     Object.entries(Uzi.state.program["block->token"]).forEach(entry => {
       let block = entry[0];
       let t = entry[1];
       if (block != "") {
         if (idx >= t[0] && idx <= t[1]) {
           candidates.push({
-            token: t,
             length: t[1] - t[0],
             block: block,
           })
@@ -3236,6 +3234,14 @@ let UziBlock = (function () {
       block = workspace.getBlockById(candidates[i].block);
       if (block != null) break;
     }
+
+    return block;
+  }
+
+  function selectByIndex(idx) {
+    if (!workspace) return;
+    
+    let block = findBlockByCodeIndex(idx);
     if (block == null) return;
 
     console.log(block.type);
