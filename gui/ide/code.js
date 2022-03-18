@@ -118,15 +118,7 @@ let UziCode = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
-      if (state.debugger.isHalted) {
-        editor.setReadOnly(true);
-      } else {
-        editor.setReadOnly(false);
-        let src = state.program.src;
-        if (editor.getValue() !== src) {
-          editor.setValue(src, 1);
-        }
-      }
+      editor.setReadOnly(state.debugger.isHalted);
 
       let interval = null;
       let src = state.program.src;
@@ -136,7 +128,7 @@ let UziCode = (function () {
         interval = stackFrame.interval;
       }
       
-      if (editor.getValue() !== src) {
+      if (!focus && editor.getValue() !== src) {
         editor.setValue(src, 1);
       }
       highlight(interval);
