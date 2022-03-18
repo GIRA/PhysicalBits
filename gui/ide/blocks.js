@@ -2265,6 +2265,7 @@ let UziBlock = (function () {
               trigger("select", evt.blockId);
             }
           }
+
           return;
         }
 
@@ -3227,6 +3228,10 @@ let UziBlock = (function () {
   }
 
   function centerOnBlock(id) {
+    // NOTE(Richo): If we try to move the workspace while a block is being dragged, for some reason,
+    // it breaks *everything* and the workspace becomes unusable
+    if (workspace.isDragging()) return;
+
     // NOTE(Richo): Code taken and adapted from
     // https://github.com/google/blockly/issues/1013#issuecomment-290713644
     let block = workspace.getBlockById(id);
@@ -3274,7 +3279,6 @@ let UziBlock = (function () {
     let block = findBlockByCodeIndex(idx);
     if (block == null) return;
 
-    console.log(block.type);
     block.select();
   }
 
