@@ -206,7 +206,7 @@ let Uzi = (function () {
         let url = apiURL + "/uzi/debugger/set-breakpoints";
         let data = {
           id: id,
-          breakpoints: Array.from(breakpoints).join(","),
+          breakpoints: breakpoints.join(","),
         };
         return POST(url, data);
       },

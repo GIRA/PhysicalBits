@@ -39,13 +39,19 @@ let UziCode = (function () {
       /*
       TODO(Richo): Here we should update the validBreakpoints list to insert
       null in every inserted line. Otherwise everything gets out of sync...
+      NOTE(Richo): The reason it's (kinda) working right now is that we're 
+      not using the validBreakpoints anymore. IIRC the server used to send us
+      a list of lines where it was valid to set a breakpoint, but now I think
+      I remove it (I don't remember why, though, probably simplicity)
       */
-      let breakpoints = Debugger.getBreakpoints();
-      let bpts = breakpoints.filter(function (bp) { return bp > start; });
-      breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
-      bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
+
+      let breakpoints = new Set();
       editor.session.clearBreakpoints();
-      breakpoints.forEach(function (line) {
+      Debugger.getBreakpoints().forEach(bp => {
+        // If the breakpoint is after the edit start we add the edit delta, otherwise we
+        // leave it as is
+        let line = bp <= start ? bp : bp + delta;
+        breakpoints.add(line);
         editor.session.setBreakpoint(line, "breakpoint");
       });
       Debugger.setBreakpoints(breakpoints);
@@ -58,6 +64,11 @@ let UziCode = (function () {
       if (editor.getValue() !== Uzi.state.program.src) return;
       var line = Debugger.getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
       Debugger.toggleBreakpoint(line);
+      if (Debugger.getBreakpoints().has(line)) {
+        editor.session.setBreakpoint(line, "breakpoint");
+      } else {
+        editor.session.clearBreakpoint(line);
+      }
       editor.gotoLine(line + 1);
 		});
 

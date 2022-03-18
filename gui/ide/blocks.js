@@ -2586,6 +2586,11 @@ let UziBlock = (function () {
                 let loc = Uzi.state.program["block->token"][block.id][2];
                 if (loc) {
                   Debugger.toggleBreakpoint(loc);
+                  if (Debugger.getBreakpoints().has(loc)) {
+                    setBreakpointOnBlock(block, loc);
+                  } else {
+                    clearBreakpointOnBlock(block);
+                  }
                 }
               },
           };
@@ -3183,12 +3188,9 @@ let UziBlock = (function () {
           let loc = token[2];
           if (breakpoints.has(loc)) {
             breakpoints.delete(loc);
-            let warning = "BREAKPOINT ON LINE: " + (loc + 1);
-            if (block.warning != warning) {
-              block.setWarningText(warning);
-            }
-          } else if (block.warning) {
-            block.setWarningText(null);
+            setBreakpointOnBlock(block, loc);
+          } else {
+            clearBreakpointOnBlock(block);
           }
         } else {
           block.setWarningText(null);
@@ -3208,6 +3210,19 @@ let UziBlock = (function () {
       }
     } catch (err) {
       console.log(err);
+    }
+  }
+
+  function setBreakpointOnBlock(block, loc) {
+    let warning = "BREAKPOINT ON LINE: " + (loc + 1);
+    if (block.warning != warning) {
+      block.setWarningText(warning);
+    }
+  }
+
+  function clearBreakpointOnBlock(block) {
+    if (block.warning) {
+      block.setWarningText(null);
     }
   }
 

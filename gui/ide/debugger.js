@@ -1,7 +1,7 @@
 let Debugger = (function () {
 
   let selectedStackFrame = 0;
-  let breakpoints = [];
+  let breakpoints = new Set();
   
   // TODO(Richo): These observer stuff is duplicated everywhere. REFACTOR!
   let observers = {
@@ -85,7 +85,7 @@ let Debugger = (function () {
     if (state.debugger.pc != previous.debugger.pc) {
       selectedStackFrame = 0;
     }
-    breakpoints = state.debugger.breakpoints;
+    breakpoints = new Set(state.debugger.breakpoints);
     updateButtons(state);
     updateDebugger(state);
     if (state.debugger.isHalted) {
@@ -182,20 +182,24 @@ let Debugger = (function () {
     $("#debugger-raw-stack-table").append($body);
   }
 
+  function setBreakpoints(bpts) {
+    breakpoints = Uzi.state.connection.isConnected ? bpts : new Set();
+  }
+
   function toggleBreakpoint(line) {
-    if (!breakpoints.includes(line)) {
-      breakpoints.push(line);
+    if (Uzi.state.connection.isConnected 
+        && !breakpoints.has(line)) {
+      breakpoints.add(line);
     } else {
-      var index = breakpoints.indexOf(line);
-      if (index > -1) { breakpoints.splice(index, 1); }
+      breakpoints.delete(line);
     }
-    sendBreakpoints();
+    return sendBreakpoints();
   }
   
-
 	function sendBreakpoints() {
-    console.log(breakpoints);
-    return Uzi.debugger.setBreakpoints(breakpoints)
+    // NOTE(Richo): On error, we trigger a debugger update anyway
+    return Uzi.debugger.setBreakpoints(Array.from(breakpoints))
+      .catch(() => trigger("change", [Uzi.state, selectedStackFrame]));
 	}
   
   
@@ -216,7 +220,7 @@ let Debugger = (function () {
 
     getSelectedStackFrameIndex: () => selectedStackFrame,
     getBreakpoints: () => breakpoints,
-    setBreakpoints: bpts => breakpoints = bpts,
+    setBreakpoints: setBreakpoints,
     toggleBreakpoint: toggleBreakpoint,
     getValidLineForBreakpoint: getValidLineForBreakpoint,
   }
