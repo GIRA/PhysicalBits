@@ -34,7 +34,7 @@
                                :breakpoints {:user #{}, :system #{}}}
                     :timing {:arduino nil, :middleware nil, :diffs nil}
                     :memory {:arduino nil, :uzi nil}
-                    :program {:current nil, :running nil}})
+                    :program nil})
 (def state (atom initial-state))
 
 (def update-chan (a/chan 100))
@@ -82,9 +82,6 @@
          (catch #?(:clj Throwable :cljs :default) e
            (log-error "ERROR WHILE DISCONNECTING ->" e)))
        (port-scanner/start!)
-       (swap! state (fn [state]
-                      (assoc-in initial-state [:program :current]
-                                (-> state :program :current))))
        (a/onto-chan! update-chan [:connection :debugger] false)))))
 
 (defn send! [bytes]
@@ -94,7 +91,7 @@
   bytes)
 
 (defn- get-global-number [global-name]
-  (program/index-of-variable (-> @state :program :running)
+  (program/index-of-variable (@state :program)
                              global-name
                              nil))
 
@@ -140,8 +137,9 @@
       (a/put! update-chan :debugger))))
 
 (defn run [program]
-  (swap! state assoc-in [:reporting :globals] #{})
-  (swap! state assoc-in [:program :running] program)
+  (swap! state #(-> %
+                    (assoc-in [:reporting :globals] #{})
+                    (assoc :program program)))
   (reset-debugger!)
   (let [bytecodes (en/encode program)
         sent (send! (p/run bytecodes))]
@@ -228,7 +226,7 @@
 
 (defn process-global-value [{:keys [timestamp data]}]
   (let [globals (vec (program/all-globals
-                      (-> @state :program :running)))]
+                      (@state :program)))]
     (let [globals (into {}
                         (map (fn [{:keys [number] :as global}]
                                (when-let [name (:name (nth globals number {}))]
@@ -242,7 +240,7 @@
   (swap! state assoc :memory memory))
 
 (defn process-running-scripts [{:keys [scripts]}]
-  (let [program (-> @state :program :running)
+  (let [program (@state :program)
         get-script-name (fn [i] (-> program :scripts (get i) :name))
         task? (fn [i] (-> (meta program) :final-ast :scripts (get i) ast/task?))
         [old new] (swap-vals! state assoc

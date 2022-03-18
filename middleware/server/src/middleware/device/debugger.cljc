@@ -9,7 +9,7 @@
             [middleware.device.controller :as dc :refer [state update-chan send!]]))
 
 (defn send-breakpoints! [breakpoints]
-  (let [pcs (program/pcs (-> @state :program :running))]
+  (let [pcs (program/pcs (@state :program))]
     (if (< (count breakpoints)
            (count pcs))
       (do
@@ -45,7 +45,7 @@
   (a/put! update-chan :debugger))
 
 (defn break! []
-  (set-system-breakpoints! (program/pcs (-> @state :program :running))))
+  (set-system-breakpoints! (-> @state :program program/pcs)))
 
 (defn send-continue! []
   (swap! state assoc-in [:debugger :vm] nil)
@@ -254,7 +254,7 @@
    (let [state @state]
      (estimate-breakpoints step-fn
                            (-> state :debugger :vm)
-                           (-> state :program :running))))
+                           (-> state :program))))
   ([step-fn vm program]
    (try
      (let [groups (instruction-groups program)
@@ -283,7 +283,7 @@
   (-> @state :debugger)
 
   (do
-    (def program (-> @state :program :running))
+    (def program (-> @state :program))
     (def vm (-> @state :debugger :vm))
     (def pc (:pc vm))
     (def groups (instruction-groups program))
@@ -302,15 +302,15 @@
   (dc/connected?)
   (dc/disconnect!)
 
-  (instruction-group-at-pc (-> @state :program :running)
+  (instruction-group-at-pc (-> @state :program)
                            (-> @state :debugger :vm :pc))
 
   (break!)
   (step-next!)
   (-> @state :debugger)
-  (def sf (stack-frames (-> @state :program :running)
+  (def sf (stack-frames (-> @state :program)
                         (-> @state :debugger :vm)))
-  (def ig (instruction-groups (-> @state :program :running)))
+  (def ig (instruction-groups (-> @state :program)))
 
   (mapv (fn [g] (-> g
                     (dissoc :script)
@@ -330,6 +330,6 @@
   (-> @state :debugger)
 
   (map-indexed (fn [v i] [v i])
-               (program/instructions (-> @state :program :running)))
+               (program/instructions (-> @state :program)))
 
   )

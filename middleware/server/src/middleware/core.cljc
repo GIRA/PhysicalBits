@@ -17,7 +17,7 @@
 
 (comment
   
-  (def program (-> @dc/state :program :running))
+  (def program (-> @dc/state :program))
 
   (def ast (-> program meta :original-ast))
   (->> (ast/all-children ast)
@@ -147,7 +147,7 @@
 
 (defn set-breakpoints! [breakpoints]
   (go-try
-   (let [loc->pc (program/loc->pc (-> @dc/state :program :running))]
+   (let [loc->pc (program/loc->pc (@dc/state :program))]
      ; TODO(Richo): If loc->pc returns nil try the next loc?
      (debugger/set-user-breakpoints! (keep loc->pc breakpoints)))))
 
@@ -186,7 +186,7 @@
                                  :reporting (contains? (-> state :reporting :globals)
                                                        global-name)})
                               (filter :name
-                                      (-> state :program :running :globals)))
+                                      (-> state :program :globals)))
              :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
                                                         (:name global)))
                                 (-> state :globals :data vals))}})
@@ -200,7 +200,7 @@
 (defn- get-debugger-data [state]
   {:debugger (let [{:keys [index pc fp stack] :as vm-state} (-> state :debugger :vm)
                    breakpoints (-> state :debugger :breakpoints :user)
-                   program (-> state :program :running)
+                   program (state :program)
                    stack-frames (debugger/stack-frames program vm-state)
                    sources (vec (distinct (map :source stack-frames)))]
                {
