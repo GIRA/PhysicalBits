@@ -907,6 +907,7 @@ let IDE = (function () {
 
 	function autorun() {
     if (Uzi.state == undefined) return Promise.resolve();
+    if (Uzi.state.debugger.isHalted) return Promise.resolve();
 		if (autorunNextTime === undefined) return Promise.resolve();
 
 		let currentTime = +new Date();
