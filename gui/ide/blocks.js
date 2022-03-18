@@ -3115,8 +3115,8 @@ let UziBlock = (function () {
   }
 
   function cleanUp() {
-    workspace.cleanUp();
-    workspace.scrollCenter();
+    workspace.cleanUp();    
+    //workspace.scrollCenter();
   }
 
   function toXML() {
