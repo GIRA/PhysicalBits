@@ -2582,16 +2582,22 @@ let UziBlock = (function () {
               enabled: blockSpec.supportsBreakpoints,
               text: i18n.translate('Toggle Breakpoint'),
               callback: function(e) {
-                let block = Blockly.ContextMenu.currentBlock;
-                // TODO(Richo): Trigger an event on block??
-                let loc = Uzi.state.program["block->token"][block.id][2];
-                if (loc) {
-                  Debugger.toggleBreakpoint(loc);
-                  if (Debugger.getBreakpoints().has(loc)) {
-                    setBreakpointOnBlock(block, loc);
-                  } else {
-                    clearBreakpointOnBlock(block);
+                try {
+                  let block = Blockly.ContextMenu.currentBlock;
+                  let token = Uzi.state.program["block->token"][block.id];
+                  if (token) {
+                    let loc = token[2];
+                    if (loc) {
+                      Debugger.toggleBreakpoint(loc);
+                      if (Debugger.getBreakpoints().has(loc)) {
+                        setBreakpointOnBlock(block, loc);
+                      } else {
+                        clearBreakpointOnBlock(block);
+                      }
+                    }
                   }
+                } catch (err) {
+                  console.error(err);
                 }
               },
           };
