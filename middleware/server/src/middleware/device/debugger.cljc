@@ -26,8 +26,14 @@
   (let [breakpoints (-> @state :debugger :breakpoints :user)]
     (action)
     (swap! state assoc-in [:debugger :breakpoints :user] breakpoints)
-    (send-breakpoints! breakpoints)
-    (send! (p/continue))))
+    (send-breakpoints! breakpoints)))
+
+(defn run-program! [program]
+  (if (= program (-> @state :program))
+    (preserve-breakpoints! #(dc/run program))
+    (dc/run program))
+  (send! (p/continue))
+  (a/put! update-chan :debugger))
 
 (defn set-user-breakpoints! [pcs]
   (swap! state assoc-in [:debugger :breakpoints :user] (set pcs))

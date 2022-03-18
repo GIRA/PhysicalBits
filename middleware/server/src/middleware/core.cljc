@@ -97,7 +97,7 @@
 (defn compile-and-run! [src type silent? & args]
   (go-try
    (let [program (<? (apply compile! src type silent? args))]
-     (debugger/preserve-breakpoints! #(dc/run program))
+     (debugger/run-program! program)
      program)))
 
 (defn run! [program]
