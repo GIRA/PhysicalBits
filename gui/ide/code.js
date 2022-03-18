@@ -118,7 +118,10 @@ let UziCode = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
-      if (!state.debugger.isHalted) {
+      if (state.debugger.isHalted) {
+        editor.setReadOnly(true);
+      } else {
+        editor.setReadOnly(false);
         let src = state.program.src;
         if (editor.getValue() !== src) {
           editor.setValue(src, 1);
