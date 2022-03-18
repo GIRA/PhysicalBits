@@ -133,8 +133,8 @@
 
 
 (defn reset-debugger! []
-  (let [[old] (swap-vals! state assoc :debugger (-> initial-state :debugger))]
-    (if (-> old :debugger :vm)
+  (let [[old new] (swap-vals! state assoc :debugger (-> initial-state :debugger))]
+    (if (not= old new)
       (a/put! update-chan :debugger))))
 
 (defn run [program]
