@@ -82,6 +82,7 @@
          (catch #?(:clj Throwable :cljs :default) e
            (log-error "ERROR WHILE DISCONNECTING ->" e)))
        (port-scanner/start!)
+       (reset! state initial-state)
        (a/onto-chan! update-chan [:connection :debugger] false)))))
 
 (defn send! [bytes]
