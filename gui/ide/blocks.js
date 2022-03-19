@@ -3184,7 +3184,6 @@ let UziBlock = (function () {
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
       let breakpoints = new Set(state.debugger.breakpoints);
-      
       workspace.getAllBlocks().forEach(block => {
         // NOTE(Richo): If the loc for this block has a breakpoint set then
         // add the warning text to the block, otherwise remove it.
@@ -3200,7 +3199,7 @@ let UziBlock = (function () {
             clearBreakpointOnBlock(block);
           }
         } else {
-          block.setWarningText(null);
+          clearBreakpointOnBlock(block);
         }
       });
       
