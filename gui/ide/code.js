@@ -45,6 +45,7 @@ let UziCode = (function () {
       I remove it (I don't remember why, though, probably simplicity)
       */
 
+      console.log("MOVING BREAKPOINTS!");
       let breakpoints = new Set();
       editor.session.clearBreakpoints();
       Debugger.getBreakpoints().forEach(bp => {
@@ -54,7 +55,6 @@ let UziCode = (function () {
         breakpoints.add(line);
         editor.session.setBreakpoint(line, "breakpoint");
       });
-      Debugger.setBreakpoints(breakpoints);
     });
 
 		$(".ace_gutter").on("click", function (e) {

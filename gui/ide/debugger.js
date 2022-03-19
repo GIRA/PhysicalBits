@@ -182,10 +182,6 @@ let Debugger = (function () {
     $("#debugger-raw-stack-table").append($body);
   }
 
-  function setBreakpoints(bpts) {
-    breakpoints = Uzi.state.connection.isConnected ? bpts : new Set();
-  }
-
   function toggleBreakpoint(line) {
     if (Uzi.state.connection.isConnected 
         && !breakpoints.has(line)) {
@@ -220,7 +216,6 @@ let Debugger = (function () {
 
     getSelectedStackFrameIndex: () => selectedStackFrame,
     getBreakpoints: () => breakpoints,
-    setBreakpoints: setBreakpoints,
     toggleBreakpoint: toggleBreakpoint,
     getValidLineForBreakpoint: getValidLineForBreakpoint,
   }
