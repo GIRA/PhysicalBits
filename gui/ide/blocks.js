@@ -3190,6 +3190,8 @@ let UziBlock = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
+      setReadOnly(state.debugger.isHalted);
+      
       let breakpoints = new Set(state.debugger.breakpoints);
       workspace.getAllBlocks().forEach(block => {
         // NOTE(Richo): If the loc for this block has a breakpoint set then
