@@ -3262,7 +3262,7 @@ let UziBlock = (function () {
   }
 
   function setBreakpointOnBlock(block, loc) {
-    let warning = "BREAKPOINT ON LINE: " + (loc + 1);
+    let warning = i18n.translate("BREAKPOINT ON LINE: ") + (loc + 1);
     if (block.warning != warning) {
       block.setWarningText(warning);
     }
