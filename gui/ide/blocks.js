@@ -3339,6 +3339,7 @@ let UziBlock = (function () {
     getWorkspace: function () { return workspace; },
     getMotors: function () { return motors; },
     setMotors: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (motors[m.index] == undefined) return;
@@ -3361,6 +3362,7 @@ let UziBlock = (function () {
     },
     getSonars: function () { return sonars; },
     setSonars: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (sonars[m.index] == undefined) return;
@@ -3383,6 +3385,7 @@ let UziBlock = (function () {
     },
     getJoysticks: function () { return joysticks; },
     setJoysticks: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (joysticks[m.index] == undefined) return;
@@ -3405,6 +3408,7 @@ let UziBlock = (function () {
     },
     getVariables: function () { return variables; },
     setVariables: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (variables[m.index] == undefined) return;
@@ -3426,6 +3430,7 @@ let UziBlock = (function () {
     },
     getLists: function () { return lists; },
     setLists: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (lists[m.index] == undefined) return;
