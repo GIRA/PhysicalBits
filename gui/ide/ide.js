@@ -39,7 +39,7 @@ let IDE = (function () {
   };
 
   function initializeLayout() {
-    return LayoutManager.init(function () {
+    return LayoutManager.init(() => {
       resizePanels();
       saveToLocalStorage();
       checkBrokenLayout();
@@ -53,13 +53,13 @@ let IDE = (function () {
 
   function initializeBlocksPanel() {
     return UziBlock.init()
-      .then(function () {
+      .then(() => {
         let lastProgram = undefined;
 
-        UziBlock.on("select", (block) => {
+        UziBlock.on("select", block => {
           UziCode.select(Uzi.state.program["block->token"][block]); 
         });
-        UziBlock.on("change", function (userInteraction) {
+        UziBlock.on("change", userInteraction => {
           saveToLocalStorage();
 
           /*
@@ -92,7 +92,7 @@ let IDE = (function () {
           */
           setTimeout(UziBlock.handleDebuggerUpdate(state, stackFrameIndex), 0);
         });
-        Uzi.on("update", function (state, previousState, keys) {          
+        Uzi.on("update", (state, previousState, keys) => {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
           let blocklyProgram = ASTToBlocks.generate(state.program.ast);
@@ -157,7 +157,7 @@ let IDE = (function () {
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", () => {
       let motors = UziBlock.getMotors();
       let usedMotors = getUsedMotors();
       let spec = {
@@ -194,7 +194,7 @@ let IDE = (function () {
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureSonars", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureSonars", () => {
       let sonars = UziBlock.getSonars();
       let usedSonars = getUsedSonars();
       let spec = {
@@ -231,7 +231,7 @@ let IDE = (function () {
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureJoysticks", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureJoysticks", () => {
       let joysticks = UziBlock.getJoysticks();
       let usedJoysticks = getUsedJoysticks();
       let spec = {
@@ -259,7 +259,7 @@ let IDE = (function () {
   }
 
   function initializeBlocklyVariablesModal() {
-    UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureVariables", () => {
       let variables = UziBlock.getVariables();
       let usedVariables = UziBlock.getUsedVariables();
       let spec = {
@@ -296,7 +296,7 @@ let IDE = (function () {
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureLists", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureLists", () => {
       let lists = UziBlock.getLists();
       let usedLists = getUsedLists();
       let spec = {
@@ -327,7 +327,7 @@ let IDE = (function () {
     UziCode.on("cursor", idx => {
       UziBlock.selectByIndex(idx);
     })
-    UziCode.on("change", function (focus) {
+    UziCode.on("change", focus => {
       saveToLocalStorage();
       
       if (focus) {
@@ -339,12 +339,12 @@ let IDE = (function () {
   }
 
   function initializeOutputPanel() {
-    Uzi.on("update", function () {
+    Uzi.on("update", () => {
       Uzi.state.output.forEach(appendToOutput);
       Uzi.state.output = [];
     });
 
-    i18n.on("change", function () {
+    i18n.on("change", () => {
       $("#output-console").html("");
       let temp = outputHistory;
       outputHistory = [];
@@ -373,17 +373,17 @@ let IDE = (function () {
   }
 
   function initializeBrokenLayoutErrorModal() {
-    $("#fix-broken-layout-button").on("click", function () {
+    $("#fix-broken-layout-button").on("click", () => {
       LayoutManager.reset();
       $("#broken-layout-modal").modal("hide");
     });
   }
 
   function initializeServerNotFoundErrorModal() {
-    Uzi.on("server-disconnect", function () {
+    Uzi.on("server-disconnect", () => {
       $("#server-not-found-modal").modal('show');
     });
-    setInterval(function () {
+    setInterval(() => {
       if (Uzi.serverAvailable) {
         $("#server-not-found-modal").modal('hide');
       }
@@ -440,7 +440,7 @@ let IDE = (function () {
     let type = entry.type || "info";
     let args = entry.args || [];
     let regex = /%(\d+)/g;
-    let text = i18n.translate(entry.text).replace(regex, function (m, i) {
+    let text = i18n.translate(entry.text).replace(regex, (m, i) => {
       let arg = args[parseInt(i) - 1];
       return arg || m;
     });
@@ -684,7 +684,7 @@ let IDE = (function () {
       dialog.showOpenDialog({
         filters: [{name: "Physical Bits project", extensions: ["phb"]}],
         properties: ["openFile"]
-      }).then(function (response) {
+      }).then(response => {
         if (!response.canceled) {
           let path = response.filePaths[0];
           fs.promises.readFile(path, "utf8")
@@ -723,7 +723,7 @@ let IDE = (function () {
       defaultPath: $("#file-name").text() || "program.phb",
       filters: [{name: "Physical Bits project", extensions: ["phb"]}],
       properties: ["openFile"]
-    }).then(function (response) {
+    }).then(response => {
       if (!response.canceled) {
         let path = response.filePath;
         $("#file-name").text(path);
@@ -793,7 +793,7 @@ let IDE = (function () {
           attemptConnection(availablePorts);
         }
       } else {
-        Uzi.connect(selectedPort).finally(function () {
+        Uzi.connect(selectedPort).finally(() => {
           connecting = false;
           updateTopBar();
         });
@@ -1068,7 +1068,7 @@ let IDE = (function () {
     }
 
     let reporting = new Set();
-    values.available.forEach(function (val) {
+    values.available.forEach(val => {
       if (val.reporting) { reporting.add(val.name); }
     });
 
@@ -1089,7 +1089,7 @@ let IDE = (function () {
 
     function initializePanel() {
       $container.html("");
-      values.available.forEach(function (val) {
+      values.available.forEach(val => {
         if (val.reporting) {
           let $row = $("<tr>")
             .append($("<td>")
@@ -1122,7 +1122,7 @@ let IDE = (function () {
       initializePanel();
     }
 
-    values.elements.forEach(function (val) {
+    values.elements.forEach(val => {
       let $eye = getEye(val);
       $eye.css("color", Plotter.colorFor(val.name) || "white");
 
@@ -1160,7 +1160,7 @@ let IDE = (function () {
       }
     });
 
-    values.available.forEach(function (val) {
+    values.available.forEach(val => {
       if (!reporting.has(val.name)) {
         let $item = getElement(val);
         if ($item != undefined) { $item.parent().remove(); }
