@@ -102,7 +102,7 @@
 
 (defn run! [program]
   (go-try 
-   (debugger/preserve-breakpoints! #(dc/run program))))
+   (debugger/run-program! #(dc/run program))))
 
 (defn compile-and-install! [src type & args]
   (go-try
