@@ -5,6 +5,8 @@ let UziBlock = (function () {
   let timestamps = new Map();
   let userInteraction = false;
   let selectedBlock = null;
+  let readOnly = false;  
+  let readOnlyProgram = null;
   let motors = [];
   let sonars = [];
   let joysticks = [];
@@ -2269,6 +2271,11 @@ let UziBlock = (function () {
           return;
         }
 
+        if (userInteraction && readOnly) {
+          setTimeout(() => fromXMLText(readOnlyProgram), 0);
+          return;
+        }
+
         /*
         NOTE(Richo): Whenever a block is created or deleted we update the timestamps map.
         These timestamps should help us disambiguate when two proc/func blocks with the same
@@ -3201,8 +3208,7 @@ let UziBlock = (function () {
         } else {
           clearBreakpointOnBlock(block);
         }
-      });
-      
+      });      
 
       workspace.highlightBlock(null);
       let blocks = [];
@@ -3285,6 +3291,11 @@ let UziBlock = (function () {
     if (block == null) return;
 
     block.select();
+  }
+
+  function setReadOnly(value) {
+    readOnlyProgram = value ? toXMLText() : null;
+    readOnly = value;
   }
 
   return {
@@ -3449,5 +3460,6 @@ let UziBlock = (function () {
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,
     selectByIndex: selectByIndex,
+    setReadOnly: setReadOnly,
   }
 })();
