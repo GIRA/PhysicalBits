@@ -83,6 +83,15 @@ var TRANSLATIONS = [
   ["This list is being used by the program!", null, "¡Esta lista está siendo usada en el programa!", null, null],
   ["Configure joysticks", null, "Configurar joysticks", null, null],
   ["Configure lists", null, "Configurar listas", null, null],
+  
+  ["Pause", null, "Pausar", null, null],
+  ["Continue", null, "Continuar", null, null],
+  ["Over", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Into", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Out", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Next", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Call stack", null, "Pila de llamadas", null, null],
+  ["Locals", null, "Variables locales", null, null],
 
   ["Welcome to the online DEMO of the Physical Bits environment!", null, "¡Bienvenido a la DEMO online de Physical Bits!", null, null],
   ["This DEMO is intended to showcase the editor and its capabilities. Therefore, its functionality is limited and it doesn't currently support connecting to a device in order to interactively program it.", null, "El objetivo de esta DEMO es exhibir el editor y sus capacidades. Por lo tanto, su funcionalidad es limitada y actualmente no soporta la conexión con un dispositivo para poder programarlo de forma interactiva.", null, null],
