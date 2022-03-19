@@ -9,6 +9,9 @@
             [middleware.compilation.checker :as checker]
             [middleware.compilation.dead-code-remover :as dcr]))
 
+; TODO(Richo): The following results are most likely outdated because I had to revert 
+; the change that moved the AST check to the end. Now it's probable that the checker
+; is again the bottleneck...
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker
 ; seems to be taking half the time of the entire process. I still haven't figured
@@ -520,15 +523,16 @@
     (dcr/remove-dead-code ast)
     ast))
 
-(defn check [ast src]
+(defn check [ast]
   ; TODO(Richo): Use the src to improve the error messages
   (let [errors (checker/check-tree ast)]
-    (when-not (empty? errors)
+    (if-not (empty? errors)
       (throw (ex-info (str (count errors)
                            " error" (if (= 1 (count errors)) "" "s")
                            " found!")
-                      {:src src
-                       :errors errors})))))
+                      {:src (-> ast meta :token :source)
+                       :errors errors}))
+      ast)))
 
 (defn resolve-imports [ast lib-dir]
   (linker/resolve-imports ast lib-dir))
@@ -540,13 +544,12 @@
                         remove-dead-code? true}}]
   (let [ast (-> original-ast
                 (resolve-imports lib-dir)
+                (check) ; NOTE(Richo): We need to do the check *after* resolving the imports and *before*
+                        ; removing the dead-code. Otherwise, we could write invalid programs that would
+                        ; compile just fine because the invalid code gets deleted before the check.
                 (remove-dead-code remove-dead-code?)
                 (augment-ast board))
         src (-> ast meta :token :source)]
-    (check ast src) ; TODO(Richo): This check should be done first as well, otherwise we
-                    ; could write invalid programs that compile just fine because the invalid
-                    ; code gets deleted before the check. This is a problem when considering
-                    ; the code->block generation (we won't be able to build the blocks correctly)
     (vary-meta (compile ast (create-context))
                assoc
                :source src
