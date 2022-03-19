@@ -47,8 +47,7 @@ let UziCode = (function () {
       a list of lines where it was valid to set a breakpoint, but now I think
       I remove it (I don't remember why, though, probably simplicity)
       */
-
-      console.log("MOVING BREAKPOINTS!");
+     
       let breakpoints = new Set();
       editor.session.clearBreakpoints();
       Debugger.getBreakpoints().forEach(bp => {
