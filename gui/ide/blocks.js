@@ -3155,6 +3155,7 @@ let UziBlock = (function () {
 
   function fromXML(xml) {
     userInteraction = false;
+    ignoreChanges = true;
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
 
