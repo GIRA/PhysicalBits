@@ -80,7 +80,18 @@ let IDE = (function () {
           }
         });
 
-        Debugger.on("change", UziBlock.handleDebuggerUpdate);
+        Debugger.on("change", (state, stackFrameIndex) => {
+          /*
+          HACK(Richo): FUCKING Blockly! I wasted a lot of time debugging this problem in which
+          a debugger update from the server wasn't being applied to the block editor (a breakpoint
+          was removed but the block still had the warning text set). By trial and error I discover
+          that, for some reason, while I'm dragging a block (a different block, completely unrelated
+          with the one misbehaving) the warning texts are not applied. I don't know why setting a
+          timeout to execute the update fixes the issue, though. But it seems it does so I will
+          keep this. Again, fucking Blockly...
+          */
+          setTimeout(UziBlock.handleDebuggerUpdate(state, stackFrameIndex), 0);
+        });
         Uzi.on("update", function (state, previousState, keys) {          
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
