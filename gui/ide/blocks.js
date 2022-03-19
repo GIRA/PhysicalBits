@@ -3,7 +3,8 @@ let UziBlock = (function () {
   let version = 3;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
-  let userInteraction = false;
+  let userInteraction = false; // Flat to indicte that a workspace evt comes from the user
+  let ignoreChanges = false; // Flag to indicate that the next workspace change evt must be ignored
   let selectedBlock = null;
   let readOnly = false;  
   let readOnlyProgram = null;
@@ -2253,6 +2254,11 @@ let UziBlock = (function () {
       });
 
       workspace.addChangeListener(function (evt) {
+        if (ignoreChanges) {
+          ignoreChanges = false;
+          return;
+        }
+
         if (evt.type == Blockly.Events.UI) {
           userInteraction = true;
 
@@ -3250,6 +3256,7 @@ let UziBlock = (function () {
     let block = workspace.getBlockById(id);
     if (block == null) return;
 
+    ignoreChanges = true;
     block.select();      // *block* is the block to scroll into view.
     var mWs = workspace;
     var xy = block.getRelativeToSurfaceXY();	// Scroll the workspace so that the block's top left corner
@@ -3292,6 +3299,7 @@ let UziBlock = (function () {
     let block = findBlockByCodeIndex(idx);
     if (block == null) return;
 
+    ignoreChanges = true;
     block.select();
   }
 
@@ -3447,6 +3455,7 @@ let UziBlock = (function () {
       if (d.version != version) { return false; }
 
       try {
+        userInteraction = false;
         fromXMLText(d.blocks);
         motors = d.motors || [];
         sonars = d.sonars || [];
