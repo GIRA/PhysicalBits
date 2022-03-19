@@ -14,6 +14,9 @@ let UziCode = (function () {
     editor = ace.edit("code-editor");
     editor.setTheme("ace/theme/ambiance");
     editor.getSession().setMode("ace/mode/uzi");
+    editor.setHighlightSelectedWord(false);
+    editor.setShowFoldWidgets(false);
+    editor.setShowPrintMargin(false);
 
     editor.selection.on("changeCursor", handleCursorChange)
     editor.on("focus", function () { 
