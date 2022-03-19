@@ -44,7 +44,7 @@
 ; Clock                                                                                                                                                         2.29s    100%
 ; ___________________________________________________________________________________________________________________________________________________________________________
 
-(defmulti compile-node :__class__)
+(declare compile-node)
 
 (defn ^:private with-node [result node]
   "Updates result's metadata with the node (if not present already)"
@@ -82,7 +82,7 @@
    (vswap! globals conj (emit/variable name value))))
 
 
-(defmethod compile-node "UziProgramNode" [node ctx]
+(defn compile-program [node ctx]
   (doseq [{:keys [name value]} (:globals node)]
     (register-global! ctx name (ast-utils/compile-time-value value 0)))
   (let [scripts (mapv #(compile % ctx)
@@ -110,7 +110,7 @@
         (map (fn [{:keys [temp-name]}] (emit/variable temp-name))
              (ast-utils/filter script-body "UziRepeatNode")))))
 
-(defmethod compile-node "UziTaskNode"
+(defn compile-task
   [{task-name :name, ticking-rate :tickingRate, state :state, body :body}
    ctx]
   (let [delay (rate->delay ticking-rate)]
@@ -131,10 +131,10 @@
       (conj instructions (with-node (emit/prim-call "pop") node))
       instructions)))
 
-(defmethod compile-node "UziBlockNode" [{:keys [statements]} ctx]
+(defn compile-block [{:keys [statements]} ctx]
   (vec (mapcat #(compile-stmt % ctx) statements)))
 
-(defmethod compile-node "UziAssignmentNode" [{:keys [left right]} {:keys [path] :as ctx}]
+(defn compile-assignment [{:keys [left right]} {:keys [path] :as ctx}]
   (let [global? (ast-utils/global? left path)
         variable (ast-utils/variable-named (:name left) path)
         var-name (if global?
@@ -145,7 +145,7 @@
             (emit/write-global var-name)
             (emit/write-local var-name)))))
 
-(defmethod compile-node "UziCallNode"
+(defn compile-call
   [{:keys [selector arguments primitive-name] :as node} ctx]
   (let [script (ast-utils/script-named selector (:path ctx))
         positional-args? (or primitive-name
@@ -166,11 +166,11 @@
             (emit/prim-call primitive-name)
             (emit/script-call selector)))))
 
-(defmethod compile-node "UziNumberLiteralNode" [{value :value} ctx]
+(defn compile-number-literal [{value :value} ctx]
   (register-constant! ctx value)
   [(emit/push-value value)])
 
-(defmethod compile-node "UziVariableNode" [node {:keys [path]}]
+(defn compile-variable [node {:keys [path]}]
   (let [global? (ast-utils/global? node path)
         variable (ast-utils/variable-named (:name node) path)
         var-name (if global?
@@ -180,7 +180,7 @@
        (emit/read-global var-name)
        (emit/read-local var-name))]))
 
-(defmethod compile-node "UziVariableDeclarationNode"
+(defn compile-variable-declaration
   [{:keys [unique-name value]} ctx]
   (register-constant! ctx (ast-utils/compile-time-value value 0))
   (if (or (nil? value)
@@ -189,11 +189,11 @@
     (conj (compile value ctx)
           (emit/write-local unique-name))))
 
-(defmethod compile-node "UziPinLiteralNode" [{:keys [value]} ctx]
+(defn compile-pin-literal [{:keys [value]} ctx]
   (register-constant! ctx value)
   [(emit/push-value value)])
 
-(defmethod compile-node "UziProcedureNode" [{:keys [name arguments body]} ctx]
+(defn compile-procedure [{:keys [name arguments body]} ctx]
   (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
@@ -203,7 +203,7 @@
    :locals (collect-locals body)
    :instructions (compile body ctx)))
 
-(defmethod compile-node "UziFunctionNode" [{:keys [name arguments body]} ctx]
+(defn compile-function [{:keys [name arguments body]} ctx]
   (register-constant! ctx 0) ; TODO(Richo): Script delay 0
   (emit/script
    :name name,
@@ -213,25 +213,25 @@
    :locals (collect-locals body)
    :instructions (compile body ctx)))
 
-(defmethod compile-node "UziReturnNode" [{:keys [value]} ctx]
+(defn compile-return [{:keys [value]} ctx]
   (if value
     (conj (compile value ctx)
           (emit/prim-call "retv"))
     [(emit/prim-call "ret")]))
 
-(defmethod compile-node "UziScriptStartNode" [{:keys [scripts]} ctx]
+(defn compile-script-start [{:keys [scripts]} ctx]
   (mapv #(emit/start %) scripts))
 
-(defmethod compile-node "UziScriptStopNode" [{:keys [scripts]} ctx]
+(defn compile-script-stop [{:keys [scripts]} ctx]
   (mapv #(emit/stop %) scripts))
 
-(defmethod compile-node "UziScriptPauseNode" [{:keys [scripts]} ctx]
+(defn compile-script-pause [{:keys [scripts]} ctx]
   (mapv #(emit/pause %) scripts))
 
-(defmethod compile-node "UziScriptResumeNode" [{:keys [scripts]} ctx]
+(defn compile-script-resume [{:keys [scripts]} ctx]
   (mapv #(emit/resume %) scripts))
 
-(defmethod compile-node "UziYieldNode" [_ _]
+(defn compile-yield [_ _]
   [(emit/prim-call "yield")])
 
 (defn ^:private compile-if-true-if-false
@@ -262,13 +262,13 @@
                  [(emit/jnz (count compiled-false-branch))]
                  compiled-false-branch))))
 
-(defmethod compile-node "UziConditionalNode" [node ctx]
+(defn compile-conditional [node ctx]
   (cond
     (empty? (-> node :falseBranch :statements)) (compile-if-true node ctx)
     (empty? (-> node :trueBranch :statements)) (compile-if-false node ctx)
     :else (compile-if-true-if-false node ctx)))
 
-(defmethod compile-node "UziForeverNode" [{:keys [body]} ctx]
+(defn compile-forever [{:keys [body]} ctx]
   (let [compiled-body (compile body ctx)]
     (conj compiled-body
           (emit/jmp (* -1 (inc (count compiled-body)))))))
@@ -297,16 +297,6 @@
                                 (emit/jz count-end))]
                              compiled-post
                              [(emit/jmp count-start)])))))))
-
-; TODO(Richo): The following four node types could be merged into one
-(defmethod compile-node "UziWhileNode" [node ctx]
-  (compile-loop node ctx))
-(defmethod compile-node "UziUntilNode" [node ctx]
-  (compile-loop node ctx))
-(defmethod compile-node "UziDoWhileNode" [node ctx]
-  (compile-loop node ctx))
-(defmethod compile-node "UziDoUntilNode" [node ctx]
-  (compile-loop node ctx))
 
 (defn ^:private compile-for-loop-with-constant-step
   [{:keys [counter start stop step body]} ctx]
@@ -393,13 +383,13 @@
                               (count compiled-step)
                               (count compiled-stop))))]))))
 
-(defmethod compile-node "UziForNode" [{:keys [step] :as node} ctx]
+(defn compile-for [{:keys [step] :as node} ctx]
   (register-constant! ctx 0) ; TODO(Richo): This seems to be necessary only if the step is not constant
   (if (ast-utils/compile-time-constant? step)
     (compile-for-loop-with-constant-step node ctx)
     (compile-for-loop node ctx)))
 
-(defmethod compile-node "UziRepeatNode"
+(defn compile-repeat
   [{:keys [body times temp-name]} ctx]
   ; We need to register constants 0 and 1 because repeat-loops use 0 to
   ; initialize "temp" and 1 to increment "times"
@@ -432,7 +422,7 @@
                               (count compiled-body)
                               (count compiled-times))))]))))
 
-(defmethod compile-node "UziLogicalAndNode" [{:keys [left right]} ctx]
+(defn compile-logical-and [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
@@ -449,7 +439,7 @@
                    compiled-right
                    [(emit/prim-call "logicalAnd")])))))
 
-(defmethod compile-node "UziLogicalOrNode" [{:keys [left right]} ctx]
+(defn compile-logical-or [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
         compiled-right (compile right ctx)]
     (if (ast-utils/has-side-effects? right)
@@ -466,8 +456,36 @@
                    compiled-right
                    [(emit/prim-call "logicalOr")])))))
 
-(defmethod compile-node :default [node ctx]
-  (throw (ex-info "Unknown node" {:node node, :ctx ctx})))
+(defn compile-node [node ctx]
+  (case (ast-utils/node-type node)
+    "UziProgramNode" (compile-program node ctx)
+    "UziTaskNode" (compile-task node ctx)
+    "UziBlockNode" (compile-block node ctx)
+    "UziAssignmentNode" (compile-assignment node ctx)
+    "UziCallNode" (compile-call node ctx)
+    "UziNumberLiteralNode" (compile-number-literal node ctx)
+    "UziVariableNode" (compile-variable node ctx)
+    "UziVariableDeclarationNode" (compile-variable-declaration node ctx)
+    "UziPinLiteralNode" (compile-pin-literal node ctx)
+    "UziProcedureNode" (compile-procedure node ctx)
+    "UziFunctionNode" (compile-function node ctx)
+    "UziReturnNode" (compile-return node ctx)
+    "UziScriptStartNode" (compile-script-start node ctx)
+    "UziScriptStopNode" (compile-script-stop node ctx)
+    "UziScriptPauseNode" (compile-script-pause node ctx)
+    "UziScriptResumeNode" (compile-script-resume node ctx)
+    "UziYieldNode" (compile-yield node ctx)
+    "UziConditionalNode" (compile-conditional node ctx)
+    "UziForeverNode" (compile-forever node ctx)
+    "UziWhileNode" (compile-loop node ctx)
+    "UziUntilNode" (compile-loop node ctx)
+    "UziDoWhileNode" (compile-loop node ctx)
+    "UziDoUntilNode" (compile-loop node ctx)
+    "UziForNode" (compile-for node ctx)
+    "UziRepeatNode" (compile-repeat node ctx)
+    "UziLogicalAndNode" (compile-logical-and node ctx)
+    "UziLogicalOrNode" (compile-logical-or node ctx)
+    (throw (ex-info "Unknown node" {:node node, :ctx ctx}))))
 
 (defn ^:private create-context []
   {:path (list)
@@ -523,9 +541,9 @@
     (dcr/remove-dead-code ast)
     ast))
 
-(defn check [ast]
+(defn check [ast check-external-code?]
   ; TODO(Richo): Use the src to improve the error messages
-  (let [errors (checker/check-tree ast)]
+  (let [errors (checker/check-tree ast check-external-code?)]
     (if-not (empty? errors)
       (throw (ex-info (str (count errors)
                            " error" (if (= 1 (count errors)) "" "s")
@@ -538,15 +556,17 @@
   (linker/resolve-imports ast lib-dir))
 
 (defn compile-tree
-  [original-ast & {:keys [board lib-dir remove-dead-code?]
+  [original-ast & {:keys [board lib-dir remove-dead-code? check-external-code?]
                    :or {board boards/UNO,
                         lib-dir "../../uzi/libraries",
-                        remove-dead-code? true}}]
+                        remove-dead-code? true
+                        check-external-code? false}}]
   (let [ast (-> original-ast
                 (resolve-imports lib-dir)
-                (check) ; NOTE(Richo): We need to do the check *after* resolving the imports and *before*
-                        ; removing the dead-code. Otherwise, we could write invalid programs that would
-                        ; compile just fine because the invalid code gets deleted before the check.
+                (check check-external-code?) ; NOTE(Richo): We need to do the check *after* resolving the imports 
+                                             ; and *before* removing the dead-code. Otherwise, we could write invalid 
+                                             ; programs that would compile just fine because the invalid code gets 
+                                             ; deleted before the check.
                 (remove-dead-code remove-dead-code?)
                 (augment-ast board))
         src (-> ast meta :token :source)]

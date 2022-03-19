@@ -10,13 +10,13 @@
 ; TODO(Richo): Improve error descriptions so that they can be translated, maybe
 ; just storing the description as a format-string with the argument data?
 (defn ^:private register-error! [description node errors]
-  (swap! errors conj {:node node
-                      :src (if-let [token (get (meta node) :token)]
-                             (t/input-value token))
-                      :description description}))
+  (vswap! errors conj {:node node
+                       :src (if-let [token (get (meta node) :token)]
+                              (t/input-value token))
+                       :description description}))
 
 (defn ^:private assert [bool description node errors]
-  (when (not bool)
+  (when-not bool
     (register-error! description node errors))
   bool)
 
@@ -77,9 +77,7 @@
               msg each errors)
       (vswap! set conj (key-fn each)))))
 
-(defmulti check-node (fn [node errors path] (:__class__ node)))
-
-(defmethod check-node "UziProgramNode" [node errors path]
+(defn check-program [node errors path]
   (doseq [import (:imports node)]
     (assert-import import errors))
   (assert-no-duplicates (:imports node)
@@ -116,16 +114,7 @@
             ticking-rate errors))
   (assert-block (:body node) errors))
 
-(defmethod check-node "UziTaskNode" [node errors path]
-  (check-script node errors path))
-
-(defmethod check-node "UziProcedureNode" [node errors path]
-  (check-script node errors path))
-
-(defmethod check-node "UziFunctionNode" [node errors path]
-  (check-script node errors path))
-
-(defmethod check-node "UziTickingRateNode" [{:keys [^long value] :as node} errors path]
+(defn check-ticking-rate [{:keys [^long value] :as node} errors path]
   (assert (> value 0)
           "Ticking rate must be a positive value"
           node errors))
@@ -166,25 +155,25 @@
               "Explicit argument names expected"
               node errors))))
 
-(defmethod check-node "UziCallNode" [node errors path]
+(defn check-call [node errors path]
   (doseq [arg (map :value (:arguments node))]
     (assert-expression arg errors))
   (if (get node :primitive-name)
     (check-primitive-call node errors path)
     (check-script-call node errors path)))
 
-(defmethod check-node "UziBlockNode" [node errors path]
+(defn check-block [node errors path]
   (doseq [stmt (:statements node)]
     (assert-statement stmt errors)))
 
 
-(defmethod check-node "UziNumberLiteralNode" [node errors path]
+(defn check-number-literal [node errors path]
   (assert (number? (:value node))
           "Number expected"
           node
           errors))
 
-(defmethod check-node "UziPinLiteralNode" [node errors path]
+(defn check-pin-literal [node errors path]
   (assert (contains? #{"D" "A"} (:type node))
           "Invalid pin type"
           node
@@ -194,12 +183,12 @@
           node
           errors))
 
-(defmethod check-node "UziConditionalNode" [node errors path]
+(defn check-conditional [node errors path]
   (assert-expression (:condition node) errors)
   (assert-block (:trueBranch node) errors)
   (assert-block (:falseBranch node) errors))
 
-(defmethod check-node "UziVariableDeclarationNode" [node errors path]
+(defn check-variable-declaration [node errors path]
   (when-let [script (seek ast-utils/script? path)]
     (let [local-names (set (map :name (ast-utils/locals-in-scope path)))]
       (assert (not (contains? local-names (:name node)))
@@ -208,26 +197,26 @@
   (when-let [value (:value node)]
     (assert-expression value errors)))
 
-(defmethod check-node "UziVariableNode" [node errors path]
+(defn check-variable [node errors path]
   (assert (ast-utils/variable-named (:name node) path)
           "Undefined variable found"
           node errors))
 
-(defmethod check-node "UziRepeatNode" [node errors path]
+(defn check-repeat [node errors path]
   (assert-expression (:times node) errors)
   (assert-block (:body node) errors))
 
-(defmethod check-node "UziForeverNode" [node errors path]
+(defn check-forever [node errors path]
   (assert-block (:body node) errors))
 
-(defmethod check-node "UziForNode" [node errors path]
+(defn check-for [node errors path]
   (assert-variable-declaration (:counter node) errors)
   (assert-expression (:start node) errors)
   (assert-expression (:step node) errors)
   (assert-expression (:stop node) errors)
   (assert-block (:body node) errors))
 
-(defmethod check-node "UziImportNode" [node errors path]
+(defn check-import [node errors path]
   (when-let [init-block (:initializationBlock node)]
     (assert-block init-block errors)
     (doseq [stmt (:statements init-block)]
@@ -235,7 +224,7 @@
       (when (ast-utils/assignment? stmt)
         (assert-literal (:right stmt) errors)))))
 
-(defmethod check-node "UziPrimitiveDeclarationNode" [node errors path]
+(defn check-primitive-declaration [node errors path]
   (assert (string? (:alias node))
           "Invalid alias"
           node errors)
@@ -246,7 +235,7 @@
           "Primitive not found"
           node errors))
 
-(defmethod check-node "UziReturnNode" [node errors path]
+(defn check-return [node errors path]
   (when-let [value (:value node)]
     (assert-expression value errors)))
 
@@ -255,29 +244,11 @@
   (assert-expression (:condition node) errors)
   (assert-block (:post node) errors))
 
-(defmethod check-node "UziWhileNode" [node errors path]
-  (check-conditional-loop node errors path))
-
-(defmethod check-node "UziDoWhileNode" [node errors path]
-  (check-conditional-loop node errors path))
-
-(defmethod check-node "UziUntilNode" [node errors path]
-  (check-conditional-loop node errors path))
-
-(defmethod check-node "UziDoUntilNode" [node errors path]
-  (check-conditional-loop node errors path))
-
 (defn ^:private check-logical-operator [node errors path]
   (assert-expression (:left node) errors)
   (assert-expression (:right node) errors))
 
-(defmethod check-node "UziLogicalAndNode" [node errors path]
-  (check-logical-operator node errors path))
-
-(defmethod check-node "UziLogicalOrNode" [node errors path]
-  (check-logical-operator node errors path))
-
-(defmethod check-node "UziAssignmentNode" [node errors path]
+(defn check-assignment [node errors path]
   (assert-variable (:left node) errors)
   (assert-expression (:right node) errors))
 
@@ -291,28 +262,63 @@
               "Task reference expected"
               node errors))))
 
-(defmethod check-node "UziScriptStartNode" [node errors path]
-  (check-script-control node errors path))
+(defn check-node [node errors path]
+  (case (ast-utils/node-type node)
+    "UziProgramNode" (check-program node errors path)
+    "UziTaskNode" (check-script node errors path)
+    "UziProcedureNode" (check-script node errors path)
+    "UziFunctionNode" (check-script node errors path)
+    "UziTickingRateNode" (check-ticking-rate node errors path)
+    "UziCallNode" (check-call node errors path)
+    "UziBlockNode" (check-block node errors path)
+    "UziNumberLiteralNode" (check-number-literal node errors path)
+    "UziPinLiteralNode" (check-pin-literal node errors path)
+    "UziConditionalNode" (check-conditional node errors path)
+    "UziVariableDeclarationNode" (check-variable-declaration node errors path)
+    "UziVariableNode" (check-variable node errors path)
+    "UziRepeatNode" (check-repeat node errors path)
+    "UziForeverNode" (check-forever node errors path)
+    "UziForNode" (check-for node errors path)
+    "UziImportNode" (check-import node errors path)
+    "UziPrimitiveDeclarationNode" (check-primitive-declaration node errors path)
+    "UziReturnNode" (check-return node errors path)
+    "UziWhileNode" (check-conditional-loop node errors path)
+    "UziDoWhileNode" (check-conditional-loop node errors path)
+    "UziUntilNode" (check-conditional-loop node errors path)
+    "UziDoUntilNode" (check-conditional-loop node errors path)
+    "UziLogicalAndNode" (check-logical-operator node errors path)
+    "UziLogicalOrNode" (check-logical-operator node errors path)
+    "UziAssignmentNode" (check-assignment node errors path)
+    "UziScriptStartNode" (check-script-control node errors path)
+    "UziScriptStopNode" (check-script-control node errors path)
+    "UziScriptResumeNode" (check-script-control node errors path)
+    "UziScriptPauseNode" (check-script-control node errors path)
+    nil))
 
-(defmethod check-node "UziScriptStopNode" [node errors path]
-  (check-script-control node errors path))
+(defn ^:private external-script? [node ast]
+  (and (ast-utils/script? node)
+       (not (identical? (-> ast meta :token :source)
+                        (-> node meta :token :source)))))
 
-(defmethod check-node "UziScriptResumeNode" [node errors path]
-  (check-script-control node errors path))
+(defn ^:private check [node errors ast path]
+  (when-not (external-script? node ast)
+    (let [new-path (conj path node)]
+      (check-node node errors new-path)
+      (doseq [child-node (ast-utils/children node)]
+        (check child-node errors ast new-path)))))
 
-(defmethod check-node "UziScriptPauseNode" [node errors path]
-  (check-script-control node errors path))
-
-(defmethod check-node :default [_ _ _])
-
-(defn ^:private check [node errors path]
+(defn ^:private check-with-external [node errors ast path]
   (let [new-path (conj path node)]
     (check-node node errors new-path)
     (doseq [child-node (ast-utils/children node)]
-      (check child-node errors new-path))))
+      (check-with-external child-node errors ast new-path))))
 
-(defn check-tree [ast]
-  (let [errors (atom [])
-        path (list)]
-    (check ast errors path)
-    @errors))
+(defn check-tree
+  ([ast] (check-tree ast true))
+  ([ast check-external-code?]
+   (let [errors (volatile! [])
+         path (list)]
+     (if check-external-code?
+       (check-with-external ast errors ast path)
+       (check ast errors ast path))
+     @errors)))
