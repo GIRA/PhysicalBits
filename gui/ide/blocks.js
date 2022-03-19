@@ -2253,6 +2253,7 @@ let UziBlock = (function () {
         refreshToolbox();
       });
 
+      let readOnlyRestoredScheduled = false; // Flag to avoid scheduling a program restore multiple times
       workspace.addChangeListener(function (evt) {
         if (ignoreChanges) {
           ignoreChanges = false;
@@ -2278,7 +2279,13 @@ let UziBlock = (function () {
         }
 
         if (userInteraction && readOnly) {
-          setTimeout(() => fromXMLText(readOnlyProgram), 0);
+          if (!readOnlyRestoredScheduled) {
+            readOnlyRestoredScheduled = true;
+            setTimeout(() => {
+              fromXMLText(readOnlyProgram);
+              readOnlyRestoredScheduled = false;
+            }, 100);
+          }
           return;
         }
 
