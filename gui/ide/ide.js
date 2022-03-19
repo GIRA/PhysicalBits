@@ -67,7 +67,7 @@ let IDE = (function () {
           the user. This prevents a double compilation when changing the program
           from the code editor.
           */
-          if (userInteraction) {
+          if (userInteraction && !UziCode.isFocused()) {
             let currentProgram = getBlocklyCode();
             if (currentProgram !== lastProgram) {
               lastProgram = currentProgram;

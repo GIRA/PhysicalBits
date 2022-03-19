@@ -220,5 +220,6 @@ let UziCode = (function () {
     select: select,
 
     getEditor: () => editor,
+    isFocused: () => focus,
   }
 })();
