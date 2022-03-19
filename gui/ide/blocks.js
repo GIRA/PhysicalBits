@@ -3191,7 +3191,7 @@ let UziBlock = (function () {
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
       setReadOnly(state.debugger.isHalted);
-      
+
       let breakpoints = new Set(state.debugger.breakpoints);
       workspace.getAllBlocks().forEach(block => {
         // NOTE(Richo): If the loc for this block has a breakpoint set then
@@ -3210,7 +3210,7 @@ let UziBlock = (function () {
         } else {
           clearBreakpointOnBlock(block);
         }
-      });      
+      });
 
       workspace.highlightBlock(null);
       let blocks = [];
@@ -3296,6 +3296,7 @@ let UziBlock = (function () {
   }
 
   function setReadOnly(value) {
+    if (readOnly == value) return;
     readOnlyProgram = value ? toXMLText() : null;
     readOnly = value;
   }
