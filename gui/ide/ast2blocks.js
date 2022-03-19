@@ -328,11 +328,14 @@ let ASTToBlocks = (function () {
 		UziReturnNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
+			// If this node is not the last statement we need to generate the secret version of 
+			// the block, which allows bottom connections
+			let last_stmt = ctx.isLastStatementInBlock(json);
 			if (json.value) {
-				node.setAttribute("type", "return_value");
+				node.setAttribute("type", (last_stmt ? "" : "secret_") + "return_value");
 				appendValue(node, "value", json.value, ctx);
 			} else {
-				node.setAttribute("type", "return");
+				node.setAttribute("type", (last_stmt ? "" : "secret_") + "return");
 			}
 			return node;
 		}
@@ -1118,6 +1121,14 @@ let ASTToBlocks = (function () {
 					let index = ctx.path.indexOf(json);
 					if (index < 1 || index >= ctx.path.length) return false;
 					return ctx.path[index - 1].__class__ == "UziBlockNode";
+				},
+				isLastStatementInBlock: function (json) {
+					let index = ctx.path.indexOf(json);
+					if (index < 1 || index >= ctx.path.length) return false;
+					let block = ctx.path[index - 1];
+					if (block.__class__ != "UziBlockNode") return false;
+					let stmts = block.statements;
+					return stmts.indexOf(json) == stmts.length - 1;
 				},
 				isButtonCall: function (alias, selector) {
 					return ctx.path[0].imports.some(imp => imp.path == "Buttons.uzi" && imp.alias == alias);

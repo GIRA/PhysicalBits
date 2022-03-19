@@ -97,8 +97,28 @@ let UziBlock = (function () {
       color: colors.CONTROL,
       supportsBreakpoints: true,
     },
-    // TODO(Richo): Make special version of the return blocks that accept bottom connections,
-    // otherwise code with statements after a return won't be translatable to blocks...
+    secret_return: { // NOTE(Richo): Special version of return that accepts bottom connections
+      text: "exit ;",
+      type: null,
+      inputs: {},
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    secret_return_value: { // NOTE(Richo): Special version of return_value that accepts bottom connections
+      text: "return %value ;",
+      type: null,
+      inputs: {
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
+    },
 
     // Imports
     import: {

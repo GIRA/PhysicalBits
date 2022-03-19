@@ -1026,7 +1026,15 @@ let BlocksToAST = (function () {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, null));
 		},
+		secret_return: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, null));
+		},
 		return_value: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, generateCodeForValue(block, ctx, "value")));
+		},
+		secret_return_value: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, generateCodeForValue(block, ctx, "value")));
 		},
