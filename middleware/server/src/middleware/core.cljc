@@ -203,14 +203,7 @@
                    program (state :program)
                    stack-frames (debugger/stack-frames program vm-state)
                    sources (vec (distinct (map :source stack-frames)))]
-               {
-                ; TODO(Richo): Added just for debugging
-                :_breakpoints {:usr (-> @dc/state :debugger :breakpoints :user sort)
-                               :sys (-> @dc/state :debugger :breakpoints :system sort)
-                               :step-over (debugger/estimate-breakpoints debugger/step-over)
-                               :step-into (debugger/estimate-breakpoints debugger/step-into)
-                               :step-out (debugger/estimate-breakpoints debugger/step-out)}
-                :index index
+               {:index index
                 :pc pc
                 :isHalted (some? pc)
                 :breakpoints (let [pc->loc (program/pc->loc program)]
