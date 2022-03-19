@@ -2,6 +2,77 @@
   (:require [criterium.core :refer [bench with-progress-reporting]]))
 
 (comment
+  
+  (def path (apply list (range 30)))
+  (def path (apply vector (range 30)))
+
+  (with-progress-reporting (bench (first path)))
+  
+  )
+
+(comment
+  
+  (require '[middleware.core :refer [compile-uzi-string]])
+
+  (with-progress-reporting
+    (bench (compile-uzi-string src :check-external-code? false)))
+  
+  (with-progress-reporting
+    (bench (not= src src)))
+  
+  (with-progress-reporting
+    (bench (not (identical? src src))))
+
+
+  (def src
+"
+import sonar from 'Sonar.uzi' {
+	trigPin = A5;
+	echoPin = A4;
+	maxDistance = 200;
+	start reading;
+}
+import leftMotor from 'DCMotor.uzi' {
+	enablePin = D5;
+	forwardPin = D7;
+	reversePin = D8;
+}
+import rightMotor from 'DCMotor.uzi' {
+	enablePin = D6;
+	forwardPin = D11;
+	reversePin = D9;
+}
+
+var temp = 0;
+
+task setup() {
+	setServoDegrees(D3, 90);
+}
+
+task keepDistance() running 1000/s {
+	temp = sonar.distance_cm();
+	temp = ((temp - 10) / 10);
+	if (temp > 100) {
+		leftMotor.brake();
+		rightMotor.brake();
+	} else {
+		move(temp);
+	}
+}
+
+proc move(speed) {
+	if (speed > 0) {
+		leftMotor.forward(speed: speed);
+		rightMotor.forward(speed: speed);
+	} else {
+		speed = (speed * -1);
+		leftMotor.backward(speed: speed);
+		rightMotor.backward(speed: speed);
+	}
+}")
+  )
+
+(comment
 
  (def v (vec (range 0 100)))
  (nth (map inc v) 12 nil)
