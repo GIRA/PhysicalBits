@@ -145,10 +145,12 @@
   {:memory (:memory state)})
 
 (defn- get-tasks-data [state]
-  {:tasks (mapv (fn [s] {:scriptName (:name s)
-                         :isRunning (:running? s)
-                         :isError (:error? s)})
-                (filter :task? (-> state :scripts vals)))})
+  {:tasks (->> (-> state :scripts vals)
+               (filter :task?)
+               (remove #(str/includes? (:name %) "."))
+               (mapv (fn [s] {:scriptName (:name s)
+                              :isRunning (:running? s)
+                              :isError (:error? s)})))})
 
 (defn- get-pins-data [state]
   {:pins {:timestamp (-> state :pins :timestamp)
