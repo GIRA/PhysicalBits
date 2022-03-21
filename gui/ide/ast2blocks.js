@@ -1028,10 +1028,11 @@ let ASTToBlocks = (function () {
 		node.setAttribute("id", stmt.id);
 		node.setAttribute("type", type);
 
-		/*
-		TODO(Richo): Get actual code to show in the comment and maybe make it visible
-		in a read-only field. The ast should probably be preserved anyway.
-		*/
+		let src = ctx.getSourceCode(stmt);
+		if (src) {
+			appendField(node, "code", src);
+		}
+
 		let ast = JSONX.stringify(stmt, null, 2);
 		let comment = create("comment");
 		comment.setAttribute("pinned", "false");
@@ -1121,7 +1122,7 @@ let ASTToBlocks = (function () {
 	}
 
 	return {
-		generate: function (json) {
+		generate: function (program) {
 			let ctx = {
 				path: [],
 				variables: [],
@@ -1185,13 +1186,24 @@ let ASTToBlocks = (function () {
 				},
 				isButtonCall: function (alias, selector) {
 					return ctx.path[0].imports.some(imp => imp.path == "Buttons.uzi" && imp.alias == alias);
+				},
+				getSourceCode: function (json) {
+					try {
+						let token = program["block->token"][json.id];
+						if (!token) return null;
+						let result = program.src.substring(token[0], token[1])
+						if (result == "" || result == program.src) return null;
+						return result;
+					} catch {
+						return null;
+					}
 				}
 			};
 
 			// TODO(Richo): Preserve old metadata somehow?
 			return {
         version: UziBlock.version,
-        blocks: Blockly.Xml.domToText(generateXMLFor(json, ctx)),
+        blocks: Blockly.Xml.domToText(generateXMLFor(program.ast, ctx)),
         motors: ctx.motors,
         sonars: ctx.sonars,
         joysticks: ctx.joysticks,

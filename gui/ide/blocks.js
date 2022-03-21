@@ -66,26 +66,56 @@ let UziBlock = (function () {
   const spec = {
     // TODO(Richo)
     here_be_dragons_stmt: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: true, down: true, left: false },
       color: colors.HIDDEN,
       supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
     here_be_dragons_expr: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: false, down: false, left: true },
       color: colors.HIDDEN,
       supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
     here_be_dragons_script: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: false, down: false, left: false },
       color: colors.HIDDEN,
       isTopLevel: true,
       supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
 
     // Secret

@@ -247,15 +247,15 @@ let BlocksToAST = (function () {
 	let dispatchTable =  {
 		// TODO(Richo)
 		here_be_dragons_stmt: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_expr: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_script: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		import: function (block, ctx, stream) {
