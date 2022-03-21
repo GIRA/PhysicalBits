@@ -479,18 +479,36 @@ let ASTToBlocks = (function () {
 		}
 	}
 
+	function findArgByKey(args, key) {
+		let result = args.find(arg => arg.key == key);
+		return result && result.value;
+	}
+
+	function findArgByIndex(args, idx) {
+		let result = args[idx];
+		return result && result.value;
+	}
+
+	function findArg(args, key, idx) {
+		if (args.some(arg => arg.key)) {
+			return findArgByKey(args, key);
+		} else {
+			return findArgByKey(args, key) || findArgByIndex(args, idx);
+		}
+	}
+
 	function initMotorCall(node, alias, selector, json, ctx) {
 		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
-		let args = json.arguments.map(function (each) { return each.value; });
+		let args = json.arguments;
 		if (selector == "forward" || selector == "backward") {
 			node.setAttribute("type", "move_dcmotor");
 			appendField(node, "motorName", alias);
 			appendField(node, "direction", selector == "forward" ? "fwd" : "bwd");
-			appendValue(node, "speed", args[0] || defaultArg, ctx);
+			appendValue(node, "speed", findArg(args, "speed", 0) || defaultArg, ctx);
 		} else if (selector == "setSpeed") {
 			node.setAttribute("type", "change_speed_dcmotor");
 			appendField(node, "motorName", alias);
-			appendValue(node, "speed", args[0] || defaultArg, ctx);
+			appendValue(node, "speed", findArg(args, "speed", 0) || defaultArg, ctx);
 		} else if (selector == "getSpeed") {
 			node.setAttribute("type", "get_speed_dcmotor");
 			appendField(node, "motorName", alias);
@@ -543,24 +561,24 @@ let ASTToBlocks = (function () {
 
 	function initButtonCall(node, alias, selector, json, ctx) {
 		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
-		let args = json.arguments.map(function (each) { return each.value; });
+		let args = json.arguments;
 		if (selector == "isPressed" || selector == "isReleased") {
 			node.setAttribute("type", "button_check_state");
-			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 			appendField(node, "state", selector == "isPressed" ? "press" : "release");
 		} else if (selector == "waitForPress" || selector == "waitForRelease") {
 			node.setAttribute("type", "button_wait_for_action");
-			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendValue(node, "pinNumber", findArg(args, "pin", 0) || defaultArg, ctx);
 			appendField(node, "action", selector == "waitForPress" ? "press" : "release");
 		} else	if (selector == "millisecondsHolding") {
 			node.setAttribute("type", "button_ms_holding");
-			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector == "waitForHold" || selector == "waitForHoldAndRelease") {
 			node.setAttribute("type", "button_wait_for_long_action");
-			appendValue(node, "pinNumber", args[0] || defaultArg, ctx);
+			appendValue(node, "pinNumber", findArg(args, "pin", 0) || defaultArg, ctx);
 			appendField(node, "action", selector == "waitForHold" ? "press" : "release");
 			appendField(node, "unit", "ms");
-			appendValue(node, "time", args[1] || defaultArg, ctx);
+			appendValue(node, "time", findArg(args, "ms", 1) || defaultArg, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -569,20 +587,20 @@ let ASTToBlocks = (function () {
 
 	function initListCall(node, alias, selector, json, ctx) {
 		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
-		let args = json.arguments.map(function (each) { return each.value; });
+		let args = json.arguments;
 		if (selector == "set") {
 			node.setAttribute("type", "list_set");
 			appendField(node, "listName", alias);
-			appendValue(node, "index", args[0] || defaultArg, ctx);
-			appendValue(node, "value", args[1] || defaultArg, ctx);
+			appendValue(node, "index", findArg(args, "index", 0) || defaultArg, ctx);
+			appendValue(node, "value", findArg(args, "value", 1) || defaultArg, ctx);
 		} else if (selector == "get") {
 			node.setAttribute("type", "list_get");
 			appendField(node, "listName", alias);
-			appendValue(node, "index", args[0] || defaultArg, ctx);
+			appendValue(node, "index", findArg(args, "index", 0) || defaultArg, ctx);
 		} else if (selector == "push") {
 			node.setAttribute("type", "list_push");
 			appendField(node, "listName", alias);
-			appendValue(node, "value", args[0] || defaultArg, ctx);
+			appendValue(node, "value", findArg(args, "value", 0) || defaultArg, ctx);
 		} else {
 			let selectors = {
 				"pop": "list_pop",
@@ -608,49 +626,50 @@ let ASTToBlocks = (function () {
 
 	function initPrimitiveCall(node, json, ctx) {
 		let selector = json.selector;
-		let args = json.arguments.map(function (each) { return each.value; });
+		let args = json.arguments;
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
 		if (selector === "toggle") {
 			node.setAttribute("type", "toggle_pin");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "turnOn") {
 			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "on");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "turnOff") {
 			node.setAttribute("type", "turn_onoff_pin");
 			appendField(node, "pinState", "off");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isOn") {
 			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "on");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isOff") {
 			node.setAttribute("type", "is_onoff_pin");
 			appendField(node, "pinState", "off");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "write") {
 			node.setAttribute("type", "write_pin");
-			appendValue(node, "pinNumber", args[0], ctx);
-			appendValue(node, "pinValue", args[1], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "pinValue", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "read") {
 			node.setAttribute("type", "read_pin");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "setServoDegrees") {
 			node.setAttribute("type", "set_servo_degrees");
-			appendValue(node, "pinNumber", args[0], ctx);
-			appendValue(node, "servoValue", args[1], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "servoValue", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "delayMs") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "ms");
-			appendValue(node, "time", args[0], ctx);
+			appendValue(node, "time", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "delayS") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "s");
-			appendValue(node, "time", args[0], ctx);
+			appendValue(node, "time", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "delayM") {
 			node.setAttribute("type", "delay");
 			appendField(node, "unit", "m");
-			appendValue(node, "time", args[0], ctx);
+			appendValue(node, "time", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "millis") {
 			node.setAttribute("type", "elapsed_time");
 			appendField(node, "unit", "ms");
@@ -663,186 +682,187 @@ let ASTToBlocks = (function () {
 		} else if (selector === "sin") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "sin");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "cos") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "cos");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "tan") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "tan");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "asin") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "asin");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "acos") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "acos");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "atan") {
 			node.setAttribute("type", "number_trig");
 			appendField(node, "operator", "atan");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "round") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "round");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "ceil") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "ceil");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "floor") {
 			node.setAttribute("type", "number_round");
 			appendField(node, "operator", "floor");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "sqrt") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "sqrt");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "abs") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "abs");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "ln") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "ln");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "log10") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "log10");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "exp") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "exp");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "pow10") {
 			node.setAttribute("type", "number_operation");
 			appendField(node, "operator", "pow10");
-			appendValue(node, "number", args[0], ctx);
+			appendValue(node, "number", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "+") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "ADD");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "-") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "MINUS");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "*") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "MULTIPLY");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "/") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "DIVIDE");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "**") {
 			node.setAttribute("type", "math_arithmetic");
 			appendField(node, "operator", "POWER");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "==") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "==");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "!=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "!=");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "<=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "<=");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "<") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", "<");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === ">=") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", ">=");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === ">") {
 			node.setAttribute("type", "logical_compare");
 			appendField(node, "operator", ">");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "!") {
 			node.setAttribute("type", "logical_not");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isEven") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "even");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isOdd") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "odd");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isPrime") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "prime");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isWhole") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "whole");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isPositive") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "positive");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isNegative") {
 			node.setAttribute("type", "number_property");
 			appendField(node, "property", "negative");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "isDivisibleBy") {
 			node.setAttribute("type", "number_divisibility");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "%") {
 			node.setAttribute("type", "number_modulo");
-			appendValue(node, "dividend", args[0], ctx);
-			appendValue(node, "divisor", args[1], ctx);
+			appendValue(node, "dividend", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "divisor", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "constrain") {
 			node.setAttribute("type", "number_constrain");
-			appendValue(node, "value", args[0], ctx);
-			appendValue(node, "low", args[1], ctx);
-			appendValue(node, "high", args[2], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "low", findArgByIndex(args, 1) || defaultArg, ctx);
+			appendValue(node, "high", findArgByIndex(args, 2) || defaultArg, ctx);
 		} else if (selector === "randomInt") {
 			node.setAttribute("type", "number_random_int");
-			appendValue(node, "from", args[0], ctx);
-			appendValue(node, "to", args[1], ctx);
+			appendValue(node, "from", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "to", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "random") {
 			node.setAttribute("type", "number_random_float");
 		} else if (selector === "setPinMode") {
 			let validModes = ["INPUT", "OUTPUT", "INPUT_PULLUP"];
-			if (args[1].__class__ == "UziNumberLiteralNode" &&
-					args[1].value >= 0 && args[1].value < validModes.length) {
+			let mode = findArgByIndex(args, 1);
+			if (mode && mode.__class__ == "UziNumberLiteralNode" &&
+					mode.value >= 0 && mode.value < validModes.length) {
 				node.setAttribute("type", "set_pin_mode");
-				appendValue(node, "pinNumber", args[0], ctx);
-				appendField(node, "mode", validModes[args[1].value] || "INPUT");
+				appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
+				appendField(node, "mode", validModes[mode.value] || "INPUT");
 			} else {
 				initProcedureCall(node, json, ctx);
 			}
 		} else if (selector === "getServoDegrees") {
 			node.setAttribute("type", "get_servo_degrees");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "servoWrite") {
 			// servoWrite(D3, 0.5) -> setServoDegrees(D3, 0.5 * 180);
 			node.setAttribute("type", "set_servo_degrees");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 
 			let value = create("block");
 			value.setAttribute("type", "math_arithmetic");
 			appendField(value, "operator", "MULTIPLY");
-			appendValue(value, "left", args[1], ctx);
+			appendValue(value, "left", findArgByIndex(args, 1) || defaultArg, ctx);
 			let multiplier = create("block");
 			multiplier.setAttribute("type", "number");
 			appendField(multiplier, "value", 180);
@@ -852,45 +872,45 @@ let ASTToBlocks = (function () {
 		} else if (selector === "&") {
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "and");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "|") {
 			node.setAttribute("type", "logical_operation");
 			appendField(node, "operator", "or");
-			appendValue(node, "left", args[0], ctx);
-			appendValue(node, "right", args[1], ctx);
+			appendValue(node, "left", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "right", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "startTone") {
 			node.setAttribute("type", "start_tone");
-			appendValue(node, "pinNumber", args[0], ctx);
-			appendValue(node, "tone", args[1], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
+			appendValue(node, "tone", findArgByIndex(args, 1) || defaultArg, ctx);
 		} else if (selector === "stopTone") {
 			node.setAttribute("type", "stop_tone");
-			appendValue(node, "pinNumber", args[0], ctx);
+			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "playTone") {
 			node.setAttribute("type", "play_tone");
 			appendField(node, "unit", "ms");
-			appendValue(node, "pinNumber", args[0], ctx);
-			appendValue(node, "tone", args[1], ctx);
-			appendValue(node, "time", args[2], ctx);
+			appendValue(node, "pinNumber", findArg(args, "pin", 0) || defaultArg, ctx);
+			appendValue(node, "tone", findArg(args, "tone", 1) || defaultArg, ctx);
+			appendValue(node, "time", findArg(args, "ms", 2) || defaultArg, ctx);
 		} else if (selector === "stopToneAndWait") {
 			node.setAttribute("type", "stop_tone_wait");
 			appendField(node, "unit", "ms");
-			appendValue(node, "pinNumber", args[0], ctx);
-			appendValue(node, "time", args[1], ctx);
+			appendValue(node, "pinNumber", findArg(args, "pin", 0) || defaultArg, ctx);
+			appendValue(node, "time", findArg(args, "ms", 1) || defaultArg, ctx);
 		} else if (selector === "isBetween") {
 			node.setAttribute("type", "number_between");
-			appendValue(node, "value", args[0], ctx);
-			appendValue(node, "low", args[1], ctx);
-			appendValue(node, "high", args[2], ctx);
+			appendValue(node, "value", findArg(args, "value", 0) || defaultArg, ctx);
+			appendValue(node, "low", findArg(args, "min", 1) || defaultArg, ctx);
+			appendValue(node, "high", findArg(args, "max", 2) || defaultArg, ctx);
 		} else if (selector === "pin") {
 			node.setAttribute("type", "pin_cast");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "number") {
 			node.setAttribute("type", "number_cast");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "bool") {
 			node.setAttribute("type", "boolean_cast");
-			appendValue(node, "value", args[0], ctx);
+			appendValue(node, "value", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else {
 			/*
 			NOTE(Richo): Fallback code. If we don't have a specific block for the selector
