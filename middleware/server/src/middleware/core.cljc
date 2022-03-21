@@ -1,6 +1,7 @@
 (ns middleware.core
   (:refer-clojure :exclude [run!])
   (:require [clojure.core.async :as a :refer [go <!]]
+            [clojure.string :as str]
             [middleware.utils.core :refer [index-of]]
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
@@ -180,16 +181,18 @@
                              (-> state :pins :data vals))}})
 
 (defn- get-globals-data [state]
-  {:globals {:timestamp (-> state :globals :timestamp)
-             :available (mapv (fn [{global-name :name}]
-                                {:name global-name
-                                 :reporting (contains? (-> state :reporting :globals)
-                                                       global-name)})
-                              (filter :name
-                                      (-> state :program :globals)))
-             :elements (filterv (fn [global] (contains? (-> state :reporting :globals)
-                                                        (:name global)))
-                                (-> state :globals :data vals))}})
+  (let [public-globals (->> (-> state :program :globals)
+                            (keep :name)
+                            (remove #(str/includes? % "."))
+                            (set))]
+    {:globals {:timestamp (-> state :globals :timestamp)
+               :available (mapv (fn [global-name]
+                                  {:name global-name
+                                   :reporting (contains? (-> state :reporting :globals)
+                                                         global-name)})
+                                public-globals)
+               :elements (mapv (-> state :globals :data)
+                               public-globals)}}))
 
 (defn- get-pseudo-vars-data [state]
   {:pseudo-vars {:timestamp (-> state :pseudo-vars :timestamp)
