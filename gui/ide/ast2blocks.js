@@ -1025,6 +1025,7 @@ let ASTToBlocks = (function () {
 
 	function createHereBeDragonsBlock(type, stmt, ctx) {
 		let node = create("block");
+		node.setAttribute("id", stmt.id);
 		node.setAttribute("type", type);
 
 		/*
