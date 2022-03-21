@@ -11,8 +11,18 @@ let BlocksToAST = (function () {
 				imports: imports,
 				globals: globals.filter(g => g != undefined).map(g => {
 					let name = g.name;
-					let value = g.value ? parseFloat(g.value) : 0;
-					return builder.variableDeclaration(id, name, builder.number(id, value));
+					let pinRegex = /^[DA]\d+$/;
+					let value = null;
+					if (g.value == undefined) {
+						value = builder.number(id, 0);
+					} else if (pinRegex.test(g.value)) {
+						let type = g.value[0];
+						let number = parseInt(g.value.slice(1));
+						value = builder.pin(id, type, number);
+					} else {
+						value = builder.number(id, parseFloat(g.value));
+					}
+					return builder.variableDeclaration(id, name, value);
 				}),
 				scripts: scripts,
 				primitives: []
