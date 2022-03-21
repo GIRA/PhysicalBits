@@ -49,8 +49,8 @@ let JSONX = (function () {
   }
 
   return {
-    parse: str => decodeSpecialFloats(JSON.parse(str)),
-    stringify: obj => JSON.stringify(encodeSpecialFloats(obj)),
+    parse: (str, reviver) => decodeSpecialFloats(JSON.parse(str, reviver)),
+    stringify: (obj, replacer, space) => JSON.stringify(encodeSpecialFloats(obj), replacer, space),
   }
 
 })();
