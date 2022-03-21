@@ -244,19 +244,25 @@ let ASTToBlocks = (function () {
 		UziWhileNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "repeat");
+			let hasStatements = json.post.statements.length > 0;
+			node.setAttribute("type", hasStatements ? "repeat" : "wait");
 			appendField(node, "negate", json.negated);
 			appendValue(node, "condition", json.condition, ctx);
-			appendStatements(node, "statements", json.post, ctx);
+			if (hasStatements) {
+				appendStatements(node, "statements", json.post, ctx);
+			}
 			return node;
 		},
 		UziUntilNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);
-			node.setAttribute("type", "repeat");
+			let hasStatements = json.post.statements.length > 0;
+			node.setAttribute("type", hasStatements ? "repeat" : "wait");
 			appendField(node, "negate", json.negated);
 			appendValue(node, "condition", json.condition, ctx);
-			appendStatements(node, "statements", json.post, ctx);
+			if (hasStatements) {
+				appendStatements(node, "statements", json.post, ctx);
+			}
 			return node;
 		},
 		UziForNode: function (json, ctx) {
