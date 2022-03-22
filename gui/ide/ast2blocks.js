@@ -188,6 +188,9 @@ let ASTToBlocks = (function () {
 			return node;
 		},
 		UziScriptStartNode: function (json, ctx) {
+			if (json.scripts.length > 1) {
+				throw "More than 1 script reference!";
+			}
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "start_task");
@@ -195,6 +198,9 @@ let ASTToBlocks = (function () {
 			return node;
 		},
 		UziScriptStopNode: function (json, ctx) {
+			if (json.scripts.length > 1) {
+				throw "More than 1 script reference!";
+			}
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "stop_task");
@@ -202,6 +208,9 @@ let ASTToBlocks = (function () {
 			return node;
 		},
 		UziScriptResumeNode: function (json, ctx) {
+			if (json.scripts.length > 1) {
+				throw "More than 1 script reference!";
+			}
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "resume_task");
@@ -209,6 +218,9 @@ let ASTToBlocks = (function () {
 			return node;
 		},
 		UziScriptPauseNode: function (json, ctx) {
+			if (json.scripts.length > 1) {
+				throw "More than 1 script reference!";
+			}
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			node.setAttribute("type", "pause_task");
