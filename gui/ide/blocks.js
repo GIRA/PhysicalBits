@@ -1873,6 +1873,117 @@ let UziBlock = (function () {
       isTopLevel: true,
       supportsBreakpoints: false,
     },
+    proc_definition_4args: {
+      text: "proc %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    proc_definition_5args: {
+      text: "proc %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "arg4": {
+          name: "arg4",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg4"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
     return: {
       text: "exit ;",
       type: null,
@@ -1978,6 +2089,99 @@ let UziBlock = (function () {
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(3), name), name)),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    proc_call_4args: {
+      text: "%procName ( %arg0 , %arg1 , %arg2 , %arg3 ) ;",
+      type: null,
+      inputs: {
+        "procName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(4)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    proc_call_5args: {
+      text: "%procName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) ;",
+      type: null,
+      inputs: {
+        "procName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(5)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg4": {
+          name: "arg4",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
         }
       },
       connections: { up: true, down: true, left: false },
@@ -2124,6 +2328,117 @@ let UziBlock = (function () {
       isTopLevel: true,
       supportsBreakpoints: false,
     },
+    func_definition_4args: {
+      text: "func %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    func_definition_5args: {
+      text: "func %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "arg4": {
+          name: "arg4",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg4"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
     return_value: {
       text: "return %value ;",
       type: null,
@@ -2235,6 +2550,99 @@ let UziBlock = (function () {
           builder: (block, input, name) => block.appendValueInput(name)
                                           .setAlign(Blockly.ALIGN_RIGHT)
                                           .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(3), name), name)),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
+    },
+    func_call_4args: {
+      text: "%funcName ( %arg0 , %arg1 , %arg2 , %arg3 )",
+      type: null,
+      inputs: {
+        "funcName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(4)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
+    },
+    func_call_5args: {
+      text: "%funcName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 )",
+      type: null,
+      inputs: {
+        "funcName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(5)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg4": {
+          name: "arg4",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
         }
       },
       connections: { up: false, down: false, left: true },
@@ -2534,8 +2942,11 @@ let UziBlock = (function () {
 
   function initProceduresToolboxCategory(toolbox, workspace) {
     let procDeclaringBlocks = new Set(["proc_definition_0args", "proc_definition_1args",
-                                       "proc_definition_2args", "proc_definition_3args"]);
-    let procCallingBlocks = ["proc_call_0args", "proc_call_1args", "proc_call_2args", "proc_call_3args"];
+                                       "proc_definition_2args", "proc_definition_3args",
+                                       "proc_definition_4args", "proc_definition_5args"]);
+    let procCallingBlocks = ["proc_call_0args", "proc_call_1args", 
+                            "proc_call_2args", "proc_call_3args", 
+                            "proc_call_4args", "proc_call_5args"];
 
     workspace.registerToolboxCategoryCallback("PROCEDURES", function () {
       let node = XML.getChildNode(toolbox, "Procedures", "originalName");
@@ -2587,8 +2998,11 @@ let UziBlock = (function () {
 
   function initFunctionsToolboxCategory(toolbox, workspace) {
     let funcDeclaringBlocks = new Set(["func_definition_0args", "func_definition_1args",
-                                       "func_definition_2args", "func_definition_3args"]);
-    let funcCallingBlocks = ["func_call_0args", "func_call_1args", "func_call_2args", "func_call_3args"];
+                                       "func_definition_2args", "func_definition_3args",
+                                       "func_definition_4args", "func_definition_5args"]);
+    let funcCallingBlocks = ["func_call_0args", "func_call_1args", 
+                             "func_call_2args", "func_call_3args", 
+                             "func_call_4args", "func_call_5args"];
 
     workspace.registerToolboxCategoryCallback("FUNCTIONS", function () {
       let node = XML.getChildNode(toolbox, "Functions", "originalName");
@@ -2840,7 +3254,8 @@ let UziBlock = (function () {
 
   function getCurrentProcedureNames(nargs) {
     let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
-                             "proc_definition_2args", "proc_definition_3args"];
+                             "proc_definition_2args", "proc_definition_3args",
+                             "proc_definition_4args", "proc_definition_5args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
@@ -2854,7 +3269,8 @@ let UziBlock = (function () {
 
   function getCurrentFunctionNames(nargs) {
     let interestingBlocks = ["func_definition_0args", "func_definition_1args",
-                             "func_definition_2args", "func_definition_3args"];
+                             "func_definition_2args", "func_definition_3args",
+                             "func_definition_4args", "func_definition_5args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
@@ -2988,17 +3404,21 @@ let UziBlock = (function () {
 
   function handleProcedureBlocksEvents(evt) {
     let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
-                            "proc_definition_2args", "proc_definition_3args"];
+                            "proc_definition_2args", "proc_definition_3args",
+                            "proc_definition_4args", "proc_definition_5args"];
     let callBlocks = ["proc_call_0args", "proc_call_1args",
-                      "proc_call_2args", "proc_call_3args"];
+                      "proc_call_2args", "proc_call_3args",
+                      "proc_call_4args", "proc_call_5args"];
     handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
   function handleFunctionBlocksEvents(evt) {
     let definitionBlocks = ["func_definition_0args", "func_definition_1args",
-                            "func_definition_2args", "func_definition_3args"];
+                            "func_definition_2args", "func_definition_3args",
+                            "func_definition_4args", "func_definition_5args"];
     let callBlocks = ["func_call_0args", "func_call_1args",
-                      "func_call_2args", "func_call_3args"];
+                      "func_call_2args", "func_call_3args",
+                      "func_call_4args", "func_call_5args"];
     handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
@@ -3027,7 +3447,9 @@ let UziBlock = (function () {
       let blocks = [
         {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
         {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
-        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]}
+        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]},
+        {types: ["proc_definition_4args", "func_definition_4args"], fields: ["arg0", "arg1", "arg2", "arg3"]},
+        {types: ["proc_definition_5args", "func_definition_5args"], fields: ["arg0", "arg1", "arg2", "arg3", "arg4"]}
       ];
       blocks.forEach(function (block) {
         if (evt.type == Blockly.Events.CREATE && block.types.includes(evt.xml.getAttribute("type"))) {
@@ -3052,6 +3474,8 @@ let UziBlock = (function () {
         {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
         {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
         {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]},
+        {types: ["proc_definition_4args", "func_definition_4args"], fields: ["arg0", "arg1", "arg2", "arg3"]},
+        {types: ["proc_definition_5args", "func_definition_5args"], fields: ["arg0", "arg1", "arg2", "arg3", "arg4"]},
       ];
       interestingBlocks.forEach(function (each) {
         if (evt.type == Blockly.Events.CHANGE
@@ -3245,9 +3669,13 @@ let UziBlock = (function () {
       proc_definition_1args: ["arg0"],
       proc_definition_2args: ["arg0", "arg1"],
       proc_definition_3args: ["arg0", "arg1", "arg2"],
+      proc_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+      proc_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
       func_definition_1args: ["arg0"],
       func_definition_2args: ["arg0", "arg1"],
       func_definition_3args: ["arg0", "arg1", "arg2"],
+      func_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+      func_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
     };
     return (interestingBlocks[block.type] || []).map(f => block.getField(f));
   }

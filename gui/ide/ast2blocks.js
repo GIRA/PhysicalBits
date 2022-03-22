@@ -104,9 +104,10 @@ let ASTToBlocks = (function () {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			let types = ["proc_definition_0args", "proc_definition_1args",
-									"proc_definition_2args", "proc_definition_3args"];
-			if (json.arguments.length > 3) {
-				throw "Max number of arguments for procedure blocks is 3";
+									"proc_definition_2args", "proc_definition_3args",
+									"proc_definition_4args", "proc_definition_5args",];
+			if (json.arguments.length > 5) {
+				throw "Max number of arguments for procedure blocks is 5";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
@@ -121,9 +122,10 @@ let ASTToBlocks = (function () {
 			let node = create("block");
 			node.setAttribute("id", json.id);
 			let types = ["func_definition_0args", "func_definition_1args",
-									"func_definition_2args", "func_definition_3args"];
-			if (json.arguments.length > 3) {
-				throw "Max number of arguments for function blocks is 3";
+									"func_definition_2args", "func_definition_3args",
+									"func_definition_4args", "func_definition_5args"];
+			if (json.arguments.length > 5) {
+				throw "Max number of arguments for function blocks is 5";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			let script = ctx.scriptNamed(json.name);
@@ -393,13 +395,14 @@ let ASTToBlocks = (function () {
 
 	function initProcedureCall(node, json, ctx) {
 		let types = ["proc_call_0args", "proc_call_1args",
-								"proc_call_2args", "proc_call_3args"];
+								"proc_call_2args", "proc_call_3args",
+								"proc_call_4args", "proc_call_5args"];
 		let script = ctx.scriptNamed(json.selector);
 		if (script == undefined) {
 			// NOTE(Richo): If the script is not found in the AST then we just trust the
 			// call to be correct and try to generate a valid block anyway...
-			if (json.arguments.length > 3) {
-				throw "Max number of arguments for call blocks is 3";
+			if (json.arguments.length > 5) {
+				throw "Max number of arguments for call blocks is 5";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			appendField(node, "scriptName", json.selector);
@@ -407,8 +410,8 @@ let ASTToBlocks = (function () {
 				appendValue(node, "arg" + index, arg.value, ctx);
 			});			
 		} else {
-			if (script.arguments.length > 3) {
-				throw "Max number of arguments for call blocks is 3";
+			if (script.arguments.length > 5) {
+				throw "Max number of arguments for call blocks is 5";
 			}
 			node.setAttribute("type", types[script.arguments.length]);
 			appendField(node, "scriptName", json.selector);
@@ -434,13 +437,14 @@ let ASTToBlocks = (function () {
 
 	function initFunctionCall(node, json, ctx) {
 		let types = ["func_call_0args", "func_call_1args",
-								"func_call_2args", "func_call_3args"];
+								"func_call_2args", "func_call_3args",
+								"func_call_4args", "func_call_5args"];
 		let script = ctx.scriptNamed(json.selector);
 		if (script == undefined) {
 			// NOTE(Richo): If the script is not found in the AST then we just trust the
 			// call to be correct and try to generate a valid block anyway...
-			if (json.arguments.length > 3) {
-				throw "Max number of arguments for call blocks is 3";
+			if (json.arguments.length > 5) {
+				throw "Max number of arguments for call blocks is 5";
 			}
 			node.setAttribute("type", types[json.arguments.length]);
 			appendField(node, "scriptName", json.selector);
@@ -448,8 +452,8 @@ let ASTToBlocks = (function () {
 				appendValue(node, "arg" + index, arg.value, ctx);
 			});			
 		} else {
-			if (script.arguments.length > 3) {
-				throw "Max number of arguments for call blocks is 3";
+			if (script.arguments.length > 5) {
+				throw "Max number of arguments for call blocks is 5";
 			}
 			node.setAttribute("type", types[script.arguments.length]);
 			appendField(node, "scriptName", json.selector);
