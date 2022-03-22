@@ -987,6 +987,20 @@ let ASTToBlocks = (function () {
 		if (types.has(valueType)) return value;
 
 		let preferredType = input.types[0];
+
+		// HACK(Richo): Special case for booleans, we check if instead of casting we can 
+		// generate the true/false block directly. Only works if the value is either 1 or 0.
+		if (preferredType == "boolean" && value.getAttribute("type") == "number") {
+			let actualValue = XML.getChildNode(value, "value").innerText;
+			if (actualValue == "0" || actualValue == "1") {
+				let node = create("block");
+				node.setAttribute("id", value.getAttribute("id"));
+				node.setAttribute("type", "boolean");
+				appendField(node, "value", actualValue == "1" ? "true" : "false");
+				return node;
+			}
+		}
+
 		let cast = createCast(preferredType);
 		appendValueNode(cast, "value", value);
 		return cast;
