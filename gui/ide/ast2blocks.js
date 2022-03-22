@@ -1114,6 +1114,7 @@ let ASTToBlocks = (function () {
 		try {
 			return generateXMLFor(stmt, ctx);
 		} catch (err) {
+			console.error(err);
 			return createHereBeDragonsBlock("here_be_dragons_stmt", stmt, ctx);
 		}
 	}
@@ -1122,6 +1123,7 @@ let ASTToBlocks = (function () {
 		try {
 			return generateXMLFor(expr, ctx);
 		} catch (err) {
+			console.error(err);
 			return createHereBeDragonsBlock("here_be_dragons_expr", expr, ctx);
 		}
 	}
@@ -1130,6 +1132,7 @@ let ASTToBlocks = (function () {
 		try {
 			return generateXMLFor(script, ctx);
 		} catch (err) {
+			console.error(err);
 			return createHereBeDragonsBlock("here_be_dragons_script", script, ctx);
 		}
 	}
