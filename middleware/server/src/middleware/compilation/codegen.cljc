@@ -272,11 +272,11 @@
           intervals (cw/intervals writer)]
       (ast-utils/transform
        ast
-       :default (fn [each _]
-                  (if-let [[start stop] (get intervals each)]
-                    (let [token (t/make-token src start (- stop start) nil)]
-                      (vary-meta each assoc :token token))
-                    each))))))
+       (fn [each]
+         (if-let [[start stop] (get intervals each)]
+           (let [token (t/make-token src start (- stop start) nil)]
+             (vary-meta each assoc :token token))
+           each))))))
 
 (defn generate-code [node]
   (-> (generate-tokens node) meta :token :source))

@@ -23,8 +23,10 @@
 (defn- without-prims [ast]
  (-> ast
      (dissoc :primitives)
-     (ast-utils/transform "UziCallNode"
-                          (fn [node _] (dissoc node :primitive-name)))))
+     (ast-utils/transform (fn [node]
+                            (if (ast-utils/call? node)
+                              (dissoc node :primitive-name)
+                              node)))))
 
 (defn link [ast]
   "HACK(Richo): I remove the :primitives key because it makes the diff hard to read"

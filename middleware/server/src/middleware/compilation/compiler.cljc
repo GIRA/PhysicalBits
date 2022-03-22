@@ -508,33 +508,33 @@
         reset-counters! (fn []
                           (vreset! local-counter 0)
                           (vreset! temp-counter 0))]
-    (ast-utils/transform
+    (ast-utils/transform-with-path
      ast
+     (fn [node path]
+       (case (ast-utils/node-type node)
+         "UziPinLiteralNode"
+         (let [{:keys [type number] :as pin} node]
+           (assoc pin :value (boards/get-pin-number (str type number) board)))
 
-     "UziPinLiteralNode"
-     (fn [{:keys [type number] :as pin} _]
-       (assoc pin :value (boards/get-pin-number (str type number) board)))
+         ; Temporary variables are local to their script
+         "UziTaskNode" (do (reset-counters!) node)
+         "UziProcedureNode" (do (reset-counters!) node)
+         "UziFunctionNode" (do (reset-counters!) node)
 
-     ; Temporary variables are local to their script
-     "UziTaskNode" (fn [node _] (reset-counters!) node)
-     "UziProcedureNode" (fn [node _] (reset-counters!) node)
-     "UziFunctionNode" (fn [node _] (reset-counters!) node)
+         "UziForNode" ; Some for-loops declare a temporary variable.
+         (if (ast-utils/compile-time-constant? (node :step))
+           node
+           (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
 
-     "UziForNode" ; Some for-loops declare a temporary variable.
-     (fn [{:keys [step] :as node} _]
-       (if (ast-utils/compile-time-constant? step)
-         node
-         (assoc node :temp-name (str "@" (vswap! temp-counter inc)))))
+         "UziRepeatNode" ; All repeat-loops declare a temporary variable
+         (assoc node :temp-name (str "@" (vswap! temp-counter inc)))
 
-     "UziRepeatNode" ; All repeat-loops declare a temporary variable
-     (fn [node _]
-       (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
-
-     "UziVariableDeclarationNode"
-     (fn [var path] ; TODO(Richo): Avoid renaming a variable if its name is already unique
-       (if (ast-utils/global? var path)
-         var
-         (assoc var :unique-name (str (:name var) "#" (vswap! local-counter inc))))))))
+         "UziVariableDeclarationNode"
+         (if (ast-utils/global? node path) ; TODO(Richo): Avoid renaming a variable if its name is already unique
+           node
+           (assoc node :unique-name (str (:name node) "#" (vswap! local-counter inc))))
+         
+         node)))))
 
 (defn remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?

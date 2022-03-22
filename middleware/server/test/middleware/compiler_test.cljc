@@ -175,15 +175,13 @@
                                        [(ast/arg-node
                                          (ast/literal-number-node 13))])]))]))
         actual (ast-utils/transform
-                 original
-                 "UziTaskNode"
-                 (fn [node _] (assoc node :name "EMPTY"))
-                 "UziCallNode"
-                 (fn [node _] (update node :selector str/upper-case))
-                 "UziNumberLiteralNode"
-                 (fn [node _] (update node :value inc))
-                 :default
-                 (fn [node _] (assoc node :__foo__ 5)))]
+                original
+                (fn [node]
+                  (case (ast-utils/node-type node)
+                    "UziTaskNode" (assoc node :name "EMPTY")
+                    "UziCallNode" (update node :selector str/upper-case)
+                    "UziNumberLiteralNode" (update node :value inc)
+                    (assoc node :__foo__ 5))))]
     (is (= expected actual))))
 
 (deftest
@@ -217,13 +215,13 @@
                                       [(ast/arg-node
                                         (ast/literal-number-node 13))])]))])
         actual (ast-utils/transform
-                 original
-                 "UziTaskNode"
-                 (fn [node _] (update node :name str/upper-case))
-                 "UziCallNode"
-                 (fn [node _] (update node :selector str/upper-case))
-                 "UziNumberLiteralNode"
-                 (fn [node _] (update node :value inc)))]
+                original
+                (fn [node]
+                  (case (ast-utils/node-type node)
+                    "UziTaskNode" (update node :name str/upper-case)
+                    "UziCallNode" (update node :selector str/upper-case)
+                    "UziNumberLiteralNode" (update node :value inc)
+                    node)))]
     (is (= expected actual))))
 
 (deftest
@@ -263,20 +261,14 @@
                                        "TURNON"
                                        [(ast/arg-node
                                          (ast/literal-number-node 13))])]))]))
-        actual (ast-utils/transformp
-                 original
-
-                 (fn [node _] (ast-utils/task? node))
-                 (fn [node _] (update node :name str/upper-case))
-
-                 (fn [node _] (ast-utils/call? node))
-                 (fn [node _] (update node :selector str/upper-case))
-
-                 (fn [node _] (ast-utils/number-literal? node))
-                 (fn [node _] (update node :value inc))
-
-                 :default
-                 (fn [node _] (assoc node :__foo__ 5)))]
+        actual (ast-utils/transform
+                original
+                (fn [node]
+                  (cond
+                    (ast-utils/task? node) (update node :name str/upper-case)
+                    (ast-utils/call? node) (update node :selector str/upper-case)
+                    (ast-utils/number-literal? node) (update node :value inc)
+                    :else (assoc node :__foo__ 5))))]
     (is (= expected actual))))
 
 (deftest
@@ -309,17 +301,14 @@
                                       "TURNON"
                                       [(ast/arg-node
                                         (ast/literal-number-node 13))])]))])
-        actual (ast-utils/transformp
-                 original
-
-                 (fn [node _] (ast-utils/task? node))
-                 (fn [node _] (update node :name str/upper-case))
-
-                 (fn [node _] (ast-utils/call? node))
-                 (fn [node _] (update node :selector str/upper-case))
-
-                 (fn [node _] (ast-utils/number-literal? node))
-                 (fn [node _] (update node :value inc)))]
+        actual (ast-utils/transform
+                original
+                (fn [node]
+                  (cond
+                    (ast-utils/task? node) (update node :name str/upper-case)
+                    (ast-utils/call? node) (update node :selector str/upper-case)
+                    (ast-utils/number-literal? node) (update node :value inc)
+                    :else node)))]
     (is (= expected actual))))
 
 (deftest

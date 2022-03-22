@@ -27,41 +27,46 @@
      ast
      ; NOTE(Richo): We should only associate a prim name if the selector doesn't match
      ; an existing script. Scripts have precedence over primitives!
-     "UziCallNode" (fn [{:keys [selector] :as node} _]
-                     (if (contains? scripts selector)
-                       node
-                       (assoc node
-                              :primitive-name (core-primitives selector)))))))
+     (fn [node]
+       (if (ast-utils/call? node)
+         (let [selector (node :selector)]
+           (if (contains? scripts selector)
+             node
+             (assoc node
+                    :primitive-name (core-primitives selector))))
+         node)))))
 
 (defn apply-alias [ast alias]
   (let [with-alias #(str alias "." %)
-         update (fn [key node _] (assoc node key (-> node key with-alias)))
-         update-name (partial update :name)
-         update-selector (partial update :selector)
-         update-alias (partial update :alias)
-         update-variable (fn [node path]
-                           (if (ast-utils/local? node path)
-                             node
-                             (update :name node path)))
-         update-script-list (fn [node _] (assoc node :scripts (mapv with-alias (:scripts node))))]
-    (ast-utils/transform
+        update (fn [key node] (assoc node key (-> node key with-alias)))
+        update-name (partial update :name)
+        update-selector (partial update :selector)
+        update-alias (partial update :alias)
+        update-variable (fn [node path]
+                          (if (ast-utils/local? node path)
+                            node
+                            (update :name node)))
+        update-script-list (fn [node] (assoc node :scripts (mapv with-alias (:scripts node))))]
+    (ast-utils/transform-with-path
      ast
+     (fn [node path]
+       (case (ast-utils/node-type node)
+         "UziVariableDeclarationNode" (update-variable node path)
+         "UziVariableNode" (update-variable node path)
 
-     "UziVariableDeclarationNode" update-variable
-     "UziVariableNode" update-variable
+         "UziTaskNode" (update-name node)
+         "UziFunctionNode" (update-name node)
+         "UziProcedureNode" (update-name node)
 
-     "UziTaskNode" update-name
-     "UziFunctionNode" update-name
-     "UziProcedureNode" update-name
+         "UziCallNode" (update-selector node)
 
-     "UziCallNode" update-selector
+         "UziScriptStopNode" (update-script-list node)
+         "UziScriptStartNode" (update-script-list node)
+         "UziScriptPauseNode" (update-script-list node)
+         "UziScriptResumeNode" (update-script-list node)
 
-     "UziScriptStopNode" update-script-list
-     "UziScriptStartNode" update-script-list
-     "UziScriptPauseNode" update-script-list
-     "UziScriptResumeNode" update-script-list
-
-     "UziPrimitiveDeclarationNode" update-alias)))
+         "UziPrimitiveDeclarationNode" (update-alias node)
+         node)))))
 
 (defn apply-initialization-block [ast {:keys [statements] :as init-block}]
   (let [globals (into {}
@@ -113,10 +118,10 @@
                     (apply-alias imported-ast alias)
                     imported-ast)})
       (throw (ex-info ; TODO(Richo): Improve this error message so that we can translate it
-                      (str "File not found: " path)
-                      {:import imp
-                       :file file
-                       :absolute-path (fs/absolute-path file)})))))
+              (str "File not found: " path)
+              {:import imp
+               :file file
+               :absolute-path (fs/absolute-path file)})))))
 
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)

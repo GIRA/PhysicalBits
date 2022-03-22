@@ -199,20 +199,6 @@
     (clj/filter #(type-set (node-type %))
                 (all-children ast))))
 
-(defn- evaluate-pred-clauses [node path clauses]
-  "Evaluates each clause in order. The clauses are pairs of pred-fn/expr-fn.
-   Both functions accept the node and its path as arguments. If a pred-fn
-   return true it will evaluate expr-fn and return its result.
-   The optional :default clause will match any node, but only if no previous
-   matching clause was found."
-  (loop [[pred result-fn & rest] clauses]
-    (if-not pred
-      node
-      (if (or (= :default pred)
-              (pred node path))
-        (result-fn node path)
-        (recur rest)))))
-
 (defn- replace-children [node keys expr-fn]
   "Updates node by replacing each child on the given keys with the
   result of evaluating expr-fn passing the child node as argument."
@@ -225,63 +211,68 @@
           node
           keys))
 
-(defn- transformp* [ast path clauses]
-  "I made this function because clojure.walk doesn't traverse the tree
-   in the order I need. Also, with this function I can keep track of the
-   path of parent nodes, which is very useful.
-   This function is private, you should call transformp or transform"
+(defn transform
+  "This function lets you traverse the tree and transform any of its nodes.
+   The action argument should be a function accepting 1 argument: the node 
+   to be transformed. The original node will be replaced with the result of 
+   evaluating action before continuing the traversal.
+   I made this function because clojure.walk doesn't traverse the tree 
+   in the order I need."
+  [ast action]
   (cond
-
-    ; If we find a vector, we simply recursively transform each element
-    ; and return a new vector.
+    ; If we find a vector, we simply recursively transform each element and 
+    ; return a new vector.
     (vector? ast)
-    (mapv #(transformp* % path clauses)
+    (mapv #(transform % action)
           ast)
 
-    ; If we find a node, we evaluate each clause in order and if we find
-    ; a match we replace the node with the result before recursively
+    ; If we find a node, we replace the node with the result before recursively
     ; transforming its children.
-    ; Here we take care of keeping track of the path so that we can pass
-    ; it as argument for both the predicates and the transforming functions.
     (node? ast)
-    (let [node (evaluate-pred-clauses ast
-                                      path
-                                      clauses)
-          new-path (conj path node)]
+    (let [node (action ast)]
       (replace-children node
                         (valid-keys node)
-                        (fn [child]
-                          (transformp* child
-                                       new-path
-                                       clauses))))
+                        #(transform % action)))
 
     ; Anything else is simply returned without any transformation
     :else ast))
 
-(defn transformp [ast & clauses]
-  "This function lets you traverse the tree and transform any of its nodes.
-   The clauses are pairs of pred-fn/expr-fn. It will traverse the tree and
-   evaluate each clause's predicate in order. If the predicate evaluates to
-   true, it will evaluate expr-fn. Both pred-fn and expr-fn should accept
-   two arguments: the node and its path as arguments. The path is a list
-   containing all the parent nodes already traversed in the tree. If no
-   clause is valid, it will optionally accept a :default clause.
-   The original node will be replaced with the result of evaluating expr-fn
-   before continuing the traversal."
-  (transformp* ast (list) clauses))
+(defn- transform-with-path* 
+  "I made this function because clojure.walk doesn't traverse the tree 
+   in the order I need. Also, with this function I can keep track of the
+   path of parent nodes, which is very useful.
+   This function is private, you should call transform-with-path"
+  [ast path action]
+  (cond
+    ; If we find a vector, we simply recursively transform each element
+    ; and return a new vector.
+    (vector? ast)
+    (mapv #(transform-with-path* % path action)
+          ast)
 
-(defn transform [ast & clauses]
-  "This function is exactly like transformp but instead of predicates it matches
-  node-types"
-  (let [as-pred (fn [type]
-                  (if (= :default type)
-                    type
-                    (fn [node _] (= type (node-type node)))))]
-    (apply transformp
-      ast
-      (mapcat (fn [[type result-fn]]
-                [(as-pred type) result-fn])
-              (partition 2 clauses)))))
+    ; If we find a node, we replace the node with the result before recursively
+    ; transforming its children.
+    ; Here we take care of keeping track of the path so that we can pass
+    ; it as argument for the transforming functions.
+    (node? ast)
+    (let [node (action ast path)
+          new-path (conj path node)]
+      (replace-children node
+                        (valid-keys node)
+                        #(transform-with-path* % new-path action)))
+
+    ; Anything else is simply returned without any transformation
+    :else ast))
+
+(defn transform-with-path
+  "This function lets you traverse the tree and transform any of its nodes.
+   The action argument should be a function accepting two arguments: the node 
+   and its path.The path is a list containing all the parent nodes already 
+   traversed in the tree.
+   The original node will be replaced with the result of evaluating action
+   before continuing the traversal."
+  [ast action]
+  (transform-with-path* ast (list) action))
 
 (defn variables-in-scope
   "Returns all the variable declarations up to this point in the ast"
@@ -323,7 +314,7 @@
 (def local? (complement global?))
 
 (defn generate-ids [ast]
-  (transform ast :default (fn [node _] (assoc node :id (str (random-uuid))))))
+  (transform ast #(assoc % :id (str (random-uuid)))))
 
 (defn id->token [ast]
   (->> (all-children ast)
@@ -361,55 +352,3 @@
                                                 lines)]
                       [id line-idx]))))
            (into {})))))
-
-(comment
-  (require '[middleware.compilation.parser :as p])
-
-  (def src "task foo() { forever { toggle(D13); }}")
-  (def src
-    "import motor from 'DCMotor.uzi' {
-	enablePin = D10;
-	forwardPin = D9;
-	reversePin = D8;
-}
-
-task loop() {
-	motor.forward(speed: 1);
-	forever {
-		turnOn(D13);
-		delayMs(0);
-		turnOff(D13);
-		delayMs(1000);
-	}
-}")
-  (def ast (-> src p/parse generate-ids))
-
-  (def source (-> ast meta :token :source))
-
-  (merge-with conj
-              (id->range ast)
-              (id->loc ast))
-
-  (let [token-map (id->token ast)]
-    (->> (all-children ast)
-         (map (fn [node]
-                [(node-type node)
-                 (:id node)
-                 (t/input-value (token-map (:id node)))]))))
-
-  (->> (all-children ast)
-       (map :id)
-       frequencies)
-  (vec (id->range ast))
-  (map (fn [[id token]]
-         (when token
-           [id [(t/start token) (t/stop token)]]))
-       (id->token ast))
-
-  (into {}
-        [[:a 1] [:b 2] nil [:c 3]])
-
-  (map
-   (all-children ast))
-
-  )
