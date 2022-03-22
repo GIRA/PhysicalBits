@@ -1023,21 +1023,23 @@ let ASTToBlocks = (function () {
 		return node;
 	}
 
-	function createHereBeDragonsBlock(type, stmt, ctx) {
+	function createHereBeDragonsBlock(type, json, ctx) {
 		let node = create("block");
-		node.setAttribute("id", stmt.id);
+		node.setAttribute("id", json.id);
 		node.setAttribute("type", type);
 
-		let src = ctx.getSourceCode(stmt);
+		let src = ctx.getSourceCode(json);
 		if (src) {
+			src = src.replaceAll(/\s+/g, " ");
+			if (src.length > 47) {
+				src = src.substring(0, 47) + "...";
+			}
 			appendField(node, "code", src);
 		}
 
-		let ast = JSONX.stringify(stmt, null, 2);
+		let ast = JSONX.stringify(json, null, 2);
 		let comment = create("comment");
 		comment.setAttribute("pinned", "false");
-		comment.setAttribute("h", "160");
-		comment.setAttribute("w", "320");
 		comment.textContent = ast;
 
 		node.appendChild(comment);
