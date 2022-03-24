@@ -9,40 +9,65 @@
             [middleware.compilation.checker :as checker]
             [middleware.compilation.dead-code-remover :as dcr]))
 
-; TODO(Richo): The following results are most likely outdated because I had to revert 
-; the change that moved the AST check to the end. Now it's probable that the checker
-; is again the bottleneck...
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker
 ; seems to be taking half the time of the entire process. I still haven't figured
 ; out a way of optimizing it without a major rewrite, so I leave this comment here
 ; to remind my future self of this.
-; ___________________________________________________________________________________________________________________________________________________________________
-; pId                                                     nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+; TODO(Richo): After a little more in-depth profiling I think the biggest issue is
+; the ast-utils/global? function, which seems to account for about 26% of the total
+; time. Unless I'm reading this wrong, that is insane.
+; __________________________________________________________________________________
+; (compiler)
+; pId                                 nCalls      50% ?       Mean      Clock  Total
 ;
-; :middleware.compilation.compiler/defn_resolve-imports          50       40ms       51ms       74ms       95ms      161ms      161ms     57.8ms  ±24%     2.89s     53%
-; :middleware.parser.parser/parse                             50       14ms       23ms       31ms       34ms       52ms       52ms    23.74ms  ±19%     1.19s     22%
-; :middleware.compilation.compiler/compile                       50        5ms       10ms       12ms       16ms       26ms       26ms     9.96ms  ±21%      498ms     9%
-; :middleware.compilation.compiler/defn_remove-dead-code         50        5ms        9ms       14ms       16ms       17ms       17ms     9.36ms  ±21%      468ms     9%
-; :middleware.compilation.compiler/defn_check                    50        3ms        5ms        8ms       10ms       20ms       20ms     5.44ms  ±34%      272ms     5%
-; :middleware.compilation.compiler/defn_augment-ast              50        1ms        3ms        4ms        4ms        4ms        4ms     2.82ms  ±19%      141ms     3%
+; defn_resolve-imports                    50       18ms    19.78ms      989ms    29%  <---
+; compile                                 50        9ms     10.2ms      510ms    15%
+; defn_remove-dead-code                   50        8ms     8.16ms      408ms    12%
+; defn_check                              50        4ms     4.28ms      214ms     6%
+; defn_augment-ast                        50        1ms      560?s       28ms     1%
 ;
-; Accounted                                                                                                                                             5.46s    100%
-; Clock                                                                                                                                                 5.47s    100%
-; ___________________________________________________________________________________________________________________________________________________________________________
-; pId                                                             nCalls        Min      50% ≤      90% ≤      95% ≤      99% ≤        Max       Mean   MAD      Clock  Total
+; Accounted                                                            2.15s     62%
+; Clock                                                                3.46s    100%
+; __________________________________________________________________________________
+; (linker)
+; pId                                 nCalls      50% ≤       Mean      Clock  Total
+; 
+; defn_resolve-import                    350        1ms     2.53ms      885ms    27%
+; defn_apply-alias                       150        3ms      3.7ms      555ms    17%  <---
+; defn_bind-primitives                   400        1ms    832.5μs      333ms    10%
+; defn_build-new-program                 400        0ns       50μs       20ms     1%
+; defn_apply-initialization-block        350        0ns    31.43μs       11ms     0%
+; defn_implicit-imports_1                350        0ns     5.71μs        2ms     0%
+; defn_parse                             350        0ns     2.86μs        1ms     0%
+; defn_implicit-imports_0                400        0ns        0ns        0ns     0%
+; 
+; Accounted                                                            1.81s     55%
+; Clock                                                                3.28s    100%
+; __________________________________________________________________________________
+; (linker/apply-alias)
+; pId                                 nCalls      50% ≤       Mean      Clock  Total
 ;
-; :middleware.compilation.linker/defn_apply-alias                       350        0ns        0ns        5ms        6ms        9ms       18ms     1.98ms ±114%      693ms    30%
-; :middleware.compilation.linker/defn_bind-primitives                   400        0ns        1ms        3ms        3ms        4ms        9ms      980μs  ±70%      392ms    17%
-; :middleware.compilation.linker/defn_build-new-program                 400        0ns        0ns        0ns        1ms        1ms        1ms     72.5μs ±186%       29ms     1%
-; :middleware.compilation.linker/defn_apply-initialization-block        350        0ns        0ns        0ns        1ms        1ms        2ms    62.86μs ±188%       22ms     1%
-; :middleware.compilation.linker/defn_implicit-imports_1                350        0ns        0ns        0ns        0ns        0ns        1ms     5.71μs ±199%        2ms     0%
-; :middleware.compilation.linker/defn_parse                             350        0ns        0ns        0ns        0ns        0ns        1ms     2.86μs ±199%        1ms     0%
-; :middleware.compilation.linker/defn_implicit-imports_0                400        0ns        0ns        0ns        0ns        0ns        0ns        0ns ±NaN%        0ns     0%
+; update-variable                      9,300        0ns    57.53μs      535ms    14%
+; ast-utils/local?                     9,300        0ns    54.95μs      511ms    13%  <---
+; update-alias                         9,800        0ns     2.86μs       28ms     1%
+; ast-utils/node-type                 36,900        0ns    352.3ns       13ms     0%
+; update-name                          1,900        0ns     4.21μs        8ms     0%
+; update-selector                      3,200        0ns     2.19μs        7ms     0%
+; untouched                           12,700        0ns   236.22ns        3ms     0%
 ;
-; Accounted                                                                                                                                                     1.14s     50%
-; Clock                                                                                                                                                         2.29s    100%
-; ___________________________________________________________________________________________________________________________________________________________________________
+; Accounted                                                            1.11s     28%
+; Clock                                                                3.91s    100%
+; __________________________________________________________________________________
+; (ast-utils/global?)
+; pId                                 nCalls      50% ≤       Mean      Clock  Total
+;
+; global-variable?                     9,550        0ns   105.65μs     1.01s     26%  <---
+; global-var-decl?                     4,450        0ns     2.02μs        9ms     0%
+;
+; Accounted                                                            1.02s     26%
+; Clock                                                                3.93s    100%
+; __________________________________________________________________________________
 
 (declare compile-node)
 
