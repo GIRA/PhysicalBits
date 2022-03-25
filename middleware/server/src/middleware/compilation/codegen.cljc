@@ -11,20 +11,23 @@
 (defn- print-metadata
   "For debugging purposes, you can attach a metadata string under the key
    ::metadata that will get printed as an uzi comment right before the node"
-  [writer node]
+  [node writer]
   (when-let [metadata (-> node meta ::metadata)]
     (cw/append! writer "\"" metadata "\" ")))
 
+(defn- print* [writer node]
+  (print-metadata node writer)
+  (print-node node writer))
+
 (defn- print [writer node]
-  (cw/save-interval! writer node #(do (print-metadata writer %)
-                                      (print-node % writer))))
+  (cw/save-interval! writer node #(print* writer %)))
 
 (defn- print-stmt [writer node]
   (let [needs-semicolon? (not (ast-utils/control-structure? node))]
     (cw/save-interval!
      writer node
      (fn [node]
-       (print-node node writer)
+       (print* writer node)
        (when needs-semicolon?
          (cw/append! writer ";"))))))
 
@@ -72,11 +75,13 @@
         (cw/append! "import " alias " from '" path "'")
         (print-optional-block initializationBlock)))
 
-(defmethod print-node "UziVariableDeclarationNode" [{:keys [name value]} writer]
-  (cw/append! writer "var " name)
-  (when value
-    (cw/append! writer " = ")
-    (print writer value)))
+(defmethod print-node "UziVariableDeclarationNode" [{:keys [name value] :as node} writer]
+  (if (node ::exclude-var-declaration?)
+    (cw/append! writer name)
+    (do (cw/append! writer "var " name)
+        (when value
+          (cw/append! writer " = ")
+          (print writer value)))))
 
 (defmethod print-node "UziPrimitiveDeclarationNode" [{:keys [alias name]} writer]
   (cw/append! writer "prim " (if (= alias name)
@@ -96,15 +101,23 @@
 
 (defmethod print-node "UziFunctionNode" [{:keys [name arguments body]} writer]
   (doto writer
-        (cw/append-indent!)
-        (cw/append! "func " name "(" (str/join ", " (map :name arguments)) ") ")
-        (print body)))
+    (cw/append-indent!)
+    (cw/append! "func " name "(")
+    (print-seq (map #(assoc % ::exclude-var-declaration? true) 
+                    arguments) 
+               :separated-by ", ")
+    (cw/append! ") ")
+    (print body)))
 
 (defmethod print-node "UziProcedureNode" [{:keys [name arguments body]} writer]
   (doto writer
-        (cw/append-indent!)
-        (cw/append! "proc " name "(" (str/join ", " (map :name arguments)) ") ")
-        (print body)))
+    (cw/append-indent!)
+    (cw/append! "proc " name "(")
+    (print-seq (map #(assoc % ::exclude-var-declaration? true)
+                    arguments)
+               :separated-by ", ")
+    (cw/append! ") ")
+    (print body)))
 
 (defmethod print-node "UziTickingRateNode" [node writer]
   (cw/append! writer (:value node) "/" (:scale node)))
@@ -176,14 +189,16 @@
 (defmethod print-node "UziForNode"
   [{:keys [counter start stop step body]} writer]
   (doto writer
-        (cw/append! "for " (:name counter) " = ")
-        (print start)
-        (cw/append! " to ")
-        (print stop)
-        (cw/append! " by ")
-        (print step)
-        (cw/append! " ")
-        (print body)))
+    (cw/append! "for ")
+    (print (assoc counter ::exclude-var-declaration? true))
+    (cw/append! " = ")
+    (print start)
+    (cw/append! " to ")
+    (print stop)
+    (cw/append! " by ")
+    (print step)
+    (cw/append! " ")
+    (print body)))
 
 (defmethod print-node "UziWhileNode" [{:keys [condition post]} writer]
   (doto writer
