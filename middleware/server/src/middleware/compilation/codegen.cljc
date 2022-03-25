@@ -8,8 +8,16 @@
 
 (defmulti print-node :__class__)
 
+(defn- print-metadata
+  "For debugging purposes, you can attach a metadata string under the key
+   ::metadata that will get printed as an uzi comment right before the node"
+  [writer node]
+  (when-let [metadata (-> node meta ::metadata)]
+    (cw/append! writer "\"" metadata "\" ")))
+
 (defn- print [writer node]
-  (cw/save-interval! writer node #(print-node % writer)))
+  (cw/save-interval! writer node #(do (print-metadata writer %)
+                                      (print-node % writer))))
 
 (defn- print-stmt [writer node]
   (let [needs-semicolon? (not (ast-utils/control-structure? node))]
