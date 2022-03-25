@@ -71,9 +71,13 @@
 
 (defmethod print-node "UziImportNode"
   [{:keys [alias path initializationBlock]} writer]
-  (doto writer
+  (if alias
+    (doto writer
         (cw/append! "import " alias " from '" path "'")
-        (print-optional-block initializationBlock)))
+        (print-optional-block initializationBlock))
+    (doto writer
+      (cw/append! "import '" path "'")
+      (print-optional-block initializationBlock))))
 
 (defmethod print-node "UziVariableDeclarationNode" [{:keys [name value] :as node} writer]
   (if (node ::exclude-var-declaration?)
