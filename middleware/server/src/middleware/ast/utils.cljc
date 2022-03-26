@@ -13,6 +13,9 @@
 (defn node-type [node]
   (:__class__ node))
 
+(defn program? [node]
+  (= "UziProgramNode" (node-type node)))
+
 (defn compile-time-constant? [node]
   (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
              (node-type node)))
@@ -274,7 +277,14 @@
   [ast action]
   (transform-with-path* ast (list) action))
 
-(defn variables-in-scope
+(defn globals-in-scope [path]
+  (if-let [imp (seek import? path)]
+    (if-let [program (-> imp meta :program)]
+      (-> program :globals)
+      (throw (ex-info "Unresolved import" imp)))
+    (-> path last :globals)))
+
+(defn- variables-in-scope
   "Returns all the variable declarations up to this point in the ast"
   [path]
   ; NOTE(Richo): If we're inside an import's initialization block we have special
@@ -294,7 +304,14 @@
 (defn locals-in-scope [path]
   ; NOTE(Richo): We take advantage of the fact that globals can only be defined
   ; in the root of the AST, which should always be the last item in the path.
-  (variables-in-scope (drop-last path)))
+  ; Unless, of course we're inside an import's initialization block, in which
+  ; case we shouldn't really have any locals in scope (only the globals from
+  ; the imported library).
+  (if-let [imp (seek import? path)]
+    (if-let [program (-> imp meta :program)]
+      []
+      (throw (ex-info "Unresolved import" imp)))
+    (variables-in-scope (drop-last path))))
 
 (defn variable-named
   "Returns the variable declaration referenced by this name at this point in the ast"
@@ -304,14 +321,15 @@
 
 (defn global?
   "Works for both variable and variable-declaration nodes."
-  [node path]
-  (let [globals (-> path last :globals)
-        global? #(seek (partial identical? %) globals)]
-    (case (node-type node)
-      "UziVariableNode" (global? (variable-named (:name node) path))
-      "UziVariableDeclarationNode" (global? node))))
+  ([node path]
+   (if (variable-declaration? node)
+     (program? (first path))
+     (let [var-name (:name node)]
+       (and (contains? (set (map :name (globals-in-scope path))) var-name)
+            (not (contains? (set (map :name (locals-in-scope path))) var-name)))))))
 
-(def local? (complement global?))
+(defn local? [node path]
+  (not (global? node path)))
 
 (defn generate-ids [ast]
   (transform ast #(assoc % :id (str (random-uuid)))))
