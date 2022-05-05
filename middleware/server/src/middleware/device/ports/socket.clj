@@ -56,8 +56,7 @@
                           (map #(Integer/parseInt %)
                                (->> match (drop 2) (take 4))))))
         [address port]))
-    (catch Throwable ex
-      false)))
+    (catch Throwable _ false)))
 
 (defn open-port [port-name _baud-rate]
   (try
