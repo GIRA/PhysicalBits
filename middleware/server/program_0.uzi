@@ -1,0 +1,527 @@
+import 'core.uzi';
+import sonar from 'Sonar.uzi' {
+	"{scope: global, locals: [], globals: [trigPin, echoPin, maxDistance, distance]}" trigPin = A5;
+	"{scope: global, locals: [], globals: [trigPin, echoPin, maxDistance, distance]}" echoPin = A4;
+	"{scope: global, locals: [], globals: [trigPin, echoPin, maxDistance, distance]}" maxDistance = 200;
+	start reading;
+}
+import leftMotor from 'DCMotor.uzi' {
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" enablePin = D5;
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" forwardPin = D7;
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" reversePin = D8;
+}
+import rightMotor from 'DCMotor.uzi' {
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" enablePin = D6;
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" forwardPin = D11;
+	"{scope: global, locals: [], globals: [enablePin, forwardPin, reversePin]}" reversePin = D9;
+}
+
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var sonar.trigPin = A5;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var sonar.echoPin = A4;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var sonar.maxDistance = 200;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var sonar.distance = 0;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var leftMotor.enablePin = D5;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var leftMotor.forwardPin = D7;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var leftMotor.reversePin = D8;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var rightMotor.enablePin = D6;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var rightMotor.forwardPin = D11;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var rightMotor.reversePin = D9;
+"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" var temp = 0;
+
+prim turnOn;
+prim turnOff;
+prim read;
+prim write;
+prim getPinMode;
+prim setPinMode;
+prim toggle;
+prim getServoDegrees;
+prim setServoDegrees;
+prim servoWrite;
+prim + : add;
+prim - : subtract;
+prim * : multiply;
+prim / : divide;
+prim sin;
+prim cos;
+prim tan;
+prim == : equals;
+prim != : notEquals;
+prim > : greaterThan;
+prim >= : greaterThanOrEquals;
+prim < : lessThan;
+prim <= : lessThanOrEquals;
+prim ! : negate;
+prim delayMs;
+prim & : bitwiseAnd;
+prim | : bitwiseOr;
+prim millis;
+prim coroutine;
+prim serialWrite;
+prim round;
+prim ceil;
+prim floor;
+prim sqrt;
+prim abs;
+prim ln;
+prim log10;
+prim exp;
+prim pow10;
+prim asin;
+prim acos;
+prim atan;
+prim atan2;
+prim ** : power;
+prim isOn;
+prim isOff;
+prim % : remainder;
+prim constrain;
+prim randomInt;
+prim random;
+prim isEven;
+prim isOdd;
+prim isPrime;
+prim isWhole;
+prim isPositive;
+prim isNegative;
+prim isDivisibleBy;
+prim seconds;
+prim isCloseTo;
+prim delayS;
+prim delayM;
+prim minutes;
+prim mod : modulo;
+prim startTone : tone;
+prim stopTone : noTone;
+prim sonar.turnOn : turnOn;
+prim sonar.turnOff : turnOff;
+prim sonar.read : read;
+prim sonar.write : write;
+prim sonar.getPinMode : getPinMode;
+prim sonar.setPinMode : setPinMode;
+prim sonar.toggle : toggle;
+prim sonar.getServoDegrees : getServoDegrees;
+prim sonar.setServoDegrees : setServoDegrees;
+prim sonar.servoWrite : servoWrite;
+prim sonar.+ : add;
+prim sonar.- : subtract;
+prim sonar.* : multiply;
+prim sonar./ : divide;
+prim sonar.sin : sin;
+prim sonar.cos : cos;
+prim sonar.tan : tan;
+prim sonar.== : equals;
+prim sonar.!= : notEquals;
+prim sonar.> : greaterThan;
+prim sonar.>= : greaterThanOrEquals;
+prim sonar.< : lessThan;
+prim sonar.<= : lessThanOrEquals;
+prim sonar.! : negate;
+prim sonar.delayMs : delayMs;
+prim sonar.& : bitwiseAnd;
+prim sonar.| : bitwiseOr;
+prim sonar.millis : millis;
+prim sonar.coroutine : coroutine;
+prim sonar.serialWrite : serialWrite;
+prim sonar.round : round;
+prim sonar.ceil : ceil;
+prim sonar.floor : floor;
+prim sonar.sqrt : sqrt;
+prim sonar.abs : abs;
+prim sonar.ln : ln;
+prim sonar.log10 : log10;
+prim sonar.exp : exp;
+prim sonar.pow10 : pow10;
+prim sonar.asin : asin;
+prim sonar.acos : acos;
+prim sonar.atan : atan;
+prim sonar.atan2 : atan2;
+prim sonar.** : power;
+prim sonar.isOn : isOn;
+prim sonar.isOff : isOff;
+prim sonar.% : remainder;
+prim sonar.constrain : constrain;
+prim sonar.randomInt : randomInt;
+prim sonar.random : random;
+prim sonar.isEven : isEven;
+prim sonar.isOdd : isOdd;
+prim sonar.isPrime : isPrime;
+prim sonar.isWhole : isWhole;
+prim sonar.isPositive : isPositive;
+prim sonar.isNegative : isNegative;
+prim sonar.isDivisibleBy : isDivisibleBy;
+prim sonar.seconds : seconds;
+prim sonar.isCloseTo : isCloseTo;
+prim sonar.delayS : delayS;
+prim sonar.delayM : delayM;
+prim sonar.minutes : minutes;
+prim sonar.mod : modulo;
+prim sonar.startTone : tone;
+prim sonar.stopTone : noTone;
+prim sonar.ping : sonarDistCm;
+prim leftMotor.turnOn : turnOn;
+prim leftMotor.turnOff : turnOff;
+prim leftMotor.read : read;
+prim leftMotor.write : write;
+prim leftMotor.getPinMode : getPinMode;
+prim leftMotor.setPinMode : setPinMode;
+prim leftMotor.toggle : toggle;
+prim leftMotor.getServoDegrees : getServoDegrees;
+prim leftMotor.setServoDegrees : setServoDegrees;
+prim leftMotor.servoWrite : servoWrite;
+prim leftMotor.+ : add;
+prim leftMotor.- : subtract;
+prim leftMotor.* : multiply;
+prim leftMotor./ : divide;
+prim leftMotor.sin : sin;
+prim leftMotor.cos : cos;
+prim leftMotor.tan : tan;
+prim leftMotor.== : equals;
+prim leftMotor.!= : notEquals;
+prim leftMotor.> : greaterThan;
+prim leftMotor.>= : greaterThanOrEquals;
+prim leftMotor.< : lessThan;
+prim leftMotor.<= : lessThanOrEquals;
+prim leftMotor.! : negate;
+prim leftMotor.delayMs : delayMs;
+prim leftMotor.& : bitwiseAnd;
+prim leftMotor.| : bitwiseOr;
+prim leftMotor.millis : millis;
+prim leftMotor.coroutine : coroutine;
+prim leftMotor.serialWrite : serialWrite;
+prim leftMotor.round : round;
+prim leftMotor.ceil : ceil;
+prim leftMotor.floor : floor;
+prim leftMotor.sqrt : sqrt;
+prim leftMotor.abs : abs;
+prim leftMotor.ln : ln;
+prim leftMotor.log10 : log10;
+prim leftMotor.exp : exp;
+prim leftMotor.pow10 : pow10;
+prim leftMotor.asin : asin;
+prim leftMotor.acos : acos;
+prim leftMotor.atan : atan;
+prim leftMotor.atan2 : atan2;
+prim leftMotor.** : power;
+prim leftMotor.isOn : isOn;
+prim leftMotor.isOff : isOff;
+prim leftMotor.% : remainder;
+prim leftMotor.constrain : constrain;
+prim leftMotor.randomInt : randomInt;
+prim leftMotor.random : random;
+prim leftMotor.isEven : isEven;
+prim leftMotor.isOdd : isOdd;
+prim leftMotor.isPrime : isPrime;
+prim leftMotor.isWhole : isWhole;
+prim leftMotor.isPositive : isPositive;
+prim leftMotor.isNegative : isNegative;
+prim leftMotor.isDivisibleBy : isDivisibleBy;
+prim leftMotor.seconds : seconds;
+prim leftMotor.isCloseTo : isCloseTo;
+prim leftMotor.delayS : delayS;
+prim leftMotor.delayM : delayM;
+prim leftMotor.minutes : minutes;
+prim leftMotor.mod : modulo;
+prim leftMotor.startTone : tone;
+prim leftMotor.stopTone : noTone;
+prim rightMotor.turnOn : turnOn;
+prim rightMotor.turnOff : turnOff;
+prim rightMotor.read : read;
+prim rightMotor.write : write;
+prim rightMotor.getPinMode : getPinMode;
+prim rightMotor.setPinMode : setPinMode;
+prim rightMotor.toggle : toggle;
+prim rightMotor.getServoDegrees : getServoDegrees;
+prim rightMotor.setServoDegrees : setServoDegrees;
+prim rightMotor.servoWrite : servoWrite;
+prim rightMotor.+ : add;
+prim rightMotor.- : subtract;
+prim rightMotor.* : multiply;
+prim rightMotor./ : divide;
+prim rightMotor.sin : sin;
+prim rightMotor.cos : cos;
+prim rightMotor.tan : tan;
+prim rightMotor.== : equals;
+prim rightMotor.!= : notEquals;
+prim rightMotor.> : greaterThan;
+prim rightMotor.>= : greaterThanOrEquals;
+prim rightMotor.< : lessThan;
+prim rightMotor.<= : lessThanOrEquals;
+prim rightMotor.! : negate;
+prim rightMotor.delayMs : delayMs;
+prim rightMotor.& : bitwiseAnd;
+prim rightMotor.| : bitwiseOr;
+prim rightMotor.millis : millis;
+prim rightMotor.coroutine : coroutine;
+prim rightMotor.serialWrite : serialWrite;
+prim rightMotor.round : round;
+prim rightMotor.ceil : ceil;
+prim rightMotor.floor : floor;
+prim rightMotor.sqrt : sqrt;
+prim rightMotor.abs : abs;
+prim rightMotor.ln : ln;
+prim rightMotor.log10 : log10;
+prim rightMotor.exp : exp;
+prim rightMotor.pow10 : pow10;
+prim rightMotor.asin : asin;
+prim rightMotor.acos : acos;
+prim rightMotor.atan : atan;
+prim rightMotor.atan2 : atan2;
+prim rightMotor.** : power;
+prim rightMotor.isOn : isOn;
+prim rightMotor.isOff : isOff;
+prim rightMotor.% : remainder;
+prim rightMotor.constrain : constrain;
+prim rightMotor.randomInt : randomInt;
+prim rightMotor.random : random;
+prim rightMotor.isEven : isEven;
+prim rightMotor.isOdd : isOdd;
+prim rightMotor.isPrime : isPrime;
+prim rightMotor.isWhole : isWhole;
+prim rightMotor.isPositive : isPositive;
+prim rightMotor.isNegative : isNegative;
+prim rightMotor.isDivisibleBy : isDivisibleBy;
+prim rightMotor.seconds : seconds;
+prim rightMotor.isCloseTo : isCloseTo;
+prim rightMotor.delayS : delayS;
+prim rightMotor.delayM : delayM;
+prim rightMotor.minutes : minutes;
+prim rightMotor.mod : modulo;
+prim rightMotor.startTone : tone;
+prim rightMotor.stopTone : noTone;
+
+proc playTone("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	startTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone);
+	delayMs("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+	stopTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+}
+
+proc stopToneAndWait("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	stopTone("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+	delayMs("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+}
+
+func map("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh) {
+	return (((("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value - "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow) * ("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh - "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow)) / ("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh - "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow)) + "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow);
+}
+
+func isBetween("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max) {
+	return (("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value >= "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min) && ("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value <= "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max));
+}
+
+func pin("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func number("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func bool("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+proc sonar.playTone("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	sonar.startTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone);
+	sonar.delayMs("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+	sonar.stopTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+}
+
+proc sonar.stopToneAndWait("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	sonar.stopTone("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+	sonar.delayMs("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+}
+
+func sonar.map("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh) {
+	return sonar.+(sonar./(sonar.*(sonar.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow), sonar.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow)), sonar.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow)), "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow);
+}
+
+func sonar.isBetween("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max) {
+	return (sonar.>=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min) && sonar.<=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max));
+}
+
+func sonar.pin("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func sonar.number("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func sonar.bool("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+proc sonar.init("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" trig, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" echo, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" maxDist) {
+	"{scope: global, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.trigPin = "{scope: local, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" trig;
+	"{scope: global, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.echoPin = "{scope: local, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" echo;
+	"{scope: global, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.maxDistance = "{scope: local, locals: [trig, echo, maxDist], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" maxDist;
+}
+
+task sonar.reading() running 10/s {
+	"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.distance = sonar.ping("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.trigPin, "{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.echoPin, "{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.maxDistance);
+}
+
+func sonar.distance_cm() {
+	return "{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.distance;
+}
+
+func sonar.distance_mm() {
+	return sonar.*("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.distance, 10);
+}
+
+func sonar.distance_m() {
+	return sonar./("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" sonar.distance, 100);
+}
+
+proc leftMotor.playTone("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	leftMotor.startTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone);
+	leftMotor.delayMs("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+	leftMotor.stopTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+}
+
+proc leftMotor.stopToneAndWait("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	leftMotor.stopTone("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+	leftMotor.delayMs("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+}
+
+func leftMotor.map("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh) {
+	return leftMotor.+(leftMotor./(leftMotor.*(leftMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow), leftMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow)), leftMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow)), "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow);
+}
+
+func leftMotor.isBetween("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max) {
+	return (leftMotor.>=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min) && leftMotor.<=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max));
+}
+
+func leftMotor.pin("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func leftMotor.number("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func leftMotor.bool("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+proc leftMotor.init("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" en, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" f, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" r) {
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" en;
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.forwardPin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" f;
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.reversePin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" r;
+}
+
+proc leftMotor.forward("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	leftMotor.turnOff("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.reversePin);
+	leftMotor.turnOn("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.forwardPin);
+	leftMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+proc leftMotor.backward("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	leftMotor.turnOff("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.forwardPin);
+	leftMotor.turnOn("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.reversePin);
+	leftMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+proc leftMotor.brake() {
+	leftMotor.turnOn("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.forwardPin);
+	leftMotor.turnOn("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.reversePin);
+	leftMotor.turnOff("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin);
+}
+
+proc leftMotor.setSpeed("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	leftMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+func leftMotor.getSpeed() {
+	return leftMotor.read("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" leftMotor.enablePin);
+}
+
+proc rightMotor.playTone("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	rightMotor.startTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" tone);
+	rightMotor.delayMs("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+	rightMotor.stopTone("{scope: local, locals: [pin, tone, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+}
+
+proc rightMotor.stopToneAndWait("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms) {
+	rightMotor.stopTone("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" pin);
+	rightMotor.delayMs("{scope: local, locals: [pin, ms], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" ms);
+}
+
+func rightMotor.map("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh) {
+	return rightMotor.+(rightMotor./(rightMotor.*(rightMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow), rightMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow)), rightMotor.-("{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromHigh, "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" fromLow)), "{scope: local, locals: [value, fromLow, fromHigh, toLow, toHigh], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" toLow);
+}
+
+func rightMotor.isBetween("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max) {
+	return (rightMotor.>=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" min) && rightMotor.<=("{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value, "{scope: local, locals: [value, min, max], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" max));
+}
+
+func rightMotor.pin("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func rightMotor.number("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+func rightMotor.bool("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value) {
+	return "{scope: local, locals: [value], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" value;
+}
+
+proc rightMotor.init("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" en, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" f, "{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" r) {
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" en;
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.forwardPin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" f;
+	"{scope: global, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.reversePin = "{scope: local, locals: [en, f, r], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" r;
+}
+
+proc rightMotor.forward("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	rightMotor.turnOff("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.reversePin);
+	rightMotor.turnOn("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.forwardPin);
+	rightMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+proc rightMotor.backward("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	rightMotor.turnOff("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.forwardPin);
+	rightMotor.turnOn("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.reversePin);
+	rightMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+proc rightMotor.brake() {
+	rightMotor.turnOn("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.forwardPin);
+	rightMotor.turnOn("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.reversePin);
+	rightMotor.turnOff("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin);
+}
+
+proc rightMotor.setSpeed("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	rightMotor.write("{scope: global, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin, "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+}
+
+func rightMotor.getSpeed() {
+	return rightMotor.read("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" rightMotor.enablePin);
+}
+
+task setup() {
+	setServoDegrees(D3, 90);
+}
+
+task keepDistance() running 1000/s {
+	"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" temp = sonar.distance_cm();
+	"{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" temp = (("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" temp - 10) / 10);
+	if ("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" temp > 100) {
+		leftMotor.brake();
+		rightMotor.brake();
+	} else {
+		move("{scope: global, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" temp);
+	}
+}
+
+proc move("{scope: local, locals: [], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed) {
+	if ("{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed > 0) {
+		leftMotor.forward(speed: "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+		rightMotor.forward(speed: "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+	} else {
+		"{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed = ("{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed * -1);
+		leftMotor.backward(speed: "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+		rightMotor.backward(speed: "{scope: local, locals: [speed], globals: [sonar.trigPin, sonar.echoPin, sonar.maxDistance, sonar.distance, leftMotor.enablePin, leftMotor.forwardPin, leftMotor.reversePin, rightMotor.enablePin, rightMotor.forwardPin, rightMotor.reversePin, temp]}" speed);
+	}
+}

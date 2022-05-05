@@ -4,7 +4,9 @@
             [clojure.walk :as w]
             [petitparser.token :as t]
             [middleware.utils.core :refer [seek random-uuid] :as u]
-            [middleware.ast.primitives :as prims]))
+            [middleware.ast.primitives :as prims]
+            #?(:clj [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 (defn node? [node]
   (and (map? node)

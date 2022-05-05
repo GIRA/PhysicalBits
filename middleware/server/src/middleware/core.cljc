@@ -13,7 +13,121 @@
             [middleware.compilation.parser :as p]
             [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
-            [middleware.compilation.encoder :as en]))
+            [middleware.compilation.encoder :as en]
+            #?(:clj [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
+
+(defn add-metadata [ast]
+  (ast/transform-with-path
+   ast
+   (fn [node path]
+     (if (contains? #{"UziVariableNode"
+                      "UziVariableDeclarationNode"}
+                    (ast/node-type node))
+       (vary-meta node assoc ::cg/metadata
+                  (str "{"
+                       "scope: " (if (ast/global? node path) "global" "local")
+                       ", locals: [" (str/join ", " (map :name (ast/locals-in-scope path))) "]"
+                       ", globals: [" (str/join ", " (map :name (ast/globals-in-scope path))) "]"
+                       "}"))
+       node))))
+
+(comment
+
+
+  (require '[criterium.core :refer [bench with-progress-reporting]])
+
+  (with-progress-reporting
+    (bench (compile-uzi-string src :check-external-code? false)))
+
+  (tufte/add-basic-println-handler! {})
+  (tufte/add-basic-println-handler!
+   {:format-pstats-opts {:columns [:n-calls :p50 :mean :clock :total]
+                         :format-id-fn name}})
+
+  (profile
+   {}
+   (dotimes [_ 50]
+     (compile-uzi-string src)))
+
+  
+  (spit "program_0.uzi" (cg/generate-code ast))
+  
+  (def ast (-> (p/parse "import t from 'test_15.uzi';")
+               (cc/resolve-imports "../../uzi/tests")
+               (add-metadata)))
+  
+  (do (ast/transform-with-path ast
+                               (fn [node path]
+                                 (when (ast/variable-declaration? node)
+                                   (println (node :name)
+                                            (mapv ast/node-type path)))
+                                 node))
+      nil)
+
+
+  (def ast (-> (p/parse src)
+               (cc/resolve-imports "../../uzi/libraries")
+               (add-metadata)))
+
+  (def src "var foo;
+            task setup() {
+              var foo = 1;
+              toggle(foo);
+            }
+            task loop() {
+              toggle(foo);
+              for i = 0 to 10 { toggle(i); }
+            }")
+
+  (def src
+    "
+import sonar from 'Sonar.uzi' {
+	trigPin = A5;
+	echoPin = A4;
+	maxDistance = 200;
+	start reading;
+}
+import leftMotor from 'DCMotor.uzi' {
+	enablePin = D5;
+	forwardPin = D7;
+	reversePin = D8;
+}
+import rightMotor from 'DCMotor.uzi' {
+	enablePin = D6;
+	forwardPin = D11;
+	reversePin = D9;
+}
+
+var temp = 0;
+
+task setup() {
+	setServoDegrees(D3, 90);
+}
+
+task keepDistance() running 1000/s {
+	temp = sonar.distance_cm();
+	temp = ((temp - 10) / 10);
+	if (temp > 100) {
+		leftMotor.brake();
+		rightMotor.brake();
+	} else {
+		move(temp);
+	}
+}
+
+proc move(speed) {
+	if (speed > 0) {
+		leftMotor.forward(speed: speed);
+		rightMotor.forward(speed: speed);
+	} else {
+		speed = (speed * -1);
+		leftMotor.backward(speed: speed);
+		rightMotor.backward(speed: speed);
+	}
+}")
+
+  )
 
 (def ^:private updates (atom nil))
 

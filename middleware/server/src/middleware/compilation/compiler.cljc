@@ -7,7 +7,9 @@
             [middleware.program.emitter :as emit]
             [middleware.compilation.linker :as linker]
             [middleware.compilation.checker :as checker]
-            [middleware.compilation.dead-code-remover :as dcr]))
+            [middleware.compilation.dead-code-remover :as dcr]
+            #?(:clj [taoensso.tufte :as tufte :refer (defnp p profiled profile)]
+               :cljs [taoensso.tufte :as tufte :refer-macros (defnp p profiled profile)])))
 
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker
