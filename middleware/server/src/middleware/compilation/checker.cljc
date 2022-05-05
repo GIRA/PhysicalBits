@@ -114,7 +114,7 @@
             ticking-rate errors))
   (assert-block (:body node) errors))
 
-(defn check-ticking-rate [{:keys [^long value] :as node} errors path]
+(defn check-ticking-rate [{:keys [^float value] :as node} errors path]
   (assert (> value 0)
           "Ticking rate must be a positive value"
           node errors))
