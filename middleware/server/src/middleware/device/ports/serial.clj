@@ -21,7 +21,7 @@
                          (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [port]
-                 (let [in-chan (a/chan 1000)]
+                 (let [in-chan (a/chan (a/sliding-buffer 1000))]
                    (s/listen! port
                               (fn [^java.io.InputStream input-stream]
                                 (try

@@ -1,7 +1,7 @@
 (ns middleware.device.protocol
   (:require [clojure.string :as str]
             [middleware.utils.conversions :as c]
-            [clojure.core.async :as a :refer [<! >! go-loop go]]))
+            [clojure.core.async :as a :refer [<! >! go]]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CONSTANTS
@@ -315,9 +315,9 @@
 
 (defn process-next-message [in]
   (go
-   (when-let [cmd (<! in)]
-     (if-let [dispatch-fn (dispatch-table cmd)]
-       (first (a/alts! [(dispatch-fn in)
-                        (a/timeout 1000)]
-                       :priority true))
-       {:tag :unknown-cmd, :code cmd}))))
+    (when-let [cmd (<! in)]
+      (if-let [dispatch-fn (dispatch-table cmd)]
+        (first (a/alts! [(dispatch-fn in)
+                         (a/timeout 1000)] ; TODO(Richo): Isn't 1s too much?
+                        :priority true))
+        {:tag :unknown-cmd, :code cmd}))))

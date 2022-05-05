@@ -32,7 +32,7 @@
                          (a/close! out-chan))))
                     out-chan))
   (make-in-chan! [port]
-                 (let [in-chan (a/chan 1000)]
+                 (let [in-chan (a/chan (a/sliding-buffer 1000))]
                    (.on port "data" (fn [data]
                                       (dotimes [i (.-length data)]
                                                (a/put! in-chan (aget data i)))))
