@@ -16,7 +16,7 @@
   (:gen-class))
 
 (defmacro project-data [key]
-  "HACK(Richo): This macro allows to read the project.clj file at compile time"
+  ; HACK(Richo): This macro allows to read the project.clj file at compile time
   `~(let [data (-> "project.clj" slurp read-string)
           name (str (nth data 1))
           version (nth data 2)

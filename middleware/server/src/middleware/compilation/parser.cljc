@@ -1,8 +1,7 @@
 (ns middleware.compilation.parser
-  (:require [middleware.utils.core :refer [seek]]
+  (:require [middleware.utils.core :refer [seek parse-number parse-double]]
             [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
-            [middleware.utils.core :refer [parse-number parse-double]]
             [petitparser.core :as pp]
             [petitparser.token :as t]))
 

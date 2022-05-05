@@ -69,8 +69,9 @@
 (defn var-display-name [name]
   (first (str/split name #"#")))
 
-(defn stack-frames [program {:keys [stack pc fp]}]
+(defn stack-frames
   "Recursively parses the stack data and returns a sequence of stack-frames"
+  [program {:keys [stack pc fp]}]
   (when-not (empty? stack)
     (when-let [script (program/script-for-pc program pc)]
       (let [arguments (-> script :arguments)
@@ -118,12 +119,13 @@
                               :pc next-pc
                               :fp next-fp})))))))
 
-(defn instruction-groups [program]
+(defn instruction-groups
   "An instruction group is sequence of contiguous instructions in which
    the last instruction is a statement (as defined in program/statement?).
    This grouping is useful to implement step-by-step execution because we
    mostly care about stepping over statements, instructions in between
    don't really matter much and we can safely bypass them."
+  [program]
   (let [groups (volatile! [])
         current (volatile! [])]
     (loop [pc 0
@@ -131,22 +133,22 @@
       (when script
         (let [instructions (vec (:instructions script))]
           (dotimes [i (count instructions)]
-                   (let [instr (nth instructions i)]
-                     (vswap! current conj [(+ pc i) instr])
-                     (when (program/statement? instr)
-                       (let [instrs (map second @current)
-                             start (apply min (map first @current))
-                             stop (+ start (count instrs) -1)
-                             pcs (range start (inc stop))]
-                         (vswap! groups conj {:start start
-                                              :stop stop
-                                              :instructions instrs
-                                              :pcs pcs
-                                              :script script}))
-                       (vreset! current []))))
+            (let [instr (nth instructions i)]
+              (vswap! current conj [(+ pc i) instr])
+              (when (program/statement? instr)
+                (let [instrs (map second @current)
+                      start (apply min (map first @current))
+                      stop (+ start (count instrs) -1)
+                      pcs (range start (inc stop))]
+                  (vswap! groups conj {:start start
+                                       :stop stop
+                                       :instructions instrs
+                                       :pcs pcs
+                                       :script script}))
+                (vreset! current []))))
           (recur
-            (+ pc (count instructions))
-            rest))))
+           (+ pc (count instructions))
+           rest))))
     @groups))
 
 (defn instruction-group-at-pc [groups pc]
@@ -255,7 +257,7 @@
 (defn step-out [vm program groups ig]
   (step-over-return vm program groups ig))
 
-(defn estimate-breakpoints ; TODO(Richo): Write tests for this function!
+(defn estimate-breakpoints
   ([step-fn]
    (let [state @state]
      (estimate-breakpoints step-fn

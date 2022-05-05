@@ -143,91 +143,91 @@
 
 (defn perform-handshake [{:keys [in out]}]
   (go
-   (>! out (request-connection))
-   (when-let [n1 (<! in)]
-     (let [n2 (confirm-handshake n1)]
-       (>! out [n2])
-       (= n2 (<! in))))))
+    (>! out (request-connection))
+    (when-let [n1 (<! in)]
+      (let [n2 (confirm-handshake n1)]
+        (>! out [n2])
+        (= n2 (<! in))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INCOMING
 
 (defn read-vec! [count in]
   (go
-   (when count
-     (loop [^long i count, elements []]
-       (if (<= i 0)
-         elements
-         (when-let [val (<! in)]
-           (recur (dec i) (conj elements val))))))))
+    (when count
+      (loop [^long i count, elements []]
+        (if (<= i 0)
+          elements
+          (when-let [val (<! in)]
+            (recur (dec i) (conj elements val))))))))
 
 (defn- read-uint16 [in]
   (go
-   (when-let [bytes (<! (read-vec! 2 in))]
-     (c/bytes->uint16 bytes))))
+    (when-let [bytes (<! (read-vec! 2 in))]
+      (c/bytes->uint16 bytes))))
 
 (defn- read-uint32 [in]
   (go
-   (when-let [bytes (<! (read-vec! 4 in))]
-     (c/bytes->uint32 bytes))))
+    (when-let [bytes (<! (read-vec! 4 in))]
+      (c/bytes->uint32 bytes))))
 
 (def read-timestamp read-uint32)
 
 (defn process-pin-value [in]
   (go
-   (let [timestamp (<! (read-timestamp in))
-         count (<! in)
-         data (when count
-                (loop [i 0, data []]
-                  (if (< i count)
-                    (let [^long n1 (<! in)
-                          ^long n2 (<! in)]
-                      (when (and n1 n2)
-                        (let [number (bit-shift-right n1 2)
-                              value (/ (bit-or n2
-                                               (bit-shift-left (bit-and n1 2r11)
-                                                               8))
-                                       1023.0)]
-                          (recur
+    (let [timestamp (<! (read-timestamp in))
+          count (<! in)
+          data (when count
+                 (loop [i 0, data []]
+                   (if (< i count)
+                     (let [^long n1 (<! in)
+                           ^long n2 (<! in)]
+                       (when (and n1 n2)
+                         (let [number (bit-shift-right n1 2)
+                               value (/ (bit-or n2
+                                                (bit-shift-left (bit-and n1 2r11)
+                                                                8))
+                                        1023.0)]
+                           (recur
                             (inc i)
                             (conj data {:number number
                                         :value value})))))
-                    data)))]
-     (when data
-       {:tag :pin-value
-        :timestamp timestamp
-        :data data}))))
+                     data)))]
+      (when data
+        {:tag :pin-value
+         :timestamp timestamp
+         :data data}))))
 
 (defn process-global-value [in]
   (go
-   (let [timestamp (<! (read-timestamp in))
-         count (<! in)
-         data (when count
-                (loop [i 0, data []]
-                  (if (< i count)
-                    (let [number (<! in)
-                          raw-bytes (<! (read-vec! 4 in))]
-                      (when raw-bytes
-                        (recur
+    (let [timestamp (<! (read-timestamp in))
+          count (<! in)
+          data (when count
+                 (loop [i 0, data []]
+                   (if (< i count)
+                     (let [number (<! in)
+                           raw-bytes (<! (read-vec! 4 in))]
+                       (when raw-bytes
+                         (recur
                           (inc i)
                           (conj data {:number number
                                       :value (c/bytes->float raw-bytes)
                                       :raw-bytes raw-bytes}))))
-                    data)))]
-     (when data
-       {:tag :global-value
-        :timestamp timestamp
-        :data data}))))
+                     data)))]
+      (when data
+        {:tag :global-value
+         :timestamp timestamp
+         :data data}))))
 
 (defn process-free-ram [in]
   (go
-   (let [timestamp (<! (read-timestamp in))
-         arduino (<! (read-uint32 in))
-         uzi (<! (read-uint32 in))]
-     (when (and timestamp arduino uzi)
-       {:tag :free-ram
-        :timestamp timestamp
-        :memory {:arduino arduino, :uzi uzi}}))))
+    (let [timestamp (<! (read-timestamp in))
+          arduino (<! (read-uint32 in))
+          uzi (<! (read-uint32 in))]
+      (when (and timestamp arduino uzi)
+        {:tag :free-ram
+         :timestamp timestamp
+         :memory {:arduino arduino, :uzi uzi}}))))
 
 (defn- process-script-state [^long byte]
   (let [running? (> (bit-and 2r10000000 byte) 0)
@@ -240,67 +240,67 @@
 
 (defn process-running-scripts [in]
   (go
-   (let [timestamp (<! (read-timestamp in))
-         count (<! in)
-         script-data (<! (read-vec! count in))]
-     (when script-data
-       {:tag :running-scripts
-        :timestamp timestamp
-        :scripts (mapv process-script-state
-                       script-data)}))))
+    (let [timestamp (<! (read-timestamp in))
+          count (<! in)
+          script-data (<! (read-vec! count in))]
+      (when script-data
+        {:tag :running-scripts
+         :timestamp timestamp
+         :scripts (mapv process-script-state
+                        script-data)}))))
 
 
 (defn process-profile [in]
   (go
-   (let [^long n1 (<! in)
-         ^long n2 (<! in)
-         report-interval (<! in)]
-     (when (and n1 n2 report-interval)
-       {:tag :profile
-        :data {:ticks (bit-or n2
-                              (bit-shift-left n1 7))
-               :interval-ms 100
-               :report-interval report-interval}}))))
+    (let [^long n1 (<! in)
+          ^long n2 (<! in)
+          report-interval (<! in)]
+      (when (and n1 n2 report-interval)
+        {:tag :profile
+         :data {:ticks (bit-or n2
+                               (bit-shift-left n1 7))
+                :interval-ms 100
+                :report-interval report-interval}}))))
 
 (defn process-debugger [in]
   (go
-   (let [index (<! in)
-         pc (<! (read-uint16 in))
-         fp (<! in)
-         ^long stack-size (<! in)
-         stack (when stack-size
-                 (<! (read-vec! (* 4 stack-size) in)))]
-     (when stack
-       {:tag :debugger
-        :data {:index index
-               :pc pc
-               :fp fp
-               ; NOTE(Richo): We partition by 4 because each stack item is a
-               ; single-precision float and then we reverse it so that the
-               ; bottom of the stack comes first.
-               :stack (reverse (partition-all 4 stack))}}))))
+    (let [index (<! in)
+          pc (<! (read-uint16 in))
+          fp (<! in)
+          ^long stack-size (<! in)
+          stack (when stack-size
+                  (<! (read-vec! (* 4 stack-size) in)))]
+      (when stack
+        {:tag :debugger
+         :data {:index index
+                :pc pc
+                :fp fp
+                ; NOTE(Richo): We partition by 4 because each stack item is a
+                ; single-precision float and then we reverse it so that the
+                ; bottom of the stack comes first.
+                :stack (reverse (partition-all 4 stack))}}))))
 
 (defn process-error [in]
   (go
-   (let [^long code (<! in)]
-     (when (and code (> code 0))
-       {:tag :error
-        :error {:code code
-                :msg (error-msg code)}}))))
+    (let [^long code (<! in)]
+      (when (and code (> code 0))
+        {:tag :error
+         :error {:code code
+                 :msg (error-msg code)}}))))
 
 (defn process-trace [in]
   (go
-   (let [count (<! in)
-         bytes (<! (read-vec! count in))]
-     (when bytes
-       {:tag :trace
-        :msg (c/bytes->string bytes)}))))
+    (let [count (<! in)
+          bytes (<! (read-vec! count in))]
+      (when bytes
+        {:tag :trace
+         :msg (c/bytes->string bytes)}))))
 
 (defn process-serial-tunnel [in]
   (go
-   (when-let [val (<! in)]
-     {:tag :serial
-      :data val})))
+    (when-let [val (<! in)]
+      {:tag :serial
+       :data val})))
 
 (def dispatch-table
   {MSG_IN_PIN_VALUE process-pin-value

@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.core.async :as a]
-            [clojure.string :as str]
             [middleware.utils.core :as u]))
 
 (def update-chan (a/chan))

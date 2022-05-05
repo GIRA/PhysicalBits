@@ -7,10 +7,11 @@
             [1 2 3 4])
       4))
 
-(defn- value-size ^long [value]
+(defn- value-size
   "Return the number of bytes necessary to encode this value.
-  	If the value is negative or float then the size is 4 bytes. Also, the
-  	max number of bytes is 4."
+   If the value is negative or float then the size is 4 bytes. Also, the
+   max number of bytes is 4."
+  ^long [value]
   (if (or (zero? value)
           (pos-int? value))
     (value-size-int value)

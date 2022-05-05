@@ -19,8 +19,8 @@
 
 (defn- get-config [path default-value]
   #?(:clj (config/get-in path default-value)
-    ; TODO(Richo): Make the CLJS version work for real...
-    :cljs default-value))
+     ; TODO(Richo): Make the CLJS version work for real...
+     :cljs default-value))
 
 (def initial-state {:connection nil
                     :board UNO
@@ -41,7 +41,7 @@
 (def updates (a/mult update-chan))
 
 (defn- add-pseudo-var! [name value]
-  (if (get-config [:device :pseudo-vars?] false)
+  (when (get-config [:device :pseudo-vars?] false)
     (let [now (or (-> @state :timing :arduino) 0)]
       (swap! state
              #(-> %
@@ -63,27 +63,27 @@
 
 (defn disconnect! []
   (go
-   (let [[{{:keys [connected?] :as conn} :connection}]
-         (swap-vals! state
-                     (fn [{:keys [connection] :as state}]
-                       (if (or (= :pending connection)
-                               (nil? connection))
-                         state
-                         (assoc state :connection :pending))))]
-     (when connected?
-       (logger/error "Connection lost!")
-       (try
-         (ports/disconnect! conn)
-         ; TODO(Richo): I used to think there was some sort of race condition in my
-         ; code that prevented me from being able to quickly disconnect and reconnect.
-         ; However, after further testing it seems to be some OS related issue. So
-         ; just to be safe I'm adding the 1s delay here.
-         (<! (timeout 1000))
-         (catch #?(:clj Throwable :cljs :default) e
-           (log-error "ERROR WHILE DISCONNECTING ->" e)))
-       (port-scanner/start!)
-       (reset! state initial-state)
-       (a/onto-chan! update-chan [:connection :debugger] false)))))
+    (let [[{{:keys [connected?] :as conn} :connection}]
+          (swap-vals! state
+                      (fn [{:keys [connection] :as state}]
+                        (if (or (= :pending connection)
+                                (nil? connection))
+                          state
+                          (assoc state :connection :pending))))]
+      (when connected?
+        (logger/error "Connection lost!")
+        (try
+          (ports/disconnect! conn)
+          ; TODO(Richo): I used to think there was some sort of race condition in my
+          ; code that prevented me from being able to quickly disconnect and reconnect.
+          ; However, after further testing it seems to be some OS related issue. So
+          ; just to be safe I'm adding the 1s delay here.
+          (<! (timeout 1000))
+          (catch #?(:clj Throwable :cljs :default) e
+            (log-error "ERROR WHILE DISCONNECTING ->" e)))
+        (port-scanner/start!)
+        (reset! state initial-state)
+        (a/onto-chan! update-chan [:connection :debugger] false)))))
 
 (defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
@@ -134,7 +134,7 @@
 
 (defn reset-debugger! []
   (let [[old new] (swap-vals! state assoc :debugger (-> initial-state :debugger))]
-    (if (not= old new)
+    (when (not= old new)
       (a/put! update-chan :debugger))))
 
 (defn run [program]
@@ -174,13 +174,13 @@
 
 (defn- keep-alive-loop []
   (go
-   (loop []
-     ; TODO(Richo): We shouldn't need to send a keep alive unless
-     ; we haven't send anything in the last 100 ms.
-     (when (connected?)
-       (send! (p/keep-alive))
-       (<! (timeout 100))
-       (recur)))))
+    (loop []
+      ; TODO(Richo): We shouldn't need to send a keep alive unless
+      ; we haven't send anything in the last 100 ms.
+      (when (connected?)
+        (send! (p/keep-alive))
+        (<! (timeout 100))
+        (recur)))))
 
 (defn- process-timestamp [^long timestamp]
   ; NOTE(Richo): Calculating the time since the last snapshot (both in the vm and the 
@@ -226,16 +226,15 @@
            :pins {:timestamp timestamp :data pins})))
 
 (defn process-global-value [{:keys [timestamp data]}]
-  (let [globals (vec (program/all-globals
-                      (@state :program)))]
-    (let [globals (into {}
-                        (map (fn [{:keys [number] :as global}]
-                               (when-let [name (:name (nth globals number {}))]
-                                 [name (assoc global :name name)]))
-                             data))]
-      (swap! state assoc
-             :globals
-             {:timestamp timestamp :data globals}))))
+  (let [all-globals (-> @state :program program/all-globals vec)
+        globals (into {}
+                      (map (fn [{:keys [number] :as global}]
+                             (when-let [name (:name (nth all-globals number {}))]
+                               [name (assoc global :name name)]))
+                           data))]
+    (swap! state assoc
+           :globals
+           {:timestamp timestamp :data globals})))
 
 (defn process-free-ram [{:keys [memory]}]
   (swap! state assoc :memory memory))
@@ -272,10 +271,10 @@
 
 (defn process-error [{{:keys [code msg]} :error}]
   (go
-   (logger/newline)
-   (logger/warning "%1 detected. The program has been stopped" msg)
-   (if (p/error-disconnect? code)
-     (<! (disconnect!)))))
+    (logger/newline)
+    (logger/warning "%1 detected. The program has been stopped" msg)
+    (when (p/error-disconnect? code)
+      (<! (disconnect!)))))
 
 (defn process-trace [{:keys [msg]}]
   (logger/log "TRACE:" msg))
@@ -285,84 +284,84 @@
 
 (defn process-next-message [in]
   (go
-   (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
-              (<! (p/process-next-message in))]
-     (when timestamp
-       (process-timestamp timestamp))
-     (case tag
-       :pin-value (process-pin-value cmd)
-       :global-value (process-global-value cmd)
-       :running-scripts (process-running-scripts cmd)
-       :free-ram (process-free-ram cmd)
-       :profile (process-profile cmd)
-       :debugger (process-debugger cmd)
-       :trace (process-trace cmd)
-       :serial (process-serial-tunnel cmd)
-       :error (<! (process-error cmd)) ; Special case because it calls disconnect!
-       :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
-                                    (:code cmd)))
-     (when tag (>! update-chan tag))
-     cmd)))
+    (when-let [{:keys [tag timestamp] :or {timestamp nil} :as cmd}
+               (<! (p/process-next-message in))]
+      (when timestamp
+        (process-timestamp timestamp))
+      (case tag
+        :pin-value (process-pin-value cmd)
+        :global-value (process-global-value cmd)
+        :running-scripts (process-running-scripts cmd)
+        :free-ram (process-free-ram cmd)
+        :profile (process-profile cmd)
+        :debugger (process-debugger cmd)
+        :trace (process-trace cmd)
+        :serial (process-serial-tunnel cmd)
+        :error (<! (process-error cmd)) ; Special case because it calls disconnect!
+        :unknown-cmd (logger/warning "Uzi - Invalid response code: %1"
+                                     (:code cmd)))
+      (when tag (>! update-chan tag))
+      cmd)))
 
 (defn- process-input-loop [{:keys [in]}]
   (go
-   (loop []
-     (when (connected?)
-       (if-not (<! (process-next-message in))
-         (<! (disconnect!))
-         (recur))))))
+    (loop []
+      (when (connected?)
+        (if-not (<! (process-next-message in))
+          (<! (disconnect!))
+          (recur))))))
 
 (defn- clean-up-reports-loop []
   (go
-   (loop []
-     (when (connected?)
-       ; If we have pseudo vars, remove old ones (older than 1s)
-       (if-not (zero? (count (-> @state :pseudo-vars :data)))
-         (if (get-config [:device :pseudo-vars?] false)
-           (swap! state update-in [:pseudo-vars :data]
-                  #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
-                         limit (- timestamp 1000)]
-                     (into {} (remove (fn [[_ {^long ts :ts}]] (< ts limit)) %))))
-           (swap! state assoc-in [:pseudo-vars :data] {})))
-       ; Now remove pins/globals that are not being reported anymore
-       (let [reporting (:reporting @state)]
-         (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
-         (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
-       ; Trigger the update event
-       (a/onto-chan! update-chan [:pins :globals :pseudo-vars] false)
-       ; Finally wait 1s and start over
-       (<! (timeout 1000))
-       (recur)))))
+    (loop []
+      (when (connected?)
+        ; If we have pseudo vars, remove old ones (older than 1s)
+        (when-not (zero? (count (-> @state :pseudo-vars :data)))
+          (if (get-config [:device :pseudo-vars?] false)
+            (swap! state update-in [:pseudo-vars :data]
+                   #(let [^long timestamp (or (get-in @state [:pseudo-vars :timestamp]) 0)
+                          limit (- timestamp 1000)]
+                      (into {} (remove (fn [[_ {^long ts :ts}]] (< ts limit)) %))))
+            (swap! state assoc-in [:pseudo-vars :data] {})))
+        ; Now remove pins/globals that are not being reported anymore
+        (let [reporting (:reporting @state)]
+          (swap! state update-in [:pins :data] #(select-keys % (:pins reporting)))
+          (swap! state update-in [:globals :data] #(select-keys % (:globals reporting))))
+        ; Trigger the update event
+        (a/onto-chan! update-chan [:pins :globals :pseudo-vars] false)
+        ; Finally wait 1s and start over
+        (<! (timeout 1000))
+        (recur)))))
 
 (defn- request-connection [port-name baud-rate]
   (go
-   (try
-     (logger/newline) ; TODO(Richo): Maybe clear the output console before connecting??
-     (logger/log "Opening port: %1" port-name)
-     (if-let [connection (ports/connect! port-name baud-rate)]
-       (do
-         (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
-         (logger/log "Requesting connection...")
-         (let [handshake (p/perform-handshake connection)
-               timeout (a/timeout 1000)]
-           (if (a/alt! handshake ([success?]
-                                  (if success?
-                                    (logger/success "Connection accepted!")
-                                    (logger/error "Connection rejected"))
-                                  success?)
-                       timeout (do
-                                 (logger/error "Connection timeout")
-                                 false)
-                       :priority true)
-             connection
-             (do
-               (ports/disconnect! connection)
-               nil))))
-       (do
-         (logger/error "Opening port failed!")
-         nil))
-     (catch #?(:clj Throwable :cljs :default) ex
-       (log-error "ERROR WHILE OPENING PORT ->" ex)))))
+    (try
+      (logger/newline) ; TODO(Richo): Maybe clear the output console before connecting??
+      (logger/log "Opening port: %1" port-name)
+      (if-let [connection (ports/connect! port-name baud-rate)]
+        (do
+          (<! (timeout 2000)) ; NOTE(Richo): Needed in Mac
+          (logger/log "Requesting connection...")
+          (let [handshake (p/perform-handshake connection)
+                timeout (a/timeout 1000)]
+            (if (a/alt! handshake ([success?]
+                                   (if success?
+                                     (logger/success "Connection accepted!")
+                                     (logger/error "Connection rejected"))
+                                   success?)
+                        timeout (do
+                                  (logger/error "Connection timeout")
+                                  false)
+                        :priority true)
+              connection
+              (do
+                (ports/disconnect! connection)
+                nil))))
+        (do
+          (logger/error "Opening port failed!")
+          nil))
+      (catch #?(:clj Throwable :cljs :default) ex
+        (log-error "ERROR WHILE OPENING PORT ->" ex)))))
 
 (defn- connection-successful [connection board reporting?]
   (port-scanner/stop!)
@@ -388,15 +387,15 @@
   ([port-name & {:keys [board baud-rate reporting?]
                  :or {board UNO, baud-rate 9600, reporting? true}}]
    (go
-    (let [[{old-connection :connection}]
-          (swap-vals! state
-                      (fn [{:keys [connection] :as state}]
-                        (if (or (= :pending connection)
-                                (ports/connected? connection))
-                          state
-                          (assoc state :connection :pending))))]
-      (when (nil? old-connection)
-        (if-let [connection (<! (request-connection port-name baud-rate))]
-          (connection-successful connection board reporting?)
-          (swap! state assoc :connection nil))
-        (>! update-chan :connection))))))
+     (let [[{old-connection :connection}]
+           (swap-vals! state
+                       (fn [{:keys [connection] :as state}]
+                         (if (or (= :pending connection)
+                                 (ports/connected? connection))
+                           state
+                           (assoc state :connection :pending))))]
+       (when (nil? old-connection)
+         (if-let [connection (<! (request-connection port-name baud-rate))]
+           (connection-successful connection board reporting?)
+           (swap! state assoc :connection nil))
+         (>! update-chan :connection))))))

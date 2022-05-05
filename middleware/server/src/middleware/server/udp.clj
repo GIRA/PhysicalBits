@@ -31,22 +31,22 @@
 
 (defn- start-incoming-thread []
   (thread
-   (let [buf (byte-array 256)
-         packet (DatagramPacket. buf (count buf))]
-     (loop []
-       (when @update-loop?
-         (when-let [^DatagramSocket udp @server]
-           (.receive udp packet)
-           (let [msg (String. buf 0 (.getLength packet) "utf8")
-                 {:keys [action name value]} (json/decode msg)]
-             (println ">>>" msg)
-             (try
-               (case action
-                 "init" (send! (get-server-state))
-                 "set_pin_value" (device/set-pin-value name value)
-                 "set_global_value" (device/set-global-value name value))
-               (catch Throwable e (log/error "ERROR WHILE RECEIVING (udp) ->" e)))))
-         (recur))))))
+    (let [buf (byte-array 256)
+          packet (DatagramPacket. buf (count buf))]
+      (loop []
+        (when @update-loop?
+          (when-let [^DatagramSocket udp @server]
+            (.receive udp packet)
+            (let [msg (String. buf 0 (.getLength packet) "utf8")
+                  {:keys [action name value]} (json/decode msg)]
+              (println ">>>" msg)
+              (try
+                (case action
+                  "init" (send! (get-server-state))
+                  "set_pin_value" (device/set-pin-value name value)
+                  "set_global_value" (device/set-global-value name value))
+                (catch Throwable e (log/error "ERROR WHILE RECEIVING (udp) ->" e)))))
+          (recur))))))
 
 
 (defn- start-outgoing-thread []
@@ -63,13 +63,6 @@
   (when (compare-and-set! update-loop? false true)
     (start-incoming-thread)
     (start-outgoing-thread)))
-
-(comment
-  (stop)
-  (start)
-
-  @server
- ,)
 
 (defn stop-update-loop []
   (reset! update-loop? false))

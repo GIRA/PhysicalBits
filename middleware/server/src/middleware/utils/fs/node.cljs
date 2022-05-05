@@ -9,10 +9,10 @@
   (write [file data] (fs/writeFileSync (.-path file) data))
   (absolute-path [file] (path/resolve (.-path file)))
   (last-modified [file]
-                 (if-let [stats (fs/lstatSync (.-path file)
-                                              #js{:throwIfNoEntry false})]
-                   (unchecked-int (.-mtimeMs stats))
-                   0))
+    (if-let [stats (fs/lstatSync (.-path file)
+                                 #js{:throwIfNoEntry false})]
+      (unchecked-int (.-mtimeMs stats))
+      0))
   (exists? [file] (fs/existsSync (.-path file))))
 
 (defn file [parent child]

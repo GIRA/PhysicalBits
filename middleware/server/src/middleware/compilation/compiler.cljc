@@ -71,8 +71,9 @@
 
 (declare compile-node)
 
-(defn ^:private with-node [result node]
+(defn ^:private with-node
   "Updates result's metadata with the node (if not present already)"
+  [result node]
   (vary-meta result update :node #(or % node)))
 
 (defn ^:private compile [node ctx]
@@ -516,7 +517,7 @@
   {:path (list)
    :globals (volatile! #{})})
 
-(defn augment-ast [ast board]
+(defn augment-ast
   "This function augments the AST with more information needed for the compiler.
    1) All pin literals are augmented with a :value that corresponds to their
       pin number for the given board. This is useful because it makes pin literals
@@ -528,6 +529,7 @@
       I'm using the following naming conventions:
       - Temporary variables are named with @ and then the counter
       - Local variables already have a name, so I just add the # suffix followed by the counter"
+  [ast board]
   (let [local-counter (volatile! 0)
         temp-counter (volatile! 0)
         reset-counters! (fn []

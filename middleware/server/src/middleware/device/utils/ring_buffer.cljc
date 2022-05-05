@@ -23,15 +23,3 @@
   (let [{:keys [array]} @ring-buffer
         len (count array)]
     (if (zero? len) 0 (/ (sum array) len))))
-
-(comment
-
- (def ring-buffer (make-ring-buffer 10))
-
- (double (avg ring-buffer))
- (push! ring-buffer 20.5)
- (time (dotimes [_ 10000]
-                (push! ring-buffer (rand-int 100))))
- (:array @ring-buffer)
-
- ,)

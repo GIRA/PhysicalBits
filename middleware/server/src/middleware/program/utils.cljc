@@ -11,8 +11,9 @@
    to encode them."
   (mapv emit/constant [0 1 -1]))
 
-(defn all-globals [program]
+(defn all-globals
   "Returns all the globals in the program in the correct order"
+  [program]
   (concat default-globals
           (remove (set default-globals)
                   (:globals program))))
@@ -63,9 +64,10 @@
 (defn instruction-at-pc [program pc]
   (nth (instructions program) pc))
 
-(defn loc->pc [program]
+(defn loc->pc
   "Returns a map from each line of code to its first available pc.
    Returns nil if the program metadata doesn't include source."
+  [program]
   (when-let [source (-> program meta :source)]
     (let [lines (utils/line-indices source)
           tokens (map-indexed (fn [pc instr]
@@ -82,9 +84,10 @@
                                         tokens)))
                    lines)))))
 
-(defn pc->loc [program]
+(defn pc->loc
   "Returns a map from each pc to its first line of code.
    Returns nil if the program metadata doesn't include source."
+  [program]
   (when-let [source (-> program meta :source)]
     (let [lines (map-indexed vector (utils/line-indices source))
           instructions (instructions program)]

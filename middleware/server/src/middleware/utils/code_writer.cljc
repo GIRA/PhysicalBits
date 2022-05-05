@@ -28,7 +28,7 @@
 
 (defn append-indent! [writer]
   (let [level @(:indent-level writer)]
-    (dotimes [i level]
+    (dotimes [_ level]
              (vswap! (:contents writer) conj "\t"))
     (vswap! (:position writer) (partial + level))
     writer))
@@ -43,7 +43,7 @@
 
 (defn save-interval! [writer obj f]
   (let [start (position writer)
-         result (f obj)
-         stop (position writer)]
+        result (f obj)
+        stop (position writer)]
     (vswap! (:intervals writer) assoc obj [start stop])
     result))

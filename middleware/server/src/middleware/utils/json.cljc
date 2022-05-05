@@ -11,8 +11,9 @@
      :cljs (js->clj (.parse js/JSON str)
               :keywordize-keys true)))
 
-(defn- fix-outgoing-floats [obj]
+(defn- fix-outgoing-floats
   "Hack to be able to encode special floats that JSON doesn't support"
+  [obj]
   (w/postwalk #(if-not (number? %)
                  %
                  (cond
@@ -27,8 +28,9 @@
       fix-outgoing-floats
       encode*))
 
-(defn- fix-incoming-floats [obj]
+(defn- fix-incoming-floats
   "Hack to be able to decode special floats that JSON doesn't support"
+  [obj]
   (w/postwalk #(if-not (map? %)
                  %
                  (condp = (keys %)

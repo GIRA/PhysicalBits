@@ -4,12 +4,12 @@
             [middleware.program.utils :as p]))
 
 (defn- globals-to-encode [program]
-  "We need to exclude the default-globals from the encoding"
+  ; We need to exclude the default-globals from the encoding
   (remove (set p/default-globals)
           (:globals program)))
 
 (defn- encode-global [{:keys [^double value ^long size]}]
-  "If the size equals 4 we have to encode it as a float"
+  ; If the size equals 4 we have to encode it as a float
   (let [^long actual-value (if (= 4 size)
                              (float->uint32 value)
                              value)]
@@ -21,20 +21,20 @@
 
 
 (defn- encode-global-group [^long size group]
-  "The first byte or each group says how many variables and the size.
-   - 6 bits: var count
-   - 2 bits: size
-     00 -> 1 byte
-     01 -> 2 bytes
-     10 -> 3 bytes
-     11 -> 4 bytes"
+  ; The first byte or each group says how many variables and the size.
+  ; - 6 bits: var count
+  ; - 2 bits: size
+  ;    00 -> 1 byte
+  ;    01 -> 2 bytes
+  ;    10 -> 3 bytes
+  ;    11 -> 4 bytes
   (concat [(bit-or (bit-shift-left (count group) 2)
                    (dec size))]
           (mapcat encode-global group)))
 
 (defn encode-globals [program]
-  "The globals are grouped by size before encoding. We use 6 bits to
-   specify each group size, so we are limited to 63 variables per group."
+  ; The globals are grouped by size before encoding. We use 6 bits to
+  ; specify each group size, so we are limited to 63 variables per group.
   (let [to-encode (globals-to-encode program)
         groups (group-by :size to-encode)]
     (concat [(count to-encode)]
@@ -205,8 +205,8 @@
   [{:keys [arguments delay locals running? once?] :as script} program]
   (let [^double delay (:value delay)
         has-delay? (> delay 0)
-        has-arguments? (not (empty? arguments))
-        has-locals? (not (empty? locals))]
+        has-arguments? (seq arguments)
+        has-locals? (seq locals)]
     (concat
      ; First byte:
      ; 1 bit : is running? (1 true / 0 false)
