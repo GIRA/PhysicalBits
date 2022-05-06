@@ -75,6 +75,12 @@
 (defn task? [node]
   (= "UziTaskNode" (node-type node)))
 
+(defn procedure? [node]
+  (= "UziProcedureNode" (node-type node)))
+
+(defn function? [node]
+  (= "UziFunctionNode" (node-type node)))
+
 (defn script? [node]
   (contains? #{"UziTaskNode"
                "UziFunctionNode"
