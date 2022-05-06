@@ -11,7 +11,7 @@
 ; just storing the description as a format-string with the argument data?
 (defn ^:private register-error! [description node errors]
   (vswap! errors conj {:node node
-                       :src (if-let [token (get (meta node) :token)]
+                       :src (when-let [token (get (meta node) :token)]
                               (t/input-value token))
                        :description description}))
 
