@@ -59,7 +59,8 @@
       ; TODO(Richo): Optimization. Reuse the writer until file changes
       (with-open [writer (io/writer file :append true)]
         (csv/write-csv writer [data])))
-    (catch java.lang.Throwable _)))
+    (catch java.lang.Throwable ex
+      (println "ERROR WHILE WRITING TO EVENT LOG ->" ex))))
 
 
 (comment
