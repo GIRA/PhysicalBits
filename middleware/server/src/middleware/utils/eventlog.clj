@@ -1,5 +1,5 @@
 (ns middleware.utils.eventlog
-  (:require #?(:clj [clojure.java.io :as io])
+  (:require [clojure.java.io :as io]
             [clojure.string :as str]
             [middleware.utils.core :refer [parse-int]]))
 
@@ -8,13 +8,14 @@
 (def file-name (atom nil))
 
 (defn today []
-  #?(:clj (java.time.LocalDate/now)))
+  (java.time.LocalDate/now))
+
 
 (defn events-folder []
-  #?(:clj (io/file "events")))
+  (io/file "events"))
 
 (defn file-size [fname]
-  #?(:clj (.length (io/file "events" fname))))
+  (.length (io/file "events" fname)))
 
 (defn inc-counter [fname]
   (let [[d c e] (str/split fname #"\.")]
@@ -39,15 +40,17 @@
          (str date ".1.csv"))))))
 
 (defn append [str]
-  #?(:clj (spit (io/file "events" (find-log-file))
-                str :append true)))
+  (spit (io/file "events" (find-log-file))
+        str :append true))
+
 
 (comment
+
 
   (require '[clojure.core.async :as a :refer [<! go]])
 
   (def stop (atom false))
-  
+
   (go (loop [i 0]
         (when-not @stop
           (append (str "RICHO " i "\n"))
@@ -55,6 +58,8 @@
             (<! (a/timeout 10)))
           (recur (inc i))))
       (println "BYE"))
-  
+
   (reset! stop true)
+
+
   )
