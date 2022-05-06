@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
             [clojure.core.async :as a]
-            [middleware.utils.core :as u]))
+            [middleware.utils.core :as u]
+            [middleware.utils.eventlog :as elog]))
 
 (def update-chan (a/chan))
 (def updates (a/mult update-chan))
@@ -17,6 +18,7 @@
                :text format-str
                :args (mapv str args)}]
     (a/put! update-chan entry)
+    (elog/append "LOGGER" entry)
     (log* (apply u/format (:text entry) (:args entry)))))
 
 (defn info [str & args]
