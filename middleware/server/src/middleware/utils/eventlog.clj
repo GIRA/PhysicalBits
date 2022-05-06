@@ -2,6 +2,7 @@
   (:require [clojure.java.io :as io]
             [clojure.data.csv :as csv]
             [clojure.string :as str]
+            [middleware.utils.config :as config]
             [middleware.utils.core :refer [parse-int random-uuid]]))
 
 (def pc-id (try
@@ -54,11 +55,12 @@
 
 (defn append [evt-type & [evt-data]]
   (try
-    (let [file (io/file "events" (find-log-file))
-          data [pc-id session-id (now) evt-type evt-data]]
+    (when (config/get :eventlog? false)
+      (let [file (io/file "events" (find-log-file))
+            data [pc-id session-id (now) evt-type evt-data]]
       ; TODO(Richo): Optimization. Reuse the writer until file changes
-      (with-open [writer (io/writer file :append true)]
-        (csv/write-csv writer [data])))
+        (with-open [writer (io/writer file :append true)]
+          (csv/write-csv writer [data]))))
     (catch java.lang.Throwable ex
       (println "ERROR WHILE WRITING TO EVENT LOG ->" ex))))
 

@@ -8,4 +8,5 @@
  :http {:enabled? true
         :interval 100}
  :udp {:enabled? true
-       :interval 16}}
+       :interval 16}
+ :eventlog? true}
