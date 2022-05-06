@@ -7,6 +7,7 @@
                  [org.clojure/core.async "1.3.618"]
                  [org.clojure/tools.logging "1.1.0"]
                  [org.clojure/tools.cli "1.0.194"] ; Parse CLI arguments
+                 [org.clojure/data.csv "1.0.1"] ; For the eventlog
                  [ch.qos.logback/logback-classic "1.1.3"]
                  [clj-serial "2.0.5"]
                  [compojure "1.6.1"]
