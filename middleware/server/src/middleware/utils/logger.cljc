@@ -1,6 +1,7 @@
 (ns middleware.utils.logger
   (:refer-clojure :exclude [newline])
   (:require #?(:clj [clojure.tools.logging :as log])
+            [clojure.string :as str]
             [clojure.core.async :as a]
             [middleware.utils.core :as u]
             [middleware.utils.eventlog :as elog]))
@@ -18,8 +19,10 @@
                :text format-str
                :args (mapv str args)}]
     (a/put! update-chan entry)
-    (elog/append "LOGGER" entry)
-    (log* (apply u/format (:text entry) (:args entry)))))
+    (let [msg (apply u/format (:text entry) (:args entry))]
+      (when-not (str/blank? msg)
+        (elog/append (str "LOGGER/" (str/upper-case (name msg-type))) msg))
+      (log* msg))))
 
 (defn info [str & args]
   (append :info str args))
