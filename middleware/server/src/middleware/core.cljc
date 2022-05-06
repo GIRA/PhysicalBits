@@ -126,13 +126,13 @@
 
 (defn set-pin-report! [pins]
   (go-try
-   (elog/append "CORE/SET_PIN_REPORT" pins)
+   (elog/append "CORE/SET_PIN_REPORT" (vec pins))
    (doseq [[pin-name report?] pins]
      (dc/set-pin-report pin-name report?))))
 
 (defn set-global-report! [globals]
   (go-try
-   (elog/append "CORE/SET_GLOBAL_REPORT" globals)
+   (elog/append "CORE/SET_GLOBAL_REPORT" (vec globals))
    (doseq [[global-name report?] globals]
      (dc/set-global-report global-name report?))))
 
@@ -170,7 +170,7 @@
 
 (defn set-breakpoints! [breakpoints]
   (go-try
-   (elog/append "CORE/DEBUGGER_SET_BREAKPOINTS" breakpoints)
+   (elog/append "CORE/DEBUGGER_SET_BREAKPOINTS" (vec breakpoints))
    (let [loc->pc (program/loc->pc (@dc/state :program))]
      ; TODO(Richo): If loc->pc returns nil try the next loc?
      (debugger/set-user-breakpoints! (keep loc->pc breakpoints)))))
