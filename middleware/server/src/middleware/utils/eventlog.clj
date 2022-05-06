@@ -52,7 +52,7 @@
          (inc-counter last)
          (str date ".1.csv"))))))
 
-(defn append [evt-type evt-data]
+(defn append [evt-type & [evt-data]]
   (try
     (let [file (io/file "events" (find-log-file))
           data [pc-id session-id (now) evt-type evt-data]]
@@ -66,11 +66,11 @@
 (comment
 
   (def w (io/writer "foo.txt" :append true))
-  (time (csv/write-csv w [[pc-id session-id (now) "RICHO" {:a 1 :b 2 :c "Richo, capo"}]]))
+  (time (csv/write-csv w [[pc-id session-id (now) "RICHO" nil]]))
 
   (.close w)
   
-  (time (append "RICHO" {:a 1 :b 2 :c "Richo, capo"}))
+  (time (append "RICHO"  #_{:a 1 :b 2 :c "Richo, capo"}))
 
   (require '[clojure.core.async :as a :refer [<! go]])
 
