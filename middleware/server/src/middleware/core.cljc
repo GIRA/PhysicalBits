@@ -6,6 +6,7 @@
             [middleware.utils.json :as json]
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
+            [middleware.utils.eventlog :as elog]
             [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
@@ -23,11 +24,13 @@
 
 (defn connect! [port & args]
   (go-try
+   (elog/append "CORE/CONNECT" {:port port :args args})
    (<? (apply dc/connect! port args))
    (-> @dc/state :connection :port-name)))
 
 (defn disconnect! []
   (go-try
+   (elog/append "CORE/DISCONNECT")
    (<? (dc/disconnect!))
    (nil? (dc/connected?))))
 
@@ -42,6 +45,30 @@
   (let [ast (-> str p/parse ast/generate-ids)]
     (vary-meta (apply cc/compile-tree ast args)
                assoc :type :uzi)))
+
+(defn compilation-success [program bytecodes type silent?]
+  (let [ast (-> program meta :final-ast)]
+    (elog/append "CORE/COMPILATION_SUCCESS"
+                 {:stats {:bytecodes (count bytecodes)
+                          :instructions (count (program/pcs program))
+                          :globals (count (:globals ast))
+                          :imports (count (:imports ast))
+                          :prims (count (:primitives ast))
+                          :tasks (count (filter ast/task?
+                                                (:scripts ast)))
+                          :procs (count (filter ast/procedure?
+                                                (:scripts ast)))
+                          :funcs (count (filter ast/function?
+                                                (:scripts ast)))}
+                  :type (keyword type) :silent? silent?})))
+
+(defn compilation-failed [src ex type silent?]
+  (elog/append "CORE/COMPILATION_FAIL"
+               {:src src :type (keyword type) :silent? silent?
+                :ex {:description (.getMessage ex)
+                     :errors (if-let [{errors :errors} (ex-data ex)]
+                               (mapv :description errors)
+                               [])}}))
 
 (defn compile! [src type silent? & args]
   (go-try
@@ -58,8 +85,10 @@
          (logger/success "Compilation successful!"))
        (reset! program-atom program)
        (a/put! program-chan true)
+       (compilation-success program bytecodes type silent?)
        program)
      (catch #?(:clj Throwable :cljs :default) ex
+       (compilation-failed src ex type silent?)
        (when-not silent?
          (logger/newline)
          (logger/exception ex)
@@ -78,57 +107,70 @@
 
 (defn compile-and-run! [src type silent? & args]
   (go-try
+   (elog/append "CORE/COMPILE_AND_RUN")
    (let [program (<? (apply compile! src type silent? args))]
      (debugger/run-program! program)
      program)))
 
 (defn run! [program]
   (go-try 
+   (elog/append "CORE/RUN")
    (debugger/run-program! #(dc/run program))))
 
 (defn compile-and-install! [src type & args]
   (go-try
+   (elog/append "CORE/COMPILE_AND_INSTALL")
    (let [program (<? (apply compile! src type false args))]
      (dc/install program)
      program)))
 
 (defn set-pin-report! [pins]
   (go-try
+   (elog/append "CORE/SET_PIN_REPORT" pins)
    (doseq [[pin-name report?] pins]
      (dc/set-pin-report pin-name report?))))
 
 (defn set-global-report! [globals]
   (go-try
+   (elog/append "CORE/SET_GLOBAL_REPORT" globals)
    (doseq [[global-name report?] globals]
      (dc/set-global-report global-name report?))))
 
 (defn set-profile! [enabled?]
   (go-try
+   (elog/append "CORE/SET_PROFILE" enabled?)
    (if enabled?
      (dc/start-profiling)
      (dc/stop-profiling))))
 
 (defn debugger-break! []
+  (elog/append "CORE/DEBUGGER_BREAK")
   (go-try (debugger/break!)))
 
 (defn debugger-continue! []
+  (elog/append "CORE/DEBUGGER_CONTINUE")
   (go-try (debugger/continue!)))
 
 
 (defn debugger-step-over! []
+  (elog/append "CORE/DEBUGGER_STEP_OVER")
   (go-try (debugger/step-over!)))
 
 (defn debugger-step-into! []
+  (elog/append "CORE/DEBUGGER_STEP_INTO")
   (go-try (debugger/step-into!)))
 
 (defn debugger-step-out! []
+  (elog/append "CORE/DEBUGGER_STEP_OUT")
   (go-try (debugger/step-out!)))
 
 (defn debugger-step-next! []
+  (elog/append "CORE/DEBUGGER_STEP_NEXT")
   (go-try (debugger/step-next!)))
 
 (defn set-breakpoints! [breakpoints]
   (go-try
+   (elog/append "CORE/DEBUGGER_SET_BREAKPOINTS" breakpoints)
    (let [loc->pc (program/loc->pc (@dc/state :program))]
      ; TODO(Richo): If loc->pc returns nil try the next loc?
      (debugger/set-user-breakpoints! (keep loc->pc breakpoints)))))
