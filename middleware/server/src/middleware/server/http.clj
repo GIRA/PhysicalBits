@@ -132,6 +132,8 @@
                         (POST "/uzi/debugger/step-out" _ (debugger-step-out-handler))
                         (POST "/uzi/debugger/step-next" _ (debugger-step-next-handler))
                         (POST "/uzi/debugger/set-breakpoints" {params :params} (debugger-set-breakpoints params))
+                        (POST "/uzi/elog" {{:strs [type data]} :params} (do (elog/append type (json/decode data))
+                                                                            (json-response "OK")))
 
                         (route/not-found "No such page."))
 

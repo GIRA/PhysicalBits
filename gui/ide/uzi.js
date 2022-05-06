@@ -197,6 +197,15 @@ let Uzi = (function () {
       return POST(url, data);
     },
 
+    elog: function (evtType, evtData) {
+      let url = apiURL + "/uzi/elog";
+      let data = {
+        type: evtType,
+        data: JSONX.stringify(evtData),
+      };
+      return POST(url, data);
+    },
+
     debugger: {
       setBreakpoints: function (breakpoints) {
         if (Uzi.state.connection.portName == "simulator") {
