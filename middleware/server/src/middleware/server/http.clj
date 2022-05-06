@@ -43,37 +43,31 @@
    :body    (json/encode data)})
 
 (defn update-handler [^IEventSink socket req]
-  (elog/append "HTTP/WS_CONNECT")
   (swap! clients conj socket)
   (ws/on-closed socket #(swap! clients disj socket))
   (ws/put! socket (json/encode (core/get-server-state))))
 
 (defn connect-handler [params]
   (let [port (params "port")]
-    (elog/append "HTTP/CONNECT" port)
     (json-response (<?? (core/connect! port)))))
 
 (defn disconnect-handler [_req]
-  (elog/append "HTTP/DISCONNECT")
   (json-response (<?? (core/disconnect!))))
 
 (defn compile-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (elog/append "HTTP/COMPILE" {:type type :silent silent})
   (json-response (<?? (core/compile! src type (= silent "true")
                                      :lib-dir uzi-libraries))))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
-  (elog/append "HTTP/RUN" {:type type :silent silent})
   (json-response (<?? (core/compile-and-run! src type (= silent "true")
                                              :lib-dir uzi-libraries))))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
-  (elog/append "HTTP/INSTALL" {:type type})
   (json-response (<?? (core/compile-and-install! src type
                                                  :lib-dir uzi-libraries))))
 
@@ -81,7 +75,6 @@
   (let [pins (remove empty? (str/split pins #","))
         report (map (partial = "true")
                     (remove empty? (str/split report #",")))]
-    (elog/append "HTTP/PIN_REPORT" {:pins pins :report report})
     (if-not (= (count pins) (count report))
       (json-response "Invalid request parameters" 400)
       (json-response (<?? (core/set-pin-report! (map vector pins report)))))))
@@ -90,42 +83,33 @@
   (let [globals (remove empty? (str/split globals #","))
         report (map (partial = "true")
                     (remove empty? (str/split report #",")))]
-    (elog/append "HTTP/GLOBAL_REPORT" {:globals globals :report report})
     (if-not (= (count globals) (count report))
       (json-response "Invalid request parameters" 400)
       (json-response (<?? (core/set-global-report! (map vector globals report)))))))
 
 (defn profile-handler [{:strs [enabled]}]
-  (elog/append "HTTP/PROFILE" enabled)
   (json-response (<?? (core/set-profile! (= "true" enabled)))))
 
 (defn debugger-break-handler []
-  (elog/append "HTTP/DEBUGGER_BREAK")
   (json-response (<?? (core/debugger-break!))))
 
 (defn debugger-continue-handler []
-  (elog/append "HTTP/DEBUGGER_CONTINUE")
   (json-response (<?? (core/debugger-continue!))))
 
 (defn debugger-step-over-handler []
-  (elog/append "HTTP/DEBUGGER_STEP_OVER")
   (json-response (<?? (core/debugger-step-over!))))
 
 (defn debugger-step-into-handler []
-  (elog/append "HTTP/DEBUGGER_STEP_INTO")
   (json-response (<?? (core/debugger-step-into!))))
 
 (defn debugger-step-out-handler []
-  (elog/append "HTTP/DEBUGGER_STEP_OUT")
   (json-response (<?? (core/debugger-step-out!))))
 
 (defn debugger-step-next-handler []
-  (elog/append "HTTP/DEBUGGER_STEP_NEXT")
   (json-response (<?? (core/debugger-step-next!))))
 
 (defn debugger-set-breakpoints [{:strs [breakpoints] :or {breakpoints ""}}]
   (let [breakpoints (map parse-int (remove empty? (str/split breakpoints #",")))]
-    (elog/append "HTTP/DEBUGGER_SET_BREAKPOINTS" breakpoints)
     (json-response (<?? (core/set-breakpoints! breakpoints)))))
 
 (defn- create-handler [uzi-libraries web-resources]
@@ -166,12 +150,10 @@
     (core/start-update-loop! (comp notify-clients! json/encode))
     (let [s (http/start-server (create-handler uzi-libraries web-resources)
                                {:port server-port})]
-      (elog/append "HTTP/START" server-port)
       (reset! server s))))
 
 (defn stop []
   (when-let [^java.io.Closeable s @server]
-    (elog/append "HTTP/STOP")
     (core/stop-update-loop!)
     (doseq [socket @clients]
       (ws/close! socket))
