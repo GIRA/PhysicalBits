@@ -58,7 +58,7 @@
     (when (config/get :eventlog? false)
       (let [file (io/file "events" (find-log-file))
             data [pc-id session-id (now) evt-type evt-data]]
-      ; TODO(Richo): Optimization. Reuse the writer until file changes
+        ; TODO(Richo): Optimization. Reuse the writer until file changes
         (with-open [writer (io/writer file :append true)]
           (csv/write-csv writer [data]))))
     (catch java.lang.Throwable ex
