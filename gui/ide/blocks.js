@@ -2717,6 +2717,7 @@ let UziBlock = (function () {
           ignoreChanges = false;
           return;
         }
+        
 
         if (evt.type == Blockly.Events.UI) {
           userInteraction = true;
@@ -2746,7 +2747,7 @@ let UziBlock = (function () {
           }
           return;
         }
-
+        
         /*
         NOTE(Richo): Whenever a block is created or deleted we update the timestamps map.
         These timestamps should help us disambiguate when two proc/func blocks with the same
@@ -2782,6 +2783,14 @@ let UziBlock = (function () {
         handleVariableDeclarationBlocksEvents(evt);
 
         trigger("change", userInteraction);
+        
+        if (userInteraction) {          
+          let evtType = evt.type;
+          let blockType = null;
+          let block = workspace.getBlockById(evt.blockId);
+          if (block) { blockType = block.type; }
+          Uzi.elog("BLOCKLY/USER_INTERACTION", {type: evtType, block: blockType});
+        }
       });
 
       initTasksToolboxCategory(toolbox, workspace);
