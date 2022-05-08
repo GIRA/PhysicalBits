@@ -203,7 +203,7 @@ let Uzi = (function () {
         type: evtType,
         data: JSONX.stringify(evtData),
       };
-      console.log("ELOG! >>> " + evtType + " -> " + evtData);
+      console.log("ELOG! >>> " + evtType + " -> ", evtData);
       return POST(url, data);
     },
 

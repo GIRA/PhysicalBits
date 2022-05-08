@@ -90,7 +90,8 @@ let IDE = (function () {
           }
           if (buttons.includes(element.localName) || handled.has(element.id)) return;
           Uzi.elog("UI/CLICK3", "#" + element.id);
-          
+        } catch {
+          // Do nothing?
         } finally {
           handled.clear(); 
         }
