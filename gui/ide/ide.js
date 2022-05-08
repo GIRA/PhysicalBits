@@ -39,7 +39,7 @@ let IDE = (function () {
     },
   };
 
-  function initializeElog() {
+  function initializeElog() {    
     let buttons = ["input", "a", "button", "select"];
     let handled = new Set();
     $(buttons.join(",")).on("click", function () {
@@ -53,59 +53,50 @@ let IDE = (function () {
     $(window).click(function (e) {
       let element = e.target;
       setTimeout(function () {
-        if (handled.has(element.id)) {
-          handled.clear();
-          return;
-        }
-  
-        // Inspector "eyes"
-        if (element.className.includes("fa-eye")) {
-          if (element.id.startsWith("pin")) {
-            Uzi.elog("UI/PIN_EYE_CLICK", "#" + element.id);
-          } else if (element.id.startsWith("global")) {
-            Uzi.elog("UI/GLOBAL_EYE_CLICK", "#" + element.id);
-          }
-          handled.clear();
-          return;
-        }
-  
-        // Special case for empty panel
-        if (element.className.includes("lm_content")) {
-          let firstChild = element.childNodes[0];
-          if (firstChild && firstChild.id) {
-            Uzi.elog("UI/CLICK2", "#" + firstChild.id);
-            handled.clear();
-            return;
-          }
-        }
-  
-        // Special case for labels (to avoid logging twice)
-        if (element.localName == "label") {
-          let target = document.getElementById(element.getAttribute("for"));
-          if (target && buttons.includes(target.localName)) {
-            if (target.type == "checkbox" && !handled.has(target.id)) {
-              Uzi.elog("UI/CLICK4", "#" + target.id);
+        try {
+          if (handled.has(element.id)) return;
+    
+          // Inspector "eyes"
+          if (element.className.includes("fa-eye")) {
+            if (element.id.startsWith("pin")) {
+              Uzi.elog("UI/PIN_EYE_CLICK", "#" + element.id);
+            } else if (element.id.startsWith("global")) {
+              Uzi.elog("UI/GLOBAL_EYE_CLICK", "#" + element.id);
             }
-            handled.clear();
             return;
           }
-        }
-        
-        // Fallback: look up in the parent chain
-        while (!element.id) {
-          element = element.parentNode;
-          if (!element || element == document.body) {
-            handled.clear();
-            return;
+    
+          // Special case for empty panel
+          if (element.className.includes("lm_content")) {
+            let firstChild = element.childNodes[0];
+            if (firstChild && firstChild.id) {
+              Uzi.elog("UI/CLICK2", "#" + firstChild.id);
+              return;
+            }
           }
+    
+          // Special case for labels (to avoid logging twice)
+          if (element.localName == "label") {
+            let target = document.getElementById(element.getAttribute("for"));
+            if (target && buttons.includes(target.localName)) {
+              if (target.type == "checkbox" && !handled.has(target.id)) {
+                Uzi.elog("UI/CLICK4", "#" + target.id);
+              }
+              return;
+            }
+          }
+          
+          // Fallback: look up in the parent chain
+          while (!element.id) {
+            element = element.parentNode;
+            if (!element || element == document.body) return;
+          }
+          if (buttons.includes(element.localName) || handled.has(element.id)) return;
+          Uzi.elog("UI/CLICK3", "#" + element.id);
+          
+        } finally {
+          handled.clear(); 
         }
-        if (buttons.includes(element.localName) || handled.has(element.id)) {
-          handled.clear();
-          return;
-        }
-        //console.log("^^^ #" + element.id);      
-        Uzi.elog("UI/CLICK3", "#" + element.id);     
-        handled.clear(); 
       }, 0);
     });
   }
