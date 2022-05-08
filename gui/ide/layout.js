@@ -72,6 +72,7 @@ let LayoutManager = (function () {
   let layout;
   let panels = new Map();
   let onStateChanged = function () { /* DO NOTHING */ }
+  let resetting = false;
   
   let observers = {
     "close" : [],
@@ -85,7 +86,8 @@ let LayoutManager = (function () {
     });
   }
 
-  function reset() {
+  function reset() {    
+    Uzi.elog("LAYOUT/RESET");
     setLayoutConfig(defaultLayoutConfig);
   }
   
@@ -106,6 +108,9 @@ let LayoutManager = (function () {
   function getLayoutConfig() { return layout.toConfig(); }
 
   function setLayoutConfig(config) {
+    resetting = true;
+    setTimeout(() => resetting = false, 0);
+
     if (layout) { layout.destroy(); }
     panels.clear();
 
@@ -116,6 +121,9 @@ let LayoutManager = (function () {
       container.on('destroy', function () {
         $("#hidden-panels").append($el);
         trigger("close", state.id);
+        if (!resetting) {
+          Uzi.elog("LAYOUT/PANEL_CLOSE", state.id);
+        }
       });
       panels[state.id] = container;
     });
@@ -152,6 +160,7 @@ let LayoutManager = (function () {
 
   function showPlotter() {
     if (layout.root.getItemsById("plotter").length > 0) return;
+    Uzi.elog("LAYOUT/PANEL_OPEN", "#plotter-panel");
 
     let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
     let path = [siblingPanel];
@@ -174,6 +183,7 @@ let LayoutManager = (function () {
 
   function showDebugger() {
     if (layout.root.getItemsById("debugger").length > 0) return;
+    Uzi.elog("LAYOUT/PANEL_OPEN", "#debugger-panel");
 
     let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
     let path = [siblingPanel];

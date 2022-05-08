@@ -47,9 +47,6 @@ let IDE = (function () {
       handled.add(this.id);
       Uzi.elog("UI/CLICK1", "#" + this.id);
     });
-    LayoutManager.on("close", (panel) => {
-      Uzi.elog("UI/PANEL_CLOSE", panel);
-    });
     $(window).click(function (e) {
       let element = e.target;
       setTimeout(function () {
