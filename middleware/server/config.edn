@@ -1,4 +1,4 @@
-{:device {:report-interval-min 0
+{:device {:report-interval-min 25
           :report-interval-max 100
           :report-interval-inc 5
           :delta-threshold-min 1
