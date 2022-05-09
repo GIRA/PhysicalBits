@@ -84,7 +84,7 @@ let IDE = (function () {
           }
           
           // Fallback: look up in the parent chain
-          while (!element.id) {
+          while (!element.id || element.id.startsWith(":")) {
             element = element.parentNode;
             if (!element || element == document.body) return;
           }
