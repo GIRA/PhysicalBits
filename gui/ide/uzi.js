@@ -198,7 +198,7 @@ let Uzi = (function () {
       return POST(url, data);
     },
 
-    elog: function (evtType, evtData) {
+    elog: function (evtType, evtData) {      
       let url = apiURL + "/uzi/elog";
       let data = {
         type: evtType,
@@ -297,15 +297,8 @@ let Uzi = (function () {
   };
 
   function POST(url, data) {
+    if (DEMO) return Promise.resolve();
     return ajax.POST(url, data);
-  }
-
-  function log(data) {
-    console.log(data);
-  }
-
-  function errorHandler (err) {
-    console.log(err);
   }
 
   function reconnect() {
