@@ -53,7 +53,8 @@ let Uzi = (function () {
       },
       globals: {available: [], elements: []},
       "pseudo-vars": {available: [], elements: []},
-      program: {src: null, compiled: null, ast: null}
+      program: {src: null, compiled: null, ast: null},
+      debugger: {isHalted: false},
     },
     serverAvailable: true,
     socket: null,
