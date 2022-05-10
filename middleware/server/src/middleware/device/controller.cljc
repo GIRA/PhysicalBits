@@ -58,9 +58,7 @@
 
 (defn start-port-scanning! []
   (add-watch port-scanner/available-ports ::scanner-update
-             (fn [_ _ old new]
-               (when (not= old new)
-                 (a/put! update-chan :connection))))
+             (fn [_ _ _ _] (a/put! update-chan :connection)))
   (port-scanner/start!))
 
 (defn stop-port-scanning! []
