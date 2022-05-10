@@ -1310,6 +1310,7 @@ let BlocksToAST = (function () {
 			throw "CODEGEN ERROR: Type not found '" + type + "'";
 		}
 		try {
+			ctx.addToHistogram(type);
 			ctx.path.push(block);
 			func(block, ctx, stream);
 		}
@@ -1370,6 +1371,12 @@ let BlocksToAST = (function () {
 				path: [xml],
 				imports: new Map(),
 				globals: [],
+
+				histogram: {},
+				addToHistogram: function (type) {
+					let count = ctx.histogram[type] || 0;
+					ctx.histogram[type] = count + 1;
+				},
 
 				/*
 				 * NOTE(Richo): For now, the only blocks capable of declaring local variables
@@ -1533,6 +1540,7 @@ let BlocksToAST = (function () {
 				}
 				scripts.unshift(builder.task(null, name, [], "once", null, setup));
 			}
+			Uzi.elog("CODEGEN/BLOCKS->AST", ctx.histogram);
 			return builder.program(null,
 				Array.from(ctx.imports, entry => entry[1]),
 				ctx.globals.map(varName => metadata.variables.find(v => v.name == varName)),

@@ -1149,6 +1149,7 @@ let ASTToBlocks = (function () {
 			throw "CODEGEN ERROR: Type not found '" + type + "'";
 		}
 		try {
+			ctx.addToHistogram(type);
 			ctx.path.push(json);
 			return func(json, ctx);
 		}	finally {
@@ -1165,6 +1166,12 @@ let ASTToBlocks = (function () {
 				sonars: [],
 				joysticks: [],
 				lists: [],
+
+				histogram: {},
+				addToHistogram: function (type) {
+					let count = ctx.histogram[type] || 0;
+					ctx.histogram[type] = count + 1;
+				},
 
 				addVariable: function (variable) {
 					if (ctx.variables.some(v => v.name == variable.name)) return;
@@ -1236,9 +1243,11 @@ let ASTToBlocks = (function () {
 			};
 
 			// TODO(Richo): Preserve old metadata somehow?
+			let blocks = Blockly.Xml.domToText(generateXMLFor(program.ast, ctx));			
+			Uzi.elog("CODEGEN/AST->BLOCKS", ctx.histogram);
 			return {
         version: UziBlock.version,
-        blocks: Blockly.Xml.domToText(generateXMLFor(program.ast, ctx)),
+        blocks: blocks,
         motors: ctx.motors,
         sonars: ctx.sonars,
         joysticks: ctx.joysticks,
