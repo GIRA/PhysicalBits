@@ -807,7 +807,7 @@ let IDE = (function () {
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
-      let defaultOption = selectedPort == "automatic" || "simulator" ? "" : selectedPort;
+      let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
       MessageBox.prompt(i18n.translate("Choose port"),
                         i18n.translate("Port name:"),
                         defaultOption).then(value => {
