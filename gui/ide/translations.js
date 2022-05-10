@@ -9,6 +9,7 @@ var TRANSLATIONS = [
   ["Save as...", null, "Guardar como...", "Salvesta kui...", "Spara som..."],
   ["Download...", null, "Descargar...", "Laadi...", "Ladda..."],
   ["Automatic", null, "Automático", "Automaatne", "Automatisk"],
+  ["Simulator", null, "Simulador", null, null],
   ["Other...", null, "Otro...", "Muu...", "Annan..."],
   ["Connect", null, "Conectar", "Ühenda", "Anslut"],
   ["Disconnect", null, "Desconectar", "Ühenda lahti", "Koppla ifrån"],
