@@ -2784,14 +2784,14 @@ let UziBlock = (function () {
 
         trigger("change", userInteraction);
         
-        if (userInteraction) {          
+        if (userInteraction && !UziCode.isFocused()) {
           let evtType = evt.type;
           let blockType = null;
           let block = workspace.getBlockById(evt.blockId);
           if (block) { blockType = block.type; }
           if (!blockType && evt.xml) { blockType = evt.xml.getAttribute("type"); }
           if (!blockType && evt.oldXml) { blockType = evt.oldXml.getAttribute("type"); }
-          Uzi.elog("BLOCKLY/USER_INTERACTION", {type: evtType, block: blockType});
+          Uzi.elog("BLOCKLY/EVENT", {type: evtType, block: blockType});
         }
       });
 
