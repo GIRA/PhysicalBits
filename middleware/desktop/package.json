@@ -1,5 +1,5 @@
 {
-  "name": "uzi-desktop",
+  "name": "physical-bits",
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
@@ -16,13 +16,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GIRA/UziScript.git"
+    "url": "git+https://github.com/GIRA/PhysicalBits.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ricardo Moran",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/GIRA/UziScript/issues"
+    "url": "https://github.com/GIRA/PhysicalBits/issues"
   },
-  "homepage": "https://github.com/GIRA/UziScript#readme"
+  "homepage": "https://gira.github.io/PhysicalBits/"
 }
