@@ -10,7 +10,6 @@
             [middleware.device.ports.common :as ports]
             [middleware.device.ports.serial :as serial]
             [middleware.device.ports.socket :as socket]
-            [middleware.device.ports.scanner :as port-scanner]
             [middleware.utils.fs.common :as fs]
             [middleware.utils.fs.jio :as jio])
   (:gen-class))
@@ -81,7 +80,7 @@
   (println)
   (if arduino-port
     (dc/connect! arduino-port)
-    (port-scanner/start!)))
+    (dc/start-port-scanning!)))
 
 (defn -main [& args]
   (let [{:keys [errors options summary]} (cli/parse-opts args cli-options)]

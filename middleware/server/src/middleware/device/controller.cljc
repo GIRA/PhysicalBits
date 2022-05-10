@@ -56,6 +56,17 @@
 (defn available-ports []
   @port-scanner/available-ports)
 
+(defn start-port-scanning! []
+  (add-watch port-scanner/available-ports ::scanner-update
+             (fn [_ _ old new]
+               (when (not= old new)
+                 (a/put! update-chan :connection))))
+  (port-scanner/start!))
+
+(defn stop-port-scanning! []
+  (port-scanner/stop!)
+  (remove-watch port-scanner/available-ports ::scanner-update))
+
 (defn connected? []
   (when-let [connection (-> @state :connection)]
     (and (not= :pending connection)
@@ -81,7 +92,7 @@
           (<! (timeout 1000))
           (catch #?(:clj Throwable :cljs :default) e
             (log-error "ERROR WHILE DISCONNECTING ->" e)))
-        (port-scanner/start!)
+        (start-port-scanning!)
         (reset! state initial-state)
         (a/onto-chan! update-chan [:connection :debugger] false)))))
 
@@ -364,7 +375,7 @@
         (log-error "ERROR WHILE OPENING PORT ->" ex)))))
 
 (defn- connection-successful [connection board reporting?]
-  (port-scanner/stop!)
+  (stop-port-scanning!)
   (swap! state assoc
          :connection connection
          :board board
