@@ -237,7 +237,9 @@ let IDE = (function () {
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "motors"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "motors", data: data});
         UziBlock.setMotors(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -274,7 +276,9 @@ let IDE = (function () {
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "sonars"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "sonars", data: data});
         UziBlock.setSonars(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -310,7 +314,9 @@ let IDE = (function () {
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "joysticks"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "joysticks", data: data});
         UziBlock.setJoysticks(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -337,7 +343,9 @@ let IDE = (function () {
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "variables"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "variables", data: data});
         UziBlock.setVariables(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -372,7 +380,9 @@ let IDE = (function () {
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "lists"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "lists", data: data});
         UziBlock.setLists(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
