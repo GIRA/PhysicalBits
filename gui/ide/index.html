@@ -101,9 +101,11 @@
             <label for="port-dropdown" style="margin: 10px 0px 0px" lang="en">Port name:</label>
             <select class="custom-select custom-select-sm" id="port-dropdown">
               <option disabled id="port-dropdown-divider">-------------</option>
+              <!-- NOTE(Richo): The following options are removed, but you can still connect to them if you enter their values manually using the "other" option
               <option value="127.0.0.1:4242">127.0.0.1:4242</option>
-              <option value="automatic" lang="en" selected>Automatic</option>
               <option value="simulator" lang="en" selected>Simulator</option>
+              -->
+              <option value="automatic" lang="en" selected>Automatic</option>
               <option value="other" lang="en">Other...</option>
             </select>
             <button id="connect-button" type="button" class="btn btn-success btn-sm btn-block mt-1"><i class="fas fa-plug mr-2 fa-flip-vertical"></i><span lang="en">Connect</span></button>

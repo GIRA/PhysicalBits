@@ -827,10 +827,20 @@ let IDE = (function () {
   function setSelectedPort(val) {
     selectedPort = val;
     if ($("#port-dropdown option[value='" + selectedPort + "']").length <= 0) {
-      $("<option>")
-        .text(selectedPort)
-        .attr("value", selectedPort)
-        .insertBefore("#port-dropdown-divider");
+      // HACK(Richo): Add the special "simulator" option in case it wasn't there
+      if (val == "simulator") {
+        $("<option>")
+          .text("Simulator")
+          .attr("value", selectedPort)
+          .attr("lang", "en")
+          .insertBefore("#port-dropdown-divider");
+        i18n.updateUI();
+      } else {
+        $("<option>")
+          .text(selectedPort)
+          .attr("value", selectedPort)
+          .insertBefore("#port-dropdown-divider");
+      }
     }
     $("#port-dropdown").val(selectedPort);
   }
