@@ -156,6 +156,10 @@ let Plotter = (function () {
       if (observed.has(val.name)) {
         let s = series.find(each => each.label == val.name);
         if (s != undefined) {
+          let last = s.data[s.data.length-1];
+          if (last && last.x > timestamp) {
+            s.data = [];
+          }
           s.data.push({
             x: timestamp,
             y: val.value
