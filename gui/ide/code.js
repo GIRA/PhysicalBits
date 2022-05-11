@@ -39,7 +39,9 @@ let UziCode = (function () {
         debugger;
       }
 
-      Uzi.elog("CODE/CHANGE", e);
+      if (focus) {
+        Uzi.elog("CODE/CHANGE", e);
+      }
 
       /*
       TODO(Richo): Here we should update the validBreakpoints list to insert
