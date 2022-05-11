@@ -54,7 +54,7 @@ let IDE = (function () {
           if (handled.has(element.id)) return;
     
           // Inspector "eyes"
-          if (element.className.includes("fa-eye")) {
+          if (element.classList.contains("fa-eye")) {
             if (element.id.startsWith("pin")) {
               Uzi.elog("UI/PIN_EYE_CLICK", "#" + element.id);
             } else if (element.id.startsWith("global")) {
@@ -64,7 +64,7 @@ let IDE = (function () {
           }
     
           // Special case for empty panel
-          if (element.className.includes("lm_content")) {
+          if (element.classList.contains("lm_content")) {
             let firstChild = element.childNodes[0];
             if (firstChild && firstChild.id) {
               Uzi.elog("UI/CLICK2", "#" + firstChild.id);
