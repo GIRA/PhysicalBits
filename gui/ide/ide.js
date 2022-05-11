@@ -45,7 +45,7 @@ let IDE = (function () {
     $(buttons.join(",")).on("click", function () {
       if (!this.id || handled.has(this.id)) return;
       handled.add(this.id);
-      Uzi.elog("UI/CLICK1", "#" + this.id);
+      Uzi.elog("UI/CLICK", "#" + this.id);
     });
     $(window).click(function (e) {
       let element = e.target;
@@ -67,7 +67,7 @@ let IDE = (function () {
           if (element.classList.contains("lm_content")) {
             let firstChild = element.childNodes[0];
             if (firstChild && firstChild.id) {
-              Uzi.elog("UI/CLICK2", "#" + firstChild.id);
+              Uzi.elog("UI/CLICK", "#" + firstChild.id);
               return;
             }
           }
@@ -77,7 +77,7 @@ let IDE = (function () {
             let target = document.getElementById(element.getAttribute("for"));
             if (target && buttons.includes(target.localName)) {
               if (target.type == "checkbox" && !handled.has(target.id)) {
-                Uzi.elog("UI/CLICK4", "#" + target.id);
+                Uzi.elog("UI/CLICK", "#" + target.id);
               }
               return;
             }
@@ -89,7 +89,7 @@ let IDE = (function () {
             if (!element || element == document.body) return;
           }
           if (buttons.includes(element.localName) || handled.has(element.id)) return;
-          Uzi.elog("UI/CLICK3", "#" + element.id);
+          Uzi.elog("UI/CLICK", "#" + element.id);
         } catch {
           // Do nothing?
         } finally {
