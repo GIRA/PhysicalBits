@@ -186,11 +186,13 @@ let Plotter = (function () {
       data: []
     });
     observed.add(observable);
+    Uzi.elog("PLOTTER/ADD", observable);
   }
 
   function remove(observable) {
     series = series.filter(each => each.label != observable);
     observed.delete(observable);
+    Uzi.elog("PLOTTER/REMOVE", observable);
   }
 
   function toggle(observable) {
