@@ -37,12 +37,20 @@ if (config.startServer) {
   }
 }
 
+function executeJs(js) {
+  return win.webContents.executeJavaScript(js);
+}
+
+function elog(event) {
+  return executeJs("Uzi.elog('" + event.toString() + "')");
+}
+
 function killServer() {
   return new Promise((resolve, reject) => {
     if (server) {
       kill(server.pid, 'SIGTERM', function () {
-         server = null;
-         resolve();
+        server = null;
+        resolve();
       });
     } else {
       resolve();
@@ -67,7 +75,12 @@ function createWindow () {
   win.on('close', function (e) {
       if (server) {
           e.preventDefault();
-          killServer().then(() => win.close());
+          // HACK(Richo): For some reason the SIGTERM signal is not detected
+          // from the java side so I log the system shutdown from here before
+          // killing the server.
+          elog("SYSTEM/SHUTDOWN")
+            .then(killServer)
+            .then(() => win.close());
       }
   });
 

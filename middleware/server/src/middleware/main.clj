@@ -11,7 +11,8 @@
             [middleware.device.ports.serial :as serial]
             [middleware.device.ports.socket :as socket]
             [middleware.utils.fs.common :as fs]
-            [middleware.utils.fs.jio :as jio])
+            [middleware.utils.fs.jio :as jio]
+            [middleware.utils.eventlog :as elog])
   (:gen-class))
 
 (defmacro project-data [key]
@@ -88,4 +89,5 @@
       (exit 1 (error-msg errors)))
     (when (:help options)
       (exit 0 (usage summary)))
+    (elog/append "SYSTEM/STARTUP")
     (start options)))
