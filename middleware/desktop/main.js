@@ -84,6 +84,22 @@ function createWindow () {
       }
   });
 
+  win.on('minimize', function () {
+    elog("WINDOW/MINIMIZE");
+  });
+
+  win.on('restore', function () {
+    elog("WINDOW/RESTORE");
+  });  
+
+  win.on('blur', function () {
+    elog("WINDOW/BLUR");
+  });
+
+  win.on('focus', function () {
+    elog("WINDOW/FOCUS");
+  });
+
   win.loadFile(path.resolve(app.getAppPath(), config.index));
   win.maximize();
 
