@@ -83,6 +83,10 @@
     (dc/connect! arduino-port)
     (dc/start-port-scanning!)))
 
+(defn add-shutdown-hook! []
+  (.addShutdownHook (Runtime/getRuntime)
+                    (Thread. ^Runnable #(elog/append "SYSTEM/SHUTDOWN"))))
+
 (defn -main [& args]
   (let [{:keys [errors options summary]} (cli/parse-opts args cli-options)]
     (when errors
@@ -90,4 +94,5 @@
     (when (:help options)
       (exit 0 (usage summary)))
     (elog/append "SYSTEM/STARTUP")
+    (add-shutdown-hook!)
     (start options)))
