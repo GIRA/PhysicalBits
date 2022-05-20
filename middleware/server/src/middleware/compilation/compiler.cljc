@@ -568,9 +568,11 @@
     (dcr/remove-dead-code ast)
     ast))
 
-(defn check [ast check-external-code?]
+(defn check [ast check-external-code? concurrency-enabled?]
   ; TODO(Richo): Use the src to improve the error messages
-  (let [errors (checker/check-tree ast check-external-code?)]
+  (let [errors (checker/check-tree ast 
+                                   check-external-code?
+                                   concurrency-enabled?)]
     (if-not (empty? errors)
       (throw (ex-info (str (count errors)
                            " error" (if (= 1 (count errors)) "" "s")
@@ -583,15 +585,17 @@
   (linker/resolve-imports ast lib-dir))
 
 (defn compile-tree
-  [original-ast & {:keys [board lib-dir remove-dead-code? check-external-code?]
+  [original-ast & {:keys [board lib-dir remove-dead-code? 
+                          check-external-code? concurrency-enabled?]
                    :or {board boards/UNO,
                         lib-dir "../../uzi/libraries",
                         remove-dead-code? true
-                        check-external-code? false}}]
+                        check-external-code? false
+                        concurrency-enabled? true}}]
   (let [ast (-> original-ast
                 (resolve-imports lib-dir)
-                (check check-external-code?) ; NOTE(Richo): We need to do the check *after* resolving the imports 
-                                             ; and *before* removing the dead-code. Otherwise, we could write invalid 
+                (check check-external-code?  ; NOTE(Richo): We need to do the check *after* resolving the imports 
+                       concurrency-enabled?) ; and *before* removing the dead-code. Otherwise, we could write invalid
                                              ; programs that would compile just fine because the invalid code gets 
                                              ; deleted before the check.
                 (remove-dead-code remove-dead-code?)

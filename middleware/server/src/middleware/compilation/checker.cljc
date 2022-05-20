@@ -77,6 +77,13 @@
               msg each errors)
       (vswap! set conj (key-fn each)))))
 
+(defn assert-single-task [node errors]
+  (let [tasks (filterv ast-utils/task? (:scripts node))]
+    (assert (<= (count tasks) 1)
+            "Only 1 task is supported"
+            (second tasks)
+            errors)))
+
 (defn check-program [node errors path]
   (doseq [import (:imports node)]
     (assert-import import errors))
@@ -314,11 +321,13 @@
       (check-with-external child-node errors ast new-path))))
 
 (defn check-tree
-  ([ast] (check-tree ast true))
-  ([ast check-external-code?]
+  ([ast] (check-tree ast true true))
+  ([ast check-external-code? concurrency-enabled?]
    (let [errors (volatile! [])
          path (list)]
      (if check-external-code?
        (check-with-external ast errors ast path)
        (check ast errors ast path))
+     (when-not concurrency-enabled?
+       (assert-single-task ast errors))
      @errors)))

@@ -58,18 +58,21 @@
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
   (json-response (<?? (core/compile! src type (= silent "true")
-                                     :lib-dir uzi-libraries))))
+                                     :lib-dir uzi-libraries
+                                     :concurrency-enabled? (config/get-in [:features :concurrency?] true)))))
 
 (defn run-handler
   [uzi-libraries
    {:strs [src type silent] :or {type "uzi", silent "true"}}]
   (json-response (<?? (core/compile-and-run! src type (= silent "true")
-                                             :lib-dir uzi-libraries))))
+                                             :lib-dir uzi-libraries
+                                             :concurrency-enabled? (config/get-in [:features :concurrency?] true)))))
 
 (defn install-handler [uzi-libraries
                        {:strs [src type] :or {type "uzi"}}]
   (json-response (<?? (core/compile-and-install! src type
-                                                 :lib-dir uzi-libraries))))
+                                                 :lib-dir uzi-libraries
+                                                 :concurrency-enabled? (config/get-in [:features :concurrency?] true)))))
 
 (defn pin-report-handler [{:strs [pins report] :or {pins "", report ""}}]
   (let [pins (remove empty? (str/split pins #","))

@@ -18,6 +18,16 @@
   (register-program! ast)
   (cc/compile-tree ast))
 
+(deftest disable-concurrency
+  (let [ast (ast/program-node
+             :scripts [(ast/task-node :name "a"
+                                      :body (ast/block-node []))
+                       (ast/task-node :name "b"
+                                      :body (ast/block-node []))])]
+    (cc/compile-tree ast :concurrency-enabled? true) ; Should not throw
+    (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
+                 (cc/compile-tree ast :concurrency-enabled? false)))))
+
 (defn- NaN? [n] (not (== n n)))
 
 (deftest constants-support-special-floats
