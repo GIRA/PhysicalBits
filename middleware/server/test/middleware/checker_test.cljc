@@ -84,13 +84,13 @@
       checker/check-tree))
 
 #?(:clj (def invalid? check)
-  :cljs (defn invalid? [src] (not (empty? (check src)))))
+   :cljs (defn invalid? [src] (seq (check src))))
 
 #?(:clj (defn valid? [src]
           (let [ast (parse src)]
             (register-program! ast :lib-dir "../../uzi/tests")
             (check ast)))
-  :cljs (defn valid? [src] (empty? (check src))))
+   :cljs (defn valid? [src] (empty? (check src))))
 
 (deftest block-should-only-contain-statements
   (is (valid? "task foo() {}"))

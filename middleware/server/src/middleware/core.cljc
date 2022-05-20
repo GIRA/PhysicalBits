@@ -113,7 +113,7 @@
      program)))
 
 (defn run! [program]
-  (go-try 
+  (go-try
    (elog/append "CORE/RUN")
    (debugger/run-program! #(dc/run program))))
 
@@ -238,22 +238,22 @@
                                (mapv pc->loc breakpoints))
                 :sources sources
                 :stackFrames (mapv (fn [{:keys [script pc fp arguments locals stack source]}]
-                                      {:scriptName (:name script)
-                                       :pc pc
-                                       :fp fp
-                                       :interval (debugger/interval-at-pc program pc)
-                                       :blocks (mapv (fn [pc]
-                                                       (get-in (meta (program/instruction-at-pc program pc))
-                                                               [:node :id]))
-                                                     (-> program
-                                                         (debugger/instruction-groups)
-                                                         (debugger/instruction-group-at-pc pc)
-                                                         :pcs))
-                                       :arguments arguments
-                                       :locals locals
-                                       :stack stack
-                                       :source (index-of sources source)})
-                                    stack-frames)})})
+                                     {:scriptName (:name script)
+                                      :pc pc
+                                      :fp fp
+                                      :interval (debugger/interval-at-pc program pc)
+                                      :blocks (mapv (fn [pc]
+                                                      (get-in (meta (program/instruction-at-pc program pc))
+                                                              [:node :id]))
+                                                    (-> program
+                                                        (debugger/instruction-groups)
+                                                        (debugger/instruction-group-at-pc pc)
+                                                        :pcs))
+                                      :arguments arguments
+                                      :locals locals
+                                      :stack stack
+                                      :source (index-of sources source)})
+                                   stack-frames)})})
 
 (def ^:private device-update-handlers
   {:connection #'get-connection-data
@@ -296,9 +296,9 @@
           (when device (get-device-state @dc/state (set device)))
           (when program (get-program-state @program-atom)))))
 
-(defn kv-chan 
+(defn kv-chan
   "Returns a channel that associates everything we put into it with a key"
-  [key]  
+  [key]
   (a/chan 1 (map (partial vector key))))
 
 (defn start-update-loop! [update-fn]
