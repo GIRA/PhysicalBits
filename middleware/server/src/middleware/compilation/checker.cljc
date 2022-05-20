@@ -20,6 +20,11 @@
     (register-error! description node errors))
   bool)
 
+(defn ^:private external-script? [node ast]
+  (and (ast-utils/script? node)
+       (not (identical? (-> ast meta :token :source)
+                        (-> node meta :token :source)))))
+
 (defn assert-statement [node errors]
   (assert (ast-utils/statement? node)
           "Statement expected"
@@ -78,7 +83,9 @@
       (vswap! set conj (key-fn each)))))
 
 (defn assert-single-task [node errors]
-  (let [tasks (filterv ast-utils/task? (:scripts node))]
+  (let [tasks (filterv #(and (ast-utils/task? %)
+                             (not (external-script? % node))) 
+                       (:scripts node))]
     (assert (<= (count tasks) 1)
             "Only 1 task is supported"
             (second tasks)
@@ -301,11 +308,6 @@
     "UziScriptResumeNode" (check-script-control node errors path)
     "UziScriptPauseNode" (check-script-control node errors path)
     nil))
-
-(defn ^:private external-script? [node ast]
-  (and (ast-utils/script? node)
-       (not (identical? (-> ast meta :token :source)
-                        (-> node meta :token :source)))))
 
 (defn ^:private check [node errors ast path]
   (when-not (external-script? node ast)

@@ -28,6 +28,24 @@
     (is (thrown? #?(:clj clojure.lang.ExceptionInfo :cljs js/Error)
                  (cc/compile-tree ast :concurrency-enabled? false)))))
 
+(deftest disable-concurrency-should-only-check-user-scripts
+  (let [ast (ast/program-node
+             :imports [(ast/import-node "sonar" "Sonar.uzi"
+                                        (ast/block-node [(ast/start-node ["reading"])]))]
+             :scripts [(ast/task-node
+                        :name "blink13"
+                        :body (ast/block-node
+                               [(ast/call-node "write"
+                                               [(ast/arg-node (ast/literal-pin-node "D" 13))
+                                                (ast/arg-node (ast/call-node "=="
+                                                                             [(ast/arg-node (ast/call-node "sonar.distance_cm" []))
+                                                                              (ast/arg-node (ast/literal-number-node 1))]))])]))])]
+    (cc/compile-tree ast :concurrency-enabled? true) ; Should not throw 
+    (cc/compile-tree ast :concurrency-enabled? false) ; Should also NOT throw
+    ))
+
+
+
 (defn- NaN? [n] (not (== n n)))
 
 (deftest constants-support-special-floats
