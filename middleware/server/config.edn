@@ -15,4 +15,5 @@
             :options-button? false
             :blocks? true
             :code? false
-            :concurrency? false}}
+            :monitoring? true
+            :concurrency? true}}

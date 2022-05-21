@@ -66,8 +66,13 @@ let LayoutManager = (function () {
         components.controls,
         components.inspector
       ]
+    }, {
+      "type": "column",
+      "width": 58,
+      "content": [
+        components.blocks
+      ]
     },
-    components.blocks,
     {
       "type": "column",
       "width": 25,
@@ -107,7 +112,7 @@ let LayoutManager = (function () {
         components.controls,
         components.inspector
       ]
-    },    
+    },
     components.blocks,
     {
       "type": "column",
@@ -141,21 +146,68 @@ let LayoutManager = (function () {
     });
   }
 
-  function reset() {    
-    Uzi.elog("LAYOUT/RESET");
+  function getDefaultContent() {
+    let removeFrom = (component, col) => {
+      let idx = col.indexOf(component);
+      if (idx !== -1) { col.splice(idx, 1); }
+    };
+    let moveFromTo = (component, col_from, col_to) => {
+      removeFrom(component, col_from);
+      col_to.push(component);
+    };
+
     let includeBlocks = Uzi.state.features["blocks?"];
     let includeCode = Uzi.state.features["code?"];
-    let content = defaultContent;
+    let includeInspector = Uzi.state.features["monitoring?"];
+    
+    let left = [components.controls, components.inspector];
+    let main = [components.blocks];
+    let right = [components.code, components.output];
+    
     if (!includeCode) {
-      content = contentWithoutCode;
+      removeFrom(components.code, right);
     } else if (!includeBlocks) {
-      content = contentWithoutBlocks;
+      removeFrom(components.blocks, main);
+      moveFromTo(components.code, right, main);
     }
-    let config = {
+
+    if (!includeInspector) {
+      removeFrom(components.inspector, left);
+      moveFromTo(components.output, right, left);
+      components.output.height = 70;
+    }
+
+    let content = [{
+      "type": "column",
+      "width": 17,
+      "content": left
+    }, {
+      "type": "column",
+      "width": 58,
+      "content": main
+    }, {
+      "type": "column",
+      "width": 25,
+      "content": right
+    }];
+
+    if (right.length == 0) {
+      content.pop();
+      content[1]["width"] = 83;
+    }
+
+    return content;
+  }
+
+  function reset() {    
+    Uzi.elog("LAYOUT/RESET");
+    setLayoutConfig({
       settings: settings,
-      content: [content]
-    };
-    setLayoutConfig(config);
+      content: [{
+        type: "row",
+        content: getDefaultContent()
+      }]
+    });
   }
   
   function on (evt, callback) {
@@ -174,20 +226,27 @@ let LayoutManager = (function () {
 
   function getLayoutConfig() { return layout.toConfig(); }
 
-  function updateClosable(config, isClosable) {
-    if (config instanceof Array) return config.map(e => updateClosable(e, isClosable));
+  function update(config, fn) {
+    if (config instanceof Array) return config.map(e => update(e, fn));
     if (typeof config != "object") return config;
     if (config === null) return null;
     if (config === undefined) return undefined;
   
     let value = {};
     for (let m in config) {
-      value[m] = updateClosable(config[m], isClosable);
+      value[m] = update(config[m], fn);
     }
-    if (value["type"] == "component") {
-      value["isClosable"] = isClosable;
-    }
+    fn(value);
     return value;
+  }
+
+  function updateClosable(config) {
+    let isClosable = Uzi.state.features["closable-panels?"];
+    return update(config, value => {
+      if (value["type"] == "component") {
+        value["isClosable"] = isClosable;
+      }
+    });
   }
 
   function setLayoutConfig(config) {
@@ -197,8 +256,7 @@ let LayoutManager = (function () {
     if (layout) { layout.destroy(); }
     panels.clear();
 
-    let closable = Uzi.state.features["closable-panels?"];
-    layout = new GoldenLayout(updateClosable(config, closable), "#layout-container");
+    layout = new GoldenLayout(updateClosable(config), "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
       let $el = $(state.id);
       container.getElement().append($el);
@@ -253,8 +311,7 @@ let LayoutManager = (function () {
     } while (path[0].type == "stack");
     let parent = path[0];
     
-    let closable = true; // Uzi.state.features["closable-panels?"];
-    let config = updateClosable(plotterConfig, closable)
+    let config = components.plotter;
     if (parent.type == "column") {
       parent.addChild(config);
     } else {
@@ -279,8 +336,7 @@ let LayoutManager = (function () {
     } while (path[0].type == "stack");
     let parent = path[0];
     
-    let closable = true; // Uzi.state.features["closable-panels?"];
-    let config = updateClosable(debuggerConfig, closable)
+    let config = components.debugger;
     if (parent.type == "column") {
       parent.addChild(config);
     } else {
