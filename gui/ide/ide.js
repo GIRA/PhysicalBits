@@ -198,6 +198,11 @@ let IDE = (function () {
     $("#install-button").on("click", install);
 		$("#interactive-checkbox").on("change", toggleInteractive);
     $("#options-button").on("click", openOptionsDialog);
+    if (Uzi.state.features["options-button?"]) {
+      $("#options-button").show();
+    } else {
+      $("#options-button").hide();
+    }
     Uzi.on("update", updateTopBar);
     Uzi.on("update", updateConnection);
     updatePortDropdown();
@@ -663,7 +668,9 @@ let IDE = (function () {
       }
 
       if (ui.layout != undefined) {
-        LayoutManager.setLayoutConfig(ui.layout);
+        if (Uzi.state.features["persistent-layout?"]) {
+          LayoutManager.setLayoutConfig(ui.layout);
+        }
       }
 
       if (ui.blockly != undefined) {

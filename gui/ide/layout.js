@@ -107,6 +107,22 @@ let LayoutManager = (function () {
 
   function getLayoutConfig() { return layout.toConfig(); }
 
+  function updateClosable(config, isClosable) {
+    if (config instanceof Array) return config.map(e => updateClosable(e, isClosable));
+    if (typeof config != "object") return config;
+    if (config === null) return null;
+    if (config === undefined) return undefined;
+  
+    let value = {};
+    for (let m in config) {
+      value[m] = updateClosable(config[m], isClosable);
+    }
+    if (value["type"] == "component") {
+      value["isClosable"] = isClosable;
+    }
+    return value;
+  }
+
   function setLayoutConfig(config) {
     resetting = true;
     setTimeout(() => resetting = false, 0);
@@ -114,7 +130,8 @@ let LayoutManager = (function () {
     if (layout) { layout.destroy(); }
     panels.clear();
 
-    layout = new GoldenLayout(config, "#layout-container");
+    let closable = Uzi.state.features["closable-panels?"];
+    layout = new GoldenLayout(updateClosable(config, closable), "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
       let $el = $(state.id);
       container.getElement().append($el);
@@ -168,15 +185,18 @@ let LayoutManager = (function () {
       path.unshift(path[0].parent);
     } while (path[0].type == "stack");
     let parent = path[0];
+    
+    let closable = true; // Uzi.state.features["closable-panels?"];
+    let config = updateClosable(plotterConfig, closable)
     if (parent.type == "column") {
-      parent.addChild(plotterConfig);
+      parent.addChild(config);
     } else {
       let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - plotterConfig.height;
+      siblingConfig.height = 100 - config.height;
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
-        content: [siblingConfig, plotterConfig]
+        content: [siblingConfig, config]
       });
     }
   }
@@ -191,15 +211,18 @@ let LayoutManager = (function () {
       path.unshift(path[0].parent);
     } while (path[0].type == "stack");
     let parent = path[0];
+    
+    let closable = true; // Uzi.state.features["closable-panels?"];
+    let config = updateClosable(debuggerConfig, closable)
     if (parent.type == "column") {
-      parent.addChild(debuggerConfig);
+      parent.addChild(config);
     } else {
       let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - debuggerConfig.height;
+      siblingConfig.height = 100 - config.height;
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
-        content: [siblingConfig, debuggerConfig]
+        content: [siblingConfig, config]
       });
     }
   }

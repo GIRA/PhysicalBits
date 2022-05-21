@@ -10,4 +10,7 @@
  :udp {:enabled? true
        :interval 16}
  :eventlog? false
- :features {:concurrency? true}}
+ :features {:closable-panels? false
+            :persistent-layout? false
+            :options-button? false
+            :concurrency? false}}
