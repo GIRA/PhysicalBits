@@ -159,6 +159,7 @@ let LayoutManager = (function () {
     let includeBlocks = Uzi.state.features["blocks?"];
     let includeCode = Uzi.state.features["code?"];
     let includeInspector = Uzi.state.features["monitoring?"];
+    includeInspector &= Uzi.state.features["interactivity?"];
     
     let left = [components.controls, components.inspector];
     let main = [components.blocks];

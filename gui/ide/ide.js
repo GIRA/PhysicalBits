@@ -193,6 +193,12 @@ let IDE = (function () {
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
+    if (Uzi.state.features["interactivity?"]) {
+      $("#connect-button").show();  
+    } else {
+      $("#connect-button").hide();
+    }
+
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
@@ -865,6 +871,7 @@ let IDE = (function () {
   function connect() {
     if (DEMO && selectedPort != "simulator") {
       MessageBox.alert("DEMO version", "The functionality you requested is not implemented in the DEMO version. Please download Physical Bits to enjoy all its capabilities");
+      return Promise.reject("DEMO version does not support arbitrary connections");
     } else {
       connecting = true;
       $("#connect-button").attr("disabled", "disabled");
@@ -875,11 +882,12 @@ let IDE = (function () {
           appendToOutput({text: "No available ports found", type: "error"});
           connecting = false;
           updateTopBar();
+          return Promise.reject("No available ports found");
         } else {
-          attemptConnection(availablePorts);
+          return attemptConnection(availablePorts);
         }
       } else {
-        Uzi.connect(selectedPort).finally(() => {
+        return Uzi.connect(selectedPort).finally(() => {
           connecting = false;
           updateTopBar();
         });
@@ -889,18 +897,21 @@ let IDE = (function () {
 
   function attemptConnection(availablePorts) {
     let port = availablePorts.shift();
-    Uzi.connect(port).then(data => {
-      if (data["port-name"] == port) {
+    return Uzi.connect(port).then(data => {
+      if (data == port) {
         selectedPort = port;
         if (selectedPort) { saveToLocalStorage(); }
         connecting = false;
+        return port;
       } else if (availablePorts.length > 0) {
-        attemptConnection(availablePorts);
+        return attemptConnection(availablePorts);
       } else {
         connecting = false;
+        return null;
       }
     }).catch(() => { connecting = false; });
   }
+  window.attemptConnection = attemptConnection;
 
   function disconnect() {
     connecting = true;
@@ -914,19 +925,46 @@ let IDE = (function () {
   function evalProgramFn(fn) {
     let program = lastProgram.code;
     let type = lastProgram.type;
-    fn(program, type).then(success).catch(error);
+    return fn(program, type).then(success).catch(error);
   }
 
   function verify() {
     evalProgramFn(Uzi.compile);
   }
 
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // HACK(Richo): I can't use the "connecting" flag so I added a new flag
+  let waiting = false;
+  
   function run() {
-    evalProgramFn(Uzi.run);
+    if (Uzi.state.features["interactivity?"]) {
+      evalProgramFn(Uzi.run);
+    } else {
+      if (waiting) return;
+      waiting = true;
+      connect()
+        .then(port => port ? evalProgramFn(Uzi.run) : null)
+        .then(() => delay(1000))
+        .then(() => disconnect())
+        .finally(() => waiting = false);
+    }
   }
 
   function install() {
-    evalProgramFn(Uzi.install);
+    if (Uzi.state.features["interactivity?"]) {
+      evalProgramFn(Uzi.install);
+    } else {
+      if (waiting) return;
+      waiting = true;
+      connect()
+        .then(port => port ? evalProgramFn(Uzi.install) : null)
+        .then(() => delay(1000))
+        .then(() => disconnect())
+        .finally(() => waiting = false);
+    }
   }
 
   function toggleInteractive() {
@@ -1038,6 +1076,7 @@ let IDE = (function () {
 
     let connected = Uzi.state.connection.isConnected;
     let interactive = $("#interactive-checkbox").get(0).checked;
+    interactive &= Uzi.state.features["interactivity?"];
     let action = connected && interactive ? Uzi.run : Uzi.compile;
     let actionName = action.name.toUpperCase();
 
@@ -1094,6 +1133,14 @@ let IDE = (function () {
       updatePortDropdown();
     }
 
+    if (!Uzi.state.features["interactivity?"]) {
+      $("#disconnect-button").hide();
+      $("#connect-button").hide();
+      $("#run-button").attr("disabled", null);
+      $("#more-buttons").attr("disabled", null);
+      $("#install-button").attr("disabled", null);
+    }
+      
 
     if (DEMO) {
       $("#port-dropdown").attr("disabled", "disabled");
