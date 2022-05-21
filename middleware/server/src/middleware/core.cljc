@@ -7,6 +7,7 @@
             [middleware.utils.async :as aa :refer [go-try <?]]
             [middleware.utils.logger :as logger]
             [middleware.utils.eventlog :as elog]
+            [middleware.utils.config :as config]
             [middleware.ast.utils :as ast]
             [middleware.program.utils :as program]
             [middleware.device.controller :as dc]
@@ -285,16 +286,22 @@
 (defn- get-logger-state [logger]
   {:output (vec logger)})
 
+(defn- get-features []
+  {:features (config/get :features {})})
+
 (defn get-server-state
   ; TODO(Richo): The empty args overload is only used to initialize the clients
   ; when they first connect. I don't know if this is actually necessary, though...
+  ; NOTE(Richo): It IS actually necessary
   ([] (get-server-state {:device (keys device-update-handlers)
-                         :program true}))
-  ([{:keys [device logger program]}]
+                         :program true
+                         :features true}))
+  ([{:keys [device logger program features]}]
    (merge {}
           (when logger (get-logger-state logger))
           (when device (get-device-state @dc/state (set device)))
-          (when program (get-program-state @program-atom)))))
+          (when program (get-program-state @program-atom))
+          (when features (get-features)))))
 
 (defn kv-chan
   "Returns a channel that associates everything we put into it with a key"
