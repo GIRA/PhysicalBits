@@ -341,12 +341,12 @@ let Uzi = (function () {
         };
         socket.onopen = function () {
           Uzi.serverAvailable = true;
-          resolve();
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
               let data = JSONX.parse(msg);
               update(data);
+              resolve();
             } catch (e) {
               console.error(e);
             }
