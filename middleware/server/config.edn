@@ -17,4 +17,5 @@
             :code? true
             :monitoring? true
             :interactivity? true
+            :debugging? true
             :concurrency? true}}

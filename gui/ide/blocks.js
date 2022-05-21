@@ -3074,7 +3074,7 @@ let UziBlock = (function () {
       Blockly.Blocks[key] = {
         customContextMenu: function(options) {
           var option = {
-              enabled: blockSpec.supportsBreakpoints,
+              enabled: blockSpec.supportsBreakpoints && Uzi.state.features["debugging?"],
               text: i18n.translate('Toggle Breakpoint'),
               callback: function(e) {
                 try {

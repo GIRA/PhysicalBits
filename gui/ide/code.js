@@ -68,6 +68,8 @@ let UziCode = (function () {
       // I still don't know why! But it bothers when setting breakpoints and in some other 
       // places as well (like when selecting blocks from the code editor)
       if (editor.getValue() !== Uzi.state.program.src) return;
+      if (!Uzi.state.features["debugging?"]) return;
+      
       var line = Debugger.getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
       Debugger.toggleBreakpoint(line);
       if (Debugger.getBreakpoints().has(line)) {
