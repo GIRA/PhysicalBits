@@ -1,72 +1,127 @@
 
 let LayoutManager = (function () {
 
-  let defaultLayoutConfig = {
-    "settings": {
-      "showPopoutIcon": false,
-      "showMaximiseIcon": false,
-      "showCloseIcon": false
+  let components = {
+    controls: {
+      "id": "controls",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#controls-panel" },
+      "title": "Controls"
     },
-    "content": [{
-      "type": "row",
-      "content":[{
-        "type": "column",
-        "width": 17,
-        "content": [{
-          "id": "controls",
-          "type": "component",
-          "height": 30,
-          "componentName": "DOM",
-          "componentState": { "id": "#controls-panel" },
-          "title": "Controls"
-        },{
-          "id": "inspector",
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#inspector-panel" },
-          "title": "Inspector"
-        }]
-      },{
-        "id": "blocks",
-        "type": "component",
-        "componentName": "DOM",
-        "componentState": { "id": "#blocks-panel" },
-        "title": "Blocks"
-      },{
-        "type": "column",
-        "width": 25,
-        "content":[{
-          "id": "code",
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#code-panel" },
-          "title": "Code"
-        },{
-          "id": "output",
-          "type": "component",
-          "height": 30,
-          "componentName": "DOM",
-          "componentState": { "id": "#output-panel" },
-          "title": "Output"
-        }]
-      }]
+    blocks: {
+      "id": "blocks",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#blocks-panel" },
+      "title": "Blocks"
+    },
+    code: {
+      "id": "code",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#code-panel" },
+      "title": "Code"
+    },
+    inspector: {
+      "id": "inspector",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#inspector-panel" },
+      "title": "Inspector"
+    },
+    output: {
+      "id": "output",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#output-panel" },
+      "title": "Output"
+    },
+    plotter: {
+      "id": "plotter",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#plotter-panel" },
+      "title": "Plotter"
+    },
+    debugger: {
+      "id": "debugger",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#debugger-panel" },
+      "title": "Debugger"
+    }, 
+  };
+
+  let defaultContent = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    },
+    components.blocks,
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.code,
+        components.output
+      ]
     }]
   };
-  let plotterConfig = {
-    "id": "plotter",
-    "type": "component",
-    "height": 30,
-    "componentName": "DOM",
-    "componentState": { "id": "#plotter-panel" },
-    "title": "Plotter"
+
+  let contentWithoutBlocks = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    },    
+    components.code,
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.output
+      ]
+    }]
   };
-  let debuggerConfig = {
-    "id": "debugger",
-    "type": "component",
-    "height": 30,
-    "componentName": "DOM",
-    "componentState": { "id": "#debugger-panel" },
-    "title": "Debugger"
+  
+  let contentWithoutCode = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    },    
+    components.blocks,
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.output
+      ]
+    }]
+  };
+
+  let settings = {
+    "showPopoutIcon": false,
+    "showMaximiseIcon": false,
+    "showCloseIcon": false
   };
 
   let layout;
@@ -88,7 +143,19 @@ let LayoutManager = (function () {
 
   function reset() {    
     Uzi.elog("LAYOUT/RESET");
-    setLayoutConfig(defaultLayoutConfig);
+    let includeBlocks = Uzi.state.features["blocks?"];
+    let includeCode = Uzi.state.features["code?"];
+    let content = defaultContent;
+    if (!includeCode) {
+      content = contentWithoutCode;
+    } else if (!includeBlocks) {
+      content = contentWithoutBlocks;
+    }
+    let config = {
+      settings: settings,
+      content: [content]
+    };
+    setLayoutConfig(config);
   }
   
   function on (evt, callback) {

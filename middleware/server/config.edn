@@ -13,4 +13,6 @@
  :features {:closable-panels? false
             :persistent-layout? false
             :options-button? false
+            :blocks? true
+            :code? false
             :concurrency? false}}
