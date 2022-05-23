@@ -53,7 +53,19 @@ let Uzi = (function () {
       },
       globals: {available: [], elements: []},
       "pseudo-vars": {available: [], elements: []},
-      program: {src: null, compiled: null, ast: null}
+      program: {src: null, compiled: null, ast: null},
+      debugger: {isHalted: false},
+      features: {
+        "closable-panels?": true,
+        "persistent-layout?": true,
+        "options-button?": true,
+        "blocks?": true,
+        "code?": true,
+        "monitoring?": true,
+        "interactivity?": true,
+        "debugging?": true,
+        "concurrency?": true,
+      }
     },
     serverAvailable: true,
     socket: null,
@@ -197,6 +209,16 @@ let Uzi = (function () {
       return POST(url, data);
     },
 
+    elog: function (evtType, evtData) {      
+      let url = apiURL + "/uzi/elog";
+      let data = {
+        type: evtType,
+        data: JSONX.stringify(evtData),
+      };
+      //console.log("ELOG! >>> " + evtType + " -> ", evtData);
+      return POST(url, data);
+    },
+
     debugger: {
       setBreakpoints: function (breakpoints) {
         if (Uzi.state.connection.portName == "simulator") {
@@ -206,7 +228,7 @@ let Uzi = (function () {
         let url = apiURL + "/uzi/debugger/set-breakpoints";
         let data = {
           id: id,
-          breakpoints: Array.from(breakpoints).join(","),
+          breakpoints: breakpoints.join(","),
         };
         return POST(url, data);
       },
@@ -286,15 +308,8 @@ let Uzi = (function () {
   };
 
   function POST(url, data) {
+    if (DEMO) return Promise.resolve();
     return ajax.POST(url, data);
-  }
-
-  function log(data) {
-    console.log(data);
-  }
-
-  function errorHandler (err) {
-    console.log(err);
   }
 
   function reconnect() {
@@ -337,12 +352,12 @@ let Uzi = (function () {
         };
         socket.onopen = function () {
           Uzi.serverAvailable = true;
-          resolve();
           socket.onmessage = function (evt) {
             try {
               let msg = evt.data;
               let data = JSONX.parse(msg);
               update(data);
+              resolve();
             } catch (e) {
               console.error(e);
             }

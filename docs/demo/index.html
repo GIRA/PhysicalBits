@@ -101,9 +101,11 @@
             <label for="port-dropdown" style="margin: 10px 0px 0px" lang="en">Port name:</label>
             <select class="custom-select custom-select-sm" id="port-dropdown">
               <option disabled id="port-dropdown-divider">-------------</option>
+              <!-- NOTE(Richo): The following options are removed, but you can still connect to them if you enter their values manually using the "other" option
               <option value="127.0.0.1:4242">127.0.0.1:4242</option>
-              <option value="automatic" lang="en" selected>Automatic</option>
               <option value="simulator" lang="en" selected>Simulator</option>
+              -->
+              <option value="automatic" lang="en" selected>Automatic</option>
               <option value="other" lang="en">Other...</option>
             </select>
             <button id="connect-button" type="button" class="btn btn-success btn-sm btn-block mt-1"><i class="fas fa-plug mr-2 fa-flip-vertical"></i><span lang="en">Connect</span></button>
@@ -237,27 +239,27 @@
           <div class="btn-group btn-group-sm" role="toolbar" aria-label="...">
             <button id="debugger-break-button" type="button" class="btn btn-primary">
               <i class="fas fa-pause mr-1"></i>
-              Pause
+              <span lang="en">Pause</span>
             </button>
             <button id="debugger-continue-button" type="button" class="btn btn-primary" disabled>
               <i class="fas fa-play mr-1"></i>
-              Continue
+              <span lang="en">Continue</span>
             </button>
             <button id="debugger-step-over-button" type="button" class="btn btn-primary" disabled>
               <i class="fas fa-share mr-1"></i>
-              Over
+              <span lang="en">Over</span>
             </button>
             <button id="debugger-step-into-button" type="button" class="btn btn-primary" disabled>
               <i class="fas fa-level-down-alt mr-1"></i>
-              Into
+              <span lang="en">Into</span>
             </button>
             <button id="debugger-step-out-button" type="button" class="btn btn-primary" disabled>
               <i class="fas fa-level-up-alt mr-1"></i>
-              Out
+              <span lang="en">Out</span>
             </button>
             <button id="debugger-step-next-button" type="button" class="btn btn-primary" disabled>
               <i class="fas fa-step-forward mr-1"></i>
-              Next
+              <span lang="en">Next</span>
             </button>
           </div>
         </div>

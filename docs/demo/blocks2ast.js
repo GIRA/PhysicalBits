@@ -11,8 +11,18 @@ let BlocksToAST = (function () {
 				imports: imports,
 				globals: globals.filter(g => g != undefined).map(g => {
 					let name = g.name;
-					let value = g.value ? parseFloat(g.value) : 0;
-					return builder.variableDeclaration(id, name, builder.number(id, value));
+					let pinRegex = /^[DA]\d+$/;
+					let value = null;
+					if (g.value == undefined) {
+						value = builder.number(id, 0);
+					} else if (pinRegex.test(g.value)) {
+						let type = g.value[0];
+						let number = parseInt(g.value.slice(1));
+						value = builder.pin(id, type, number);
+					} else {
+						value = builder.number(id, parseFloat(g.value));
+					}
+					return builder.variableDeclaration(id, name, value);
 				}),
 				scripts: scripts,
 				primitives: []
@@ -232,20 +242,22 @@ let BlocksToAST = (function () {
 												"import", "here_be_dragons_script",
 												"proc_definition_0args", "proc_definition_1args",
 												"proc_definition_2args", "proc_definition_3args",
+												"proc_definition_4args", "proc_definition_5args",
 												"func_definition_0args", "func_definition_1args",
-												"func_definition_2args", "func_definition_3args"];
+												"func_definition_2args", "func_definition_3args",
+												"func_definition_4args", "func_definition_5args"];
 	let dispatchTable =  {
 		// TODO(Richo)
 		here_be_dragons_stmt: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_expr: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		here_be_dragons_script: function (block, ctx, stream) {
-			let node = JSONX.parse(block.children[0].textContent);
+			let node = JSONX.parse(block.getElementsByTagName("comment")[0].textContent);
 			stream.push(node);
 		},
 		import: function (block, ctx, stream) {
@@ -935,6 +947,29 @@ let BlocksToAST = (function () {
 									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
 			stream.push(builder.procedure(id, name, args, statements));
 		},
+		proc_definition_4args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText),
+									asIdentifier(XML.getChildNode(block, "arg3").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
+		proc_definition_5args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText),
+									asIdentifier(XML.getChildNode(block, "arg3").innerText),
+									asIdentifier(XML.getChildNode(block, "arg4").innerText)];
+			stream.push(builder.procedure(id, name, args, statements));
+		},
 		proc_call_0args: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
@@ -959,6 +994,25 @@ let BlocksToAST = (function () {
 			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
 									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
 									{name: null, value: generateCodeForValue(block, ctx, "arg2")}];
+			stream.push(builder.scriptCall(id, scriptName, args));
+		},
+		proc_call_4args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg3")}];
+			stream.push(builder.scriptCall(id, scriptName, args));
+		},
+		proc_call_5args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg3")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg4")}];
 			stream.push(builder.scriptCall(id, scriptName, args));
 		},
 		func_definition_0args: function (block, ctx, stream) {
@@ -996,6 +1050,29 @@ let BlocksToAST = (function () {
 									asIdentifier(XML.getChildNode(block, "arg2").innerText)];
 			stream.push(builder.function(id, name, args, statements));
 		},
+		func_definition_4args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText),
+									asIdentifier(XML.getChildNode(block, "arg3").innerText)];
+			stream.push(builder.function(id, name, args, statements));
+		},
+		func_definition_5args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let name = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let statements = [];
+			generateCodeForStatements(block, ctx, "statements", statements);
+			let args = [asIdentifier(XML.getChildNode(block, "arg0").innerText),
+									asIdentifier(XML.getChildNode(block, "arg1").innerText),
+									asIdentifier(XML.getChildNode(block, "arg2").innerText),
+									asIdentifier(XML.getChildNode(block, "arg3").innerText),
+									asIdentifier(XML.getChildNode(block, "arg4").innerText)];
+			stream.push(builder.function(id, name, args, statements));
+		},
 		func_call_0args: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
@@ -1022,11 +1099,38 @@ let BlocksToAST = (function () {
 									{name: null, value: generateCodeForValue(block, ctx, "arg2")}];
 			stream.push(builder.scriptCall(id, scriptName, args));
 		},
+		func_call_4args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg3")}];
+			stream.push(builder.scriptCall(id, scriptName, args));
+		},
+		func_call_5args: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let scriptName = asIdentifier(XML.getChildNode(block, "scriptName").innerText);
+			let args = [{name: null, value: generateCodeForValue(block, ctx, "arg0")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg1")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg2")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg3")},
+									{name: null, value: generateCodeForValue(block, ctx, "arg4")}];
+			stream.push(builder.scriptCall(id, scriptName, args));
+		},
 		return: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, null));
 		},
+		secret_return: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, null));
+		},
 		return_value: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			stream.push(builder.return(id, generateCodeForValue(block, ctx, "value")));
+		},
+		secret_return_value: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			stream.push(builder.return(id, generateCodeForValue(block, ctx, "value")));
 		},
@@ -1206,6 +1310,7 @@ let BlocksToAST = (function () {
 			throw "CODEGEN ERROR: Type not found '" + type + "'";
 		}
 		try {
+			ctx.addToHistogram(type);
 			ctx.path.push(block);
 			func(block, ctx, stream);
 		}
@@ -1267,6 +1372,12 @@ let BlocksToAST = (function () {
 				imports: new Map(),
 				globals: [],
 
+				histogram: {},
+				addToHistogram: function (type) {
+					let count = ctx.histogram[type] || 0;
+					ctx.histogram[type] = count + 1;
+				},
+
 				/*
 				 * NOTE(Richo): For now, the only blocks capable of declaring local variables
 				 * are "declare_local_variable", "for", and the procedure definition blocks.
@@ -1306,9 +1417,13 @@ let BlocksToAST = (function () {
 							proc_definition_1args: ["arg0"],
 							proc_definition_2args: ["arg0", "arg1"],
 							proc_definition_3args: ["arg0", "arg1", "arg2"],
+							proc_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+							proc_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
 							func_definition_1args: ["arg0"],
 							func_definition_2args: ["arg0", "arg1"],
-							func_definition_3args: ["arg0", "arg1", "arg2"]
+							func_definition_3args: ["arg0", "arg1", "arg2"],
+							func_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+							func_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
 						};
 						let interestingTypes = new Set(Object.keys(interestingBlocks));
 						let blocks = ctx.path.filter(b => interestingTypes.has(b.getAttribute("type")));
@@ -1425,6 +1540,7 @@ let BlocksToAST = (function () {
 				}
 				scripts.unshift(builder.task(null, name, [], "once", null, setup));
 			}
+			Uzi.elog("CODEGEN/BLOCKS->AST", ctx.histogram);
 			return builder.program(null,
 				Array.from(ctx.imports, entry => entry[1]),
 				ctx.globals.map(varName => metadata.variables.find(v => v.name == varName)),

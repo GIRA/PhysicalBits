@@ -1,76 +1,142 @@
 
 let LayoutManager = (function () {
 
-  let defaultLayoutConfig = {
-    "settings": {
-      "showPopoutIcon": false,
-      "showMaximiseIcon": false,
-      "showCloseIcon": false
+  let components = {
+    controls: {
+      "id": "controls",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#controls-panel" },
+      "title": "Controls"
     },
-    "content": [{
-      "type": "row",
-      "content":[{
-        "type": "column",
-        "width": 17,
-        "content": [{
-          "id": "controls",
-          "type": "component",
-          "height": 30,
-          "componentName": "DOM",
-          "componentState": { "id": "#controls-panel" },
-          "title": "Controls"
-        },{
-          "id": "inspector",
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#inspector-panel" },
-          "title": "Inspector"
-        }]
-      },{
-        "id": "blocks",
-        "type": "component",
-        "componentName": "DOM",
-        "componentState": { "id": "#blocks-panel" },
-        "title": "Blocks"
-      },{
-        "type": "column",
-        "width": 25,
-        "content":[{
-          "id": "code",
-          "type": "component",
-          "componentName": "DOM",
-          "componentState": { "id": "#code-panel" },
-          "title": "Code"
-        },{
-          "id": "output",
-          "type": "component",
-          "height": 30,
-          "componentName": "DOM",
-          "componentState": { "id": "#output-panel" },
-          "title": "Output"
-        }]
-      }]
+    blocks: {
+      "id": "blocks",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#blocks-panel" },
+      "title": "Blocks"
+    },
+    code: {
+      "id": "code",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#code-panel" },
+      "title": "Code"
+    },
+    inspector: {
+      "id": "inspector",
+      "type": "component",
+      "componentName": "DOM",
+      "componentState": { "id": "#inspector-panel" },
+      "title": "Inspector"
+    },
+    output: {
+      "id": "output",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#output-panel" },
+      "title": "Output"
+    },
+    plotter: {
+      "id": "plotter",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#plotter-panel" },
+      "title": "Plotter"
+    },
+    debugger: {
+      "id": "debugger",
+      "type": "component",
+      "height": 30,
+      "componentName": "DOM",
+      "componentState": { "id": "#debugger-panel" },
+      "title": "Debugger"
+    }, 
+  };
+
+  let defaultContent = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    }, {
+      "type": "column",
+      "width": 58,
+      "content": [
+        components.blocks
+      ]
+    },
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.code,
+        components.output
+      ]
     }]
   };
-  let plotterConfig = {
-    "id": "plotter",
-    "type": "component",
-    "height": 30,
-    "componentName": "DOM",
-    "componentState": { "id": "#plotter-panel" },
-    "title": "Plotter"
+
+  let contentWithoutBlocks = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    },    
+    components.code,
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.output
+      ]
+    }]
   };
-  let debuggerConfig = {
-    "id": "debugger",
-    "type": "component",
-    "height": 30,
-    "componentName": "DOM",
-    "componentState": { "id": "#debugger-panel" },
-    "title": "Debugger"
+  
+  let contentWithoutCode = {
+    "type": "row",
+    "content":[{
+      "type": "column",
+      "width": 17,
+      "content": [
+        components.controls,
+        components.inspector
+      ]
+    },
+    components.blocks,
+    {
+      "type": "column",
+      "width": 25,
+      "content":[
+        components.output
+      ]
+    }]
+  };
+
+  let settings = {
+    "showPopoutIcon": false,
+    "showMaximiseIcon": false,
+    "showCloseIcon": false
   };
 
   let layout;
+  let panels = new Map();
   let onStateChanged = function () { /* DO NOTHING */ }
+  let resetting = false;
+  
+  let observers = {
+    "close" : [],
+  };
 
   function init(callback) {
     if (callback) { onStateChanged = callback; }
@@ -80,22 +146,129 @@ let LayoutManager = (function () {
     });
   }
 
-  function reset() {
-    setLayoutConfig(defaultLayoutConfig);
+  function getDefaultContent() {
+    let removeFrom = (component, col) => {
+      let idx = col.indexOf(component);
+      if (idx !== -1) { col.splice(idx, 1); }
+    };
+    let moveFromTo = (component, col_from, col_to) => {
+      removeFrom(component, col_from);
+      col_to.push(component);
+    };
+
+    let includeBlocks = Uzi.state.features["blocks?"];
+    let includeCode = Uzi.state.features["code?"];
+    let includeInspector = Uzi.state.features["monitoring?"];
+    includeInspector &= Uzi.state.features["interactivity?"];
+    
+    let left = [components.controls, components.inspector];
+    let main = [components.blocks];
+    let right = [components.code, components.output];
+    
+    if (!includeCode) {
+      removeFrom(components.code, right);
+    } else if (!includeBlocks) {
+      removeFrom(components.blocks, main);
+      moveFromTo(components.code, right, main);
+    }
+
+    if (!includeInspector) {
+      removeFrom(components.inspector, left);
+      moveFromTo(components.output, right, left);
+      components.output.height = 70;
+    }
+
+    let content = [{
+      "type": "column",
+      "width": 17,
+      "content": left
+    }, {
+      "type": "column",
+      "width": 58,
+      "content": main
+    }, {
+      "type": "column",
+      "width": 25,
+      "content": right
+    }];
+
+    if (right.length == 0) {
+      content.pop();
+      content[1]["width"] = 83;
+    }
+
+    return content;
+  }
+
+  function reset() {    
+    Uzi.elog("LAYOUT/RESET");
+    setLayoutConfig({
+      settings: settings,
+      content: [{
+        type: "row",
+        content: getDefaultContent()
+      }]
+    });
+  }
+  
+  function on (evt, callback) {
+    observers[evt].push(callback);
+  }
+
+  function trigger(evt, args) {
+    observers[evt].forEach(function (fn) {
+      try {
+        fn(args);
+      } catch (err) {
+        console.log(err);
+      }
+    });
   }
 
   function getLayoutConfig() { return layout.toConfig(); }
 
-  function setLayoutConfig(config) {
-    if (layout) { layout.destroy(); }
+  function update(config, fn) {
+    if (config instanceof Array) return config.map(e => update(e, fn));
+    if (typeof config != "object") return config;
+    if (config === null) return null;
+    if (config === undefined) return undefined;
+  
+    let value = {};
+    for (let m in config) {
+      value[m] = update(config[m], fn);
+    }
+    fn(value);
+    return value;
+  }
 
-    layout = new GoldenLayout(config, "#layout-container");
+  function updateClosable(config) {
+    let isClosable = Uzi.state.features["closable-panels?"];
+    return update(config, value => {
+      if (value["type"] == "component") {
+        value["isClosable"] = isClosable;
+      }
+    });
+  }
+
+  function setLayoutConfig(config) {
+    resetting = true;
+    setTimeout(() => resetting = false, 0);
+
+    if (layout) { layout.destroy(); }
+    panels.clear();
+
+    layout = new GoldenLayout(updateClosable(config), "#layout-container");
     layout.registerComponent('DOM', function(container, state) {
       let $el = $(state.id);
       container.getElement().append($el);
       container.on('destroy', function () {
         $("#hidden-panels").append($el);
+        trigger("close", state.id);
+        if (!resetting) {
+          Uzi.elog("LAYOUT/PANEL_CLOSE", state.id);
+        }
       });
+      panels[state.id] = container;
     });
 
     function updateSize() {
@@ -113,6 +286,10 @@ let LayoutManager = (function () {
     updateSize();
   }
 
+  function getPanel(id) {
+    return panels[id];
+  }
+
   function isBroken() {
     return layout.config.content.length == 0;
   }
@@ -126,6 +303,7 @@ let LayoutManager = (function () {
 
   function showPlotter() {
     if (layout.root.getItemsById("plotter").length > 0) return;
+    Uzi.elog("LAYOUT/PANEL_OPEN", "#plotter-panel");
 
     let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
     let path = [siblingPanel];
@@ -133,21 +311,24 @@ let LayoutManager = (function () {
       path.unshift(path[0].parent);
     } while (path[0].type == "stack");
     let parent = path[0];
+    
+    let config = components.plotter;
     if (parent.type == "column") {
-      parent.addChild(plotterConfig);
+      parent.addChild(config);
     } else {
       let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - plotterConfig.height;
+      siblingConfig.height = 100 - config.height;
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
-        content: [siblingConfig, plotterConfig]
+        content: [siblingConfig, config]
       });
     }
   }
 
   function showDebugger() {
     if (layout.root.getItemsById("debugger").length > 0) return;
+    Uzi.elog("LAYOUT/PANEL_OPEN", "#debugger-panel");
 
     let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
     let path = [siblingPanel];
@@ -155,27 +336,37 @@ let LayoutManager = (function () {
       path.unshift(path[0].parent);
     } while (path[0].type == "stack");
     let parent = path[0];
+    
+    let config = components.debugger;
     if (parent.type == "column") {
-      parent.addChild(debuggerConfig);
+      parent.addChild(config);
     } else {
       let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - debuggerConfig.height;
+      siblingConfig.height = 100 - config.height;
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
-        content: [siblingConfig, debuggerConfig]
+        content: [siblingConfig, config]
       });
     }
+  }
+
+  function closePanel(id) {
+    let panel = getPanel(id);
+    if (panel) { panel.close(); }
   }
 
   return {
     init: init,
     reset: reset,
+    on: on,
     showPlotter: showPlotter,
     showDebugger: showDebugger,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,
+    getPanel: getPanel,
+    closePanel: closePanel,
   };
 
 })();

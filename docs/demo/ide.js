@@ -1,8 +1,7 @@
-const electron = require('electron');
-const { dialog } = electron ? electron.remote : {};
-const fs = require('fs');
-
-﻿let IDE = (function () {
+let IDE = (function () {
+  const electron = require('electron');
+  const { dialog } = electron ? electron.remote : {};
+  const fs = require('fs');
 
   let selectedPort = DEMO ? "simulator" : "automatic";
   let autorunInterval, autorunNextTime, autorunCounter = 0;
@@ -34,12 +33,73 @@ const fs = require('fs');
         .then(initializeDebuggerPanel)
         .then(initializeBrokenLayoutErrorModal)
         .then(initializeServerNotFoundErrorModal)
-        .then(initializeOptionsModal);
+        .then(initializeOptionsModal)
+        .then(initializeElog);
     },
   };
 
+  function initializeElog() {    
+    let buttons = ["input", "a", "button", "select"];
+    let handled = new Set();
+    $(buttons.join(",")).on("click", function () {
+      if (!this.id || handled.has(this.id)) return;
+      handled.add(this.id);
+      Uzi.elog("UI/CLICK", "#" + this.id);
+    });
+    $(window).click(function (e) {
+      let element = e.target;
+      setTimeout(function () {
+        try {
+          if (handled.has(element.id)) return;
+    
+          // Inspector "eyes"
+          if (element.classList.contains("fa-eye")) {
+            if (element.id.startsWith("pin")) {
+              Uzi.elog("UI/PIN_EYE_CLICK", "#" + element.id);
+            } else if (element.id.startsWith("global")) {
+              Uzi.elog("UI/GLOBAL_EYE_CLICK", "#" + element.id);
+            }
+            return;
+          }
+    
+          // Special case for empty panel
+          if (element.classList.contains("lm_content")) {
+            let firstChild = element.childNodes[0];
+            if (firstChild && firstChild.id) {
+              Uzi.elog("UI/CLICK", "#" + firstChild.id);
+              return;
+            }
+          }
+    
+          // Special case for labels (to avoid logging twice)
+          if (element.localName == "label") {
+            let target = document.getElementById(element.getAttribute("for"));
+            if (target && buttons.includes(target.localName)) {
+              if (target.type == "checkbox" && !handled.has(target.id)) {
+                Uzi.elog("UI/CLICK", "#" + target.id);
+              }
+              return;
+            }
+          }
+          
+          // Fallback: look up in the parent chain
+          while (!element.id || element.id.startsWith(":")) {
+            element = element.parentNode;
+            if (!element || element == document.body) return;
+          }
+          if (buttons.includes(element.localName) || handled.has(element.id)) return;
+          Uzi.elog("UI/CLICK", "#" + element.id);
+        } catch {
+          // Do nothing?
+        } finally {
+          handled.clear(); 
+        }
+      }, 0);
+    });
+  }
+
   function initializeLayout() {
-    return LayoutManager.init(function () {
+    return LayoutManager.init(() => {
       resizePanels();
       saveToLocalStorage();
       checkBrokenLayout();
@@ -53,10 +113,13 @@ const fs = require('fs');
 
   function initializeBlocksPanel() {
     return UziBlock.init()
-      .then(function () {
+      .then(() => {
         let lastProgram = undefined;
 
-        UziBlock.on("change", function (userInteraction) {
+        UziBlock.on("select", block => {
+          UziCode.select(Uzi.state.program["block->token"][block]); 
+        });
+        UziBlock.on("change", userInteraction => {
           saveToLocalStorage();
 
           /*
@@ -64,7 +127,7 @@ const fs = require('fs');
           the user. This prevents a double compilation when changing the program
           from the code editor.
           */
-          if (userInteraction) {
+          if (userInteraction && !UziCode.isFocused()) {
             let currentProgram = getBlocklyCode();
             if (currentProgram !== lastProgram) {
               lastProgram = currentProgram;
@@ -77,11 +140,22 @@ const fs = require('fs');
           }
         });
 
-        // TODO(Richo)
-        Uzi.on("update", function (state, previousState) {
+        Debugger.on("change", (state, stackFrameIndex) => {
+          /*
+          HACK(Richo): FUCKING Blockly! I wasted a lot of time debugging this problem in which
+          a debugger update from the server wasn't being applied to the block editor (a breakpoint
+          was removed but the block still had the warning text set). By trial and error I discover
+          that, for some reason, while I'm dragging a block (a different block, completely unrelated
+          with the one misbehaving) the warning texts are not applied. I don't know why setting a
+          timeout to execute the update fixes the issue, though. But it seems it does so I will
+          keep this. Again, fucking Blockly...
+          */
+          setTimeout(UziBlock.handleDebuggerUpdate(state, stackFrameIndex), 0);
+        });
+        Uzi.on("update", (state, previousState, keys) => {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
-          let blocklyProgram = ASTToBlocks.generate(state.program.ast);
+          let blocklyProgram = ASTToBlocks.generate(state.program);
           UziBlock.setProgram(blocklyProgram);
           UziBlock.cleanUp();
         });
@@ -118,11 +192,22 @@ const fs = require('fs');
     $("#port-dropdown").change(choosePort);
     $("#connect-button").on("click", connect);
     $("#disconnect-button").on("click", disconnect);
+    if (Uzi.state.features["interactivity?"]) {
+      $("#connect-button").show();  
+    } else {
+      $("#connect-button").hide();
+    }
+
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
 		$("#interactive-checkbox").on("change", toggleInteractive);
     $("#options-button").on("click", openOptionsDialog);
+    if (Uzi.state.features["options-button?"]) {
+      $("#options-button").show();
+    } else {
+      $("#options-button").hide();
+    }
     Uzi.on("update", updateTopBar);
     Uzi.on("update", updateConnection);
     updatePortDropdown();
@@ -143,7 +228,7 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureDCMotors", () => {
       let motors = UziBlock.getMotors();
       let usedMotors = getUsedMotors();
       let spec = {
@@ -162,7 +247,9 @@ const fs = require('fs');
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "motors"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "motors", data: data});
         UziBlock.setMotors(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -180,7 +267,7 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureSonars", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureSonars", () => {
       let sonars = UziBlock.getSonars();
       let usedSonars = getUsedSonars();
       let spec = {
@@ -199,7 +286,9 @@ const fs = require('fs');
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "sonars"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "sonars", data: data});
         UziBlock.setSonars(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -217,7 +306,7 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureJoysticks", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureJoysticks", () => {
       let joysticks = UziBlock.getJoysticks();
       let usedJoysticks = getUsedJoysticks();
       let spec = {
@@ -235,7 +324,9 @@ const fs = require('fs');
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "joysticks"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "joysticks", data: data});
         UziBlock.setJoysticks(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -245,7 +336,7 @@ const fs = require('fs');
   }
 
   function initializeBlocklyVariablesModal() {
-    UziBlock.getWorkspace().registerButtonCallback("configureVariables", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureVariables", () => {
       let variables = UziBlock.getVariables();
       let usedVariables = UziBlock.getUsedVariables();
       let spec = {
@@ -254,7 +345,7 @@ const fs = require('fs');
         defaultElement: {name: "variable", value: "0"},
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("Variable name")},
-          {id: "value", type: "number", name: i18n.translate("Initial value (if global)")},
+          {id: "value", type: "numberOrPin", name: i18n.translate("Initial value (if global)")},
         ],
         rows: variables.map(each => {
           let clone = deepClone(each);
@@ -262,7 +353,9 @@ const fs = require('fs');
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "variables"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "variables", data: data});
         UziBlock.setVariables(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -280,7 +373,7 @@ const fs = require('fs');
       return new Set(program.ast.imports.map(imp => imp.alias));
     }
 
-    UziBlock.getWorkspace().registerButtonCallback("configureLists", function () {
+    UziBlock.getWorkspace().registerButtonCallback("configureLists", () => {
       let lists = UziBlock.getLists();
       let usedLists = getUsedLists();
       let spec = {
@@ -297,7 +390,9 @@ const fs = require('fs');
           return clone;
         })
       };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "lists"});
       BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "lists", data: data});
         UziBlock.setLists(data);
         UziBlock.refreshToolbox();
         saveToLocalStorage();
@@ -308,8 +403,12 @@ const fs = require('fs');
 
   function initializeCodePanel() {
     UziCode.init();
-    UziCode.on("change", function (focus) {
+    UziCode.on("cursor", idx => {
+      UziBlock.selectByIndex(idx);
+    })
+    UziCode.on("change", focus => {
       saveToLocalStorage();
+      
       if (focus) {
         dirtyCode = true;
         dirtyBlocks = false;
@@ -319,12 +418,12 @@ const fs = require('fs');
   }
 
   function initializeOutputPanel() {
-    Uzi.on("update", function () {
+    Uzi.on("update", () => {
       Uzi.state.output.forEach(appendToOutput);
       Uzi.state.output = [];
     });
 
-    i18n.on("change", function () {
+    i18n.on("change", () => {
       $("#output-console").html("");
       let temp = outputHistory;
       outputHistory = [];
@@ -353,17 +452,17 @@ const fs = require('fs');
   }
 
   function initializeBrokenLayoutErrorModal() {
-    $("#fix-broken-layout-button").on("click", function () {
+    $("#fix-broken-layout-button").on("click", () => {
       LayoutManager.reset();
       $("#broken-layout-modal").modal("hide");
     });
   }
 
   function initializeServerNotFoundErrorModal() {
-    Uzi.on("server-disconnect", function () {
+    Uzi.on("server-disconnect", () => {
       $("#server-not-found-modal").modal('show');
     });
-    setInterval(function () {
+    setInterval(() => {
       if (Uzi.serverAvailable) {
         $("#server-not-found-modal").modal('hide');
       }
@@ -420,7 +519,7 @@ const fs = require('fs');
     let type = entry.type || "info";
     let args = entry.args || [];
     let regex = /%(\d+)/g;
-    let text = i18n.translate(entry.text).replace(regex, function (m, i) {
+    let text = i18n.translate(entry.text).replace(regex, (m, i) => {
       let arg = args[parseInt(i) - 1];
       return arg || m;
     });
@@ -574,7 +673,9 @@ const fs = require('fs');
       }
 
       if (ui.layout != undefined) {
-        LayoutManager.setLayoutConfig(ui.layout);
+        if (Uzi.state.features["persistent-layout?"]) {
+          LayoutManager.setLayoutConfig(ui.layout);
+        }
       }
 
       if (ui.blockly != undefined) {
@@ -664,7 +765,7 @@ const fs = require('fs');
       dialog.showOpenDialog({
         filters: [{name: "Physical Bits project", extensions: ["phb"]}],
         properties: ["openFile"]
-      }).then(function (response) {
+      }).then(response => {
         if (!response.canceled) {
           let path = response.filePaths[0];
           fs.promises.readFile(path, "utf8")
@@ -703,7 +804,7 @@ const fs = require('fs');
       defaultPath: $("#file-name").text() || "program.phb",
       filters: [{name: "Physical Bits project", extensions: ["phb"]}],
       properties: ["openFile"]
-    }).then(function (response) {
+    }).then(response => {
       if (!response.canceled) {
         let path = response.filePath;
         $("#file-name").text(path);
@@ -728,7 +829,7 @@ const fs = require('fs');
   function choosePort() {
     let value = $("#port-dropdown").val();
     if (value == "other") {
-      let defaultOption = selectedPort == "automatic" || "simulator" ? "" : selectedPort;
+      let defaultOption = selectedPort == "automatic" ? "" : selectedPort;
       MessageBox.prompt(i18n.translate("Choose port"),
                         i18n.translate("Port name:"),
                         defaultOption).then(value => {
@@ -748,10 +849,20 @@ const fs = require('fs');
   function setSelectedPort(val) {
     selectedPort = val;
     if ($("#port-dropdown option[value='" + selectedPort + "']").length <= 0) {
-      $("<option>")
-        .text(selectedPort)
-        .attr("value", selectedPort)
-        .insertBefore("#port-dropdown-divider");
+      // HACK(Richo): Add the special "simulator" option in case it wasn't there
+      if (val == "simulator") {
+        $("<option>")
+          .text("Simulator")
+          .attr("value", selectedPort)
+          .attr("lang", "en")
+          .insertBefore("#port-dropdown-divider");
+        i18n.updateUI();
+      } else {
+        $("<option>")
+          .text(selectedPort)
+          .attr("value", selectedPort)
+          .insertBefore("#port-dropdown-divider");
+      }
     }
     $("#port-dropdown").val(selectedPort);
   }
@@ -759,6 +870,7 @@ const fs = require('fs');
   function connect() {
     if (DEMO && selectedPort != "simulator") {
       MessageBox.alert("DEMO version", "The functionality you requested is not implemented in the DEMO version. Please download Physical Bits to enjoy all its capabilities");
+      return Promise.reject("DEMO version does not support arbitrary connections");
     } else {
       connecting = true;
       $("#connect-button").attr("disabled", "disabled");
@@ -769,11 +881,12 @@ const fs = require('fs');
           appendToOutput({text: "No available ports found", type: "error"});
           connecting = false;
           updateTopBar();
+          return Promise.reject("No available ports found");
         } else {
-          attemptConnection(availablePorts);
+          return attemptConnection(availablePorts);
         }
       } else {
-        Uzi.connect(selectedPort).finally(function () {
+        return Uzi.connect(selectedPort).finally(() => {
           connecting = false;
           updateTopBar();
         });
@@ -783,18 +896,21 @@ const fs = require('fs');
 
   function attemptConnection(availablePorts) {
     let port = availablePorts.shift();
-    Uzi.connect(port).then(data => {
-      if (data["port-name"] == port) {
+    return Uzi.connect(port).then(data => {
+      if (data == port) {
         selectedPort = port;
         if (selectedPort) { saveToLocalStorage(); }
         connecting = false;
+        return port;
       } else if (availablePorts.length > 0) {
-        attemptConnection(availablePorts);
+        return attemptConnection(availablePorts);
       } else {
         connecting = false;
+        return null;
       }
     }).catch(() => { connecting = false; });
   }
+  window.attemptConnection = attemptConnection;
 
   function disconnect() {
     connecting = true;
@@ -808,19 +924,46 @@ const fs = require('fs');
   function evalProgramFn(fn) {
     let program = lastProgram.code;
     let type = lastProgram.type;
-    fn(program, type).then(success).catch(error);
+    return fn(program, type).then(success).catch(error);
   }
 
   function verify() {
     evalProgramFn(Uzi.compile);
   }
 
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // HACK(Richo): I can't use the "connecting" flag so I added a new flag
+  let waiting = false;
+  
   function run() {
-    evalProgramFn(Uzi.run);
+    if (Uzi.state.features["interactivity?"]) {
+      evalProgramFn(Uzi.run);
+    } else {
+      if (waiting) return;
+      waiting = true;
+      connect()
+        .then(port => port ? evalProgramFn(Uzi.run) : null)
+        .then(() => delay(1000))
+        .then(() => disconnect())
+        .finally(() => waiting = false);
+    }
   }
 
   function install() {
-    evalProgramFn(Uzi.install);
+    if (Uzi.state.features["interactivity?"]) {
+      evalProgramFn(Uzi.install);
+    } else {
+      if (waiting) return;
+      waiting = true;
+      connect()
+        .then(port => port ? evalProgramFn(Uzi.install) : null)
+        .then(() => delay(1000))
+        .then(() => disconnect())
+        .finally(() => waiting = false);
+    }
   }
 
   function toggleInteractive() {
@@ -898,6 +1041,7 @@ const fs = require('fs');
 
 	function autorun() {
     if (Uzi.state == undefined) return Promise.resolve();
+    if (Uzi.state.debugger.isHalted) return Promise.resolve();
 		if (autorunNextTime === undefined) return Promise.resolve();
 
 		let currentTime = +new Date();
@@ -931,6 +1075,7 @@ const fs = require('fs');
 
     let connected = Uzi.state.connection.isConnected;
     let interactive = $("#interactive-checkbox").get(0).checked;
+    interactive &= Uzi.state.features["interactivity?"];
     let action = connected && interactive ? Uzi.run : Uzi.compile;
     let actionName = action.name.toUpperCase();
 
@@ -987,6 +1132,14 @@ const fs = require('fs');
       updatePortDropdown();
     }
 
+    if (!Uzi.state.features["interactivity?"]) {
+      $("#disconnect-button").hide();
+      $("#connect-button").hide();
+      $("#run-button").attr("disabled", null);
+      $("#more-buttons").attr("disabled", null);
+      $("#install-button").attr("disabled", null);
+    }
+      
 
     if (DEMO) {
       $("#port-dropdown").attr("disabled", "disabled");
@@ -1047,7 +1200,7 @@ const fs = require('fs');
     }
 
     let reporting = new Set();
-    values.available.forEach(function (val) {
+    values.available.forEach(val => {
       if (val.reporting) { reporting.add(val.name); }
     });
 
@@ -1068,7 +1221,7 @@ const fs = require('fs');
 
     function initializePanel() {
       $container.html("");
-      values.available.forEach(function (val) {
+      values.available.forEach(val => {
         if (val.reporting) {
           let $row = $("<tr>")
             .append($("<td>")
@@ -1101,7 +1254,7 @@ const fs = require('fs');
       initializePanel();
     }
 
-    values.elements.forEach(function (val) {
+    values.elements.forEach(val => {
       let $eye = getEye(val);
       $eye.css("color", Plotter.colorFor(val.name) || "white");
 
@@ -1139,7 +1292,7 @@ const fs = require('fs');
       }
     });
 
-    values.available.forEach(function (val) {
+    values.available.forEach(val => {
       if (!reporting.has(val.name)) {
         let $item = getElement(val);
         if ($item != undefined) { $item.parent().remove(); }

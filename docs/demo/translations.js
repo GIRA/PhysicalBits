@@ -9,6 +9,7 @@ var TRANSLATIONS = [
   ["Save as...", null, "Guardar como...", "Salvesta kui...", "Spara som..."],
   ["Download...", null, "Descargar...", "Laadi...", "Ladda..."],
   ["Automatic", null, "Automático", "Automaatne", "Automatisk"],
+  ["Simulator", null, "Simulador", null, null],
   ["Other...", null, "Otro...", "Muu...", "Annan..."],
   ["Connect", null, "Conectar", "Ühenda", "Anslut"],
   ["Disconnect", null, "Desconectar", "Ühenda lahti", "Koppla ifrån"],
@@ -83,6 +84,15 @@ var TRANSLATIONS = [
   ["This list is being used by the program!", null, "¡Esta lista está siendo usada en el programa!", null, null],
   ["Configure joysticks", null, "Configurar joysticks", null, null],
   ["Configure lists", null, "Configurar listas", null, null],
+  
+  ["Pause", null, "Pausar", null, null],
+  ["Continue", null, "Continuar", null, null],
+  ["Over", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Into", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Out", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Next", null, null, null, null], // TODO(Richo): Spanish translation?
+  ["Call stack", null, "Pila de llamadas", null, null],
+  ["Locals", null, "Variables locales", null, null],
 
   ["Welcome to the online DEMO of the Physical Bits environment!", null, "¡Bienvenido a la DEMO online de Physical Bits!", null, null],
   ["This DEMO is intended to showcase the editor and its capabilities. Therefore, its functionality is limited and it doesn't currently support connecting to a device in order to interactively program it.", null, "El objetivo de esta DEMO es exhibir el editor y sus capacidades. Por lo tanto, su funcionalidad es limitada y actualmente no soporta la conexión con un dispositivo para poder programarlo de forma interactiva.", null, null],
@@ -193,21 +203,29 @@ var TRANSLATIONS = [
   ["proc %name ( %arg0 ) { \n %stmts }", "procedure named %name with argument %arg0 %stmts", "procedimiento llamado %name con argumento %arg0 %stmts", "protseduur nimega %name argumendiga %arg0 %stmts", "procedur med namn %name och argumentet %arg0 %stmts"],
   ["proc %name ( %arg0 , %arg1 ) { \n %stmts }", "procedure named %name with arguments %arg0 %arg1 %stmts", "procedimiento llamado %name con argumentos %arg0 %arg1 %stmts", "protseduur nimega %name argumentidega %arg0 %arg1 %stmts", "procedur med namn %name och argumenten %arg0 %arg1 %stmts"],
   ["proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }", "procedure named %name with arguments %arg0 %arg1 %arg2 %stmts", "procedimiento llamado %name con argumentos %arg0 %arg1 %arg2 %stmts", "protseduur nimega %name argumentidega %arg0 %arg1 %arg2 %stmts", "procedur med namn %name och argumenten %arg0 %arg1 %arg2 %stmts"],
+  ["proc %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }", "procedure named %name with arguments %arg0 %arg1 %arg2 %arg3 %stmts", "procedimiento llamado %name con argumentos %arg0 %arg1 %arg2 %arg3 %stmts", "protseduur nimega %name argumentidega %arg0 %arg1 %arg2 %arg3 %stmts", "procedur med namn %name och argumenten %arg0 %arg1 %arg2 %arg3 %stmts"],
+  ["proc %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }", "procedure named %name with arguments %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "procedimiento llamado %name con argumentos %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "protseduur nimega %name argumentidega %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "procedur med namn %name och argumenten %arg0 %arg1 %arg2 %arg3 %arg4 %stmts"],
   ["exit ;", "exit", "salir", "lõpeta", "sluta"],
   ["%procName () ;", "execute %procName", "ejecutar %procName", "jooksuta %procName", "kör %procName"],
   ["%procName ( %arg0 ) ;", "execute %procName %arg0", "ejecutar %procName %arg0", "jooksuta toimingut %procName argumendiga %arg0", "kör %procName %arg0"],
   ["%procName ( %arg0 , %arg1 ) ;", "execute %procName %arg0 %arg1", "ejecutar %procName %arg0 %arg1", "jooksuta toimingut %procName argumentidega %arg0 %arg1", "kör %procName %arg0 %arg1"],
   ["%procName ( %arg0 , %arg1 , %arg2 ) ;", "execute %procName %arg0 %arg1 %arg2", "ejecutar %procName %arg0 %arg1 %arg2", "jooksuta toimingut %procName argumentidega %arg0 %arg1 %arg2", "kör %procName %arg0 %arg1 %arg2"],
+  ["%procName ( %arg0 , %arg1 , %arg2 , %arg3 ) ;", "execute %procName %arg0 %arg1 %arg2 %arg3", "ejecutar %procName %arg0 %arg1 %arg2 %arg3", "jooksuta toimingut %procName argumentidega %arg0 %arg1 %arg2 %arg3", "kör %procName %arg0 %arg1 %arg2 %arg3"],
+  ["%procName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) ;", "execute %procName %arg0 %arg1 %arg2 %arg3 %arg4", "ejecutar %procName %arg0 %arg1 %arg2 %arg3 %arg4", "jooksuta toimingut %procName argumentidega %arg0 %arg1 %arg2 %arg3 %arg4", "kör %procName %arg0 %arg1 %arg2 %arg3 %arg4"],
 
   ["func %name () { \n %stmts }", "function named %name %stmts", "función llamada %name %stmts", "funktsioon nimega %name %stmts", "funktion med namn %name %stmts"],
   ["func %name ( %arg0 ) { \n %stmts }", "function named %name with argument %arg0 %stmts", "función llamada %name con argumento %arg0 %stmts", "funktsioon nimega %name argumentidega %arg0 %stmts", "funktion med namn %name och argumentet %arg0 %stmts"],
   ["func %name ( %arg0 , %arg1 ) { \n %stmts }", "function named %name with arguments %arg0 %arg1 %stmts", "función llamada %name con argumentos %arg0 %arg1 %stmts", "funktsioon nimega %name argumentidega %arg0 %arg1 %stmts", "funktion med namn %name och argument %arg0 %arg1 %stmts"],
   ["func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }", "function named %name with arguments %arg0 %arg1 %arg2 %stmts", "función llamada %name con argumentos %arg0 %arg1 %arg2 %stmts", "funktsioon nimega %name argumentidega %arg0 %arg1 %arg2 %stmts", "funktion med namn %name och argument %arg0 %arg1 %arg2 %stmts"],
+  ["func %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }", "function named %name with arguments %arg0 %arg1 %arg2 %arg3 %stmts", "función llamada %name con argumentos %arg0 %arg1 %arg2 %arg3 %stmts", "funktsioon nimega %name argumentidega %arg0 %arg1 %arg2 %arg3 %stmts", "funktion med namn %name och argument %arg0 %arg1 %arg2 %arg3 %stmts"],
+  ["func %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }", "function named %name with arguments %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "función llamada %name con argumentos %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "funktsioon nimega %name argumentidega %arg0 %arg1 %arg2 %arg3 %arg4 %stmts", "funktion med namn %name och argument %arg0 %arg1 %arg2 %arg3 %arg4 %stmts"],
   ["return %value ;", "return %value", "devolver %value", "tagasta %value", "svara %value"],
   ["%funcName ()", "evaluate function %funcName", "evaluar %funcName", "arvuta %funcName", "beräkna %funcName"],
   ["%funcName ( %arg0 )", "evaluate function %funcName %arg0", "evaluar %funcName %arg0", "arvuta %funcName argumendiga %arg0", "beräkna %funcName med argumentet %arg0"],
   ["%funcName ( %arg0 , %arg1 )", "evaluate function %funcName %arg0 %arg1", "evaluar %funcName %arg0 %arg1", "arvuta %funcName argumentidega %arg0 %arg1", "beräkna %funcName med argumenten %arg0 %arg1"],
   ["%funcName ( %arg0 , %arg1 , %arg2 )", "evaluate function %funcName %arg0 %arg1 %arg2", "evaluar %funcName %arg0 %arg1 %arg2", "arvuta %funcName argumentidega %arg0 %arg1 %arg2", "beräkna %funcName med argumenten %arg0 %arg1 %arg2"],
+  ["%funcName ( %arg0 , %arg1 , %arg2 , %arg3 )", "evaluate function %funcName %arg0 %arg1 %arg2 %arg3", "evaluar %funcName %arg0 %arg1 %arg2 %arg3", "arvuta %funcName argumentidega %arg0 %arg1 %arg2 %arg3", "beräkna %funcName med argumenten %arg0 %arg1 %arg2 %arg3"],
+  ["%funcName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 )", "evaluate function %funcName %arg0 %arg1 %arg2 %arg3 %arg4", "evaluar %funcName %arg0 %arg1 %arg2 %arg3 %arg4", "arvuta %funcName argumentidega %arg0 %arg1 %arg2 %arg3 %arg4", "beräkna %funcName med argumenten %arg0 %arg1 %arg2 %arg3 %arg4"],
 
   ["isEven", "is even", "es par", "on paarisarv", "är ett jämnt tal"],
   ["isOdd", "is odd", "es impar", "on paaritu arv", "är ett ojämnt tal"],
@@ -318,4 +336,7 @@ var TRANSLATIONS = [
   ["%name . min ( )", "get min value from %name", "valor mínimo de %name", null, null],
   ["%name . sum ( )", "get sum from %name", "sumatoria de %name", null, null],
   ["%name . avg ( )", "get average from %name", "promedio de %name", null, null],
+
+  ["Toggle Breakpoint", null, "Agregar/Quitar punto de interrupción", null, null],
+  ["BREAKPOINT ON LINE: ", null, "PUNTO DE INTERRUPCIÓN EN LÍNEA: ", null, null],
 ];

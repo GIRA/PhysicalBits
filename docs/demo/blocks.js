@@ -3,7 +3,11 @@ let UziBlock = (function () {
   let version = 3;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
-  let userInteraction = false;
+  let userInteraction = false; // Flat to indicte that a workspace evt comes from the user
+  let ignoreChanges = false; // Flag to indicate that the next workspace change evt must be ignored
+  let selectedBlock = null;
+  let readOnly = false;  
+  let readOnlyProgram = null;
   let motors = [];
   let sonars = [];
   let joysticks = [];
@@ -11,6 +15,7 @@ let UziBlock = (function () {
   let lists = [];
   let observers = {
     "change" : [],
+    "select": []
   };
 
   let uziSyntax = false;
@@ -61,23 +66,56 @@ let UziBlock = (function () {
   const spec = {
     // TODO(Richo)
     here_be_dragons_stmt: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: true, down: true, left: false },
-      color: colors.HIDDEN
+      color: colors.HIDDEN,
+      supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
     here_be_dragons_expr: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: false, down: false, left: true },
-      color: colors.HIDDEN
+      color: colors.HIDDEN,
+      supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
     here_be_dragons_script: {
-      text: "HERE BE DRAGONS",
+      text: "%here_be_dragons",
       type: null,
+      inputs: {
+        "here_be_dragons": {
+          name: "code",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldTextInput("HERE BE DRAGONS"), name),
+        },
+      },
       connections: { up: false, down: false, left: false },
       color: colors.HIDDEN,
       isTopLevel: true,
+      supportsBreakpoints: false,
+      postload: function (block) {
+        block.setEditable(false);
+      },
     },
 
     // Secret
@@ -87,6 +125,29 @@ let UziBlock = (function () {
       inputs: {},
       connections: { up: true, down: true, left: false },
       color: colors.CONTROL,
+      supportsBreakpoints: true,
+    },
+    secret_return: { // NOTE(Richo): Special version of return that accepts bottom connections
+      text: "exit ;",
+      type: null,
+      inputs: {},
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    secret_return_value: { // NOTE(Richo): Special version of return_value that accepts bottom connections
+      text: "return %value ;",
+      type: null,
+      inputs: {
+        "value": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
     },
 
     // Imports
@@ -111,6 +172,7 @@ let UziBlock = (function () {
         block.setEditable(false);
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
 
     // Tasks
@@ -132,6 +194,7 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: false },
       color: colors.TASKS,
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     timer: {
       text: "task %1 () %4 %2 / %3 { \n %5 }",
@@ -169,6 +232,7 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: false },
       color: colors.TASKS,
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     start_task: {
       text: "start %name ;",
@@ -181,7 +245,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      supportsBreakpoints: true,
     },
     pause_task: {
       text: "pause %name ;",
@@ -194,7 +259,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      supportsBreakpoints: true,
     },
     stop_task: {
       text: "stop %name ;",
@@ -207,7 +273,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      supportsBreakpoints: true,
     },
     run_task: {
       text: "%taskName () ;",
@@ -220,7 +287,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      supportsBreakpoints: true,
     },
     resume_task: {
       text: "resume %name ;",
@@ -233,7 +301,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.TASKS
+      color: colors.TASKS,
+      supportsBreakpoints: true,
     },
 
     // GPIO
@@ -248,7 +317,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     turn_onoff_pin: {
       text: "turn %1 ( %2 ) ;",
@@ -268,7 +338,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     is_onoff_pin: {
       text: "%1 ( %2 )",
@@ -288,7 +359,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     read_pin: {
       text: "read( %1 )",
@@ -301,7 +373,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     write_pin: {
       text: "write( %1 , %2 );",
@@ -319,7 +392,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     set_pin_mode: {
       text: "setPinMode( %1 , %2 );",
@@ -339,7 +413,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: true,
     },
     pin: {
       text: "%pin",
@@ -358,7 +433,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: false,
     },
     pin_cast: {
       text: "pin ( %1 )",
@@ -371,7 +447,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.GPIO
+      color: colors.GPIO,
+      supportsBreakpoints: false,
     },
 
     // Motors - Servo
@@ -391,7 +468,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
     get_servo_degrees: {
       text: "getServoDegrees( %1 ) ;",
@@ -404,7 +482,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
 
     // Motors - DC
@@ -430,7 +509,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
     stop_dcmotor: {
       text: "%name . brake() ;",
@@ -443,7 +523,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
     change_speed_dcmotor: {
       text: "%name . setSpeed (speed: %speed ) ;",
@@ -461,7 +542,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
     get_speed_dcmotor: {
       text: "%name .getSpeed( )",
@@ -474,7 +556,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MOTORS
+      color: colors.MOTORS,
+      supportsBreakpoints: true,
     },
 
     // Sensors - Sonar
@@ -496,7 +579,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
 
     // Sensors - Buttons
@@ -516,7 +600,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     button_wait_for_action: {
       text: "buttons. %action ( %pin ) ;",
@@ -534,7 +619,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     /*
      TODO(Richo): This block is too large when its inputs are inlined (especially in spanish)
@@ -568,7 +654,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     /*
      TODO(Richo): This block is useful to react to long presses. It will wait
@@ -587,7 +674,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
 
 
@@ -603,7 +691,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     get_joystick_y: {
       text: "%name .y",
@@ -616,7 +705,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     get_joystick_angle: {
       text: "%name .getAngle()",
@@ -629,7 +719,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
     get_joystick_magnitude: {
       text: "%name .getMagnitude()",
@@ -642,7 +733,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.SENSORS
+      color: colors.SENSORS,
+      supportsBreakpoints: true,
     },
 
     // Sound
@@ -662,7 +754,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
     play_tone: {
       text: "playTone( %tone , %pinNumber , %time %unit ) ;",
@@ -692,7 +785,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
     start_note: {
       text: "startTone( %note , %pinNumber ) ;",
@@ -710,7 +804,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
     play_note: {
       text: "playTone( %note , %pinNumber , %time %unit ) ;",
@@ -740,7 +835,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
     stop_tone: {
       text: "stopTone( %pinNumber ) ;",
@@ -753,7 +849,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
     stop_tone_wait: {
       text: "stopToneAndWait( %pinNumber , %time %unit ) ;",
@@ -778,7 +875,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.SOUND
+      color: colors.SOUND,
+      supportsBreakpoints: true,
     },
 
     // Control
@@ -795,7 +893,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: false,
     },
     boolean_cast: {
       text: "bool ( %1 )",
@@ -808,7 +907,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: false,
     },
     conditional_simple: {
       text: "if %1 { \n %2 }",
@@ -826,7 +926,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     conditional_full: {
       text: "if %1 { \n %2 } else { \n %3 }",
@@ -849,7 +950,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     forever: {
       text: "forever { \n %1 }",
@@ -862,7 +964,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     repeat: {
       text: "%negate %condition { \n %statements }",
@@ -888,7 +991,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     repeat_times: {
       text: "repeat %times { \n %statements }",
@@ -906,7 +1010,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     for: {
       text: "for %1 = %2 to %3 by %4 { \n %5 }",
@@ -940,7 +1045,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     delay: {
       text: "%delay ( %time ) ;",
@@ -961,7 +1067,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     wait: {
       text: "%negate %condition ;",
@@ -980,7 +1087,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     elapsed_time: {
       text: "%timeUnit",
@@ -995,7 +1103,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     logical_compare: {
       text: "( %left %logical_compare_op %right )",
@@ -1024,7 +1133,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     logical_operation: {
       text: "( %left %logical_operation_op %right )",
@@ -1049,7 +1159,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
     logical_not: {
       text: "! %1",
@@ -1062,7 +1173,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL
+      color: colors.CONTROL,
+      supportsBreakpoints: true,
     },
 
     // Math
@@ -1078,7 +1190,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: false,
     },
     number_cast: {
       text: "number ( %1 )",
@@ -1091,7 +1204,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: false,
     },
     number_property: {
       text: "%numProp ( %value )",
@@ -1115,7 +1229,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_divisibility: {
       text: "isDivisibleBy( %1 , %2 )",
@@ -1133,7 +1248,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_operation: {
       text: "%operation %number \n",
@@ -1158,7 +1274,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_trig: {
       text: "%trigOperation %number \n",
@@ -1182,7 +1299,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     math_constant: {
       text: "%constant",
@@ -1201,7 +1319,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: false,
     },
     math_arithmetic: {
       text: "( %left %arithmeticOperator %right )",
@@ -1229,7 +1348,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_round: {
       text: "%roundingOperation %number \n",
@@ -1250,7 +1370,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_modulo: {
       text: "%1 % %2 \n",
@@ -1268,7 +1389,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH
+      color: colors.MATH,
+      supportsBreakpoints: true,
     },
     number_constrain: {
       text: "constrain ( %1 , %2 , %3 )",
@@ -1292,7 +1414,8 @@ let UziBlock = (function () {
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH,
-      postload: (block) => block.setInputsInline(true)
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: true,
     },
     number_between: {
       text: "isBetween ( value: %1 , min: %2 , max: %3 )",
@@ -1316,7 +1439,8 @@ let UziBlock = (function () {
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH,
-      postload: (block) => block.setInputsInline(true)
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: true,
     },
     number_random_int: {
       text: "randomInt( %1, %2 )",
@@ -1335,7 +1459,8 @@ let UziBlock = (function () {
       },
       connections: { up: false, down: false, left: true },
       color: colors.MATH,
-      postload: (block) => block.setInputsInline(true)
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: true,
     },
     number_random_float: {
       text: "random()",
@@ -1343,6 +1468,7 @@ let UziBlock = (function () {
       inputs: {},
       connections: { up: false, down: false, left: true },
       color: colors.MATH,
+      supportsBreakpoints: true,
     },
 
     // Variables
@@ -1358,6 +1484,7 @@ let UziBlock = (function () {
       },
       connections: { up: false, down: false, left: true },
       color: colors.VARIABLES,
+      supportsBreakpoints: false,
     },
     declare_local_variable: {
       text: "var %name = %value ;",
@@ -1375,7 +1502,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: false,
     },
     set_variable: {
       text: "%name = %value ;",
@@ -1393,7 +1521,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     increment_variable: {
       text: "%name += %value ;",
@@ -1411,7 +1540,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
 
     // Lists
@@ -1431,7 +1561,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_set: {
       text: "%name . set ( %index , %value ) ;",
@@ -1454,7 +1585,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_push: {
       text: "%name . push ( %value ) ;",
@@ -1472,7 +1604,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_pop: {
       text: "%name . pop ( ) ;",
@@ -1485,7 +1618,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_clear: {
       text: "%name . clear ( ) ;",
@@ -1498,7 +1632,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: true, down: true, left: false },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_random: {
       text: "%name . get_random ( )",
@@ -1511,7 +1646,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_count: {
       text: "%name . count ( )",
@@ -1524,7 +1660,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_size: {
       text: "%name . size ( )",
@@ -1537,7 +1674,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_sum: {
       text: "%name . sum ( )",
@@ -1550,7 +1688,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_avg: {
       text: "%name . avg ( )",
@@ -1563,7 +1702,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_max: {
       text: "%name . max ( )",
@@ -1576,7 +1716,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
     list_min: {
       text: "%name . min ( )",
@@ -1589,7 +1730,8 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.VARIABLES
+      color: colors.VARIABLES,
+      supportsBreakpoints: true,
     },
 
     // Procedures
@@ -1615,6 +1757,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     proc_definition_1args: {
       text: "proc %name ( %arg0 ) { \n %stmts }",
@@ -1645,6 +1788,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     proc_definition_2args: {
       text: "proc %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1682,6 +1826,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     proc_definition_3args: {
       text: "proc %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1726,13 +1871,126 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    proc_definition_4args: {
+      text: "proc %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    proc_definition_5args: {
+      text: "proc %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "arg4": {
+          name: "arg4",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg4"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.PROCEDURES,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
     },
     return: {
       text: "exit ;",
       type: null,
       inputs: {},
       connections: { up: true, down: false, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
     },
     proc_call_0args: {
       text: "%procName () ;",
@@ -1747,7 +2005,8 @@ let UziBlock = (function () {
       },
       connections: { up: true, down: true, left: false },
       color: colors.PROCEDURES,
-      postload: (block) => block.setInputsInline(true)
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: true,
     },
     proc_call_1args: {
       text: "%procName ( %arg0 ) ;",
@@ -1768,7 +2027,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
     },
     proc_call_2args: {
       text: "%procName ( %arg0 , %arg1 ) ;",
@@ -1796,7 +2056,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
     },
     proc_call_3args: {
       text: "%procName ( %arg0 , %arg1 , %arg2 ) ;",
@@ -1831,7 +2092,101 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.PROCEDURES
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    proc_call_4args: {
+      text: "%procName ( %arg0 , %arg1 , %arg2 , %arg3 ) ;",
+      type: null,
+      inputs: {
+        "procName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(4)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(4), name), name)),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
+    },
+    proc_call_5args: {
+      text: "%procName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) ;",
+      type: null,
+      inputs: {
+        "procName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentProceduresForDropdown(5)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        },
+        "arg4": {
+          name: "arg4",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastProcedureName(5), name), name)),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.PROCEDURES,
+      supportsBreakpoints: true,
     },
 
     // Functions
@@ -1857,6 +2212,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     func_definition_1args: {
       text: "func %name ( %arg0 ) { \n %stmts }",
@@ -1887,6 +2243,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     func_definition_2args: {
       text: "func %name ( %arg0 , %arg1 ) { \n %stmts }",
@@ -1924,6 +2281,7 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
     },
     func_definition_3args: {
       text: "func %name ( %arg0 , %arg1 , %arg2 ) { \n %stmts }",
@@ -1968,6 +2326,118 @@ let UziBlock = (function () {
         if (uziSyntax) { block.setInputsInline(true); }
       },
       isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    func_definition_4args: {
+      text: "func %name ( %arg0 , %arg1 , %arg2 , %arg3 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
+    },
+    func_definition_5args: {
+      text: "func %name ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 ) { \n %stmts }",
+      type: null,
+      inputs: {
+        "name": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput("default"), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg0"), name),
+        },
+        "arg1": {
+          name: "arg1",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg1"), name),
+        },
+        "arg2": {
+          name: "arg2",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg2"), name),
+        },
+        "arg3": {
+          name: "arg3",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg3"), name),
+        },
+        "arg4": {
+          name: "arg4",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldTextInput("arg4"), name),
+        },
+        "stmts": {
+          name: "statements",
+          types: null,
+          builder: (block, input, name) => block.appendStatementInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: false },
+      color: colors.FUNCTIONS,
+      postload: function (block) {
+        if (uziSyntax) { block.setInputsInline(true); }
+      },
+      isTopLevel: true,
+      supportsBreakpoints: false,
     },
     return_value: {
       text: "return %value ;",
@@ -1980,7 +2450,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: false, left: false },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
     },
     func_call_0args: {
       text: "%funcName ()",
@@ -1995,7 +2466,8 @@ let UziBlock = (function () {
       },
       connections: { up: false, down: false, left: true },
       color: colors.FUNCTIONS,
-      postload: (block) => block.setInputsInline(true)
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: true,
     },
     func_call_1args: {
       text: "%funcName ( %arg0 )",
@@ -2016,7 +2488,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
     },
     func_call_2args: {
       text: "%funcName ( %arg0 , %arg1 )",
@@ -2044,7 +2517,8 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
     },
     func_call_3args: {
       text: "%funcName ( %arg0 , %arg1 , %arg2 )",
@@ -2079,7 +2553,101 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.FUNCTIONS
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
+    },
+    func_call_4args: {
+      text: "%funcName ( %arg0 , %arg1 , %arg2 , %arg3 )",
+      type: null,
+      inputs: {
+        "funcName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(4)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(4), name), name)),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
+    },
+    func_call_5args: {
+      text: "%funcName ( %arg0 , %arg1 , %arg2 , %arg3 , %arg4 )",
+      type: null,
+      inputs: {
+        "funcName": {
+          name: "scriptName",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown(() => currentFunctionsForDropdown(5)), name),
+        },
+        "arg0": {
+          name: "arg0",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg1": {
+          name: "arg1",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg2": {
+          name: "arg2",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg3": {
+          name: "arg3",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        },
+        "arg4": {
+          name: "arg4",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name)
+                                          .setAlign(Blockly.ALIGN_RIGHT)
+                                          .appendField(new Blockly.FieldLabel(getArgumentName(getLastFunctionName(5), name), name)),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.FUNCTIONS,
+      supportsBreakpoints: true,
     },
   }
 
@@ -2143,12 +2711,43 @@ let UziBlock = (function () {
         refreshToolbox();
       });
 
+      let readOnlyRestoredScheduled = false; // Flag to avoid scheduling a program restore multiple times
       workspace.addChangeListener(function (evt) {
+        if (ignoreChanges) {
+          ignoreChanges = false;
+          return;
+        }
+        
+
         if (evt.type == Blockly.Events.UI) {
           userInteraction = true;
-          return; // Ignore these events
+
+          if (evt.element == "selected") {
+            if (selectedBlock != evt.newValue) {
+              selectedBlock = evt.newValue;
+              trigger("select", evt.newValue);
+            }
+          } else if (evt.element == "click") {
+            if (selectedBlock != evt.blockId) {
+              selectedBlock = evt.blockId;
+              trigger("select", evt.blockId);
+            }
+          }
+
+          return;
         }
 
+        if (userInteraction && readOnly) {
+          if (!readOnlyRestoredScheduled) {
+            readOnlyRestoredScheduled = true;
+            setTimeout(() => {
+              fromXMLText(readOnlyProgram);
+              readOnlyRestoredScheduled = false;
+            }, 100);
+          }
+          return;
+        }
+        
         /*
         NOTE(Richo): Whenever a block is created or deleted we update the timestamps map.
         These timestamps should help us disambiguate when two proc/func blocks with the same
@@ -2184,6 +2783,16 @@ let UziBlock = (function () {
         handleVariableDeclarationBlocksEvents(evt);
 
         trigger("change", userInteraction);
+        
+        if (userInteraction && !UziCode.isFocused()) {
+          let evtType = evt.type;
+          let blockType = null;
+          let block = workspace.getBlockById(evt.blockId);
+          if (block) { blockType = block.type; }
+          if (!blockType && evt.xml) { blockType = evt.xml.getAttribute("type"); }
+          if (!blockType && evt.oldXml) { blockType = evt.oldXml.getAttribute("type"); }
+          Uzi.elog("BLOCKLY/EVENT", {type: evtType, block: blockType});
+        }
       });
 
       initTasksToolboxCategory(toolbox, workspace);
@@ -2344,8 +2953,11 @@ let UziBlock = (function () {
 
   function initProceduresToolboxCategory(toolbox, workspace) {
     let procDeclaringBlocks = new Set(["proc_definition_0args", "proc_definition_1args",
-                                       "proc_definition_2args", "proc_definition_3args"]);
-    let procCallingBlocks = ["proc_call_0args", "proc_call_1args", "proc_call_2args", "proc_call_3args"];
+                                       "proc_definition_2args", "proc_definition_3args",
+                                       "proc_definition_4args", "proc_definition_5args"]);
+    let procCallingBlocks = ["proc_call_0args", "proc_call_1args", 
+                            "proc_call_2args", "proc_call_3args", 
+                            "proc_call_4args", "proc_call_5args"];
 
     workspace.registerToolboxCategoryCallback("PROCEDURES", function () {
       let node = XML.getChildNode(toolbox, "Procedures", "originalName");
@@ -2397,8 +3009,11 @@ let UziBlock = (function () {
 
   function initFunctionsToolboxCategory(toolbox, workspace) {
     let funcDeclaringBlocks = new Set(["func_definition_0args", "func_definition_1args",
-                                       "func_definition_2args", "func_definition_3args"]);
-    let funcCallingBlocks = ["func_call_0args", "func_call_1args", "func_call_2args", "func_call_3args"];
+                                       "func_definition_2args", "func_definition_3args",
+                                       "func_definition_4args", "func_definition_5args"]);
+    let funcCallingBlocks = ["func_call_0args", "func_call_1args", 
+                             "func_call_2args", "func_call_3args", 
+                             "func_call_4args", "func_call_5args"];
 
     workspace.registerToolboxCategoryCallback("FUNCTIONS", function () {
       let node = XML.getChildNode(toolbox, "Functions", "originalName");
@@ -2457,6 +3072,32 @@ let UziBlock = (function () {
     for (let key in spec) {
       let blockSpec = spec[key];
       Blockly.Blocks[key] = {
+        customContextMenu: function(options) {
+          var option = {
+              enabled: blockSpec.supportsBreakpoints && Uzi.state.features["debugging?"],
+              text: i18n.translate('Toggle Breakpoint'),
+              callback: function(e) {
+                try {
+                  let block = Blockly.ContextMenu.currentBlock;
+                  let token = Uzi.state.program["block->token"][block.id];
+                  if (token) {
+                    let loc = token[2];
+                    if (loc) {
+                      Debugger.toggleBreakpoint(loc);
+                      if (Debugger.getBreakpoints().has(loc)) {
+                        setBreakpointOnBlock(block, loc);
+                      } else {
+                        clearBreakpointOnBlock(block);
+                      }
+                    }
+                  }
+                } catch (err) {
+                  console.error(err);
+                }
+              },
+          };
+          options.push(option);
+        }, 
         init: function () {
           try {
             let msg = blocklyTranslate(blockSpec.text);
@@ -2498,6 +3139,8 @@ let UziBlock = (function () {
   }
 
   function initBlock (block, msg, inputFields) {
+    //block.contextMenu = false;
+
     // if the translation msg contains line breaks, then
     // each part is created on separate rows
     let lineSeparator = "\n";
@@ -2622,7 +3265,8 @@ let UziBlock = (function () {
 
   function getCurrentProcedureNames(nargs) {
     let interestingBlocks = ["proc_definition_0args", "proc_definition_1args",
-                             "proc_definition_2args", "proc_definition_3args"];
+                             "proc_definition_2args", "proc_definition_3args",
+                             "proc_definition_4args", "proc_definition_5args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
@@ -2636,7 +3280,8 @@ let UziBlock = (function () {
 
   function getCurrentFunctionNames(nargs) {
     let interestingBlocks = ["func_definition_0args", "func_definition_1args",
-                             "func_definition_2args", "func_definition_3args"];
+                             "func_definition_2args", "func_definition_3args",
+                             "func_definition_4args", "func_definition_5args"];
     if (nargs != undefined) { interestingBlocks = [interestingBlocks[nargs]]; }
     return workspace.getTopBlocks()
       .filter(b => interestingBlocks.includes(b.type))
@@ -2770,17 +3415,21 @@ let UziBlock = (function () {
 
   function handleProcedureBlocksEvents(evt) {
     let definitionBlocks = ["proc_definition_0args", "proc_definition_1args",
-                            "proc_definition_2args", "proc_definition_3args"];
+                            "proc_definition_2args", "proc_definition_3args",
+                            "proc_definition_4args", "proc_definition_5args"];
     let callBlocks = ["proc_call_0args", "proc_call_1args",
-                      "proc_call_2args", "proc_call_3args"];
+                      "proc_call_2args", "proc_call_3args",
+                      "proc_call_4args", "proc_call_5args"];
     handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
   function handleFunctionBlocksEvents(evt) {
     let definitionBlocks = ["func_definition_0args", "func_definition_1args",
-                            "func_definition_2args", "func_definition_3args"];
+                            "func_definition_2args", "func_definition_3args",
+                            "func_definition_4args", "func_definition_5args"];
     let callBlocks = ["func_call_0args", "func_call_1args",
-                      "func_call_2args", "func_call_3args"];
+                      "func_call_2args", "func_call_3args",
+                      "func_call_4args", "func_call_5args"];
     handleScriptBlocksEvents(evt, definitionBlocks, callBlocks);
   }
 
@@ -2809,7 +3458,9 @@ let UziBlock = (function () {
       let blocks = [
         {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
         {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
-        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]}
+        {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]},
+        {types: ["proc_definition_4args", "func_definition_4args"], fields: ["arg0", "arg1", "arg2", "arg3"]},
+        {types: ["proc_definition_5args", "func_definition_5args"], fields: ["arg0", "arg1", "arg2", "arg3", "arg4"]}
       ];
       blocks.forEach(function (block) {
         if (evt.type == Blockly.Events.CREATE && block.types.includes(evt.xml.getAttribute("type"))) {
@@ -2834,6 +3485,8 @@ let UziBlock = (function () {
         {types: ["proc_definition_1args", "func_definition_1args"], fields: ["arg0"]},
         {types: ["proc_definition_2args", "func_definition_2args"], fields: ["arg0", "arg1"]},
         {types: ["proc_definition_3args", "func_definition_3args"], fields: ["arg0", "arg1", "arg2"]},
+        {types: ["proc_definition_4args", "func_definition_4args"], fields: ["arg0", "arg1", "arg2", "arg3"]},
+        {types: ["proc_definition_5args", "func_definition_5args"], fields: ["arg0", "arg1", "arg2", "arg3", "arg4"]},
       ];
       interestingBlocks.forEach(function (each) {
         if (evt.type == Blockly.Events.CHANGE
@@ -2973,8 +3626,8 @@ let UziBlock = (function () {
   }
 
   function cleanUp() {
-    workspace.cleanUp();
-    workspace.scrollCenter();
+    workspace.cleanUp();    
+    //workspace.scrollCenter();
   }
 
   function toXML() {
@@ -2987,6 +3640,7 @@ let UziBlock = (function () {
 
   function fromXML(xml) {
     userInteraction = false;
+    ignoreChanges = true;
     workspace.clear();
     Blockly.Xml.domToWorkspace(xml, workspace);
 
@@ -3026,11 +3680,130 @@ let UziBlock = (function () {
       proc_definition_1args: ["arg0"],
       proc_definition_2args: ["arg0", "arg1"],
       proc_definition_3args: ["arg0", "arg1", "arg2"],
+      proc_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+      proc_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
       func_definition_1args: ["arg0"],
       func_definition_2args: ["arg0", "arg1"],
       func_definition_3args: ["arg0", "arg1", "arg2"],
+      func_definition_4args: ["arg0", "arg1", "arg2", "arg3"],
+      func_definition_5args: ["arg0", "arg1", "arg2", "arg3", "arg4"],
     };
     return (interestingBlocks[block.type] || []).map(f => block.getField(f));
+  }
+
+  function handleDebuggerUpdate(state, stackFrameIndex) {
+    try {
+      setReadOnly(state.debugger.isHalted);
+
+      let breakpoints = new Set(state.debugger.breakpoints);
+      workspace.getAllBlocks().forEach(block => {
+        // NOTE(Richo): If the loc for this block has a breakpoint set then
+        // add the warning text to the block, otherwise remove it.
+        // Also, just add one breakpoint for each line (the first). After adding
+        // the breakpoint remove it from the set so future blocks don't use it
+        let token = Uzi.state.program["block->token"][block.id];
+        if (token) {
+          let loc = token[2];
+          if (breakpoints.has(loc)) {
+            breakpoints.delete(loc);
+            setBreakpointOnBlock(block, loc);
+          } else {
+            clearBreakpointOnBlock(block);
+          }
+        } else {
+          clearBreakpointOnBlock(block);
+        }
+      });
+
+      workspace.highlightBlock(null);
+      let blocks = [];
+      if (state.debugger.isHalted && state.debugger.stackFrames.length > 0) {
+        let stackFrame = state.debugger.stackFrames[stackFrameIndex];
+        blocks = stackFrame.blocks.filter(id => id != null); // Only valid blocks please!
+      }
+      if (blocks.length > 0) {        
+        centerOnBlock(blocks[blocks.length - 1]);
+        blocks.forEach(id => workspace.highlightBlock(id, true));
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function setBreakpointOnBlock(block, loc) {
+    let warning = i18n.translate("BREAKPOINT ON LINE: ") + (loc + 1);
+    if (block.warning != warning) {
+      block.setWarningText(warning);
+    }
+  }
+
+  function clearBreakpointOnBlock(block) {
+    if (block.warning) {
+      block.setWarningText(null);
+    }
+  }
+
+  function centerOnBlock(id) {
+    // NOTE(Richo): If we try to move the workspace while a block is being dragged, for some reason,
+    // it breaks *everything* and the workspace becomes unusable
+    if (workspace.isDragging()) return;
+
+    // NOTE(Richo): Code taken and adapted from
+    // https://github.com/google/blockly/issues/1013#issuecomment-290713644
+    let block = workspace.getBlockById(id);
+    if (block == null) return;
+
+    ignoreChanges = true;
+    block.select();      // *block* is the block to scroll into view.
+    var mWs = workspace;
+    var xy = block.getRelativeToSurfaceXY();	// Scroll the workspace so that the block's top left corner
+    var m = mWs.getMetrics();				        	// is in the (0.2; 0.3) part of the viewport.
+    mWs.scrollbar.set(
+      xy.x * mWs.scale - m.contentLeft - m.viewWidth  * 0.4,
+      xy.y * mWs.scale - m.contentTop  - m.viewHeight * 0.4);
+  }
+
+  function findBlockByCodeIndex(idx) {
+    // TODO(Richo): This implementation sucks!
+
+    let candidates = [];
+    Object.entries(Uzi.state.program["block->token"]).forEach(entry => {
+      let block = entry[0];
+      let t = entry[1];
+      if (block != "") {
+        if (idx >= t[0] && idx <= t[1]) {
+          candidates.push({
+            length: t[1] - t[0],
+            block: block,
+          })
+        }
+      }
+    });
+    candidates.sort((a, b) => a.length - b.length);
+
+    let block = null;
+    for (let i = 0; i < candidates.length; i++) {
+      block = workspace.getBlockById(candidates[i].block);
+      if (block != null) break;
+    }
+
+    return block;
+  }
+
+  function selectByIndex(idx) {
+    if (!workspace) return;
+    
+    let block = findBlockByCodeIndex(idx);
+    if (block == null) return;
+
+    ignoreChanges = true;
+    block.select();
+  }
+
+  function setReadOnly(value) {
+    if (readOnly == value) return;
+    readOnlyProgram = value ? toXMLText() : null;
+    readOnly = value;
   }
 
   return {
@@ -3056,6 +3829,7 @@ let UziBlock = (function () {
     getWorkspace: function () { return workspace; },
     getMotors: function () { return motors; },
     setMotors: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (motors[m.index] == undefined) return;
@@ -3078,6 +3852,7 @@ let UziBlock = (function () {
     },
     getSonars: function () { return sonars; },
     setSonars: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (sonars[m.index] == undefined) return;
@@ -3100,6 +3875,7 @@ let UziBlock = (function () {
     },
     getJoysticks: function () { return joysticks; },
     setJoysticks: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (joysticks[m.index] == undefined) return;
@@ -3122,6 +3898,7 @@ let UziBlock = (function () {
     },
     getVariables: function () { return variables; },
     setVariables: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (variables[m.index] == undefined) return;
@@ -3143,6 +3920,7 @@ let UziBlock = (function () {
     },
     getLists: function () { return lists; },
     setLists: function (data) {
+      if (readOnly) return;
       let renames = new Map();
       data.forEach(function (m) {
         if (lists[m.index] == undefined) return;
@@ -3179,6 +3957,7 @@ let UziBlock = (function () {
       if (d.version != version) { return false; }
 
       try {
+        userInteraction = false;
         fromXMLText(d.blocks);
         motors = d.motors || [];
         sonars = d.sonars || [];
@@ -3192,5 +3971,9 @@ let UziBlock = (function () {
       }
     },
     getUsedVariables: getUsedVariables,
+    handleDebuggerUpdate: handleDebuggerUpdate,
+    getSelectedBlock: () => selectedBlock,
+    selectByIndex: selectByIndex,
+    setReadOnly: setReadOnly,
   }
 })();

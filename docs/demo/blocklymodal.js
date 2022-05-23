@@ -204,7 +204,8 @@ let BlocklyModal = (function () {
       text: text,
       pin: pin,
       identifier: text,
-      number: text
+      number: text,
+      numberOrPin: text,
     };
   })();
 
@@ -224,10 +225,15 @@ let BlocklyModal = (function () {
       let regex = /^-?[0-9]+((\.?[0-9]*[eE][+-]?[0-9]+)|(\.[0-9]+)?)$/;
       return regex.test(value);
     };
+    let numberOrPin = (id, value, data) => {
+      let regex = /^[DA]\d+$/;
+      return number(id, value, data) || regex.test(value);        
+    };
 
     return {
       identifier: [identifier, unique],
       number: [number],
+      numberOrPin: [numberOrPin],
     }
   })();
 

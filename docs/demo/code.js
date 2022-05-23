@@ -3,10 +3,10 @@ let UziCode = (function () {
   let editor;
   let focus = false;
   let updating = false;
-  let breakpoints = [];
 	let markers = [];
   let observers = {
-    "change": []
+    "change": [],
+    "cursor": []
   };
 
   function init() {
@@ -14,12 +14,20 @@ let UziCode = (function () {
     editor = ace.edit("code-editor");
     editor.setTheme("ace/theme/ambiance");
     editor.getSession().setMode("ace/mode/uzi");
+    editor.setHighlightSelectedWord(false);
+    editor.setShowFoldWidgets(false);
+    editor.setShowPrintMargin(false);
 
-    editor.on("focus", function () { focus = true; });
+    editor.selection.on("changeCursor", handleCursorChange)
+    editor.on("focus", function () { 
+      focus = true; 
+      handleCursorChange();
+    });
     editor.on("blur", function () { focus = false; });
     editor.on("change", function (e) {
-      if (updating) return;
       trigger("change", focus);
+      
+      if (updating) return;
 
       let start = e.start.row;
       let delta = e.lines.length - 1;
@@ -31,41 +39,50 @@ let UziCode = (function () {
         debugger;
       }
 
+      if (focus) {
+        Uzi.elog("CODE/CHANGE", e);
+      }
+
       /*
       TODO(Richo): Here we should update the validBreakpoints list to insert
       null in every inserted line. Otherwise everything gets out of sync...
+      NOTE(Richo): The reason it's (kinda) working right now is that we're 
+      not using the validBreakpoints anymore. IIRC the server used to send us
+      a list of lines where it was valid to set a breakpoint, but now I think
+      I remove it (I don't remember why, though, probably simplicity)
       */
-
-      let bpts = breakpoints.filter(function (bp) { return bp > start; });
-      breakpoints = breakpoints.filter(function (bp) { return bp <= start; });
-      bpts.forEach(function (bp) { breakpoints.push(bp + delta); });
+     
+      let breakpoints = new Set();
       editor.session.clearBreakpoints();
-      breakpoints.forEach(function (line) {
+      Debugger.getBreakpoints().forEach(bp => {
+        // If the breakpoint is after the edit start we add the edit delta, otherwise we
+        // leave it as is
+        let line = bp <= start ? bp : bp + delta;
+        breakpoints.add(line);
         editor.session.setBreakpoint(line, "breakpoint");
       });
     });
 
 		$(".ace_gutter").on("click", function (e) {
-      var line = getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
-
-			if (breakpoints.includes(line)) {
-				var index = breakpoints.indexOf(line);
-				if (index > -1) { breakpoints.splice(index, 1); }
-				editor.session.clearBreakpoint(line);
-			} else {
-				breakpoints.push(line);
-				editor.session.setBreakpoint(line, "breakpoint");
-			}
-			editor.gotoLine(line + 1);
-			sendBreakpoints();
+      // TODO(Richo): Sometimes the editor and the src get out of sync when they shouldn't
+      // I still don't know why! But it bothers when setting breakpoints and in some other 
+      // places as well (like when selecting blocks from the code editor)
+      if (editor.getValue() !== Uzi.state.program.src) return;
+      if (!Uzi.state.features["debugging?"]) return;
+      
+      var line = Debugger.getValidLineForBreakpoint(Number.parseInt(e.target.innerText) - 1);
+      Debugger.toggleBreakpoint(line);
+      if (Debugger.getBreakpoints().has(line)) {
+        editor.session.setBreakpoint(line, "breakpoint");
+      } else {
+        editor.session.clearBreakpoint(line);
+      }
+      editor.gotoLine(line + 1);
 		});
 
     Uzi.on("update", function (state, previousState, keys) {
       updating = true;
       try {
-        if (keys.has("debugger")) {
-          handleDebuggerUpdate(state, 0);
-        }
         if (keys.has("program")) {
           handleProgramUpdate(state, previousState);
         }
@@ -75,8 +92,20 @@ let UziCode = (function () {
         updating = false;
       }
     });
+
+    Debugger.on("change", handleDebuggerUpdate);
   }
 
+  function handleCursorChange() {
+    if (!focus) return;
+    let doc = editor.session.getDocument();
+
+    let col = editor.selection.cursor.column;
+    let row = editor.selection.cursor.row;
+    let idx = doc.positionToIndex({row: row, column: col});
+    trigger("cursor", idx);
+  }
+  
   function handleProgramUpdate(state, previousState) {
     if (focus) return; // Don't change the code while the user is editing!
     if (state.program.type == "uzi") return; // Ignore textual programs
@@ -97,9 +126,7 @@ let UziCode = (function () {
 
   function handleDebuggerUpdate(state, stackFrameIndex) {
     try {
-      if (!state.debugger.isHalted) {
-        editor.setValue(state.program.src, 1);
-      }
+      editor.setReadOnly(state.debugger.isHalted);
 
       let interval = null;
       let src = state.program.src;
@@ -108,7 +135,10 @@ let UziCode = (function () {
         src = state.debugger.sources[stackFrame.source];
         interval = stackFrame.interval;
       }
-      editor.setValue(src, 1);
+      
+      if (!focus && editor.getValue() !== src) {
+        editor.setValue(src, 1);
+      }
       highlight(interval);
 
       breakpoints = state.debugger.breakpoints;
@@ -123,21 +153,6 @@ let UziCode = (function () {
     }
   }
 
-	function getValidLineForBreakpoint(line) {
-    return line;
-    // TODO(Richo)
-		let valid = Uzi.program.validBreakpoints;
-		for (let i = line; i < valid.length; i++) {
-			if (valid[i] != null) return i;
-		}
-		return null;
-	}
-
-	function sendBreakpoints() {
-    console.log(breakpoints);
-    Uzi.debugger.setBreakpoints(breakpoints);
-	}
-
   function highlight(interval) {
 		markers.forEach((each) => { editor.session.removeMarker(each); });
 		if (interval == null) {
@@ -151,6 +166,19 @@ let UziCode = (function () {
 			markers.push(editor.session.addMarker(range, "debugger_ActiveLine", "line", true));
 			markers.push(editor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
 		}
+  }
+
+  function select(interval) {
+    if (focus) return;
+    if (interval == null || interval.length < 2) {
+      editor.clearSelection();
+    } else {
+      let doc = editor.session.getDocument();
+      let start = doc.indexToPosition(interval[0]);
+      let end = doc.indexToPosition(interval[1]);
+      let range = new ace.Range(start.row, start.column, end.row, end.column);
+      editor.selection.setSelectionRange(range);
+    }
   }
 
   function resizeEditor() {
@@ -195,6 +223,9 @@ let UziCode = (function () {
     clearEditor: clearEditor,
 
     handleDebuggerUpdate: handleDebuggerUpdate,
-    getBreakpoints: () => breakpoints,
+    select: select,
+
+    getEditor: () => editor,
+    isFocused: () => focus,
   }
 })();
