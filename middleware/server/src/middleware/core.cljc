@@ -66,7 +66,7 @@
 (defn compilation-failed [src ex type silent?]
   (elog/append "CORE/COMPILATION_FAIL"
                {:src src :type (keyword type) :silent? silent?
-                :ex {:description (.getMessage ex)
+                :ex {:description (ex-message ex)
                      :errors (if-let [{errors :errors} (ex-data ex)]
                                (mapv :description errors)
                                [])}}))
