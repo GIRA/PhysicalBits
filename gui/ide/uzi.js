@@ -55,6 +55,17 @@ let Uzi = (function () {
       "pseudo-vars": {available: [], elements: []},
       program: {src: null, compiled: null, ast: null},
       debugger: {isHalted: false},
+      features: {
+        "closable-panels?": true,
+        "persistent-layout?": true,
+        "options-button?": true,
+        "blocks?": true,
+        "code?": true,
+        "monitoring?": true,
+        "interactivity?": true,
+        "debugging?": true,
+        "concurrency?": true,
+      }
     },
     serverAvailable: true,
     socket: null,
