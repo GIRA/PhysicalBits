@@ -34,9 +34,9 @@ Most educational robotics projects require the implementation of a device that p
 
 ## Debugging
 
-*COMING SOON*
+Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. Physical Bits provides mechanisms for setting breakpoints (both in the code and the blocks) and executing the program step-by-step.
 
-Without debugging tools the process of fixing programming errors can be frustrating for an inexperienced user. UziScript's debugger provides mechanisms for error handling and step-by-step code execution.
+![debugger](../img/debugger.gif)
 
 ## Portability
 
