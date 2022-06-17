@@ -8,7 +8,7 @@
     "tree-kill": "^1.2.2"
   },
   "devDependencies": {
-    "electron": "^9.4.0"
+    "electron": "^15.5.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
