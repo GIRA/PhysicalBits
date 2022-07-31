@@ -24,6 +24,9 @@
         (elog/append (str "LOGGER/" (str/upper-case (name msg-type))) msg))
       (log* msg))))
 
+(defn clear []
+  (append :clear "" []))
+
 (defn info [str & args]
   (append :info str args))
 

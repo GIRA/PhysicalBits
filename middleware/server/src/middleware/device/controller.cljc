@@ -349,7 +349,8 @@
 (defn- request-connection [port-name baud-rate]
   (go
     (try
-      (logger/newline) ; TODO(Richo): Maybe clear the output console before connecting??
+      (logger/clear)
+      (logger/newline)
       (logger/log "Opening port: %1" port-name)
       (if-let [connection (ports/connect! port-name baud-rate)]
         (do

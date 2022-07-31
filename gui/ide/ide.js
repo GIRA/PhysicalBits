@@ -515,6 +515,13 @@ let IDE = (function () {
     if (outputHistory.length == 100) { outputHistory.shift(); }
     outputHistory.push(entry);
 
+    // Special case for the clear message
+    if (entry.type == "clear") {
+      $("#output-console").html("");
+      outputHistory = [];
+      return;
+    }
+
     // Translate and format the message
     let type = entry.type || "info";
     let args = entry.args || [];
