@@ -3,12 +3,6 @@
     <block type="task">
       <field name="scriptName">default</field>
     </block>
-    <block type="timer">
-      <field name="scriptName">default</field>
-      <field name="runningTimes">1</field>
-      <field name="tickingScale">s</field>
-      <field name="initialState">started</field>
-    </block>
     <block type="start_task">
       <field name="scriptName"></field>
     </block>
