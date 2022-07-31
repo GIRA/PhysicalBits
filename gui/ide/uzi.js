@@ -181,6 +181,19 @@ let Uzi = (function () {
       };
       return POST(url, data);
     },
+    setPinValues: function (pins, values) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_pin_values(pins, values);
+      }
+
+      let url = apiURL + "/uzi/pin-values";
+      let data = {
+        id: id,
+        pins: Array.from(pins).join(","),
+        values: Array.from(values).join(",")
+      };
+      return POST(url, data);
+    },
 
     setGlobalReport: function (globals, report) {
       if (Uzi.state.connection.portName == "simulator") {
@@ -192,6 +205,19 @@ let Uzi = (function () {
         id: id,
         globals: Array.from(globals).join(","),
         report: Array.from(report).join(",")
+      };
+      return POST(url, data);
+    },
+    setGlobalValues: function (globals, values) {
+      if (Uzi.state.connection.portName == "simulator") {
+        return middleware.simulator.set_global_values(globals, values);
+      }
+
+      let url = apiURL + "/uzi/global-values";
+      let data = {
+        id: id,
+        globals: Array.from(globals).join(","),
+        values: Array.from(values).join(",")
       };
       return POST(url, data);
     },

@@ -137,6 +137,18 @@
    (doseq [[global-name report?] globals]
      (dc/set-global-report global-name report?))))
 
+(defn set-pin-values! [pins]
+  (go-try
+   (elog/append "CORE/SET_PIN_VALUES" (vec pins))
+   (doseq [[pin-name value] pins]
+     (dc/set-pin-value pin-name value))))
+
+(defn set-global-values! [globals]
+  (go-try
+   (elog/append "CORE/SET_GLOBAL_VALUES" (vec globals))
+   (doseq [[global-name value] globals]
+     (dc/set-global-value global-name value))))
+
 (defn set-profile! [enabled?]
   (go-try
    (elog/append "CORE/SET_PROFILE" enabled?)

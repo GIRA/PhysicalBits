@@ -59,6 +59,18 @@
     ; TODO(Richo): Assert globals and report are the same size
     (<? (core/set-global-report! (map vector globals report))))))
 
+(defn ^:export set-pin-values [pins values]
+  (chan->promise
+   (go-try
+    ; TODO(Richo): Assert pins and values are the same size
+    (<? (core/set-pin-values! (map vector pins values))))))
+
+(defn ^:export set-global-values [globals values]
+  (chan->promise
+   (go-try
+    ; TODO(Richo): Assert globals and values are the same size
+    (<? (core/set-global-values! (map vector globals values))))))
+
 (defn ^:export set-profile [enabled?]
   (chan->promise
    (go-try

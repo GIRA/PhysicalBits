@@ -16,7 +16,7 @@
             [middleware.core :as core]
             [middleware.utils.json :as json]
             [middleware.utils.config :as config]
-            [middleware.utils.core :refer [parse-int]]
+            [middleware.utils.core :refer [parse-int parse-double]]
             [middleware.utils.eventlog :as elog])
   (:import [manifold.stream.core IEventSink]))
 
@@ -96,6 +96,22 @@
       (json-response "Invalid request parameters" 400)
       (json-response (<?? (core/set-global-report! (map vector globals report)))))))
 
+(defn pin-values-handler [{:strs [pins values] :or {pins "", values ""}}]
+  (let [pins (remove empty? (str/split pins #","))
+        values (map parse-double
+                    (remove empty? (str/split values #",")))]
+    (if-not (= (count pins) (count values))
+      (json-response "Invalid request parameters" 400)
+      (json-response (<?? (core/set-pin-values! (map vector pins values)))))))
+
+(defn global-values-handler [{:strs [globals values] :or {globals "", values ""}}]
+  (let [globals (remove empty? (str/split globals #","))
+        values (map parse-double
+                    (remove empty? (str/split values #",")))]
+    (if-not (= (count globals) (count values))
+      (json-response "Invalid request parameters" 400)
+      (json-response (<?? (core/set-global-values! (map vector globals values)))))))
+
 (defn profile-handler [{:strs [enabled]}]
   (json-response (<?? (core/set-profile! (= "true" enabled)))))
 
@@ -133,6 +149,8 @@
                         (POST "/uzi/install" {params :params} (install-handler uzi-libraries params))
                         (POST "/uzi/pin-report" {params :params} (pin-report-handler params))
                         (POST "/uzi/global-report" {params :params} (global-report-handler params))
+                        (POST "/uzi/pin-values" {params :params} (pin-values-handler params))
+                        (POST "/uzi/global-values" {params :params} (global-values-handler params))
                         (POST "/uzi/profile" {params :params} (profile-handler params))
                         (POST "/uzi/debugger/break" _ (debugger-break-handler))
                         (POST "/uzi/debugger/continue" _ (debugger-continue-handler))
