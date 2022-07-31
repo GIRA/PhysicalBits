@@ -880,36 +880,6 @@ let UziBlock = (function () {
     },
 
     // Control
-    boolean: {
-      text: "%boolean",
-      type: types.BOOLEAN,
-      inputs: {
-        "boolean": {
-          name: "value",
-          types: null,
-          builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[blocklyTranslate("true"), "true"],
-                                                                                  [blocklyTranslate("false"), "false"]]), name),
-        }
-      },
-      connections: { up: false, down: false, left: true },
-      color: colors.CONTROL,
-      supportsBreakpoints: false,
-    },
-    boolean_cast: {
-      text: "bool ( %1 )",
-      type: types.BOOLEAN,
-      inputs: {
-        "1": {
-          name: "value",
-          types: allTypes(types.NUMBER),
-          builder: (block, input, name) => block.appendValueInput(name),
-        }
-      },
-      connections: { up: false, down: false, left: true },
-      color: colors.CONTROL,
-      supportsBreakpoints: false,
-    },
     conditional_simple: {
       text: "if %1 { \n %2 }",
       type: null,
@@ -1106,6 +1076,52 @@ let UziBlock = (function () {
       color: colors.CONTROL,
       supportsBreakpoints: true,
     },
+
+    // Math
+    boolean: {
+      text: "%boolean",
+      type: types.BOOLEAN,
+      inputs: {
+        "boolean": {
+          name: "value",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldDropdown([[blocklyTranslate("true"), "true"],
+                                                                                  [blocklyTranslate("false"), "false"]]), name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.MATH,
+      supportsBreakpoints: false,
+    },
+    boolean_cast: {
+      text: "bool ( %1 )",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          name: "value",
+          types: allTypes(types.NUMBER),
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.MATH,
+      supportsBreakpoints: false,
+    },
+    logical_not: {
+      text: "! %1",
+      type: types.BOOLEAN,
+      inputs: {
+        "1": {
+          name: "value",
+          types: [types.BOOLEAN],
+          builder: (block, input, name) => block.appendValueInput(name),
+        },
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.MATH,
+      supportsBreakpoints: true,
+    },
     logical_compare: {
       text: "( %left %logical_compare_op %right )",
       type: types.BOOLEAN,
@@ -1133,7 +1149,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL,
+      color: colors.MATH,
       supportsBreakpoints: true,
     },
     logical_operation: {
@@ -1159,25 +1175,9 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.CONTROL,
+      color: colors.MATH,
       supportsBreakpoints: true,
     },
-    logical_not: {
-      text: "! %1",
-      type: types.BOOLEAN,
-      inputs: {
-        "1": {
-          name: "value",
-          types: [types.BOOLEAN],
-          builder: (block, input, name) => block.appendValueInput(name),
-        },
-      },
-      connections: { up: false, down: false, left: true },
-      color: colors.CONTROL,
-      supportsBreakpoints: true,
-    },
-
-    // Math
     number: {
       text: "%number",
       type: types.NUMBER,

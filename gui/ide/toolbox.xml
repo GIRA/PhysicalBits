@@ -282,42 +282,6 @@
         </shadow>
       </value>
     </block>
-    <block type="boolean">
-      <field name="value">true</field>
-    </block>
-    <block type="logical_compare">
-      <field name="operator">==</field>
-      <value name="left">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-      <value name="right">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="logical_operation">
-      <field name="operator">and</field>
-      <value name="left">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-      <value name="right">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="logical_not">
-      <value name="value">
-        <shadow type="boolean">
-          <field name="value">false</field>
-        </shadow>
-      </value>
-    </block>
     <block type="forever"></block>
     <block type="repeat_times">
       <value name="times">
@@ -371,17 +335,36 @@
         </shadow>
       </value>
     </block>
-    <block type="boolean_cast">
-      <value name="value">
+  </category>
+  <category name="Math">
+    <block type="number">
+      <field name="value">0</field>
+    </block>    
+    <block type="math_arithmetic">
+      <field name="operator">ADD</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
         <shadow type="number">
           <field name="value">1</field>
         </shadow>
       </value>
     </block>
-  </category>
-  <category name="Math">
-    <block type="number">
-      <field name="value">0</field>
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
     </block>
     <block type="number_property">
       <field name="property">even</field>
@@ -427,19 +410,6 @@
       <value name="number">
         <shadow type="number">
           <field name="value">3.1</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="math_arithmetic">
-      <field name="operator">ADD</field>
-      <value name="left">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-      <value name="right">
-        <shadow type="number">
-          <field name="value">1</field>
         </shadow>
       </value>
     </block>
@@ -500,12 +470,42 @@
           <field name="value">100</field>
         </shadow>
       </value>
-    </block>
+    </block>    
     <block type="number_random_float"></block>
+    <block type="boolean">
+      <field name="value">true</field>
+    </block>
+    <block type="logical_operation">
+      <field name="operator">and</field>
+      <value name="left">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_not">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
     <block type="number_cast">
       <value name="value">
         <shadow type="boolean">
           <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>    
+    <block type="boolean_cast">
+      <value name="value">
+        <shadow type="number">
+          <field name="value">1</field>
         </shadow>
       </value>
     </block>
