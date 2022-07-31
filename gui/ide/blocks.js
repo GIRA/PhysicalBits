@@ -1219,8 +1219,7 @@ let UziBlock = (function () {
         "numProp": {
           name: "property",
           types: null,
-          builder: (block, input, name) => block.appendDummyInput()
-                                          .appendField(new Blockly.FieldDropdown([[blocklyTranslate("isEven"),"even"],
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown([[blocklyTranslate("isEven"),"even"],
                                                                                   [blocklyTranslate("isOdd"),"odd"],
                                                                                   [blocklyTranslate("isPrime"),"prime"],
                                                                                   [blocklyTranslate("isWhole"),"whole"],
