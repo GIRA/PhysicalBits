@@ -1257,9 +1257,12 @@ let IDE = (function () {
               */
               if (13 == evt.keyCode || 9 == evt.keyCode) {
                 let new_value = parseFloat(this.innerText);
-                if (isFinite(new_value)) {
-                  console.log(val, new_value);
-                  updateFn([val.name], [new_value]);
+                if (isFinite(new_value) && updateFn) {
+                  try {
+                    updateFn([val.name], [new_value]);
+                  } catch(err) {
+                    console.error(err);
+                  }
                 }
               }
               /*
