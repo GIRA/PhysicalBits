@@ -80,7 +80,11 @@
                           state
                           (assoc state :connection :pending))))]
       (when connected?
-        (logger/error "Connection lost!")
+        ; HACK(Richo): Only show the connection lost message in the output console if
+        ; the interactivity feature is enabled. Otherwise, every time we send a program
+        ; to the robot we'll be seeing this confusing error message
+        (when (get-config [:features :interactivity?] true)
+          (logger/error "Connection lost!"))
         (try
           (ports/disconnect! conn)
           ; TODO(Richo): I used to think there was some sort of race condition in my
