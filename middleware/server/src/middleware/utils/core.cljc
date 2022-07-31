@@ -38,7 +38,8 @@
 (defn parse-double [str] #?(:clj (Double/parseDouble str)
                             :cljs (js/parseFloat str)))
 
-(defn parse-number [str]
+(defn parse-number [str] 
+  ; TODO(Richo): This shouldn't work in cljs because js/parseInt doesn't throw an exception. Check!
   (try
     (parse-int str)
     (catch #?(:clj Throwable :cljs :default) _
