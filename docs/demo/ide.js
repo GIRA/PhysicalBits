@@ -216,7 +216,8 @@ let IDE = (function () {
   function initializeInspectorPanel() {
     $("#pin-choose-button").on("click", openInspectorPinDialog);
     $("#global-choose-button").on("click", openInspectorGlobalDialog);
-    Uzi.on("update", updateInspectorPanel);
+    let editing = new Set();
+    Uzi.on("update", () => updateInspectorPanel(editing));
   }
 
   function initializeBlocklyMotorsModal() {
@@ -514,6 +515,13 @@ let IDE = (function () {
     // Remember the entry in case we need to update the panel (up to a fixed limit)
     if (outputHistory.length == 100) { outputHistory.shift(); }
     outputHistory.push(entry);
+
+    // Special case for the clear message
+    if (entry.type == "clear") {
+      $("#output-console").html("");
+      outputHistory = [];
+      return;
+    }
 
     // Translate and format the message
     let type = entry.type || "info";
@@ -1167,20 +1175,20 @@ let IDE = (function () {
     setSelectedPort(selectedPort);
   }
 
-  function updateInspectorPanel() {
-    updatePinsPanel();
-    updateGlobalsPanel();
+  function updateInspectorPanel(editing) {
+    updatePinsPanel(editing);
+    updateGlobalsPanel(editing);
     updateTasksPanel();
     updateMemoryPanel();
     updatePseudoVarsPanel();
   }
 
-  function updatePinsPanel() {
-    updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), $("#no-pins-label"), "pin");
+  function updatePinsPanel(editing) {
+    updateValuesPanel(Uzi.state.pins, $("#pins-table tbody"), $("#no-pins-label"), "pin", editing, Uzi.setPinValues);
   }
 
-  function updateGlobalsPanel() {
-    updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global");
+  function updateGlobalsPanel(editing) {
+    updateValuesPanel(Uzi.state.globals, $("#globals-table tbody"), $("#no-globals-label"), "global", editing, Uzi.setGlobalValues);
   }
 
   function updatePseudoVarsPanel() {
@@ -1193,7 +1201,7 @@ let IDE = (function () {
     }
   }
 
-  function updateValuesPanel(values, $container, $emptyLabel, itemPrefix) {
+  function updateValuesPanel(values, $container, $emptyLabel, itemPrefix, editing, updateFn) {
     if (!Uzi.state.connection.isConnected) {
       // NOTE(Richo): If we're not connected we simply clear the panel
       values = { available: [], elements: [] };
@@ -1232,13 +1240,42 @@ let IDE = (function () {
                 .attr("id", getEyeId(val))
                 .on("click", () => Plotter.toggle(val.name))))
             .append($("<td>")
-              .text(val.name))
-            .append($("<td>")
+              .text(val.name));
+          let $value = $("<td>")
               .addClass("text-right")
               .addClass("pr-4")
               .addClass("text-muted")
               .attr("id", getElementId(val))
-              .text("?"));
+              .text("?");
+          if (editing != null) {            
+            $value.attr("contenteditable", "true")
+            $value.on("focus", () => editing.add(val.name));
+            $value.on("blur", () => editing.delete(val.name));
+            $value.on("keydown", function (evt) {
+              /*
+              NOTE(Richo): If the user presses either Enter (13) or Tab (9) we update the value
+              */
+              if (13 == evt.keyCode || 9 == evt.keyCode) {
+                let new_value = parseFloat(this.innerText);
+                if (isFinite(new_value) && updateFn) {
+                  try {
+                    updateFn([val.name], [new_value]);
+                  } catch(err) {
+                    console.error(err);
+                  }
+                }
+              }
+              /*
+              NOTE(Richo): Additionally, if the user presses Enter (13) we prevent the
+              default event behavior and blur the input to simulate a "submit" event
+              */
+              if (13 == evt.keyCode) {
+                evt.preventDefault();
+                $value.blur();
+              }
+            });
+          }
+          $row.append($value);
           $container.append($row);
         }
       });
@@ -1259,6 +1296,8 @@ let IDE = (function () {
       $eye.css("color", Plotter.colorFor(val.name) || "white");
 
       if (reporting.has(val.name)) {
+        if (editing && editing.has(val.name)) return; // Ignore this element if we're editing its value
+
         let $item = getElement(val);
         if ($item.get(0) == undefined) { initializePanel(); }
 
