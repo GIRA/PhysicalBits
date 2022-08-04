@@ -339,7 +339,7 @@
   <category name="Math">
     <block type="number">
       <field name="value">0</field>
-    </block>    
+    </block>
     <block type="math_arithmetic">
       <field name="operator">ADD</field>
       <value name="left">
@@ -472,8 +472,30 @@
       </value>
     </block>    
     <block type="number_random_float"></block>
+    <block type="number_cast">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
+  </category>  
+  <category name="Logic">
     <block type="boolean">
       <field name="value">true</field>
+    </block>
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
     </block>
     <block type="logical_operation">
       <field name="operator">and</field>
@@ -495,21 +517,7 @@
         </shadow>
       </value>
     </block>
-    <block type="number_cast">
-      <value name="value">
-        <shadow type="boolean">
-          <field name="value">false</field>
-        </shadow>
-      </value>
-    </block>    
-    <block type="boolean_cast">
-      <value name="value">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-    </block>
-  </category>
+  </category>  
   <category name="Variables" custom="VARIABLES">
     <button text="Configure variables..." callbackKey="configureVariables"></button>
     <block type="declare_local_variable">

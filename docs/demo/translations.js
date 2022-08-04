@@ -248,6 +248,7 @@ var TRANSLATIONS = [
   ["Joystick", null, "Joystick", "Juhtkang", null],
   ["Control", null, "Control", "Kontroll", "Kontroll"],
   ["Math", null, "Matemática", "Aritmeetika", "Matematik"],
+  ["Logic", null, "Lógica", null, null],
   ["Variables", null, "Variables", "Muutujad", "Variabler"],
   ["Functions", null, "Funciones", "Arvutused", "Funktioner"],
   ["Comments", null, "Comentarios", "Kommentaarid", "Kommentarer"],

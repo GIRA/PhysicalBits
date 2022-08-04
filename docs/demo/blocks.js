@@ -37,6 +37,7 @@ let UziBlock = (function () {
     SOUND: 30,
     CONTROL: 140,
     MATH: 210,
+    LOGIC: 210,
     VARIABLES: 305,
     LISTS: 305,
     PROCEDURES: 285,
@@ -1077,7 +1078,7 @@ let UziBlock = (function () {
       supportsBreakpoints: true,
     },
 
-    // Math
+    // Math & Logic
     boolean: {
       text: "%boolean",
       type: types.BOOLEAN,
@@ -1091,7 +1092,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH,
+      color: colors.LOGIC,
       supportsBreakpoints: false,
     },
     boolean_cast: {
@@ -1105,7 +1106,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH,
+      color: colors.LOGIC,
       supportsBreakpoints: false,
     },
     logical_not: {
@@ -1119,7 +1120,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH,
+      color: colors.LOGIC,
       supportsBreakpoints: true,
     },
     logical_compare: {
@@ -1149,7 +1150,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH,
+      color: colors.LOGIC,
       supportsBreakpoints: true,
     },
     logical_operation: {
@@ -1175,7 +1176,7 @@ let UziBlock = (function () {
         },
       },
       connections: { up: false, down: false, left: true },
-      color: colors.MATH,
+      color: colors.LOGIC,
       supportsBreakpoints: true,
     },
     number: {
