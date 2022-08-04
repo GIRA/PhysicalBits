@@ -96,7 +96,9 @@
             (log-error "ERROR WHILE DISCONNECTING ->" e)))
         (start-port-scanning!)
         (reset! state initial-state)
-        (a/onto-chan! update-chan [:connection :debugger] false)))))
+        (a/onto-chan! update-chan 
+                      [:connection :debugger :pin-value :global-value] 
+                      false)))))
 
 (defn send! [bytes]
   (when-let [out (-> @state :connection :out)]
