@@ -1249,7 +1249,10 @@ let IDE = (function () {
               .text("?");
           if (editing != null) {            
             $value.attr("contenteditable", "true")
-            $value.on("focus", () => editing.add(val.name));
+            $value.on("focus", () => {
+              editing.add(val.name);
+              $value.removeClass("text-muted");
+            });
             $value.on("blur", () => editing.delete(val.name));
             $value.on("keydown", function (evt) {
               /*
@@ -1296,8 +1299,9 @@ let IDE = (function () {
       $eye.css("color", Plotter.colorFor(val.name) || "white");
 
       if (reporting.has(val.name)) {
-        if (editing && editing.has(val.name)) return; // Ignore this element if we're editing its value
-
+        // Ignore this element if we're editing its value
+        if (editing && editing.has(val.name)) return;
+        
         let $item = getElement(val);
         if ($item.get(0) == undefined) { initializePanel(); }
 
