@@ -87,7 +87,15 @@
    "array_sum"              [16r56    [2     1]]
    "array_avg"              [16r57    [2     1]]
    "array_max"              [16r58    [2     1]]
-   "array_min"              [16r59    [2     1]]})
+   "array_min"              [16r59    [2     1]]
+   "jmp"                    [16r60    [1     0]]
+   "jz"                     [16r61    [2     0]]
+   "jnz"                    [16r62    [2     0]]
+   "jne"                    [16r63    [3     0]]
+   "jlt"                    [16r64    [3     0]]
+   "jlte"                   [16r65    [3     0]]
+   "jgt"                    [16r66    [3     0]]
+   "jgte"                   [16r67    [3     0]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]

@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
-MAX,154,27,283
-AVERAGE,12.35534591194969,4.437106918238994,29.22955974842767
-MEDIAN,6,3,17.5
+MAX,168,27,283
+AVERAGE,15.46808510638298,5.051671732522796,34.17629179331307
+MEDIAN,6,3,19
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,8,9,26
@@ -321,3 +321,14 @@ middleware.vm-test-files-gen/Test089DebuggerBreakpointHaltsAllScripts#0,10,4,23
 middleware.vm-test-files-gen/Test091ChangingTheProgramResetsTheVMState#0,8,3,17
 middleware.vm-test-files-gen/Test094ProgramWithMultipleImports#0,135,27,251
 middleware.vm-test-files-gen/Test099CallingAScriptWithLessArgumentsThanRequired#0,8,5,22
+middleware.vm-test-files-gen/Test100CompilingJumpsLongerThan7bitTwosComplement#0,86,22,149
+middleware.vm-test-files-gen/Test101CompilingJumpsLongerThan7bitTwosComplement#0,87,22,146
+middleware.vm-test-files-gen/Test102CompilingJumpsLongerThan7bitTwosComplement#0,87,22,146
+middleware.vm-test-files-gen/Test103CompilingJumpsLongerThan7bitTwosComplement#0,90,22,150
+middleware.vm-test-files-gen/Test104CompilingJumpsLongerThan7bitTwosComplement#0,89,23,155
+middleware.vm-test-files-gen/Test105CompilingJumpsLongerThan7bitTwosComplement#0,97,23,169
+middleware.vm-test-files-gen/Test106CompilingJumpsLongerThan7bitTwosComplement#0,97,23,169
+middleware.vm-test-files-gen/Test107CompilingJumpsLongerThan7bitTwosComplement#0,104,23,184
+middleware.vm-test-files-gen/Test108CompilingJumpsLongerThan7bitTwosComplement#0,166,24,260
+middleware.vm-test-files-gen/Test109CompilingJumpsLongerThan7bitTwosComplement#0,168,25,269
+middleware.vm-test-files-gen/Test110CompilingJumpsLongerThan7bitTwosComplement#0,89,22,152

@@ -32,6 +32,507 @@
     (register-program! ast)
     (cc/compile-tree ast)))
 
+
+(deftest Test099CallingAScriptWithLessArgumentsThanRequired
+  (let [src "func foo(a, b, c) { return; }
+             task main() running 1/s {
+	             toggle(D13);
+	             foo(1, 2);
+             }"
+        program (emit/program
+                 :globals #{(emit/constant 0)
+                            (emit/constant 1)
+                            (emit/constant 2)
+                            (emit/constant 13)
+                            (emit/constant 1000)}
+                 :scripts [(emit/script
+                            :name "foo"
+                            :arguments [(emit/variable "a#1")
+                                        (emit/variable "b#2")
+                                        (emit/variable "c#3")]
+                            :instructions [(emit/prim-call "ret")])
+                           (emit/script
+                            :name "main"
+                            :delay 1000
+                            :running? true
+                            :instructions [(emit/push-value 13)
+                                           (emit/prim-call "toggle")
+                                           (emit/push-value 1)
+                                           (emit/push-value 2)
+                                           (emit/push-value 0)
+                                           (emit/script-call "foo")
+                                           (emit/prim-call "pop")])])
+        actual (en/encode program)
+        expected (en/encode (compile-string src))]
+    (is (= actual expected))
+    (write-file actual)))
+
+(deftest Test100CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+             	forever {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test101CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() running {
+             	if 1 {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test102CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() running {
+             	if 0 {} else {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test103CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() running {
+             	if 0 { turnOff(D13); } else {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test104CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+             	while 1 {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test105CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+             	repeat 100 {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test106CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+             	for i = 1 to 100 {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test107CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+              var s = 1;
+             	for i = 1 to 100 by s {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test108CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() running {
+             	if 1 {  
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+              } else {
+                toggle(D12);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	}
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test109CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+              forever {
+             	  if 0 {  
+                  toggle(D12);
+             	  	variable = (variable + 1);
+             	  	if (variable > 7) {
+             	  		variable = 1;
+             	  	}
+             	  	if (variable == 10) {
+             	  		playTone(D2, 523, 100);
+             	  	}
+             	  	if (variable == 20) {
+             	  		playTone(D2, 587, 100);
+             	  	}
+             	  	if (variable == 30) {
+             	  		playTone(D2, 659, 100);
+             	  	}
+             	  	if (variable == 40) {
+             	  		playTone(D2, 698, 100);
+             	  	}
+             	  	if (variable == 50) {
+             	  		playTone(D2, 784, 100);
+             	  	}
+             	  	if (variable == 60) {
+             	  		playTone(D2, 880, 100);
+             	  	}
+             	  	if (variable == 70) {
+             	  		playTone(D2, 988, 100);
+             	  	}
+                  delayS(1);
+                } else {
+                  toggle(D13);
+             	  	variable = (variable + 1);
+             	  	if (variable > 7) {
+             	  		variable = 1;
+             	  	}
+             	  	if (variable == 10) {
+             	  		playTone(D2, 523, 100);
+             	  	}
+             	  	if (variable == 20) {
+             	  		playTone(D2, 587, 100);
+             	  	}
+             	  	if (variable == 30) {
+             	  		playTone(D2, 659, 100);
+             	  	}
+             	  	if (variable == 40) {
+             	  		playTone(D2, 698, 100);
+             	  	}
+             	  	if (variable == 50) {
+             	  		playTone(D2, 784, 100);
+             	  	}
+             	  	if (variable == 60) {
+             	  		playTone(D2, 880, 100);
+             	  	}
+             	  	if (variable == 70) {
+             	  		playTone(D2, 988, 100);
+             	  	}
+                  delayS(1);
+             	  }
+               }
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test110CompilingJumpsLongerThan7bitTwosComplement
+  (let [src "var variable = 0;
+             
+             task piano() {
+             	do {
+                toggle(D13);
+             		variable = (variable + 1);
+             		if (variable > 7) {
+             			variable = 1;
+             		}
+             		if (variable == 10) {
+             			playTone(D2, 523, 100);
+             		}
+             		if (variable == 20) {
+             			playTone(D2, 587, 100);
+             		}
+             		if (variable == 30) {
+             			playTone(D2, 659, 100);
+             		}
+             		if (variable == 40) {
+             			playTone(D2, 698, 100);
+             		}
+             		if (variable == 50) {
+             			playTone(D2, 784, 100);
+             		}
+             		if (variable == 60) {
+             			playTone(D2, 880, 100);
+             		}
+             		if (variable == 70) {
+             			playTone(D2, 988, 100);
+             		}
+                delayS(1);
+             	} while variable < 10;
+             }"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; NOTE(Richo): Autogenerated code begins here...
 
@@ -5176,38 +5677,4 @@
                                                     (emit/prim-call "toggle")
                                                     (emit/resume "test")])])
         actual (en/encode program)]
-    (write-file actual)))
-
-(deftest Test099CallingAScriptWithLessArgumentsThanRequired
-  (let [src "func foo(a, b, c) { return; }
-             task main() running 1/s {
-	             toggle(D13);
-	             foo(1, 2);
-             }"
-        program (emit/program
-                 :globals #{(emit/constant 0)
-                            (emit/constant 1)
-                            (emit/constant 2)
-                            (emit/constant 13)
-                            (emit/constant 1000)}
-                 :scripts [(emit/script
-                            :name "foo"
-                            :arguments [(emit/variable "a#1")
-                                        (emit/variable "b#2")
-                                        (emit/variable "c#3")]
-                            :instructions [(emit/prim-call "ret")])
-                           (emit/script
-                            :name "main"
-                            :delay 1000
-                            :running? true
-                            :instructions [(emit/push-value 13)
-                                           (emit/prim-call "toggle")
-                                           (emit/push-value 1)
-                                           (emit/push-value 2)
-                                           (emit/push-value 0)
-                                           (emit/script-call "foo")
-                                           (emit/prim-call "pop")])])
-        actual (en/encode program)
-        expected (en/encode (compile-string src))]
-    (is (= actual expected))
     (write-file actual)))

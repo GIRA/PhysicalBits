@@ -2438,5 +2438,258 @@ namespace SimulatorTest
             sketch.Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
         }
+
+
+        [TestMethod]
+        public void Test100CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test100CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test101CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test101CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test102CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test102CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test103CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test103CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test104CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test104CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test105CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test105CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test106CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test106CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test107CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test107CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test108CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test108CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test109CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test109CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+
+        [TestMethod]
+        public void Test110CompilingJumpsLongerThan7bitTwosComplement()
+        {
+            LoadProgram(ReadFile(nameof(Test110CompilingJumpsLongerThan7bitTwosComplement)));
+
+            sketch.SetMillis(0);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(1000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+
+            sketch.SetMillis(2000);
+            Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+
+            sketch.SetMillis(3000);
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
     }
 }

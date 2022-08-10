@@ -52,8 +52,8 @@
   ([instr script program & data]
    (throw (ex-info "Not implemented yet!"
                    (apply merge
-                     {:instruction instr, :script script, :program program}
-                     data)))))
+                          {:instruction instr, :script script, :program program}
+                          data)))))
 
 (defmethod encode-instruction "UziPushInstruction" ; TODO(Richo) Read-global
   [instr script program]
@@ -139,18 +139,30 @@
 
 (defmethod encode-instruction "UziJMPInstruction"
   [instr script program]
+  (let [v (-> instr :argument)]
+    ;(assert (not= v 0) "JMP argument is zero!")
+    (assert (and (<= v 63) (>= v -64)) (str "JMP argument out of range (" v ")")))
   [16rF0 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziJZInstruction"
   [instr script program]
+  (let [v (-> instr :argument)]
+    ;(assert (not= v 0) "JZ argument is zero!")
+    (assert (and (<= v 63) (>= v -64)) (str "JZ argument out of range (" v ")")))
   [16rF1 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziJNZInstruction"
   [instr script program]
+  (let [v (-> instr :argument)]    
+    ;(assert (not= v 0) "JNZ argument is zero!")
+    (assert (and (<= v 63) (>= v -64)) (str "JNZ argument out of range (" v ")")))
   [16rF2 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziJLTEInstruction"
   [instr script program]
+  (let [v (-> instr :argument)]
+    ;(assert (not= v 0) "JLTE argument is zero!")
+    (assert (and (<= v 63) (>= v -64)) (str "JLTE argument out of range (" v ")")))
   [16rF5 (-> instr :argument two's-complement)])
 
 (defmethod encode-instruction "UziTurnOnInstruction"

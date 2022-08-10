@@ -40,9 +40,12 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 			If the opcode is one of the "jump" instructions, the argument is encoded
 			using two's complement.
 			*/
-			if (opcode >= 0xF0 && opcode <= 0xF7 && argument >= 128)
+			if (opcode >= 0xF0 && opcode <= 0xF7)
 			{
-				argument = (0xFF & ((argument ^ 0xFF) + 1)) * -1;
+				if (argument >= 128) // Handle negative numbers
+				{
+					argument = (0xFF & ((argument ^ 0xFF) + 1)) * -1;
+				}
 			}
 		}
 	}
@@ -173,6 +176,16 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x57: instruction->opcode = PRIM_ARRAY_AVG; break;
 				case 0x58: instruction->opcode = PRIM_ARRAY_MAX; break;
 				case 0x59: instruction->opcode = PRIM_ARRAY_MIN; break;
+
+				case 0x60: instruction->opcode = PRIM_JMP; break;
+				case 0x61: instruction->opcode = PRIM_JZ; break;
+				case 0x62: instruction->opcode = PRIM_JNZ; break;
+				case 0x63: instruction->opcode = PRIM_JNE; break;
+				case 0x64: instruction->opcode = PRIM_JLT; break;
+				case 0x65: instruction->opcode = PRIM_JLTE; break;
+				case 0x66: instruction->opcode = PRIM_JGT; break;
+				case 0x67: instruction->opcode = PRIM_JGTE; break;
+
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
 		}

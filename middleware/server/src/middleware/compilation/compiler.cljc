@@ -260,16 +260,44 @@
 (defn compile-yield [_ _]
   [(emit/prim-call "yield")])
 
+(defn- compile-branch-prim [emit-fn offset ctx]
+  (let [prim-map {emit/jmp "jmp"
+                  emit/jz "jz"
+                  emit/jnz "jnz"
+                  emit/jlte "jlte"}
+        prim-name (prim-map emit-fn)
+        ; HACK(Richo): If we jump backwards we need to decrement the offset to
+        ; take into account the new push instruction (this sucks!)
+        actual-offset (if (< offset 0) (dec offset) offset)]
+    (register-constant! ctx actual-offset)
+    [(emit/push-value actual-offset)
+     (emit/prim-call prim-name)]))
+
+; TODO(Richo): Think of a better name!
+(defn- inside-7bits-range? [n]
+  ; Using 2's complement in 7 bits we can encode in the range [-64, 63] 
+  (and (>= n -64) (<= n 63)))
+
+(defn- compile-branch [emit-fn offset ctx]
+  ; TODO(Richo): Magic numbers!
+  (if (inside-7bits-range? offset)
+    [(emit-fn offset)]
+    (compile-branch-prim emit-fn offset ctx)))
+
 (defn ^:private compile-if-true-if-false
   [{condition :condition, true-branch :trueBranch, false-branch :falseBranch}
    ctx]
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)
-        compiled-false-branch (compile false-branch ctx)]
+        compiled-false-branch (compile false-branch ctx)
+        count-true (count compiled-true-branch)
+        count-false (count compiled-false-branch)]
     (vec (concat compiled-condition
-                 [(emit/jz (inc (count compiled-true-branch)))]
+                 (compile-branch emit/jz (+ (if (inside-7bits-range? count-false) 
+                                              1 2)
+                                            count-true) ctx)
                  compiled-true-branch
-                 [(emit/jmp (count compiled-false-branch))]
+                 (compile-branch emit/jmp count-false ctx)
                  compiled-false-branch))))
 
 (defn ^:private compile-if-true
@@ -277,7 +305,7 @@
   (let [compiled-condition (compile condition ctx)
         compiled-true-branch (compile true-branch ctx)]
     (vec (concat compiled-condition
-                 [(emit/jz (count compiled-true-branch))]
+                 (compile-branch emit/jz (count compiled-true-branch) ctx)
                  compiled-true-branch))))
 
 (defn ^:private compile-if-false
@@ -285,7 +313,7 @@
   (let [compiled-condition (compile condition ctx)
         compiled-false-branch (compile false-branch ctx)]
     (vec (concat compiled-condition
-                 [(emit/jnz (count compiled-false-branch))]
+                 (compile-branch emit/jnz (count compiled-false-branch) ctx)
                  compiled-false-branch))))
 
 (defn compile-conditional [node ctx]
@@ -296,8 +324,8 @@
 
 (defn compile-forever [{:keys [body]} ctx]
   (let [compiled-body (compile body ctx)]
-    (conj compiled-body
-          (emit/jmp (* -1 (inc (count compiled-body)))))))
+    (vec (concat compiled-body
+                 (compile-branch emit/jmp (* -1 (inc (count compiled-body))) ctx)))))
 
 (defn ^:private compile-loop
   [{negated? :negated, :keys [pre condition post]} ctx]
@@ -307,63 +335,101 @@
     (vec (concat compiled-pre
                  compiled-condition
                  (if (empty? (:statements post))
-                   (let [count (* -1 (+ 1
-                                        (count compiled-pre)
-                                        (count compiled-condition)))]
-                     (if negated?
-                       [(emit/jz count)]
-                       [(emit/jnz count)]))
+                   (compile-branch (if negated? emit/jz emit/jnz)
+                                   (* -1 (+ 1
+                                            (count compiled-pre)
+                                            (count compiled-condition)))
+                                   ctx)
                    (let [count-start (* -1 (+ 2
                                               (count compiled-pre)
                                               (count compiled-condition)
                                               (count compiled-post)))
                          count-end (inc (count compiled-post))]
-                     (concat [(if negated?
-                                (emit/jnz count-end)
-                                (emit/jz count-end))]
-                             compiled-post
-                             [(emit/jmp count-start)])))))))
+                     (if (and (inside-7bits-range? count-start)
+                              (inside-7bits-range? count-end))
+                       (concat (compile-branch (if negated? emit/jnz emit/jz)
+                                               count-end ctx)
+                               compiled-post
+                               (compile-branch emit/jmp count-start ctx))
+                       ; TODO(Richo): Make sure to test this!
+                       (concat (compile-branch-prim (if negated? emit/jnz emit/jz)
+                                                    (inc count-end) ctx)
+                               compiled-post
+                               (compile-branch-prim emit/jmp (dec count-start) ctx)))))))))
 
 (defn ^:private compile-for-loop-with-constant-step
-  [{:keys [counter start stop step body]} ctx]
+  [{:keys [counter start stop step body]} ctx] 
   (let [compiled-start (compile start ctx)
         compiled-stop (compile stop ctx)
         compiled-step (compile step ctx)
         compiled-body (compile body ctx)
+        count-end (+ 4
+                     (count compiled-body)
+                     (count compiled-step))
+        count-begin (* -1 (+ 7
+                             (count compiled-step)
+                             (count compiled-body)
+                             (count compiled-stop)))
         counter-name (:unique-name counter)]
-    (vec (concat
-          ; First, we initialize counter
-          compiled-start
-          [(emit/write-local counter-name)
+    ; HACK(Richo): This is such a disgusting hack...
+    (if (and (inside-7bits-range? count-end)
+             (inside-7bits-range? count-begin))
+      (vec (concat
+            ; First, we initialize counter
+            compiled-start
+            [(emit/write-local counter-name)
 
-           ; Then, we compare counter with stop
-           (emit/read-local counter-name)]
-          compiled-stop
+             ; Then, we compare counter with stop
+             (emit/read-local counter-name)]
+            compiled-stop
 
-          ; We can do this statically because we know step is a compile-time constant
-          [(if (> (ast-utils/compile-time-value step 0) 0)
-             (emit/prim-call "lessThanOrEquals")
-             (emit/prim-call "greaterThanOrEquals"))
+            ; We can do this statically because we know step is a compile-time constant
+            [(if (> (ast-utils/compile-time-value step 0) 0)
+               (emit/prim-call "lessThanOrEquals")
+               (emit/prim-call "greaterThanOrEquals"))]
 
-           ; If the condition succeeds, we jump to the end (break out of the loop)
-           (emit/jz (+ 4
-                       (count compiled-body)
-                       (count compiled-step)))]
+            ; If the condition succeeds, we jump to the end (break out of the loop)
+            (compile-branch emit/jz count-end ctx)
 
-          ; We execute the body
-          compiled-body
+            ; We execute the body
+            compiled-body
 
-          ; But before jumping back to the comparison, we increment counter by step
-          [(emit/read-local counter-name)]
-          compiled-step
-          [(emit/prim-call "add")
-           (emit/write-local counter-name)
+            ; But before jumping back to the comparison, we increment counter by step
+            [(emit/read-local counter-name)]
+            compiled-step
+            [(emit/prim-call "add")
+             (emit/write-local counter-name)]
 
-           ; And now we jump to the beginning
-           (emit/jmp (* -1 (+ 7
-                              (count compiled-step)
-                              (count compiled-body)
-                              (count compiled-stop))))]))))
+            ; And now we jump to the beginning
+            (compile-branch emit/jmp count-begin ctx)))
+      (vec (concat
+            ; First, we initialize counter
+            compiled-start
+            [(emit/write-local counter-name)
+
+             ; Then, we compare counter with stop
+             (emit/read-local counter-name)]
+            compiled-stop
+
+            ; We can do this statically because we know step is a compile-time constant
+            [(if (> (ast-utils/compile-time-value step 0) 0)
+               (emit/prim-call "lessThanOrEquals")
+               (emit/prim-call "greaterThanOrEquals"))]
+
+            ; If the condition succeeds, we jump to the end (break out of the loop)
+            (compile-branch-prim emit/jz (inc count-end) ctx)
+
+            ; We execute the body
+            compiled-body
+
+            ; But before jumping back to the comparison, we increment counter by step
+            [(emit/read-local counter-name)]
+            compiled-step
+            [(emit/prim-call "add")
+             (emit/write-local counter-name)]
+
+            ; And now we jump to the beginning
+            (compile-branch-prim emit/jmp (dec count-begin) ctx))))))
 
 
 (defn ^:private compile-for-loop
@@ -372,42 +438,78 @@
         compiled-stop (compile stop ctx)
         compiled-step (compile step ctx)
         compiled-body (compile body ctx)
+        count-end (+ 5 (count compiled-body))
+        count-begin (* -1 (+ 14
+                             (count compiled-body)
+                             (count compiled-step)
+                             (count compiled-stop)))
         counter-name (:unique-name counter)]
-    (vec (concat
-          ; First, we initialize counter
-          compiled-start
-          [(emit/write-local counter-name)
+    (if (and (inside-7bits-range? count-end)
+             (inside-7bits-range? count-begin))
+      (vec (concat
+            ; First, we initialize counter
+            compiled-start
+            [(emit/write-local counter-name)
 
-           ; This is where the loop begins!
+            ; This is where the loop begins!
 
-           ; Then, we compare counter with stop. The comparison can either be
-           ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
-           (emit/read-local counter-name)]
-          compiled-stop
-          compiled-step
-          [(emit/write-local temp-name)
-           (emit/read-local temp-name)
-           (emit/push-value 0)
-           (emit/jlte 2)
-           (emit/prim-call "lessThanOrEquals")
-           (emit/jmp 1)
-           (emit/prim-call "greaterThanOrEquals")
-           (emit/jz (+ 5 (count compiled-body)))]
+            ; Then, we compare counter with stop. The comparison can either be
+            ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
+             (emit/read-local counter-name)]
+            compiled-stop
+            compiled-step
+            [(emit/write-local temp-name)
+             (emit/read-local temp-name)
+             (emit/push-value 0)
+             (emit/jlte 2)
+             (emit/prim-call "lessThanOrEquals")
+             (emit/jmp 1)
+             (emit/prim-call "greaterThanOrEquals")]
+            (compile-branch emit/jz count-end ctx)
 
           ; While counter doesn't reach the stop we execute the body
-          compiled-body
+            compiled-body
 
           ; Before jumping back to the comparison, we increment counter by step
-          [(emit/read-local counter-name)
-           (emit/read-local temp-name)
-           (emit/prim-call "add")
-           (emit/write-local counter-name)
+            [(emit/read-local counter-name)
+             (emit/read-local temp-name)
+             (emit/prim-call "add")
+             (emit/write-local counter-name)]
 
-           ; And now we jump to the beginning
-           (emit/jmp (* -1 (+ 14
-                              (count compiled-body)
-                              (count compiled-step)
-                              (count compiled-stop))))]))))
+          ; And now we jump to the beginning           
+            (compile-branch emit/jmp count-begin ctx)))
+      (vec (concat
+            ; First, we initialize counter
+            compiled-start
+            [(emit/write-local counter-name)
+
+            ; This is where the loop begins!
+
+            ; Then, we compare counter with stop. The comparison can either be
+            ; GTEQ or LTEQ depending on the sign of the step (which is stored on temp)
+             (emit/read-local counter-name)]
+            compiled-stop
+            compiled-step
+            [(emit/write-local temp-name)
+             (emit/read-local temp-name)
+             (emit/push-value 0)
+             (emit/jlte 2)
+             (emit/prim-call "lessThanOrEquals")
+             (emit/jmp 1)
+             (emit/prim-call "greaterThanOrEquals")]
+            (compile-branch-prim emit/jz (inc count-end) ctx)
+
+          ; While counter doesn't reach the stop we execute the body
+            compiled-body
+
+          ; Before jumping back to the comparison, we increment counter by step
+            [(emit/read-local counter-name)
+             (emit/read-local temp-name)
+             (emit/prim-call "add")
+             (emit/write-local counter-name)]
+
+          ; And now we jump to the beginning           
+            (compile-branch-prim emit/jmp (dec count-begin) ctx))))))
 
 (defn compile-for [{:keys [step] :as node} ctx]
   (register-constant! ctx 0) ; TODO(Richo): This seems to be necessary only if the step is not constant
@@ -422,31 +524,59 @@
   (register-constant! ctx 0)
   (register-constant! ctx 1)
   (let [compiled-body (compile body ctx)
-        compiled-times (compile times ctx)]
-    (vec (concat
+        compiled-times (compile times ctx)
+        count-end (+ 5 (count compiled-body))
+        count-begin (* -1 (+ 8
+                             (count compiled-body)
+                             (count compiled-times)))]
+    (if (and (inside-7bits-range? count-end)
+             (inside-7bits-range? count-begin))
+      (vec (concat
           ; First, we set temp = 0
-          [(emit/push-value 0)
-           (emit/write-local temp-name)]
+            [(emit/push-value 0)
+             (emit/write-local temp-name)]
 
           ; This is where the loop begins!
 
           ; Then, we compare temp with times
-          [(emit/read-local temp-name)]
-          compiled-times
-          [(emit/prim-call "lessThan")
-           (emit/jz (+ 5 (count compiled-body)))]
+            [(emit/read-local temp-name)]
+            compiled-times
+            [(emit/prim-call "lessThan")]
+            (compile-branch emit/jz count-end ctx)
 
           ; While temp is less than the expected times we execute the body
-          compiled-body
+            compiled-body
 
           ; Before jumping back to the comparison, we increment temp
-          [(emit/read-local temp-name)
-           (emit/push-value 1)
-           (emit/prim-call "add")
-           (emit/write-local temp-name)
-           (emit/jmp (* -1 (+ 8
-                              (count compiled-body)
-                              (count compiled-times))))]))))
+            [(emit/read-local temp-name)
+             (emit/push-value 1)
+             (emit/prim-call "add")
+             (emit/write-local temp-name)]
+
+            (compile-branch emit/jmp count-begin ctx)))
+      (vec (concat
+          ; First, we set temp = 0
+            [(emit/push-value 0)
+             (emit/write-local temp-name)]
+
+          ; This is where the loop begins!
+
+          ; Then, we compare temp with times
+            [(emit/read-local temp-name)]
+            compiled-times
+            [(emit/prim-call "lessThan")]
+            (compile-branch-prim emit/jz (inc count-end) ctx)
+
+          ; While temp is less than the expected times we execute the body
+            compiled-body
+
+          ; Before jumping back to the comparison, we increment temp
+            [(emit/read-local temp-name)
+             (emit/push-value 1)
+             (emit/prim-call "add")
+             (emit/write-local temp-name)]
+
+            (compile-branch-prim emit/jmp (dec count-begin) ctx))))))
 
 (defn compile-logical-and [{:keys [left right]} ctx]
   (let [compiled-left (compile left ctx)
@@ -456,7 +586,7 @@
       (do
         (register-constant! ctx 0)
         (vec (concat compiled-left
-                     [(emit/jz (inc (count compiled-right)))]
+                     (compile-branch emit/jz (inc (count compiled-right)) ctx)
                      compiled-right
                      [(emit/jmp 1)
                       (emit/push-value 0)])))
@@ -473,7 +603,7 @@
       (do
         (register-constant! ctx 1)
         (vec (concat compiled-left
-                     [(emit/jnz (inc (count compiled-right)))]
+                     (compile-branch emit/jnz (inc (count compiled-right)) ctx)
                      compiled-right
                      [(emit/jmp 1)
                       (emit/push-value 1)])))

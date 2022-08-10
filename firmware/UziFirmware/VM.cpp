@@ -413,6 +413,103 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	case PRIM_JMP:
+	{
+		int16 argument = (int16)stack_pop(error);
+		pc += argument;
+		handleBackwardJump(argument, yieldFlag);
+	}
+	break;
+
+	case PRIM_JZ:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float value = stack_pop(error);
+		if (value == 0) // TODO(Richo): Float comparison
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JNZ:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float value = stack_pop(error);
+		if (value != 0) // TODO(Richo): Float comparison
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JNE:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float b = stack_pop(error);
+		float a = stack_pop(error);
+		if (a != b) // TODO(Richo): float comparison
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JLT:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float b = stack_pop(error);
+		float a = stack_pop(error);
+		if (a < b)
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JLTE:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float b = stack_pop(error);
+		float a = stack_pop(error);
+		if (a <= b)
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JGT:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float b = stack_pop(error);
+		float a = stack_pop(error);
+		if (a > b)
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
+	case PRIM_JGTE:
+	{
+		int16 argument = (int16)stack_pop(error);
+		float b = stack_pop(error);
+		float a = stack_pop(error);
+		if (a >= b)
+		{
+			pc += argument;
+			handleBackwardJump(argument, yieldFlag);
+		}
+	}
+	break;
+
 	case READ_LOCAL:
 	{
 		uint16 index = framePointer + argument;

@@ -1,8 +1,8 @@
 ﻿,Loops,Memory used (bytes),Total coroutine resizings
 MIN,4,73,0
 MAX,5040003,1105,6
-AVERAGE,60115.6666666667,167.535353535354,0.363636363636364
-MEDIAN,53,131,0
+AVERAGE,54108,4,189,363636363636,0,327272727272727
+MEDIAN,43,133,0
 Test001TurnOnBytecode,4,75,0
 Test002TurnOffBytecode,4,75,0
 Test003ReadWriteBytecode,4,77,0
@@ -102,3 +102,14 @@ Test096ScriptWith128Instructions,500003,337,0
 Test097ScriptWith512Instructions,100003,1105,0
 Test098criptWith255Instructions,100003,587,0
 Test099CallingAScriptWithLessArgumentsThanRequired,7,117,0
+Test100CompilingJumpsLongerThan7bitTwosComplement,43,343,0
+Test101CompilingJumpsLongerThan7bitTwosComplement,43,345,0
+Test102CompilingJumpsLongerThan7bitTwosComplement,43,345,0
+Test103CompilingJumpsLongerThan7bitTwosComplement,43,351,0
+Test104CompilingJumpsLongerThan7bitTwosComplement,43,353,0
+Test105CompilingJumpsLongerThan7bitTwosComplement,43,370,0
+Test106CompilingJumpsLongerThan7bitTwosComplement,43,370,0
+Test107CompilingJumpsLongerThan7bitTwosComplement,43,386,0
+Test108CompilingJumpsLongerThan7bitTwosComplement,43,512,0
+Test109CompilingJumpsLongerThan7bitTwosComplement,43,520,0
+Test110CompilingJumpsLongerThan7bitTwosComplement,43,349,0
