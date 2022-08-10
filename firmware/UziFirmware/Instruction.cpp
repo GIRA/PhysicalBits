@@ -61,11 +61,11 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 		case 0xF0: instruction->opcode = JMP; break;
 		case 0xF1: instruction->opcode = JZ; break;
 		case 0xF2: instruction->opcode = JNZ; break;
-		case 0xF3: instruction->opcode = JNE; break;
-		case 0xF4: instruction->opcode = JLT; break;
-		case 0xF5: instruction->opcode = JLTE; break;
-		case 0xF6: instruction->opcode = JGT; break;
-		case 0xF7: instruction->opcode = JGTE; break;
+		//case 0xF3: instruction->opcode = JNE; break; // HACK(Richo): Commented for space reasons
+		//case 0xF4: instruction->opcode = JLT; break; // HACK(Richo): Commented for space reasons
+		case 0xF5: instruction->opcode = JLTE; break; 
+		//case 0xF6: instruction->opcode = JGT; break; // HACK(Richo): Commented for space reasons
+		//case 0xF7: instruction->opcode = JGTE; break; // HACK(Richo): Commented for space reasons
 
 		case 0xFF:
 		{
@@ -180,11 +180,7 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x60: instruction->opcode = PRIM_JMP; break;
 				case 0x61: instruction->opcode = PRIM_JZ; break;
 				case 0x62: instruction->opcode = PRIM_JNZ; break;
-				case 0x63: instruction->opcode = PRIM_JNE; break;
-				case 0x64: instruction->opcode = PRIM_JLT; break;
-				case 0x65: instruction->opcode = PRIM_JLTE; break;
-				case 0x66: instruction->opcode = PRIM_JGT; break;
-				case 0x67: instruction->opcode = PRIM_JGTE; break;
+				case 0x63: instruction->opcode = PRIM_JLTE; break;
 
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)

@@ -353,6 +353,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	/*
 	case JNE:
 	{
 		float a = stack_pop(error);
@@ -364,7 +365,9 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		}
 	}
 	break;
+	*/
 
+	/*
 	case JLT:
 	{
 		float b = stack_pop(error);
@@ -376,6 +379,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		}
 	}
 	break;
+	*/
 
 	case JLTE:
 	{
@@ -389,6 +393,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	/*
 	case JGT:
 	{
 		float b = stack_pop(error);
@@ -400,7 +405,9 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		}
 	}
 	break;
+	*/
 
+	/*
 	case JGTE:
 	{
 		float b = stack_pop(error);
@@ -412,6 +419,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		}
 	}
 	break;
+	*/
 
 	case PRIM_JMP:
 	{
@@ -445,64 +453,12 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_JNE:
-	{
-		int16 argument = (int16)stack_pop(error);
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a != b) // TODO(Richo): float comparison
-		{
-			pc += argument;
-			handleBackwardJump(argument, yieldFlag);
-		}
-	}
-	break;
-
-	case PRIM_JLT:
-	{
-		int16 argument = (int16)stack_pop(error);
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a < b)
-		{
-			pc += argument;
-			handleBackwardJump(argument, yieldFlag);
-		}
-	}
-	break;
-
 	case PRIM_JLTE:
 	{
 		int16 argument = (int16)stack_pop(error);
 		float b = stack_pop(error);
 		float a = stack_pop(error);
 		if (a <= b)
-		{
-			pc += argument;
-			handleBackwardJump(argument, yieldFlag);
-		}
-	}
-	break;
-
-	case PRIM_JGT:
-	{
-		int16 argument = (int16)stack_pop(error);
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a > b)
-		{
-			pc += argument;
-			handleBackwardJump(argument, yieldFlag);
-		}
-	}
-	break;
-
-	case PRIM_JGTE:
-	{
-		int16 argument = (int16)stack_pop(error);
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a >= b)
 		{
 			pc += argument;
 			handleBackwardJump(argument, yieldFlag);
