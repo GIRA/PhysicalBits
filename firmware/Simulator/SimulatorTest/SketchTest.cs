@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace SimulatorTest
 {
@@ -109,35 +110,38 @@ namespace SimulatorTest
                 };
                 file.WriteLine(string.Join(",", columns));
 
+                // Use the same number format to print all stats
+                var format = CultureInfo.InvariantCulture.NumberFormat;
+
                 // Write aggregate data
                 {
-                    file.WriteLine(string.Join(",", new object[]
+                    file.WriteLine(string.Join(",", new []
                     {
                         "MIN",
-                        stats.Min(kvp => kvp.Value.Count()),
-                        stats.Min(kvp => kvp.Value.Max(each => each.UsedMemory)),
-                        stats.Min(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                        stats.Min(kvp => kvp.Value.Count()).ToString(format),
+                        stats.Min(kvp => kvp.Value.Max(each => each.UsedMemory)).ToString(format),
+                        stats.Min(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter)).ToString(format)
                     }));
-                    file.WriteLine(string.Join(",", new object[]
+                    file.WriteLine(string.Join(",", new []
                     {
                         "MAX",
-                        stats.Max(kvp => kvp.Value.Count()),
-                        stats.Max(kvp => kvp.Value.Max(each => each.UsedMemory)),
-                        stats.Max(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                        stats.Max(kvp => kvp.Value.Count()).ToString(format),
+                        stats.Max(kvp => kvp.Value.Max(each => each.UsedMemory)).ToString(format),
+                        stats.Max(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter)).ToString(format)
                     }));
-                    file.WriteLine(string.Join(",", new object[]
+                    file.WriteLine(string.Join(",", new []
                     {
                         "AVERAGE",
-                        stats.Average(kvp => kvp.Value.Count()),
-                        stats.Average(kvp => kvp.Value.Max(each => each.UsedMemory)),
-                        stats.Average(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                        stats.Average(kvp => kvp.Value.Count()).ToString(format),
+                        stats.Average(kvp => kvp.Value.Max(each => each.UsedMemory)).ToString(format),
+                        stats.Average(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter)).ToString(format)
                     }));
-                    file.WriteLine(string.Join(",", new object[]
+                    file.WriteLine(string.Join(",", new []
                     {
                         "MEDIAN",
-                        stats.Median(kvp => kvp.Value.Count()),
-                        stats.Median(kvp => kvp.Value.Max(each => each.UsedMemory)),
-                        stats.Median(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter))
+                        stats.Median(kvp => kvp.Value.Count()).ToString(format),
+                        stats.Median(kvp => kvp.Value.Max(each => each.UsedMemory)).ToString(format),
+                        stats.Median(kvp => kvp.Value.Sum(each => each.CoroutineResizeCounter)).ToString(format)
                     }));
                 }
 
@@ -145,12 +149,12 @@ namespace SimulatorTest
                 {
                     var lines = stats
                         .OrderBy(kvp => kvp.Key)
-                        .Select(kvp => string.Join(",", new object[]
+                        .Select(kvp => string.Join(",", new []
                         {
                             kvp.Key,
-                            kvp.Value.Count(),
-                            kvp.Value.Max(each => each.UsedMemory),
-                            kvp.Value.Sum(each => each.CoroutineResizeCounter)
+                            kvp.Value.Count().ToString(format),
+                            kvp.Value.Max(each => each.UsedMemory).ToString(format),
+                            kvp.Value.Sum(each => each.CoroutineResizeCounter).ToString(format)
                         }));
                     foreach (var line in lines)
                     {
