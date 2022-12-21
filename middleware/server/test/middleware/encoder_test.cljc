@@ -8,7 +8,10 @@
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]
-            [middleware.program.emitter :as emit]))
+            [middleware.program.emitter :as emit]
+            [middleware.ast.nodes :as ast]
+            [middleware.program.utils :as program]
+            [clojure.set :as set]))
 
 ; NOTE(Richo): You'll notice that most of these tests are not really making any
 ; assertion. They are here for two reasons: (1) exercise the compiler and encoder
@@ -33,6 +36,26 @@
       compile
       en/encode
       (check-bytecodes src)))
+
+; NOTE(Richo): I compile an empty program without removing the dead-code so that we
+; get all the core.uzi scripts
+(def core-scripts (:scripts (cc/compile-tree (ast/program-node)
+                                             :remove-dead-code? false)))
+
+(defn link-core [program]
+  (let [globals (:globals program)
+        called-scripts (set/difference (->> (program/instructions program)
+                                            (filter program/script-call?)
+                                            (map :argument)
+                                            (set))
+                                       (set (map :name (:scripts program))))
+        scripts (vec (concat (filter #(contains? called-scripts (:name %))
+                                     core-scripts)
+                             (:scripts program)))]
+    (emit/program
+     :globals globals
+     :scripts scripts)))
+
 
 (deftest empty-program
   (encode ""))
@@ -167,32 +190,38 @@
 
 
 (deftest program-with-more-than-63-globals-of-the-same-size
-  (let [program (emit/program :globals (map #(emit/variable % %) (range 64)))
+  (let [program (link-core (emit/program :globals (map #(emit/variable % %) (range 64))))
         actual (en/encode program)]))
 
 (deftest script-with-127-instructions
-  (let [program (emit/program
-                 :globals [(emit/constant 0)
-                           (emit/constant 16)]
-                 :scripts [(emit/script
-                            :name "test"
-                            :running? true
-                            :instructions (concat (mapcat (fn [_] [(emit/push-value 16)
-                                                                   (emit/prim-call "toggle")])
-                                                          (range 63))
-                                                  [(emit/stop "test")]))])
+  (let [program (link-core
+                 (emit/program
+                  :globals [(emit/constant 0)
+                            (emit/constant 16)]
+                  :scripts [(emit/script
+                             :name "test"
+                             :running? true
+                             :instructions (concat (mapcat (fn [_] [(emit/push-value 16)
+                                                                    (emit/script-call "toggle")
+                                                                    (emit/prim-call "pop")])
+                                                           (range 42))
+                                                   [(emit/stop "test")]))]))
         actual (en/encode program)]))
 
 (deftest script-with-128-instructions
-  (let [program (emit/program
-                 :globals [(emit/constant 0)
-                           (emit/constant 16)]
-                 :scripts [(emit/script
-                            :name "test"
-                            :running? true
-                            :instructions (mapcat (fn [_] [(emit/push-value 16)
-                                                           (emit/prim-call "toggle")])
-                                                  (range 64)))])
+  (let [program (link-core
+                 (emit/program
+                  :globals [(emit/constant 0)
+                            (emit/constant 16)]
+                  :scripts [(emit/script
+                             :name "test"
+                             :running? true
+                             :instructions (concat (mapcat (fn [_] [(emit/push-value 16)
+                                                                    (emit/script-call "toggle")
+                                                                    (emit/prim-call "pop")])
+                                                           (range 42))
+                                                   [(emit/stop "test")
+                                                    (emit/stop "test")]))]))
         actual (en/encode program)]))
 
 (deftest script-with-large-ticking-rate
