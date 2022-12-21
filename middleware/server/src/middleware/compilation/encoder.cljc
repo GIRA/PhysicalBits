@@ -85,18 +85,18 @@
   (let [index (p/index-of-local script (:argument instr))]
     [16rFF (bit-or 16r80 index)]))
 
-
 (defmethod encode-instruction "UziPrimitiveCallInstruction"
   [instr script program]
-  (let [primitive (prims/primitive (-> instr :argument :name))
-        ^long code (:code primitive)]
-    (if (< code 16)
-      [(bit-or 16rA0 code)]
-      (if (< code 32)
-        [(bit-or 16rB0 (- code 16))]
-        (if (< code 287)
-          [16rFA (- code 32)]
-          (throw-not-implemented instr script program {:primitive primitive}))))))
+  (if-let [primitive (prims/primitive (-> instr :argument :name))]
+    (let [^long code (:code primitive)]
+      (if (< code 16)
+        [(bit-or 16rA0 code)]
+        (if (< code 32)
+          [(bit-or 16rB0 (- code 16))]
+          (if (< code 287)
+            [16rFA (- code 32)]
+            (throw-not-implemented instr script program {:primitive primitive})))))
+    (throw (ex-info "Primitive not found" {:name (-> instr :argument :name)}))))
 
 (defmethod encode-instruction "UziScriptCallInstruction"
   [instr script program]
@@ -200,8 +200,14 @@
 (defmethod encode-instruction :default [instr script program]
   (throw-not-implemented instr script program))
 
+(defn encode-instruction* [instr script program]
+  (let [result (encode-instruction instr script program)]
+    (when (some #(or (< % 0) (> % 255)) result)
+      (throw (ex-info "INVALID!" {:instruction instr})))
+    result))
+
 (defn encode-instructions [script program]
-  (mapcat #(encode-instruction % script program)
+  (mapcat #(encode-instruction* % script program)
           (:instructions script)))
 
 (defn- encode-instruction-count [script]
