@@ -1973,8 +1973,8 @@ namespace SimulatorTest
                 Assert.AreEqual(value, sketch.GetPinValue(13), "D13 should be {1} (step: 0, iteration: {0})", i, msg);
             }
 
-            // NOTE(Richo): protocol setBreakpoints: #(0)
-            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 0 });
+            // NOTE(Richo): protocol setBreakpoints: #(12)
+            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 12 });
 
             // NOTE(Richo): The VM must halt and the pins must be left untouched.
             sketch.WriteSerial(new[] { KEEP_ALIVE }); // We need to keep the connection!
@@ -2008,8 +2008,8 @@ namespace SimulatorTest
                 Assert.AreEqual(1023, sketch.GetPinValue(13), "D13 should be on (step: 2, iteration: {0})", i);
             }
 
-            // NOTE(Richo): protocol clearBreakpoints: #(0)
-            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 0 });
+            // NOTE(Richo): protocol clearBreakpoints: #(12)
+            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 12 });
 
             /*
              * NOTE(Richo): Clearing the breakpoints should have no effect in the VM state. The program
@@ -2089,7 +2089,7 @@ namespace SimulatorTest
             }
 
             // NOTE(Richo): We are now ready to put the first breakpoint
-            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 19 });
+            sketch.WriteSerial(new byte[] { 13, 1, 1, 0, 30 });
             sketch.Loop();
 
             // NOTE(Richo): Execution should be halted now. Let's check...
@@ -2131,7 +2131,7 @@ namespace SimulatorTest
 
 
             // NOTE(Richo): Now we remove the breakpoint and continue
-            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 19 });
+            sketch.WriteSerial(new byte[] { 13, 0, 1, 0, 30 });
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(7), "D7 should be on (step: 3)");
             Assert.AreEqual(0, sketch.GetPinValue(13), "D13 should always be off (step: 3)");
@@ -2338,7 +2338,7 @@ namespace SimulatorTest
             LoadProgram(ReadFile(nameof(Test095ScriptWith127Instructions)));
 
             int millis = 0;
-            for (int i = 0; i < 31; i++)
+            for (int i = 0; i < 23; i++)
             {
                 sketch.SetMillis(millis += 100);
                 Loop(10);
@@ -2349,7 +2349,7 @@ namespace SimulatorTest
             IncrementMillisAndExec(1000, 10);
 
             millis = sketch.GetMillis();
-            for (int i = 0; i < 31; i++)
+            for (int i = 0; i < 23; i++)
             {
                 sketch.SetMillis(millis += 100);
                 Loop(10);
