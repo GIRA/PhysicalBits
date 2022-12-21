@@ -497,32 +497,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_TOGGLE_PIN:
-	{
-		// TODO(Richo): What happens if we pop a value that exceeds the uint8 range (or is negative)?
-		uint8 pin = (uint8)stack_pop(error);
-		io->setMode(pin, OUTPUT);
-		io->setValue(pin, 1 - io->getValue(pin));
-	}
-	break;
-
-	case PRIM_GET_SERVO_DEGREES:
-	{
-		uint8 pin = (uint8)stack_pop(error);
-		float value = io->getValue(pin);
-		float degrees = value * 180.0f;
-		stack_push(degrees, error);
-	}
-	break;
-
-	case PRIM_SET_SERVO_DEGREES:
-	{
-		float value = stack_pop(error) / 180.0f;
-		uint8 pin = (uint8)stack_pop(error);
-		io->servoWrite(pin, value);
-	}
-	break;
-
 	case PRIM_SERVO_WRITE:
 	{
 		float value = stack_pop(error);
@@ -560,20 +534,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		float val2 = stack_pop(error);
 		float val1 = stack_pop(error);
 		stack_push(val1 - val2, error);
-	}
-	break;
-
-	case PRIM_SECONDS:
-	{
-		float time = (float)millis() / 1000.0f;
-		stack_push(time, error);
-	}
-	break;
-
-	case PRIM_MINUTES:
-	{
-		float time = (float)millis() / 1000.0f / 60.0f;
-		stack_push(time, error);
 	}
 	break;
 
@@ -653,20 +613,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_TURN_ON:
-	{
-		uint8 pin = (uint8)stack_pop(error);
-		io->setValue(pin, 1);
-	}
-	break;
-
-	case PRIM_TURN_OFF:
-	{
-		uint8 pin = (uint8)stack_pop(error);
-		io->setValue(pin, 0);
-	}
-	break;
-
 	case PRIM_YIELD:
 	{
 		yieldTime(0, yieldFlag);
@@ -676,22 +622,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	case PRIM_DELAY_MILLIS:
 	{
 		int32 time = (int32)stack_pop(error);
-		yieldTime(time, yieldFlag);
-	}
-	break;
-
-	case PRIM_DELAY_SECONDS:
-	{
-		float seconds = stack_pop(error);
-		int32 time = (int32)(seconds * 1000);
-		yieldTime(time, yieldFlag);
-	}
-	break;
-
-	case PRIM_DELAY_MINUTES:
-	{
-		float minutes = stack_pop(error);
-		int32 time = (int32)(minutes * 60 * 1000);
 		yieldTime(time, yieldFlag);
 	}
 	break;
@@ -902,20 +832,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_IS_ON:
-	{
-		uint8 pin = (uint8)stack_pop(error);
-		stack_push(io->getValue(pin) > 0, error);
-	}
-	break;
-
-	case PRIM_IS_OFF:
-	{
-		uint8 pin = (uint8)stack_pop(error);
-		stack_push(io->getValue(pin) == 0, error);
-	}
-	break;
-
 	case PRIM_REMAINDER:
 	{
 		float b = stack_pop(error);
@@ -924,34 +840,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
-	case PRIM_MOD:
-	{
-		float n = stack_pop(error);
-		float a = stack_pop(error);
-		double result = a - (floor(a / n) * n);
-		stack_push((float)result, error);
-	}
-	break;
-
-	case PRIM_CONSTRAIN:
-	{
-		float c = stack_pop(error);
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a < b)
-		{
-			stack_push(b, error);
-		}
-		else if (a > c)
-		{
-			stack_push(c, error);
-		}
-		else
-		{
-			stack_push(a, error);
-		}
-	}
-	break;
 
 	case PRIM_RANDOM_INT:
 	{
@@ -978,105 +866,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		stack_push(r2, error);
 	}
 	break;
-
-	case PRIM_IS_EVEN:
-	{
-		int32 a = (int32)stack_pop(error);
-		stack_push(a % 2 == 0 ? 1.0f : 0.0f, error);
-	}
-	break;
-
-	case PRIM_IS_ODD:
-	{
-		int32 a = (int32)stack_pop(error);
-		stack_push(a % 2 == 0 ? 0.0f : 1.0f, error);
-	}
-	break;
-
-	case PRIM_IS_PRIME:
-	{
-		int32 a = (int32)stack_pop(error);
-		if (a <= 1) { stack_push(0, error); }
-		else if (a % 2 == 0) { stack_push(a == 2 ? 1.0f : 0.0f, error); }
-		else
-		{
-			bool result = true;
-			for (int32 i = 3; i <= sqrt(a); i += 2)
-			{
-				if (a % i == 0)
-				{
-					result = false;
-					break;
-				}
-			}
-			stack_push(result ? 1.0f : 0.0f, error);
-		}
-	}
-	break;
-
-	case PRIM_IS_WHOLE:
-	{
-		float a = stack_pop(error);
-		int32 a_int = (int32)a;
-		stack_push(a == a_int ? 1.0f : 0.0f, error);
-	}
-	break;
-
-	case PRIM_IS_POSITIVE:
-	{
-		float a = stack_pop(error);
-		stack_push(a >= 0 ? 1.0f : 0.0f, error);
-	}
-	break;
-
-	case PRIM_IS_NEGATIVE:
-	{
-		float a = stack_pop(error);
-		stack_push(a < 0 ? 1.0f : 0.0f, error);
-	}
-	break;
-
-	case PRIM_IS_DIVISIBLE_BY:
-	{
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (b == 0) { stack_push(0, error); }
-		else if (b != (int32)b) { stack_push(0, error); }
-		else
-		{
-			stack_push(fmod(a, b) == 0 ? 1.0f : 0.0f, error);
-		}
-	}
-	break;
-
-	case PRIM_IS_CLOSE_TO:
-	{
-		float epsilon = 0.0001f;
-		float b = stack_pop(error);
-		float a = stack_pop(error);
-		if (a == 0)
-		{
-			stack_push(b < epsilon ? 1.0f : 0.0f, error);
-		}
-		else if (b == 0)
-		{
-			stack_push(a < epsilon ? 1.0f : 0.0f, error);
-		}
-		else if (a == b)
-		{
-			stack_push(1, error);
-		}
-		else
-		{
-			float a_abs = (float)fabs(a);
-			float b_abs = (float)fabs(b);
-			float max = a_abs > b_abs ? a_abs : b_abs;
-			float diff = (float)fabs(a - b);
-			stack_push(diff / max < epsilon ? 1.0f : 0.0f, error);
-		}
-	}
-	break;
-
 	case PRIM_SONAR_DIST_CM:
 	{
 		uint16 maxDist = (uint16)stack_pop(error);
