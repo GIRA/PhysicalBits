@@ -31,7 +31,8 @@
     (if (= "UziCallNode" type) ; Special case for calls
       (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
         (= 1 after)
-        true)
+        true ; TODO(Richo): Should we check if the called script is a proc or a func??
+        )
       (contains? #{"UziLogicalAndNode"
                    "UziLogicalOrNode"
                    "UziNumberLiteralNode"
