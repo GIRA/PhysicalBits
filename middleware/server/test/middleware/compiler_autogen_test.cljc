@@ -36,7 +36,7 @@
                                                     (emit/prim-call "lessThanOrEquals")
                                                     (emit/jz 7)
                                                     (emit/read-local "i#1")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-local "i#1")
                                                     (emit/push-value 1)
                                                     (emit/prim-call "add")
@@ -65,7 +65,7 @@
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz 7)
                                                     (emit/read-local "i#1")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-local "i#1")
                                                     (emit/push-value -1)
                                                     (emit/prim-call "add")
@@ -102,7 +102,7 @@
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz 7)
                                                     (emit/read-local "i#1")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-local "i#1")
                                                     (emit/read-local "@1")
                                                     (emit/prim-call "add")
@@ -146,7 +146,7 @@
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz 7)
                                                     (emit/read-local "i#1")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-local "i#1")
                                                     (emit/read-local "@1")
                                                     (emit/prim-call "add")
@@ -292,7 +292,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "toggle")])
+                                                    (emit/script-call "toggle")])
                                 (emit/script
                                     :name "test1"
                                     :running? true
@@ -451,7 +451,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "toggle")])
+                                                    (emit/script-call "toggle")])
                                 (emit/script
                                     :name "cp"
                                     :running? true
@@ -459,12 +459,12 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 11)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/script-call "c.receive")
                                                     (emit/script-call "c.send")
                                                     (emit/prim-call "pop")
                                                     (emit/push-value 11)
-                                                    (emit/prim-call "toggle")])]))
+                                                    (emit/script-call "toggle")])]))
         program (compile-string "
         	import c from 'Channel.uzi';
 
@@ -566,7 +566,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "toggle")])
+                                                    (emit/script-call "toggle")])
                                 (emit/script
                                     :name "test"
                                     :running? true
@@ -803,7 +803,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "toggle")])
+                                                    (emit/script-call "toggle")])
                                 (emit/script
                                     :name "producer1"
                                     :running? true
@@ -1043,13 +1043,13 @@
                                     :instructions [(emit/push-value 1)
                                                     (emit/jz 2)
                                                     (emit/read-local "pin#1")
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-local "pin#2")
                                                     (emit/push-value 6)
                                                     (emit/prim-call "add")
                                                     (emit/write-local "pin#2")
                                                     (emit/read-local "pin#2")
-                                                    (emit/prim-call "toggle")])]))
+                                                    (emit/script-call "toggle")])]))
         program (compile-string "
         	\"Pin 7 should blink once per second.
         	Pin 6 should blink once per second.\"
@@ -1081,9 +1081,9 @@
                                     :instructions [(emit/push-value 1)
                                                     (emit/jz 2)
                                                     (emit/read-local "pin#1")
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-local "pin#2")
-                                                    (emit/prim-call "toggle")])]))
+                                                    (emit/script-call "toggle")])]))
         program (compile-string "
         	\"Pin 7 should blink once per second.
         	Pin 6 should blink once per second.\"
@@ -1435,27 +1435,27 @@
                                     :locals []
                                     :instructions [(emit/push-value 1)
                                                     (emit/push-value 1.00001)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/jz 3)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/jmp 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/push-value 12)
                                                     (emit/push-value 0)
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 11)
                                                     (emit/push-value 2)
                                                     (emit/push-value 2.001)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 10)
                                                     (emit/push-value ##Inf)
                                                     (emit/push-value ##Inf)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	\"D13 -> ON
@@ -1504,7 +1504,7 @@
                                                     (emit/push-value -1)
                                                     (emit/prim-call "asin")
                                                     (emit/push-value -1.570796326794897)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -1543,7 +1543,7 @@
                                                     (emit/push-value 0)
                                                     (emit/prim-call "acos")
                                                     (emit/push-value 1.570796326794897)
-                                                    (emit/prim-call "isCloseTo")
+                                                    (emit/script-call "isCloseTo")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -1641,13 +1641,13 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "isOn")
+                                                    (emit/script-call "isOn")
                                                     (emit/jz 3)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/jmp 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")])]))
+                                                    (emit/script-call "turnOn")])]))
         program (compile-string "
         	task main() running 1/s {
         		if isOn(D13) {
@@ -1670,13 +1670,13 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "isOff")
+                                                    (emit/script-call "isOff")
                                                     (emit/jz 3)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/jmp 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")])]))
+                                                    (emit/script-call "turnOff")])]))
         program (compile-string "
         	task main() running 1/s {
         		if isOff(D13) {
@@ -1715,25 +1715,25 @@
                                                     (emit/prim-call "equals")
                                                     (emit/jz 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-global "a")
                                                     (emit/push-value 1)
                                                     (emit/prim-call "equals")
                                                     (emit/jz 2)
                                                     (emit/push-value 12)
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-global "a")
                                                     (emit/push-value 2)
                                                     (emit/prim-call "equals")
                                                     (emit/jz 2)
                                                     (emit/push-value 11)
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-global "a")
                                                     (emit/push-value 3)
                                                     (emit/prim-call "equals")
                                                     (emit/jz 2)
                                                     (emit/push-value 10)
-                                                    (emit/prim-call "toggle")
+                                                    (emit/script-call "toggle")
                                                     (emit/read-global "a")
                                                     (emit/push-value 1)
                                                     (emit/prim-call "add")
@@ -1772,7 +1772,7 @@
                                                     (emit/push-value -10)
                                                     (emit/push-value -3)
                                                     (emit/push-value 5)
-                                                    (emit/prim-call "constrain")
+                                                    (emit/script-call "constrain")
                                                     (emit/push-value -3)
                                                     (emit/prim-call "equals")
                                                     (emit/prim-call "write")
@@ -1780,13 +1780,13 @@
                                                     (emit/push-value 0.5)
                                                     (emit/push-value -3)
                                                     (emit/push-value 5)
-                                                    (emit/prim-call "constrain")
+                                                    (emit/script-call "constrain")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value 10)
                                                     (emit/push-value -3)
                                                     (emit/push-value 5)
-                                                    (emit/prim-call "constrain")
+                                                    (emit/script-call "constrain")
                                                     (emit/push-value 5)
                                                     (emit/prim-call "equals")
                                                     (emit/prim-call "write")])]))
@@ -1830,10 +1830,10 @@
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/jmp 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-local "a#1")
                                                     (emit/write-global "old")])]))
         program (compile-string "
@@ -1878,10 +1878,10 @@
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/jmp 2)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-local "a#1")
                                                     (emit/write-global "old")])]))
         program (compile-string "
@@ -1917,12 +1917,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 1)
-                                                    (emit/prim-call "isEven")
+                                                    (emit/script-call "isEven")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 2)
-                                                    (emit/prim-call "isEven")
+                                                    (emit/script-call "isEven")
                                                     (emit/push-value -2)
-                                                    (emit/prim-call "isEven")
+                                                    (emit/script-call "isEven")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -1930,7 +1930,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isEven")
+                                                    (emit/script-call "isEven")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -1960,12 +1960,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isOdd")
+                                                    (emit/script-call "isOdd")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 1)
-                                                    (emit/prim-call "isOdd")
+                                                    (emit/script-call "isOdd")
                                                     (emit/push-value -1)
-                                                    (emit/prim-call "isOdd")
+                                                    (emit/script-call "isOdd")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -1973,7 +1973,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value 3)
-                                                    (emit/prim-call "isOdd")
+                                                    (emit/script-call "isOdd")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2002,12 +2002,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 9)
-                                                    (emit/prim-call "isPrime")
+                                                    (emit/script-call "isPrime")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 2)
-                                                    (emit/prim-call "isPrime")
+                                                    (emit/script-call "isPrime")
                                                     (emit/push-value 3)
-                                                    (emit/prim-call "isPrime")
+                                                    (emit/script-call "isPrime")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -2015,7 +2015,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value 5)
-                                                    (emit/prim-call "isPrime")
+                                                    (emit/script-call "isPrime")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2045,12 +2045,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 9.5)
-                                                    (emit/prim-call "isWhole")
+                                                    (emit/script-call "isWhole")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isWhole")
+                                                    (emit/script-call "isWhole")
                                                     (emit/push-value 100000)
-                                                    (emit/prim-call "isWhole")
+                                                    (emit/script-call "isWhole")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -2058,7 +2058,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value -10)
-                                                    (emit/prim-call "isWhole")
+                                                    (emit/script-call "isWhole")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2088,12 +2088,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value -10)
-                                                    (emit/prim-call "isPositive")
+                                                    (emit/script-call "isPositive")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 10)
-                                                    (emit/prim-call "isPositive")
+                                                    (emit/script-call "isPositive")
                                                     (emit/push-value 100000)
-                                                    (emit/prim-call "isPositive")
+                                                    (emit/script-call "isPositive")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -2101,7 +2101,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isPositive")
+                                                    (emit/script-call "isPositive")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2131,12 +2131,12 @@
                                     :locals []
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 0)
-                                                    (emit/prim-call "isNegative")
+                                                    (emit/script-call "isNegative")
                                                     (emit/prim-call "write")
                                                     (emit/push-value -10)
-                                                    (emit/prim-call "isNegative")
+                                                    (emit/script-call "isNegative")
                                                     (emit/push-value -0.54534)
-                                                    (emit/prim-call "isNegative")
+                                                    (emit/script-call "isNegative")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -2144,7 +2144,7 @@
                                                     (emit/prim-call "write")
                                                     (emit/push-value 9)
                                                     (emit/push-value -1)
-                                                    (emit/prim-call "isNegative")
+                                                    (emit/script-call "isNegative")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2176,14 +2176,14 @@
                                     :instructions [(emit/push-value 7)
                                                     (emit/push-value 9)
                                                     (emit/push-value 5)
-                                                    (emit/prim-call "isDivisibleBy")
+                                                    (emit/script-call "isDivisibleBy")
                                                     (emit/prim-call "write")
                                                     (emit/push-value 5)
                                                     (emit/push-value 1)
-                                                    (emit/prim-call "isDivisibleBy")
+                                                    (emit/script-call "isDivisibleBy")
                                                     (emit/push-value -15)
                                                     (emit/push-value -3)
-                                                    (emit/prim-call "isDivisibleBy")
+                                                    (emit/script-call "isDivisibleBy")
                                                     (emit/prim-call "logicalAnd")
                                                     (emit/jz 3)
                                                     (emit/push-value 8)
@@ -2192,7 +2192,7 @@
                                                     (emit/push-value 9)
                                                     (emit/push-value 64)
                                                     (emit/push-value 8)
-                                                    (emit/prim-call "isDivisibleBy")
+                                                    (emit/script-call "isDivisibleBy")
                                                     (emit/prim-call "write")])]))
         program (compile-string "
         	task main() running 1/s {
@@ -2217,30 +2217,30 @@
                                     :delay 0
                                     :arguments []
                                     :locals []
-                                    :instructions [(emit/prim-call "minutes")
+                                    :instructions [(emit/script-call "minutes")
                                                     (emit/push-value 1)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
-                                                    (emit/prim-call "minutes")
+                                                    (emit/script-call "turnOn")
+                                                    (emit/script-call "minutes")
                                                     (emit/push-value 2)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
-                                                    (emit/prim-call "minutes")
+                                                    (emit/script-call "turnOff")
+                                                    (emit/script-call "minutes")
                                                     (emit/push-value 3)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
-                                                    (emit/prim-call "minutes")
+                                                    (emit/script-call "turnOn")
+                                                    (emit/script-call "minutes")
                                                     (emit/push-value 4)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")])]))
+                                                    (emit/script-call "turnOff")])]))
         program (compile-string "
         	task main() running {
         		until minutes() >= 1;
@@ -2269,30 +2269,30 @@
                                     :delay 0
                                     :arguments []
                                     :locals []
-                                    :instructions [(emit/prim-call "seconds")
+                                    :instructions [(emit/script-call "seconds")
                                                     (emit/push-value 1)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
-                                                    (emit/prim-call "seconds")
+                                                    (emit/script-call "turnOn")
+                                                    (emit/script-call "seconds")
                                                     (emit/push-value 2)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
-                                                    (emit/prim-call "seconds")
+                                                    (emit/script-call "turnOff")
+                                                    (emit/script-call "seconds")
                                                     (emit/push-value 3)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
-                                                    (emit/prim-call "seconds")
+                                                    (emit/script-call "turnOn")
+                                                    (emit/script-call "seconds")
                                                     (emit/push-value 4)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")])]))
+                                                    (emit/script-call "turnOff")])]))
         program (compile-string "
         	task main() running {
         		until seconds() >= 1;
@@ -2326,25 +2326,25 @@
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/prim-call "millis")
                                                     (emit/push-value 2000)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/prim-call "millis")
                                                     (emit/push-value 3000)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/prim-call "millis")
                                                     (emit/push-value 4000)
                                                     (emit/prim-call "greaterThanOrEquals")
                                                     (emit/jz -4)
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")])]))
+                                                    (emit/script-call "turnOff")])]))
         program (compile-string "
         	task main() running {
         		until millis() >= 1000;
@@ -2385,10 +2385,10 @@
                                                     (emit/prim-call "read")
                                                     (emit/jz 3)
                                                     (emit/read-local "pin#1")
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/jmp 2)
                                                     (emit/read-local "pin#1")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-local "delay#2")
                                                     (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2415,7 +2415,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 11)
-                                                    (emit/prim-call "toggle")])
+                                                    (emit/script-call "toggle")])
                                 (emit/script
                                     :name "blink13"
                                     :running? true
@@ -2423,11 +2423,11 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/push-value 1000)
                                                     (emit/prim-call "delayMs")
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/push-value 1000)
                                                     (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2456,11 +2456,11 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/push-value 1000)
                                                     (emit/prim-call "delayMs")
                                                     (emit/push-value 13)
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/push-value 1000)
                                                     (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2556,9 +2556,9 @@
                                     :arguments [(emit/variable "speed#7" 0)]
                                     :locals []
                                     :instructions [(emit/read-global "leftMotor.reversePin")
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-global "leftMotor.forwardPin")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-global "leftMotor.enablePin")
                                                     (emit/read-local "speed#7")
                                                     (emit/prim-call "write")])
@@ -2569,9 +2569,9 @@
                                     :arguments [(emit/variable "speed#8" 0)]
                                     :locals []
                                     :instructions [(emit/read-global "leftMotor.forwardPin")
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-global "leftMotor.reversePin")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-global "leftMotor.enablePin")
                                                     (emit/read-local "speed#8")
                                                     (emit/prim-call "write")])
@@ -2596,9 +2596,9 @@
                                     :arguments [(emit/variable "speed#12" 0)]
                                     :locals []
                                     :instructions [(emit/read-global "rightMotor.reversePin")
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-global "rightMotor.forwardPin")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-global "rightMotor.enablePin")
                                                     (emit/read-local "speed#12")
                                                     (emit/prim-call "write")])
@@ -2609,9 +2609,9 @@
                                     :arguments [(emit/variable "speed#13" 0)]
                                     :locals []
                                     :instructions [(emit/read-global "rightMotor.forwardPin")
-                                                    (emit/prim-call "turnOff")
+                                                    (emit/script-call "turnOff")
                                                     (emit/read-global "rightMotor.reversePin")
-                                                    (emit/prim-call "turnOn")
+                                                    (emit/script-call "turnOn")
                                                     (emit/read-global "rightMotor.enablePin")
                                                     (emit/read-local "speed#13")
                                                     (emit/prim-call "write")])
@@ -2715,7 +2715,7 @@
                                     :arguments []
                                     :locals []
                                     :instructions [(emit/push-value 13)
-                                                    (emit/prim-call "toggle")])]))
+                                                    (emit/script-call "toggle")])]))
         program (compile-string "
         import sonar from 'Sonar.uzi';
         import leftMotor from 'DCMotor.uzi';
