@@ -21,28 +21,19 @@
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   "-Dclojure.compiler.elide-meta=[:doc :file :line :added]"]}
 
-             :test [:project/test :user/test]
-             :dev [:project/dev :user/dev]
+             :test {:resource-paths ["env/test/resources"]}
 
-             ; NOTE(Richo): To use atom and proto-repl (place in profiles.clj)
-             ; :user/dev {:dependencies [[proto-repl "0.3.1"]]}
-
-             ; NOTE(Richo): To use sound notifications with test-refresh (place in profiles.clj)
-             ; :user/test {:resource-paths ["env/test/sounds"]}
-
-             :project/test {:resource-paths ["env/test/resources"]}
-
-             :project/dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
-                                          [org.clojars.beppu/clj-audio "0.3.0"]
-                                          [criterium "0.4.6"]
-                                          [com.taoensso/tufte "2.2.0"]]
-                           :source-paths ["env/dev/clj"]
-                           :resource-paths ["env/dev/resources"]
-                           :repl-options {:init-ns user
-                                          :timeout 120000}
+             :dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
+                                  [org.clojars.beppu/clj-audio "0.3.0"]
+                                  [criterium "0.4.6"]
+                                  [com.taoensso/tufte "2.2.0"]]
+                   :source-paths ["env/dev/clj"]
+                   :resource-paths ["env/dev/resources"]
+                   :repl-options {:init-ns user
+                                  :timeout 120000}
                            ;:middleware [ultra.plugin/middleware]
-                           :plugins [;[venantius/ultra "0.6.0"]
-                                     [com.jakemccrary/lein-test-refresh "0.24.1"]]
-                           :global-vars {;*unchecked-math* :warn-on-boxed
-                                         ;*warn-on-reflection* true
-                                         }}})
+                   :plugins [[venantius/ultra "0.6.0"]
+                             [com.jakemccrary/lein-test-refresh "0.24.1"]]
+                   :global-vars {;*unchecked-math* :warn-on-boxed
+                                 ;*warn-on-reflection* true
+                                 }}})
