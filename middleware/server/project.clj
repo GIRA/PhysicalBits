@@ -21,7 +21,8 @@
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   "-Dclojure.compiler.elide-meta=[:doc :file :line :added]"]}
 
-             :test {:resource-paths ["env/test/resources"]}
+             :test {:resource-paths ["env/test/resources"
+                                     "env/test/sounds"]}
 
              :dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
                                   [org.clojars.beppu/clj-audio "0.3.0"]
