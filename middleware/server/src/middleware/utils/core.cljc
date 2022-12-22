@@ -14,6 +14,9 @@
   ^long [^java.util.List v e]
   (.indexOf v e))
 
+(defn indexed-by [f vs]
+  (into {} (map (juxt f identity)) vs))
+
 (defn format
   "Simple string formatting function. It doesn't support any fancy features
   (but works in cljs)"
