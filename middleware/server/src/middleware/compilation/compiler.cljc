@@ -153,7 +153,15 @@
   (let [instructions (compile node ctx)]
     ; NOTE(Richo): If the node is an expression we need to append a pop instruction to
     ; leave the stack in the correct state (remember: this functions compiles statements!)
-    (if (ast-utils/expression? node)
+    (if (or (ast-utils/expression? node)
+            ; HACK(Richo): Now script calls can return false to expression? because the 
+            ; linker associates this info by checking if the called script is either a 
+            ; func or a proc/task. However, the VM doesn't know about func/proc/tasks! 
+            ; They are all scripts at that level, so until we fix the VM to handle script
+            ; calls correctly we need to append the pop instruction for all script calls,
+            ; regardless of their expression? status
+            (and (ast-utils/call? node)
+                 (nil? (:primitive-name node))))
       (conj instructions (with-node (emit/prim-call "pop") node))
       instructions)))
 
