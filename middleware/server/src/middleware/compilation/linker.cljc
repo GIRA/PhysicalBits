@@ -122,14 +122,6 @@
                :file file
                :absolute-path (fs/absolute-path file)})))))
 
-(defn remove-duplicate-scripts [scripts]
-  (vec (reduce (fn [acc next]
-                 (if (seek #(= (:name %) (:name next)) acc)
-                   acc
-                   (conj acc next)))
-               (list)
-               (rseq scripts))))
-
 (defn build-new-program [ast resolved-imports]
   (let [imported-programs (map :program resolved-imports)
          imported-globals (mapcat :globals imported-programs)
@@ -138,8 +130,10 @@
     (assoc ast
            :imports (mapv :import resolved-imports)
            :globals (vec (concat imported-globals (:globals ast)))
-           :scripts (remove-duplicate-scripts 
-                     (vec (concat imported-scripts (:scripts ast))))
+           :scripts (let [new-scripts (indexed-by :name (:scripts ast))]
+                      (vec (concat (remove #(contains? new-scripts (:name %)) 
+                                           imported-scripts)
+                                   (:scripts ast))))
            :primitives (vec (concat imported-prims (:primitives ast))))))
 
 (defn resolve-imports
