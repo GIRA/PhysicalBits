@@ -36,8 +36,9 @@
 
 ; NOTE(Richo): I compile an empty program without removing the dead-code so that we
 ; get all the core.uzi scripts
-(def core-scripts (:scripts (cc/compile-tree (ast/program-node)
-                                             :remove-dead-code? false)))
+(def core-scripts
+  (memoize #(:scripts (cc/compile-tree (ast/program-node)
+                                       :remove-dead-code? false))))
 
 (defn link-core [program]
   (let [globals (:globals program)
@@ -47,7 +48,7 @@
                                             (set))
                                        (set (map :name (:scripts program))))
         scripts (vec (concat (filter #(contains? called-scripts (:name %))
-                                     core-scripts)
+                                     (core-scripts))
                              (:scripts program)))]
     (emit/program
      :globals globals
