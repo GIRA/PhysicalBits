@@ -28,16 +28,18 @@
                      :args args}))))
 
 (defn- collect-stats [programs]
-  (map (fn [{:keys [name ast-or-src args]}]
-         (let [ast (if (string? ast-or-src)
-                     (p/parse ast-or-src)
-                     ast-or-src)
-               program (apply cc/compile-tree ast args)]
-           {:instruction-count (count (program/instructions program))
-            :global-count (count (:globals program))
-            :encoded-size (count (en/encode program))
-            :name name}))
-       (apply concat (vals programs))))
+  (keep (fn [{:keys [name ast-or-src args]}]
+          (try
+            (let [ast (if (string? ast-or-src)
+                        (p/parse ast-or-src)
+                        ast-or-src)
+                  program (apply cc/compile-tree ast args)]
+              {:instruction-count (count (program/instructions program))
+               :global-count (count (:globals program))
+               :encoded-size (count (en/encode program))
+               :name name})
+            (catch Throwable _ nil)))
+        (apply concat (vals programs))))
 
 (defn- write-row! [^java.io.BufferedWriter writer row]
   (.write writer (str/join "," (map #(if (ratio? %) (double %) %) row)))
