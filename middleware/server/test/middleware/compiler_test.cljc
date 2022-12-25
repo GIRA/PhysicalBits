@@ -10,7 +10,8 @@
             [middleware.ast.nodes :as ast]
             [middleware.ast.utils :as ast-utils]
             [middleware.compilation.compiler :as cc]
-            [middleware.program.emitter :as emit]))
+            [middleware.program.emitter :as emit]
+            [utils.compilation :refer [emit-program]]))
 
 (use-fixtures :once setup-fixture)
 
@@ -61,7 +62,7 @@
                           :tick-rate (ast/ticking-rate-node 1 "s")
                           :state "running"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 1000)}
                    :scripts [(emit/script
                                :name "empty"
@@ -86,7 +87,7 @@
                                        [(ast/arg-node (ast/variable-node "counter"))
                                         (ast/arg-node
                                           (ast/literal-number-node 1))]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/variable "counter" 0) (emit/constant 1000)
                               (emit/constant 1)}
                    :scripts [(emit/script
@@ -107,7 +108,7 @@
                           :name "foo"
                           :state "running"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script :name "foo" :delay 0 :running? true)])
         actual (compile ast)]
@@ -120,7 +121,7 @@
                           :name "foo"
                           :state "once"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
                                :name "foo"
@@ -145,9 +146,9 @@
                                         (ast/arg-node
                                           (ast/literal-pin-node "D" 13))]))
                                    (ast/call-node
-                                     "toggle"
+                                     "delayMs"
                                      [(ast/arg-node (ast/variable-node "pin"))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
@@ -161,7 +162,7 @@
                                               (emit/prim-call "add")
                                               (emit/write-local "pin#1")
                                               (emit/read-local "pin#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/prim-call "delayMs")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -342,24 +343,25 @@
 (deftest
   program-with-local-variable-whose-value-is-a-compile-time-constant
   (let [ast (ast/program-node
-              :scripts [(ast/task-node
-                          :name "default"
-                          :state "once"
-                          :body (ast/block-node
-                                  [(ast/variable-declaration-node
-                                     "a"
-                                     (ast/literal-number-node 0))
-                                   (ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "a"))])
-                                   (ast/variable-declaration-node
-                                     "b"
-                                     (ast/literal-number-node 0))
-                                   (ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "b"))])]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0)}
+             :scripts [(ast/task-node
+                        :name "default"
+                        :state "once"
+                        :body (ast/block-node
+                               [(ast/variable-declaration-node
+                                 "a"
+                                 (ast/literal-number-node 0))
+                                (ast/call-node
+                                 "toggle"
+                                 [(ast/arg-node (ast/variable-node "a"))])
+                                (ast/variable-declaration-node
+                                 "b"
+                                 (ast/literal-number-node 0))
+                                (ast/call-node
+                                 "toggle"
+                                 [(ast/arg-node (ast/variable-node "b"))])]))])
+        expected (emit-program
+                   :globals #{(emit/constant 0)
+                              (emit/constant 1)}
                    :scripts [(emit/script
                                :name "default"
                                :delay 0
@@ -367,9 +369,11 @@
                                :once? true
                                :locals [(emit/variable "a#1" 0) (emit/variable "b#2" 0)]
                                :instructions [(emit/read-local "a#1")
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "b#2")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -392,7 +396,7 @@
                                    (ast/call-node
                                      "toggle"
                                      [(ast/arg-node (ast/variable-node "b"))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1)}
                    :scripts [(emit/script
@@ -402,9 +406,11 @@
                                :once? true
                                :locals [(emit/variable "a#1" 1) (emit/variable "b#2" 2)]
                                :instructions [(emit/read-local "a#1")
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "b#2")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -428,7 +434,7 @@
                                    (ast/call-node
                                      "toggle"
                                      [(ast/arg-node (ast/variable-node "b"))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1) (emit/variable "b" 0)}
                    :scripts [(emit/script
@@ -438,9 +444,11 @@
                                :once? true
                                :locals [(emit/variable "a#1" 1) (emit/variable "b#2" 2)]
                                :instructions [(emit/read-global "b")
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "b#2")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -455,7 +463,7 @@
                                   [(ast/assignment-node
                                      (ast/variable-node "temp")
                                      (ast/literal-number-node 0))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/variable "temp" 0)}
                    :scripts [(emit/script
                                :name "default"
@@ -480,7 +488,7 @@
                                    (ast/assignment-node
                                      (ast/variable-node "temp")
                                      (ast/literal-number-node 0))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
                                :name "default"
@@ -503,7 +511,7 @@
                         (ast/procedure-node
                           :name "default1"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0)}
                    :scripts [(emit/script
                                :name "default"
@@ -525,13 +533,15 @@
                           :body (ast/block-node
                                   [(ast/call-node "default1" [])
                                    (ast/call-node
-                                     "toggle"
+                                     "write"
                                      [(ast/arg-node
-                                        (ast/literal-pin-node "D" 13))])]))
+                                        (ast/literal-pin-node "D" 13))
+                                      (ast/arg-node
+                                       (ast/literal-number-node 0))])]))
                         (ast/procedure-node
                           :name "default1"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
                                :name "default"
@@ -541,7 +551,8 @@
                                :instructions [(emit/script-call "default1")
                                               (emit/prim-call "pop")
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])
                              (emit/script :name "default1" :delay 0)])
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -562,9 +573,10 @@
                           :arguments [(ast/variable-declaration-node "arg0")]
                           :body (ast/block-node
                                   [(ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
-        expected (emit/program
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "arg0"))
+                                      (ast/arg-node (ast/literal-number-node 0))])]))])
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
                                :name "default"
@@ -579,7 +591,8 @@
                                :arguments [(emit/variable "arg0#1" 0)]
                                :delay 0
                                :instructions [(emit/read-local "arg0#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -597,7 +610,7 @@
                         (ast/function-node
                           :name "default1"
                           :body (ast/block-node []))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/variable "temp" 0)}
                    :scripts [(emit/script
                                :name "default"
@@ -629,9 +642,10 @@
                           :arguments [(ast/variable-declaration-node "arg0")]
                           :body (ast/block-node
                                   [(ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
-        expected (emit/program
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "arg0"))
+                                      (ast/arg-node (ast/literal-number-node 0))])]))])
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 13)
                               (emit/variable "temp" 0)}
                    :scripts [(emit/script
@@ -647,7 +661,8 @@
                                :arguments [(emit/variable "arg0#1" 0)]
                                :delay 0
                                :instructions [(emit/read-local "arg0#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -667,7 +682,7 @@
                                        [(ast/arg-node (ast/variable-node "counter"))
                                         (ast/arg-node
                                           (ast/literal-number-node 1))]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/variable "counter" 0) (emit/constant 1000)
                               (emit/constant 1)}
                    :scripts [(emit/script
@@ -697,9 +712,10 @@
                           :arguments [(ast/variable-declaration-node "arg0")]
                           :body (ast/block-node
                                   [(ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
-        expected (emit/program
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "arg0"))
+                                      (ast/arg-node (ast/literal-number-node 0))])]))])
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 13)}
                    :scripts [(emit/script
                                :name "default"
@@ -714,7 +730,8 @@
                                :arguments [(emit/variable "arg0#1" 0)]
                                :delay 0
                                :instructions [(emit/read-local "arg0#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -737,9 +754,10 @@
                           :arguments [(ast/variable-declaration-node "arg0")]
                           :body (ast/block-node
                                   [(ast/call-node
-                                     "toggle"
-                                     [(ast/arg-node (ast/variable-node "arg0"))])]))])
-        expected (emit/program
+                                     "write"
+                                     [(ast/arg-node (ast/variable-node "arg0"))
+                                      (ast/arg-node (ast/literal-number-node 0))])]))])
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 13)
                               (emit/variable "temp" 0)}
                    :scripts [(emit/script
@@ -755,7 +773,8 @@
                                :arguments [(emit/variable "arg0#1" 0)]
                                :delay 0
                                :instructions [(emit/read-local "arg0#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -770,7 +789,7 @@
                           :tick-rate (ast/ticking-rate-node 1 "s")
                           :state "running"
                           :body (ast/block-node [(ast/call-node "default" [])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)}
                    :scripts [(emit/script
                                :name "default"
@@ -813,7 +832,7 @@
                                              (ast/literal-number-node 0.25))
                                            (ast/arg-node
                                              (ast/literal-number-node 0.75))]))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 0.75)
                               (emit/constant 1000) (emit/constant 0.25)
                               (emit/constant 13)}
@@ -846,9 +865,11 @@
                           :state "running"
                           :body (ast/block-node
                                   [(ast/call-node
-                                     "toggle"
+                                     "write"
                                      [(ast/arg-node
-                                        (ast/literal-pin-node "D" 13))])]))
+                                        (ast/literal-pin-node "D" 13))
+                                      (ast/arg-node 
+                                       (ast/literal-number-node 0))])]))
                         (ast/task-node
                           :name "main"
                           :state "once"
@@ -858,14 +879,16 @@
                                    (ast/resume-node ["loop"])
                                    (ast/pause-node ["loop"])
                                    (ast/call-node "loop" [])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "loop"
                                :delay 1000
                                :running? true
-                               :instructions [(emit/push-value 13) (emit/prim-call "toggle")])
+                               :instructions [(emit/push-value 13) 
+                                              (emit/push-value 0)
+                                              (emit/prim-call "write")])
                              (emit/script
                                :name "main"
                                :delay 0
@@ -899,7 +922,7 @@
                                      [(ast/arg-node (ast/variable-node "pin"))
                                       (ast/arg-node
                                         (ast/literal-number-node 1))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1)}
                    :scripts [(emit/script
                                :name "default"
@@ -934,17 +957,21 @@
                                      "turnOff"
                                      [(ast/arg-node (ast/literal-pin-node "D" 13))])
                                    (ast/yield-node)]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 13)}
+        expected (emit-program
+                   :globals #{(emit/constant 0)
+                              (emit/constant 1)
+                              (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
                                :delay 0
                                :running? true
                                :instructions [(emit/push-value 13)
-                                              (emit/prim-call "turnOn")
+                                              (emit/script-call "turnOn")
+                                              (emit/prim-call "pop")
                                               (emit/prim-call "yield")
                                               (emit/push-value 13)
-                                              (emit/prim-call "turnOff")
+                                              (emit/script-call "turnOff")
+                                              (emit/prim-call "pop")
                                               (emit/prim-call "yield")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
@@ -978,7 +1005,7 @@
                                           [(ast/arg-node (ast/variable-node "b"))
                                            (ast/arg-node
                                              (ast/variable-node "c"))]))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 0.75)
                               (emit/constant 9) (emit/constant 0.5)}
                    :scripts [(emit/script
@@ -1007,71 +1034,79 @@
 (deftest
   full-conditional
   (let [ast (ast/program-node
-              :scripts [(ast/task-node
-                          :name "main"
-                          :tick-rate (ast/ticking-rate-node 1 "s")
-                          :state "running"
-                          :body (ast/block-node
-                                  [(ast/conditional-node
-                                     (ast/call-node
-                                       "isOn"
-                                       [(ast/arg-node (ast/literal-pin-node "D" 13))])
-                                     (ast/block-node
-                                       [(ast/call-node
-                                          "turnOff"
-                                          [(ast/arg-node
-                                             (ast/literal-pin-node "D" 13))])])
-                                     (ast/block-node
-                                       [(ast/call-node
-                                          "turnOn"
-                                          [(ast/arg-node
-                                             (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 1000) (emit/constant 13)}
-                   :scripts [(emit/script
-                               :name "main"
-                               :delay 1000
-                               :running? true
-                               :instructions [(emit/push-value 13)
-                                              (emit/prim-call "isOn")
-                                              (emit/jz 3)
-                                              (emit/push-value 13)
-                                              (emit/prim-call "turnOff")
-                                              (emit/jmp 2)
-                                              (emit/push-value 13)
-                                              (emit/prim-call "turnOn")])])
+             :scripts [(ast/task-node
+                        :name "main"
+                        :tick-rate (ast/ticking-rate-node 1 "s")
+                        :state "running"
+                        :body (ast/block-node
+                               [(ast/conditional-node
+                                 (ast/call-node
+                                  "isOn"
+                                  [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                 (ast/block-node
+                                  [(ast/call-node
+                                    "turnOff"
+                                    [(ast/arg-node
+                                      (ast/literal-pin-node "D" 13))])])
+                                 (ast/block-node
+                                  [(ast/call-node
+                                    "turnOn"
+                                    [(ast/arg-node
+                                      (ast/literal-pin-node "D" 13))])]))]))])
+        expected (emit-program
+                  :globals #{(emit/constant 1000) 
+                             (emit/constant 0)
+                             (emit/constant 1)
+                             (emit/constant 13)}
+                  :scripts [(emit/script
+                             :name "main"
+                             :delay 1000
+                             :running? true
+                             :instructions [(emit/push-value 13)
+                                            (emit/script-call "isOn")
+                                            (emit/jz 4)
+                                            (emit/push-value 13)
+                                            (emit/script-call "turnOff")
+                                            (emit/prim-call "pop")
+                                            (emit/jmp 3)
+                                            (emit/push-value 13)
+                                            (emit/script-call "turnOn")
+                                            (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest
   conditional-with-only-true-branch
   (let [ast (ast/program-node
-              :scripts [(ast/task-node
-                          :name "main"
-                          :tick-rate (ast/ticking-rate-node 1 "s")
-                          :state "running"
-                          :body (ast/block-node
-                                  [(ast/conditional-node
-                                     (ast/call-node
-                                       "isOn"
-                                       [(ast/arg-node (ast/literal-pin-node "D" 13))])
-                                     (ast/block-node
-                                       [(ast/call-node
-                                          "turnOff"
-                                          [(ast/arg-node
-                                             (ast/literal-pin-node "D" 13))])])
-                                     (ast/block-node []))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 1000) (emit/constant 13)}
-                   :scripts [(emit/script
-                               :name "main"
-                               :delay 1000
-                               :running? true
-                               :instructions [(emit/push-value 13)
-                                              (emit/prim-call "isOn")
-                                              (emit/jz 2)
-                                              (emit/push-value 13)
-                                              (emit/prim-call "turnOff")])])
+             :scripts [(ast/task-node
+                        :name "main"
+                        :tick-rate (ast/ticking-rate-node 1 "s")
+                        :state "running"
+                        :body (ast/block-node
+                               [(ast/conditional-node
+                                 (ast/call-node
+                                  "isOn"
+                                  [(ast/arg-node (ast/literal-pin-node "D" 13))])
+                                 (ast/block-node
+                                  [(ast/call-node
+                                    "turnOff"
+                                    [(ast/arg-node
+                                      (ast/literal-pin-node "D" 13))])])
+                                 (ast/block-node []))]))])
+        expected (emit-program
+                  :globals #{(emit/constant 1000) 
+                             (emit/constant 0)
+                             (emit/constant 13)}
+                  :scripts [(emit/script
+                             :name "main"
+                             :delay 1000
+                             :running? true
+                             :instructions [(emit/push-value 13)
+                                            (emit/script-call "isOn")
+                                            (emit/jz 3)
+                                            (emit/push-value 13)
+                                            (emit/script-call "turnOff")
+                                            (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1093,17 +1128,21 @@
                                           "turnOn"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 1000) (emit/constant 13)}
+        expected (emit-program
+                   :globals #{(emit/constant 1000)
+                              (emit/constant 0)
+                              (emit/constant 1)
+                              (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
                                :delay 1000
                                :running? true
                                :instructions [(emit/push-value 13)
-                                              (emit/prim-call "isOn")
-                                              (emit/jnz 2)
+                                              (emit/script-call "isOn")
+                                              (emit/jnz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "turnOn")])])
+                                              (emit/script-call "turnOn")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1120,16 +1159,19 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 13)}
+        expected (emit-program
+                   :globals #{(emit/constant 0)
+                              (emit/constant 1)
+                              (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
                                :delay 0
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 13)
-                                              (emit/prim-call "toggle")
-                                              (emit/jmp -3)])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
+                                              (emit/jmp -4)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1147,8 +1189,9 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
@@ -1156,10 +1199,11 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 1)
-                                              (emit/jz 3)
+                                              (emit/jz 4)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")
-                                              (emit/jmp -5)])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
+                                              (emit/jmp -6)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1177,8 +1221,9 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
@@ -1186,10 +1231,11 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 1)
-                                              (emit/jnz 3)
+                                              (emit/jnz 4)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")
-                                              (emit/jmp -5)])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
+                                              (emit/jmp -6)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1207,8 +1253,9 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
@@ -1216,9 +1263,10 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 13)
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/push-value 1)
-                                              (emit/jnz -4)])])
+                                              (emit/jnz -5)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1236,7 +1284,7 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
@@ -1245,9 +1293,10 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 13)
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/push-value 1)
-                                              (emit/jz -4)])])
+                                              (emit/jz -5)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1267,8 +1316,10 @@
                                      "toggle"
                                      [(ast/arg-node
                                         (ast/literal-pin-node "D" 13))])]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 9)
+        expected (emit-program
+                   :globals #{(emit/constant 0)
+                              (emit/constant 1)
+                              (emit/constant 9)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
@@ -1276,10 +1327,11 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 9)
-                                              (emit/prim-call "isOn")
+                                              (emit/script-call "isOn")
                                               (emit/jnz -3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1299,8 +1351,10 @@
                                      "toggle"
                                      [(ast/arg-node
                                         (ast/literal-pin-node "D" 13))])]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 9)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
+                              (emit/constant 9)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "main"
@@ -1308,10 +1362,11 @@
                                :running? true
                                :once? true
                                :instructions [(emit/push-value 9)
-                                              (emit/prim-call "isOn")
+                                              (emit/script-call "isOn")
                                               (emit/jz -3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1329,10 +1384,10 @@
                                      (ast/literal-number-node 1)
                                      (ast/block-node
                                        [(ast/call-node
-                                          "toggle"
+                                          "delayMs"
                                           [(ast/arg-node
                                              (ast/variable-node "i"))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1)
                               (emit/constant 10)}
                    :scripts [(emit/script
@@ -1348,7 +1403,7 @@
                                               (emit/prim-call "lessThanOrEquals")
                                               (emit/jz 7)
                                               (emit/read-local "i#1")
-                                              (emit/prim-call "toggle")
+                                              (emit/prim-call "delayMs")
                                               (emit/read-local "i#1")
                                               (emit/push-value 1)
                                               (emit/prim-call "add")
@@ -1378,8 +1433,9 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/variable-node "i"))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
                               (emit/constant 10)}
                    :scripts [(emit/script
                                :name "start"
@@ -1396,14 +1452,15 @@
                                               (emit/read-local "i#1")
                                               (emit/push-value 10)
                                               (emit/prim-call "lessThanOrEquals")
-                                              (emit/jz 7)
+                                              (emit/jz 8)
                                               (emit/read-local "i#1")
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "i#1")
                                               (emit/push-value 1)
                                               (emit/prim-call "add")
                                               (emit/write-local "i#1")
-                                              (emit/jmp -11)])])
+                                              (emit/jmp -12)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1430,7 +1487,7 @@
                                                 (ast/arg-node
                                                   (ast/literal-number-node
                                                     100))]))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 100) (emit/constant -10)}
                    :scripts [(emit/script
@@ -1478,8 +1535,9 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/variable-node "i"))])]))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
                               (emit/constant 10)}
                    :scripts [(emit/script
                                :name "step"
@@ -1503,14 +1561,15 @@
                                               (emit/prim-call "lessThanOrEquals")
                                               (emit/jmp 1)
                                               (emit/prim-call "greaterThanOrEquals")
-                                              (emit/jz 7)
+                                              (emit/jz 8)
                                               (emit/read-local "i#1")
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "i#1")
                                               (emit/read-local "@1")
                                               (emit/prim-call "add")
                                               (emit/write-local "i#1")
-                                              (emit/jmp -18)])])
+                                              (emit/jmp -19)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1536,7 +1595,7 @@
                                           "delayMs"
                                           [(ast/arg-node
                                              (ast/literal-number-node 1000))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 100)
                               (emit/constant 1000) (emit/constant 1)
                               (emit/constant 13)}
@@ -1555,16 +1614,17 @@
                                               (emit/read-local "@1")
                                               (emit/script-call "step")
                                               (emit/prim-call "lessThan")
-                                              (emit/jz 9)
+                                              (emit/jz 10)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/push-value 1000)
                                               (emit/prim-call "delayMs")
                                               (emit/read-local "@1")
                                               (emit/push-value 1)
                                               (emit/prim-call "add")
                                               (emit/write-local "@1")
-                                              (emit/jmp -13)])])
+                                              (emit/jmp -14)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1583,7 +1643,7 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
                               (emit/constant 5)}
@@ -1597,14 +1657,15 @@
                                               (emit/read-local "@1")
                                               (emit/push-value 5)
                                               (emit/prim-call "lessThan")
-                                              (emit/jz 7)
+                                              (emit/jz 8)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "@1")
                                               (emit/push-value 1)
                                               (emit/prim-call "add")
                                               (emit/write-local "@1")
-                                              (emit/jmp -11)])])
+                                              (emit/jmp -12)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1626,7 +1687,7 @@
                                           "toggle"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1000) (emit/constant 1)
                               (emit/constant 13) (emit/constant 10)}
@@ -1640,14 +1701,15 @@
                                               (emit/read-local "i#1")
                                               (emit/push-value 10)
                                               (emit/prim-call "lessThanOrEquals")
-                                              (emit/jz 7)
+                                              (emit/jz 8)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")
                                               (emit/read-local "i#1")
                                               (emit/push-value 2)
                                               (emit/prim-call "add")
                                               (emit/write-local "i#1")
-                                              (emit/jmp -11)])])
+                                              (emit/jmp -12)])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1663,15 +1725,18 @@
                                    (ast/call-node
                                      "toggle"
                                      [(ast/arg-node (ast/variable-node "a"))])]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 1000)}
+        expected (emit-program
+                   :globals #{(emit/constant 0) 
+                              (emit/constant 1)
+                              (emit/constant 1000)}
                    :scripts [(emit/script
                                :name "main"
                                :delay 1000
                                :running? true
                                :locals [(emit/variable "a#1" 0)]
                                :instructions [(emit/read-local "a#1")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1693,7 +1758,7 @@
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1703,9 +1768,10 @@
                                :instructions [(emit/push-value 1)
                                               (emit/push-value 0)
                                               (emit/prim-call "logicalAnd")
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1731,7 +1797,7 @@
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
                               (emit/constant 42)}
@@ -1748,9 +1814,10 @@
                                               (emit/script-call "foo")
                                               (emit/jmp 1)
                                               (emit/push-value 0)
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1772,7 +1839,7 @@
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1782,9 +1849,10 @@
                                :instructions [(emit/push-value 1)
                                               (emit/push-value 0)
                                               (emit/prim-call "logicalOr")
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1810,7 +1878,7 @@
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)
                               (emit/constant 42)}
@@ -1827,56 +1895,57 @@
                                               (emit/script-call "foo")
                                               (emit/jmp 1)
                                               (emit/push-value 1)
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
 (deftest
   logical-and-with-short-circuit-declares-0-as-global-constant
   (let [ast (ast/program-node
-              :scripts [(ast/task-node
-                          :name "foo"
-                          :tick-rate (ast/ticking-rate-node 1 "s")
-                          :state "stopped"
-                          :body (ast/block-node
-                                  [(ast/return-node (ast/literal-number-node 42))]))
-                        (ast/task-node
-                          :name "main"
-                          :tick-rate (ast/ticking-rate-node 1 "s")
-                          :state "running"
-                          :body (ast/block-node
-                                  [(ast/conditional-node
-                                     (ast/logical-and-node
-                                       (ast/literal-number-node 2)
-                                       (ast/call-node "foo" []))
-                                     (ast/block-node
-                                       [(ast/call-node
-                                          "toggle"
-                                          [(ast/arg-node
-                                             (ast/literal-pin-node "D" 13))])])
-                                     (ast/block-node []))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 0) (emit/constant 2)
-                              (emit/constant 1000) (emit/constant 13)
-                              (emit/constant 42)}
-                   :scripts [(emit/script
-                               :name "foo"
-                               :delay 1000
-                               :instructions [(emit/push-value 42) (emit/prim-call "retv")])
-                             (emit/script
-                               :name "main"
-                               :delay 1000
-                               :running? true
-                               :instructions [(emit/push-value 2)
-                                              (emit/jz 2)
-                                              (emit/script-call "foo")
-                                              (emit/jmp 1)
-                                              (emit/push-value 0)
-                                              (emit/jz 2)
-                                              (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+             :scripts [(ast/function-node
+                        :name "foo"
+                        :body (ast/block-node
+                               [(ast/return-node (ast/literal-number-node 42))]))
+                       (ast/task-node
+                        :name "main"
+                        :tick-rate (ast/ticking-rate-node 1 "s")
+                        :state "running"
+                        :body (ast/block-node
+                               [(ast/conditional-node
+                                 (ast/logical-and-node
+                                  (ast/literal-number-node 2)
+                                  (ast/call-node "foo" []))
+                                 (ast/block-node
+                                  [(ast/call-node
+                                    "write"
+                                    [(ast/arg-node
+                                      (ast/literal-pin-node "D" 13))
+                                     (ast/arg-node
+                                      (ast/literal-number-node 2))])])
+                                 (ast/block-node []))]))])
+        expected (emit-program
+                  :globals #{(emit/constant 0) (emit/constant 2)
+                             (emit/constant 1000) (emit/constant 13)
+                             (emit/constant 42)}
+                  :scripts [(emit/script
+                             :name "foo"
+                             :instructions [(emit/push-value 42) (emit/prim-call "retv")])
+                            (emit/script
+                             :name "main"
+                             :delay 1000
+                             :running? true
+                             :instructions [(emit/push-value 2)
+                                            (emit/jz 2)
+                                            (emit/script-call "foo")
+                                            (emit/jmp 1)
+                                            (emit/push-value 0)
+                                            (emit/jz 3)
+                                            (emit/push-value 13)
+                                            (emit/push-value 2)
+                                            (emit/prim-call "write")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1898,11 +1967,11 @@
                                        (ast/call-node "foo" []))
                                      (ast/block-node
                                        [(ast/call-node
-                                          "toggle"
+                                          "delayMs"
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 2)
                               (emit/constant 1000) (emit/constant 1)
                               (emit/constant 13) (emit/constant 42)}
@@ -1921,7 +1990,7 @@
                                               (emit/push-value 1)
                                               (emit/jz 2)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/prim-call "delayMs")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1941,7 +2010,7 @@
                                      (ast/logical-and-node
                                        (ast/literal-number-node 1)
                                        (ast/call-node
-                                         "isOn"
+                                         "read"
                                          [(ast/arg-node (ast/call-node "pin13" []))]))
                                      (ast/block-node
                                        [(ast/call-node
@@ -1949,7 +2018,7 @@
                                           [(ast/arg-node
                                              (ast/call-node "pin13" []))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 1) (emit/constant 13)}
                    :scripts [(emit/script
@@ -1963,12 +2032,13 @@
                                :instructions [(emit/push-value 1)
                                               (emit/jz 3)
                                               (emit/script-call "pin13")
-                                              (emit/prim-call "isOn")
+                                              (emit/prim-call "read")
                                               (emit/jmp 1)
                                               (emit/push-value 0)
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/script-call "pin13")
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -1984,7 +2054,7 @@
                                      (ast/logical-and-node
                                        (ast/literal-number-node 1)
                                        (ast/call-node
-                                         "isOn"
+                                         "read"
                                          [(ast/arg-node
                                             (ast/literal-pin-node "D" 13))]))
                                      (ast/block-node
@@ -1993,8 +2063,10 @@
                                           [(ast/arg-node
                                              (ast/literal-pin-node "D" 13))])])
                                      (ast/block-node []))]))])
-        expected (emit/program
-                   :globals #{(emit/constant 1000) (emit/constant 1)
+        expected (emit-program
+                   :globals #{(emit/constant 1000) 
+                              (emit/constant 0)
+                              (emit/constant 1)
                               (emit/constant 13)}
                    :scripts [(emit/script
                                :name "loop"
@@ -2002,11 +2074,12 @@
                                :running? true
                                :instructions [(emit/push-value 1)
                                               (emit/push-value 13)
-                                              (emit/prim-call "isOn")
+                                              (emit/prim-call "read")
                                               (emit/prim-call "logicalAnd")
-                                              (emit/jz 2)
+                                              (emit/jz 3)
                                               (emit/push-value 13)
-                                              (emit/prim-call "toggle")])])
+                                              (emit/script-call "toggle")
+                                              (emit/prim-call "pop")])])
         actual (compile ast)]
     (is (equivalent? expected actual))))
 
@@ -2056,7 +2129,7 @@
                                           [(ast/arg-node (ast/literal-number-node -1))
                                            (ast/arg-node
                                              (ast/variable-node "a"))]))])]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 1000)
                               (emit/constant 13) (emit/constant 10)
                               (emit/variable "a" 42) (emit/constant 12)
@@ -2071,7 +2144,7 @@
                                               (emit/read-global "a")
                                               (emit/prim-call "write")
                                               (emit/push-value 0)
-                                              (emit/prim-call "isOn")
+                                              (emit/script-call "isOn")
                                               (emit/jz 4)
                                               (emit/push-value 13)
                                               (emit/read-local "a#1")
@@ -2107,7 +2180,7 @@
                                        [(ast/arg-node (ast/variable-node "a"))
                                         (ast/arg-node
                                           (ast/literal-number-node 10))]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 10)
                               (emit/variable "a" 42)}
                    :scripts [(emit/script
@@ -2150,7 +2223,7 @@
                                        [(ast/arg-node (ast/variable-node "a"))
                                         (ast/arg-node
                                           (ast/literal-number-node 42))]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 15)
                               (emit/constant 1) (emit/variable "a" 42)
                               (emit/constant 42)}
@@ -2207,7 +2280,7 @@
                                              (ast/arg-node
                                                (ast/literal-number-node
                                                  20))]))]))]))])
-        expected (emit/program
+        expected (emit-program
                    :globals #{(emit/constant 0) (emit/constant 9)
                               (emit/constant 11) (emit/constant 20)
                               (emit/constant 10) (emit/constant 21)}
@@ -2219,7 +2292,7 @@
                                :locals [(emit/variable "a#1" 11)
                                         (emit/variable "a#2" 21)]
                                :instructions [(emit/push-value 9)
-                                              (emit/prim-call "isOn")
+                                              (emit/script-call "isOn")
                                               (emit/jz 5)
                                               (emit/read-local "a#1")
                                               (emit/push-value 10)
@@ -2249,7 +2322,7 @@
                         :state "once"
                         :body (ast/block-node
                                [(ast/call-node "foo" [])]))])
-        expected (emit/program
+        expected (emit-program
                   :globals #{(emit/constant 0)
                              (emit/constant 2)
                              (emit/constant 1)}
@@ -2283,7 +2356,7 @@
                                [(ast/call-node "foo"
                                                [(ast/arg-node (ast/literal-number-node 1))
                                                 (ast/arg-node (ast/literal-number-node 2))])]))])
-        expected (emit/program
+        expected (emit-program
                   :globals #{(emit/constant 0)
                              (emit/constant 1)
                              (emit/constant 2)}
@@ -2320,7 +2393,7 @@
                                [(ast/call-node "foo"
                                                [(ast/arg-node "c" (ast/literal-number-node 1))
                                                 (ast/arg-node "a" (ast/literal-number-node 2))])]))])
-        expected (emit/program
+        expected (emit-program
                   :globals #{(emit/constant 0)
                              (emit/constant 1)
                              (emit/constant 2)}
