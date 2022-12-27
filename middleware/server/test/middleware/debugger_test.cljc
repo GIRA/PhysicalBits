@@ -1,10 +1,10 @@
 (ns middleware.debugger-test
   (:require #?(:clj [clojure.test :refer :all]
                :cljs [cljs.test :refer-macros [deftest is testing use-fixtures]])
-            [clojure.core.async :as a :refer [<! go]]
-            [utils.tests :refer [setup-fixture test-async]]
+            [utils.tests :refer [setup-fixture]]
             [middleware.compilation.parser :as p]
             [middleware.compilation.compiler :as cc]
+            [middleware.program.emitter :as emit]
             [middleware.device.debugger :as debugger :refer [step-over step-into step-out]]))
 
 (use-fixtures :once setup-fixture)
@@ -31,83 +31,40 @@
                   	}
                   }
                 ")
-        expected '({:instructions ({:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 13,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "toggle"}}),
-                    :start 0}
-                   {:instructions ({:__class__ "UziReadLocalInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :name "a#1",
-                                               :value 0,
-                                               :size 1}}
-                                   {:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 2,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "remainder"}}
-                                   {:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 0,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "equals"}}
-                                   {:__class__ "UziJZInstruction", :argument 3}),
-                    :start 2}
-                   {:instructions ({:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 11,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "turnOn"}}),
-                    :start 8}
-                   {:instructions ({:__class__ "UziJMPInstruction", :argument 2}),
-                    :start 10}
-                   {:instructions ({:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 11,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "turnOff"}}),
-                    :start 11}
-                   {:instructions ({:__class__ "UziReadLocalInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :name "a#1",
-                                               :value 0,
-                                               :size 1}}
-                                   {:__class__ "UziPushInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :value 1,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive", :name "add"}}
-                                   {:__class__ "UziWriteLocalInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :name "a#1",
-                                               :value 0,
-                                               :size 1}}),
-                    :start 13}
-                   {:instructions ({:__class__ "UziReadLocalInstruction",
-                                    :argument {:__class__ "UziVariable",
-                                               :name "a#1",
-                                               :value 0,
-                                               :size 1}}
-                                   {:__class__ "UziPrimitiveCallInstruction",
-                                    :argument {:__class__ "UziPrimitive",
-                                               :name "delayMs"}}),
-                    :start 17}
-                   {:instructions ({:__class__ "UziJMPInstruction", :argument -18}),
-                    :start 19})
-        actual (map #(select-keys % [:start :instructions])
-                    (debugger/instruction-groups program))]
+        expected [{:instructions [(emit/push-value 13)
+                                  (emit/script-call "toggle")
+                                  (emit/prim-call "pop")] ,
+                   :start 12}
+                  {:instructions [(emit/read-local "a#1")
+                                  (emit/push-value 2)
+                                  (emit/prim-call "remainder")
+                                  (emit/push-value 0)
+                                  (emit/prim-call "equals")
+                                  (emit/jz 4)],
+                   :start 15}
+                  {:instructions [(emit/push-value 11)
+                                  (emit/script-call "turnOn")
+                                  (emit/prim-call "pop")] ,
+                   :start 21}
+                  {:instructions [(emit/jmp 3)],
+                   :start 24}
+                  {:instructions [(emit/push-value 11)
+                                  (emit/script-call "turnOff")
+                                  (emit/prim-call "pop")] ,
+                   :start 25}
+                  {:instructions [(emit/read-local "a#1")
+                                  (emit/push-value 1)
+                                  (emit/prim-call "add")
+                                  (emit/write-local "a#1")] ,
+                   :start 28}
+                  {:instructions [(emit/read-local "a#1")
+                                  (emit/prim-call "delayMs")] ,
+                   :start 32}
+                  {:instructions [(emit/jmp -20)] ,
+                   :start 34}]
+        actual (->> (debugger/instruction-groups program)
+                    (filter (comp #{"blink13" "loop"} :name :script))
+                    (map #(select-keys % [:start :instructions])))]
     (is (= expected actual))))
 
 (deftest estimate-breakpoints-1
@@ -116,7 +73,7 @@
                                     toggle(D13);
                                     forever {
                                         turnOn(D12); \" <--- BREAKPOINT HERE \"
-                                        delayS(1);
+                                        delayMs(1);
                                         turnOff(D12);
                                         delayMs(500);
                                     }
@@ -155,7 +112,7 @@
                                     toggle(D13); \" <--- \"
                                     forever {
                                         turnOn(D12);
-                                        delayS(1);
+                                        delayMs(1000);
                                         turnOff(D12);
                                         delayMs(500);
                                     }
@@ -198,7 +155,7 @@
                                     toggle(D13);
                                     forever {
                                         turnOn(D12);
-                                        delayS(1);
+                                        delayMs(1000);
                                         turnOff(D12); \" <--- \"
                                         delayMs(500);
                                     }
@@ -239,7 +196,7 @@
                                     toggle(D13);
                                     forever {
                                         turnOn(D12);
-                                        delayS(1);
+                                        delayMs(1000);
                                         turnOff(D12);
                                         delayMs(500);
                                     }
@@ -280,7 +237,7 @@
                                     toggle(D13);
                                     forever {
                                         turnOn(D12);
-                                        delayS(1);
+                                        delayMs(1000);
                                         turnOff(D12);
                                         delayMs(500); \" <--- BREAKPOINT HERE \"
                                     }
@@ -325,7 +282,7 @@
                                  	    pin_2 = pin_2 + 1; \" <--- BREAKPOINT HERE \"
                                  	    
                                  		turnOn(pin_2);
-                                 		delayS(1);
+                                 		delayMs(1000);
                                  		turnOff(pin_2);
                                  		delayMs(500);
                                  		
@@ -391,7 +348,7 @@
                                 	pin_2 = 0;
                                 	while (pin_2 < 13) { \" <--- BREAKPOINT HERE \"
                                 		turnOn(pin_2);
-                                		delayS(1);
+                                		delayMs(1000);
                                 		turnOff(pin_2);
                                 		delayMs(500);
                                 		pin_2 = (pin_2 + 1);
@@ -441,7 +398,7 @@
                                  	for i = 0 to 12 by 1 { \" <--- BREAKPOINT HERE \"
                                  	    pin_2 = i;
                                  		turnOn(pin_2);
-                                 		delayS(0.1);
+                                 		delayMs(100);
                                  		turnOff(pin_2);
                                  		delayMs(5);
                                  	}
