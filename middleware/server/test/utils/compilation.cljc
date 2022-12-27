@@ -9,8 +9,10 @@
 ; NOTE(Richo): I compile an empty program without removing the dead-code so that we
 ; get all the core.uzi scripts
 (def core-scripts
-  (memoize #(:scripts (cc/compile-tree (ast/program-node)
-                                       :remove-dead-code? false))))
+  (memoize (fn [& [lib-dir]]
+             (:scripts (cc/compile-tree (ast/program-node)
+                                        :lib-dir (or lib-dir "../../uzi/libraries")
+                                        :remove-dead-code? false)))))
 
 (defn link-core [program]
   (let [globals (:globals program)
