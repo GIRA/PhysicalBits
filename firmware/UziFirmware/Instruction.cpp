@@ -150,11 +150,6 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x52: instruction->opcode = PRIM_ARRAY_INIT; break;
 				case 0x53: instruction->opcode = PRIM_ARRAY_GET; break;
 				case 0x54: instruction->opcode = PRIM_ARRAY_SET; break;
-				case 0x55: instruction->opcode = PRIM_ARRAY_CLEAR; break;
-				case 0x56: instruction->opcode = PRIM_ARRAY_SUM; break;
-				case 0x57: instruction->opcode = PRIM_ARRAY_AVG; break;
-				case 0x58: instruction->opcode = PRIM_ARRAY_MAX; break;
-				case 0x59: instruction->opcode = PRIM_ARRAY_MIN; break;
 
 				case 0x60: instruction->opcode = PRIM_JMP; break;
 				case 0x61: instruction->opcode = PRIM_JZ; break;
