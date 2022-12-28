@@ -5,11 +5,6 @@ var count = 0;
 prim array_init;
 prim array_set;
 prim array_get;
-prim array_clear;
-prim array_sum;
-prim array_avg;
-prim array_max;
-prim array_min;
 
 task setup() {
 	array = array_init(size);
@@ -43,7 +38,9 @@ func get_random() {
 }
 
 func clear() {
-	array_clear(array);
+	for i = 0 to count - 1 {
+		array_set(array, i, 0);
+	}
 	count = 0;
 }
 
@@ -56,17 +53,39 @@ func size() {
 }
 
 func sum() {
-	return array_sum(array, count);
+	var result = 0;
+	for i = 0 to count - 1 {
+		result = result + array_get(array, i);
+	}
+	return result;
 }
 
 func avg() {
-	return array_avg(array, count);
+	var result = 0;
+	for i = 0 to count - 1 {
+		result = result + array_get(array, i);
+	}
+	return result / count;
 }
 
 func max() {
-	return array_max(array, count);
+	var result = -Infinity;
+	for i = 0 to count - 1 {
+		var temp = array_get(array, i);
+		if temp > result {
+			result = temp;
+		}
+	}
+	return result;
 }
 
 func min() {
-	return array_min(array, count);
+	var result = Infinity;
+	for i = 0 to count - 1 {
+		var temp = array_get(array, i);
+		if temp < result {
+			result = temp;
+		}
+	}
+	return result;
 }
