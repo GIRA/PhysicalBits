@@ -533,6 +533,265 @@
         program (en/encode (compile-string src))]
     (write-file program)))
 
+(deftest Test111ListCount
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.count() == 3));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test112ListSize
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.size() == 10));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test113ListSum
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.sum() == 6));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test114ListAvg
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.avg() == 2));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test115ListMin
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.min() == 1));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test116ListMax
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.max() == 3));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+
+(deftest Test117ArrayCount
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.count() == 5));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test118ArraySum
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.sum() == 6));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test119ArrayAvg
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 5);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.avg() == 2));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test120ArrayMin
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.min() == 0));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test121ArrayMax
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.max() == 3));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test122ListGet
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	write(D13, (list.get(1) == 2));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test123ListSet
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	list.set(index: 1, value: 100);
+	write(D13, (list.get(1) == 100));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test124ListPop
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	list.pop();
+	list.pop();
+	write(D13, (list.count() == 1));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test125ListClear
+  (let [src "import list from 'List.uzi' {
+	size = 10;
+}
+
+task default() {
+	list.push(value: 1);
+	list.push(value: 2);
+	list.push(value: 3);
+	list.clear();
+	write(D13, (list.count() == 0));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test126ArrayGet
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	write(D13, (array.get(1) == 2));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test127ArraySet
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	array.set(index: 1, value: 100);
+	write(D13, (array.max() == 100));
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
+(deftest Test128ArrayClear
+  (let [src "import array from 'Array.uzi' {
+	size = 5;
+}
+
+task default() {
+	array.set(index: 0, value: 1);
+	array.set(index: 1, value: 2);
+	array.set(index: 2, value: 3);
+	array.clear();
+	write(D13, (array.max() == 0));	
+}"
+        program (en/encode (compile-string src))]
+    (write-file program)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; NOTE(Richo): Autogenerated code begins here...
 

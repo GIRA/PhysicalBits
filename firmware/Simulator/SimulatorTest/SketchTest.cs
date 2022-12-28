@@ -2695,5 +2695,187 @@ namespace SimulatorTest
             Loop();
             Assert.AreEqual(0, sketch.GetPinValue(13));
         }
+
+        [TestMethod]
+        public void Test111ListCount()
+        {
+            LoadProgram(ReadFile(nameof(Test111ListCount)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test112ListSize()
+        {
+            LoadProgram(ReadFile(nameof(Test112ListSize)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test113ListSum()
+        {
+            LoadProgram(ReadFile(nameof(Test113ListSum)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test114ListAvg()
+        {
+            LoadProgram(ReadFile(nameof(Test114ListAvg)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test115ListMin()
+        {
+            LoadProgram(ReadFile(nameof(Test115ListMin)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test116ListMax()
+        {
+            LoadProgram(ReadFile(nameof(Test116ListMax)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+
+
+        [TestMethod]
+        public void Test117ArrayCount()
+        {
+            LoadProgram(ReadFile(nameof(Test117ArrayCount)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test118ArraySum()
+        {
+            LoadProgram(ReadFile(nameof(Test118ArraySum)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test119ArrayAvg()
+        {
+            LoadProgram(ReadFile(nameof(Test119ArrayAvg)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test120ArrayMin()
+        {
+            LoadProgram(ReadFile(nameof(Test120ArrayMin)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test121ArrayMax()
+        {
+            LoadProgram(ReadFile(nameof(Test121ArrayMax)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test122ListGet()
+        {
+            LoadProgram(ReadFile(nameof(Test122ListGet)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test123ListSet()
+        {
+            LoadProgram(ReadFile(nameof(Test123ListSet)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test124ListPop()
+        {
+            LoadProgram(ReadFile(nameof(Test124ListPop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test125ListClear()
+        {
+            LoadProgram(ReadFile(nameof(Test125ListClear)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test126ArrayGet()
+        {
+            LoadProgram(ReadFile(nameof(Test126ArrayGet)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test127ArraySet()
+        {
+            LoadProgram(ReadFile(nameof(Test127ArraySet)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test128ArrayClear()
+        {
+            LoadProgram(ReadFile(nameof(Test128ArrayClear)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            sketch.Loop();
+            Assert.AreEqual(1023, sketch.GetPinValue(13));
+        }
     }
 }

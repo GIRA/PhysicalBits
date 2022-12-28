@@ -1,8 +1,8 @@
 ﻿,Loops,Memory used (bytes),Total coroutine resizings
 MIN,4,73,0
 MAX,5040003,1121,6
-AVERAGE,54106.9454545455,222.054545454545,0.327272727272727
-MEDIAN,43,168.5,0
+AVERAGE,46498.71875,230.09375,0.28125
+MEDIAN,27,178,0
 Test001TurnOnBytecode,4,75,0
 Test002TurnOffBytecode,4,75,0
 Test003ReadWriteBytecode,4,77,0
@@ -113,3 +113,21 @@ Test107CompilingJumpsLongerThan7bitTwosComplement,43,447,0
 Test108CompilingJumpsLongerThan7bitTwosComplement,43,576,0
 Test109CompilingJumpsLongerThan7bitTwosComplement,43,584,0
 Test110CompilingJumpsLongerThan7bitTwosComplement,43,409,0
+Test111ListCount,4,280,0
+Test112ListSize,4,284,0
+Test113ListSum,4,288,0
+Test114ListAvg,4,284,0
+Test115ListMin,4,284,0
+Test116ListMax,4,284,0
+Test117ArrayCount,4,248,0
+Test118ArraySum,4,252,0
+Test119ArrayAvg,4,252,0
+Test120ArrayMin,4,247,0
+Test121ArrayMax,4,247,0
+Test122ListGet,4,298,0
+Test123ListSet,4,360,0
+Test124ListPop,4,330,0
+Test125ListClear,4,308,0
+Test126ArrayGet,4,249,0
+Test127ArraySet,4,260,0
+Test128ArrayClear,4,271,0
