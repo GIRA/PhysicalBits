@@ -4,7 +4,7 @@
 
 | Platform | File(s) |
 | :---: |:---:|
-| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBits.v0.6.2-desktop-win32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.6.2/PhysicalBits.v0.6.2-desktop-win32.zip) |
+| ![windows](https://gira.github.io/PhysicalBits/img/windows.png)<br>Windows | [PhysicalBits.v0.7.0-desktop-win32.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.7.0/PhysicalBits.v0.7.0-desktop-win32.zip) |
 | ![linux](https://gira.github.io/PhysicalBits/img/linux.png)<br>Linux | [PhysicalBits.v0.5.1-desktop-linux.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.5.1/PhysicalBits.v0.5.1-desktop-linux.zip) |
 | ![macOS](https://gira.github.io/PhysicalBits/img/apple.png)<br>macOS | [PhysicalBits.v0.5.1-desktop-darwin.zip](https://github.com/GIRA/PhysicalBits/releases/download/v0.5.1/PhysicalBits.v0.5.1-desktop-darwin.zip) |
 
