@@ -71,6 +71,7 @@ var TRANSLATIONS = [
   ["Program:", null, "Programa:", "Programmeerimisrežiim:", "Programmeringsläge:"],
   ["Blocks:", null, "Bloques:", null, null],
   ["Uzi syntax", "Code syntax instead of block text", "Código en lugar del texto de los bloques", "Uzi süntaks", null],
+  ["Advanced", null, "Avanzado", null, null],
   ["Text mode:", "Text:", "Texto:", "Teksti kuvamine:", "Textläge:"],
   ["Saving...", null, "Guardando...", "Salvestamine...", "Sparar..."],
   ["Saved!", null, "¡Guardado!", "Salvestatud!", "Sparad!"],

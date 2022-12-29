@@ -473,6 +473,7 @@ let IDE = (function () {
   function initializeOptionsModal() {
     $("#restore-layout-button").on("click", LayoutManager.reset);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
+    $("#adv-blocks-checkbox").on("change", updateAdvBlocks);
     $("#all-caps-checkbox").on("change", updateAllCaps);
     if (!fs) {
       $("#autosave-checkbox").attr("disabled", "disabled");
@@ -648,6 +649,7 @@ let IDE = (function () {
         interactive: $("#interactive-checkbox").get(0).checked,
         allcaps:     $("#all-caps-checkbox").get(0).checked,
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
+        advBlocks:   $("#adv-blocks-checkbox").get(0).checked,
       },
       fileName:  $("#file-name").text() || "",
       layout: LayoutManager.getLayoutConfig(),
@@ -667,14 +669,17 @@ let IDE = (function () {
         $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
+        $("#adv-blocks-checkbox").get(0).checked  = ui.settings.advBlocks;
       } else {
         $("#autosave-checkbox").get(0).checked    = false;
         $("#interactive-checkbox").get(0).checked = true;
         $("#all-caps-checkbox").get(0).checked    = false;
         $("#uzi-syntax-checkbox").get(0).checked  = false;
+        $("#adv-blocks-checkbox").get(0).checked  = false;
       }
       updateAllCaps();
       updateUziSyntax();
+      updateAdvBlocks();
 
       if (ui.fileName != undefined) {
         $("#file-name").text(ui.fileName);
@@ -988,6 +993,12 @@ let IDE = (function () {
     let checked = $("#uzi-syntax-checkbox").get(0).checked;
     UziBlock.setUziSyntax(checked);
 
+    saveToLocalStorage();
+  }
+
+  function updateAdvBlocks() {
+    let checked = $("#adv-blocks-checkbox").get(0).checked;
+    UziBlock.modifyToolbox(checked);
     saveToLocalStorage();
   }
 
