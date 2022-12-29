@@ -3794,7 +3794,6 @@ let UziBlock = (function () {
   }
 
   function setToolbox(toolbox) {
-    console.log("Ejecutando: setToolbox")
     if (typeof(toolbox) == "string") {
       toolbox = Blockly.Xml.textToDom(toolbox);
     } else {
@@ -3818,12 +3817,10 @@ let UziBlock = (function () {
       button.setAttribute("originalText", button.getAttribute("text"));
       button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
     }
-    //workspace.updateToolbox(toolbox);
     return toolbox;
   }
 
   function modifyToolbox(value) {
-    console.log("Ejecutando: modifyToolbox")
     toolboxName = (value == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
     ajax.GET(toolboxName).then(function(toolbox) {
       toolbox = setToolbox(toolbox);
