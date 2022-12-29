@@ -20,6 +20,7 @@
                       ; as well as interact with the wasm simulator.
                       :target :browser
                       :output-dir "public/simulator/js"
+                      :build-hooks [(user/copy-output "../../gui/ide/middleware")]
                       :modules {:main {:init-fn middleware.simulator/init}}}
 
           :controller {; NOTE(Richo): This build is is used by mendieta
