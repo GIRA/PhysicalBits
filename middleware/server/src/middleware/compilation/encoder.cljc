@@ -220,24 +220,28 @@
         [count]))))
 
 (defn encode-script-header
-  [{:keys [arguments delay locals running? once?] :as script} program]
+  [{:keys [type running? delay arguments locals] :as script} program]
   (let [^double delay (:value delay)
         has-delay? (> delay 0)
         has-arguments? (seq arguments)
         has-locals? (seq locals)]
     (concat
      ; First byte:
-     ; 1 bit : is running? (1 true / 0 false)
-     ; 1 bit : run once? (1 true / 0 false)
-     ; 1 bit: has delay? (1 true / 0 false)
-     ; 1 bit: has arguments? (1 true / 0 false)
-     ; 1 bit: has locals? (1 true / 0 false)
-     ; 3 bits: reserved for future use
+     ; 1 bit  : is running? (1 true / 0 false)
+     ; 2 bits : type (0 task / 1 func / 2 proc / 3 timer)
+     ; 1 bit  : has delay? (1 true / 0 false)
+     ; 1 bit  : has arguments? (1 true / 0 false)
+     ; 1 bit  : has locals? (1 true / 0 false)
+     ; 2 bits : reserved for future use
      [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
-                       (bit-shift-left (if once? 1 0) 6)
-                       (bit-shift-left (if has-delay? 1 0) 5)
-                       (bit-shift-left (if has-arguments? 1 0) 4)
-                       (bit-shift-left (if has-locals? 1 0) 3))
+                       (bit-shift-left (type {:task 0
+                                              :function 1
+                                              :procedure 2
+                                              :timer 3})
+                                       5)
+                       (bit-shift-left (if has-delay? 1 0) 4)
+                       (bit-shift-left (if has-arguments? 1 0) 3)
+                       (bit-shift-left (if has-locals? 1 0) 2))
                16rFF)]
 
      ; If the script has a delay write its index on the global list
