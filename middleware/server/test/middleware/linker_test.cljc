@@ -622,7 +622,7 @@
                                :name "t.foo"
                                :delay 0
                                :running? true
-                               :once? true
+                               :type :task
                                :locals [(emit/variable "b#1" 0)
                                         (emit/variable "a#2" 100)]
                                :instructions [(emit/push-value 10)

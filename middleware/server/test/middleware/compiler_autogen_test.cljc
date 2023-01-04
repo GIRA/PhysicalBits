@@ -39,15 +39,15 @@
                                              (emit/read-local "i#1")
                                              (emit/push-value 11)
                                              (emit/prim-call "lessThanOrEquals")
-                                             (emit/jz 8)
+                                             (emit/jz 7)
                                              (emit/read-local "i#1")
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "i#1")
                                              (emit/push-value 1)
                                              (emit/prim-call "add")
                                              (emit/write-local "i#1")
-                                             (emit/jmp -12)])]))
+                                             (emit/jmp -11)])]))
         program (compile-string "task for() running { for i = 7 to 11 { turnOn(i); }}")
         actual (en/encode program)]
     (is (= expected actual))))
@@ -70,15 +70,15 @@
                                              (emit/read-local "i#1")
                                              (emit/push-value 7)
                                              (emit/prim-call "greaterThanOrEquals")
-                                             (emit/jz 8)
+                                             (emit/jz 7)
                                              (emit/read-local "i#1")
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "i#1")
                                              (emit/push-value -1)
                                              (emit/prim-call "add")
                                              (emit/write-local "i#1")
-                                             (emit/jmp -12)])]))
+                                             (emit/jmp -11)])]))
         program (compile-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); }}")
         actual (en/encode program)]
     (is (= expected actual))))
@@ -109,15 +109,15 @@
                                              (emit/prim-call "lessThanOrEquals")
                                              (emit/jmp 1)
                                              (emit/prim-call "greaterThanOrEquals")
-                                             (emit/jz 8)
+                                             (emit/jz 7)
                                              (emit/read-local "i#1")
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "i#1")
                                              (emit/read-local "@1")
                                              (emit/prim-call "add")
                                              (emit/write-local "i#1")
-                                             (emit/jmp -19)])]))
+                                             (emit/jmp -18)])]))
         program (compile-string "
         	var step = 1;
 
@@ -155,15 +155,15 @@
                                              (emit/prim-call "lessThanOrEquals")
                                              (emit/jmp 1)
                                              (emit/prim-call "greaterThanOrEquals")
-                                             (emit/jz 8)
+                                             (emit/jz 7)
                                              (emit/read-local "i#1")
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "i#1")
                                              (emit/read-local "@1")
                                              (emit/prim-call "add")
                                              (emit/write-local "i#1")
-                                             (emit/jmp -19)])]))
+                                             (emit/jmp -18)])]))
         program (compile-string "
         	var step = -1;
 
@@ -175,65 +175,69 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test047ForLoopShouldOnlyEvaluateStepOncePerIteration
+(deftest
+  Test047ForLoopShouldOnlyEvaluateStepOncePerIteration
   (let [expected (en/encode (emit-program
-                    :globals #{(emit/variable "step" -1)
-                                (emit/variable "stop" -10)
-                                (emit/constant 0)
-                                (emit/constant -1)
-                                (emit/constant 13)}
-                    :scripts [(emit/script
-                                    :name "negatedStep"
-                                    :running? false
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/read-global "step")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "multiply")
-                                                    (emit/write-global "step")
-                                                    (emit/read-global "step")
-                                                    (emit/prim-call "retv")])
-                                (emit/script
-                                    :name "negatedStop"
-                                    :running? false
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/read-global "stop")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "multiply")
-                                                    (emit/write-global "stop")
-                                                    (emit/read-global "stop")
-                                                    (emit/prim-call "retv")])
-                                (emit/script
-                                    :name "for"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals [(emit/variable "i#1" 0)
-                                             (emit/variable "@1" 0)]
-                                    :instructions [(emit/push-value 0)
-                                                    (emit/write-local "i#1")
-                                                    (emit/read-local "i#1")
-                                                    (emit/script-call "negatedStop")
-                                                    (emit/script-call "negatedStep")
-                                                    (emit/write-local "@1")
-                                                    (emit/read-local "@1")
-                                                    (emit/push-value 0)
-                                                    (emit/jlte 2)
-                                                    (emit/prim-call "lessThanOrEquals")
-                                                    (emit/jmp 1)
-                                                    (emit/prim-call "greaterThanOrEquals")
-                                                    (emit/jz 8)
-                                                    (emit/push-value 13)
-                                                    (emit/read-local "i#1")
-                                                    (emit/prim-call "write")
-                                                    (emit/read-local "i#1")
-                                                    (emit/read-local "@1")
-                                                    (emit/prim-call "add")
-                                                    (emit/write-local "i#1")
-                                                    (emit/jmp -19)])]))
+                             :globals #{(emit/variable "step" -1)
+                                        (emit/variable "stop" -10)
+                                        (emit/constant 0)
+                                        (emit/constant -1)
+                                        (emit/constant 13)}
+                             :scripts [(emit/script
+                                        :name "negatedStep"
+                                        :running? false
+                                        :delay 0
+                                        :type :function
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/read-global "step")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "multiply")
+                                                       (emit/write-global "step")
+                                                       (emit/read-global "step")
+                                                       (emit/prim-call "retv")])
+                                       (emit/script
+                                        :name "negatedStop"
+                                        :running? false
+                                        :delay 0
+                                        :type :function
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/read-global "stop")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "multiply")
+                                                       (emit/write-global "stop")
+                                                       (emit/read-global "stop")
+                                                       (emit/prim-call "retv")])
+                                       (emit/script
+                                        :name "for"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals [(emit/variable "i#1" 0)
+                                                 (emit/variable "@1" 0)]
+                                        :instructions [(emit/push-value 0)
+                                                       (emit/write-local "i#1")
+                                                       (emit/read-local "i#1")
+                                                       (emit/script-call "negatedStop")
+                                                       (emit/script-call "negatedStep")
+                                                       (emit/write-local "@1")
+                                                       (emit/read-local "@1")
+                                                       (emit/push-value 0)
+                                                       (emit/jlte 2)
+                                                       (emit/prim-call "lessThanOrEquals")
+                                                       (emit/jmp 1)
+                                                       (emit/prim-call "greaterThanOrEquals")
+                                                       (emit/jz 8)
+                                                       (emit/push-value 13)
+                                                       (emit/read-local "i#1")
+                                                       (emit/prim-call "write")
+                                                       (emit/read-local "i#1")
+                                                       (emit/read-local "@1")
+                                                       (emit/prim-call "add")
+                                                       (emit/write-local "i#1")
+                                                       (emit/jmp -19)])]))
         program (compile-string "
         	var step = -1;
         	var stop = -10;
@@ -256,7 +260,8 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test048MutexShouldGuaranteeACriticalSection
+(deftest
+  Test048MutexShouldGuaranteeACriticalSection
   (let [expected (en/encode
                   (emit-program
                    :globals #{(emit/variable "m.lock" 0)
@@ -274,6 +279,7 @@
                               :name "m.acquire"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments []
                               :locals []
                               :instructions [(emit/read-global "m.lock")
@@ -292,6 +298,7 @@
                               :name "m.release"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0)
@@ -302,19 +309,21 @@
                               :name "blink"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "test1"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals [(emit/variable "a#1" 0)]
                               :instructions [(emit/script-call "m.acquire")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 0)
                                              (emit/write-local "a#1")
                                              (emit/read-local "a#1")
@@ -332,15 +341,16 @@
                                              (emit/write-local "a#1")
                                              (emit/jmp -14)
                                              (emit/script-call "m.release")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "test2"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals [(emit/variable "a#2" 0)]
                               :instructions [(emit/script-call "m.acquire")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1)
                                              (emit/write-local "a#2")
                                              (emit/read-local "a#2")
@@ -358,7 +368,7 @@
                                              (emit/write-local "a#2")
                                              (emit/jmp -14)
                                              (emit/script-call "m.release")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	import m from 'Mutex.uzi';
 
@@ -384,7 +394,8 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer
+(deftest
+  Test049ChannelShouldDeadlockIfConsumingFromTheSameTaskAsProducer
   (let [expected (en/encode
                   (emit-program
                    :globals #{(emit/variable "c.value" 0)
@@ -401,6 +412,7 @@
                               :name "c.send"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "val#1" 0)]
                               :locals []
                               :instructions [(emit/prim-call "coroutine")
@@ -434,6 +446,7 @@
                               :name "c.receive"
                               :running? false
                               :delay 0
+                              :type :function
                               :arguments []
                               :locals []
                               :instructions [(emit/prim-call "coroutine")
@@ -463,26 +476,28 @@
                               :name "blink"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "cp"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 11)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "c.receive")
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 11)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	import c from 'Channel.uzi';
 
@@ -496,7 +511,8 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers
+(deftest
+  Test050ChannelWithMultipleProducersAndNoConsumerShouldBlockAllProducers
   (let [expected (en/encode
                   (emit-program
                    :globals #{(emit/variable "c.value" 0)
@@ -516,6 +532,7 @@
                               :name "c.send"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "val#1" 0)]
                               :locals []
                               :instructions [(emit/prim-call "coroutine")
@@ -549,48 +566,53 @@
                               :name "producer1"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 1)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1)
                                              (emit/write-global "counter")])
                              (emit/script
                               :name "producer0"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 2)
                                              (emit/write-global "counter")])
                              (emit/script
                               :name "producer05"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0.5)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 3)
                                              (emit/write-global "counter")])
                              (emit/script
                               :name "blink"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "test"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 11)
@@ -621,106 +643,111 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer
+(deftest
+  Test051ChannelWithOneProducerAndOneConsumerBlocksTheProducerAtTheRateOfConsumer
   (let [expected (en/encode (emit-program
-                    :globals #{(emit/variable "c.value" 0)
-                                (emit/variable "c.state" 0)
-                                (emit/variable "c.r_turn" -1)
-                                (emit/variable "c.s_turn" -1)
-                                (emit/constant 0)
-                                (emit/constant -1)
-                                (emit/constant 1)
-                                (emit/constant 11)
-                                (emit/constant 1000)
-                                (emit/constant 13)}
-                    :scripts [(emit/script
-                                    :name "c.send"
-                                    :running? false
-                                    :delay 0
-                                    :arguments [(emit/variable "val#1" 0)]
-                                    :locals []
-                                    :instructions [(emit/prim-call "coroutine")
-                                                    (emit/read-global "c.s_turn")
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jz 8)
-                                                    (emit/read-global "c.s_turn")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "equals")
-                                                    (emit/jz 3)
-                                                    (emit/prim-call "coroutine")
-                                                    (emit/write-global "c.s_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/jmp -12)
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 0)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)
-                                                    (emit/push-value -1)
-                                                    (emit/write-global "c.s_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/read-local "val#1")
-                                                    (emit/write-global "c.value")
-                                                    (emit/push-value 1)
-                                                    (emit/write-global "c.state")
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 0)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)])
-                                (emit/script
-                                    :name "c.receive"
-                                    :running? false
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/prim-call "coroutine")
-                                                    (emit/read-global "c.r_turn")
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jz 8)
-                                                    (emit/read-global "c.r_turn")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "equals")
-                                                    (emit/jz 3)
-                                                    (emit/prim-call "coroutine")
-                                                    (emit/write-global "c.r_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/jmp -12)
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 1)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)
-                                                    (emit/push-value -1)
-                                                    (emit/write-global "c.r_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/push-value 0)
-                                                    (emit/write-global "c.state")
-                                                    (emit/read-global "c.value")
-                                                    (emit/prim-call "retv")])
-                                (emit/script
-                                    :name "producer"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals [(emit/variable "a#2" 1)]
-                                    :instructions [(emit/read-local "a#2")
-                                                    (emit/script-call "c.send")
-                                                    (emit/prim-call "pop")
-                                                    (emit/push-value 1)
-                                                    (emit/read-local "a#2")
-                                                    (emit/prim-call "subtract")
-                                                    (emit/write-local "a#2")
-                                                    (emit/push-value 11)
-                                                    (emit/read-local "a#2")
-                                                    (emit/prim-call "write")
-                                                    (emit/jmp -11)])
-                                (emit/script
-                                    :name "consumer"
-                                    :running? true
-                                    :delay 1000
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/push-value 13)
-                                                    (emit/script-call "c.receive")
-                                                    (emit/prim-call "write")])]))
+                             :globals #{(emit/variable "c.value" 0)
+                                        (emit/variable "c.state" 0)
+                                        (emit/variable "c.r_turn" -1)
+                                        (emit/variable "c.s_turn" -1)
+                                        (emit/constant 0)
+                                        (emit/constant -1)
+                                        (emit/constant 1)
+                                        (emit/constant 11)
+                                        (emit/constant 1000)
+                                        (emit/constant 13)}
+                             :scripts [(emit/script
+                                        :name "c.send"
+                                        :running? false
+                                        :delay 0
+                                        :type :procedure
+                                        :arguments [(emit/variable "val#1" 0)]
+                                        :locals []
+                                        :instructions [(emit/prim-call "coroutine")
+                                                       (emit/read-global "c.s_turn")
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jz 8)
+                                                       (emit/read-global "c.s_turn")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "equals")
+                                                       (emit/jz 3)
+                                                       (emit/prim-call "coroutine")
+                                                       (emit/write-global "c.s_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/jmp -12)
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 0)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)
+                                                       (emit/push-value -1)
+                                                       (emit/write-global "c.s_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/read-local "val#1")
+                                                       (emit/write-global "c.value")
+                                                       (emit/push-value 1)
+                                                       (emit/write-global "c.state")
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 0)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)])
+                                       (emit/script
+                                        :name "c.receive"
+                                        :running? false
+                                        :delay 0
+                                        :type :function
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/prim-call "coroutine")
+                                                       (emit/read-global "c.r_turn")
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jz 8)
+                                                       (emit/read-global "c.r_turn")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "equals")
+                                                       (emit/jz 3)
+                                                       (emit/prim-call "coroutine")
+                                                       (emit/write-global "c.r_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/jmp -12)
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 1)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)
+                                                       (emit/push-value -1)
+                                                       (emit/write-global "c.r_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/push-value 0)
+                                                       (emit/write-global "c.state")
+                                                       (emit/read-global "c.value")
+                                                       (emit/prim-call "retv")])
+                                       (emit/script
+                                        :name "producer"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals [(emit/variable "a#2" 1)]
+                                        :instructions [(emit/read-local "a#2")
+                                                       (emit/script-call "c.send")
+                                                       #_(emit/prim-call "pop")
+                                                       (emit/push-value 1)
+                                                       (emit/read-local "a#2")
+                                                       (emit/prim-call "subtract")
+                                                       (emit/write-local "a#2")
+                                                       (emit/push-value 11)
+                                                       (emit/read-local "a#2")
+                                                       (emit/prim-call "write")
+                                                       (emit/jmp -10)])
+                                       (emit/script
+                                        :name "consumer"
+                                        :running? true
+                                        :delay 1000
+                                        :type :timer
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/push-value 13)
+                                                       (emit/script-call "c.receive")
+                                                       (emit/prim-call "write")])]))
         program (compile-string "
         	import c from 'Channel.uzi';
 
@@ -739,7 +766,8 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test052ChannelWithMultipleProducersAndOneConsumer
+(deftest
+  Test052ChannelWithMultipleProducersAndOneConsumer
   (let [expected (en/encode
                   (emit-program
                    :globals #{(emit/variable "c.value" 0)
@@ -759,6 +787,7 @@
                               :name "c.send"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "val#1" 0)]
                               :locals []
                               :instructions [(emit/prim-call "coroutine")
@@ -792,6 +821,7 @@
                               :name "c.receive"
                               :running? false
                               :delay 0
+                              :type :function
                               :arguments []
                               :locals []
                               :instructions [(emit/prim-call "coroutine")
@@ -821,60 +851,67 @@
                               :name "blink"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "producer1"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "producer2"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0.25)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "producer3"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0.5)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "producer4"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 0.75)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "producer5"
                               :running? true
                               :delay 0
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 1)
                                              (emit/script-call "c.send")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "consumer"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 11)
@@ -895,141 +932,149 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test053ChannelWithMultipleConsumersAndOneProducer
+(deftest
+  Test053ChannelWithMultipleConsumersAndOneProducer
   (let [expected (en/encode (emit-program
-                    :globals #{(emit/variable "c.value" 0)
-                                (emit/variable "c.state" 0)
-                                (emit/variable "c.r_turn" -1)
-                                (emit/variable "c.s_turn" -1)
-                                (emit/constant 0)
-                                (emit/constant -1)
-                                (emit/constant 1)
-                                (emit/constant 13)
-                                (emit/constant 10)
-                                (emit/constant 11)
-                                (emit/constant 12)
-                                (emit/constant 1000)
-                                (emit/constant 0.25)}
-                    :scripts [(emit/script
-                                    :name "c.send"
-                                    :running? false
-                                    :delay 0
-                                    :arguments [(emit/variable "val#1" 0)]
-                                    :locals []
-                                    :instructions [(emit/prim-call "coroutine")
-                                                    (emit/read-global "c.s_turn")
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jz 8)
-                                                    (emit/read-global "c.s_turn")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "equals")
-                                                    (emit/jz 3)
-                                                    (emit/prim-call "coroutine")
-                                                    (emit/write-global "c.s_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/jmp -12)
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 0)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)
-                                                    (emit/push-value -1)
-                                                    (emit/write-global "c.s_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/read-local "val#1")
-                                                    (emit/write-global "c.value")
-                                                    (emit/push-value 1)
-                                                    (emit/write-global "c.state")
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 0)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)])
-                                (emit/script
-                                    :name "c.receive"
-                                    :running? false
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/prim-call "coroutine")
-                                                    (emit/read-global "c.r_turn")
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jz 8)
-                                                    (emit/read-global "c.r_turn")
-                                                    (emit/push-value -1)
-                                                    (emit/prim-call "equals")
-                                                    (emit/jz 3)
-                                                    (emit/prim-call "coroutine")
-                                                    (emit/write-global "c.r_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/jmp -12)
-                                                    (emit/read-global "c.state")
-                                                    (emit/push-value 1)
-                                                    (emit/prim-call "notEquals")
-                                                    (emit/jnz -4)
-                                                    (emit/push-value -1)
-                                                    (emit/write-global "c.r_turn")
-                                                    (emit/prim-call "yield")
-                                                    (emit/push-value 0)
-                                                    (emit/write-global "c.state")
-                                                    (emit/read-global "c.value")
-                                                    (emit/prim-call "retv")])
-                                (emit/script
-                                    :name "consumer1"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/push-value 13)
-                                                    (emit/script-call "c.receive")
-                                                    (emit/prim-call "write")])
-                                (emit/script
-                                    :name "consumer2"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/push-value 10)
-                                                    (emit/script-call "c.receive")
-                                                    (emit/prim-call "write")])
-                                (emit/script
-                                    :name "consumer3"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/push-value 11)
-                                                    (emit/script-call "c.receive")
-                                                    (emit/prim-call "write")])
-                                (emit/script
-                                    :name "consumer4"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals []
-                                    :instructions [(emit/push-value 12)
-                                                    (emit/script-call "c.receive")
-                                                    (emit/prim-call "write")])
-                                (emit/script
-                                    :name "consumer"
-                                    :running? true
-                                    :delay 0
-                                    :arguments []
-                                    :locals [(emit/variable "a#2" 0)]
-                                    :instructions [(emit/push-value 0)
-                                                    (emit/write-local "a#2")
-                                                    (emit/read-local "a#2")
-                                                    (emit/push-value 1)
-                                                    (emit/prim-call "lessThanOrEquals")
-                                                    (emit/jz 10)
-                                                    (emit/read-local "a#2")
-                                                    (emit/script-call "c.send")
-                                                    (emit/prim-call "pop")
-                                                    (emit/push-value 1000)
-                                                    (emit/prim-call "delayMs")
-                                                    (emit/read-local "a#2")
-                                                    (emit/push-value 0.25)
-                                                    (emit/prim-call "add")
-                                                    (emit/write-local "a#2")
-                                                    (emit/jmp -14)])]))
+                             :globals #{(emit/variable "c.value" 0)
+                                        (emit/variable "c.state" 0)
+                                        (emit/variable "c.r_turn" -1)
+                                        (emit/variable "c.s_turn" -1)
+                                        (emit/constant 0)
+                                        (emit/constant -1)
+                                        (emit/constant 1)
+                                        (emit/constant 13)
+                                        (emit/constant 10)
+                                        (emit/constant 11)
+                                        (emit/constant 12)
+                                        (emit/constant 1000)
+                                        (emit/constant 0.25)}
+                             :scripts [(emit/script
+                                        :name "c.send"
+                                        :running? false
+                                        :delay 0
+                                        :type :procedure
+                                        :arguments [(emit/variable "val#1" 0)]
+                                        :locals []
+                                        :instructions [(emit/prim-call "coroutine")
+                                                       (emit/read-global "c.s_turn")
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jz 8)
+                                                       (emit/read-global "c.s_turn")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "equals")
+                                                       (emit/jz 3)
+                                                       (emit/prim-call "coroutine")
+                                                       (emit/write-global "c.s_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/jmp -12)
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 0)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)
+                                                       (emit/push-value -1)
+                                                       (emit/write-global "c.s_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/read-local "val#1")
+                                                       (emit/write-global "c.value")
+                                                       (emit/push-value 1)
+                                                       (emit/write-global "c.state")
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 0)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)])
+                                       (emit/script
+                                        :name "c.receive"
+                                        :running? false
+                                        :delay 0
+                                        :type :function
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/prim-call "coroutine")
+                                                       (emit/read-global "c.r_turn")
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jz 8)
+                                                       (emit/read-global "c.r_turn")
+                                                       (emit/push-value -1)
+                                                       (emit/prim-call "equals")
+                                                       (emit/jz 3)
+                                                       (emit/prim-call "coroutine")
+                                                       (emit/write-global "c.r_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/jmp -12)
+                                                       (emit/read-global "c.state")
+                                                       (emit/push-value 1)
+                                                       (emit/prim-call "notEquals")
+                                                       (emit/jnz -4)
+                                                       (emit/push-value -1)
+                                                       (emit/write-global "c.r_turn")
+                                                       (emit/prim-call "yield")
+                                                       (emit/push-value 0)
+                                                       (emit/write-global "c.state")
+                                                       (emit/read-global "c.value")
+                                                       (emit/prim-call "retv")])
+                                       (emit/script
+                                        :name "consumer1"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/push-value 13)
+                                                       (emit/script-call "c.receive")
+                                                       (emit/prim-call "write")])
+                                       (emit/script
+                                        :name "consumer2"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/push-value 10)
+                                                       (emit/script-call "c.receive")
+                                                       (emit/prim-call "write")])
+                                       (emit/script
+                                        :name "consumer3"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/push-value 11)
+                                                       (emit/script-call "c.receive")
+                                                       (emit/prim-call "write")])
+                                       (emit/script
+                                        :name "consumer4"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals []
+                                        :instructions [(emit/push-value 12)
+                                                       (emit/script-call "c.receive")
+                                                       (emit/prim-call "write")])
+                                       (emit/script
+                                        :name "consumer"
+                                        :running? true
+                                        :delay 0
+                                        :type :timer
+                                        :arguments []
+                                        :locals [(emit/variable "a#2" 0)]
+                                        :instructions [(emit/push-value 0)
+                                                       (emit/write-local "a#2")
+                                                       (emit/read-local "a#2")
+                                                       (emit/push-value 1)
+                                                       (emit/prim-call "lessThanOrEquals")
+                                                       (emit/jz 9)
+                                                       (emit/read-local "a#2")
+                                                       (emit/script-call "c.send")
+                                                       #_(emit/prim-call "pop")
+                                                       (emit/push-value 1000)
+                                                       (emit/prim-call "delayMs")
+                                                       (emit/read-local "a#2")
+                                                       (emit/push-value 0.25)
+                                                       (emit/prim-call "add")
+                                                       (emit/write-local "a#2")
+                                                       (emit/jmp -13)])]))
         program (compile-string "
         	import c from 'Channel.uzi';
 
@@ -1064,17 +1109,17 @@
                               :locals [(emit/variable "pin#1" 7)
                                        (emit/variable "pin#2" 0)]
                               :instructions [(emit/push-value 1)
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/read-local "pin#1")
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "pin#2")
                                              (emit/push-value 6)
                                              (emit/prim-call "add")
                                              (emit/write-local "pin#2")
                                              (emit/read-local "pin#2")
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	\"Pin 7 should blink once per second.
         	Pin 6 should blink once per second.\"
@@ -1105,13 +1150,13 @@
                               :locals [(emit/variable "pin#1" 7)
                                        (emit/variable "pin#2" 6)]
                               :instructions [(emit/push-value 1)
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/read-local "pin#1")
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "pin#2")
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	\"Pin 7 should blink once per second.
         	Pin 6 should blink once per second.\"
@@ -1466,14 +1511,14 @@
                               :instructions [(emit/push-value 1)
                                              (emit/push-value 1.00001)
                                              (emit/script-call "isCloseTo")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 12)
                                              (emit/push-value 0)
                                              (emit/push-value 0)
@@ -1679,14 +1724,14 @@
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "isOn")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	task main() running 1/s {
         		if isOn(D13) {
@@ -1711,14 +1756,14 @@
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "isOff")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	task main() running 1/s {
         		if isOff(D13) {
@@ -1756,31 +1801,31 @@
                                              (emit/read-global "a")
                                              (emit/push-value 0)
                                              (emit/prim-call "equals")
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-global "a")
                                              (emit/push-value 1)
                                              (emit/prim-call "equals")
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/push-value 12)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-global "a")
                                              (emit/push-value 2)
                                              (emit/prim-call "equals")
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/push-value 11)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-global "a")
                                              (emit/push-value 3)
                                              (emit/prim-call "equals")
-                                             (emit/jz 3)
+                                             (emit/jz 2)
                                              (emit/push-value 10)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-global "a")
                                              (emit/push-value 1)
                                              (emit/prim-call "add")
@@ -1876,14 +1921,14 @@
                                              (emit/push-value 100000)
                                              (emit/prim-call "lessThanOrEquals")
                                              (emit/prim-call "logicalAnd")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "a#1")
                                              (emit/write-global "old")])]))
         program (compile-string "
@@ -1927,14 +1972,14 @@
                                              (emit/push-value 1)
                                              (emit/prim-call "lessThanOrEquals")
                                              (emit/prim-call "logicalAnd")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "a#1")
                                              (emit/write-global "old")])]))
         program (compile-string "
@@ -2301,28 +2346,28 @@
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "minutes")
                                              (emit/push-value 2)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "minutes")
                                              (emit/push-value 3)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "minutes")
                                              (emit/push-value 4)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	task main() running {
         		until minutes() >= 1;
@@ -2359,28 +2404,28 @@
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "seconds")
                                              (emit/push-value 2)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "seconds")
                                              (emit/push-value 3)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/script-call "seconds")
                                              (emit/push-value 4)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	task main() running {
         		until seconds() >= 1;
@@ -2416,28 +2461,28 @@
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/prim-call "millis")
                                              (emit/push-value 2000)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/prim-call "millis")
                                              (emit/push-value 3000)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/prim-call "millis")
                                              (emit/push-value 4000)
                                              (emit/prim-call "greaterThanOrEquals")
                                              (emit/jz -4)
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         	task main() running {
         		until millis() >= 1000;
@@ -2452,7 +2497,8 @@
         actual (en/encode program)]
     (is (= expected actual))))
 
-(deftest Test088ScriptCallOverridingPrimitive
+(deftest
+  Test088ScriptCallOverridingPrimitive
   (let [expected (en/encode
                   (emit-program
                    :globals #{(emit/constant 1000)
@@ -2462,29 +2508,31 @@
                               :name "blink"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/push-value 0)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "toggle"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "pin#1" 0)
                                           (emit/variable "delay#2" 0)]
                               :locals []
                               :instructions [(emit/read-local "pin#1")
                                              (emit/prim-call "read")
-                                             (emit/jz 4)
+                                             (emit/jz 3)
                                              (emit/read-local "pin#1")
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 3)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 2)
                                              (emit/read-local "pin#1")
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/read-local "delay#2")
                                              (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2513,7 +2561,7 @@
                               :locals []
                               :instructions [(emit/push-value 11)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "blink13"
                               :running? true
@@ -2522,12 +2570,12 @@
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2558,12 +2606,12 @@
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "turnOn")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")
                                              (emit/push-value 13)
                                              (emit/script-call "turnOff")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")])]))
         program (compile-string "
@@ -2610,6 +2658,7 @@
                               :name "sonar.init"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "trig#1" 0)
                                           (emit/variable "echo#2" 0)
                                           (emit/variable "maxDist#3" 0)]
@@ -2624,6 +2673,7 @@
                               :name "sonar.reading"
                               :running? false
                               :delay 100
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/read-global "sonar.trigPin")
@@ -2635,6 +2685,7 @@
                               :name "sonar.distance_cm"
                               :running? false
                               :delay 0
+                              :type :function
                               :arguments []
                               :locals []
                               :instructions [(emit/read-global "sonar.distance")
@@ -2643,6 +2694,7 @@
                               :name "leftMotor.init"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "en#4" 0)
                                           (emit/variable "f#5" 0)
                                           (emit/variable "r#6" 0)]
@@ -2657,6 +2709,7 @@
                               :name "leftMotor.forward"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "speed#7" 0)]
                               :locals []
                               :instructions [(emit/read-global "leftMotor.reversePin")
@@ -2672,6 +2725,7 @@
                               :name "leftMotor.backward"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "speed#8" 0)]
                               :locals []
                               :instructions [(emit/read-global "leftMotor.forwardPin")
@@ -2687,6 +2741,7 @@
                               :name "rightMotor.init"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "en#9" 0)
                                           (emit/variable "f#10" 0)
                                           (emit/variable "r#11" 0)]
@@ -2701,6 +2756,7 @@
                               :name "rightMotor.forward"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "speed#12" 0)]
                               :locals []
                               :instructions [(emit/read-global "rightMotor.reversePin")
@@ -2716,6 +2772,7 @@
                               :name "rightMotor.backward"
                               :running? false
                               :delay 0
+                              :type :procedure
                               :arguments [(emit/variable "speed#13" 0)]
                               :locals []
                               :instructions [(emit/read-global "rightMotor.forwardPin")
@@ -2730,7 +2787,7 @@
                              (emit/script
                               :name "setup"
                               :running? true
-                              :once? true
+                              :type :task
                               :delay 0
                               :arguments []
                               :locals []
@@ -2738,97 +2795,99 @@
                                              (emit/push-value 18)
                                              (emit/push-value 200)
                                              (emit/script-call "sonar.init")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/start "sonar.reading")
                                              (emit/push-value 5)
                                              (emit/push-value 7)
                                              (emit/push-value 8)
                                              (emit/script-call "leftMotor.init")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 6)
                                              (emit/push-value 11)
                                              (emit/push-value 9)
                                              (emit/script-call "rightMotor.init")
-                                             (emit/prim-call "pop")])
+                                             #_(emit/prim-call "pop")])
                              (emit/script
                               :name "move"
                               :running? true
                               :delay 10
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/script-call "sonar.distance_cm")
                                              (emit/push-value 0)
                                              (emit/prim-call "equals")
-                                             (emit/jz 7)
+                                             (emit/jz 5)
                                              (emit/push-value 1)
                                              (emit/script-call "leftMotor.forward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1)
                                              (emit/script-call "rightMotor.forward")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 53)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 45)
                                              (emit/script-call "sonar.distance_cm")
                                              (emit/push-value 100)
                                              (emit/prim-call "greaterThan")
-                                             (emit/jz 7)
+                                             (emit/jz 5)
                                              (emit/push-value 1)
                                              (emit/script-call "leftMotor.forward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1)
                                              (emit/script-call "rightMotor.forward")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 42)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 36)
                                              (emit/script-call "sonar.distance_cm")
                                              (emit/push-value 45)
                                              (emit/prim-call "greaterThan")
-                                             (emit/jz 7)
+                                             (emit/jz 5)
                                              (emit/push-value 0.5)
                                              (emit/script-call "leftMotor.forward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 0.5)
                                              (emit/script-call "rightMotor.forward")
-                                             (emit/prim-call "pop")
-                                             (emit/jmp 31)
+                                             #_(emit/prim-call "pop")
+                                             (emit/jmp 27)
                                              (emit/prim-call "random")
                                              (emit/push-value 0.5)
                                              (emit/prim-call "lessThan")
-                                             (emit/jz 14)
+                                             (emit/jz 12)
                                              (emit/script-call "sonar.distance_cm")
                                              (emit/push-value 45)
                                              (emit/prim-call "lessThan")
-                                             (emit/jz 9)
+                                             (emit/jz 7)
                                              (emit/push-value 0.5)
                                              (emit/script-call "leftMotor.forward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 0.5)
                                              (emit/script-call "rightMotor.backward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")
-                                             (emit/jmp -13)
-                                             (emit/jmp 13)
+                                             (emit/jmp -11)
+                                             (emit/jmp 11)
                                              (emit/script-call "sonar.distance_cm")
                                              (emit/push-value 45)
                                              (emit/prim-call "lessThan")
-                                             (emit/jz 9)
+                                             (emit/jz 7)
                                              (emit/push-value 0.5)
                                              (emit/script-call "rightMotor.forward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 0.5)
                                              (emit/script-call "leftMotor.backward")
-                                             (emit/prim-call "pop")
+                                             #_(emit/prim-call "pop")
                                              (emit/push-value 1000)
                                              (emit/prim-call "delayMs")
-                                             (emit/jmp -13)])
+                                             (emit/jmp -11)])
                              (emit/script
                               :name "blink13"
                               :running? true
                               :delay 1000
+                              :type :timer
                               :arguments []
                               :locals []
                               :instructions [(emit/push-value 13)
                                              (emit/script-call "toggle")
-                                             (emit/prim-call "pop")])]))
+                                             #_(emit/prim-call "pop")])]))
         program (compile-string "
         import sonar from 'Sonar.uzi';
         import leftMotor from 'DCMotor.uzi';

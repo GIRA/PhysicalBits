@@ -32,7 +32,8 @@
     (register-program! ast)
     (cc/compile-tree ast)))
 
-(deftest Test099CallingAScriptWithLessArgumentsThanRequired
+(deftest 
+  Test099CallingAScriptWithLessArgumentsThanRequired
   (let [src "func foo(a, b, c) { return; }
              task main() running 1/s {
 	             toggle(D13);
@@ -46,6 +47,7 @@
                             (emit/constant 1000)}
                  :scripts [(emit/script
                             :name "foo"
+                            :type :function
                             :arguments [(emit/variable "a#1")
                                         (emit/variable "b#2")
                                         (emit/variable "c#3")]
@@ -54,9 +56,10 @@
                             :name "main"
                             :delay 1000
                             :running? true
+                            :type :timer
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/push-value 2)
                                            (emit/push-value 0)
@@ -951,8 +954,7 @@ task default() {
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
-                                           (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           (emit/script-call "toggle")])
                            (emit/script
                             :name "pot"
                             :running? true
@@ -993,17 +995,14 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
                                            (emit/push-value 13)
                                            (emit/prim-call "yield")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
                                            (emit/push-value 12)
                                            (emit/push-value 1)
                                            (emit/prim-call "yield")
                                            (emit/prim-call "add")
-                                           (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           (emit/script-call "toggle")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1053,7 +1052,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "main"
                             :running? true
@@ -1062,7 +1061,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-pin 15)
                                            (emit/jz -2)
                                            (emit/read-pin 15)
@@ -1084,7 +1083,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 10)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/prim-call "ret")
                                            (emit/turn-on-pin 13)])
                            (emit/script
@@ -1094,10 +1093,10 @@ task default() {
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "toggle_10")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1112,6 +1111,7 @@ task default() {
                             :name "incr"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "counter")
@@ -1122,7 +1122,7 @@ task default() {
                                            (emit/prim-call "retv")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "loop"
                             :running? true
@@ -1150,7 +1150,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-global "counter")
                                            (emit/push-value 1)
                                            (emit/prim-call "add")
@@ -1159,7 +1159,7 @@ task default() {
                                            (emit/prim-call "retv")
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1176,7 +1176,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "main"
                             :running? true
@@ -1184,7 +1184,7 @@ task default() {
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "blink11")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")])])
         actual (en/encode program)]
@@ -1201,14 +1201,16 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "main")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "fake_toggle"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "n" 0)]
                             :locals []
                             :instructions [(emit/push-value 1)
@@ -1217,11 +1219,12 @@ task default() {
                                            (emit/prim-call "retv")
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "main"
                             :running? false
-                            :delay 10000000
+                            :delay 10000000                            
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/read-pin 13)
@@ -1240,14 +1243,16 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "main")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "fake_toggle"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "n" 0)]
                             :locals []
                             :instructions [(emit/push-value 1)
@@ -1258,11 +1263,12 @@ task default() {
                             :name "main"
                             :running? false
                             :delay 10000000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/read-pin 13)
                                            (emit/script-call "fake_toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1276,14 +1282,16 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "main")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "toggle"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "n" 0)]
                             :locals []
                             :instructions [(emit/push-value 1)
@@ -1296,6 +1304,7 @@ task default() {
                             :name "main"
                             :running? false
                             :delay 10000000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/read-pin 13)
@@ -1314,14 +1323,16 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "main")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "toggle"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "a" 0)
                                         (emit/variable "b" 0)]
                             :locals []
@@ -1335,6 +1346,7 @@ task default() {
                             :name "main"
                             :running? false
                             :delay 10000000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 1)
@@ -1355,14 +1367,16 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "main")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "toggle"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "a" 0)
                                         (emit/variable "b" 0)]
                             :locals []
@@ -1378,6 +1392,7 @@ task default() {
                             :name "main"
                             :running? false
                             :delay 10000000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 1)
@@ -1399,6 +1414,7 @@ task default() {
                             :name "foo"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "n" 0)]
                             :locals []
                             :instructions [(emit/read-local "n")
@@ -1417,6 +1433,7 @@ task default() {
                             :name "main"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 4)
@@ -1464,7 +1481,7 @@ task default() {
                                            (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "button"
                             :running? true
@@ -1504,7 +1521,7 @@ task default() {
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "writeCoroutine")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
                                            (emit/start "bar")
@@ -1516,7 +1533,7 @@ task default() {
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "writeCoroutine")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
                                            (emit/start "foo")
@@ -1604,14 +1621,14 @@ task default() {
                             :instructions [(emit/push-value 1)
                                            (emit/push-value 0)
                                            (emit/prim-call "logicalAnd")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1631,14 +1648,14 @@ task default() {
                             :instructions [(emit/push-value 1)
                                            (emit/push-value 0)
                                            (emit/prim-call "logicalOr")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)]
     (write-file actual)))
 
@@ -1765,13 +1782,13 @@ task default() {
                             :instructions [(emit/resume "main")
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/resume "main")
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")])
                            (emit/script
@@ -1797,11 +1814,11 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/pause "main")
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/pause "main")])
                            (emit/script
                             :name "awake"
@@ -1901,6 +1918,7 @@ task default() {
                             :name "main"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "a" 5)]
                             :instructions [(emit/read-local "a")
@@ -1908,11 +1926,12 @@ task default() {
                                            (emit/prim-call "add")
                                            (emit/script-call "getPin")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "getPin"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments [(emit/variable "n" 0)]
                             :locals [(emit/variable "result" 0)]
                             :instructions [(emit/read-local "n")
@@ -1926,6 +1945,7 @@ task default() {
                             :name "awake"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/resume "main")])])
@@ -1963,18 +1983,18 @@ task default() {
                                            (emit/read-local "i#1")
                                            (emit/push-value 11)
                                            (emit/prim-call "lessThanOrEquals")
-                                           (emit/jz 11)
+                                           (emit/jz 9)
                                            (emit/read-local "i#1")
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "delayS")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "i#1")
                                            (emit/push-value 1)
                                            (emit/prim-call "add")
                                            (emit/write-local "i#1")
-                                           (emit/jmp -15)])])
+                                           (emit/jmp -13)])])
         actual (en/encode program)
         expected (en/encode (compile-string "task for() running { for i = 7 to 11 { turnOn(i); delayS(1); }}"))]
     (is (= actual expected))
@@ -1999,18 +2019,18 @@ task default() {
                                            (emit/read-local "i#1")
                                            (emit/push-value 7)
                                            (emit/prim-call "greaterThanOrEquals")
-                                           (emit/jz 11)
+                                           (emit/jz 9)
                                            (emit/read-local "i#1")
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "delayS")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "i#1")
                                            (emit/push-value -1)
                                            (emit/prim-call "add")
                                            (emit/write-local "i#1")
-                                           (emit/jmp -15)])])
+                                           (emit/jmp -13)])])
         actual (en/encode program)
         expected (en/encode (compile-string "task for() running { for i = 11 to 7 by -1 { turnOn(i); delayS(1); }}"))]
     (is (= actual expected))
@@ -2043,18 +2063,18 @@ task default() {
                                            (emit/prim-call "lessThanOrEquals")
                                            (emit/jmp 1)
                                            (emit/prim-call "greaterThanOrEquals")
-                                           (emit/jz 11)
+                                           (emit/jz 9)
                                            (emit/read-local "i#1")
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "delayS")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "i#1")
                                            (emit/read-local "@1")
                                            (emit/prim-call "add")
                                            (emit/write-local "i#1")
-                                           (emit/jmp -22)])])
+                                           (emit/jmp -20)])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	var step = 1;
@@ -2095,18 +2115,18 @@ task default() {
                                            (emit/prim-call "lessThanOrEquals")
                                            (emit/jmp 1)
                                            (emit/prim-call "greaterThanOrEquals")
-                                           (emit/jz 11)
+                                           (emit/jz 9)
                                            (emit/read-local "i#1")
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "delayS")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "i#1")
                                            (emit/read-local "@1")
                                            (emit/prim-call "add")
                                            (emit/write-local "i#1")
-                                           (emit/jmp -22)])])
+                                           (emit/jmp -20)])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	var step = -1;
@@ -2132,6 +2152,7 @@ task default() {
                             :name "negatedStep"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "step")
@@ -2144,6 +2165,7 @@ task default() {
                             :name "negatedStop"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "stop")
@@ -2156,6 +2178,7 @@ task default() {
                             :name "for"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "i#1" 0)
                                      (emit/variable "@1" 0)]
@@ -2223,6 +2246,7 @@ task default() {
                             :name "m.acquire"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "m.lock")
@@ -2241,6 +2265,7 @@ task default() {
                             :name "m.release"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0)
@@ -2251,19 +2276,21 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "test1"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "a#1" 0)]
                             :instructions [(emit/script-call "m.acquire")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 0)
                                            (emit/write-local "a#1")
                                            (emit/read-local "a#1")
@@ -2281,15 +2308,16 @@ task default() {
                                            (emit/write-local "a#1")
                                            (emit/jmp -14)
                                            (emit/script-call "m.release")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "test2"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "a#2" 0)]
                             :instructions [(emit/script-call "m.acquire")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/write-local "a#2")
                                            (emit/read-local "a#2")
@@ -2307,7 +2335,7 @@ task default() {
                                            (emit/write-local "a#2")
                                            (emit/jmp -14)
                                            (emit/script-call "m.release")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	import m from 'Mutex.uzi';
@@ -2350,6 +2378,7 @@ task default() {
                             :name "c.send"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "val#1" 0)]
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2383,6 +2412,7 @@ task default() {
                             :name "c.receive"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2412,26 +2442,28 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "cp"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 11)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "c.receive")
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	import c from 'Channel.uzi';
@@ -2465,6 +2497,7 @@ task default() {
                             :name "c.send"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "val#1" 0)]
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2498,48 +2531,53 @@ task default() {
                             :name "producer1"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 1)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/write-global "counter")])
                            (emit/script
                             :name "producer0"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 2)
                                            (emit/write-global "counter")])
                            (emit/script
                             :name "producer05"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0.5)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 3)
                                            (emit/write-global "counter")])
                            (emit/script
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "test"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 11)
@@ -2587,6 +2625,7 @@ task default() {
                             :name "c.send"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "val#1" 0)]
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2620,6 +2659,7 @@ task default() {
                             :name "c.receive"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2649,11 +2689,12 @@ task default() {
                             :name "producer"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "a#2" 1)]
                             :instructions [(emit/read-local "a#2")
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/read-local "a#2")
                                            (emit/prim-call "subtract")
@@ -2661,11 +2702,12 @@ task default() {
                                            (emit/push-value 11)
                                            (emit/read-local "a#2")
                                            (emit/prim-call "write")
-                                           (emit/jmp -11)])
+                                           (emit/jmp -10)])
                            (emit/script
                             :name "consumer"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
@@ -2709,6 +2751,7 @@ task default() {
                             :name "c.send"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "val#1" 0)]
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2742,6 +2785,7 @@ task default() {
                             :name "c.receive"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2771,60 +2815,67 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "producer1"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "producer2"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0.25)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "producer3"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0.5)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "producer4"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 0.75)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "producer5"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 1)
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "consumer"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 11)
@@ -2865,6 +2916,7 @@ task default() {
                             :name "c.send"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "val#1" 0)]
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2898,6 +2950,7 @@ task default() {
                             :name "c.receive"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/prim-call "coroutine")
@@ -2927,6 +2980,7 @@ task default() {
                             :name "consumer1"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
@@ -2936,6 +2990,7 @@ task default() {
                             :name "consumer2"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 10)
@@ -2945,6 +3000,7 @@ task default() {
                             :name "consumer3"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 11)
@@ -2954,6 +3010,7 @@ task default() {
                             :name "consumer4"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 12)
@@ -2963,6 +3020,7 @@ task default() {
                             :name "consumer"
                             :running? true
                             :delay 0
+                            :type :timer
                             :arguments []
                             :locals [(emit/variable "a#2" 0)]
                             :instructions [(emit/push-value 0)
@@ -2970,17 +3028,17 @@ task default() {
                                            (emit/read-local "a#2")
                                            (emit/push-value 1)
                                            (emit/prim-call "lessThanOrEquals")
-                                           (emit/jz 10)
+                                           (emit/jz 9)
                                            (emit/read-local "a#2")
                                            (emit/script-call "c.send")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
                                            (emit/read-local "a#2")
                                            (emit/push-value 0.25)
                                            (emit/prim-call "add")
                                            (emit/write-local "a#2")
-                                           (emit/jmp -14)])])
+                                           (emit/jmp -13)])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	import c from 'Channel.uzi';
@@ -3015,17 +3073,17 @@ task default() {
                             :locals [(emit/variable "pin#1" 7)
                                      (emit/variable "pin#2" 0)]
                             :instructions [(emit/push-value 1)
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/read-local "pin#1")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "pin#2")
                                            (emit/push-value 6)
                                            (emit/prim-call "add")
                                            (emit/write-local "pin#2")
                                            (emit/read-local "pin#2")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	\"Pin 7 should blink once per second.
@@ -3056,13 +3114,13 @@ task default() {
                             :locals [(emit/variable "pin#1" 7)
                                      (emit/variable "pin#2" 6)]
                             :instructions [(emit/push-value 1)
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/read-local "pin#1")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "pin#2")
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               	\"Pin 7 should blink once per second.
@@ -3426,14 +3484,14 @@ task default() {
                             :instructions [(emit/push-value 1)
                                            (emit/push-value 1.00001)
                                            (emit/script-call "isCloseTo")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 12)
                                            (emit/push-value 0)
                                            (emit/push-value 0)
@@ -3641,14 +3699,14 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "isOn")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
                 task main() running 1/s {
@@ -3673,14 +3731,14 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "isOff")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
                 task main() running 1/s {
@@ -3718,31 +3776,31 @@ task default() {
                                            (emit/read-global "a")
                                            (emit/push-value 0)
                                            (emit/prim-call "equals")
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-global "a")
                                            (emit/push-value 1)
                                            (emit/prim-call "equals")
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/push-value 12)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-global "a")
                                            (emit/push-value 2)
                                            (emit/prim-call "equals")
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-global "a")
                                            (emit/push-value 3)
                                            (emit/prim-call "equals")
-                                           (emit/jz 3)
+                                           (emit/jz 2)
                                            (emit/push-value 10)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-global "a")
                                            (emit/push-value 1)
                                            (emit/prim-call "add")
@@ -3839,14 +3897,14 @@ task default() {
                                            (emit/push-value 100000)
                                            (emit/prim-call "lessThanOrEquals")
                                            (emit/prim-call "logicalAnd")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "a#1")
                                            (emit/write-global "old")])])
         actual (en/encode program)
@@ -3890,14 +3948,14 @@ task default() {
                                            (emit/push-value 1)
                                            (emit/prim-call "lessThanOrEquals")
                                            (emit/prim-call "logicalAnd")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "a#1")
                                            (emit/write-global "old")])])
         actual (en/encode program)
@@ -4256,7 +4314,7 @@ task default() {
                             :instructions [(emit/turn-on-pin 13)
                                            (emit/push-value 1)
                                            (emit/script-call "delayS")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/turn-off-pin 13)])])
         actual (en/encode program)]
     (write-file actual)))
@@ -4276,7 +4334,7 @@ task default() {
                             :instructions [(emit/turn-on-pin 13)
                                            (emit/push-value 1)
                                            (emit/script-call "delayM")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/turn-off-pin 13)])])
         actual (en/encode program)]
     (write-file actual)))
@@ -4303,28 +4361,28 @@ task default() {
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "minutes")
                                            (emit/push-value 2)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "minutes")
                                            (emit/push-value 3)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "minutes")
                                            (emit/push-value 4)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
                 task main() running {
@@ -4361,28 +4419,28 @@ task default() {
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "seconds")
                                            (emit/push-value 2)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "seconds")
                                            (emit/push-value 3)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/script-call "seconds")
                                            (emit/push-value 4)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
                 task main() running {
@@ -4418,28 +4476,28 @@ task default() {
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/prim-call "millis")
                                            (emit/push-value 2000)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/prim-call "millis")
                                            (emit/push-value 3000)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/prim-call "millis")
                                            (emit/push-value 4000)
                                            (emit/prim-call "greaterThanOrEquals")
                                            (emit/jz -4)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
                 task main() running {
@@ -4468,29 +4526,31 @@ task default() {
                             :name "blink"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/push-value 0)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "toggle"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "pin#1" 0)
                                         (emit/variable "delay#2" 0)]
                             :locals []
                             :instructions [(emit/read-local "pin#1")
                                            (emit/prim-call "read")
-                                           (emit/jz 4)
+                                           (emit/jz 3)
                                            (emit/read-local "pin#1")
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 3)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 2)
                                            (emit/read-local "pin#1")
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/read-local "delay#2")
                                            (emit/prim-call "delayMs")])])
         actual (en/encode program)
@@ -4519,7 +4579,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "blink13"
                             :running? true
@@ -4528,12 +4588,12 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")])])
         actual (en/encode program)
@@ -4575,7 +4635,7 @@ task default() {
                                            (emit/jz 2)
                                            (emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "increment"
                             :running? true
@@ -4600,7 +4660,7 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 11)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "test"
                             :running? true
@@ -4629,12 +4689,12 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "turnOn")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "turnOff")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")])])
         actual (en/encode program)
@@ -4719,6 +4779,7 @@ task default() {
                             :name "sonar.init"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "trig#1" 0)
                                         (emit/variable "echo#2" 0)
                                         (emit/variable "maxDist#3" 0)]
@@ -4733,6 +4794,7 @@ task default() {
                             :name "sonar.reading"
                             :running? false
                             :delay 100
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "sonar.trigPin")
@@ -4744,6 +4806,7 @@ task default() {
                             :name "sonar.distance_cm"
                             :running? false
                             :delay 0
+                            :type :function
                             :arguments []
                             :locals []
                             :instructions [(emit/read-global "sonar.distance")
@@ -4752,6 +4815,7 @@ task default() {
                             :name "leftMotor.init"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "en#4" 0)
                                         (emit/variable "f#5" 0)
                                         (emit/variable "r#6" 0)]
@@ -4766,6 +4830,7 @@ task default() {
                             :name "leftMotor.forward"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "speed#7" 0)]
                             :locals []
                             :instructions [(emit/read-global "leftMotor.reversePin")
@@ -4781,6 +4846,7 @@ task default() {
                             :name "leftMotor.backward"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "speed#8" 0)]
                             :locals []
                             :instructions [(emit/read-global "leftMotor.forwardPin")
@@ -4796,6 +4862,7 @@ task default() {
                             :name "rightMotor.init"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "en#9" 0)
                                         (emit/variable "f#10" 0)
                                         (emit/variable "r#11" 0)]
@@ -4810,6 +4877,7 @@ task default() {
                             :name "rightMotor.forward"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "speed#12" 0)]
                             :locals []
                             :instructions [(emit/read-global "rightMotor.reversePin")
@@ -4825,6 +4893,7 @@ task default() {
                             :name "rightMotor.backward"
                             :running? false
                             :delay 0
+                            :type :procedure
                             :arguments [(emit/variable "speed#13" 0)]
                             :locals []
                             :instructions [(emit/read-global "rightMotor.forwardPin")
@@ -4839,105 +4908,107 @@ task default() {
                            (emit/script
                             :name "setup"
                             :running? true
-                            :once? true
                             :delay 0
+                            :type :task
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 19)
                                            (emit/push-value 18)
                                            (emit/push-value 200)
                                            (emit/script-call "sonar.init")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/start "sonar.reading")
                                            (emit/push-value 5)
                                            (emit/push-value 7)
                                            (emit/push-value 8)
                                            (emit/script-call "leftMotor.init")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 6)
                                            (emit/push-value 11)
                                            (emit/push-value 9)
                                            (emit/script-call "rightMotor.init")
-                                           (emit/prim-call "pop")])
+                                           #_(emit/prim-call "pop")])
                            (emit/script
                             :name "move"
                             :running? true
                             :delay 10
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/script-call "sonar.distance_cm")
                                            (emit/push-value 0)
                                            (emit/prim-call "equals")
-                                           (emit/jz 7)
+                                           (emit/jz 5)
                                            (emit/push-value 1)
                                            (emit/script-call "leftMotor.forward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "rightMotor.forward")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 53)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 45)
                                            (emit/script-call "sonar.distance_cm")
                                            (emit/push-value 100)
                                            (emit/prim-call "greaterThan")
-                                           (emit/jz 7)
+                                           (emit/jz 5)
                                            (emit/push-value 1)
                                            (emit/script-call "leftMotor.forward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1)
                                            (emit/script-call "rightMotor.forward")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 42)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 36)
                                            (emit/script-call "sonar.distance_cm")
                                            (emit/push-value 45)
                                            (emit/prim-call "greaterThan")
-                                           (emit/jz 7)
+                                           (emit/jz 5)
                                            (emit/push-value 0.5)
                                            (emit/script-call "leftMotor.forward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 0.5)
                                            (emit/script-call "rightMotor.forward")
-                                           (emit/prim-call "pop")
-                                           (emit/jmp 31)
+                                           #_(emit/prim-call "pop")
+                                           (emit/jmp 27)
                                            (emit/prim-call "random")
                                            (emit/push-value 0.5)
                                            (emit/prim-call "lessThan")
-                                           (emit/jz 14)
+                                           (emit/jz 12)
                                            (emit/script-call "sonar.distance_cm")
                                            (emit/push-value 45)
                                            (emit/prim-call "lessThan")
-                                           (emit/jz 9)
+                                           (emit/jz 7)
                                            (emit/push-value 0.5)
                                            (emit/script-call "leftMotor.forward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 0.5)
                                            (emit/script-call "rightMotor.backward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
-                                           (emit/jmp -13)
-                                           (emit/jmp 13)
+                                           (emit/jmp -11)
+                                           (emit/jmp 11)
                                            (emit/script-call "sonar.distance_cm")
                                            (emit/push-value 45)
                                            (emit/prim-call "lessThan")
-                                           (emit/jz 9)
+                                           (emit/jz 7)
                                            (emit/push-value 0.5)
                                            (emit/script-call "rightMotor.forward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 0.5)
                                            (emit/script-call "leftMotor.backward")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 1000)
                                            (emit/prim-call "delayMs")
-                                           (emit/jmp -13)])
+                                           (emit/jmp -11)])
                            (emit/script
                             :name "blink13"
                             :running? true
                             :delay 1000
+                            :type :timer
                             :arguments []
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")])])
+                                           #_(emit/prim-call "pop")])])
         actual (en/encode program)
         expected (en/encode (compile-string "
               import sonar from 'Sonar.uzi';
@@ -5002,117 +5073,117 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 1000)
@@ -5137,122 +5208,122 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/resume "test")
@@ -5273,507 +5344,507 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/resume "test")])])
@@ -5793,252 +5864,252 @@ task default() {
                             :locals []
                             :instructions [(emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/push-value 100)
                                            (emit/prim-call "delayMs")
                                            (emit/push-value 13)
                                            (emit/script-call "toggle")
-                                           (emit/prim-call "pop")
+                                           #_(emit/prim-call "pop")
                                            (emit/resume "test")])])
         actual (en/encode program)]
     (write-file actual)))
