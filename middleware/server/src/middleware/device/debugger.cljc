@@ -200,7 +200,22 @@
 (declare step-over)
 
 (defn- step-over-return [vm program _groups _ig]
-  [(-> (stack-frames program vm) first :return)])
+  ; HACK(Richo): The pc in each stack-frame points to the previous executed instruction,
+  ; which most of the time should be a script-call (because we were called from a different
+  ; script). To know where to place the breakpoint to catch the return we need to increment
+  ; this pc and find the next instruction. However, this could fail if the return pc points
+  ; to a script call that is the last instruction of its script. In that case, incrementing
+  ; the return pc would either point to an instruction in a completely different script or,
+  ; even worse, would point outside the bounds of the program and we would risk a null ref
+  ; exception. So the "safe" way to find the return pc is to traverse the stack frames in 
+  ; pairs checking if after incrementing the return on the first frame the value still lies 
+  ; within the script's instructions on the second frame, discarding the ones who fail this
+  ; check. It's kind of complicated but it seems to work fine...
+  (keep (fn [[{return :return} {script :script}]]
+          (let [pc (inc return)]
+            (when (= script (program/script-for-pc program pc))
+              pc)))
+        (partition 2 1 (stack-frames program vm))))
 
 (defn- step-over-regular [vm program groups ig]
   (if-let [next (next-instruction-group groups ig)]
