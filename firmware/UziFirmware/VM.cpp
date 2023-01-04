@@ -104,7 +104,7 @@ void VM::executeCoroutine(Coroutine* coroutine, GPIO* io, Monitor* monitor)
 		}
 		if (pc > currentScript->getInstructionStop())
 		{
-			if (currentScript->once) 
+			if (currentScript->type == TASK) 
 			{
 				currentScript->setRunning(false);
 			}
