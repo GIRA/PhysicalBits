@@ -145,7 +145,9 @@
      :name task-name
      :delay delay
      :running? (contains? #{"running" "once"} state)
-     :once? (= "once" state)
+     :type (if (= "once" state)
+             :task
+             :timer)
      :locals (collect-locals body)
      :instructions (compile body ctx))))
 
@@ -235,7 +237,8 @@
                       (emit/variable unique-name)) ; TODO(Richo): Handle default value
                     arguments)
    :locals (collect-locals body)
-   :instructions (compile body ctx)))
+   :instructions (compile body ctx)
+   :type :procedure))
 
 (defn compile-function [{:keys [name arguments body]} ctx]
   (register-constant! ctx 0) ; TODO(Richo): Script delay 0
@@ -245,7 +248,8 @@
                       (emit/variable unique-name)) ; TODO(Richo): Handle default value
                     arguments)
    :locals (collect-locals body)
-   :instructions (compile body ctx)))
+   :instructions (compile body ctx)
+   :type :function))
 
 (defn compile-return [{:keys [value]} ctx]
   (if value
