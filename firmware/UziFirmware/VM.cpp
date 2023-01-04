@@ -112,11 +112,7 @@ void VM::executeCoroutine(Coroutine* coroutine, GPIO* io, Monitor* monitor)
 			bool returnFromScriptCall = framePointer != 0;
 			unwindStackAndReturn();
 
-			if (returnFromScriptCall)
-			{
-				currentScript = currentProgram->getScriptForPC(pc);
-			}
-			else
+			if (!returnFromScriptCall)
 			{
 				/*
 				INFO(Richo):
@@ -206,7 +202,7 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		{
 			stack_push(currentProgram->getGlobal(currentScript->getLocal(i)), error);
 		}
-		stack_push(uint32_to_float((uint32)framePointer << 16 | pc), error);
+		stack_push(uint32_to_float((uint32)framePointer << 16 | (pc - 1)), error);
 
 		/*
 		INFO(Richo):
@@ -639,7 +635,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (returnFromScriptCall)
 		{
 			unwindStackAndReturn();
-			currentScript = currentProgram->getScriptForPC(pc);
 		}
 		else
 		{
@@ -672,7 +667,6 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 		if (returnFromScriptCall)
 		{
 			unwindStackAndReturn();
-			currentScript = currentProgram->getScriptForPC(pc);
 		}
 		else
 		{
@@ -1103,6 +1097,30 @@ void VM::unwindStackAndReturn(void)
 	if (returnFromScriptCall && currentScript->type == FUNC)
 	{
 		stack_push(returnValue, error);
+	}
+
+	// NOTE(Richo): Set current script and increment pc
+	Script* script = currentProgram->getScriptForPC(pc);
+	
+	// HACK(Richo): I don't like this, there shouldn't be any reason for not finding a script if the pc was valid.
+	// I had to add this here because of a test that requires that a program with a single empty task doesn't break
+	// the VM. However, it doesn't feel right. Maybe I should just change the dead code remover to ensure empty tasks
+	// are removed. That's probably the better solution...
+	if (script)
+	{
+		currentScript = script;
+	}
+
+	// HACK(Richo): I *REALLY* don't like this. I had to change the meaning of the pc we push to the stack to be the
+	// previous instruction (usually a SCRIPT_CALL) because if we kept pushing the next instruction we could arrive
+	// after the end of the calling script and we would be in trouble. This situation couldn't happen before because 
+	// script calls were never the last instruction on a script, if they were in a statement position then the compiler
+	// used to emit a "pop" so we were safe. However, now that is no longer the case and we have this issue. I would 
+	// like to always push the previous pc but if the framePointer == -1 it means we're starting executing this script
+	// so, as a special case, we push the first pc of the script (thus, we can't increment it or we would be off by 1).
+	if (framePointer != -1) 
+	{
+		pc++;
 	}
 }
 
