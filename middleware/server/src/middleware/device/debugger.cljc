@@ -253,8 +253,8 @@
                                      (:argument call)))
                           groups)]
       [(:start target)]
-      (step-over-regular vm program groups ig))
-    (step-over-regular vm program groups ig)))
+      (step-over vm program groups ig))
+    (step-over vm program groups ig)))
 
 (defn step-over [vm program groups ig]
   (cond
