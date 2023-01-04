@@ -1095,13 +1095,12 @@ void VM::unwindStackAndReturn(void)
 	pc = value & 0xFFFF;
 	framePointer = value >> 16;
 
-	// INFO(Richo): Pop args/locals
+	// NOTE(Richo): Pop args/locals
 	int varCount = currentScript->getArgCount() + currentScript->getLocalCount();
 	stack_discard(varCount, error);
 
-
-	// INFO(Richo): Only push a return value if we were called from another script
-	if (returnFromScriptCall)
+	// NOTE(Richo): Only push a return value if we were called from another script
+	if (returnFromScriptCall && currentScript->type == FUNC)
 	{
 		stack_push(returnValue, error);
 	}
