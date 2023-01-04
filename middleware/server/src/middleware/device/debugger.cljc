@@ -135,7 +135,7 @@
           (dotimes [i (count instructions)]
             (let [instr (nth instructions i)]
               (vswap! current conj [(+ pc i) instr])
-              (when (program/statement? instr)
+              (when (program/statement? instr program)
                 (let [instrs (map second @current)
                       start (apply min (map first @current))
                       stop (+ start (count instrs) -1)
