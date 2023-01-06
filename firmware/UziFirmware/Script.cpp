@@ -6,7 +6,7 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	script->index = scriptIndex;
 
 	script->running = false;
-	script->once = false;
+	script->type = 0;
 	script->interval = 0;
 	script->argCount = script->localCount = 0;
 	script->locals = 0; 
@@ -18,22 +18,22 @@ Error readScript(Reader * rs, Script* script, int16 start, uint8 scriptIndex, fl
 	if (timeout) return READER_TIMEOUT;
 
 	script->running = (h >> 7) & 1;
-	script->once = ((h >> 6) & 1);
+	script->type = ((h >> 5) & 3);
 	
-	if ((h >> 5) & 1) // Has delay
+	if ((h >> 4) & 1) // Has delay
 	{
 		uint8 index = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
 		script->interval = index;
 	}
 
-	if ((h >> 4) & 1) // Has arguments
+	if ((h >> 3) & 1) // Has arguments
 	{
 		script->argCount = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;
 	}
 
-	if ((h >> 3) & 1) // Has locals
+	if ((h >> 2) & 1) // Has locals
 	{
 		script->localCount = rs->next(timeout);
 		if (timeout) return READER_TIMEOUT;

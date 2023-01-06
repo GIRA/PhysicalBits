@@ -9,21 +9,21 @@ proc init(en, f, r) {
 }
 
 proc forward(speed) {
-	turnOff(reversePin);
-	turnOn(forwardPin);
+	write(reversePin, 0);
+	write(forwardPin, 1);
 	write(enablePin, speed);
 }
 
 proc backward(speed) {
-	turnOff(forwardPin);
-	turnOn(reversePin);
+	write(forwardPin, 0);
+	write(reversePin, 1);
 	write(enablePin, speed);
 }
 
 proc brake() {
-	turnOn(forwardPin);
-	turnOn(reversePin);
-	turnOff(enablePin);
+	write(forwardPin, 1);
+	write(reversePin, 1);
+	write(enablePin, 0);
 }
 
 proc setSpeed(speed) {

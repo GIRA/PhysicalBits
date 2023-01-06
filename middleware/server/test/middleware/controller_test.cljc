@@ -39,7 +39,7 @@
                      :globals #{}})
   ; HACK(Richo): Fake program
   (let [program (compile-string
-                 "task blink13() running 1/s { toggle(D13); }
+                 "task blink13() running 1/s { write(D13, 1); }
 
                   var counter;
                   var n;

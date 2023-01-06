@@ -117,12 +117,12 @@
 (defn script-call? [instr]
   (= "UziScriptCallInstruction" (:__class__ instr)))
 
-(defn statement? [instr]
+(defn statement? [instr program]
   (case (:__class__ instr)
+    
     ; Expressions (leave a value in the stack)
     "UziPushInstruction" false
     "UziReadLocalInstruction" false
-    "UziScriptCallInstruction" false
     "UziReadInstruction" false
 
     ; Statements (don't leave a value on the stack)
@@ -139,6 +139,12 @@
     "UziWriteInstruction" true
     "UziTurnOnInstruction" true
     "UziTurnOffInstruction" true
+    
+    ; Special case (depends on the script)
+    "UziScriptCallInstruction" 
+    (let [script (utils/seek #(= (:name %) (-> instr :argument))
+                             (:scripts program))]
+      (not= :function (:type script)))
 
     ; Special case (depends on the primitive)
     "UziPrimitiveCallInstruction"
