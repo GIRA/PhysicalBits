@@ -21,19 +21,22 @@
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"
                                   "-Dclojure.compiler.elide-meta=[:doc :file :line :added]"]}
 
-             :test {:resource-paths ["env/test/resources"]}
+             :test {:resource-paths ["env/test/resources"
+                                     "env/test/sounds"]
+                    :plugins [[venantius/ultra "0.6.0"]]}
 
              :dev {:dependencies [[org.clojure/tools.namespace "0.3.1"]
                                   [org.clojars.beppu/clj-audio "0.3.0"]
                                   [criterium "0.4.6"]
-                                  [com.taoensso/tufte "2.2.0"]]
+                                  [com.taoensso/tufte "2.2.0"]
+                                  [pjstadig/humane-test-output "0.11.0"]]
+                   :injections [(require 'pjstadig.humane-test-output)
+                                (pjstadig.humane-test-output/activate!)]
+                   :plugins [[com.jakemccrary/lein-test-refresh "0.24.1"]]
                    :source-paths ["env/dev/clj"]
                    :resource-paths ["env/dev/resources"]
                    :repl-options {:init-ns user
                                   :timeout 120000}
-                           ;:middleware [ultra.plugin/middleware]
-                   :plugins [[venantius/ultra "0.6.0"]
-                             [com.jakemccrary/lein-test-refresh "0.24.1"]]
                    :global-vars {;*unchecked-math* :warn-on-boxed
                                  ;*warn-on-reflection* true
                                  }}})

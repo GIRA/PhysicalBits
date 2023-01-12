@@ -11,10 +11,16 @@
                   "public/test"
                   "../../gui"]}
 
+ ; NOTE(Richo): We disable caching for the middleware.utils.fs.browser namespace because
+ ; it currently uses a macro to read the "uzi" folder at compile time. If we allow caching
+ ; we risk compiling an old version of the uzi libraries.
+ :cache-blockers #{middleware.utils.fs.browser}
+
  :builds {:simulator {; NOTE(Richo): This build is used in the GUI in order to compile
                       ; as well as interact with the wasm simulator.
                       :target :browser
                       :output-dir "public/simulator/js"
+                      :build-hooks [(user/copy-output "../../gui/ide/middleware")]
                       :modules {:main {:init-fn middleware.simulator/init}}}
 
           :controller {; NOTE(Richo): This build is is used by mendieta

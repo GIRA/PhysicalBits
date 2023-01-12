@@ -54,16 +54,26 @@
      :size (value-size actual-value)}))
 
 (defn script
-  [& {:keys [name arguments delay running? once? locals instructions]
-      :or {arguments [], delay 0, running? false, once? false, locals [], instructions []}}]
+  [& {:keys [name type delay running? arguments locals instructions]
+      :or {type :timer, delay 0, running? false,
+           arguments [], locals [], instructions []}}]
+  ; Possible types: 
+  ; * task (delay = 0, running? = T/F)
+  ; * function (delay = 0, running? = F)
+  ; * procedure (delay = 0, running? = F)
+  ; * timer (delay = [0-Infinity], running? = T/F)
+  (when (not= type :timer)
+    (assert (zero? delay) "Only timer scripts can have a :delay > 0")
+    (when (not= type :task)
+      (assert (not running?) "Only tasks or timers can have :running? = true")))
   {:__class__ "UziScript"
-   :arguments arguments
-   :delay (constant delay)
-   :instructions instructions
-   :locals locals
    :name name
+   :type type
    :running? running?
-   :once? once?})
+   :delay (constant delay)
+   :arguments arguments
+   :locals locals
+   :instructions instructions})
 
 (defn write-global [var-name]
   {:__class__ "UziPopInstruction"

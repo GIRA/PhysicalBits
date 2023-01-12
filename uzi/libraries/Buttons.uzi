@@ -1,7 +1,7 @@
 var debounceMs = 50;
 
-prim isPressed : isOn;
-prim isReleased : isOff;
+func isPressed(pin) { return isOn(pin); }
+func isReleased(pin) { return isOff(pin); }
 
 proc waitForRelease(pin) {
 	until isPressed(pin);

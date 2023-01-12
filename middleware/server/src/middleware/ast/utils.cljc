@@ -26,12 +26,12 @@
     "UziPinLiteralNode" (:value node)
     not-constant))
 
-(defn expression? [{:keys [primitive-name] :as node}]
+(defn expression? [{:keys [primitive-name expression?] :as node}]
   (let [type (node-type node)]
     (if (= "UziCallNode" type) ; Special case for calls
       (if-let [{[_ after] :stack-transition} (prims/primitive primitive-name)]
         (= 1 after)
-        true)
+        expression?)
       (contains? #{"UziLogicalAndNode"
                    "UziLogicalOrNode"
                    "UziNumberLiteralNode"

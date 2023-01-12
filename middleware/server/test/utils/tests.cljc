@@ -29,3 +29,13 @@
 (def setup-fixture
   #?(:clj (fn [f] (init-dependencies) (f))
     :cljs {:before init-dependencies}))
+
+(comment ; Useful snippet to run the test on a specific namespace and output to a file
+  #?(:clj    
+          
+     (with-open [writer (clojure.java.io/writer "test.out")]
+       (binding [clojure.test/*test-out* writer]
+         (clojure.test/run-tests 'middleware.compiler-test)
+         #_(clojure.test/run-all-tests)))
+     
+     ))

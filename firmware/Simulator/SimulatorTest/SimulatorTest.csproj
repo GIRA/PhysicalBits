@@ -107,6 +107,24 @@
     <None Include="TestFiles\Test108CompilingJumpsLongerThan7bitTwosComplement" />
     <None Include="TestFiles\Test109CompilingJumpsLongerThan7bitTwosComplement" />
     <None Include="TestFiles\Test110CompilingJumpsLongerThan7bitTwosComplement" />
+    <None Include="TestFiles\Test111ListCount" />
+    <None Include="TestFiles\Test112ListSize" />
+    <None Include="TestFiles\Test113ListSum" />
+    <None Include="TestFiles\Test114ListAvg" />
+    <None Include="TestFiles\Test115ListMin" />
+    <None Include="TestFiles\Test116ListMax" />
+    <None Include="TestFiles\Test117ArrayCount" />
+    <None Include="TestFiles\Test118ArraySum" />
+    <None Include="TestFiles\Test119ArrayAvg" />
+    <None Include="TestFiles\Test120ArrayMin" />
+    <None Include="TestFiles\Test121ArrayMax" />
+    <None Include="TestFiles\Test122ListGet" />
+    <None Include="TestFiles\Test123ListSet" />
+    <None Include="TestFiles\Test124ListPop" />
+    <None Include="TestFiles\Test125ListClear" />
+    <None Include="TestFiles\Test126ArrayGet" />
+    <None Include="TestFiles\Test127ArraySet" />
+    <None Include="TestFiles\Test128ArrayClear" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />

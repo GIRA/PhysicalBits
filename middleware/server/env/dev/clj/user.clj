@@ -35,4 +35,6 @@
 (comment
   (reload)
   (refresh-all)
+  (start)
+  (open-browser)
   ,,,)

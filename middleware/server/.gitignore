@@ -25,3 +25,5 @@ pom.xml.asc
 
 pc.uuid
 /events
+
+test.out

@@ -1,7 +1,8 @@
 (ns middleware.compilation.linker
   (:require [middleware.ast.utils :as ast-utils]
             [middleware.utils.fs.common :as fs]
-            [middleware.compilation.parser :as parser]))
+            [middleware.compilation.parser :as parser]
+            [middleware.utils.core :refer [seek indexed-by]]))
 
 ; NOTE(Richo): Cache to avoid parsing the same file several times if it didn't change.
 (def parser-cache (atom {}))
@@ -17,22 +18,25 @@
                                         :content content})
         content))))
 
+; TODO(Richo): I would like this function to actually bind the call target and somehow 
+; assoc the actual script/primitive object to the call. However, I don't want to make
+; the object bigger as it would be impossible to print. Maybe I can add this as metadata.
+; When I do it I need to remember to change the name to bind-call-targets or something...
 (defn bind-primitives [ast]
-  (let [scripts (set (map :name
-                          (:scripts ast)))
-        core-primitives (into {} (map (fn [{:keys [name alias]}] [alias name])
-                                      (:primitives ast)))]
+  (let [scripts (indexed-by :name (:scripts ast))
+        core-primitives (indexed-by :alias (:primitives ast))]
     (ast-utils/transform
      ast
      ; NOTE(Richo): We should only associate a prim name if the selector doesn't match
      ; an existing script. Scripts have precedence over primitives!
+     ; If we're calling a script we check if it's a function and let the call know if
+     ; it should be treated as an expression or not
      (fn [node]
        (if (ast-utils/call? node)
          (let [selector (node :selector)]
-           (if (contains? scripts selector)
-             node
-             (assoc node
-                    :primitive-name (core-primitives selector))))
+           (if-let [script (scripts selector)]              
+             (assoc node :expression? (ast-utils/function? script))
+             (assoc node :primitive-name (:name (core-primitives selector)))))
          node)))))
 
 (defn apply-alias [ast alias]
@@ -130,7 +134,10 @@
     (assoc ast
            :imports (mapv :import resolved-imports)
            :globals (vec (concat imported-globals (:globals ast)))
-           :scripts (vec (concat imported-scripts (:scripts ast)))
+           :scripts (let [new-scripts (indexed-by :name (:scripts ast))]
+                      (vec (concat (remove #(contains? new-scripts (:name %)) 
+                                           imported-scripts)
+                                   (:scripts ast))))
            :primitives (vec (concat imported-prims (:primitives ast))))))
 
 (defn resolve-imports

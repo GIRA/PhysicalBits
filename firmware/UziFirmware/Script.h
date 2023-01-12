@@ -5,16 +5,23 @@
 #include "Coroutine.h"
 #include "Memory.h"
 
+enum ScriptType
+{
+	TASK = 0,
+	FUNC = 1,
+	PROC = 2,
+	TIMER = 3
+};
+
 // TODO(Richo): Optimize memory!
 struct Script
 {
+	uint8 index;
+	uint8 interval;
+
 	bool running : 1;
-	uint8 index : 7;
-
-	bool once : 1;
-	uint8 interval : 7;
-
-	uint8 argCount = 0;
+	uint8 type : 2;
+	uint8 argCount : 5;
 
 	uint8 localCount = 0;
 	uint8* locals = 0;
