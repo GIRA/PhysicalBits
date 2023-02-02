@@ -22,6 +22,8 @@ let ASTToBlocks = (function () {
 		},
 		UziImportNode: function (json, ctx) {
 			function getVariableDefaultValue(varName) {
+				if (!json.initializationBlock) return "0";
+				
 				let assignment = json.initializationBlock.statements.find(stmt =>
 					stmt.__class__ == "UziAssignmentNode" &&
 					stmt.left.__class__ == "UziVariableNode" &&
