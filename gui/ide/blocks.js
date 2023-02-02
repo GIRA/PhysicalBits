@@ -19,6 +19,7 @@ let UziBlock = (function () {
   };
 
   let uziSyntax = false;
+  let toolbox = null;
 
   /**
   NOTE(Richo): This function should be used instead of i18n.translate in all block
@@ -2657,34 +2658,21 @@ let UziBlock = (function () {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
 
+    // TODO(Vicky)
+    settings = JSONX.parse(localStorage["uzi.settings"] || "null");
+    advBlocksChecked = false;
+    if (settings && settings.advBlocks) {
+      advBlocksChecked = true;
+    }
+
     initFromSpec();
 
     i18n.on("change", refreshWorkspace);
 
-    return ajax.GET('toolbox.xml').then(function (toolbox) {
-      if (typeof(toolbox) == "string") {
-        toolbox = Blockly.Xml.textToDom(toolbox);
-      } else {
-        toolbox = toolbox.documentElement;
-      }
-      let categories = toolbox.getElementsByTagName("category");
-      for (let i = 0; i < categories.length; i++) {
-        let category = categories[i];
-        let name = category.getAttribute("name");
-        category.setAttribute("originalName", name);
-        category.setAttribute("name", i18n.translate(name));
+    toolboxName = (advBlocksChecked == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
 
-        let color = colors[name.toUpperCase()];
-        if (color != undefined) {
-          category.setAttribute("colour", color);
-        }
-      }
-      let buttons = toolbox.getElementsByTagName("button");
-      for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i];
-        button.setAttribute("originalText", button.getAttribute("text"));
-        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
-      }
+    return ajax.GET(toolboxName).then(function(toolboxData) {
+      toolbox = setToolbox(toolboxData);
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox,
         zoom: {
@@ -2699,10 +2687,12 @@ let UziBlock = (function () {
       });
 
       i18n.on("change", function () {
+        let categories = toolbox.getElementsByTagName("category");
         for (let i = 0; i < categories.length; i++) {
           let category = categories[i];
           category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
         }
+        let buttons = toolbox.getElementsByTagName("button");
         for (let i = 0; i < buttons.length; i++) {
           let button = buttons[i];
           button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
@@ -2795,21 +2785,21 @@ let UziBlock = (function () {
         }
       });
 
-      initTasksToolboxCategory(toolbox, workspace);
-      initDCMotorsToolboxCategory(toolbox, workspace);
-      initSonarToolboxCategory(toolbox, workspace);
-      initJoystickToolboxCategory(toolbox, workspace);
-      initVariablesToolboxCategory(toolbox, workspace);
-      initListsToolboxCategory(toolbox, workspace);
-      initProceduresToolboxCategory(toolbox, workspace);
-      initFunctionsToolboxCategory(toolbox, workspace);
+      initTasksToolboxCategory(workspace);
+      initDCMotorsToolboxCategory(workspace);
+      initSonarToolboxCategory(workspace);
+      initJoystickToolboxCategory(workspace);
+      initVariablesToolboxCategory(workspace);
+      initListsToolboxCategory(workspace);
+      initProceduresToolboxCategory(workspace);
+      initFunctionsToolboxCategory(workspace);
 
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
   }
 
-  function initTasksToolboxCategory(toolbox, workspace) {
+  function initTasksToolboxCategory(workspace) {
     let taskDeclaringBlocks = new Set(["task", "timer"]);
     let taskControlBlocks = new Set(["start_task", "stop_task", "resume_task", "pause_task", "run_task"]);
 
@@ -2856,7 +2846,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initDCMotorsToolboxCategory(toolbox, workspace) {
+  function initDCMotorsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
       let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
       let nodes = Array.from(node.children);
@@ -2875,7 +2865,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initSonarToolboxCategory(toolbox, workspace) {
+  function initSonarToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("SONAR", function () {
       let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
       let nodes = Array.from(node.children);
@@ -2894,7 +2884,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initJoystickToolboxCategory(toolbox, workspace) {
+  function initJoystickToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
       let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
       let nodes = Array.from(node.children);
@@ -2913,7 +2903,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initVariablesToolboxCategory(toolbox, workspace) {
+  function initVariablesToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("VARIABLES", function () {
       let node = XML.getChildNode(toolbox, "Variables", "originalName");
       let nodes = Array.from(node.children);
@@ -2932,7 +2922,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initListsToolboxCategory(toolbox, workspace) {
+  function initListsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("LISTS", function () {
       let node = XML.getChildNode(toolbox, "Lists", "originalName");
       let nodes = Array.from(node.children);
@@ -2951,7 +2941,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initProceduresToolboxCategory(toolbox, workspace) {
+  function initProceduresToolboxCategory(workspace) {
     let procDeclaringBlocks = new Set(["proc_definition_0args", "proc_definition_1args",
                                        "proc_definition_2args", "proc_definition_3args",
                                        "proc_definition_4args", "proc_definition_5args"]);
@@ -3007,7 +2997,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initFunctionsToolboxCategory(toolbox, workspace) {
+  function initFunctionsToolboxCategory(workspace) {
     let funcDeclaringBlocks = new Set(["func_definition_0args", "func_definition_1args",
                                        "func_definition_2args", "func_definition_3args",
                                        "func_definition_4args", "func_definition_5args"]);
@@ -3806,6 +3796,41 @@ let UziBlock = (function () {
     readOnly = value;
   }
 
+  function setToolbox(toolboxData) {
+    if (typeof(toolboxData) == "string") {
+      toolbox = Blockly.Xml.textToDom(toolboxData);
+    } else {
+      toolbox = toolboxData.documentElement;
+    }
+    let categories = toolbox.getElementsByTagName("category");
+    for (let i = 0; i < categories.length; i++) {
+      let category = categories[i];
+      let name = category.getAttribute("name");
+      category.setAttribute("originalName", name);
+      category.setAttribute("name", i18n.translate(name));
+
+      let color = colors[name.toUpperCase()];
+      if (color != undefined) {
+        category.setAttribute("colour", color);
+      }
+    }
+    let buttons = toolbox.getElementsByTagName("button");
+    for (let i = 0; i < buttons.length; i++) {
+      let button = buttons[i];
+      button.setAttribute("originalText", button.getAttribute("text"));
+      button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
+    }
+    return toolbox;
+  }
+
+  function modifyToolbox(value) {
+    toolboxName = (value == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
+    ajax.GET(toolboxName).then(function(toolboxData) {
+      toolbox = setToolbox(toolboxData);
+      workspace.updateToolbox(toolbox);
+    });
+  }
+
   return {
     init: init,
     on: on,
@@ -3821,6 +3846,9 @@ let UziBlock = (function () {
       uziSyntax = value;
       refreshAll();
     },
+
+    modifyToolbox: modifyToolbox,
+    setToolbox: setToolbox,
 
     cleanUp: cleanUp,
 

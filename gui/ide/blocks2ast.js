@@ -1300,7 +1300,11 @@ let BlocksToAST = (function () {
 	};
 
 	function asIdentifier(str) {
-		return str.replace(/ /g, '_');
+		str = str.replace(/ /g, '_')
+		if (!isNaN(str[0])){
+			str = "_" + str;
+		}
+		return str;
 	}
 
 	function generateCodeFor(block, ctx, stream) {
