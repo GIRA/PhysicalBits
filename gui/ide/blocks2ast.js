@@ -11,17 +11,7 @@ let BlocksToAST = (function () {
 				imports: imports,
 				globals: globals.filter(g => g != undefined).map(g => {
 					let name = g.name;
-					let pinRegex = /^[DA]\d+$/;
-					let value = null;
-					if (g.value == undefined) {
-						value = builder.number(id, 0);
-					} else if (pinRegex.test(g.value)) {
-						let type = g.value[0];
-						let number = parseInt(g.value.slice(1));
-						value = builder.pin(id, type, number);
-					} else {
-						value = builder.number(id, parseFloat(g.value));
-					}
+					let value = builder.pinOrNumber(id, g.value);
 					return builder.variableDeclaration(id, name, value);
 				}),
 				scripts: scripts,
@@ -144,6 +134,18 @@ let BlocksToAST = (function () {
 				type: type,
 				number: number
 			});
+		},
+		pinOrNumber: function (id, value) {
+			let pinRegex = /^[DA]\d+$/;
+			if (value == undefined) {
+				return builder.number(id, 0);
+			} else if (pinRegex.test(value)) {
+				let type = value[0];
+				let number = parseInt(value.slice(1));
+				return builder.pin(id, type, number);
+			} else {
+				return builder.number(id, parseFloat(value));
+			}
 		},
 		variable: function (id, variableName) {
 			return node("UziVariableNode", {
@@ -1447,16 +1449,10 @@ let BlocksToAST = (function () {
 						let motor = metadata.motors.find(function (m) { return m.name === alias; });
 						if (motor == undefined) return null;
 
-						function pin(pin) {
-							let type = pin[0];
-							let number = parseInt(pin.slice(1));
-							return builder.pin(null, type, number);
-						}
-
 						let stmts = [];
-						stmts.push(builder.assignment(null, "enablePin", pin(motor.enable)));
-						stmts.push(builder.assignment(null, "forwardPin", pin(motor.fwd)));
-						stmts.push(builder.assignment(null, "reversePin", pin(motor.bwd)));
+						stmts.push(builder.assignment(null, "enablePin", builder.pinOrNumber(null, motor.enable)));
+						stmts.push(builder.assignment(null, "forwardPin", builder.pinOrNumber(null, motor.fwd)));
+						stmts.push(builder.assignment(null, "reversePin", builder.pinOrNumber(null, motor.bwd)));
 						return builder.block(null, stmts);
 					});
 				},
@@ -1465,15 +1461,9 @@ let BlocksToAST = (function () {
 						let sonar = metadata.sonars.find(function (m) { return m.name === alias; });
 						if (sonar == undefined) return null;
 
-						function pin(pin) {
-							let type = pin[0];
-							let number = parseInt(pin.slice(1));
-							return builder.pin(null, type, number);
-						}
-
 						let stmts = [];
-						stmts.push(builder.assignment(null, "trigPin", pin(sonar.trig)));
-						stmts.push(builder.assignment(null, "echoPin", pin(sonar.echo)));
+						stmts.push(builder.assignment(null, "trigPin", builder.pinOrNumber(null, sonar.trig)));
+						stmts.push(builder.assignment(null, "echoPin", builder.pinOrNumber(null, sonar.echo)));
 						stmts.push(builder.assignment(null, "maxDistance", builder.number(null, parseInt(sonar.maxDist))));
 						stmts.push(builder.start(null, ["reading"]));
 						return builder.block(null, stmts);
@@ -1484,15 +1474,9 @@ let BlocksToAST = (function () {
 						let joystick = metadata.joysticks.find(function (m) { return m.name === alias; });
 						if (joystick == undefined) return null;
 
-						function pin(pin) {
-							let type = pin[0];
-							let number = parseInt(pin.slice(1));
-							return builder.pin(null, type, number);
-						}
-
 						let stmts = [];
-						stmts.push(builder.assignment(null, "xPin", pin(joystick.xPin)));
-						stmts.push(builder.assignment(null, "yPin", pin(joystick.yPin)));
+						stmts.push(builder.assignment(null, "xPin", builder.pinOrNumber(null, joystick.xPin)));
+						stmts.push(builder.assignment(null, "yPin", builder.pinOrNumber(null, joystick.yPin)));
 						stmts.push(builder.start(null, ["reading"]));
 						return builder.block(null, stmts);
 					});
