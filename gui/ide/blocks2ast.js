@@ -268,7 +268,9 @@ let BlocksToAST = (function () {
 
 			// NOTE(Richo): Instead of creating the block here we just add the import to the ctx
 			ctx.addImport(alias, path, function () {
-				return JSONX.parse(XML.getLastChild(block, n => n.tagName == "COMMENT").textContent);
+				let comment = XML.getLastChild(block, n => n.tagName == "COMMENT");
+				if (comment) return JSONX.parse(comment.textContent);
+				return null;
 			});
 		},
 		yield: function (block, ctx, stream) {
