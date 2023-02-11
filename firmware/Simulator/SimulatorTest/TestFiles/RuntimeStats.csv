@@ -1,8 +1,8 @@
 ﻿,Loops,Memory used (bytes),Total coroutine resizings
 MIN,2,18,0
 MAX,5040003,919,6
-AVERAGE,46498.6484375,224.4453125,0.2734375
-MEDIAN,26,176,0
+AVERAGE,44088.2814814815,219.696296296296,0.259259259259259
+MEDIAN,13,168,0
 Test001TurnOnBytecode,4,75,0
 Test002TurnOffBytecode,4,75,0
 Test003ReadWriteBytecode,4,77,0
@@ -131,3 +131,10 @@ Test125ListClear,4,333,0
 Test126ArrayGet,4,243,0
 Test127ArraySet,4,301,0
 Test128ArrayClear,4,344,0
+Test129VariableDeclarationInsideForeverLoop,13,124,0
+Test130VariableDeclarationInsideRepeatLoop,13,149,0
+Test131VariableDeclarationInsideWhileLoop,13,128,0
+Test132VariableDeclarationInsideUntilLoop,13,128,0
+Test133VariableDeclarationInsideDoWhileLoop,13,126,0
+Test134VariableDeclarationInsideDoUntilLoop,13,126,0
+Test135VariableDeclarationInsideForLoop,13,149,0
