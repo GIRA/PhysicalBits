@@ -2878,5 +2878,75 @@ namespace SimulatorTest
             sketch.Loop();
             Assert.AreEqual(1023, sketch.GetPinValue(13));
         }
+
+        [TestMethod]
+        public void Test129VariableDeclarationInsideForeverLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test129VariableDeclarationInsideForeverLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test130VariableDeclarationInsideRepeatLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test130VariableDeclarationInsideRepeatLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test131VariableDeclarationInsideWhileLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test131VariableDeclarationInsideWhileLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test132VariableDeclarationInsideUntilLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test132VariableDeclarationInsideUntilLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test133VariableDeclarationInsideDoWhileLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test133VariableDeclarationInsideDoWhileLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test134VariableDeclarationInsideDoUntilLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test134VariableDeclarationInsideDoUntilLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
+
+        [TestMethod]
+        public void Test135VariableDeclarationInsideForLoop()
+        {
+            LoadProgram(ReadFile(nameof(Test135VariableDeclarationInsideForLoop)));
+
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+            Loop();
+            Assert.AreEqual(0, sketch.GetPinValue(13));
+        }
     }
 }

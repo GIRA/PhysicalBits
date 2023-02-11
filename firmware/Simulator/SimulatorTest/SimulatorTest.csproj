@@ -125,6 +125,13 @@
     <None Include="TestFiles\Test126ArrayGet" />
     <None Include="TestFiles\Test127ArraySet" />
     <None Include="TestFiles\Test128ArrayClear" />
+    <None Include="TestFiles\Test129VariableDeclarationInsideForeverLoop" />
+    <None Include="TestFiles\Test130VariableDeclarationInsideRepeatLoop" />
+    <None Include="TestFiles\Test131VariableDeclarationInsideWhileLoop" />
+    <None Include="TestFiles\Test132VariableDeclarationInsideUntilLoop" />
+    <None Include="TestFiles\Test133VariableDeclarationInsideDoWhileLoop" />
+    <None Include="TestFiles\Test134VariableDeclarationInsideDoUntilLoop" />
+    <None Include="TestFiles\Test135VariableDeclarationInsideForLoop" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TestFiles\Test001TurnOnBytecode" />
