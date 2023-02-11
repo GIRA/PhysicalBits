@@ -211,9 +211,9 @@
 (defn compile-variable-declaration
   [{:keys [unique-name value]} ctx]
   (register-constant! ctx (ast-utils/compile-time-value value 0))
-  (if (and (or (nil? value)
-               (ast-utils/compile-time-constant? value))
-           (empty? (filter ast-utils/loop? (:path ctx))))
+  (if (or (nil? value)
+          (and (ast-utils/compile-time-constant? value)
+               (empty? (filter ast-utils/loop? (:path ctx)))))
     []
     (conj (compile value ctx)
           (emit/write-local unique-name))))
