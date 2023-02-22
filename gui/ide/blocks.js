@@ -3831,6 +3831,47 @@ let UziBlock = (function () {
     });
   }
 
+  function getTopBlockName(block) {
+      return block.getFieldValue("scriptName"); // fix func
+  }
+
+  function getTopBlocksPositions(){
+      console.log("Ejecutando getTopBlocksPositions...")
+      let topBlockPositions = {};
+      workspace.getTopBlocks().forEach(block =>{
+          topBlockPositions[getTopBlockName(block)] = block.getRelativeToSurfaceXY();
+      })
+      console.log(topBlockPositions)
+      return topBlockPositions;
+  }
+
+  function setPositions(prevTopBlockPositions) {
+      console.log("Ejecutando setPositions...")
+      let lastY = 0;
+      let y = 0;
+      let x = 0;
+      workspace.getTopBlocks().forEach(block =>{
+          let name = getTopBlockName(block);
+          x = 0;
+          y = lastY;
+          if (name in prevTopBlockPositions){
+              console.log(name + " is a previous top block.")
+              let positions = prevTopBlockPositions[name];
+              x = positions.x;
+              if (positions.y > lastY){
+                  y = positions.y;
+              }
+              console.log("Previous position: ( " +  positions.x + ", " + positions.y + "). Actual position: ( "  +  x + ", " + y + ")")
+          } else {
+              console.log(name + " is a NEW top block")
+              console.log("Actual position: ( "  +  x + ", " + y + ")")
+          }
+          block.moveBy(x, y);
+          lastY = y + block.height + 24;
+      })
+    }
+
+
   return {
     init: init,
     on: on,
@@ -3998,6 +4039,10 @@ let UziBlock = (function () {
         return false;
       }
     },
+    
+    getTopBlocksPositions: getTopBlocksPositions,
+    setPositions: setPositions,
+    //setBlockPosition: setBlockPosition,
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,

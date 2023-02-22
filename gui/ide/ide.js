@@ -155,9 +155,10 @@ let IDE = (function () {
         Uzi.on("update", (state, previousState, keys) => {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
+          let topBlocksPosition = UziBlock.getTopBlocksPositions();
           let blocklyProgram = ASTToBlocks.generate(state.program);
           UziBlock.setProgram(blocklyProgram);
-          UziBlock.cleanUp();
+          UziBlock.setPositions(topBlocksPosition);
         });
       })
       .then(restoreFromLocalStorage);
