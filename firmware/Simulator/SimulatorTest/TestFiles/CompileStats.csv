@@ -1,8 +1,8 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,2
 MAX,164,27,308
-AVERAGE,21.17867435158501,5.585014409221902,44.86455331412104
-MEDIAN,12,4,29
+AVERAGE,21.17514124293785,5.53954802259887,44.79661016949153
+MEDIAN,12,4,31
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,12
 middleware.checker-test/assignments-are-not-expressions#0,0,0,2
 middleware.checker-test/attempting-to-start-or-stop-a-non-existing-task-should-fail#0,14,9,37
@@ -40,7 +40,7 @@ middleware.checker-test/variable-names-should-not-collide#2,3,4,15
 middleware.checker-test/variables-declared-inside-a-block-should-not-collide-with-variables-already-declared-outside#0,2,3,12
 middleware.code-generator-test/blink13#0,8,4,23
 middleware.code-generator-test/control-structures#0,35,4,72
-middleware.code-generator-test/control-structures-part-II#0,5,4,17
+middleware.code-generator-test/control-structures-part-II#0,9,4,23
 middleware.code-generator-test/empty-program#0,0,0,2
 middleware.code-generator-test/empty-script-running-once#0,0,1,4
 middleware.code-generator-test/empty-script-stopped#0,0,0,2
@@ -58,8 +58,8 @@ middleware.code-generator-test2/blink13#0,8,4,23
 middleware.code-generator-test2/blink13#1,8,4,23
 middleware.code-generator-test2/control-structures#0,35,4,72
 middleware.code-generator-test2/control-structures#1,35,4,72
-middleware.code-generator-test2/control-structures-part-II#0,5,4,17
-middleware.code-generator-test2/control-structures-part-II#1,5,4,17
+middleware.code-generator-test2/control-structures-part-II#0,9,4,23
+middleware.code-generator-test2/control-structures-part-II#1,9,4,23
 middleware.code-generator-test2/custom-operator-precedence#0,0,0,2
 middleware.code-generator-test2/custom-operator-precedence#1,0,0,2
 middleware.code-generator-test2/empty-program#0,0,0,2
@@ -231,7 +231,7 @@ middleware.encoder-test/script-with-while-loop-2#0,13,2,28
 middleware.linker-test/importing-a-script-with-a-local-var-that-shadows-global#0,6,4,20
 middleware.parser-test/blink13#0,8,4,23
 middleware.parser-test/control-structures#0,35,4,72
-middleware.parser-test/control-structures-2#0,5,4,17
+middleware.parser-test/control-structures-2#0,9,4,23
 middleware.parser-test/empty-program#0,0,0,2
 middleware.parser-test/function-with-arguments#0,0,0,2
 middleware.parser-test/functions-with-calls-and-globals#0,0,0,2
@@ -350,3 +350,10 @@ middleware.vm-test-files-gen/Test125ListClear#0,50,8,84
 middleware.vm-test-files-gen/Test126ArrayGet#0,26,7,50
 middleware.vm-test-files-gen/Test127ArraySet#0,49,9,95
 middleware.vm-test-files-gen/Test128ArrayClear#0,64,8,121
+middleware.vm-test-files-gen/Test129VariableDeclarationInsideForeverLoop#0,15,3,32
+middleware.vm-test-files-gen/Test130VariableDeclarationInsideRepeatLoop#0,25,4,49
+middleware.vm-test-files-gen/Test131VariableDeclarationInsideWhileLoop#0,17,3,35
+middleware.vm-test-files-gen/Test132VariableDeclarationInsideUntilLoop#0,17,3,35
+middleware.vm-test-files-gen/Test133VariableDeclarationInsideDoWhileLoop#0,16,3,33
+middleware.vm-test-files-gen/Test134VariableDeclarationInsideDoUntilLoop#0,16,3,33
+middleware.vm-test-files-gen/Test135VariableDeclarationInsideForLoop#0,25,4,49

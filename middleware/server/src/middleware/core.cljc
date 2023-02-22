@@ -116,7 +116,7 @@
 (defn run! [program]
   (go-try
    (elog/append "CORE/RUN")
-   (debugger/run-program! #(dc/run program))))
+   (debugger/run-program! program)))
 
 (defn compile-and-install! [src type & args]
   (go-try

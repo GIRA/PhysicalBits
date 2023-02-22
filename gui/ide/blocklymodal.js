@@ -193,8 +193,13 @@ let BlocklyModal = (function () {
       let select = $("<select>")
         .addClass("form-control")
         .attr("name", "elements[" + i + "][" + id + "]");
-      Uzi.state.pins.available.forEach(function (pin) {
-        select.append($("<option>").text(pin.name));
+      let options = Uzi.state.pins.available.map(pin => pin.name);
+      if (!options.includes(value)) {
+        select.append($("<option>").text(value));
+        select.append($("<option disabled>-------------</option>"));
+      }
+      options.forEach(function (option) {
+        select.append($("<option>").text(option));
       });
       select.get(0).value = value;
       return select;

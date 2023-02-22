@@ -127,6 +127,14 @@
                "UziRepeatNode"}
              (node-type node)))
 
+(defn loop? [node]
+  (contains? #{"UziLoopNode" ; TODO(Richo): Is UziLoopNode still necessary?
+               "UziForNode" "UziForeverNode"
+               "UziWhileNode" "UziUntilNode"
+               "UziDoWhileNode" "UziDoUntilNode"
+               "UziRepeatNode"}
+             (node-type node)))
+
 (defn script-control? [node]
   (contains? #{"UziScriptStopNode" "UziScriptStartNode"
                "UziScriptPauseNode" "UziScriptResumeNode"}
