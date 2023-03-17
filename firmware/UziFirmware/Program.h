@@ -18,6 +18,8 @@ struct Program
 
 	Instruction* instructions = 0;
 
+	char* strings = 0;
+
 	uint8 getScriptCount(void);
 	Script* getScript(int16);
 	Script* getScriptForPC(int16);

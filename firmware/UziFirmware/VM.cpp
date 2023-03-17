@@ -1000,6 +1000,24 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+	case PRIM_LCD_PRINT_STRING:
+	{
+		uint32 value_pointer = stack_pop(error);
+		char* value = currentProgram->strings + value_pointer;
+		uint8 line = (uint8)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+		if (pointer > 0)
+		{
+			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				lcd->setCursor(0, line);
+				lcd->print(value);
+			}
+		}
+	}
+	break;
+
 	case PRIM_ARRAY_INIT:
 	{
 		int32 size = (int32)stack_pop(error);

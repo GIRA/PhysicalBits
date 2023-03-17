@@ -54,4 +54,5 @@ public:
 	 
 	// Print.h
 	void print(float) {}
+	void print(char*) {}
 };
