@@ -21,6 +21,7 @@ class Monitor
 {
 public:
 	void loadInstalledProgram(Program** program);
+	void loadHardcodedProgram(Program** program);
 	void initSerial(UziSerial*);
 	void checkForIncomingMessages(Program** program, GPIO* io, VM* vm);
 	void sendOutgoingMessages(Program* program, GPIO* io, VM* vm);

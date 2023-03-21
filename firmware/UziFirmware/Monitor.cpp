@@ -55,6 +55,56 @@ void Monitor::loadInstalledProgram(Program** program)
 	}
 }
 
+
+
+void Monitor::loadHardcodedProgram(Program** program)
+{
+	Program* p = uzi_create(Program);
+	p->scriptCount = 1;
+	p->globalCount = 5;
+	
+	p->globals = uzi_createArray(float, p->globalCount);
+	p->globals[0] = 39;
+	p->globals[1] = 16;
+	p->globals[2] = 2;
+	p->globals[3] = 0;
+	p->globals[4] = 6;
+
+
+	p->scripts = uzi_createArray(Script, p->scriptCount);
+	p->scripts[0].index = 0;
+	p->scripts[0].interval = 0;
+	p->scripts[0].running = true;
+	p->scripts[0].type = 0;
+	p->scripts[0].argCount = 0;
+
+	p->scripts[0].instructionCount = 8;
+
+	p->instructions = uzi_createArray(Instruction, p->scripts[0].instructionCount);
+	p->instructions[0].opcode = READ_GLOBAL;
+	p->instructions[0].data = 0;
+	p->instructions[1].opcode = READ_GLOBAL;
+	p->instructions[1].data = 1;
+	p->instructions[2].opcode = READ_GLOBAL;
+	p->instructions[2].data = 2;
+	
+	p->instructions[3].opcode = PRIM_LCD_INIT0;
+	p->instructions[4].opcode = PRIM_LCD_INIT1;
+
+	p->instructions[5].opcode = READ_GLOBAL;
+	p->instructions[5].data = 3;
+
+	p->instructions[6].opcode = READ_GLOBAL;
+	p->instructions[6].data = 3;
+
+	p->instructions[7].opcode = PRIM_LCD_PRINT_STRING;
+
+	p->strings = "RICHO_VICKY";
+	p->strings[5] = 0;
+
+	*program = p;
+}
+
 void Monitor::initSerial(UziSerial* s)
 {
 	serial = s;
