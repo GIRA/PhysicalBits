@@ -1,5 +1,5 @@
 var lcd = 0;
-var address = 63;
+var address = 63; "NOTE(Richo): 39 is a common address too"
 var cols = 16;
 var rows = 2;
 
@@ -16,5 +16,6 @@ func ready() {
 }
 
 proc print(line, value) {
+  until ready();
   lcd_print(lcd, line, value);
 }
