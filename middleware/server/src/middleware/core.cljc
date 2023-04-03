@@ -40,9 +40,9 @@
                                               (emit/prim-call "lcd_init0")
                                               (emit/prim-call "lcd_init1")
                                               (emit/push-value 0)
-                                              (emit/push-value 0)
+                                              (emit/push-value 6)
                                               (emit/prim-call "lcd_print_str")])]
-             :strings ["ABC"]))
+             :strings ["Richo" "Vicky"]))
 
   (debugger/run-program! *program)
 
@@ -50,7 +50,7 @@
   (en/encode *program)
 
   (<!! (connect! "COM11"))
-  (connect! "127.0.0.1:4242")
+  (<!! (connect! "127.0.0.1:4242"))
   (disconnect!)
 
   (connected?)
@@ -77,12 +77,14 @@ prim lcd_init1;
 prim lcd_print;
             
 task setup() {
-            var lcd = lcd_init1(lcd_init0(39, 16, 2));
+            var lcd = lcd_init1(lcd_init0(63, 16, 2));
             lcd_print(lcd, 0, 14);
 }
             ")
 
   (<!! (compile! src "uzi" false))
+
+  (Integer/toBinaryString 124646100)
 
   (<!! (compile-and-run! src "uzi" false))
   )
