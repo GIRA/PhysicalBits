@@ -65,7 +65,8 @@
    "jmp"                    [16r60    [1     0]]
    "jz"                     [16r61    [2     0]]
    "jnz"                    [16r62    [2     0]]
-   "jlte"                   [16r63    [3     0]]})
+   "jlte"                   [16r63    [3     0]]
+   "lcd_print_str"          [16r64    [3     0]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]

@@ -1,5 +1,5 @@
 (ns middleware.compilation.encoder
-  (:require [middleware.utils.conversions :refer [float->uint32 two's-complement]]
+  (:require [middleware.utils.conversions :refer [float->uint32 two's-complement string->bytes]]
             [middleware.ast.primitives :as prims]
             [middleware.program.utils :as p]))
 
@@ -261,13 +261,23 @@
 
      (encode-instruction-count script))))
 
+(defn encode-strings [{:keys [strings]}]
+  (let [length (reduce + (map (comp inc count) strings))]
+    (when (> length 255)
+      (throw (ex-info "Too many strings!" {})))
+    (concat [length]
+            (mapcat (fn [s] (concat (string->bytes s) [0]))
+                    strings))))
+
 (defn encode-program [program]
   (concat [(count (:scripts program))]
           (encode-globals program)
           (mapcat #(encode-script-header % program)
                   (:scripts program))
           (mapcat #(encode-instructions % program)
-                  (:scripts program))))
+                  (:scripts program))
+          (encode-strings program)))
+
 
 (defn encode [program]
   (-> program

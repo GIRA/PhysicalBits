@@ -1,6 +1,6 @@
 (ns middleware.core
   (:refer-clojure :exclude [run!])
-  (:require [clojure.core.async :as a :refer [go <!]]
+  (:require [clojure.core.async :as a :refer [go <! <!!]]
             [clojure.string :as str]
             [middleware.utils.core :refer [index-of]]
             [middleware.utils.json :as json]
@@ -16,6 +16,76 @@
             [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
             [middleware.compilation.encoder :as en]))
+
+(comment
+
+  ;; push 39
+  ;; push 16
+  ;; push 2
+  ;; prim lcd_init_0
+  ;; prim lcd_init_1
+  ;; push 0
+  ;; push 0
+  ;; prim lcd_print_str
+  (require '[middleware.program.emitter :as emit])
+
+  (def *program
+    (emit/program :globals (map emit/constant [63 16 2 0 6])
+             :scripts [(emit/script :name "foo"
+                               :type :task
+                               :running? true
+                               :instructions [(emit/push-value 63)
+                                              (emit/push-value 16)
+                                              (emit/push-value 2)
+                                              (emit/prim-call "lcd_init0")
+                                              (emit/prim-call "lcd_init1")
+                                              (emit/push-value 0)
+                                              (emit/push-value 0)
+                                              (emit/prim-call "lcd_print_str")])]
+             :strings ["ABC"]))
+
+  (debugger/run-program! *program)
+
+
+  (en/encode *program)
+
+  (<!! (connect! "COM11"))
+  (connect! "127.0.0.1:4242")
+  (disconnect!)
+
+  (connected?)
+
+  (def src "
+task blink() running 1/s {
+            toggle(D13);
+}")
+  
+(def src "
+task blink() {
+          forever {
+            write(D13, 1);
+          delayMs(1000);
+          write(D13, 0);
+          delayMs(1000);
+          }
+}")
+
+  (def src "
+            
+prim lcd_init0;
+prim lcd_init1;
+prim lcd_print;
+            
+task setup() {
+            var lcd = lcd_init1(lcd_init0(39, 16, 2));
+            lcd_print(lcd, 0, 14);
+}
+            ")
+
+  (<!! (compile! src "uzi" false))
+
+  (<!! (compile-and-run! src "uzi" false))
+  )
 
 (def ^:private updates (atom nil))
 

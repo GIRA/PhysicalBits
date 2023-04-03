@@ -14,8 +14,8 @@ Program * program;
 void setup()
 {
 	monitor.initSerial(&serial);
-	//monitor.loadInstalledProgram(&program);
-	monitor.loadHardcodedProgram(&program);
+	monitor.loadInstalledProgram(&program);
+	//monitor.loadHardcodedProgram(&program);
 }
 
 void loop()

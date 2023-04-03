@@ -28,11 +28,12 @@
             (< a-size b-size)))
         globals))
 
-(defn program [& {:keys [globals scripts]
-                  :or {globals [] scripts []}}]
+(defn program [& {:keys [globals scripts strings]
+                  :or {globals [] scripts [] strings []}}]
   {:__class__ "UziProgram"
    :globals (-> globals sort-globals vec)
-   :scripts scripts})
+   :scripts scripts
+   :strings strings})
 
 (def ^:private simplify
   "Tries to reduce the value to its equivalent integer or float (ratios not allowed)"

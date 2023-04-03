@@ -72,3 +72,6 @@
 (defn bytes->string [bytes]
   #?(:clj (new String (byte-array bytes) "UTF-8")
      :cljs (reduce #(str %1 (String/fromCharCode %2)) "" bytes)))
+
+(defn string->bytes [str]
+  (map (comp byte int) str))

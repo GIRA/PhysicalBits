@@ -64,7 +64,7 @@ void Monitor::loadHardcodedProgram(Program** program)
 	p->globalCount = 5;
 	
 	p->globals = uzi_createArray(float, p->globalCount);
-	p->globals[0] = 39;
+	p->globals[0] = 63;
 	p->globals[1] = 16;
 	p->globals[2] = 2;
 	p->globals[3] = 0;

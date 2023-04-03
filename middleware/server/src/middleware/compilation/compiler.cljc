@@ -741,3 +741,20 @@
                :source src
                :original-ast original-ast
                :final-ast ast)))
+
+
+(comment
+  
+  (require '[middleware.compilation.parser :as p])
+  
+  (def src "func foo(n) { return n + 1; } 
+
+            task blink() running 1/s { toggle(D13); }")
+  (def ast (p/parse src))
+  
+  (def program (compile-tree ast))
+
+  (require '[middleware.compilation.encoder :as en])
+
+  (en/encode program)
+  )
