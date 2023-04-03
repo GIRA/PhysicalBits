@@ -1,5 +1,6 @@
 #include "Program.h"
 
+
 Error readGlobals(Reader* rs, Program* program);
 Error readScripts(Reader* rs, Program* program);
 Error readInstructions(Reader* rs, Program* program);
@@ -55,6 +56,7 @@ Error readStrings(Reader* rs, Program* program)
 
 		program->strings[i] = next_char;
 	}
+	return NO_ERROR;
 }
 
 Error readGlobals(Reader* rs, Program* program)
