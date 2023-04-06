@@ -3832,54 +3832,46 @@ let UziBlock = (function () {
   }
 
   function getTopBlockName(block) {
-      return block.getFieldValue("scriptName"); // fix func
+    return block.getFieldValue("scriptName");
   }
 
-  function getTopBlocksPositions(){
-      console.log("Ejecutando getTopBlocksPositions...")
-      let topBlockPositions = {};
-      workspace.getTopBlocks().forEach(block =>{
-          topBlockPositions[getTopBlockName(block)] = block.getRelativeToSurfaceXY();
-      })
-      console.log(topBlockPositions)
-      return topBlockPositions;
+  function getTopBlocksPositions() {
+    // NOTE(Richo): This function returns a map whose keys are each top block's name 
+    // and its values are the position of each top block relative to the bottom-left
+    // of its previous block (sorted from top to bottom)
+    let positions = {};
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let abs_pos = block.getRelativeToSurfaceXY();
+      positions[getTopBlockName(block)] = {
+        x: abs_pos.x - x,
+        y: abs_pos.y - y,
+      };
+      x = abs_pos.x;
+      y = abs_pos.y + block.height;
+    });
+    return positions;
   }
-
-  function setPositions(prevTopBlockPositions) {
-      console.log("Ejecutando setPositions...")
-      let AddedHeight = 0;
-      let newAddedBlock = false;
-      let lastY = 0;
-      let y = 0;
-      let x = 0;
-      workspace.getTopBlocks().forEach(block =>{
-          let name = getTopBlockName(block);
-          if (name in prevTopBlockPositions){
-            let positions = prevTopBlockPositions[name];
-            x = positions.x;
-            y = positions.y;
-            lastY += 24;
-            if (y < lastY){
-              if (newAddedBlock){
-                AddedHeight += (lastY - y);
-              } 
-              y += AddedHeight;
-            } else {
-              AddedHeight = 0;
-            }
-            newAddedBlock = false;
-          } else {
-            if (lastY != 0){
-              x = 0;
-              y = 24 + lastY;
-            }
-            newAddedBlock = true;
-          }
-          block.moveBy(x, y);
-          lastY = y + block.height;
-      })
-    }
-
+  
+  function setTopBlocksPositions(positions) {
+    // NOTE(Richo): This function restores the positions of all top blocks according to
+    // the 'positions' argument, which must be the result or getTopBlocksPositions()
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let name = getTopBlockName(block);
+      if (name in positions) {
+        let pos = positions[name];
+        x += pos.x;
+        y += pos.y;
+      } else {
+        y += 24;
+      }
+      block.moveBy(x, y);
+      y += block.height;
+    });
+  }
 
   return {
     init: init,
@@ -4048,10 +4040,10 @@ let UziBlock = (function () {
         return false;
       }
     },
-    
+
     getTopBlocksPositions: getTopBlocksPositions,
-    setPositions: setPositions,
-    //setBlockPosition: setBlockPosition,
+    setTopBlocksPositions: setTopBlocksPositions,
+
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,
