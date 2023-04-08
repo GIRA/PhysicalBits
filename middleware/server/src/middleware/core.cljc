@@ -1,6 +1,6 @@
 (ns middleware.core
   (:refer-clojure :exclude [run!])
-  (:require [clojure.core.async :as a :refer [go <! <!!]]
+  (:require [clojure.core.async :as a :refer [go <!]]
             [clojure.string :as str]
             [middleware.utils.core :refer [index-of]]
             [middleware.utils.json :as json]
@@ -44,13 +44,11 @@
                                               (emit/prim-call "lcd_print_str")])]
              :strings ["Richo" "Vicky"]))
 
-  (debugger/run-program! *program)
-
 
   (en/encode *program)
 
-  (<!! (connect! "COM11"))
-  (<!! (connect! "127.0.0.1:4242"))
+  (a/<!! (connect! "COM11"))
+  (a/<!! (connect! "127.0.0.1:4242"))
   (disconnect!)
 
   (connected?)
@@ -82,11 +80,11 @@ task setup() {
 }
             ")
 
-  (<!! (compile! src "uzi" false))
+  (a/<!! (compile! src "uzi" false))
 
   (Integer/toBinaryString 124646100)
 
-  (<!! (compile-and-run! src "uzi" false))
+  (a/<!! (compile-and-run! src "uzi" false))
   )
 
 (def ^:private updates (atom nil))
