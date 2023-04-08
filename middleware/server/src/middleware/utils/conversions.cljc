@@ -74,4 +74,6 @@
      :cljs (reduce #(str %1 (String/fromCharCode %2)) "" bytes)))
 
 (defn string->bytes [str]
-  (map (comp byte int) str))
+  #?(:clj (map (comp byte int) str)
+     :cljs (map #(.charCodeAt str %) (range (count str)))))
+
