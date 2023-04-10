@@ -15,7 +15,8 @@
             [middleware.compilation.parser :as p]
             [middleware.compilation.codegen :as cg]
             [middleware.compilation.compiler :as cc]
-            [middleware.compilation.encoder :as en]))
+            [middleware.compilation.encoder :as en]
+            [middleware.ast.nodes :as nodes]))
 
 (comment
 
@@ -31,22 +32,65 @@
 
   (def *program
     (emit/program :globals (map emit/constant [63 16 2 0 6])
-             :scripts [(emit/script :name "foo"
-                               :type :task
-                               :running? true
-                               :instructions [(emit/push-value 63)
-                                              (emit/push-value 16)
-                                              (emit/push-value 2)
-                                              (emit/prim-call "lcd_init0")
-                                              (emit/prim-call "lcd_init1")
-                                              (emit/push-value 0)
-                                              (emit/push-value 6)
-                                              (emit/prim-call "lcd_print_str")])]
-             :strings ["Richo" "Vicky"]))
+                  :scripts [(emit/script :name "foo"
+                                         :type :task
+                                         :running? true
+                                         :instructions [(emit/push-value 63)
+                                                        (emit/push-value 16)
+                                                        (emit/push-value 2)
+                                                        (emit/prim-call "lcd_init0")
+                                                        (emit/prim-call "lcd_init1")
+                                                        (emit/push-value 0)
+                                                        (emit/push-value 6) ;;;;; <------
+                                                        (emit/prim-call "lcd_print_str")])]
+                  :strings ["Richo" "Vicky"]))
+
+  (require '[middleware.ast.nodes :as nodes])
 
 
-  (en/encode *program)
+  ;;; var lcd = lcd_init1(lcd_init0(63, 16, 2))
+  ;;; var a = "Richo"
+  ;;; var b = "Vicky"
+  ;;; lcd_print_str(lcd, 0, 'Vicky')
+  (def ast (nodes/program-node
+            :primitives [(nodes/primitive-node "lcd_init0")
+                         (nodes/primitive-node "lcd_init1")
+                         (nodes/primitive-node "lcd_print_str")]
+            :scripts [(nodes/task-node
+                       :name "foo"
+                       :body (nodes/block-node
+                              [(nodes/variable-declaration-node
+                                "lcd"
+                                (nodes/call-node "lcd_init1"
+                                                 [(nodes/arg-node
+                                                   (nodes/call-node "lcd_init0"
+                                                                    [(nodes/arg-node (nodes/literal-number-node 63))
+                                                                     (nodes/arg-node (nodes/literal-number-node 16))
+                                                                     (nodes/arg-node (nodes/literal-number-node 2))]))]))
+                               (nodes/variable-declaration-node
+                                "a"
+                                (nodes/string-node "Richo"))
+                               (nodes/variable-declaration-node
+                                "b"
+                                (nodes/string-node "Vicky"))
+                               (nodes/call-node "lcd_print_str"
+                                                [(nodes/arg-node (nodes/variable-node "lcd"))
+                                                 (nodes/arg-node (nodes/literal-number-node 0))
+                                                 (nodes/arg-node (nodes/string-node "Vicky"))])
+                               (nodes/variable-declaration-node
+                                "c"
+                                (nodes/string-node "Juan"))]))]))
 
+  (def program (cc/compile-tree ast))
+
+  (p/parse "prim lcd_init0;")
+
+  *e
+
+  (en/encode program)
+
+  (debugger/run-program! program)
+  
   (a/<!! (connect! "COM11"))
   (a/<!! (connect! "127.0.0.1:4242"))
   (disconnect!)
@@ -57,8 +101,8 @@
 task blink() running 1/s {
             toggle(D13);
 }")
-  
-(def src "
+
+  (def src "
 task blink() {
           forever {
             write(D13, 1);

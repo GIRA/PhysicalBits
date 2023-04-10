@@ -7,7 +7,8 @@
             [middleware.program.emitter :as emit]
             [middleware.compilation.linker :as linker]
             [middleware.compilation.checker :as checker]
-            [middleware.compilation.dead-code-remover :as dcr]))
+            [middleware.compilation.dead-code-remover :as dcr]
+            [middleware.utils.core :as u]))
 
 ; TODO(Richo): Optimize the linker! Following are the results of running the tufte
 ; profiler on the compiler and then inside the linker. As you can see, the linker
@@ -113,9 +114,11 @@
     (register-global! ctx name (ast-utils/compile-time-value value 0)))
   (let [scripts (mapv #(compile % ctx)
                       (:scripts node))
-        globals @(:globals ctx)]
+        globals @(:globals ctx)
+        strings @(:strings ctx)]
     (emit/program
      :globals globals
+     :strings strings
      :scripts scripts)))
 
 ; TODO(Richo): Maybe collect the locals while traversing the tree...
@@ -617,6 +620,17 @@
                    compiled-right
                    [(emit/prim-call "logicalOr")])))))
 
+(defn compile-string [{:keys [value]} {:keys [strings] :as ctx}]
+  (let [idx (u/index-of @strings value)
+        actual-index (reduce + (map (comp inc count)
+                                    (if (= -1 idx)
+                                      @strings
+                                      (subvec @strings 0 idx))))]
+    (when (= -1 idx)
+      (vswap! strings conj value))
+    (register-constant! ctx actual-index)
+    [(emit/push-value actual-index)]))
+
 (defn compile-node [node ctx]
   (case (ast-utils/node-type node)
     "UziProgramNode" (compile-program node ctx)
@@ -646,11 +660,13 @@
     "UziRepeatNode" (compile-repeat node ctx)
     "UziLogicalAndNode" (compile-logical-and node ctx)
     "UziLogicalOrNode" (compile-logical-or node ctx)
+    "UziStringNode" (compile-string node ctx)
     (throw (ex-info "Unknown node" {:node node, :ctx ctx}))))
 
 (defn ^:private create-context []
   {:path (list)
-   :globals (volatile! #{})})
+   :globals (volatile! #{})
+   :strings (volatile! [])})
 
 (defn augment-ast
   "This function augments the AST with more information needed for the compiler.

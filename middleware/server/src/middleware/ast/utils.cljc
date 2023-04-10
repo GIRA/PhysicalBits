@@ -36,7 +36,8 @@
                    "UziLogicalOrNode"
                    "UziNumberLiteralNode"
                    "UziPinLiteralNode"
-                   "UziVariableNode"}
+                   "UziVariableNode"
+                   "UziStringNode"}
                  type))))
 
 (defn statement? [{:keys [primitive-name] :as node}]

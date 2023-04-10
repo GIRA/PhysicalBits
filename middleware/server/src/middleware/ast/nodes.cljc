@@ -228,3 +228,7 @@
 (defn resume-node [scripts]
   (node "UziScriptResumeNode"
    :scripts   scripts))
+
+(defn string-node [value]
+  (node "UziStringNode"
+        :value value))

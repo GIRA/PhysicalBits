@@ -58,6 +58,7 @@
 (defmethod encode-instruction "UziPushInstruction" ; TODO(Richo) Read-global
   [instr script program]
   (let [index (p/index-of-global program (:argument instr))]
+    (assert (>= index 0) (str "Global not found (" (:argument instr) ")"))
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:global-index index})
@@ -68,6 +69,7 @@
 (defmethod encode-instruction "UziPopInstruction" ; TODO(Richo): Write-global
   [instr script program]
   (let [index (p/index-of-global program (:argument instr))]
+    (assert (>= index 0) (str "Global not found (" (:argument instr) ")"))
     (if (> index 16rFF)
       (throw-not-implemented instr script program
                              {:global-index index})
@@ -78,11 +80,13 @@
 (defmethod encode-instruction "UziReadLocalInstruction"
   [instr script program]
   (let [index (p/index-of-local script (:argument instr))]
+    (assert (>= index 0) (str "Local not found (" (:argument instr) ")"))
     [16rFF index]))
 
 (defmethod encode-instruction "UziWriteLocalInstruction"
   [instr script program]
   (let [index (p/index-of-local script (:argument instr))]
+    (assert (>= index 0) (str "Local not found (" (:argument instr) ")"))
     [16rFF (bit-or 16r80 index)]))
 
 (defmethod encode-instruction "UziPrimitiveCallInstruction"
