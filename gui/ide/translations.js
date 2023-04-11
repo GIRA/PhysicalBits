@@ -243,7 +243,7 @@ var TRANSLATIONS = [
   ["GPIO", null, "GPIO", "Viigud", "Ben"],
   ["Motors", null, "Motores", "Mootorid", "Motorer"],
   ["Servo", null, "Servo", null, "Servon"],
-  ["DC", null, "CC", null, null],
+  ["DC motor", null, "Motor CC", null, null],
   ["Sensors", null, "Sensores", "Andurid", "Sensorer"],
   ["Sonar", null, "Sonar", "Kajalood", "Ekolod"],
   ["Joystick", null, "Joystick", "Juhtkang", null],
