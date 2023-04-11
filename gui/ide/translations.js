@@ -240,7 +240,7 @@ var TRANSLATIONS = [
   ["+", null, null, null, null],
   ["**", "^", "^", "^", "^"],
   ["Tasks", null, "Tareas", "Tööd", "Jobb"],
-  ["GPIO", null, "GPIO", "Viigud", "Ben"],
+  ["Pins", null, "Pines", "Viigud", "Ben"],
   ["Motors", null, "Motores", "Mootorid", "Motorer"],
   ["Servo", null, "Servo", null, "Servon"],
   ["DC motor", null, "Motor CC", null, null],

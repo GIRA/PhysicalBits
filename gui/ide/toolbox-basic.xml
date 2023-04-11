@@ -4,7 +4,7 @@
       <field name="scriptName">default</field>
     </block>
   </category>
-  <category name="GPIO">
+  <category name="Pins">
     <block type="write_pin">
       <value name="pinNumber">
         <shadow type="pin">

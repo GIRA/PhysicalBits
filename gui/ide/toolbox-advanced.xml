@@ -19,7 +19,7 @@
       <field name="scriptName"></field>
     </block>
   </category>
-  <category name="GPIO">
+  <category name="Pins">
     <block type="toggle_pin">
       <value name="pinNumber">
         <shadow type="pin">

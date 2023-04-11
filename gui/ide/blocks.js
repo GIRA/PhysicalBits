@@ -33,6 +33,7 @@ let UziBlock = (function () {
     HIDDEN: "#9E8E7F",
     TASKS: 175,
     GPIO: 345,
+    PINS: 345,
     MOTORS: 0,
     SERVO: 0,
     "DC MOTOR": 0,
