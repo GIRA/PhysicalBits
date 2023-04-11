@@ -2667,7 +2667,7 @@ let UziBlock = (function () {
 
     i18n.on("change", refreshWorkspace);
 
-    return loadToolbox(false).then(function(toolbox) {
+    return loadToolbox(false).then(function () {
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox,
         zoom: {
