@@ -2898,10 +2898,11 @@ let UziBlock = (function () {
       let node = XML.getChildNode(toolbox, "Variables", "originalName");
       let nodes = Array.from(node.children);
       if (variables.length == 0) {
-        nodes.splice(2); // Leave the button and declare_local_variable
+        // Leave the button and declare_local_variable
+        nodes = nodes.filter(node => node.nodeName == "button" || node.getAttribute("type") == "declare_local_variable");
       } else {
         let fields = node.getElementsByTagName("field");
-        for (let i = 1; i < fields.length; i++) {
+        for (let i = 0; i < fields.length; i++) {
           let field = fields[i];
           if (field.getAttribute("name") === "variableName") {
             field.innerText = variables[variables.length-1].name;
