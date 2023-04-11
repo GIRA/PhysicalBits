@@ -2658,21 +2658,11 @@ let UziBlock = (function () {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
 
-    // TODO(Vicky)
-    settings = JSONX.parse(localStorage["uzi.settings"] || "null");
-    advBlocksChecked = false;
-    if (settings && settings.advBlocks) {
-      advBlocksChecked = true;
-    }
-
     initFromSpec();
 
     i18n.on("change", refreshWorkspace);
 
-    toolboxName = (advBlocksChecked == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
-
-    return ajax.GET(toolboxName).then(function(toolboxData) {
-      toolbox = setToolbox(toolboxData);
+    return loadToolbox(false).then(function(toolbox) {
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox,
         zoom: {
@@ -3796,38 +3786,40 @@ let UziBlock = (function () {
     readOnly = value;
   }
 
-  function setToolbox(toolboxData) {
-    if (typeof(toolboxData) == "string") {
-      toolbox = Blockly.Xml.textToDom(toolboxData);
-    } else {
-      toolbox = toolboxData.documentElement;
-    }
-    let categories = toolbox.getElementsByTagName("category");
-    for (let i = 0; i < categories.length; i++) {
-      let category = categories[i];
-      let name = category.getAttribute("name");
-      category.setAttribute("originalName", name);
-      category.setAttribute("name", i18n.translate(name));
-
-      let color = colors[name.toUpperCase()];
-      if (color != undefined) {
-        category.setAttribute("colour", color);
+  function loadToolbox(advancedFlag) {
+    toolboxName = advancedFlag ? 'toolbox-advanced.xml' : 'toolbox-basic.xml';
+    return ajax.GET(toolboxName).then(toolboxData => {        
+      if (typeof(toolboxData) == "string") {
+        toolbox = Blockly.Xml.textToDom(toolboxData);
+      } else {
+        toolbox = toolboxData.documentElement;
       }
-    }
-    let buttons = toolbox.getElementsByTagName("button");
-    for (let i = 0; i < buttons.length; i++) {
-      let button = buttons[i];
-      button.setAttribute("originalText", button.getAttribute("text"));
-      button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
-    }
-    return toolbox;
+      let categories = toolbox.getElementsByTagName("category");
+      for (let i = 0; i < categories.length; i++) {
+        let category = categories[i];
+        let name = category.getAttribute("name");
+        category.setAttribute("originalName", name);
+        category.setAttribute("name", i18n.translate(name));
+
+        let color = colors[name.toUpperCase()];
+        if (color != undefined) {
+          category.setAttribute("colour", color);
+        }
+      }
+      let buttons = toolbox.getElementsByTagName("button");
+      for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        button.setAttribute("originalText", button.getAttribute("text"));
+        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
+      }
+      return toolbox;
+    });
   }
 
-  function modifyToolbox(value) {
-    toolboxName = (value == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
-    ajax.GET(toolboxName).then(function(toolboxData) {
-      toolbox = setToolbox(toolboxData);
+  function setToolbox(advancedFlag) {
+    loadToolbox(advancedFlag).then(toolbox => {
       workspace.updateToolbox(toolbox);
+      refreshToolbox();
     });
   }
 
@@ -3889,8 +3881,8 @@ let UziBlock = (function () {
       refreshAll();
     },
 
-    modifyToolbox: modifyToolbox,
-    setToolbox: setToolbox,
+    setBasicToolbox: () => setToolbox(false),
+    setAdvancedToolbox: () => setToolbox(true),
 
     cleanUp: cleanUp,
 

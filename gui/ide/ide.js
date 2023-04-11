@@ -1000,7 +1000,11 @@ let IDE = (function () {
 
   function updateAdvBlocks() {
     let checked = $("#adv-blocks-checkbox").get(0).checked;
-    UziBlock.modifyToolbox(checked);
+    if (checked) {
+      UziBlock.setAdvancedToolbox();
+    } else {
+      UziBlock.setBasicToolbox();
+    }
     saveToLocalStorage();
   }
 
