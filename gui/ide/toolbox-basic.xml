@@ -43,63 +43,59 @@
       </value>
     </block>
   </category>
-  <category name="Motors">
-    <category name="Servo">
-      <block type="set_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-        <value name="servoValue">
-          <shadow type="number">
-            <field name="value">90</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="DC" custom="DC_MOTORS">
-      <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
-      <block type="move_dcmotor">
-        <field name="motorName"></field>
-        <field name="direction">fwd</field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="change_speed_dcmotor">
-        <field name="motorName"></field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">0</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_speed_dcmotor">
-        <field name="motorName"></field>
-      </block>
-      <block type="stop_dcmotor">
-        <field name="motorName"></field>
-      </block>
-    </category>
+  <category name="Servo">
+    <block type="set_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+      <value name="servoValue">
+        <shadow type="number">
+          <field name="value">90</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+    </block>
   </category>
-  <category name="Sensors">
-    <category name="Sonar" custom="SONAR">
-      <button text="Configure sonars..." callbackKey="configureSonars"></button>
-      <block type="get_sonar_distance">
-        <field name="sonarName">sonar</field>
-        <field name="unit">cm</field>
-      </block>
-    </category>
+  <category name="DC motor" custom="DC_MOTORS">
+    <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
+    <block type="move_dcmotor">
+      <field name="motorName"></field>
+      <field name="direction">fwd</field>
+      <value name="speed">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="change_speed_dcmotor">
+      <field name="motorName"></field>
+      <value name="speed">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_speed_dcmotor">
+      <field name="motorName"></field>
+    </block>
+    <block type="stop_dcmotor">
+      <field name="motorName"></field>
+    </block>
+  </category>
+  <category name="Sonar" custom="SONAR">
+    <button text="Configure sonars..." callbackKey="configureSonars"></button>
+    <block type="get_sonar_distance">
+      <field name="sonarName">sonar</field>
+      <field name="unit">cm</field>
+    </block>
   </category>
   <category name="Sound">
     <block type="start_tone">

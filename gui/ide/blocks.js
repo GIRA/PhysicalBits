@@ -34,7 +34,12 @@ let UziBlock = (function () {
     TASKS: 175,
     GPIO: 345,
     MOTORS: 0,
+    SERVO: 0,
+    "DC MOTOR": 0,
     SENSORS: 15,
+    SONAR: 15,
+    BUTTONS: 15,
+    JOYSTICK: 15,
     SOUND: 30,
     CONTROL: 140,
     MATH: 210,
@@ -2838,7 +2843,7 @@ let UziBlock = (function () {
 
   function initDCMotorsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
+      let node = XML.getChildNode(toolbox, "DC motor", "originalName");
       let nodes = Array.from(node.children);
       if (motors.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2857,7 +2862,7 @@ let UziBlock = (function () {
 
   function initSonarToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("SONAR", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
+      let node = XML.getChildNode(toolbox, "Sonar", "originalName");
       let nodes = Array.from(node.children);
       if (sonars.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2876,7 +2881,7 @@ let UziBlock = (function () {
 
   function initJoystickToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+      let node = XML.getChildNode(toolbox, "Joystick", "originalName");
       let nodes = Array.from(node.children);
       if (joysticks.length == 0) {
         nodes.splice(1); // Leave the button only
