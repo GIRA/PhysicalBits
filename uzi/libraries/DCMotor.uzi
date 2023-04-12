@@ -27,9 +27,22 @@ proc brake() {
 }
 
 proc setSpeed(speed) {
+	if speed > 0 {
+		write(reversePin, 0);
+		write(forwardPin, 1);
+	} 
+	if speed < 0 {
+		speed = speed * -1;
+		write(forwardPin, 0);
+		write(reversePin, 1);
+	}
 	write(enablePin, speed);
 }
 
 func getSpeed() {
-	return read(enablePin);
+	var speed = read(enablePin);
+	if read(forwardPin) < read(reversePin) {
+		speed = speed * -1;
+	}
+	return speed;
 }
