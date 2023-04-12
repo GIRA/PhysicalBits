@@ -192,7 +192,7 @@ var TRANSLATIONS = [
   ["constrain ( %1 , %2 , %3 )", "constrain %1 low %2 high %3", "mantener %1 entre %2 y %3", "piira %1 olema %2 ja %3 vahel", "begränsa %1 att vara mellan %2 och %3"],
   ["isBetween ( value: %1 , min: %2 , max: %3 )", "is %1 between %2 and %3 ?", "¿ está %1 entre %2 y %3 ?", "kas %1 on %2 ja %3 vahel", "är värdet %1 mellan %2 och %3"],
 
-  ["randomInt( %1, %2 )", "random integer between %1 and %2", "número entero al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
+  ["randomInt( %1, %2 )", "random integer between %1 and %2", "número al azar entre %1 y %2", "suvaline täisarv %1 ja %2 vahel", "slumpmässigt heltal mellan %1 och %2"],
   ["random()", "random fraction", "fracción al azar", "suvaline murdarv 0.0 ja 1.0 vahel", "slumpmässig bråkdel mellan 0.0 och 1.0"],
 
   ["%name", null, null, "muutuja %name", null],
