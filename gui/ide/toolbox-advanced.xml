@@ -104,15 +104,6 @@
   </category>
   <category name="DC motor" custom="DC_MOTORS">
     <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
-    <block type="move_dcmotor">
-      <field name="motorName"></field>
-      <field name="direction">fwd</field>
-      <value name="speed">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-    </block>
     <block type="change_speed_dcmotor">
       <field name="motorName"></field>
       <value name="speed">
