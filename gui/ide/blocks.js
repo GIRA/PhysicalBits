@@ -1,6 +1,6 @@
 let UziBlock = (function () {
 
-  let version = 3;
+  let version = 4;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
   let userInteraction = false; // Flat to indicte that a workspace evt comes from the user
