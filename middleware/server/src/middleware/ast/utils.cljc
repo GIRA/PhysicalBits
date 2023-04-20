@@ -17,7 +17,10 @@
   (= "UziProgramNode" (node-type node)))
 
 (defn compile-time-constant? [node]
-  (contains? #{"UziNumberLiteralNode" "UziPinLiteralNode"}
+  (contains? #{"UziNumberLiteralNode" 
+               "UziPinLiteralNode"
+               ; "UziStringLiteralNode" ;;; TODO(Richo)
+               }
              (node-type node)))
 
 (defn compile-time-value ^double [node not-constant]

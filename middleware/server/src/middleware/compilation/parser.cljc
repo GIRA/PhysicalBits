@@ -148,7 +148,7 @@
    :binary-expr [:non-binary-expr :ws?
                  (pp/plus [:binary-selector :ws? :non-binary-expr :ws?])]
    :binary-selector (pp/flatten (pp/plus (pp/predicate binary? "Not binary")))
-   :literal (pp/or :constant :number)
+   :literal (pp/or :string :constant :number)
    :constant [(pp/or "D" "A") :integer]
    :number (pp/or :float :integer)
    :float (pp/flatten
@@ -184,7 +184,8 @@
    ; TODO(Richo): Don't lose the comments
    :ws (pp/plus (pp/or pp/space :comment))
    :ws? (pp/optional :ws)
-   :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])})
+   :comment (pp/flatten ["\"" (pp/flatten (pp/star (pp/negate "\""))) "\""])
+   :string (pp/flatten ["'" (pp/flatten (pp/star (pp/negate "'"))) "'"])})
 
 (def transformations
   {:program (fn [[_ imports members _]]
@@ -292,6 +293,7 @@
                 (if alias
                   (ast/primitive-node alias name)
                   (ast/primitive-node name)))
+   :string (fn [value] (ast/string-node (subs value 1 (dec (count value)))))
    })
 
 (defn- update-keys [map keys f]
