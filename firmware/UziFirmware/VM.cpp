@@ -986,14 +986,12 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	case PRIM_LCD_PRINT_VALUE:
 	{
 		float value = stack_pop(error);
-		uint8 line = (uint8)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 		if (pointer > 0) 
 		{
 			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR)
 			{
-				lcd->setCursor(0, line);
 				lcd->print(value);
 			}
 		}
@@ -1004,15 +1002,43 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	{
 		uint32 value_pointer = stack_pop(error);
 		char* value = currentProgram->strings + value_pointer;
-		uint8 line = (uint8)stack_pop(error);
 		uint32 pointer = (uint32)stack_pop(error);
 		if (pointer > 0)
 		{
 			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
 			if (error == NO_ERROR)
 			{
-				lcd->setCursor(0, line);
 				lcd->print(value);
+			}
+		}
+	}
+	break;
+
+	case PRIM_LCD_CLEAR:
+	{
+		uint32 pointer = (uint32)stack_pop(error);
+		if (pointer > 0)
+		{
+			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				lcd->clear();
+			}
+		}
+	}
+	break;
+
+	case PRIM_LCD_SET_CURSOR:
+	{
+		uint32 column = (uint32)stack_pop(error);
+		uint32 row = (uint32)stack_pop(error);
+		uint32 pointer = (uint32)stack_pop(error);
+		if (pointer > 0)
+		{
+			LiquidCrystal_I2C* lcd = (LiquidCrystal_I2C*)uzi_pointer(pointer, error);
+			if (error == NO_ERROR)
+			{
+				lcd->setCursor(row, column);
 			}
 		}
 	}

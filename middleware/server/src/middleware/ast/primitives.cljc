@@ -58,7 +58,7 @@
    "atan2"                  [16r47    [2     1]]
    "lcd_init0"              [16r49    [3     1]]
    "lcd_init1"              [16r50    [1     1]]
-   "lcd_print"              [16r51    [3     0]]
+   "lcd_print_num"          [16r51    [2     0]]
    "array_init"             [16r52    [1     1]]
    "array_get"              [16r53    [2     1]]
    "array_set"              [16r54    [3     0]]
@@ -66,7 +66,9 @@
    "jz"                     [16r61    [2     0]]
    "jnz"                    [16r62    [2     0]]
    "jlte"                   [16r63    [3     0]]
-   "lcd_print_str"          [16r64    [3     0]]})
+   "lcd_print_str"          [16r64    [2     0]]
+   "lcd_clear"        [16r65    [1     0]]
+   "lcd_set_cursor"   [16r66    [3     0]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]

@@ -5,8 +5,10 @@ var rows = 2;
 
 prim lcd_init0;
 prim lcd_init1;
-prim lcd_print;
+prim lcd_print_num;
 prim lcd_print_str;
+prim lcd_clear;
+prim lcd_set_cursor;
 
 task setup() {
 	lcd = lcd_init1(lcd_init0(address, cols, rows));
@@ -16,12 +18,22 @@ func ready() {
   return lcd > 0;
 }
 
-proc print(line, value) {
+proc printNumber(value) {
   until ready();
-  lcd_print(lcd, line, value);
+  lcd_print_num(lcd, value);
 }
 
-proc print_str(line, value) {
+proc printString(value) {
   until ready();
-  lcd_print_str(lcd, line, value);
+  lcd_print_str(lcd, value);
+}
+
+proc setCursor(column, row) {
+  until ready();
+  lcd_set_cursor(lcd, column, row);
+}
+
+proc clear() {
+  until ready();
+  lcd_clear(lcd);
 }

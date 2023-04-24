@@ -157,6 +157,8 @@ void readInstruction(Reader* rs, Instruction* instruction, bool& timeout)
 				case 0x63: instruction->opcode = PRIM_JLTE; break;
 
 				case 0x64: instruction->opcode = PRIM_LCD_PRINT_STRING; break;
+				case 0x65: instruction->opcode = PRIM_LCD_CLEAR; break;
+				case 0x66: instruction->opcode = PRIM_LCD_SET_CURSOR; break;
 
 			}
 			argument = 0; // INFO(Richo): Primitives don't have arguments (at least, not yet)
