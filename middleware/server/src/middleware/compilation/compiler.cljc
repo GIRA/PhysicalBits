@@ -115,7 +115,7 @@
   (let [scripts (mapv #(compile % ctx)
                       (:scripts node))
         globals @(:globals ctx)
-        strings @(:strings ctx)]
+        strings (:strings node)]
     (emit/program
      :globals globals
      :strings strings
@@ -620,16 +620,9 @@
                    compiled-right
                    [(emit/prim-call "logicalOr")])))))
 
-(defn compile-string [{:keys [value]} {:keys [strings] :as ctx}]
-  (let [idx (u/index-of @strings value)
-        actual-index (reduce + (map (comp inc count)
-                                    (if (= -1 idx)
-                                      @strings
-                                      (subvec @strings 0 idx))))]
-    (when (= -1 idx)
-      (vswap! strings conj value))
-    (register-constant! ctx actual-index)
-    [(emit/push-value actual-index)]))
+(defn compile-string [{:keys [index]} ctx]
+  (register-constant! ctx index)
+  [(emit/push-value index)])
 
 (defn compile-node [node ctx]
   (case (ast-utils/node-type node)
@@ -665,16 +658,17 @@
 
 (defn ^:private create-context []
   {:path (list)
-   :globals (volatile! #{})
-   :strings (volatile! [])})
+   :globals (volatile! #{})})
 
 (defn augment-ast
   "This function augments the AST with more information needed for the compiler.
-   1) All pin literals are augmented with a :value that corresponds to their
+   1) All string nodes are augmented with an :index that corresponds to their index in the string
+      list. This string list is also associated to the program node.
+   2) All pin literals are augmented with a :value that corresponds to their
       pin number for the given board. This is useful because it makes pin literals
       polymorphic with number literals. And also, we'll need this value later and it
       would be a pain in the ass to pass around the board every time.
-   2) All nodes that could need to declare either a local or temporary variable
+   3) All nodes that could need to declare either a local or temporary variable
       are augmented with a unique name (based on a simple counter) that the compiler
       can later use to identify this variable.
       I'm using the following naming conventions:
@@ -683,36 +677,50 @@
   [ast board]
   (let [local-counter (volatile! 0)
         temp-counter (volatile! 0)
+        strings (volatile! [])
         reset-counters! (fn []
                           (vreset! local-counter 0)
-                          (vreset! temp-counter 0))]
-    (ast-utils/transform-with-path
-     ast
-     (fn [node path]
-       (case (ast-utils/node-type node)
-         "UziPinLiteralNode"
-         (let [{:keys [type number] :as pin} node]
-           (assoc pin :value (boards/get-pin-number (str type number) board)))
+                          (vreset! temp-counter 0))
+        augmented-ast
+        (ast-utils/transform-with-path
+         ast
+         (fn [node path]
+           (case (ast-utils/node-type node)
+             "UziStringNode"
+             (let [value (:value node)
+                   vector-index (u/index-of @strings value)
+                   actual-index (reduce + (map (comp inc count)
+                                               (if (= -1 vector-index)
+                                                 @strings
+                                                 (subvec @strings 0 vector-index))))]
+               (when (= -1 vector-index)
+                 (vswap! strings conj value))
+               (assoc node :index actual-index))
 
-         ; Temporary variables are local to their script
-         "UziTaskNode" (do (reset-counters!) node)
-         "UziProcedureNode" (do (reset-counters!) node)
-         "UziFunctionNode" (do (reset-counters!) node)
+             "UziPinLiteralNode"
+             (let [{:keys [type number] :as pin} node]
+               (assoc pin :value (boards/get-pin-number (str type number) board)))
 
-         "UziForNode" ; Some for-loops declare a temporary variable.
-         (if (ast-utils/compile-time-constant? (node :step))
-           node
-           (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
+             ; Temporary variables are local to their script
+             "UziTaskNode" (do (reset-counters!) node)
+             "UziProcedureNode" (do (reset-counters!) node)
+             "UziFunctionNode" (do (reset-counters!) node)
 
-         "UziRepeatNode" ; All repeat-loops declare a temporary variable
-         (assoc node :temp-name (str "@" (vswap! temp-counter inc)))
+             "UziForNode" ; Some for-loops declare a temporary variable.
+             (if (ast-utils/compile-time-constant? (node :step))
+               node
+               (assoc node :temp-name (str "@" (vswap! temp-counter inc))))
 
-         "UziVariableDeclarationNode"
-         (if (ast-utils/global? node path) ; TODO(Richo): Avoid renaming a variable if its name is already unique
-           node
-           (assoc node :unique-name (str (:name node) "#" (vswap! local-counter inc))))
-         
-         node)))))
+             "UziRepeatNode" ; All repeat-loops declare a temporary variable
+             (assoc node :temp-name (str "@" (vswap! temp-counter inc)))
+
+             "UziVariableDeclarationNode"
+             (if (ast-utils/global? node path) ; TODO(Richo): Avoid renaming a variable if its name is already unique
+               node
+               (assoc node :unique-name (str (:name node) "#" (vswap! local-counter inc))))
+
+             node)))]
+    (assoc augmented-ast :strings @strings)))
 
 (defn remove-dead-code [ast & [remove-dead-code?]]
   (if remove-dead-code?
@@ -757,20 +765,3 @@
                :source src
                :original-ast original-ast
                :final-ast ast)))
-
-
-(comment
-  
-  (require '[middleware.compilation.parser :as p])
-  
-  (def src "func foo(n) { return n + 1; } 
-
-            task blink() running 1/s { toggle(D13); }")
-  (def ast (p/parse src))
-  
-  (def program (compile-tree ast))
-
-  (require '[middleware.compilation.encoder :as en])
-
-  (en/encode program)
-  )

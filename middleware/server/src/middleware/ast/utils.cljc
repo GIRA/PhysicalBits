@@ -17,16 +17,16 @@
   (= "UziProgramNode" (node-type node)))
 
 (defn compile-time-constant? [node]
-  (contains? #{"UziNumberLiteralNode" 
+  (contains? #{"UziNumberLiteralNode"
                "UziPinLiteralNode"
-               ; "UziStringLiteralNode" ;;; TODO(Richo)
-               }
+               "UziStringNode"}
              (node-type node)))
 
 (defn compile-time-value ^double [node not-constant]
   (case (node-type node)
     "UziNumberLiteralNode" (:value node)
     "UziPinLiteralNode" (:value node)
+    "UziStringNode" (:index node)
     not-constant))
 
 (defn expression? [{:keys [primitive-name expression?] :as node}]
