@@ -289,6 +289,12 @@
         (print right)
         (cw/append! ")")))
 
+(defmethod print-node "UziStringNode" [{:keys [value]} writer]
+  (doto writer
+    (cw/append! "'")
+    (cw/append! value)
+    (cw/append! "'")))
+
 (defmethod print-node :default [node _]
   (throw (ex-info "Unknown node" {:node node})))
 
