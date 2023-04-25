@@ -19,21 +19,21 @@ func ready() {
 }
 
 proc printNumber(value) {
-  until ready();
+  until lcd;
   lcd_print_num(lcd, value);
 }
 
 proc printString(value) {
-  until ready();
+  until lcd;
   lcd_print_str(lcd, value);
 }
 
 proc setCursor(column, row) {
-  until ready();
+  until lcd;
   lcd_set_cursor(lcd, column, row);
 }
 
 proc clear() {
-  until ready();
+  until lcd;
   lcd_clear(lcd);
 }
