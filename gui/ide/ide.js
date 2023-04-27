@@ -155,10 +155,11 @@ let IDE = (function () {
         Uzi.on("update", (state, previousState, keys) => {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
-          let topBlocksPosition = UziBlock.getTopBlocksPositions();
+          
+          let topBlocksPositions = UziBlock.getTopBlocksPositions();
           let blocklyProgram = ASTToBlocks.generate(state.program);
           UziBlock.setProgram(blocklyProgram);
-          UziBlock.setPositions(topBlocksPosition);
+          UziBlock.setTopBlocksPositions(topBlocksPositions);
         });
       })
       .then(restoreFromLocalStorage);
@@ -999,7 +1000,11 @@ let IDE = (function () {
 
   function updateAdvBlocks() {
     let checked = $("#adv-blocks-checkbox").get(0).checked;
-    UziBlock.modifyToolbox(checked);
+    if (checked) {
+      UziBlock.setAdvancedToolbox();
+    } else {
+      UziBlock.setBasicToolbox();
+    }
     saveToLocalStorage();
   }
 

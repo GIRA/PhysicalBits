@@ -1,6 +1,6 @@
 let UziBlock = (function () {
 
-  let version = 3;
+  let version = 4;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
   let userInteraction = false; // Flat to indicte that a workspace evt comes from the user
@@ -33,8 +33,14 @@ let UziBlock = (function () {
     HIDDEN: "#9E8E7F",
     TASKS: 175,
     GPIO: 345,
+    PINS: 345,
     MOTORS: 0,
+    SERVO: 0,
+    "DC MOTOR": 0,
     SENSORS: 15,
+    SONAR: 15,
+    BUTTONS: 15,
+    JOYSTICK: 15,
     SOUND: 30,
     CONTROL: 140,
     MATH: 210,
@@ -2658,21 +2664,11 @@ let UziBlock = (function () {
     blocklyArea = $("#blocks-editor").get(0);
     blocklyDiv = $("#blockly").get(0);
 
-    // TODO(Vicky)
-    settings = JSONX.parse(localStorage["uzi.settings"] || "null");
-    advBlocksChecked = false;
-    if (settings && settings.advBlocks) {
-      advBlocksChecked = true;
-    }
-
     initFromSpec();
 
     i18n.on("change", refreshWorkspace);
 
-    toolboxName = (advBlocksChecked == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
-
-    return ajax.GET(toolboxName).then(function(toolboxData) {
-      toolbox = setToolbox(toolboxData);
+    return loadToolbox(false).then(function () {
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox,
         zoom: {
@@ -2848,7 +2844,7 @@ let UziBlock = (function () {
 
   function initDCMotorsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
+      let node = XML.getChildNode(toolbox, "DC motor", "originalName");
       let nodes = Array.from(node.children);
       if (motors.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2867,7 +2863,7 @@ let UziBlock = (function () {
 
   function initSonarToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("SONAR", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
+      let node = XML.getChildNode(toolbox, "Sonar", "originalName");
       let nodes = Array.from(node.children);
       if (sonars.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2886,7 +2882,7 @@ let UziBlock = (function () {
 
   function initJoystickToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+      let node = XML.getChildNode(toolbox, "Joystick", "originalName");
       let nodes = Array.from(node.children);
       if (joysticks.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2908,10 +2904,11 @@ let UziBlock = (function () {
       let node = XML.getChildNode(toolbox, "Variables", "originalName");
       let nodes = Array.from(node.children);
       if (variables.length == 0) {
-        nodes.splice(2); // Leave the button and declare_local_variable
+        // Leave the button and declare_local_variable
+        nodes = nodes.filter(node => node.nodeName == "button" || node.getAttribute("type") == "declare_local_variable");
       } else {
         let fields = node.getElementsByTagName("field");
-        for (let i = 1; i < fields.length; i++) {
+        for (let i = 0; i < fields.length; i++) {
           let field = fields[i];
           if (field.getAttribute("name") === "variableName") {
             field.innerText = variables[variables.length-1].name;
@@ -3796,81 +3793,84 @@ let UziBlock = (function () {
     readOnly = value;
   }
 
-  function setToolbox(toolboxData) {
-    if (typeof(toolboxData) == "string") {
-      toolbox = Blockly.Xml.textToDom(toolboxData);
-    } else {
-      toolbox = toolboxData.documentElement;
-    }
-    let categories = toolbox.getElementsByTagName("category");
-    for (let i = 0; i < categories.length; i++) {
-      let category = categories[i];
-      let name = category.getAttribute("name");
-      category.setAttribute("originalName", name);
-      category.setAttribute("name", i18n.translate(name));
-
-      let color = colors[name.toUpperCase()];
-      if (color != undefined) {
-        category.setAttribute("colour", color);
+  function loadToolbox(advancedFlag) {
+    toolboxName = advancedFlag ? 'toolbox-advanced.xml' : 'toolbox-basic.xml';
+    return ajax.GET(toolboxName).then(toolboxData => {        
+      if (typeof(toolboxData) == "string") {
+        toolbox = Blockly.Xml.textToDom(toolboxData);
+      } else {
+        toolbox = toolboxData.documentElement;
       }
-    }
-    let buttons = toolbox.getElementsByTagName("button");
-    for (let i = 0; i < buttons.length; i++) {
-      let button = buttons[i];
-      button.setAttribute("originalText", button.getAttribute("text"));
-      button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
-    }
-    return toolbox;
+      let categories = toolbox.getElementsByTagName("category");
+      for (let i = 0; i < categories.length; i++) {
+        let category = categories[i];
+        let name = category.getAttribute("name");
+        category.setAttribute("originalName", name);
+        category.setAttribute("name", i18n.translate(name));
+
+        let color = colors[name.toUpperCase()];
+        if (color != undefined) {
+          category.setAttribute("colour", color);
+        }
+      }
+      let buttons = toolbox.getElementsByTagName("button");
+      for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        button.setAttribute("originalText", button.getAttribute("text"));
+        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
+      }
+      return toolbox;
+    });
   }
 
-  function modifyToolbox(value) {
-    toolboxName = (value == true) ? 'toolboxAdv.xml' : 'toolbox.xml';
-    ajax.GET(toolboxName).then(function(toolboxData) {
-      toolbox = setToolbox(toolboxData);
+  function setToolbox(advancedFlag) {
+    loadToolbox(advancedFlag).then(toolbox => {
       workspace.updateToolbox(toolbox);
+      refreshToolbox();
     });
   }
 
   function getTopBlockName(block) {
-      return block.getFieldValue("scriptName"); // fix func
+    return block.getFieldValue("scriptName");
   }
 
-  function getTopBlocksPositions(){
-      console.log("Ejecutando getTopBlocksPositions...")
-      let topBlockPositions = {};
-      workspace.getTopBlocks().forEach(block =>{
-          topBlockPositions[getTopBlockName(block)] = block.getRelativeToSurfaceXY();
-      })
-      console.log(topBlockPositions)
-      return topBlockPositions;
+  function getTopBlocksPositions() {
+    // NOTE(Richo): This function returns a map whose keys are each top block's name 
+    // and its values are the position of each top block relative to the bottom-left
+    // of its previous block (sorted from top to bottom)
+    let positions = {};
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let abs_pos = block.getRelativeToSurfaceXY();
+      positions[getTopBlockName(block)] = {
+        x: abs_pos.x - x,
+        y: abs_pos.y - y,
+      };
+      x = abs_pos.x;
+      y = abs_pos.y + block.height;
+    });
+    return positions;
   }
-
-  function setPositions(prevTopBlockPositions) {
-      console.log("Ejecutando setPositions...")
-      let lastY = 0;
-      let y = 0;
-      let x = 0;
-      workspace.getTopBlocks().forEach(block =>{
-          let name = getTopBlockName(block);
-          x = 0;
-          y = lastY;
-          if (name in prevTopBlockPositions){
-              console.log(name + " is a previous top block.")
-              let positions = prevTopBlockPositions[name];
-              x = positions.x;
-              if (positions.y > lastY){
-                  y = positions.y;
-              }
-              console.log("Previous position: ( " +  positions.x + ", " + positions.y + "). Actual position: ( "  +  x + ", " + y + ")")
-          } else {
-              console.log(name + " is a NEW top block")
-              console.log("Actual position: ( "  +  x + ", " + y + ")")
-          }
-          block.moveBy(x, y);
-          lastY = y + block.height + 24;
-      })
-    }
-
+  
+  function setTopBlocksPositions(positions) {
+    // NOTE(Richo): This function restores the positions of all top blocks according to
+    // the 'positions' argument, which must be the result or getTopBlocksPositions()
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let name = getTopBlockName(block);
+      if (name in positions) {
+        let pos = positions[name];
+        x += pos.x;
+        y += pos.y;
+      } else {
+        y += 24;
+      }
+      block.moveBy(x, y);
+      y += block.height;
+    });
+  }
 
   return {
     init: init,
@@ -3888,8 +3888,8 @@ let UziBlock = (function () {
       refreshAll();
     },
 
-    modifyToolbox: modifyToolbox,
-    setToolbox: setToolbox,
+    setBasicToolbox: () => setToolbox(false),
+    setAdvancedToolbox: () => setToolbox(true),
 
     cleanUp: cleanUp,
 
@@ -4039,10 +4039,10 @@ let UziBlock = (function () {
         return false;
       }
     },
-    
+
     getTopBlocksPositions: getTopBlocksPositions,
-    setPositions: setPositions,
-    //setBlockPosition: setBlockPosition,
+    setTopBlocksPositions: setTopBlocksPositions,
+
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,

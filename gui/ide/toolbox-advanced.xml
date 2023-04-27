@@ -19,7 +19,7 @@
       <field name="scriptName"></field>
     </block>
   </category>
-  <category name="GPIO">
+  <category name="Pins">
     <block type="toggle_pin">
       <value name="pinNumber">
         <shadow type="pin">
@@ -81,117 +81,104 @@
       </value>
     </block>
   </category>
-  <category name="Motors">
-    <category name="Servo">
-      <block type="set_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-        <value name="servoValue">
-          <shadow type="number">
-            <field name="value">90</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="DC" custom="DC_MOTORS">
-      <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
-      <block type="move_dcmotor">
-        <field name="motorName"></field>
-        <field name="direction">fwd</field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="change_speed_dcmotor">
-        <field name="motorName"></field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">0</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_speed_dcmotor">
-        <field name="motorName"></field>
-      </block>
-      <block type="stop_dcmotor">
-        <field name="motorName"></field>
-      </block>
-    </category>
+  <category name="Servo">
+    <block type="set_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+      <value name="servoValue">
+        <shadow type="number">
+          <field name="value">90</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+    </block>
   </category>
-  <category name="Sensors">
-    <category name="Sonar" custom="SONAR">
-      <button text="Configure sonars..." callbackKey="configureSonars"></button>
-      <block type="get_sonar_distance">
-        <field name="sonarName">sonar</field>
-        <field name="unit">cm</field>
-      </block>
-    </category>
-    <category name="Buttons">
-      <block type="button_wait_for_action">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="action">press</field>
-      </block>
-      <block type="button_wait_for_long_action">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="action">press</field>
-        <field name="unit">ms</field>
-        <value name="time">
-          <shadow type="number">
-            <field name="value">1000</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="button_check_state">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="state">press</field>
-      </block>
-      <block type="button_ms_holding">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="Joystick" custom="JOYSTICK">
-      <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
-      <block type="get_joystick_x">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_y">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_angle">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_magnitude">
-        <field name="joystickName">joystick</field>
-      </block>
-    </category>
+  <category name="DC motor" custom="DC_MOTORS">
+    <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
+    <block type="change_speed_dcmotor">
+      <field name="motorName"></field>
+      <value name="speed">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_speed_dcmotor">
+      <field name="motorName"></field>
+    </block>
+    <block type="stop_dcmotor">
+      <field name="motorName"></field>
+    </block>
+  </category>
+  <category name="Sonar" custom="SONAR">
+    <button text="Configure sonars..." callbackKey="configureSonars"></button>
+    <block type="get_sonar_distance">
+      <field name="sonarName">sonar</field>
+      <field name="unit">cm</field>
+    </block>
+  </category>
+  <category name="Buttons">
+    <block type="button_wait_for_action">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="action">press</field>
+    </block>
+    <block type="button_wait_for_long_action">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="action">press</field>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="button_check_state">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="state">press</field>
+    </block>
+    <block type="button_ms_holding">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Joystick" custom="JOYSTICK">
+    <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
+    <block type="get_joystick_x">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_y">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_angle">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_magnitude">
+      <field name="joystickName">joystick</field>
+    </block>
   </category>
   <category name="Sound">
     <block type="play_note">
