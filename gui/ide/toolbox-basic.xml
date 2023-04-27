@@ -147,6 +147,14 @@
           <field name="value">1</field>
         </shadow>
       </value>
+    </block>    
+    <block type="number_operation">
+      <field name="operator">sqrt</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">9</field>
+        </shadow>
+      </value>
     </block>
     <block type="number_round">
       <field name="operator">round</field>
