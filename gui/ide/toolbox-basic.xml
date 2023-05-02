@@ -175,8 +175,7 @@
           <field name="value">100</field>
         </shadow>
       </value>
-    </block>    
-    <block type="number_random_float"></block>
+    </block>
   </category>
   <category name="Logic">
     <block type="boolean">
