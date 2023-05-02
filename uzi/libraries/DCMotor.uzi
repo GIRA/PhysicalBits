@@ -11,13 +11,13 @@ proc init(en, f, r) {
 proc forward(speed) {
 	write(reversePin, 0);
 	write(forwardPin, 1);
-	write(enablePin, speed);
+	write(enablePin, speed / 100);
 }
 
 proc backward(speed) {
 	write(forwardPin, 0);
 	write(reversePin, 1);
-	write(enablePin, speed);
+	write(enablePin, speed / 100);
 }
 
 proc brake() {
@@ -36,7 +36,7 @@ proc setSpeed(speed) {
 		write(forwardPin, 0);
 		write(reversePin, 1);
 	}
-	write(enablePin, speed);
+	write(enablePin, speed / 100);
 }
 
 func getSpeed() {
@@ -44,5 +44,5 @@ func getSpeed() {
 	if read(forwardPin) < read(reversePin) {
 		speed = speed * -1;
 	}
-	return speed;
+	return speed * 100;
 }
