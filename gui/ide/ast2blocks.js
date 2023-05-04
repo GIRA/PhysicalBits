@@ -184,6 +184,13 @@ let ASTToBlocks = (function () {
 			}
 			return node;
 		},
+		UziStringNode: function (json, ctx) {
+			let node = create("block");
+			node.setAttribute("id", json.id);
+			node.setAttribute("type", "string");
+			appendField(node, "text", json.value);
+			return node;
+		},
 		UziPinLiteralNode: function (json, ctx) {
 			let node = create("block");
 			node.setAttribute("id", json.id);

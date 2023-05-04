@@ -147,6 +147,12 @@ let BlocksToAST = (function () {
 				return builder.number(id, parseFloat(value));
 			}
 		},
+		string: function(id, text) {
+			return node("UziStringNode", {
+				id: id,
+				value: text
+			});
+		},
 		variable: function (id, variableName) {
 			return node("UziVariableNode", {
 				id: id,
@@ -304,6 +310,11 @@ let BlocksToAST = (function () {
 			let id = XML.getId(block);
 			let value = parseFloat(XML.getChildNode(block, "value").innerText);
 			stream.push(builder.number(id, value));
+		},
+		string: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let value = XML.getChildNode(block, "text").innerText;
+			stream.push(builder.string(id, value));
 		},
 		turn_onoff_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);

@@ -338,6 +338,8 @@ var TRANSLATIONS = [
   ["%name . min ( )", "get min value from %name", "valor mínimo de %name", null, null],
   ["%name . sum ( )", "get sum from %name", "sumatoria de %name", null, null],
   ["%name . avg ( )", "get average from %name", "promedio de %name", null, null],
+  
+  ["'%text'", "%text", "%text", "%text", "%text"],
 
   ["Toggle Breakpoint", null, "Agregar/Quitar punto de interrupción", null, null],
   ["BREAKPOINT ON LINE: ", null, "PUNTO DE INTERRUPCIÓN EN LÍNEA: ", null, null],

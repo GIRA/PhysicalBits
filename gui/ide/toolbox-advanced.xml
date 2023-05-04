@@ -504,7 +504,13 @@
         </shadow>
       </value>
     </block>
-  </category>  
+  </category>
+  <category name="Strings">
+    <block type="string">
+      <field name="text">abc</field>
+    </block>
+  </category>
+  
   <category name="Variables" custom="VARIABLES">
     <button text="Configure variables..." callbackKey="configureVariables"></button>
     <block type="declare_local_variable">

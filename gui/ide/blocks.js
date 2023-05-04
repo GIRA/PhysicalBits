@@ -54,7 +54,8 @@ let UziBlock = (function () {
   const types = {
     PIN: "pin",
     NUMBER: "number",
-    BOOLEAN: "boolean"
+    BOOLEAN: "boolean",
+    STRING: "string"
   };
 
   function allTypes(preferredType) {
@@ -743,6 +744,24 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true },
       color: colors.SENSORS,
       supportsBreakpoints: true,
+    },
+
+    // Strings
+    string: {
+      text: "'%text'",
+      type: types.STRING,
+      inputs: {
+        "text": {
+          name: "text",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput('abc'), name),
+        }
+      },
+      connections: { up: false, down: false, left: true},
+      color: 0,
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: false,
     },
 
     // Sound
