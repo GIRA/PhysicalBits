@@ -748,6 +748,28 @@ let BlocksToAST = (function () {
 			let selector = motorName + "." + "brake";
 			stream.push(builder.scriptCall(id, selector, []));
 		},
+		print_number: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let lcdName = asIdentifier(XML.getChildNode(block, "lcdName").innerText);
+			let number = generateCodeForValue(block, ctx, "number");
+
+			ctx.addLcdImport(lcdName);
+
+			let selector = lcdName + "." + "printNumber";
+			let arg = {name: null, value: number};
+			stream.push(builder.scriptCall(id, selector, [arg]));
+		},
+		print_string: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let lcdName = asIdentifier(XML.getChildNode(block, "lcdName").innerText);
+			let string = generateCodeForValue(block, ctx, "string");
+
+			ctx.addLcdImport(lcdName);
+
+			let selector = lcdName + "." + "printString";
+			let arg = {name: null, value: string};
+			stream.push(builder.scriptCall(id, selector, [arg]));
+		},
 		get_sonar_distance: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let sonarName = asIdentifier(XML.getChildNode(block, "sonarName").innerText);
@@ -1470,6 +1492,18 @@ let BlocksToAST = (function () {
 						stmts.push(builder.assignment(null, "enablePin", builder.pinOrNumber(null, motor.enable)));
 						stmts.push(builder.assignment(null, "forwardPin", builder.pinOrNumber(null, motor.fwd)));
 						stmts.push(builder.assignment(null, "reversePin", builder.pinOrNumber(null, motor.bwd)));
+						return builder.block(null, stmts);
+					});
+				},
+				addLcdImport: function (alias) {
+					ctx.addImport(alias, "LCD_I2C.uzi", function () {
+						let lcd = metadata.lcds.find(function (m) { return m.name === alias; });
+						if (lcd == undefined) return null;
+
+						let stmts = [];
+						stmts.push(builder.assignment(null, "address", builder.pinOrNumber(null, lcd.address)));
+						stmts.push(builder.assignment(null, "cols", builder.pinOrNumber(null, lcd.cols)));
+						stmts.push(builder.assignment(null, "rows", builder.pinOrNumber(null, lcd.rows)));
 						return builder.block(null, stmts);
 					});
 				},

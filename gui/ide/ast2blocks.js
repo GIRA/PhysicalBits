@@ -46,6 +46,18 @@ let ASTToBlocks = (function () {
 					fwd: fwd,
 					bwd: bwd
 				});
+			} else if (json.path == "LCD_I2C.uzi") {
+				let name = json.alias;
+				let address = getVariableDefaultValue("address");
+				let cols = getVariableDefaultValue("cols");
+				let rows = getVariableDefaultValue("rows");
+				// TODO(Richo): Handle start/stop reading
+				ctx.addLcd({
+					name: name,
+					address: address,
+					cols: cols,
+					rows: rows
+				});
 			} else if (json.path == "Sonar.uzi") {
 				let name = json.alias;
 				let trig = getVariableDefaultValue("trigPin");
@@ -496,6 +508,8 @@ let ASTToBlocks = (function () {
 
 		if (ctx.motors.some(m => m.name == alias)) {
 			initMotorCall(node, alias, selector, json, ctx);
+		} else if (ctx.lcds.some(p => p.name == alias)) {
+			initLcdCall(node, alias, selector, json, ctx);
 		} else if (ctx.sonars.some(s => s.name == alias)) {
 			initSonarCall(node, alias, selector, json, ctx);
 		} else if (ctx.joysticks.some(j => j.name == alias)) {
@@ -546,6 +560,25 @@ let ASTToBlocks = (function () {
 		} else if (selector == "brake") {
 			node.setAttribute("type", "stop_dcmotor");
 			appendField(node, "motorName", alias);
+		} else {
+			// NOTE(Richo): Fallback code...
+			initPrimitiveCall(node, json, ctx);
+		}
+	}
+
+	function initLcdCall(node, alias, selector, json, ctx) {
+		let defaultArg = {__class__: "UziNumberLiteralNode", value: 0};
+		let args = json.arguments;
+
+		if (selector == "printNumber") {
+			node.setAttribute("type", "print_number");
+			appendField(node, "lcdName", alias);
+			appendValue(node, "number", findArg(args, "value", 0) || defaultArg, ctx);
+		} else if (selector == "printString") {
+			defaultArg = {__class__: "UziStringNode", value: "abc"};
+			node.setAttribute("type", "print_string");
+			appendField(node, "lcdName", alias);
+			appendValue(node, "string", findArg(args, "value", 0) || defaultArg, ctx);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);
@@ -965,6 +998,8 @@ let ASTToBlocks = (function () {
 			appendField(node, "value", "1");
 		} else if (type == UziBlock.types.BOOLEAN) {
 			appendField(node, "value", "true");
+		} else if (type == UziBlock.types.STRING) {
+			appendField(node, "text", "abc");
 		} else {
 			return null; // Invalid type
 		}
@@ -1172,6 +1207,7 @@ let ASTToBlocks = (function () {
 				path: [],
 				variables: [],
 				motors: [],
+				lcds: [],
 				sonars: [],
 				joysticks: [],
 				lists: [],
@@ -1190,6 +1226,10 @@ let ASTToBlocks = (function () {
 				addMotor: function (motor) {
 					motor.index = ctx.motors.length;
 					ctx.motors.push(motor);
+				},
+				addLcd: function (lcd) {
+					lcd.index = ctx.lcds.length;
+					ctx.lcds.push(lcd);
 				},
 				addSonar: function (sonar) {
 					sonar.index = ctx.sonars.length;

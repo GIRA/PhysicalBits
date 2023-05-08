@@ -9,6 +9,7 @@ let UziBlock = (function () {
   let readOnly = false;  
   let readOnlyProgram = null;
   let motors = [];
+  let lcds = [];
   let sonars = [];
   let joysticks = [];
   let variables = [];
@@ -35,6 +36,7 @@ let UziBlock = (function () {
     GPIO: 345,
     PINS: 345,
     MOTORS: 0,
+    LCDS: 0,
     SERVO: 0,
     "DC MOTOR": 0,
     SENSORS: 15,
@@ -567,6 +569,46 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true },
       color: colors.MOTORS,
       supportsBreakpoints: true,
+    },
+
+    // Lcds
+    print_number : {
+      text: "%name . printNumber ( %number ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        },
+        "number": {
+          name: "number",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCDS,
+      supportsBreakpoints: true,
+    },
+    print_string : {
+          text: "%name . printString ( %string ) ;",
+          type: null,
+          inputs: {
+            "name": {
+              name: "lcdName",
+              types: null,
+              builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+            },
+            "string": {
+              name: "string",
+              types: [types.STRING],
+              builder: (block, input, name) => block.appendValueInput(name),
+            }
+          },
+          connections: { up: true, down: true, left: false },
+          color: colors.LCDS,
+          supportsBreakpoints: true,
     },
 
     // Sensors - Sonar
@@ -2802,6 +2844,7 @@ let UziBlock = (function () {
 
       initTasksToolboxCategory(workspace);
       initDCMotorsToolboxCategory(workspace);
+      initLCDToolboxCategory(workspace);
       initSonarToolboxCategory(workspace);
       initJoystickToolboxCategory(workspace);
       initVariablesToolboxCategory(workspace);
@@ -2873,6 +2916,25 @@ let UziBlock = (function () {
           let field = fields[i];
           if (field.getAttribute("name") === "motorName") {
             field.innerText = motors[motors.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initLCDToolboxCategory(workspace) {
+    workspace.registerToolboxCategoryCallback("LCD", function () {
+      let node = XML.getChildNode(toolbox, "LCD", "originalName");
+      let nodes = Array.from(node.children);
+      if (lcds.length == 0) {
+        nodes.splice(1); // Leave the button only
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "lcdName") {
+            field.innerText = lcds[lcds.length-1].name;
           }
         }
       }
@@ -3322,6 +3384,11 @@ let UziBlock = (function () {
     return motors.map(function(each) { return [ each.name, each.name ]; });
   }
 
+  function currentLcdsForDropdown() {
+    if (lcds.length == 0) return [[null, null]];
+    return lcds.map(function(each) { return [ each.name, each.name ]; });
+  }
+
   function currentSonarsForDropdown() {
     if (sonars.length == 0) return [[null, null]];
     return sonars.map(function(each) { return [ each.name, each.name ]; });
@@ -3610,6 +3677,7 @@ let UziBlock = (function () {
     let xml = Blockly.Xml.workspaceToDom(workspace);
     let metadata = {
       motors: motors,
+      lcds: lcds,
       sonars: sonars,
       joysticks: joysticks,
       variables: variables,
@@ -3938,6 +4006,29 @@ let UziBlock = (function () {
 
       motors = data;
     },
+    getLcds: function () { return lcds; },
+    setLcds: function (data) {
+      if (readOnly) return;
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (lcds[m.index] == undefined) return;
+        renames.set(lcds[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("motorName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      lcds = data;
+    },
     getSonars: function () { return sonars; },
     setSonars: function (data) {
       if (readOnly) return;
@@ -4034,6 +4125,7 @@ let UziBlock = (function () {
         version: version,
         blocks: toXMLText(),
         motors: motors,
+        lcds: lcds,
         sonars: sonars,
         joysticks: joysticks,
         variables: variables,
@@ -4048,6 +4140,7 @@ let UziBlock = (function () {
         userInteraction = false;
         fromXMLText(d.blocks);
         motors = d.motors || [];
+        lcds = d.lcds || [];
         sonars = d.sonars || [];
         joysticks = d.joysticks || [];
         variables = d.variables || [];

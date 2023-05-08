@@ -21,6 +21,7 @@ let IDE = (function () {
         .then(initializeCodePanel)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
+        .then(initializeBlocklyLcdsModal)
         .then(initializeBlocklySonarsModal)
         .then(initializeBlocklyJoysticksModal)
         .then(initializeBlocklyVariablesModal)
@@ -257,6 +258,45 @@ let IDE = (function () {
         UziBlock.refreshToolbox();
         saveToLocalStorage();
         scheduleAutorun(true, "MOTOR UPDATE!");
+      });
+    });
+  }
+
+  function initializeBlocklyLcdsModal() {
+
+    function getUsedLcds() {
+      let program = Uzi.state.program;
+      if (program == null) return new Set();
+      // HACK(Richo): We are actually returning all the aliases, not just motors
+      return new Set(program.ast.imports.map(imp => imp.alias));
+    }
+
+    UziBlock.getWorkspace().registerButtonCallback("configureLCD", () => {
+      let lcds = UziBlock.getLcds();
+      let usedLcds = getUsedLcds();
+      let spec = {
+        title: i18n.translate("Configure lcds"),
+        cantRemoveMsg: i18n.translate("This lcd is being used by the program!"),
+        defaultElement: { name: "lcd", address: 63, cols: 0, rows: 0 },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("Lcd name")},
+          {id: "address", type: "number", name: i18n.translate("Address")},
+          {id: "cols", type: "number", name: i18n.translate("Columns")},
+          {id: "rows", type: "number", name: i18n.translate("Rows")},
+        ],
+        rows: lcds.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedLcds.has(each.name);
+          return clone;
+        })
+      };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "lcds"});
+      BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "lcds", data: data});
+        UziBlock.setLcds(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "LCD UPDATE!");
       });
     });
   }
