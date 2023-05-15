@@ -4,6 +4,54 @@
       <field name="scriptName">default</field>
     </block>
   </category>
+  <category name="Control">
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="forever"></block>
+    <block type="repeat_times">
+      <value name="times">
+        <shadow type="number">
+          <field name="value">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="wait">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
   <category name="Pins">
     <block type="write_pin">
       <value name="pinNumber">
@@ -68,54 +116,6 @@
     <block type="get_sonar_distance">
       <field name="sonarName">sonar</field>
       <field name="unit">cm</field>
-    </block>
-  </category>
-  <category name="Control">
-    <block type="conditional_simple">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="conditional_full">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="forever"></block>
-    <block type="repeat_times">
-      <value name="times">
-        <shadow type="number">
-          <field name="value">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="wait">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="delay">
-      <field name="unit">ms</field>
-      <value name="time">
-        <shadow type="number">
-          <field name="value">1000</field>
-        </shadow>
-      </value>
     </block>
   </category>
   <category name="Math">

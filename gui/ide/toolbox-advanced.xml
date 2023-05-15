@@ -19,6 +19,75 @@
       <field name="scriptName"></field>
     </block>
   </category>
+  <category name="Control">
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="forever"></block>
+    <block type="repeat_times">
+      <value name="times">
+        <shadow type="number">
+          <field name="value">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="wait">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="elapsed_time">
+      <field name="unit">ms</field>
+    </block>
+    <block type="for">
+      <field name="variableName">i</field>
+      <value name="start">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="stop">
+        <shadow type="number">
+          <field name="value">10</field>
+        </shadow>
+      </value>
+      <value name="step">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
   <category name="Pins">
     <block type="toggle_pin">
       <value name="pinNumber">
@@ -286,75 +355,7 @@
       </value>
     </block>
   </category>
-  <category name="Control">
-    <block type="conditional_simple">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="conditional_full">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="forever"></block>
-    <block type="repeat_times">
-      <value name="times">
-        <shadow type="number">
-          <field name="value">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="wait">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="delay">
-      <field name="unit">ms</field>
-      <value name="time">
-        <shadow type="number">
-          <field name="value">1000</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="elapsed_time">
-      <field name="unit">ms</field>
-    </block>
-    <block type="for">
-      <field name="variableName">i</field>
-      <value name="start">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-      <value name="stop">
-        <shadow type="number">
-          <field name="value">10</field>
-        </shadow>
-      </value>
-      <value name="step">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-    </block>
-  </category>
+
   <category name="Math">
     <block type="number">
       <field name="value">0</field>
