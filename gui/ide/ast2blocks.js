@@ -1298,6 +1298,7 @@ let ASTToBlocks = (function () {
         version: UziBlock.version,
         blocks: blocks,
         motors: ctx.motors,
+        lcds: ctx.lcds,
         sonars: ctx.sonars,
         joysticks: ctx.joysticks,
         variables: ctx.variables,
