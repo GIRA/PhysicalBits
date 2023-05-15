@@ -4011,7 +4011,7 @@ let UziBlock = (function () {
       });
 
       workspace.getAllBlocks()
-        .map(b => ({ block: b, field: b.getField("motorName") }))
+        .map(b => ({ block: b, field: b.getField("lcdName") }))
         .filter(o => o.field != undefined)
         .forEach(function (o) {
           let value = renames.get(o.field.getValue());
