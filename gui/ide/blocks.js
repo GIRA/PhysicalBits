@@ -36,7 +36,7 @@ let UziBlock = (function () {
     GPIO: 345,
     PINS: 345,
     MOTORS: 0,
-    LCDS: 0,
+    LCD: 0,
     SERVO: 0,
     "DC MOTOR": 0,
     SENSORS: 15,
@@ -45,6 +45,7 @@ let UziBlock = (function () {
     JOYSTICK: 15,
     SOUND: 30,
     CONTROL: 140,
+    STRINGS: 235,
     MATH: 210,
     LOGIC: 210,
     VARIABLES: 305,
@@ -588,7 +589,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: true, down: true, left: false },
-      color: colors.LCDS,
+      color: colors.LCD,
       supportsBreakpoints: true,
     },
     print_string : {
@@ -607,7 +608,7 @@ let UziBlock = (function () {
             }
           },
           connections: { up: true, down: true, left: false },
-          color: colors.LCDS,
+          color: colors.LCD,
           supportsBreakpoints: true,
     },
 
@@ -801,7 +802,7 @@ let UziBlock = (function () {
         }
       },
       connections: { up: false, down: false, left: true},
-      color: 0,
+      color: colors.STRINGS,
       postload: (block) => block.setInputsInline(true),
       supportsBreakpoints: false,
     },
