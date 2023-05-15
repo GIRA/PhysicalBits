@@ -3132,11 +3132,6 @@ let UziBlock = (function () {
   }
 
   function initFromSpec() {
-    let typeMap = {};
-    typeMap[types.PIN] = "Pin";
-    typeMap[types.NUMBER] = "Number";
-    typeMap[types.BOOLEAN] = "Boolean";
-
     for (let key in spec) {
       let blockSpec = spec[key];
       Blockly.Blocks[key] = {
@@ -3175,7 +3170,7 @@ let UziBlock = (function () {
               inputFields[inputKey] = (block, input) => {
                 let inputResult = inputSpec.builder(block, input, inputSpec.name);
                 if (inputSpec.types) {
-                  inputResult.setCheck(inputSpec.types.map(t => typeMap[t]));
+                  inputResult.setCheck(inputSpec.types);
                 }
                 return inputResult;
               }
@@ -3189,7 +3184,7 @@ let UziBlock = (function () {
             initBlock(this, msg, inputFields);
             this.setPreviousStatement(blockSpec.connections.up, null);
             this.setNextStatement(blockSpec.connections.down, null);
-            this.setOutput(blockSpec.connections.left, typeMap[blockSpec.type]);
+            this.setOutput(blockSpec.connections.left, blockSpec.type);
             this.setColour(blockSpec.color);
             this.setTooltip(blockSpec.tooltip || "");
             this.setHelpUrl(blockSpec.helpUrl || "");
