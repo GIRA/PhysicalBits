@@ -1236,7 +1236,6 @@ let IDE = (function () {
     updatePinsPanel(editing);
     updateGlobalsPanel(editing);
     updateTasksPanel();
-    updateMemoryPanel();
     updatePseudoVarsPanel();
   }
 
@@ -1427,16 +1426,6 @@ let IDE = (function () {
           .append($("<td>")
             .addClass(css)
             .html(html)));
-    }
-  }
-
-  function updateMemoryPanel() {
-    if (Uzi.state.connection.isConnected) {
-      $("#arduino-memory").text(Uzi.state.memory.arduino || "?");
-      $("#uzi-memory").text(Uzi.state.memory.uzi || "?");
-    } else {
-      $("#arduino-memory").text("?");
-      $("#uzi-memory").text("?");
     }
   }
 
