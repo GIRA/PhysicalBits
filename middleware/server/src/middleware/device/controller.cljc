@@ -252,6 +252,8 @@
            {:timestamp timestamp :data globals})))
 
 (defn process-free-ram [{:keys [memory]}]
+  (add-pseudo-var! "__arduino_memory" (-> @state :memory :arduino))
+  (add-pseudo-var! "__uzi_memory" (-> @state :memory :uzi))
   (swap! state assoc :memory memory))
 
 (defn process-running-scripts [{:keys [scripts]}]
