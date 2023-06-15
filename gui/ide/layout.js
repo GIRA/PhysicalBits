@@ -250,19 +250,6 @@ let LayoutManager = (function () {
     });
   }
 
-  function updateContent() {    
-    Uzi.elog("LAYOUT/RESET UPDATE CONTENT");
-    let content =
-
-    setLayoutConfig({
-      settings: settings,
-      content: [{
-        type: "row",
-        content: getDefaultContent()
-      }]
-    });
-  }
-
   function on (evt, callback) {
     observers[evt].push(callback);
   }

@@ -547,10 +547,8 @@ let IDE = (function () {
   }
 
   function updatePanel(name) {
-    let panelId = "#" + name + "-panel-checkbox";
-    console.log("Ejecutar updatePanel: " + panelId);
-    console.log("Valor del check: " + $(panelId).get(0).checked);
-    if ($(panelId).get(0).checked){
+    let panelId = "#" + name + "-panel";
+    if ($(panelId + "-checkbox").get(0).checked){
       LayoutManager.showPanel(name);
     } else {
       LayoutManager.closePanel(panelId);
