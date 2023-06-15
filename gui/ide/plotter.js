@@ -200,7 +200,7 @@ let Plotter = (function () {
       remove(observable);
     } else {
       add(observable);
-      LayoutManager.showPlotter();
+      LayoutManager.showPanel("plotter");
     }
     updateLabels();
     resize();

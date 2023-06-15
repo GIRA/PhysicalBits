@@ -200,6 +200,23 @@ let LayoutManager = (function () {
     return content;
   }
 
+  function getBasicContent() {
+    let left = [components.controls, components.inspector];
+    let main = [components.blocks];
+
+    let content = [{
+      "type": "column",
+      "width": 17,
+      "content": left
+    }, {
+      "type": "column",
+      "width": 83,
+      "content": main
+    }];
+
+    return content;
+  }
+
   function reset() {    
     Uzi.elog("LAYOUT/RESET");
     setLayoutConfig({
@@ -211,6 +228,41 @@ let LayoutManager = (function () {
     });
   }
   
+  function setBasicContent() {    
+    Uzi.elog("LAYOUT/RESET BASIC CONTENT");
+    setLayoutConfig({
+      settings: settings,
+      content: [{
+        type: "row",
+        content: getBasicContent()
+      }]
+    });
+  }
+
+  function setAdvancedContent() {    
+    Uzi.elog("LAYOUT/RESET ADVANCED CONTENT");
+    setLayoutConfig({
+      settings: settings,
+      content: [{
+        type: "row",
+        content: getDefaultContent()
+      }]
+    });
+  }
+
+  function updateContent() {    
+    Uzi.elog("LAYOUT/RESET UPDATE CONTENT");
+    let content =
+
+    setLayoutConfig({
+      settings: settings,
+      content: [{
+        type: "row",
+        content: getDefaultContent()
+      }]
+    });
+  }
+
   function on (evt, callback) {
     observers[evt].push(callback);
   }
@@ -301,9 +353,9 @@ let LayoutManager = (function () {
     return items[0].id;
   }
 
-  function showPlotter() {
-    if (layout.root.getItemsById("plotter").length > 0) return;
-    Uzi.elog("LAYOUT/PANEL_OPEN", "#plotter-panel");
+  function showPanel(name) {
+    if (layout.root.getItemsById(name).length > 0) return;
+    // Uzi.elog("LAYOUT/PANEL_OPEN #", id, "-panel");
 
     let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
     let path = [siblingPanel];
@@ -311,38 +363,16 @@ let LayoutManager = (function () {
       path.unshift(path[0].parent);
     } while (path[0].type == "stack");
     let parent = path[0];
-    
-    let config = components.plotter;
+    console.log(parent);
+
+    let config = components[name];
+    console.log(config);
     if (parent.type == "column") {
       parent.addChild(config);
     } else {
       let siblingConfig = path[1].config;
       siblingConfig.height = 100 - config.height;
-      parent.replaceChild(path[1], {
-        type: "column",
-        width: siblingConfig.width,
-        content: [siblingConfig, config]
-      });
-    }
-  }
-
-  function showDebugger() {
-    if (layout.root.getItemsById("debugger").length > 0) return;
-    Uzi.elog("LAYOUT/PANEL_OPEN", "#debugger-panel");
-
-    let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
-    let path = [siblingPanel];
-    do {
-      path.unshift(path[0].parent);
-    } while (path[0].type == "stack");
-    let parent = path[0];
-    
-    let config = components.debugger;
-    if (parent.type == "column") {
-      parent.addChild(config);
-    } else {
-      let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - config.height;
+      console.log(siblingConfig);
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
@@ -359,9 +389,10 @@ let LayoutManager = (function () {
   return {
     init: init,
     reset: reset,
+    setBasicContent: setBasicContent,
+    setAdvancedContent: setAdvancedContent,
     on: on,
-    showPlotter: showPlotter,
-    showDebugger: showDebugger,
+    showPanel: showPanel,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,

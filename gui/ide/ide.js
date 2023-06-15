@@ -204,7 +204,7 @@ let IDE = (function () {
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
-		$("#interactive-checkbox").on("change", toggleInteractive);
+		// $("#interactive-checkbox").on("change", toggleInteractive);
     $("#options-button").on("click", openOptionsDialog);
     if (Uzi.state.features["options-button?"]) {
       $("#options-button").show();
@@ -513,15 +513,16 @@ let IDE = (function () {
   }
 
   function initializeOptionsModal() {
-    $("#restore-layout-button").on("click", LayoutManager.reset);
+    $("#interface-checkbox").on("change", updateInterface);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
-    $("#adv-blocks-checkbox").on("change", updateAdvBlocks);
     $("#all-caps-checkbox").on("change", updateAllCaps);
-    if (!fs) {
-      $("#autosave-checkbox").attr("disabled", "disabled");
-    } else {
-      $("#autosave-checkbox").on("change", toggleAutosave);
-    }
+    $("#controls-panel-checkbox").on("change", updatePanel("controls"));
+    $("#inspector-panel-checkbox").on("change", updatePanel("inspector"));
+    $("#blocks-panel-checkbox").on("change", updatePanel("blocks"));
+    $("#code-panel-checkbox").on("change", updatePanel("code"));
+    $("#plotter-panel-checkbox").on("change", updatePanel("plotter"));
+    $("#output-panel-checkbox").on("change", updatePanel("output"));
+    $("#debugger-panel-checkbox").on("change", updatePanel("debugger"));
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
@@ -543,6 +544,17 @@ let IDE = (function () {
       let panelId = $(this).val();
       $(this).prop("checked", $(panelId).is(":visible"));
     });
+  }
+
+  function updatePanel(name) {
+    let panelId = "#" + name + "-panel-checkbox";
+    console.log("Ejecutar updatePanel: " + panelId);
+    console.log("Valor del check: " + $(panelId).get(0).checked);
+    if ($(panelId).get(0).checked){
+      LayoutManager.showPanel(name);
+    } else {
+      LayoutManager.closePanel(panelId);
+    }
   }
 
   function checkBrokenLayout() {
@@ -679,19 +691,15 @@ let IDE = (function () {
     localStorage["uzi.code"] = ui.code;
     localStorage["uzi.ports"] = JSONX.stringify(ui.ports);
 
-    if ($("#autosave-checkbox").get(0).checked && $("#file-name").text()) {
-      saveProject();
-    }
   }
 
   function getUIState() {
     return {
       settings: {
-        autosave:    $("#autosave-checkbox").get(0).checked,
-        interactive: $("#interactive-checkbox").get(0).checked,
+        // interactive: $("#interactive-checkbox").get(0).checked,
         allcaps:     $("#all-caps-checkbox").get(0).checked,
         uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
-        advBlocks:   $("#adv-blocks-checkbox").get(0).checked,
+        advInterface:$("#interface-checkbox").get(0).checked,
       },
       fileName:  $("#file-name").text() || "",
       layout: LayoutManager.getLayoutConfig(),
@@ -707,21 +715,19 @@ let IDE = (function () {
   function setUIState(ui) {
     try {
       if (ui.settings != undefined) {
-        $("#autosave-checkbox").get(0).checked    = ui.settings.autosave;
-        $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+        // $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
-        $("#adv-blocks-checkbox").get(0).checked  = ui.settings.advBlocks;
+        $("#interface-checkbox").get(0).checked   = ui.settings.advInterface;
       } else {
-        $("#autosave-checkbox").get(0).checked    = false;
-        $("#interactive-checkbox").get(0).checked = true;
+        // $("#interactive-checkbox").get(0).checked = true;
         $("#all-caps-checkbox").get(0).checked    = false;
         $("#uzi-syntax-checkbox").get(0).checked  = false;
-        $("#adv-blocks-checkbox").get(0).checked  = false;
+        $("#interface-checkbox").get(0).checked   = false;
       }
       updateAllCaps();
       updateUziSyntax();
-      updateAdvBlocks();
+      updateInterface();
 
       if (ui.fileName != undefined) {
         $("#file-name").text(ui.fileName);
@@ -1021,15 +1027,6 @@ let IDE = (function () {
     }
   }
 
-  function toggleInteractive() {
-    scheduleAutorun($("#interactive-checkbox").get(0).checked,
-                    "TOGGLE INTERACTIVE!");
-    saveToLocalStorage();
-  }
-
-  function toggleAutosave() {
-    saveToLocalStorage();
-  }
 
   function updateUziSyntax() {
     let checked = $("#uzi-syntax-checkbox").get(0).checked;
@@ -1038,13 +1035,22 @@ let IDE = (function () {
     saveToLocalStorage();
   }
 
-  function updateAdvBlocks() {
-    let checked = $("#adv-blocks-checkbox").get(0).checked;
-    if (checked) {
+  function updateInterface() {
+    let checked = $("#interface-checkbox").get(0).checked;
+    
+    // Set Layout
+    if (checked){
       UziBlock.setAdvancedToolbox();
+      LayoutManager.setAdvancedContent();
     } else {
       UziBlock.setBasicToolbox();
+      LayoutManager.setBasicContent();
     }
+    let advPanels = ["#code-panel-checkbox", "#plotter-panel-checkbox", "#output-panel-checkbox", "#debugger-panel-checkbox"];
+    advPanels.forEach(advPanel => {
+      $(advPanel).attr("disabled", checked? null: "disabled");
+    })
+    
     saveToLocalStorage();
   }
 
@@ -1139,7 +1145,7 @@ let IDE = (function () {
     }
 
     let connected = Uzi.state.connection.isConnected;
-    let interactive = $("#interactive-checkbox").get(0).checked;
+    let interactive = true; //$("#interactive-checkbox").get(0).checked;
     interactive &= Uzi.state.features["interactivity?"];
     let action = connected && interactive ? Uzi.run : Uzi.compile;
     let actionName = action.name.toUpperCase();

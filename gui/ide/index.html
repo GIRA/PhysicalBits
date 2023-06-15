@@ -356,13 +356,9 @@
           <div class="modal-body">
             <div class="container">
               <div class="row">
-                <div class="col-4">
+                <div class="col-md-4">
                   <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <a class="nav-link active" id="v-pills-general-tab" data-toggle="pill" href="#v-pills-general" role="tab" aria-controls="v-pills-general" aria-selected="true">
-                      <i class="fas fa-wrench mr-2"></i>
-                      <span lang="en">General</span>
-                    </a>
-                    <a class="nav-link" id="v-pills-layout-tab" data-toggle="pill" href="#v-pills-layout" role="tab" aria-controls="v-pills-layout" aria-selected="false">
+                    <a class="nav-link active" id="v-pills-layout-tab" data-toggle="pill" href="#v-pills-layout" role="tab" aria-controls="v-pills-layout" aria-selected="true">
                       <i class="fas fa-th mr-2"></i>
                       <span lang="en">User interface</span>
                     </a>
@@ -372,61 +368,27 @@
                     </a>
                   </div>
                 </div>
-                <div class="col-8">
+                <div class="col-md-8">
                   <div class="tab-content" id="v-pills-tabContent">
-                    <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel" aria-labelledby="v-pills-general-tab">
+                    <div class="tab-pane fade show active" id="v-pills-layout" role="tabpanel" aria-labelledby="v-pills-layout-tab">
                       <div class="container">
-			                  <h6 lang="en">Program:</h6>
-                        <div class="row">
-                          <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="autosave-checkbox">
-                              <label class="custom-control-label" for="autosave-checkbox" lang="en">Autosave</label>
-                            </div>
-                          </div>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="interface-checkbox">
+                          <label class="custom-control-label" for="interface-checkbox" lang="en">Advanced</label>
                         </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="interactive-checkbox">
-                              <label class="custom-control-label" for="interactive-checkbox" lang="en">Interactive mode</label>
-                            </div>
-                          </div>
-                        </div>
-		                  </div>
+                      </div>
                       <div class="container mt-3">
-			                  <h6 lang="en">Blocks:</h6>
-                        <div class="row">
-                          <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="uzi-syntax-checkbox" />
-                                    <label class="custom-control-label" for="uzi-syntax-checkbox" lang="en">Uzi syntax</label>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="row">
-                          <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="adv-blocks-checkbox" />
-                                <label class="custom-control-label" for="adv-blocks-checkbox" lang="en">Advanced</label>
-                            </div>
-                          </div>
-                        </div>
-                       </div>
-                    </div>
-                    <div class="tab-pane fade" id="v-pills-layout" role="tabpanel" aria-labelledby="v-pills-layout-tab">
-                      <div class="container">
                         <h6 lang="en">Panels:</h6>
                         <div class="row">
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="controls-panel-checkbox" name="layout-panels" value="#controls-panel" disabled>
+                              <input type="checkbox" class="custom-control-input" id="controls-panel-checkbox" name="layout-panels" value="#controls-panel">
                               <label class="custom-control-label" for="controls-panel-checkbox" lang="en">Controls</label>
                             </div>
                           </div>
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="inspector-panel-checkbox" name="layout-panels" value="#inspector-panel" disabled>
+                              <input type="checkbox" class="custom-control-input" id="inspector-panel-checkbox" name="layout-panels" value="#inspector-panel">
                               <label class="custom-control-label" for="inspector-panel-checkbox" lang="en">Inspector</label>
                             </div>
                           </div>
@@ -434,7 +396,7 @@
                         <div class="row">
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="blocks-panel-checkbox" name="layout-panels" value="#blocks-panel" disabled>
+                              <input type="checkbox" class="custom-control-input" id="blocks-panel-checkbox" name="layout-panels" value="#blocks-panel">
                               <label class="custom-control-label" for="blocks-panel-checkbox" lang="en">Blocks</label>
                             </div>
                           </div>
@@ -462,22 +424,9 @@
                         <div class="row">
                           <div class="col">
                             <div class="custom-control custom-checkbox custom-control-inline">
-                              <input type="checkbox" class="custom-control-input" id="serial-monitor-panel-checkbox" name="layout-panels" value="#serial-monitor-panel" disabled>
-                              <label class="custom-control-label" for="serial-monitor-panel-checkbox" lang="en">Serial Monitor</label>
-                            </div>
-                          </div>
-                          <div class="col">
-                            <div class="custom-control custom-checkbox custom-control-inline">
                               <input type="checkbox" class="custom-control-input" id="debugger-panel-checkbox" name="layout-panels" value="#debugger-panel" disabled>
                               <label class="custom-control-label" for="debugger-panel-checkbox" lang="en">Debugger</label>
                             </div>
-                          </div>
-                        </div>
-                        <div class="row mt-1">
-                          <div class="col">
-                            <button id="restore-layout-button" type="button" class="btn btn-outline-secondary btn-sm">
-                              <span lang="en">Restore default layout</span>
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -488,6 +437,14 @@
                             <div class="custom-control custom-checkbox custom-control-inline">
                               <input type="checkbox" class="custom-control-input" id="all-caps-checkbox" />
 			                        <label class="custom-control-label" for="all-caps-checkbox" lang="en">Display text in ALL-CAPS</label>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col">
+                            <div class="custom-control custom-checkbox custom-control-inline">
+                              <input type="checkbox" class="custom-control-input" id="uzi-syntax-checkbox" />
+                                    <label class="custom-control-label" for="uzi-syntax-checkbox" lang="en">Uzi syntax</label>
                             </div>
                           </div>
                         </div>

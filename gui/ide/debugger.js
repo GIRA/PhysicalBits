@@ -89,7 +89,7 @@ let Debugger = (function () {
     updateButtons(state);
     updateDebugger(state);
     if (state.debugger.isHalted) {
-      LayoutManager.showDebugger();
+      LayoutManager.showPanel("debugger");
     }
     $("#debugger-output").text(JSON.stringify(state.debugger, null, 2));
   }
