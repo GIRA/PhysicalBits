@@ -516,13 +516,13 @@ let IDE = (function () {
     $("#interface-checkbox").on("change", updateInterface);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
     $("#all-caps-checkbox").on("change", updateAllCaps);
-    $("#controls-panel-checkbox").on("change", updatePanel("controls"));
-    $("#inspector-panel-checkbox").on("change", updatePanel("inspector"));
-    $("#blocks-panel-checkbox").on("change", updatePanel("blocks"));
-    $("#code-panel-checkbox").on("change", updatePanel("code"));
-    $("#plotter-panel-checkbox").on("change", updatePanel("plotter"));
-    $("#output-panel-checkbox").on("change", updatePanel("output"));
-    $("#debugger-panel-checkbox").on("change", updatePanel("debugger"));
+    $("#controls-panel-checkbox").on("change", () => updatePanel("controls"));
+    $("#inspector-panel-checkbox").on("change", () => updatePanel("inspector"));
+    $("#blocks-panel-checkbox").on("change", () => updatePanel("blocks"));
+    $("#code-panel-checkbox").on("change", () => updatePanel("code"));
+    $("#plotter-panel-checkbox").on("change", () => updatePanel("plotter"));
+    $("#output-panel-checkbox").on("change", () => updatePanel("output"));
+    $("#debugger-panel-checkbox").on("change", () => updatePanel("debugger"));
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
