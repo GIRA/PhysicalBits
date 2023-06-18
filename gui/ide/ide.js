@@ -1038,13 +1038,13 @@ let IDE = (function () {
       UziBlock.setAdvancedToolbox();
       LayoutManager.setAdvancedContent();
       $('input[name="layout-panels-advanced"]').each(function () {
-        $(this).get(0).parentNode.classList.remove("fade");
+        $(this).get(0).parentNode.removeAttribute("hidden");
       })
     } else {
       UziBlock.setBasicToolbox();
       LayoutManager.setBasicContent();
       $('input[name="layout-panels-advanced"]').each(function () {
-        $(this).get(0).parentNode.classList.add("fade");
+        $(this).get(0).parentNode.setAttribute("hidden", "hidden");
       })
     }
     saveToLocalStorage();
