@@ -363,7 +363,8 @@ let LayoutManager = (function () {
       parent.replaceChild(path[1], {
         type: "column",
         width: siblingConfig.width,
-        content: [siblingConfig, config]
+        content: [siblingConfig, config],
+        config: config
       });
     }
   }

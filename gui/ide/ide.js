@@ -540,7 +540,7 @@ let IDE = (function () {
   }
 
   function updateVisiblePanelsInOptionsModal() {
-    $('input[name="layout-panels"]').each(function () {
+    $('input[name^="layout-panels"]').each(function () {
       let panelId = $(this).val();
       $(this).prop("checked", $(panelId).is(":visible"));
     });
@@ -1029,26 +1029,24 @@ let IDE = (function () {
   function updateUziSyntax() {
     let checked = $("#uzi-syntax-checkbox").get(0).checked;
     UziBlock.setUziSyntax(checked);
-
     saveToLocalStorage();
   }
 
   function updateInterface() {
     let checked = $("#interface-checkbox").get(0).checked;
-    
-    // Set Layout
     if (checked){
       UziBlock.setAdvancedToolbox();
       LayoutManager.setAdvancedContent();
+      $('input[name="layout-panels-advanced"]').each(function () {
+        $(this).get(0).parentNode.classList.remove("fade");
+      })
     } else {
       UziBlock.setBasicToolbox();
       LayoutManager.setBasicContent();
+      $('input[name="layout-panels-advanced"]').each(function () {
+        $(this).get(0).parentNode.classList.add("fade");
+      })
     }
-    let advPanels = ["#code-panel-checkbox", "#plotter-panel-checkbox", "#output-panel-checkbox", "#debugger-panel-checkbox"];
-    advPanels.forEach(advPanel => {
-      $(advPanel).attr("disabled", checked? null: "disabled");
-    })
-    
     saveToLocalStorage();
   }
 
