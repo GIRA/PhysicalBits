@@ -585,6 +585,11 @@ let IDE = (function () {
       return arg || m;
     });
 
+    // Create toast
+    console.log("Show message!");
+    console.log(entry);
+    ToastMessageBox.show(entry);
+
     // Append element
     let css = {
       info: "text-white",
