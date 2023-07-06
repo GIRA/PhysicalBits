@@ -341,6 +341,17 @@ let LayoutManager = (function () {
   }
 
   function showPanel(name) {
+    let preferredPath = preferredPaths[name];
+    if (!preferredPath) {
+      console.log("NO PREFERRED PATH!");
+      preferredPath = [0, 1, 10];
+    } else {
+      console.log(preferredPath);
+    }
+    let simpleLayout = simplifyLayout(getLayoutConfig());
+    let newLayout = insertIn(simpleLayout, preferredPath, name);
+    setLayoutConfig(complicateLayout(newLayout));
+    /*
     if (layout.root.getItemsById(name).length > 0) return;
     // Uzi.elog("LAYOUT/PANEL_OPEN #", id, "-panel");
 
@@ -366,12 +377,119 @@ let LayoutManager = (function () {
         content: [siblingConfig, config],
         config: config
       });
-    }
+    }*/
+  }
+
+  let preferredPaths = {};
+
+  function hidePanel(name) {
+    let simpleLayout = simplifyLayout(getLayoutConfig());
+    let path = getPath(name, simpleLayout);
+    preferredPaths[name] = path;
+    let id = components[name].componentState.id;
+    closePanel(id);
   }
 
   function closePanel(id) {
     let panel = getPanel(id);
     if (panel) { panel.close(); }
+  }
+
+  function simplifyLayout(layout) {
+    if (layout.type == "stack" && layout.content.length == 1) {
+      let content = layout.content[0];
+      if (layout.width && !content.width) {
+        content.width = layout.width;
+      }
+      if (layout.height && !content.height) {
+        content.height = layout.height;
+      }
+      return simplifyLayout(content);
+    } else {
+      let content = [];
+      if (layout.content) {
+        content = layout.content.map(e => simplifyLayout(e));
+      }
+      if (layout.id) {
+        return layout.id;
+      } else {
+        let result = {};
+        result.content = content;
+        if (layout.type) { result.type = layout.type; }
+        if (layout.width) { result.width = layout.width; }
+        if (layout.height) { result.height = layout.height; }
+        return result;
+      }
+    }
+  }
+
+  function complicateLayout(layout) {
+    if (typeof layout === 'string' || layout instanceof String) {
+      return components[layout];
+    } else {
+      let result = {};
+      if (layout.content) {
+        result.content = layout.content.map(complicateLayout);
+      }
+      if (layout.type) {
+        result.type = layout.type;
+      }
+      if (layout.width) {
+        result.width = layout.width;
+      }
+      if (layout.heigth) {
+        result.height = layout.height;
+      }
+      return result;
+    }
+  }
+
+  function getPath(element, layout) {
+    if (element == layout) return [];
+    if (typeof layout === 'string' || layout instanceof String) {
+      return null;
+    }
+    for (let i = 0; i < layout.content.length; i++) {
+      let path = getPath(element, layout.content[i]);
+      if (path) return [i].concat(path);
+    }
+  }
+
+  function insertIn(layout, path, element, parent) {
+    console.log(">>>", layout);
+    if (typeof layout === 'string' || layout instanceof String) {
+      let idx = path[0];
+      return {
+        type: parent == "row" ? "column" : "row",
+        content: idx == 0 ? [element, layout] : [layout, element]
+      };
+    }
+    let result = {};
+    if (layout.type) result.type = layout.type;
+    if (layout.width) result.width = layout.width;
+    if (layout.heigth) result.height = layout.height;
+    let idx = path[0];
+    path = path.slice(1);
+    let content = layout.content;
+    if (!content || content.length == 0) {
+      result.content = [element];
+    } else if (idx >= content.length) {
+      result.content = content.concat(element);
+    } else if (path.length == 0) {
+      let l = content.slice(0, idx);
+      let r = content.slice(idx);
+      result.content = l.concat(element).concat(r);
+    } else {
+      result.content = [];
+      for (let i = 0; i < content.length; i++) {
+        if (i == idx) {
+          result.content.push(insertIn(content[i], path, element, layout.type));
+        } else {
+          result.content.push(content[i]);
+        }
+      }
+    }
+    return result;
   }
 
   return {
@@ -381,11 +499,18 @@ let LayoutManager = (function () {
     setAdvancedContent: setAdvancedContent,
     on: on,
     showPanel: showPanel,
+    hidePanel: hidePanel,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,
     getPanel: getPanel,
     closePanel: closePanel,
+
+    components: components,
+    simplifyLayout: simplifyLayout,
+    complicateLayout: complicateLayout,
+    getPath: getPath,
+    insertIn: insertIn,
   };
 
 })();

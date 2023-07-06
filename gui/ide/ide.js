@@ -551,7 +551,7 @@ let IDE = (function () {
     if ($(panelId + "-checkbox").get(0).checked){
       LayoutManager.showPanel(name);
     } else {
-      LayoutManager.closePanel(panelId);
+      LayoutManager.hidePanel(name);
     }
   }
 
