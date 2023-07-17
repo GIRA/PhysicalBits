@@ -1042,16 +1042,13 @@ let IDE = (function () {
     if (checked){
       UziBlock.setAdvancedToolbox();
       LayoutManager.setAdvancedContent();
-      $('input[name="layout-panels-advanced"]').each(function () {
-        $(this).get(0).parentNode.removeAttribute("hidden");
-      })
     } else {
       UziBlock.setBasicToolbox();
       LayoutManager.setBasicContent();
-      $('input[name="layout-panels-advanced"]').each(function () {
-        $(this).get(0).parentNode.setAttribute("hidden", "hidden");
-      })
     }
+    $('input[name="layout-panels-advanced"]').each(function () {
+      $(this).attr("disabled", checked? null: "disabled");
+    })
     saveToLocalStorage();
   }
 
