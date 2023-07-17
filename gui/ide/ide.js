@@ -565,16 +565,6 @@ let IDE = (function () {
   }
 
   function appendToOutput(entry) {
-    // Remember the entry in case we need to update the panel (up to a fixed limit)
-    if (outputHistory.length == 100) { outputHistory.shift(); }
-    outputHistory.push(entry);
-
-    // Special case for the clear message
-    if (entry.type == "clear") {
-      $("#output-console").html("");
-      outputHistory = [];
-      return;
-    }
 
     // Translate and format the message
     let type = entry.type || "info";
@@ -584,10 +574,7 @@ let IDE = (function () {
       let arg = args[parseInt(i) - 1];
       return arg || m;
     });
-
-    // Create toast
-    console.log("Show message!");
-    console.log(entry);
+    entry["text"] = text;
     ToastMessageBox.show(entry);
 
     // Append element

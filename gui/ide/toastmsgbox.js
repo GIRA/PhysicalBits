@@ -6,43 +6,42 @@ let ToastMessageBox = (function () {
 		warning: {"textStyle":"text-warning", "icon":"fa-triangle-exclamation"},
 	};
 
+	function removeToast(toast) {
+		toast.classList.add("hide");
+		if (toast.timeoutId) clearTimeout(toast.timeoutId);
+		setTimeout(() => toast.remove(), 1000);
+	}
+
 	function getToastId(toastContainer) {
 		return "toast-msg-box-" + (toastContainer.childNodes.length? parseInt(toastContainer.lastChild.getAttribute("id").split("-")[3])+1 : 1);
 	}
 
-	function build(data) {
-	let toastContainer = $("#toast-container").get(0);
-	let newMsgBox = $("#toast-template").get(0).cloneNode(true);
-	let toastId = getToastId(toastContainer);
-	newMsgBox.setAttribute("id", toastId);
-	newMsgBox.classList.add(css[data.type]["textStyle"])
-
-	// Header
-	newMsgBox.children[0].children[0].classList.add(css[data.type]["icon"])
-	newMsgBox.children[0].children[1].textContent = data.type.charAt(0).toUpperCase() + data.type.substr(1).toLowerCase();
-
-	// Body
-	newMsgBox.children[1].textContent = data.text;
-
-	toastContainer.appendChild(newMsgBox);
-	newMsgBox.timeoutId = setTimeout(() => hide(newMsgBox), data.delay? data.delay : 10000);
-	return toastId;
-	}
-
-	function hide(newMsgBox) {
-		newMsgBox.classList.add("hide");
-		if (newMsgBox.timeoutId) clearTimeout(newMsgBox.timeoutId)
-		setTimeout(() => newMsgBox.remove(), 1000);
+	function buildToast(data){
+		const toastContainer = document.querySelector(".notifications");
+		const toast = document.createElement("li");
+		toast.setAttribute("id", getToastId(toastContainer));
+		toast.className = `toast ${data.type}`;
+		toast.setAttribute("data-autohide", false);
+		toast.innerHTML = `<div class="column">
+								<i class="fas ${css[data.type]["icon"]}"></i>
+								<span>${data.text}</span>
+							</div>
+							<i class="fas fa-xmark" onclick="ToastMessageBox.removeToast(this.parentElement)"></i>
+							`;
+		toastContainer.appendChild(toast);
+		toast.timeoutId = setTimeout(() => removeToast(toast), data.delay? data.delay : 5000);
+		return toast.id;
 	}
 
 	function show(data) {
 		console.log(data);
-		let _id = build(data);
+		let _id = buildToast(data);
 		$("#" + _id).toast("show");
 	}
 
 	return {
-		show: show
+		show: show,
+		removeToast:removeToast
 	};
 })();
 
