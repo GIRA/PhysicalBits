@@ -81,9 +81,6 @@
            program (apply compile-fn src args)
            bytecodes (en/encode program)]
        (when-not silent?
-         (logger/newline)
-         (logger/log "Program size (bytes): %1" (count bytecodes))
-         (logger/log (str bytecodes))
          (logger/success "Compilation successful!"))
        (reset! program-atom program)
        (a/put! program-chan true)
@@ -92,20 +89,22 @@
      (catch #?(:clj Throwable :cljs :default) ex
        (compilation-failed src ex type silent?)
        (when-not silent?
-         (logger/newline)
-         (logger/exception ex)
+         (logger/error "Compilation failed!")
          ; TODO(Richo): Improve the error message for checker errors
-         (when-let [{errors :errors} (ex-data ex)]
-           (doseq [[^long i {:keys [description node src]}]
-                   (map-indexed (fn [i e] [i e])
-                                errors)]
-             (logger/error (str "├─ " (inc i) ". " description))
-             (if src
-               (logger/error (str "|     ..." src "..."))
-               (when-let [id (:id node)]
-                 (logger/error (str "|     Block ID: " id)))))
-           (logger/error (str "└─ Compilation failed!"))))
-       (throw ex)))))
+        ;;  (when-let [{errors :errors} (ex-data ex)]
+        ;;    (doseq [[^long i {:keys [description node src]}]
+        ;;            (map-indexed (fn [i e] [i e])
+        ;;                         errors)]
+        ;;      (logger/error (str "├─ " (inc i) ". " description))
+        ;;      (if src
+        ;;        (logger/error (str "|     ..." src "..."))
+        ;;        (when-let [id (:id node)]
+        ;;          (logger/error (str "|     Block ID: " id)))))
+        ;;    (logger/error (str "└─ Compilation failed!")))
+         )
+       (throw ex)
+       )
+     )))
 
 (defn compile-and-run! [src type silent? & args]
   (go-try
