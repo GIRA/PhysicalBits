@@ -288,7 +288,6 @@
 
 (defn process-error [{{:keys [code msg]} :error}]
   (go
-    (logger/newline)
     (logger/warning "%1 detected. The program has been stopped" msg)
     (when (p/error-disconnect? code)
       (<! (disconnect!)))))
@@ -353,8 +352,6 @@
 (defn- request-connection [port-name baud-rate]
   (go
     (try
-      (logger/clear)
-      (logger/newline)
       (logger/log "Opening port: %1" port-name)
       (if-let [connection (ports/connect! port-name baud-rate)]
         (do
