@@ -134,6 +134,8 @@ let LayoutManager = (function () {
   let onStateChanged = function () { /* DO NOTHING */ }
   let resetting = false;
   
+  let preferredPaths = {};
+  
   let observers = {
     "close" : [],
   };
@@ -332,14 +334,7 @@ let LayoutManager = (function () {
   function isBroken() {
     return layout.config.content.length == 0;
   }
-
-  function findBiggestComponent() {
-    let items = layout.root.getItemsByType("component")
-      .map(item => ({ id: item.config.id, size: item.container.width*item.container.height }));
-    items.sort((a, b) => b.size - a.size);
-    return items[0].id;
-  }
-
+  
   function showPanel(name) {
     let preferredPath = preferredPaths[name];
     if (!preferredPath) {
@@ -351,36 +346,8 @@ let LayoutManager = (function () {
     let simpleLayout = simplifyLayout(getLayoutConfig());
     let newLayout = insertIn(simpleLayout, preferredPath, name);
     setLayoutConfig(complicateLayout(newLayout));
-    /*
-    if (layout.root.getItemsById(name).length > 0) return;
-    // Uzi.elog("LAYOUT/PANEL_OPEN #", id, "-panel");
-
-    let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
-    let path = [siblingPanel];
-    do {
-      path.unshift(path[0].parent);
-    } while (path[0].type == "stack");
-    let parent = path[0];
-    console.log(parent);
-
-    let config = components[name];
-    console.log(config);
-    if (parent.type == "column") {
-      parent.addChild(config);
-    } else {
-      let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - config.height;
-      console.log(siblingConfig);
-      parent.replaceChild(path[1], {
-        type: "column",
-        width: siblingConfig.width,
-        content: [siblingConfig, config],
-        config: config
-      });
-    }*/
   }
 
-  let preferredPaths = {};
 
   function hidePanel(name) {
     let simpleLayout = simplifyLayout(getLayoutConfig());
@@ -466,7 +433,6 @@ let LayoutManager = (function () {
   }
 
   function insertIn(layout, path, element, parent) {
-    console.log(">>>", layout);
     if (typeof layout === 'string' || layout instanceof String) {
       let idx = path[0];
       return {
@@ -515,12 +481,6 @@ let LayoutManager = (function () {
     setLayoutConfig: setLayoutConfig,
     getPanel: getPanel,
     closePanel: closePanel,
-
-    components: components,
-    simplifyLayout: simplifyLayout,
-    complicateLayout: complicateLayout,
-    getPath: getPath,
-    insertIn: insertIn,
   };
 
 })();
