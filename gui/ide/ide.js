@@ -496,7 +496,8 @@ let IDE = (function () {
 
   function initializeBrokenLayoutErrorModal() {
     $("#fix-broken-layout-button").on("click", () => {
-      LayoutManager.reset();
+      let checked = $("#interface-checkbox").get(0).checked;
+      LayoutManager.reset(checked);
       $("#broken-layout-modal").modal("hide");
     });
   }
@@ -687,9 +688,9 @@ let IDE = (function () {
     return {
       settings: {
         // interactive: $("#interactive-checkbox").get(0).checked,
-        allcaps:     $("#all-caps-checkbox").get(0).checked,
-        uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
-        advInterface:$("#interface-checkbox").get(0).checked,
+        allcaps:      $("#all-caps-checkbox").get(0).checked,
+        uziSyntax:    $("#uzi-syntax-checkbox").get(0).checked,
+        advInterface: $("#interface-checkbox").get(0).checked,
       },
       fileName:  $("#file-name").text() || "",
       layout: LayoutManager.getLayoutConfig(),

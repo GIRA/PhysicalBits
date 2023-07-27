@@ -219,15 +219,12 @@ let LayoutManager = (function () {
     return content;
   }
 
-  function reset() {    
-    Uzi.elog("LAYOUT/RESET");
-    setLayoutConfig({
-      settings: settings,
-      content: [{
-        type: "row",
-        content: getDefaultContent()
-      }]
-    });
+  function reset(advanced) {    
+    if (advanced){
+      LayoutManager.setAdvancedContent();
+    } else {
+      LayoutManager.setBasicContent();
+    }
   }
   
   function setBasicContent() {    
