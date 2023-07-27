@@ -7,79 +7,134 @@
             [middleware.utils.fs.browser :as browser]
             [middleware.utils.async :refer [go-try <? chan->promise]]))
 
+(def !preferred-paths (atom {}))
+
+(defn components []
+  (js->clj js/LayoutManager.components
+           :keywordize-keys true))
+
+(defn get-path [endpoint data]
+  (cond (= endpoint data) []
+        (list? data) (some (fn [[i v]]
+                             (println i ">>>" v)
+                             (if (and (list? v)
+                                      (= 2 (count v))
+                                      (= endpoint (second v)))
+                               [i]
+                               (when-let [p (get-path endpoint v)]
+                                 (cons i p))))
+                           (map-indexed vector (drop 1 data)))
+        (keyword? data) nil))
+
+(defn simplify-layout [layout]
+  (if (and (= "stack" (:type layout))
+           (= 1 (count (:content layout))))
+    (let [content (first (:content layout))
+          {stack-w :width stack-h :height} layout
+          {content-w :width content-h :height} content]
+      (simplify-layout (cond-> content
+                         (and stack-w (not content-w)) (assoc :width stack-w)
+                         (and stack-h (not content-h)) (assoc :height stack-h))))
+    (let [{:keys [id type content width height]}
+          (update layout :content #(mapv simplify-layout %))]
+      (if id
+        (keyword id)
+        (cond-> (apply list (symbol (or type :content)) content)
+          width (vary-meta assoc :width width)
+          height (vary-meta assoc :height height))))))
+
+(defn complicate-layout [simple-layout]
+  (if (keyword? simple-layout)
+    (let [component (get (components) simple-layout)]
+      {"type" "stack"
+       "width" (get component :width 50)
+       "height" (get component :height 50)
+       "content" [component]})
+    (let [[type & content] simple-layout
+          {:keys [width height]} (meta simple-layout)
+          content* (mapv complicate-layout content)]
+      (cond-> (case type
+                content {"content" content*}
+                row {"type" "row" "content" content*}
+                column {"type" "column" "content" content*}
+                stack {"type" "stack" "content" content*})
+        width (assoc "width" width)
+        height (assoc "height" height)))))
+
+(defn insert-in
+  ([layout path element]
+   (insert-in layout path element nil))
+  ([layout path element parent]
+   (println ">>>" layout)
+   (if (seqable? layout)
+     (let [[key & content] layout
+           [idx & rpath] path]
+       (concat [key]
+               (if (seq content)
+                 (if (>= idx (count content))
+                   (concat content [element])
+                   (if (empty? rpath)
+                     (let [[l r] (split-at idx content)]
+                       (concat l [element] r))
+                     (map-indexed (fn [i v]
+                                    (if (= i idx)
+                                      (insert-in v rpath element key)
+                                      v))
+                                  content)))
+                 [element])))
+     (concat [(case parent
+                row 'column
+                column 'row
+                nil 'row)]
+             (if (zero? (first path))
+               [element layout]
+               [layout element])))))
+
+(defn hide-panel [name]
+  (let [simple-layout (simplify-layout (js->clj (js/LayoutManager.getLayoutConfig)
+                                                :keywordize-keys true))
+        path (get-path name simple-layout)]
+    (swap! !preferred-paths assoc name path)
+    (js/LayoutManager.closePanel
+     (get-in (components) [name :componentState :id]))))
+
+(defn show-panel
+  ([name]
+   (if-let [preferred-path (get @!preferred-paths name)]
+     (show-panel name preferred-path)
+     (throw "NO PREFERRED PATH!!")))
+  ([name preferred-path]
+   (let [simple-layout (simplify-layout (js->clj (js/LayoutManager.getLayoutConfig)
+                                                 :keywordize-keys true))
+         new-layout (insert-in simple-layout preferred-path name)]
+     (js/LayoutManager.setLayoutConfig
+      (clj->js (complicate-layout new-layout))))))
+
+(defn current-layout []
+  (simplify-layout (js->clj (js/LayoutManager.getLayoutConfig)
+                            :keywordize-keys true)) )
+
 (comment
 
-  (def components (js->clj js/LayoutManager.components
-                           :keywordize-keys true))
+  (binding [*print-meta* true]
+    (println (current-layout)))
+  
+
+  (get-path :output (current-layout))
+
+  (get @!preferred-paths :inspector)
+  (hide-panel :inspector)
+  (show-panel :inspector)
+  
+  (get @!preferred-paths :blocks)
+  (hide-panel :blocks)
+  (show-panel :blocks)
 
   
-  (defn get-path [endpoint data]
-    (cond (= endpoint data) []
-          (list? data) (some (fn [[i v]]
-                               (when-let [p (get-path endpoint v)]
-                                 (cons i p)))
-                             (map-indexed vector (drop 1 data)))
-          (keyword? data) nil))
+  (get @!preferred-paths :code)
+  (hide-panel :output)
+  (show-panel :output)
 
-  (defn simplify-layout [layout]
-    (if (and (= "stack" (:type layout))
-             (= 1 (count (:content layout))))
-      (let [content (first (:content layout))
-            {stack-w :width stack-h :height} layout
-            {content-w :width content-h :height} content]
-        (simplify-layout (cond-> content
-                           (and stack-w (not content-w)) (assoc :width stack-w)
-                           (and stack-h (not content-h)) (assoc :height stack-h))))
-      (let [{:keys [id type content width height]}
-            (update layout :content #(mapv simplify-layout %))]
-        (if id
-          (keyword id)
-          (vary-meta (apply list (symbol (or type :content)) content)
-                     assoc :width width :height height)))))
-
-  (defn complicate-layout [simple-layout]
-    (if (keyword? simple-layout)
-      (components simple-layout)
-      (let [[type & content] simple-layout
-            {:keys [width height]} (meta simple-layout)
-            content* (mapv complicate-layout content)]
-        (cond-> (case type
-                  content {"content" content*}
-                  row {"type" "row" "content" content*}
-                  column {"type" "column" "content" content*}
-                  stack {"type" "stack" "content" content*})
-          width (assoc "width" width)
-          height (assoc "height" height)))))
-
-  (defn insert-in
-    ([layout path element] 
-     (insert-in layout path element nil))
-    ([layout path element parent]
-     (println ">>>" layout)
-     (if (seqable? layout)
-       (let [[key & content] layout
-             [idx & rpath] path]
-         (concat [key]
-                 (if (seq content)
-                   (if (>= idx (count content))
-                     (concat content [element])
-                     (if (empty? rpath)
-                       (let [[l r] (split-at idx content)]
-                         (concat l [element] r))
-                       (map-indexed (fn [i v]
-                                      (if (= i idx)
-                                        (insert-in v rpath element key)
-                                        v))
-                                    content)))
-                   [element])))
-       (list (case parent
-               row 'column
-               column 'row
-               nil 'row)
-             layout element))))
-
-  
-  
   (insert-in adv [0 0 1] :a)
 
   (min 10 9)
@@ -102,7 +157,7 @@
                             :keywordize-keys true)
                    simplify-layout))
 
-  
+
 
   (get-path :inspector adv)
   (def output-path (get-path :output adv))
@@ -235,7 +290,7 @@
 (defn ^:export install [src type]
   (chan->promise
    (go-try
-     (clj->js (<? (core/compile-and-install! src type))))))
+    (clj->js (<? (core/compile-and-install! src type))))))
 
 (defn ^:export set-pin-report [pins report]
   (chan->promise

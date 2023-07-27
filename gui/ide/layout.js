@@ -425,7 +425,13 @@ let LayoutManager = (function () {
 
   function complicateLayout(layout) {
     if (typeof layout === 'string' || layout instanceof String) {
-      return components[layout];
+      var component = components[layout];
+      return {
+        type: "stack",
+        width: component.width || 50,
+        height: component.height || 50,
+        content: [component]
+      };
     } else {
       let result = {};
       if (layout.content) {
@@ -450,7 +456,11 @@ let LayoutManager = (function () {
       return null;
     }
     for (let i = 0; i < layout.content.length; i++) {
-      let path = getPath(element, layout.content[i]);
+      var v = layout.content[i];
+      if (v.content && v.content.length == 1 && v.content[0] == element) {
+        return [i];
+      }      
+      let path = getPath(element, v);
       if (path) return [i].concat(path);
     }
   }
