@@ -333,6 +333,8 @@ let LayoutManager = (function () {
   }
   
   function showPanel(name) {
+    if (layout.root.getItemsById(name).length > 0) return;
+    
     let preferredPath = preferredPaths[name];
     if (!preferredPath) {
       console.log("NO PREFERRED PATH!");
