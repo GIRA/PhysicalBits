@@ -25,7 +25,7 @@ var TRANSLATIONS = [
   ["ERROR: Broken layout", null, "ERROR: Diseño arruinado", "VIGA: Katkine asetus", "FEL: bruten layout"],
   ["It seems you've broken the page layout.", null, "Parece que se rompió el diseño de la aplicación.", "Paistab, et sa oled asetuse lõhkunud.", "Det verkar som något gått fel med layouten"],
   ["But don't worry! Click the button below to restore it to its former glory.", null, "¡Pero no te preocupes! Hacé clic en el botón siguiente para restaurarlo.", "Aga ära pabista! Vajuta nupule, et taastada õige seis.", "Men oroa dig inte! Klicka på knappen nedan för att återställa den till sin tidigare härlighet."],
-  ["Restore default layout", null, "Restaurar diseño", "Taasta vaikimisi asetus", "Återställ layout"],
+  ["Restore layout", null, "Restaurar diseño", "Taasta asetus", "Återställ layout"],
   ["ERROR: Server not found", null, "ERROR: Servidor no encontrado", "VIGA: Serverit ei leitud", "FEL: Servern kunde inte nås"],
   ["Please make sure the Physical BITS server is up and running.", null, "Por favor, asegurate de que el servidor de Physical BITS está ejecutándose.", "Palun tee kindlaks, et Physical BITS server on püsti.", "Se till att Physical BITS-servern är igång."],
   ["Attempting to reconnect...", null, "Intentando volver a conectarse...", "Püüan uuesti ühenduda...", "Försöker återansluta..."],

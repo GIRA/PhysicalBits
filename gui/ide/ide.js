@@ -496,8 +496,7 @@ let IDE = (function () {
 
   function initializeBrokenLayoutErrorModal() {
     $("#fix-broken-layout-button").on("click", () => {
-      let checked = $("#interface-checkbox").get(0).checked;
-      LayoutManager.reset(checked);
+      restoreLayout();
       $("#broken-layout-modal").modal("hide");
     });
   }
@@ -515,6 +514,7 @@ let IDE = (function () {
 
   function initializeOptionsModal() {
     $("#interface-checkbox").on("change", updateInterface);
+    $("#restore-layout-button").on("click", restoreLayout);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
     $("#all-caps-checkbox").on("change", updateAllCaps);
     $("#controls-panel-checkbox").on("change", () => updatePanel("controls"));
@@ -1018,6 +1018,10 @@ let IDE = (function () {
     }
   }
 
+  function restoreLayout() {
+    let checked = $("#interface-checkbox").get(0).checked;
+    LayoutManager.reset(checked);
+  }
 
   function updateUziSyntax() {
     let checked = $("#uzi-syntax-checkbox").get(0).checked;
