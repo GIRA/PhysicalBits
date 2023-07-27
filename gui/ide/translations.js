@@ -109,6 +109,7 @@ var TRANSLATIONS = [
   // Server
   ["Program size (bytes): %1", null, "Tamaño del programa (en bytes): %1", "Programmi suurus baitides: %1", "Programmstorlek i bytes: %1"],
   ["Compilation successful!", null, "¡Compilación exitosa!", "Kompileerimine õnnestus!", "Kompileringen lyckades!"],
+  ["Compilation failed!", null, "¡Error de compilación!", null, null],
   ["Connecting on serial...", null, "Conectando por serie...", "Ühendatakse jadapordiga...", "Ansluter till serieporten..."],
   ["Connecting on socket...", null, "Conectando por socket...", "Ühendatakse kiibipesaga...", "Ansluter till serieuttag..."],
   ["Installed program successfully!", null, "¡Programa instalado correctamente!", "Programmi installimine õnnestus!", "Programmet installerad!"],
