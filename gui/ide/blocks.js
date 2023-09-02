@@ -611,6 +611,45 @@ let UziBlock = (function () {
           color: colors.LCD,
           supportsBreakpoints: true,
     },
+    lcd_set_cursor: {
+      text: "%name . setCursor ( %column, %row ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        },
+        "column": {
+          name: "column",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name).setAlign(Blockly.ALIGN_RIGHT),
+        },
+        "row": {
+          name: "row",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name).setAlign(Blockly.ALIGN_RIGHT),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCD,
+      supportsBreakpoints: true,
+    },
+    lcd_clear: {
+      text: "%name . clear () ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCD,
+      supportsBreakpoints: true,
+    },
+    
 
     // Sensors - Sonar
     get_sonar_distance: {

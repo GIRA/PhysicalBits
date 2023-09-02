@@ -579,6 +579,14 @@ let ASTToBlocks = (function () {
 			node.setAttribute("type", "print_string");
 			appendField(node, "lcdName", alias);
 			appendValue(node, "string", findArg(args, "value", 0) || defaultArg, ctx);
+		} else if (selector == "setCursor") {
+			node.setAttribute("type", "lcd_set_cursor");
+			appendField(node, "lcdName", alias);
+			appendValue(node, "column", findArg(args, "column", 0) || defaultArg, ctx);
+			appendValue(node, "row", findArg(args, "row", 1) || defaultArg, ctx);
+		} else if (selector == "clear") {
+			node.setAttribute("type", "lcd_clear");
+			appendField(node, "lcdName", alias);
 		} else {
 			// NOTE(Richo): Fallback code...
 			initPrimitiveCall(node, json, ctx);

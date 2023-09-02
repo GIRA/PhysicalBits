@@ -150,6 +150,8 @@ var TRANSLATIONS = [
   ["%name .getSpeed( )", "get %name speed", "obtener la velocidad de %name", "mootori %name kiirus", "läs %name hastighet"],
   ["%name . printNumber ( %number ) ;", "show number %number in %name", "mostrar número %number en %name", null, null],
   ["%name . printString ( %string ) ;", "show text %string in %name", "mostrar texto %string en %name", null, null],
+  ["%name . setCursor ( %column, %row ) ;", "move cursor for %name to column %column row %row", "mover cursor de %name a columna %column fila %row", null, null],
+  ["%name . clear () ;", "clear %name", "limpiar pantalla de %name", null, null],
   ["%name . %unit ()", "read distance from %name in %unit", "leer distancia de %name en %unit", "mõõda kaugus kajaloost %name ühikutes %unit", "läs avståndet från ekolodet %name i %unit"],
   ["buttons. %state ( %pin )", "is button %state on pin %pin ?", "¿ está %state el botón en el pin %pin ?", "kas lüliti on %state viigus %pin", "är knapp %state på ben %pin"],
   ["buttons. %action ( %pin ) ;", "wait for button %action on pin %pin", "esperar hasta que %action el botón en el pin %pin", "oota lüliti %action viigus %pin", "vänta på knapp %action på ben %pin"],

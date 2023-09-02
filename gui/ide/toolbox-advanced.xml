@@ -206,19 +206,22 @@
         </shadow>
       </value>
     </block>
-    <!-- <block type="set_cursor">
+    <block type="lcd_set_cursor">
       <field name="lcdName"></field>
-      <value name="valueLeft">
+      <value name="column">
         <shadow type="number">
           <field name="value">0</field>
         </shadow>
       </value>
-      <value name="valueRight">
+      <value name="row">
         <shadow type="number">
           <field name="value">0</field>
         </shadow>
       </value>
-    </block> -->
+    </block>
+    <block type="lcd_clear">
+      <field name="lcdName"></field>
+    </block>
   </category>
   <category name="Sonar" custom="SONAR">
     <button text="Configure sonars..." callbackKey="configureSonars"></button>
