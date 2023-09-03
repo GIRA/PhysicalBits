@@ -770,6 +770,28 @@ let BlocksToAST = (function () {
 			let arg = {name: null, value: string};
 			stream.push(builder.scriptCall(id, selector, [arg]));
 		},
+		lcd_set_cursor: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let lcdName = asIdentifier(XML.getChildNode(block, "lcdName").innerText);
+			let column = generateCodeForValue(block, ctx, "column");
+			let row = generateCodeForValue(block, ctx, "row");
+
+			ctx.addLcdImport(lcdName);
+
+			let selector = lcdName + "." + "setCursor";
+			let args = [{name: "column", value: column},
+						{name: "row", value: row}];
+			stream.push(builder.scriptCall(id, selector, args));
+		},
+		lcd_clear: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let lcdName = asIdentifier(XML.getChildNode(block, "lcdName").innerText);
+
+			ctx.addLcdImport(lcdName);
+
+			let selector = lcdName + "." + "clear";
+			stream.push(builder.scriptCall(id, selector, []));
+		},
 		get_sonar_distance: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let sonarName = asIdentifier(XML.getChildNode(block, "sonarName").innerText);
