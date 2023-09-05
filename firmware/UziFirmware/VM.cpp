@@ -1105,6 +1105,16 @@ void VM::executeInstruction(Instruction instruction, GPIO* io, Monitor* monitor,
 	}
 	break;
 
+
+	case PRIM_STRING_LENGTH:
+	{
+		uint32 value_pointer = stack_pop(error);
+		char* value = currentProgram->strings + value_pointer;
+		int result = strlen(value);
+		stack_push(result, error);
+	}
+	break;
+
 	}
 }
 

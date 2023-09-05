@@ -43,6 +43,7 @@ prim randomInt;
 prim random;
 prim startTone : tone;
 prim stopTone : noTone;
+prim strlen : string_length;
 
 proc turnOn(pin) {
   write(pin, 1);

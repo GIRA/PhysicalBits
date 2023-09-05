@@ -67,8 +67,9 @@
    "jnz"                    [16r62    [2     0]]
    "jlte"                   [16r63    [3     0]]
    "lcd_print_str"          [16r64    [2     0]]
-   "lcd_clear"        [16r65    [1     0]]
-   "lcd_set_cursor"   [16r66    [3     0]]})
+   "lcd_clear"              [16r65    [1     0]]
+   "lcd_set_cursor"         [16r66    [3     0]]
+   "string_length"          [16r67    [1     1]]})
 
 (defn primitive [name]
   (when-let [data (prim-spec name)]
