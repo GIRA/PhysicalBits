@@ -52,8 +52,8 @@ var TRANSLATIONS = [
   ["Configure LCD...", null, "Configurar LCD...", null, null],
   ["LCD name", null, "Nombre del LCD", null, null],
   ["Address", null, "Dirección", null, null],
-  ["Columns", null, "Columna", null, null],
-  ["Rows", null, "Fila", null, null],
+  ["Columns", null, "Columnas", null, null],
+  ["Rows", null, "Filas", null, null],
   ["Configure sonars", null, "Configurar sonares", "Seadista kajalood", "Konfigurera ekolod"],
   ["Sonar name", null, "Nombre del sonar", "Kajaloo nimi", "Ekolodets namn"],
   ["Trig pin", null, "Pin Trig", "Kõlari viik", "Högtalarens ben"],
@@ -61,7 +61,7 @@ var TRANSLATIONS = [
   ["Max distance (cm)", null, "Distancia máxima (cm)", "Pikim kaugus (cm)", "Längsta avstånd (cm)"],
   ["This variable is being used by the program!", null, "¡Esta variable está siendo usada en el programa!", "Hetkel kasutatakse seda muutujat mujal programmis!", "Denna variabel används just nu i programmet!"],
   ["This motor is being used by the program!", null, "¡Este motor está siendo usado en el programa!", "Hetkel kasutatakse seda mootorit mujal programmis!", "Denna motor används just nu i programmet!"],
-  ["This lcd is being used by the program!", null, "¡Este lcd está siendo usado en el programa!", null, null],
+  ["This LCD is being used by the program!", null, "¡Este LCD está siendo usado en el programa!", null, null],
   ["This sonar is being used by the program!", null, "¡Este sonar está siendo usado en el programa!", "Hetkel kasutatakse seda kajaloodi mujal programmis!", "Detta ekolod används just nu i programmet!"],
   ["Display text in ALL-CAPS", null, "Mostrar todo el texto en MAYÚSCULAS", "Kuva kõik tekst TRÜKITÄHTEDES", "Visa all text som STORA BOKSTÄVER"],
   ["No available ports found", null, "No se encontraron puertos disponibles", "Ei leitud ühtki vaba porti", "Inga tillgängliga portar hittades"],
@@ -352,6 +352,7 @@ var TRANSLATIONS = [
   ["%name . avg ( )", "get average from %name", "promedio de %name", null, null],
   
   ["'%text'", "%text", "%text", "%text", "%text"],
+  ["strlen ( %string )", "length of %string", "longitud de %string", null, null],
 
   ["Toggle Breakpoint", null, "Agregar/Quitar punto de interrupción", null, null],
   ["BREAKPOINT ON LINE: ", null, "PUNTO DE INTERRUPCIÓN EN LÍNEA: ", null, null],

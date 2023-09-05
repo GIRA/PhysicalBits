@@ -276,7 +276,7 @@ let IDE = (function () {
       let usedLcds = getUsedLcds();
       let spec = {
         title: i18n.translate("Configure LCD"),
-        cantRemoveMsg: i18n.translate("This lcd is being used by the program!"),
+        cantRemoveMsg: i18n.translate("This LCD is being used by the program!"),
         defaultElement: { name: "lcd", address: 63, cols: 16, rows: 2 },
         columns: [
           {id: "name", type: "identifier", name: i18n.translate("LCD name")},
