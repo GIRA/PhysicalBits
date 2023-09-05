@@ -91,20 +91,17 @@
        (when-not silent?
          (logger/error "Compilation failed!")
          ; TODO(Richo): Improve the error message for checker errors
-        ;;  (when-let [{errors :errors} (ex-data ex)]
-        ;;    (doseq [[^long i {:keys [description node src]}]
-        ;;            (map-indexed (fn [i e] [i e])
-        ;;                         errors)]
-        ;;      (logger/error (str "├─ " (inc i) ". " description))
-        ;;      (if src
-        ;;        (logger/error (str "|     ..." src "..."))
-        ;;        (when-let [id (:id node)]
-        ;;          (logger/error (str "|     Block ID: " id)))))
-        ;;    (logger/error (str "└─ Compilation failed!")))
-         )
-       (throw ex)
-       )
-     )))
+         #_(when-let [{errors :errors} (ex-data ex)]
+             (doseq [[^long i {:keys [description node src]}]
+                     (map-indexed (fn [i e] [i e])
+                                  errors)]
+               (logger/error (str "├─ " (inc i) ". " description))
+               (if src
+                 (logger/error (str "|     ..." src "..."))
+                 (when-let [id (:id node)]
+                   (logger/error (str "|     Block ID: " id)))))
+             (logger/error (str "└─ Compilation failed!"))))
+       (throw ex)))))
 
 (defn compile-and-run! [src type silent? & args]
   (go-try
