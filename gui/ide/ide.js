@@ -275,11 +275,11 @@ let IDE = (function () {
       let lcds = UziBlock.getLcds();
       let usedLcds = getUsedLcds();
       let spec = {
-        title: i18n.translate("Configure lcds"),
+        title: i18n.translate("Configure LCD"),
         cantRemoveMsg: i18n.translate("This lcd is being used by the program!"),
         defaultElement: { name: "lcd", address: 63, cols: 16, rows: 2 },
         columns: [
-          {id: "name", type: "identifier", name: i18n.translate("Lcd name")},
+          {id: "name", type: "identifier", name: i18n.translate("LCD name")},
           {id: "address", type: "number", name: i18n.translate("Address")},
           {id: "cols", type: "number", name: i18n.translate("Columns")},
           {id: "rows", type: "number", name: i18n.translate("Rows")},

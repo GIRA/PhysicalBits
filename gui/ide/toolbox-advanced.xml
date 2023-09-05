@@ -189,7 +189,7 @@
     </block>
   </category>
   <category name="LCD" custom="LCD">
-    <button text="Configure lcd..." callbackKey="configureLCD"></button>
+    <button text="Configure LCD..." callbackKey="configureLCD"></button>
     <block type="print_number">
       <field name="lcdName">0</field>
       <value name="number">
