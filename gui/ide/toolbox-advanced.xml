@@ -202,7 +202,7 @@
       <field name="lcdName">abc</field>
       <value name="string">
         <shadow type="string">
-          <field name="value">abc</field>
+          <field name="text">abc</field>
         </shadow>
       </value>
     </block>
@@ -544,6 +544,13 @@
   <category name="Strings">
     <block type="string">
       <field name="text">abc</field>
+    </block>
+    <block type="string_length">
+      <value name="string">
+        <shadow type="string">
+          <field name="text">abc</field>
+        </shadow>
+      </value>
     </block>
   </category>
   <category name="Variables" custom="VARIABLES">

@@ -958,6 +958,10 @@ let ASTToBlocks = (function () {
 		} else if (selector === "stopTone") {
 			node.setAttribute("type", "stop_tone");
 			appendValue(node, "pinNumber", findArgByIndex(args, 0) || defaultArg, ctx);
+		} else if (selector == "strlen") {
+			defaultArg = {__class__: "UziStringNode", value: "abc"};
+			node.setAttribute("type", "string_length");
+			appendValue(node, "string", findArgByIndex(args, 0) || defaultArg, ctx);
 		} else if (selector === "playTone") {
 			node.setAttribute("type", "play_tone");
 			appendField(node, "unit", "ms");

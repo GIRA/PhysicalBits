@@ -316,6 +316,12 @@ let BlocksToAST = (function () {
 			let value = XML.getChildNode(block, "text").innerText;
 			stream.push(builder.string(id, value));
 		},
+		string_length: function (block, ctx, stream) {
+			let id = XML.getId(block);
+			let string = generateCodeForValue(block, ctx, "string");
+
+			stream.push(builder.primitiveCall(id, "strlen", [string]));
+		},
 		turn_onoff_pin: function (block, ctx, stream) {
 			let id = XML.getId(block);
 			let pinState = XML.getChildNode(block, "pinState").innerText;

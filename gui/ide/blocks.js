@@ -650,7 +650,6 @@ let UziBlock = (function () {
       supportsBreakpoints: true,
     },
     
-
     // Sensors - Sonar
     get_sonar_distance: {
       text: "%name . %unit ()",
@@ -843,6 +842,20 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true},
       color: colors.STRINGS,
       postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: false,
+    },
+    string_length: {
+      text: "strlen ( %string )",
+      type: null,
+      inputs: {
+        "string": {
+          name: "string",
+          types: [types.STRING],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.STRINGS,
       supportsBreakpoints: false,
     },
 
