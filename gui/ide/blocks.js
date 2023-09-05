@@ -572,7 +572,7 @@ let UziBlock = (function () {
       supportsBreakpoints: true,
     },
 
-    // Lcds
+    // LCDs
     print_number : {
       text: "%name . printNumber ( %number ) ;",
       type: null,
