@@ -1,7 +1,7 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,3
 MAX,177,27,331
-AVERAGE,21.32768361581921,5.559322033898305,46.03107344632768
+AVERAGE,21.26760563380282,5.546478873239437,45.91549295774648
 MEDIAN,12,4,32
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,13
 middleware.checker-test/assignments-are-not-expressions#0,0,0,3
@@ -214,6 +214,7 @@ middleware.encoder-test/pause-resume-start-and-stop-instructions#0,4,1,9
 middleware.encoder-test/primitive-between-0-and-15#0,8,4,24
 middleware.encoder-test/primitive-between-16-and-31#0,5,4,20
 middleware.encoder-test/primitive-between-32-and-286#0,8,4,23
+middleware.encoder-test/script-type-can-be-string#0,0,1,5
 middleware.encoder-test/script-with-conditionals#0,19,4,44
 middleware.encoder-test/script-with-conditionals-2#0,13,4,33
 middleware.encoder-test/script-with-default-constant-written-as-float#0,0,2,7
