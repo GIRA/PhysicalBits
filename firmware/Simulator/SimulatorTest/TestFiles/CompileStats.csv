@@ -1,7 +1,7 @@
 name,instruction-count,global-count,encoded-size
 MIN,0,0,3
-MAX,164,27,309
-AVERAGE,21.17514124293785,5.53954802259887,45.79661016949153
+MAX,177,27,331
+AVERAGE,21.32768361581921,5.559322033898305,46.03107344632768
 MEDIAN,12,4,32
 middleware.checker-test/assignment-value-should-be-an-expression#0,4,4,13
 middleware.checker-test/assignments-are-not-expressions#0,0,0,3
@@ -47,7 +47,7 @@ middleware.code-generator-test/empty-script-stopped#0,0,0,3
 middleware.code-generator-test/empty-script-ticking#0,0,1,11
 middleware.code-generator-test/function-with-arguments#0,0,0,3
 middleware.code-generator-test/functions-with-calls-and-globals#0,0,0,3
-middleware.code-generator-test/motor-usage#0,41,10,73
+middleware.code-generator-test/motor-usage#0,43,11,76
 middleware.code-generator-test/multiple-global-declaration#0,0,0,3
 middleware.code-generator-test/primitive-definition#0,8,3,21
 middleware.code-generator-test/procedure-with-argument#0,0,0,3
@@ -68,8 +68,8 @@ middleware.code-generator-test2/function-with-arguments#0,0,0,3
 middleware.code-generator-test2/function-with-arguments#1,0,0,3
 middleware.code-generator-test2/functions-with-calls-and-globals#0,0,0,3
 middleware.code-generator-test2/functions-with-calls-and-globals#1,0,0,3
-middleware.code-generator-test2/motor-usage#0,41,10,73
-middleware.code-generator-test2/motor-usage#1,41,10,73
+middleware.code-generator-test2/motor-usage#0,43,11,76
+middleware.code-generator-test2/motor-usage#1,43,11,76
 middleware.code-generator-test2/operator-precedence#0,0,0,3
 middleware.code-generator-test2/operator-precedence#1,0,0,3
 middleware.code-generator-test2/parsing-negative-numbers-larger-than-minus-1#0,2,2,12
@@ -128,7 +128,7 @@ middleware.compiler-autogen-test/Test087Millis#0,30,7,58
 middleware.compiler-autogen-test/Test088ScriptCallOverridingPrimitive#0,19,4,47
 middleware.compiler-autogen-test/Test089DebuggerBreakpointHaltsAllScripts#0,22,5,49
 middleware.compiler-autogen-test/Test091ChangingTheProgramResetsTheVMState#0,14,4,32
-middleware.compiler-autogen-test/Test094ProgramWithMultipleImports#0,136,27,258
+middleware.compiler-autogen-test/Test094ProgramWithMultipleImports#0,144,27,270
 middleware.compiler-test/conditional-children-order-should-not-impact-compilation#0,17,6,41
 middleware.compiler-test/conditional-with-only-false-branch#0,13,4,33
 middleware.compiler-test/conditional-with-only-true-branch#0,13,3,33
@@ -187,9 +187,9 @@ middleware.compiler-test/wait-until-loop#0,16,4,34
 middleware.compiler-test/wait-while-loop#0,16,4,34
 middleware.compiler-test/while-loop#0,11,3,25
 middleware.dead-code-remover-test/a-more-complete-example#0,23,8,59
-middleware.dead-code-remover-test/a-more-complete-example-2#0,163,25,309
-middleware.dead-code-remover-test/a-more-complete-example-3#0,163,25,306
-middleware.dead-code-remover-test/calling-a-script-should-mark-it-as-alive#0,11,5,24
+middleware.dead-code-remover-test/a-more-complete-example-2#0,177,26,331
+middleware.dead-code-remover-test/a-more-complete-example-3#0,177,26,328
+middleware.dead-code-remover-test/calling-a-script-should-mark-it-as-alive#0,13,6,27
 middleware.dead-code-remover-test/circular-refs-should-not-be-a-problem#0,12,4,27
 middleware.dead-code-remover-test/pause-task-should-mark-the-script-as-alive#0,11,4,26
 middleware.dead-code-remover-test/resume-task-should-mark-the-script-as-alive#0,11,4,26
@@ -238,7 +238,7 @@ middleware.parser-test/functions-with-calls-and-globals#0,0,0,3
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#0,12,6,32
 middleware.parser-test/global-variables-can-be-declared-after-tasks-that-use-them#1,12,6,32
 middleware.parser-test/large-integers-are-parsed-as-floats#0,2,2,12
-middleware.parser-test/motor-usage#0,41,10,73
+middleware.parser-test/motor-usage#0,43,11,76
 middleware.parser-test/operator-precedence#0,0,0,3
 middleware.parser-test/parsing-negative-numbers-larger-than-minus-1#0,2,2,12
 middleware.parser-test/parsing-numbers-in-scientific-notation#0,2,2,12
@@ -319,7 +319,7 @@ middleware.vm-test-files-gen/Test087Millis#0,30,7,58
 middleware.vm-test-files-gen/Test088ScriptCallOverridingPrimitive#0,19,4,47
 middleware.vm-test-files-gen/Test089DebuggerBreakpointHaltsAllScripts#0,22,5,49
 middleware.vm-test-files-gen/Test091ChangingTheProgramResetsTheVMState#0,14,4,32
-middleware.vm-test-files-gen/Test094ProgramWithMultipleImports#0,136,27,258
+middleware.vm-test-files-gen/Test094ProgramWithMultipleImports#0,144,27,270
 middleware.vm-test-files-gen/Test099CallingAScriptWithLessArgumentsThanRequired#0,14,5,34
 middleware.vm-test-files-gen/Test100CompilingJumpsLongerThan7bitTwosComplement#0,89,23,164
 middleware.vm-test-files-gen/Test101CompilingJumpsLongerThan7bitTwosComplement#0,90,22,159
