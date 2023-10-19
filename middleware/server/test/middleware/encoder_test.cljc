@@ -25,6 +25,13 @@
     (register-program! ast)
     (cc/compile-tree ast)))
 
+(deftest script-type-can-be-string
+  (letfn [(break-script [script]
+            (update script :type #(str/replace-first (str %) ":" "")))]
+    (en/encode (update (compile "task foo() {}")
+                       :scripts #(mapv break-script %)))))
+
+
 (defn check-bytecodes [bytecodes src]
   ; HACK(Richo): Basic check to make sure we're actually producing some bytecodes
   (if (empty? (str/trim src))

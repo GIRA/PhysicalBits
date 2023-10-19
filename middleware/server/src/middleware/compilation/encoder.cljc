@@ -238,10 +238,11 @@
      ; 1 bit  : has locals? (1 true / 0 false)
      ; 2 bits : reserved for future use
      [(bit-and (bit-or (bit-shift-left (if running? 1 0) 7)
-                       (bit-shift-left (type {:task 0
-                                              :function 1
-                                              :procedure 2
-                                              :timer 3})
+                       (bit-shift-left (get {:task 0
+                                             :function 1
+                                             :procedure 2
+                                             :timer 3}
+                                            (keyword type))
                                        5)
                        (bit-shift-left (if has-delay? 1 0) 4)
                        (bit-shift-left (if has-arguments? 1 0) 3)
