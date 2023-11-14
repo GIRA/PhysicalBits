@@ -16,7 +16,11 @@
  ; we risk compiling an old version of the uzi libraries.
  :cache-blockers #{middleware.utils.fs.browser}
 
- :builds {:simulator {; NOTE(Richo): This build is used in the GUI in order to compile
+ :builds {:mendieta {:target :node-script
+                     :main middleware.mendieta/main
+                     :output-to "out/mendieta/main.js"}
+          
+          :simulator {; NOTE(Richo): This build is used in the GUI in order to compile
                       ; as well as interact with the wasm simulator.
                       :target :browser
                       :output-dir "public/simulator/js"

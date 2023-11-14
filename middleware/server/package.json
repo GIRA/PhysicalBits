@@ -17,6 +17,8 @@
     "shadow-cljs": "^2.16.12"
   },
   "dependencies": {
+    "express": "^4.18.2",
+    "express-ws": "^5.0.2",
     "serialport": "^9.2.0"
   }
 }
