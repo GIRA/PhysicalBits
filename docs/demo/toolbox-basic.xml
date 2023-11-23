@@ -1,0 +1,216 @@
+<xml xmlns="http://www.w3.org/1999/xhtml" id="toolbox" style="display: none;">
+  <category name="Tasks" custom="TASKS">
+    <block type="task">
+      <field name="scriptName">default</field>
+    </block>
+  </category>
+  <category name="Control">
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="forever"></block>
+    <block type="repeat_times">
+      <value name="times">
+        <shadow type="number">
+          <field name="value">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="wait">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Pins">
+    <block type="write_pin">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+      <value name="pinValue">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="read_pin">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D13</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Servo">
+    <block type="set_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+      <value name="servoValue">
+        <shadow type="number">
+          <field name="value">90</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="DC motor" custom="DC_MOTORS">
+    <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
+    <block type="change_speed_dcmotor">
+      <field name="motorName"></field>
+      <value name="speed">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_speed_dcmotor">
+      <field name="motorName"></field>
+    </block>
+    <block type="stop_dcmotor">
+      <field name="motorName"></field>
+    </block>
+  </category>
+  <category name="Sonar" custom="SONAR">
+    <button text="Configure sonars..." callbackKey="configureSonars"></button>
+    <block type="get_sonar_distance">
+      <field name="sonarName">sonar</field>
+      <field name="unit">cm</field>
+    </block>
+  </category>
+  <category name="Math">
+    <block type="number">
+      <field name="value">0</field>
+    </block>
+    <block type="math_arithmetic">
+      <field name="operator">ADD</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="number_random_int">
+      <value name="from">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="to">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Logic">
+    <block type="boolean">
+      <field name="value">true</field>
+    </block>
+    <block type="logical_compare">
+      <field name="operator">==</field>
+      <value name="left">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_operation">
+      <field name="operator">and</field>
+      <value name="left">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+      <value name="right">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="logical_not">
+      <value name="value">
+        <shadow type="boolean">
+          <field name="value">false</field>
+        </shadow>
+      </value>
+    </block>
+  </category>  
+  <category name="Variables" custom="VARIABLES">
+    <button text="Configure variables..." callbackKey="configureVariables"></button>
+    <block type="set_variable">
+      <field name="variableName"></field>
+      <value name="value">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="variable">
+      <field name="variableName"></field>
+    </block>
+  </category>
+</xml>

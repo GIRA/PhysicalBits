@@ -165,6 +165,7 @@ let UziCode = (function () {
 			markers = [];
 			markers.push(editor.session.addMarker(range, "debugger_ActiveLine", "line", true));
 			markers.push(editor.session.addMarker(range, "debugger_ActiveInterval", "line", true));
+      editor.scrollToLine(start.row - 3);
 		}
   }
 

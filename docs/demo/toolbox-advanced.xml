@@ -19,7 +19,76 @@
       <field name="scriptName"></field>
     </block>
   </category>
-  <category name="GPIO">
+  <category name="Control">
+    <block type="conditional_simple">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="conditional_full">
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="forever"></block>
+    <block type="repeat_times">
+      <value name="times">
+        <shadow type="number">
+          <field name="value">5</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="repeat">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="wait">
+      <field name="negate">false</field>
+      <value name="condition">
+        <shadow type="boolean">
+          <field name="value">true</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="delay">
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="elapsed_time">
+      <field name="unit">ms</field>
+    </block>
+    <block type="for">
+      <field name="variableName">i</field>
+      <value name="start">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+      <value name="stop">
+        <shadow type="number">
+          <field name="value">10</field>
+        </shadow>
+      </value>
+      <value name="step">
+        <shadow type="number">
+          <field name="value">1</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Pins">
     <block type="toggle_pin">
       <value name="pinNumber">
         <shadow type="pin">
@@ -81,117 +150,139 @@
       </value>
     </block>
   </category>
-  <category name="Motors">
-    <category name="Servo">
-      <block type="set_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-        <value name="servoValue">
-          <shadow type="number">
-            <field name="value">90</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_servo_degrees">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D3</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="DC" custom="DC_MOTORS">
-      <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
-      <block type="move_dcmotor">
-        <field name="motorName"></field>
-        <field name="direction">fwd</field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">1</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="change_speed_dcmotor">
-        <field name="motorName"></field>
-        <value name="speed">
-          <shadow type="number">
-            <field name="value">0</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="get_speed_dcmotor">
-        <field name="motorName"></field>
-      </block>
-      <block type="stop_dcmotor">
-        <field name="motorName"></field>
-      </block>
-    </category>
+  <category name="Servo">
+    <block type="set_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+      <value name="servoValue">
+        <shadow type="number">
+          <field name="value">90</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_servo_degrees">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D3</field>
+        </shadow>
+      </value>
+    </block>
   </category>
-  <category name="Sensors">
-    <category name="Sonar" custom="SONAR">
-      <button text="Configure sonars..." callbackKey="configureSonars"></button>
-      <block type="get_sonar_distance">
-        <field name="sonarName">sonar</field>
-        <field name="unit">cm</field>
-      </block>
-    </category>
-    <category name="Buttons">
-      <block type="button_wait_for_action">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="action">press</field>
-      </block>
-      <block type="button_wait_for_long_action">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="action">press</field>
-        <field name="unit">ms</field>
-        <value name="time">
-          <shadow type="number">
-            <field name="value">1000</field>
-          </shadow>
-        </value>
-      </block>
-      <block type="button_check_state">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-        <field name="state">press</field>
-      </block>
-      <block type="button_ms_holding">
-        <value name="pinNumber">
-          <shadow type="pin">
-            <field name="pinNumber">D7</field>
-          </shadow>
-        </value>
-      </block>
-    </category>
-    <category name="Joystick" custom="JOYSTICK">
-      <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
-      <block type="get_joystick_x">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_y">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_angle">
-        <field name="joystickName">joystick</field>
-      </block>
-      <block type="get_joystick_magnitude">
-        <field name="joystickName">joystick</field>
-      </block>
-    </category>
+  <category name="DC motor" custom="DC_MOTORS">
+    <button text="Configure DC motors..." callbackKey="configureDCMotors"></button>
+    <block type="change_speed_dcmotor">
+      <field name="motorName"></field>
+      <value name="speed">
+        <shadow type="number">
+          <field name="value">100</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="get_speed_dcmotor">
+      <field name="motorName"></field>
+    </block>
+    <block type="stop_dcmotor">
+      <field name="motorName"></field>
+    </block>
+  </category>
+  <category name="LCD" custom="LCD">
+    <button text="Configure LCD..." callbackKey="configureLCD"></button>
+    <block type="print_number">
+      <field name="lcdName">0</field>
+      <value name="number">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="print_string">
+      <field name="lcdName">abc</field>
+      <value name="string">
+        <shadow type="string">
+          <field name="text">abc</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="lcd_set_cursor">
+      <field name="lcdName"></field>
+      <value name="column">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+      <value name="row">
+        <shadow type="number">
+          <field name="value">0</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="lcd_clear">
+      <field name="lcdName"></field>
+    </block>
+  </category>
+  <category name="Sonar" custom="SONAR">
+    <button text="Configure sonars..." callbackKey="configureSonars"></button>
+    <block type="get_sonar_distance">
+      <field name="sonarName">sonar</field>
+      <field name="unit">cm</field>
+    </block>
+  </category>
+  <category name="Buttons">
+    <block type="button_wait_for_action">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="action">press</field>
+    </block>
+    <block type="button_wait_for_long_action">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="action">press</field>
+      <field name="unit">ms</field>
+      <value name="time">
+        <shadow type="number">
+          <field name="value">1000</field>
+        </shadow>
+      </value>
+    </block>
+    <block type="button_check_state">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+      <field name="state">press</field>
+    </block>
+    <block type="button_ms_holding">
+      <value name="pinNumber">
+        <shadow type="pin">
+          <field name="pinNumber">D7</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
+  <category name="Joystick" custom="JOYSTICK">
+    <button text="Configure joysticks..." callbackKey="configureJoysticks"></button>
+    <block type="get_joystick_x">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_y">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_angle">
+      <field name="joystickName">joystick</field>
+    </block>
+    <block type="get_joystick_magnitude">
+      <field name="joystickName">joystick</field>
+    </block>
   </category>
   <category name="Sound">
     <block type="play_note">
@@ -267,75 +358,7 @@
       </value>
     </block>
   </category>
-  <category name="Control">
-    <block type="conditional_simple">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="conditional_full">
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="forever"></block>
-    <block type="repeat_times">
-      <value name="times">
-        <shadow type="number">
-          <field name="value">5</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="repeat">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="wait">
-      <field name="negate">false</field>
-      <value name="condition">
-        <shadow type="boolean">
-          <field name="value">true</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="delay">
-      <field name="unit">ms</field>
-      <value name="time">
-        <shadow type="number">
-          <field name="value">1000</field>
-        </shadow>
-      </value>
-    </block>
-    <block type="elapsed_time">
-      <field name="unit">ms</field>
-    </block>
-    <block type="for">
-      <field name="variableName">i</field>
-      <value name="start">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-      <value name="stop">
-        <shadow type="number">
-          <field name="value">10</field>
-        </shadow>
-      </value>
-      <value name="step">
-        <shadow type="number">
-          <field name="value">1</field>
-        </shadow>
-      </value>
-    </block>
-  </category>
+
   <category name="Math">
     <block type="number">
       <field name="value">0</field>
@@ -517,7 +540,19 @@
         </shadow>
       </value>
     </block>
-  </category>  
+  </category>
+  <category name="Strings">
+    <block type="string">
+      <field name="text">abc</field>
+    </block>
+    <block type="string_length">
+      <value name="string">
+        <shadow type="string">
+          <field name="text">abc</field>
+        </shadow>
+      </value>
+    </block>
+  </category>
   <category name="Variables" custom="VARIABLES">
     <button text="Configure variables..." callbackKey="configureVariables"></button>
     <block type="declare_local_variable">

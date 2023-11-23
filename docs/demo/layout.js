@@ -134,6 +134,8 @@ let LayoutManager = (function () {
   let onStateChanged = function () { /* DO NOTHING */ }
   let resetting = false;
   
+  let preferredPaths = {};
+  
   let observers = {
     "close" : [],
   };
@@ -200,8 +202,44 @@ let LayoutManager = (function () {
     return content;
   }
 
-  function reset() {    
-    Uzi.elog("LAYOUT/RESET");
+  function getBasicContent() {
+    let left = [components.controls, components.inspector];
+    let main = [components.blocks];
+
+    let content = [{
+      "type": "column",
+      "width": 17,
+      "content": left
+    }, {
+      "type": "column",
+      "width": 83,
+      "content": main
+    }];
+
+    return content;
+  }
+
+  function reset(advanced) {    
+    if (advanced){
+      LayoutManager.setAdvancedContent();
+    } else {
+      LayoutManager.setBasicContent();
+    }
+  }
+  
+  function setBasicContent() {    
+    Uzi.elog("LAYOUT/RESET BASIC CONTENT");
+    setLayoutConfig({
+      settings: settings,
+      content: [{
+        type: "row",
+        content: getBasicContent()
+      }]
+    });
+  }
+
+  function setAdvancedContent() {    
+    Uzi.elog("LAYOUT/RESET ADVANCED CONTENT");
     setLayoutConfig({
       settings: settings,
       content: [{
@@ -210,7 +248,7 @@ let LayoutManager = (function () {
       }]
     });
   }
-  
+
   function on (evt, callback) {
     observers[evt].push(callback);
   }
@@ -293,62 +331,29 @@ let LayoutManager = (function () {
   function isBroken() {
     return layout.config.content.length == 0;
   }
-
-  function findBiggestComponent() {
-    let items = layout.root.getItemsByType("component")
-      .map(item => ({ id: item.config.id, size: item.container.width*item.container.height }));
-    items.sort((a, b) => b.size - a.size);
-    return items[0].id;
+  
+  function showPanel(name) {
+    if (layout.root.getItemsById(name).length > 0) return;
+    
+    let preferredPath = preferredPaths[name];
+    if (!preferredPath) {
+      console.log("NO PREFERRED PATH!");
+      preferredPath = [0, 1, 10];
+    } else {
+      console.log(preferredPath);
+    }
+    let simpleLayout = simplifyLayout(getLayoutConfig());
+    let newLayout = insertIn(simpleLayout, preferredPath, name);
+    setLayoutConfig(complicateLayout(newLayout));
   }
 
-  function showPlotter() {
-    if (layout.root.getItemsById("plotter").length > 0) return;
-    Uzi.elog("LAYOUT/PANEL_OPEN", "#plotter-panel");
 
-    let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
-    let path = [siblingPanel];
-    do {
-      path.unshift(path[0].parent);
-    } while (path[0].type == "stack");
-    let parent = path[0];
-    
-    let config = components.plotter;
-    if (parent.type == "column") {
-      parent.addChild(config);
-    } else {
-      let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - config.height;
-      parent.replaceChild(path[1], {
-        type: "column",
-        width: siblingConfig.width,
-        content: [siblingConfig, config]
-      });
-    }
-  }
-
-  function showDebugger() {
-    if (layout.root.getItemsById("debugger").length > 0) return;
-    Uzi.elog("LAYOUT/PANEL_OPEN", "#debugger-panel");
-
-    let siblingPanel = layout.root.getItemsById(findBiggestComponent())[0];
-    let path = [siblingPanel];
-    do {
-      path.unshift(path[0].parent);
-    } while (path[0].type == "stack");
-    let parent = path[0];
-    
-    let config = components.debugger;
-    if (parent.type == "column") {
-      parent.addChild(config);
-    } else {
-      let siblingConfig = path[1].config;
-      siblingConfig.height = 100 - config.height;
-      parent.replaceChild(path[1], {
-        type: "column",
-        width: siblingConfig.width,
-        content: [siblingConfig, config]
-      });
-    }
+  function hidePanel(name) {
+    let simpleLayout = simplifyLayout(getLayoutConfig());
+    let path = getPath(name, simpleLayout);
+    preferredPaths[name] = path;
+    let id = components[name].componentState.id;
+    closePanel(id);
   }
 
   function closePanel(id) {
@@ -356,12 +361,120 @@ let LayoutManager = (function () {
     if (panel) { panel.close(); }
   }
 
+  function simplifyLayout(layout) {
+    if (layout.type == "stack" && layout.content.length == 1) {
+      let content = layout.content[0];
+      if (layout.width && !content.width) {
+        content.width = layout.width;
+      }
+      if (layout.height && !content.height) {
+        content.height = layout.height;
+      }
+      return simplifyLayout(content);
+    } else {
+      let content = [];
+      if (layout.content) {
+        content = layout.content.map(e => simplifyLayout(e));
+      }
+      if (layout.id) {
+        return layout.id;
+      } else {
+        let result = {};
+        result.content = content;
+        if (layout.type) { result.type = layout.type; }
+        if (layout.width) { result.width = layout.width; }
+        if (layout.height) { result.height = layout.height; }
+        return result;
+      }
+    }
+  }
+
+  function complicateLayout(layout) {
+    if (typeof layout === 'string' || layout instanceof String) {
+      var component = components[layout];
+      return {
+        type: "stack",
+        width: component.width || 50,
+        height: component.height || 50,
+        content: [component]
+      };
+    } else {
+      let result = {};
+      if (layout.content) {
+        result.content = layout.content.map(complicateLayout);
+      }
+      if (layout.type) {
+        result.type = layout.type;
+      }
+      if (layout.width) {
+        result.width = layout.width;
+      }
+      if (layout.heigth) {
+        result.height = layout.height;
+      }
+      return result;
+    }
+  }
+
+  function getPath(element, layout) {
+    if (element == layout) return [];
+    if (typeof layout === 'string' || layout instanceof String) {
+      return null;
+    }
+    for (let i = 0; i < layout.content.length; i++) {
+      var v = layout.content[i];
+      if (v.content && v.content.length == 1 && v.content[0] == element) {
+        return [i];
+      }      
+      let path = getPath(element, v);
+      if (path) return [i].concat(path);
+    }
+  }
+
+  function insertIn(layout, path, element, parent) {
+    if (typeof layout === 'string' || layout instanceof String) {
+      let idx = path[0];
+      return {
+        type: parent == "row" ? "column" : "row",
+        content: idx == 0 ? [element, layout] : [layout, element]
+      };
+    }
+    let result = {};
+    if (layout.type) result.type = layout.type;
+    if (layout.width) result.width = layout.width;
+    if (layout.heigth) result.height = layout.height;
+    let idx = path[0];
+    path = path.slice(1);
+    let content = layout.content;
+    if (!content || content.length == 0) {
+      result.content = [element];
+    } else if (idx >= content.length) {
+      result.content = content.concat(element);
+    } else if (path.length == 0) {
+      let l = content.slice(0, idx);
+      let r = content.slice(idx);
+      result.content = l.concat(element).concat(r);
+    } else {
+      result.content = [];
+      for (let i = 0; i < content.length; i++) {
+        if (i == idx) {
+          result.content.push(insertIn(content[i], path, element, layout.type));
+        } else {
+          result.content.push(content[i]);
+        }
+      }
+    }
+    return result;
+  }
+
   return {
     init: init,
     reset: reset,
+    setBasicContent: setBasicContent,
+    setAdvancedContent: setAdvancedContent,
     on: on,
-    showPlotter: showPlotter,
-    showDebugger: showDebugger,
+    showPanel: showPanel,
+    hidePanel: hidePanel,
     isBroken: isBroken,
     getLayoutConfig: getLayoutConfig,
     setLayoutConfig: setLayoutConfig,

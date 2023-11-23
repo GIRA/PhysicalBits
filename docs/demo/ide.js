@@ -21,6 +21,7 @@ let IDE = (function () {
         .then(initializeCodePanel)
         .then(initializeBlocksPanel)
         .then(initializeBlocklyMotorsModal)
+        .then(initializeBlocklyLcdsModal)
         .then(initializeBlocklySonarsModal)
         .then(initializeBlocklyJoysticksModal)
         .then(initializeBlocklyVariablesModal)
@@ -155,9 +156,11 @@ let IDE = (function () {
         Uzi.on("update", (state, previousState, keys) => {
           if (state.program.type == "json") return; // Ignore blockly programs
           if (state.program.src == previousState.program.src) return;
+          
+          let topBlocksPositions = UziBlock.getTopBlocksPositions();
           let blocklyProgram = ASTToBlocks.generate(state.program);
           UziBlock.setProgram(blocklyProgram);
-          UziBlock.cleanUp();
+          UziBlock.setTopBlocksPositions(topBlocksPositions);
         });
       })
       .then(restoreFromLocalStorage);
@@ -201,7 +204,7 @@ let IDE = (function () {
     $("#verify-button").on("click", verify);
     $("#run-button").on("click", run);
     $("#install-button").on("click", install);
-		$("#interactive-checkbox").on("change", toggleInteractive);
+		// $("#interactive-checkbox").on("change", toggleInteractive);
     $("#options-button").on("click", openOptionsDialog);
     if (Uzi.state.features["options-button?"]) {
       $("#options-button").show();
@@ -255,6 +258,45 @@ let IDE = (function () {
         UziBlock.refreshToolbox();
         saveToLocalStorage();
         scheduleAutorun(true, "MOTOR UPDATE!");
+      });
+    });
+  }
+
+  function initializeBlocklyLcdsModal() {
+
+    function getUsedLcds() {
+      let program = Uzi.state.program;
+      if (program == null) return new Set();
+      // HACK(Richo): We are actually returning all the aliases, not just motors
+      return new Set(program.ast.imports.map(imp => imp.alias));
+    }
+
+    UziBlock.getWorkspace().registerButtonCallback("configureLCD", () => {
+      let lcds = UziBlock.getLcds();
+      let usedLcds = getUsedLcds();
+      let spec = {
+        title: i18n.translate("Configure LCD"),
+        cantRemoveMsg: i18n.translate("This LCD is being used by the program!"),
+        defaultElement: { name: "lcd", address: 63, cols: 16, rows: 2 },
+        columns: [
+          {id: "name", type: "identifier", name: i18n.translate("LCD name")},
+          {id: "address", type: "number", name: i18n.translate("Address")},
+          {id: "cols", type: "number", name: i18n.translate("Columns")},
+          {id: "rows", type: "number", name: i18n.translate("Rows")},
+        ],
+        rows: lcds.map(each => {
+          let clone = deepClone(each);
+          clone.removable = !usedLcds.has(each.name);
+          return clone;
+        })
+      };
+      Uzi.elog("BLOCKLY/MODAL_OPEN", {type: "lcds"});
+      BlocklyModal.show(spec).then(data => {
+        Uzi.elog("BLOCKLY/MODAL_CLOSE", {type: "lcds", data: data});
+        UziBlock.setLcds(data);
+        UziBlock.refreshToolbox();
+        saveToLocalStorage();
+        scheduleAutorun(true, "LCD UPDATE!");
       });
     });
   }
@@ -454,7 +496,7 @@ let IDE = (function () {
 
   function initializeBrokenLayoutErrorModal() {
     $("#fix-broken-layout-button").on("click", () => {
-      LayoutManager.reset();
+      restoreLayout();
       $("#broken-layout-modal").modal("hide");
     });
   }
@@ -471,14 +513,17 @@ let IDE = (function () {
   }
 
   function initializeOptionsModal() {
-    $("#restore-layout-button").on("click", LayoutManager.reset);
+    $("#interface-checkbox").on("change", updateInterface);
+    $("#restore-layout-button").on("click", restoreLayout);
     $("#uzi-syntax-checkbox").on("change", updateUziSyntax);
     $("#all-caps-checkbox").on("change", updateAllCaps);
-    if (!fs) {
-      $("#autosave-checkbox").attr("disabled", "disabled");
-    } else {
-      $("#autosave-checkbox").on("change", toggleAutosave);
-    }
+    $("#controls-panel-checkbox").on("change", () => updatePanel("controls"));
+    $("#inspector-panel-checkbox").on("change", () => updatePanel("inspector"));
+    $("#blocks-panel-checkbox").on("change", () => updatePanel("blocks"));
+    $("#code-panel-checkbox").on("change", () => updatePanel("code"));
+    $("#plotter-panel-checkbox").on("change", () => updatePanel("plotter"));
+    $("#output-panel-checkbox").on("change", () => updatePanel("output"));
+    $("#debugger-panel-checkbox").on("change", () => updatePanel("debugger"));
 
     $('input[name="language-radios"]:radio').change(function () {
       i18n.currentLocale(this.value);
@@ -496,10 +541,19 @@ let IDE = (function () {
   }
 
   function updateVisiblePanelsInOptionsModal() {
-    $('input[name="layout-panels"]').each(function () {
+    $('input[name^="layout-panels"]').each(function () {
       let panelId = $(this).val();
       $(this).prop("checked", $(panelId).is(":visible"));
     });
+  }
+
+  function updatePanel(name) {
+    let panelId = "#" + name + "-panel";
+    if ($(panelId + "-checkbox").get(0).checked){
+      LayoutManager.showPanel(name);
+    } else {
+      LayoutManager.hidePanel(name);
+    }
   }
 
   function checkBrokenLayout() {
@@ -512,16 +566,6 @@ let IDE = (function () {
   }
 
   function appendToOutput(entry) {
-    // Remember the entry in case we need to update the panel (up to a fixed limit)
-    if (outputHistory.length == 100) { outputHistory.shift(); }
-    outputHistory.push(entry);
-
-    // Special case for the clear message
-    if (entry.type == "clear") {
-      $("#output-console").html("");
-      outputHistory = [];
-      return;
-    }
 
     // Translate and format the message
     let type = entry.type || "info";
@@ -531,6 +575,8 @@ let IDE = (function () {
       let arg = args[parseInt(i) - 1];
       return arg || m;
     });
+    entry["text"] = text;
+    ToastMessageBox.show(entry);
 
     // Append element
     let css = {
@@ -636,18 +682,15 @@ let IDE = (function () {
     localStorage["uzi.code"] = ui.code;
     localStorage["uzi.ports"] = JSONX.stringify(ui.ports);
 
-    if ($("#autosave-checkbox").get(0).checked && $("#file-name").text()) {
-      saveProject();
-    }
   }
 
   function getUIState() {
     return {
       settings: {
-        autosave:    $("#autosave-checkbox").get(0).checked,
-        interactive: $("#interactive-checkbox").get(0).checked,
-        allcaps:     $("#all-caps-checkbox").get(0).checked,
-        uziSyntax:   $("#uzi-syntax-checkbox").get(0).checked,
+        // interactive: $("#interactive-checkbox").get(0).checked,
+        allcaps:      $("#all-caps-checkbox").get(0).checked,
+        uziSyntax:    $("#uzi-syntax-checkbox").get(0).checked,
+        advInterface: $("#interface-checkbox").get(0).checked,
       },
       fileName:  $("#file-name").text() || "",
       layout: LayoutManager.getLayoutConfig(),
@@ -663,18 +706,19 @@ let IDE = (function () {
   function setUIState(ui) {
     try {
       if (ui.settings != undefined) {
-        $("#autosave-checkbox").get(0).checked    = ui.settings.autosave;
-        $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
+        // $("#interactive-checkbox").get(0).checked = ui.settings.interactive;
         $("#all-caps-checkbox").get(0).checked    = ui.settings.allcaps;
         $("#uzi-syntax-checkbox").get(0).checked  = ui.settings.uziSyntax;
+        $("#interface-checkbox").get(0).checked   = ui.settings.advInterface;
       } else {
-        $("#autosave-checkbox").get(0).checked    = false;
-        $("#interactive-checkbox").get(0).checked = true;
+        // $("#interactive-checkbox").get(0).checked = true;
         $("#all-caps-checkbox").get(0).checked    = false;
         $("#uzi-syntax-checkbox").get(0).checked  = false;
+        $("#interface-checkbox").get(0).checked   = false;
       }
       updateAllCaps();
       updateUziSyntax();
+      updateInterface();
 
       if (ui.fileName != undefined) {
         $("#file-name").text(ui.fileName);
@@ -974,20 +1018,29 @@ let IDE = (function () {
     }
   }
 
-  function toggleInteractive() {
-    scheduleAutorun($("#interactive-checkbox").get(0).checked,
-                    "TOGGLE INTERACTIVE!");
-    saveToLocalStorage();
-  }
-
-  function toggleAutosave() {
-    saveToLocalStorage();
+  function restoreLayout() {
+    let checked = $("#interface-checkbox").get(0).checked;
+    LayoutManager.reset(checked);
   }
 
   function updateUziSyntax() {
     let checked = $("#uzi-syntax-checkbox").get(0).checked;
     UziBlock.setUziSyntax(checked);
+    saveToLocalStorage();
+  }
 
+  function updateInterface() {
+    let checked = $("#interface-checkbox").get(0).checked;
+    if (checked){
+      UziBlock.setAdvancedToolbox();
+      LayoutManager.setAdvancedContent();
+    } else {
+      UziBlock.setBasicToolbox();
+      LayoutManager.setBasicContent();
+    }
+    $('input[name="layout-panels-advanced"]').each(function () {
+      $(this).attr("disabled", checked? null: "disabled");
+    })
     saveToLocalStorage();
   }
 
@@ -1082,7 +1135,7 @@ let IDE = (function () {
     }
 
     let connected = Uzi.state.connection.isConnected;
-    let interactive = $("#interactive-checkbox").get(0).checked;
+    let interactive = true; //$("#interactive-checkbox").get(0).checked;
     interactive &= Uzi.state.features["interactivity?"];
     let action = connected && interactive ? Uzi.run : Uzi.compile;
     let actionName = action.name.toUpperCase();
@@ -1179,7 +1232,6 @@ let IDE = (function () {
     updatePinsPanel(editing);
     updateGlobalsPanel(editing);
     updateTasksPanel();
-    updateMemoryPanel();
     updatePseudoVarsPanel();
   }
 
@@ -1370,16 +1422,6 @@ let IDE = (function () {
           .append($("<td>")
             .addClass(css)
             .html(html)));
-    }
-  }
-
-  function updateMemoryPanel() {
-    if (Uzi.state.connection.isConnected) {
-      $("#arduino-memory").text(Uzi.state.memory.arduino || "?");
-      $("#uzi-memory").text(Uzi.state.memory.uzi || "?");
-    } else {
-      $("#arduino-memory").text("?");
-      $("#uzi-memory").text("?");
     }
   }
 

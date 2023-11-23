@@ -1,6 +1,6 @@
 let UziBlock = (function () {
 
-  let version = 3;
+  let version = 4;
   let blocklyArea, blocklyDiv, workspace;
   let timestamps = new Map();
   let userInteraction = false; // Flat to indicte that a workspace evt comes from the user
@@ -9,6 +9,7 @@ let UziBlock = (function () {
   let readOnly = false;  
   let readOnlyProgram = null;
   let motors = [];
+  let lcds = [];
   let sonars = [];
   let joysticks = [];
   let variables = [];
@@ -19,6 +20,7 @@ let UziBlock = (function () {
   };
 
   let uziSyntax = false;
+  let toolbox = null;
 
   /**
   NOTE(Richo): This function should be used instead of i18n.translate in all block
@@ -32,10 +34,18 @@ let UziBlock = (function () {
     HIDDEN: "#9E8E7F",
     TASKS: 175,
     GPIO: 345,
+    PINS: 345,
     MOTORS: 0,
+    LCD: 0,
+    SERVO: 0,
+    "DC MOTOR": 0,
     SENSORS: 15,
+    SONAR: 15,
+    BUTTONS: 15,
+    JOYSTICK: 15,
     SOUND: 30,
     CONTROL: 140,
+    STRINGS: 235,
     MATH: 210,
     LOGIC: 210,
     VARIABLES: 305,
@@ -47,7 +57,8 @@ let UziBlock = (function () {
   const types = {
     PIN: "pin",
     NUMBER: "number",
-    BOOLEAN: "boolean"
+    BOOLEAN: "boolean",
+    STRING: "string"
   };
 
   function allTypes(preferredType) {
@@ -561,6 +572,84 @@ let UziBlock = (function () {
       supportsBreakpoints: true,
     },
 
+    // LCDs
+    print_number : {
+      text: "%name . printNumber ( %number ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        },
+        "number": {
+          name: "number",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCD,
+      supportsBreakpoints: true,
+    },
+    print_string : {
+          text: "%name . printString ( %string ) ;",
+          type: null,
+          inputs: {
+            "name": {
+              name: "lcdName",
+              types: null,
+              builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+            },
+            "string": {
+              name: "string",
+              types: [types.STRING],
+              builder: (block, input, name) => block.appendValueInput(name),
+            }
+          },
+          connections: { up: true, down: true, left: false },
+          color: colors.LCD,
+          supportsBreakpoints: true,
+    },
+    lcd_set_cursor: {
+      text: "%name . setCursor ( %column, %row ) ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        },
+        "column": {
+          name: "column",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name).setAlign(Blockly.ALIGN_RIGHT),
+        },
+        "row": {
+          name: "row",
+          types: [types.NUMBER],
+          builder: (block, input, name) => block.appendValueInput(name).setAlign(Blockly.ALIGN_RIGHT),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCD,
+      supportsBreakpoints: true,
+    },
+    lcd_clear: {
+      text: "%name . clear () ;",
+      type: null,
+      inputs: {
+        "name": {
+          name: "lcdName",
+          types: null,
+          builder: (block, input, name) => input.appendField(new Blockly.FieldDropdown(currentLcdsForDropdown), name),
+        }
+      },
+      connections: { up: true, down: true, left: false },
+      color: colors.LCD,
+      supportsBreakpoints: true,
+    },
+    
     // Sensors - Sonar
     get_sonar_distance: {
       text: "%name . %unit ()",
@@ -736,6 +825,38 @@ let UziBlock = (function () {
       connections: { up: false, down: false, left: true },
       color: colors.SENSORS,
       supportsBreakpoints: true,
+    },
+
+    // Strings
+    string: {
+      text: "'%text'",
+      type: types.STRING,
+      inputs: {
+        "text": {
+          name: "text",
+          types: null,
+          builder: (block, input, name) => block.appendDummyInput()
+                                          .appendField(new Blockly.FieldTextInput('abc'), name),
+        }
+      },
+      connections: { up: false, down: false, left: true},
+      color: colors.STRINGS,
+      postload: (block) => block.setInputsInline(true),
+      supportsBreakpoints: false,
+    },
+    string_length: {
+      text: "strlen ( %string )",
+      type: null,
+      inputs: {
+        "string": {
+          name: "string",
+          types: [types.STRING],
+          builder: (block, input, name) => block.appendValueInput(name),
+        }
+      },
+      connections: { up: false, down: false, left: true },
+      color: colors.STRINGS,
+      supportsBreakpoints: false,
     },
 
     // Sound
@@ -2661,30 +2782,7 @@ let UziBlock = (function () {
 
     i18n.on("change", refreshWorkspace);
 
-    return ajax.GET('toolbox.xml').then(function (toolbox) {
-      if (typeof(toolbox) == "string") {
-        toolbox = Blockly.Xml.textToDom(toolbox);
-      } else {
-        toolbox = toolbox.documentElement;
-      }
-      let categories = toolbox.getElementsByTagName("category");
-      for (let i = 0; i < categories.length; i++) {
-        let category = categories[i];
-        let name = category.getAttribute("name");
-        category.setAttribute("originalName", name);
-        category.setAttribute("name", i18n.translate(name));
-
-        let color = colors[name.toUpperCase()];
-        if (color != undefined) {
-          category.setAttribute("colour", color);
-        }
-      }
-      let buttons = toolbox.getElementsByTagName("button");
-      for (let i = 0; i < buttons.length; i++) {
-        let button = buttons[i];
-        button.setAttribute("originalText", button.getAttribute("text"));
-        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
-      }
+    return loadToolbox(false).then(function () {
       workspace = Blockly.inject(blocklyDiv, {
         toolbox: toolbox,
         zoom: {
@@ -2699,10 +2797,12 @@ let UziBlock = (function () {
       });
 
       i18n.on("change", function () {
+        let categories = toolbox.getElementsByTagName("category");
         for (let i = 0; i < categories.length; i++) {
           let category = categories[i];
           category.setAttribute("name", i18n.translate(category.getAttribute("originalName")));
         }
+        let buttons = toolbox.getElementsByTagName("button");
         for (let i = 0; i < buttons.length; i++) {
           let button = buttons[i];
           button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
@@ -2795,21 +2895,22 @@ let UziBlock = (function () {
         }
       });
 
-      initTasksToolboxCategory(toolbox, workspace);
-      initDCMotorsToolboxCategory(toolbox, workspace);
-      initSonarToolboxCategory(toolbox, workspace);
-      initJoystickToolboxCategory(toolbox, workspace);
-      initVariablesToolboxCategory(toolbox, workspace);
-      initListsToolboxCategory(toolbox, workspace);
-      initProceduresToolboxCategory(toolbox, workspace);
-      initFunctionsToolboxCategory(toolbox, workspace);
+      initTasksToolboxCategory(workspace);
+      initDCMotorsToolboxCategory(workspace);
+      initLCDToolboxCategory(workspace);
+      initSonarToolboxCategory(workspace);
+      initJoystickToolboxCategory(workspace);
+      initVariablesToolboxCategory(workspace);
+      initListsToolboxCategory(workspace);
+      initProceduresToolboxCategory(workspace);
+      initFunctionsToolboxCategory(workspace);
 
       window.addEventListener('resize', resizeBlockly, false);
       resizeBlockly();
     });
   }
 
-  function initTasksToolboxCategory(toolbox, workspace) {
+  function initTasksToolboxCategory(workspace) {
     let taskDeclaringBlocks = new Set(["task", "timer"]);
     let taskControlBlocks = new Set(["start_task", "stop_task", "resume_task", "pause_task", "run_task"]);
 
@@ -2856,9 +2957,9 @@ let UziBlock = (function () {
     });
   }
 
-  function initDCMotorsToolboxCategory(toolbox, workspace) {
+  function initDCMotorsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("DC_MOTORS", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Motors", "originalName"), "DC", "originalName");
+      let node = XML.getChildNode(toolbox, "DC motor", "originalName");
       let nodes = Array.from(node.children);
       if (motors.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2875,9 +2976,28 @@ let UziBlock = (function () {
     });
   }
 
-  function initSonarToolboxCategory(toolbox, workspace) {
+  function initLCDToolboxCategory(workspace) {
+    workspace.registerToolboxCategoryCallback("LCD", function () {
+      let node = XML.getChildNode(toolbox, "LCD", "originalName");
+      let nodes = Array.from(node.children);
+      if (lcds.length == 0) {
+        nodes.splice(1); // Leave the button only
+      } else {
+        let fields = node.getElementsByTagName("field");
+        for (let i = 0; i < fields.length; i++) {
+          let field = fields[i];
+          if (field.getAttribute("name") === "lcdName") {
+            field.innerText = lcds[lcds.length-1].name;
+          }
+        }
+      }
+      return nodes;
+    });
+  }
+
+  function initSonarToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("SONAR", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Sonar", "originalName");
+      let node = XML.getChildNode(toolbox, "Sonar", "originalName");
       let nodes = Array.from(node.children);
       if (sonars.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2894,9 +3014,9 @@ let UziBlock = (function () {
     });
   }
 
-  function initJoystickToolboxCategory(toolbox, workspace) {
+  function initJoystickToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("JOYSTICK", function () {
-      let node = XML.getChildNode(XML.getChildNode(toolbox, "Sensors", "originalName"), "Joystick", "originalName");
+      let node = XML.getChildNode(toolbox, "Joystick", "originalName");
       let nodes = Array.from(node.children);
       if (joysticks.length == 0) {
         nodes.splice(1); // Leave the button only
@@ -2913,15 +3033,16 @@ let UziBlock = (function () {
     });
   }
 
-  function initVariablesToolboxCategory(toolbox, workspace) {
+  function initVariablesToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("VARIABLES", function () {
       let node = XML.getChildNode(toolbox, "Variables", "originalName");
       let nodes = Array.from(node.children);
       if (variables.length == 0) {
-        nodes.splice(2); // Leave the button and declare_local_variable
+        // Leave the button and declare_local_variable
+        nodes = nodes.filter(node => node.nodeName == "button" || node.getAttribute("type") == "declare_local_variable");
       } else {
         let fields = node.getElementsByTagName("field");
-        for (let i = 1; i < fields.length; i++) {
+        for (let i = 0; i < fields.length; i++) {
           let field = fields[i];
           if (field.getAttribute("name") === "variableName") {
             field.innerText = variables[variables.length-1].name;
@@ -2932,7 +3053,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initListsToolboxCategory(toolbox, workspace) {
+  function initListsToolboxCategory(workspace) {
     workspace.registerToolboxCategoryCallback("LISTS", function () {
       let node = XML.getChildNode(toolbox, "Lists", "originalName");
       let nodes = Array.from(node.children);
@@ -2951,7 +3072,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initProceduresToolboxCategory(toolbox, workspace) {
+  function initProceduresToolboxCategory(workspace) {
     let procDeclaringBlocks = new Set(["proc_definition_0args", "proc_definition_1args",
                                        "proc_definition_2args", "proc_definition_3args",
                                        "proc_definition_4args", "proc_definition_5args"]);
@@ -3007,7 +3128,7 @@ let UziBlock = (function () {
     });
   }
 
-  function initFunctionsToolboxCategory(toolbox, workspace) {
+  function initFunctionsToolboxCategory(workspace) {
     let funcDeclaringBlocks = new Set(["func_definition_0args", "func_definition_1args",
                                        "func_definition_2args", "func_definition_3args",
                                        "func_definition_4args", "func_definition_5args"]);
@@ -3064,11 +3185,6 @@ let UziBlock = (function () {
   }
 
   function initFromSpec() {
-    let typeMap = {};
-    typeMap[types.PIN] = "Pin";
-    typeMap[types.NUMBER] = "Number";
-    typeMap[types.BOOLEAN] = "Boolean";
-
     for (let key in spec) {
       let blockSpec = spec[key];
       Blockly.Blocks[key] = {
@@ -3107,7 +3223,7 @@ let UziBlock = (function () {
               inputFields[inputKey] = (block, input) => {
                 let inputResult = inputSpec.builder(block, input, inputSpec.name);
                 if (inputSpec.types) {
-                  inputResult.setCheck(inputSpec.types.map(t => typeMap[t]));
+                  inputResult.setCheck(inputSpec.types);
                 }
                 return inputResult;
               }
@@ -3121,7 +3237,7 @@ let UziBlock = (function () {
             initBlock(this, msg, inputFields);
             this.setPreviousStatement(blockSpec.connections.up, null);
             this.setNextStatement(blockSpec.connections.down, null);
-            this.setOutput(blockSpec.connections.left, typeMap[blockSpec.type]);
+            this.setOutput(blockSpec.connections.left, blockSpec.type);
             this.setColour(blockSpec.color);
             this.setTooltip(blockSpec.tooltip || "");
             this.setHelpUrl(blockSpec.helpUrl || "");
@@ -3314,6 +3430,11 @@ let UziBlock = (function () {
   function currentMotorsForDropdown() {
     if (motors.length == 0) return [[null, null]];
     return motors.map(function(each) { return [ each.name, each.name ]; });
+  }
+
+  function currentLcdsForDropdown() {
+    if (lcds.length == 0) return [[null, null]];
+    return lcds.map(function(each) { return [ each.name, each.name ]; });
   }
 
   function currentSonarsForDropdown() {
@@ -3604,6 +3725,7 @@ let UziBlock = (function () {
     let xml = Blockly.Xml.workspaceToDom(workspace);
     let metadata = {
       motors: motors,
+      lcds: lcds,
       sonars: sonars,
       joysticks: joysticks,
       variables: variables,
@@ -3806,6 +3928,85 @@ let UziBlock = (function () {
     readOnly = value;
   }
 
+  function loadToolbox(advancedFlag) {
+    toolboxName = advancedFlag ? 'toolbox-advanced.xml' : 'toolbox-basic.xml';
+    return ajax.GET(toolboxName).then(toolboxData => {        
+      if (typeof(toolboxData) == "string") {
+        toolbox = Blockly.Xml.textToDom(toolboxData);
+      } else {
+        toolbox = toolboxData.documentElement;
+      }
+      let categories = toolbox.getElementsByTagName("category");
+      for (let i = 0; i < categories.length; i++) {
+        let category = categories[i];
+        let name = category.getAttribute("name");
+        category.setAttribute("originalName", name);
+        category.setAttribute("name", i18n.translate(name));
+
+        let color = colors[name.toUpperCase()];
+        if (color != undefined) {
+          category.setAttribute("colour", color);
+        }
+      }
+      let buttons = toolbox.getElementsByTagName("button");
+      for (let i = 0; i < buttons.length; i++) {
+        let button = buttons[i];
+        button.setAttribute("originalText", button.getAttribute("text"));
+        button.setAttribute("text", i18n.translate(button.getAttribute("originalText")));
+      }
+      return toolbox;
+    });
+  }
+
+  function setToolbox(advancedFlag) {
+    loadToolbox(advancedFlag).then(toolbox => {
+      workspace.updateToolbox(toolbox);
+      refreshToolbox();
+    });
+  }
+
+  function getTopBlockName(block) {
+    return block.getFieldValue("scriptName");
+  }
+
+  function getTopBlocksPositions() {
+    // NOTE(Richo): This function returns a map whose keys are each top block's name 
+    // and its values are the position of each top block relative to the bottom-left
+    // of its previous block (sorted from top to bottom)
+    let positions = {};
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let abs_pos = block.getRelativeToSurfaceXY();
+      positions[getTopBlockName(block)] = {
+        x: abs_pos.x - x,
+        y: abs_pos.y - y,
+      };
+      x = abs_pos.x;
+      y = abs_pos.y + block.height;
+    });
+    return positions;
+  }
+  
+  function setTopBlocksPositions(positions) {
+    // NOTE(Richo): This function restores the positions of all top blocks according to
+    // the 'positions' argument, which must be the result or getTopBlocksPositions()
+    let x = 0;
+    let y = 0;
+    workspace.getTopBlocks().forEach(block => {
+      let name = getTopBlockName(block);
+      if (name in positions) {
+        let pos = positions[name];
+        x += pos.x;
+        y += pos.y;
+      } else {
+        y += 24;
+      }
+      block.moveBy(x, y);
+      y += block.height;
+    });
+  }
+
   return {
     init: init,
     on: on,
@@ -3821,6 +4022,9 @@ let UziBlock = (function () {
       uziSyntax = value;
       refreshAll();
     },
+
+    setBasicToolbox: () => setToolbox(false),
+    setAdvancedToolbox: () => setToolbox(true),
 
     cleanUp: cleanUp,
 
@@ -3849,6 +4053,29 @@ let UziBlock = (function () {
         });
 
       motors = data;
+    },
+    getLcds: function () { return lcds; },
+    setLcds: function (data) {
+      if (readOnly) return;
+      let renames = new Map();
+      data.forEach(function (m) {
+        if (lcds[m.index] == undefined) return;
+        renames.set(lcds[m.index].name, m.name);
+      });
+
+      workspace.getAllBlocks()
+        .map(b => ({ block: b, field: b.getField("lcdName") }))
+        .filter(o => o.field != undefined)
+        .forEach(function (o) {
+          let value = renames.get(o.field.getValue());
+          if (value == undefined) {
+            o.block.dispose(true);
+          } else {
+            o.field.setValue(value);
+          }
+        });
+
+      lcds = data;
     },
     getSonars: function () { return sonars; },
     setSonars: function (data) {
@@ -3946,6 +4173,7 @@ let UziBlock = (function () {
         version: version,
         blocks: toXMLText(),
         motors: motors,
+        lcds: lcds,
         sonars: sonars,
         joysticks: joysticks,
         variables: variables,
@@ -3960,6 +4188,7 @@ let UziBlock = (function () {
         userInteraction = false;
         fromXMLText(d.blocks);
         motors = d.motors || [];
+        lcds = d.lcds || [];
         sonars = d.sonars || [];
         joysticks = d.joysticks || [];
         variables = d.variables || [];
@@ -3970,6 +4199,10 @@ let UziBlock = (function () {
         return false;
       }
     },
+
+    getTopBlocksPositions: getTopBlocksPositions,
+    setTopBlocksPositions: setTopBlocksPositions,
+
     getUsedVariables: getUsedVariables,
     handleDebuggerUpdate: handleDebuggerUpdate,
     getSelectedBlock: () => selectedBlock,
