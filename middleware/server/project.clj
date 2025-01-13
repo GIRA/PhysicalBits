@@ -13,7 +13,7 @@
                  [compojure "1.6.1"]
                  [aleph "0.4.6"]
                  [cheshire "5.9.0"]
-                 [clj-petitparser "0.1.2-SNAPSHOT"]]
+                 [clj-petitparser "0.1.3"]]
   :main ^:skip-aot middleware.main
   :target-path "target/%s"
 
